@@ -15,7 +15,7 @@ import { setid } from "../../../../redux/clientFormSlice"
 import ModelOne from '../../common/Modelone';
 import Imagedetails from "./Imagedetails"
 import {
-  getoffersTable, getOfferById,getBranchById, allofferstype, activateoffers, deleteoffers, allmetal, getallbranch
+  getoffersTable, sendwhatsappmessage,getOfferById,getBranchById, allofferstype, activateoffers, deleteoffers, allmetal, getallbranch
 } from "../../../api/Endpoints";
 
 import { useDispatch, useSelector } from 'react-redux'
@@ -41,6 +41,7 @@ const ProductWhatsapp = () => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedRow, setSelectedRow] = useState(null)
   const [activeDropdown, setActiveDropdown] = useState(null)
+   const [sendDropdown, setSendDropdown] = useState(null)
   const [popuptitle, setPopuptitle] = useState(0);
   const [displaysetting, setDiplaySetting] = useState(0);
 
@@ -220,13 +221,6 @@ const ProductWhatsapp = () => {
     navigate('/catalog/addoffers');
   }
 
-  const handleStatusToggle = async (id) => {
-    let response = await activateoffers(id);
-    if (response) {
-      toast.success(response.message);
-      getofferData({ page: currentPage, limit: itemsPerPage, search: search })
-    }
-  };
 
 
 
@@ -282,7 +276,58 @@ const ProductWhatsapp = () => {
     };
   }, [eventEmitter]);
 
-
+  const handleSend = (id,id_branch) => {
+    setSendDropdown(null);
+    dispatch(openModal({
+      modalType: 'SENDCONFIRMATION',
+      header: 'Send Offers Notification',
+      formData: {
+        message: 'Are you sure you want to send?',
+        id: id,
+        id_branch:id_branch
+      },
+      buttons: {
+        cancel: {
+          text: 'Cancel'
+        },
+        submit: {
+          text: 'Send'
+        }
+      }
+    }));
+  };
+  
+  useEffect(() => {
+    const handleSubmit = async (data) => {
+      try {
+        sendwhatsapp({ id: data.id,id_branch:data.id_branch, senttype: 1 });
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    };
+  
+    // Listen for SENDCONFIRMATION_SUBMIT only once when component mounts
+    eventEmitter.on('SENDCONFIRMATION_SUBMIT', handleSubmit);
+  
+    return () => {
+      // Clean up listener on unmount
+      eventEmitter.off('SENDCONFIRMATION_SUBMIT', handleSubmit);
+    };
+  }, [eventEmitter]); // Only depend on eventEmitter to avoid unnecessary re-renders
+  
+  // Mutation to get purity type
+  const { mutate: sendwhatsapp } = useMutation({
+    mutationFn: sendwhatsappmessage,
+    onSuccess: (response) => {
+      console.log("Response", response);
+      toast.success(response.message);
+      getofferData({ page: currentPage, limit: itemsPerPage, search: search });
+    },
+    onError: (error) => {
+      console.error("Error fetching countries:", error);
+    },
+  });
+  
 
   const columns = [
     {
@@ -370,6 +415,12 @@ const ProductWhatsapp = () => {
       cell: (row, rowIndex) => (
         <div className="dropdown-container relative">
           <button
+            onClick={() => {
+              if (row.whatsapp_sent === 0) {
+                handleSend(row._id,row.id_branch._id);
+                setSendDropdown(null);
+              }
+            }}
             className={`px-4 py-2 text-white font-semibold rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-opacity-75 
             ${row.whatsapp_sent > 0 ? "bg-gray-900 focus:ring-gray-600 cursor-not-allowed opacity-50" : "bg-[#61A375] hover:bg-[#4F8A5D] focus:ring-green-400 cursor-pointer"}`}
             disabled={row.whatsapp_sent > 0}
@@ -378,11 +429,14 @@ const ProductWhatsapp = () => {
           </button>
         </div>
       ),
-
     },
     {
       header: "Total Sent",
       cell: (row) => row.whatsapp_sent
+    },
+    {
+      header: "Branch Name",
+      cell: (row) => row.id_branch.branch_name
     },
 
   ];
@@ -495,7 +549,7 @@ const ProductWhatsapp = () => {
 
               <div className="space-y-2">
                 {
-                  id_branch === 0 &&
+                  id_branch === "0" &&
 
                   <>
                     <div className="flex flex-col lg:mt-2">

@@ -5,18 +5,18 @@ import { CalendarDays, Search } from 'lucide-react'
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import {  getallbranch, getBranchById,showtype, createnewarrivals,updatenewarrivals,newarrivalsbyid,} from "../../../api/Endpoints"
-
+import {setid} from "../../../../redux/clientFormSlice";
 import { toast } from "react-toastify";
 import { useSelector,useDispatch } from 'react-redux'
 
 const AddNewArrival = () => {
   const navigate = useNavigate();
- 
+   let dispatch = useDispatch();
   const roledata = useSelector((state) => state.clientForm.roledata);
   const id_branch = roledata?.branch;
   
    const id = useSelector((state) => state.clientForm.id);
-   console.log(id)
+   console.log("---",id)
 
   const [filtertype, setShowType] = useState([]);
   
@@ -151,6 +151,7 @@ const AddNewArrival = () => {
   const { mutate: createnewarrivalsMutate } = useMutation({
     mutationFn: createnewarrivals,
     onSuccess: (response) => {
+       dispatch(setid(null));
       toast.success(response.message)
       navigate('/catalog/newarrivals')
     },
@@ -180,6 +181,7 @@ const AddNewArrival = () => {
 
 
   const handleCancle = () => {
+     dispatch(setid(null));
     navigate("/catalog/newarrivals");
   };
 
@@ -189,7 +191,16 @@ const AddNewArrival = () => {
   const { mutate: fetchnewarrivalsById } = useMutation({
     mutationFn: newarrivalsbyid,
     onSuccess: (response) => {
-      setFormData(response.data);
+      setFormData(
+        {id_branch:response.data.id_branch,
+          description:response.data.description,
+          name:response.data.name,
+          images_Url:response.data.images_Url,
+          price:response.data.price.$numberDecimal,
+          expiry_date:response.data.expiry_date,
+          show_rate:response.data.show_rate
+
+        });
       // setIffersImage(`${response.data.pathUrl}/${response.data.desc_img}`);
       handletypeChange('type',response.data.show_rate);
     },
@@ -203,6 +214,7 @@ const AddNewArrival = () => {
     mutationFn: updatenewarrivals,
     onSuccess: (response) => {
       toast.success(response.message);
+       dispatch(setid(null));
       navigate("/catalog/newarrivals");
     },
     onError: (error) => {

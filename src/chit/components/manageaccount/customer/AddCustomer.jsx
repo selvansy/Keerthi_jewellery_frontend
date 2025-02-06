@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { CalendarDays, Camera, X } from 'lucide-react'
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
-import { updatecustomer ,getcustomerById,getallbranch, allcountry, allstate, addcustomer, allcity } from '../../../api/Endpoints';
+import { updatecustomer, getcustomerById, getallbranch, allcountry, allstate, addcustomer, allcity } from '../../../api/Endpoints';
 
 
 import { useMutation } from '@tanstack/react-query';
@@ -51,7 +51,7 @@ const AddCustomer = () => {
     authorno: '',
   });
 
- 
+
   const [formErrors, setFormErrors] = useState({});
   const [customerData, setcustomerData] = useState(null);
   const customerId = useSelector((state) => state.clientForm.id);
@@ -117,7 +117,7 @@ const AddCustomer = () => {
     },
   });
 
- 
+
 
   const adjustDate = (dateString) => {
     if (!dateString) return null;
@@ -137,7 +137,7 @@ const AddCustomer = () => {
     let formDataToSend = new FormData();
 
     const id = formData.id;  // Ensure the 'id' is correctly coming from formData or another source
-  
+
     if (!id) {
       console.error('Customer ID is missing!');
       return;  // Exit early if ID is not available
@@ -152,11 +152,11 @@ const AddCustomer = () => {
     formDataToSend.append('id_state', selectedState);
     formDataToSend.append('id_city', selectedCity);
     formDataToSend.append('id_branch', selectedBranch);
-  
+
     // Add date of birth and wedding date with conditional handling
     formDataToSend.append('date_of_birth', birthDate ? birthDate.toISOString() : '');
     formDataToSend.append('date_of_wed', date_of_wed ? date_of_wed.toISOString() : '');
-  
+
     formDataToSend.append('gender', selectedGender);
     formDataToSend.append('phone', '');  // empty value if not used
     formDataToSend.append('nominee_name', '');  // empty value if not used
@@ -173,14 +173,14 @@ const AddCustomer = () => {
     formDataToSend.append('bank_accountname', '');  // empty value if not used
     formDataToSend.append('bank_accno', '');  // empty value if not used
     formDataToSend.append('bank_ifsccode', '');  // empty value if not used
-  
+
     // Conditionally append fields if they exist
     if (formData.whatsapp) formDataToSend.append('whatsapp', formData.whatsapp);
     if (formData.pan) formDataToSend.append('pan', formData.pan);
     if (formData.authorno) formDataToSend.append('authorno', formData.authorno);
     if (cus_img) formDataToSend.append('cus_img', cus_img);  // Assuming cus_img is a file or blob
     if (id_proof) formDataToSend.append('id_proof', id_proof);  // Assuming id_proof is a file or blob
-  
+
     // Assuming `updatecustomerMutate` is the function you're calling to send this data
     updatecustomerMutate(id, formDataToSend);
   }
@@ -238,23 +238,23 @@ const AddCustomer = () => {
     }
   });
 
-    const { mutate: updateCustomerData } = useMutation({
-      mutationFn: updatecustomer,
-      onSuccess: (response) => {
-        toast.success(response.message)
-        navigate('/manageaccount/customer');
-        setFormData({})
-        dispatch(setid(null))
-      },
-      onError: (error) => {
-        console.error("Error fetching scheme types:", error);
-      },
-    });
+  const { mutate: updateCustomerData } = useMutation({
+    mutationFn: updatecustomer,
+    onSuccess: (response) => {
+      toast.success(response.message)
+      navigate('/manageaccount/customer');
+      setFormData({})
+      dispatch(setid(null))
+    },
+    onError: (error) => {
+      console.error("Error fetching scheme types:", error);
+    },
+  });
 
   // input change handler
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    
+
     // Special handling for authorno to ensure it's a single string
     if (name === 'authorno') {
       setFormData(prev => ({
@@ -267,7 +267,7 @@ const AddCustomer = () => {
         [name]: value
       }));
     }
-    
+
     setFormErrors(prev => ({
       ...prev,
       [name]: ''
@@ -280,7 +280,7 @@ const AddCustomer = () => {
     getallbranchMutate();
 
     if (customerId) {
-      getbranchbyidMutate(customerId );
+      getbranchbyidMutate(customerId);
     }
 
   }, []);
@@ -362,14 +362,14 @@ const AddCustomer = () => {
     return Object.keys(errors).length === 0;
   };
 
-   const handleUpdate = (formData)=>{
-      if(!validateForm()){
-        toast.error("Required fields missing")
-        return;
-      }
-      updateCustomerData(formData)
+  const handleUpdate = (formData) => {
+    if (!validateForm()) {
+      toast.error("Required fields missing")
+      return;
     }
-  
+    updateCustomerData(formData)
+  }
+
 
   const handleSubmit = () => {
     if (!validateForm()) {
@@ -389,11 +389,11 @@ const AddCustomer = () => {
     formDataToSend.append('id_state', selectedState);
     formDataToSend.append('id_city', selectedCity);
     formDataToSend.append('id_branch', selectedBranch);
-    
+
     // Date fields with null checks
     formDataToSend.append('date_of_birth', birthDate ? birthDate.toISOString() : '');
     formDataToSend.append('date_of_wed', date_of_wed ? date_of_wed.toISOString() : '');
-    
+
     // Other fields
     formDataToSend.append('gender', selectedGender || '');
     formDataToSend.append('phone', '');
@@ -402,10 +402,10 @@ const AddCustomer = () => {
     formDataToSend.append('nominee_mobile', '');
     formDataToSend.append('digital_sign', '');
     formDataToSend.append('pan', formData.pan || '');
-    
+
     // Fix for authorno - ensure it's a string
     formDataToSend.append('authorno', String(formData.authorno || ''));
-    
+
     formDataToSend.append('username', '');
     formDataToSend.append('passwd', '');
     formDataToSend.append('mpin', '');
@@ -480,7 +480,7 @@ const AddCustomer = () => {
   return (
     <>
       <div className='flex flex-row justify-between'>
-        <h2 className='text-2xl text-[#023453] font-bold justify-between'>{customerId ? "Edit Customer" : "Add Customer" }</h2>
+        <h2 className='text-2xl text-[#023453] font-bold justify-between'>{customerId ? "Edit Customer" : "Add Customer"}</h2>
         {customerId && (
           <div className='flex flex-row gap-4'>
             <button onClick={handleBack} className='bg-[#E2E8F0] text-black px-4 py-2 rounded-md'>Back</button>
@@ -891,7 +891,7 @@ const AddCustomer = () => {
           </div>
           {!customerId && (
             <div>
-              
+
               <div className='bg-white mt-6'>
                 <div className='flex justify-end gap-2 mt-3'>
                   <button
@@ -902,20 +902,20 @@ const AddCustomer = () => {
                     Cancel
                   </button>
                   <button
-                className="bg-[#61A375] text-white rounded-md p-2 w-full lg:w-20"
-                type="button"
-                onClick={customerId ? handleUpdate : handleSubmit}
-              >
-                {customerId ? "Update" : "Submit"}
-              </button>
+                    className="bg-[#61A375] text-white rounded-md p-2 w-full lg:w-20"
+                    type="button"
+                    onClick={customerId ? handleUpdate : handleSubmit}
+                  >
+                    {customerId ? "Update" : "Submit"}
+                  </button>
                 </div>
               </div>
             </div>
           )}
         </div>
       </div>
-      </>
-      )
+    </>
+  )
 }
 
-      export default AddCustomer;
+export default AddCustomer;

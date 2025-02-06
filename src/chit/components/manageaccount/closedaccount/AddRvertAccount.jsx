@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { CalendarDays, Search,UserX2Icon } from 'lucide-react'
+import { CalendarDays, Search } from 'lucide-react'
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 
-const AddCloseAccount = () => {
+const AddRvertAccount = () => {
   const navigate = useNavigate()
   const [startDate, setStartDate] = useState(null);
   const [maturityDate, setMaturityDate] = useState(null);
@@ -16,7 +16,7 @@ const AddCloseAccount = () => {
   return (
     <>
       <div className='flex flex-row justify-between'>
-        <h2 className='text-2xl text-[#023453] font-bold justify-between'>Close Account</h2>
+        <h2 className='text-2xl text-[#023453] font-bold justify-between'>Revert Account</h2>
       </div>
       <div className='w-full flex flex-col bg-white pl-8 pr-8 pb-4 border-t-2 border-[#023453] mt-3 overflow-y-auto scrollbar-hide h-[calc(100vh-200px)]'>
         <div className='mb-8'>
@@ -165,4 +165,4 @@ const AddCloseAccount = () => {
   )
 }
 
-export default AddCloseAccount;
+export default AddRvertAccount;

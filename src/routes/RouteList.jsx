@@ -52,6 +52,7 @@ import Schemeaccount from "../chit/components/manageaccount/schemeaccount/index"
 import AddSchemeAccount from "../chit/components/manageaccount/schemeaccount/SchemeAccountform";
 import CloseAccount from "../chit/components/manageaccount/closedaccount/CloseAccount";
 import AddCloseAccount from "../chit/components/manageaccount/closedaccount/AddCloseAccount";
+import AddRvertAccount from "../chit/components/manageaccount/closedaccount/AddRvertAccount";
 import CompleteAccount from "../chit/components/manageaccount/completedaccount/CompleteAccount";
 import DigiGold from "../chit/components/manageaccount/digigold/index";
 import AddSchemePayment from "../chit/components/payment/schemepayment/AddSchemePayment";
@@ -72,6 +73,7 @@ import AdminMaster from "../chit/components/SuperAdmin/Accounts/AdminMaster";
 import Dashboard from "../chit/components/SuperAdmin/Dashboard/Dashboard"
 import AddNotfication from "../chit/components/notification/pushnotification/AddNotfication";
 import Weddingnotification from "../chit/components/notification/Weddingnotification";
+import Birthdaynotification from "../chit/components/notification/Birthdaynotification";
 import SchemePaymentReport from "../chit/components/Report/SchemePaymentReport";
 import SchemeAccountReport from "../chit/components/Report/SchemeAccountReport";
 import AccountSummaryReport from "../chit/components/Report/AccountSummary";
@@ -280,6 +282,11 @@ const RouteList = [
     element:<Base renderContent={Weddingnotification}/>
   },
   {
+    name: "Birthday",
+    path:'/notification/birthday',
+    element:<Base renderContent={Birthdaynotification}/>
+  },
+  {
     name: "Push Notification",
     path:'/notification/pushnotification',
     element:<Base renderContent={Pushnotification}/>
@@ -318,10 +325,14 @@ const RouteList = [
   },
   {
     name: "Add Close Account",
-    path:'/manageaccount/closedaccount/add',
+    path:'/manageaccount/addcloseaccount',
     element:<Base renderContent={AddCloseAccount}/>
   },
- 
+  {
+    name: "Add Revert Account",
+    path:'/manageaccount/addrevertaccount',
+    element:<Base renderContent={AddRvertAccount}/>
+  },
   {
     name: "Digi Gold Account",
     path:'/manageaccount/digigold',

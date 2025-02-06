@@ -54,6 +54,10 @@ const Modal = () => {
                 eventEmitter.emit(`${modalType}_SUBMIT`, formData);
                 dispatch(closeModal());
                 break;
+            case 'SENDCONFIRMATION':
+                eventEmitter.emit(`${modalType}_SUBMIT`, formData);
+                dispatch(closeModal());
+                break;
             case 'EDIT_PROJECT':
                 eventEmitter.emit(`${modalType}_SUBMIT`, localFormData);
                 dispatch(closeModal());
@@ -164,6 +168,8 @@ const Modal = () => {
 
     const handleCancel = () => {
         if (modalType === 'CONFIRMATION') {
+            dispatch(closeModal());
+        }  if (modalType === 'SENDCONFIRMATION') {
             dispatch(closeModal());
         } else if (modalType === 'ADD_PROJECT') {
             dispatch(closeModal());
@@ -288,6 +294,18 @@ const Modal = () => {
                         </p>
                     </div>
                 );
+
+                case 'SENDCONFIRMATION':
+                    return (
+                        <div className="text-center py-4">
+                            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-circle-reply"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/><path d="m10 15-3-3 3-3"/><path d="M7 12h7a2 2 0 0 1 2 2v1"/></svg>
+                            </div>
+                            <p className="text-lg text-gray-700">
+                                {formData.message}
+                            </p>
+                        </div>
+                    );
             case 'EDIT_GIFTVENDOR':
                         return (
                             <form className="space-y-4">
@@ -587,11 +605,11 @@ const Modal = () => {
                         <button
                             onClick={handleCancel}
                             className={`px-4 py-2 rounded-md
-                                ${modalType === 'CONFIRMATION'
+                                ${modalType === 'CONFIRMATION' || modalType === 'SENDCONFIRMATION'
                                     ? 'bg-gray-300 text-gray-800 hover:bg-gray-400'
                                     : 'bg-gray-300 text-gray-800 hover:bg-red-400'}`}
                         >
-                            {modalType === 'CONFIRMATION'
+                            {modalType === 'CONFIRMATION'  || modalType === 'SENDCONFIRMATION'
                                 ? 'No'
                                 : buttons.cancel.text}
                         </button>
@@ -600,11 +618,11 @@ const Modal = () => {
                         <button
                             onClick={handleSubmit}
                             className={`px-4 py-2 rounded-md
-                                ${modalType === 'CONFIRMATION'
+                                ${modalType === 'CONFIRMATION'  || modalType === 'SENDCONFIRMATION'
                                     ? 'bg-red-600 text-white hover:bg-red-700'
                                     : 'bg-[#61A375] text-white hover:bg-[#528f63]'}`}
                         >
-                            {modalType === 'CONFIRMATION'
+                            {modalType === 'CONFIRMATION'  || modalType === 'SENDCONFIRMATION'
                                 && 'Yes' }
                         </button>
                     )}
