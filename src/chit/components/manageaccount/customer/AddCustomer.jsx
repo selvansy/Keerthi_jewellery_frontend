@@ -1,0 +1,921 @@
+import React, { useState, useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { CalendarDays, Camera, X } from 'lucide-react'
+import "react-datepicker/dist/react-datepicker.css";
+import DatePicker from "react-datepicker";
+import { updatecustomer ,getcustomerById,getallbranch, allcountry, allstate, addcustomer, allcity } from '../../../api/Endpoints';
+
+
+import { useMutation } from '@tanstack/react-query';
+import Webcam from 'react-webcam';
+import profileplaceholder from '../../../../assets/profileplaceholder.png'
+import { toast } from 'react-toastify';
+import { useParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+
+const AddCustomer = () => {
+
+  const navigate = useNavigate()
+
+  // const { id } = useParams();
+  const [cus_img, setcus_img] = useState(null);
+  const [id_proof, setid_proof] = useState(null);
+  const [id_proofError, setid_proofError] = useState('');
+  const [date_of_wed, setDate_of_wed] = useState(null);
+  const [countryData, setCountryData] = useState('');
+  const [stateData, setStateData] = useState([]);
+  const sortedStates = [...stateData].sort((a, b) =>
+    a.state_name.localeCompare(b.state_name)
+  );
+  const [selectedGender, setSelectedGender] = useState(null);
+  const [birthDate, setBirthDate] = useState(null);
+  const [cityData, setCityData] = useState([]);
+  const [branchData, setBranchData] = useState([]);
+  const [selectedState, setSelectedState] = useState('');
+  const sortedCities = [...cityData].sort((a, b) =>
+    a.city_name.localeCompare(b.city_name)
+  );
+  const [selectedBranch, setSelectedBranch] = useState('');
+  const [selectedCity, setSelectedCity] = useState('');
+  const [showWebcam, setShowWebcam] = useState(false);
+  const [profilePreview, setProfilePreview] = useState(null);
+  const webcamRef = useRef(null);
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    mobile: '',
+    whatsapp: '',
+    address: '',
+    pincode: '',
+    pan: '',
+    authorno: '',
+  });
+
+ 
+  const [formErrors, setFormErrors] = useState({});
+  const [customerData, setcustomerData] = useState(null);
+  const customerId = useSelector((state) => state.clientForm.id);
+  console.log(customerId)
+
+  const { mutate: getAllCountryMutate } = useMutation({
+    mutationFn: allcountry,
+    onSuccess: (response) => {
+      if (response?.data?.[0]?._id) {
+        setCountryData(response.data[0]._id);
+        getAllStateMutate({ id_country: response.data[0]._id });
+      }
+    },
+    onError: (error) => {
+      console.error('Error fetching countries:', error);
+    }
+  });
+
+
+
+  const handleSetStateChange = (stateId) => {
+    setSelectedState(stateId)
+    getAllCityMutate({ id_state: stateId });
+    cityData.map((city) => {
+      if (city._id === stateId) {
+        setSelectedCity(city.city_name);
+      }
+    })
+  }
+
+  const handleSetCityChange = (e) => {
+    const cityId = e.target.value;
+    setSelectedCity(cityId);
+  }
+
+  const { mutate: getbranchbyidMutate } = useMutation({
+    mutationFn: getcustomerById,
+    onSuccess: (response) => {
+      console.log(response)
+      if (response?.data) {
+        setcustomerData(response.data);
+        setSelectedGender(response.data.gender);
+        setFormData({
+          firstName: response.data.firstname,
+          lastName: response.data.lastname,
+          mobile: response.data.mobile,
+          whatsapp: response.data.whatsapp,
+          address: response.data.address,
+          pincode: response.data.pincode,
+          pan: response.data.pan,
+          authorno: response.data.authorno,
+        });
+        setProfilePreview(response.data.image);
+        setDate_of_wed(adjustDate(response.data.date_of_wed));
+        setBirthDate(adjustDate(response.data.date_of_birth));
+        setSelectedState(response.data.id_state);
+        handleSetStateChange(response.data.id_state);
+        setSelectedState(response.data.id_state);
+        setSelectedCity(response.data.id_city);
+        setSelectedBranch(response.data.id_branch);
+        getAllCityMutate({ id_state: response.data.id_state });
+      }
+    },
+  });
+
+ 
+
+  const adjustDate = (dateString) => {
+    if (!dateString) return null;
+    const [year, month, day] = dateString.split('T')[0].split('-');
+    return new Date(year, month - 1, day);
+  };
+
+  // const formatDate = (date) => {
+  //   if (!date) return null;
+  //   const year = date.getFullYear();
+  //   const month = String(date.getMonth() + 1).padStart(2, '0');
+  //   const day = String(date.getDate()).padStart(2, '0');
+  //   return `${year}-${month}-${day}`;
+  // };
+
+  const handleEditSubmit = () => {
+    let formDataToSend = new FormData();
+
+    const id = formData.id;  // Ensure the 'id' is correctly coming from formData or another source
+  
+    if (!id) {
+      console.error('Customer ID is missing!');
+      return;  // Exit early if ID is not available
+    }
+    formDataToSend.append('id', id);
+    formDataToSend.append('firstname', formData.firstName);
+    formDataToSend.append('lastname', formData.lastName);
+    formDataToSend.append('mobile', formData.mobile);
+    formDataToSend.append('address', formData.address);
+    formDataToSend.append('pincode', formData.pincode);
+    formDataToSend.append('id_country', countryData);
+    formDataToSend.append('id_state', selectedState);
+    formDataToSend.append('id_city', selectedCity);
+    formDataToSend.append('id_branch', selectedBranch);
+  
+    // Add date of birth and wedding date with conditional handling
+    formDataToSend.append('date_of_birth', birthDate ? birthDate.toISOString() : '');
+    formDataToSend.append('date_of_wed', date_of_wed ? date_of_wed.toISOString() : '');
+  
+    formDataToSend.append('gender', selectedGender);
+    formDataToSend.append('phone', '');  // empty value if not used
+    formDataToSend.append('nominee_name', '');  // empty value if not used
+    formDataToSend.append('nominee_relationship', '');  // empty value if not used
+    formDataToSend.append('nominee_mobile', '');  // empty value if not used
+    formDataToSend.append('digital_sign', '');  // empty value if not used
+    formDataToSend.append('pan', '');  // empty value if not used
+    formDataToSend.append('authorno', '');  // empty value if not used
+    formDataToSend.append('username', '');  // empty value if not used
+    formDataToSend.append('passwd', '');  // empty value if not used
+    formDataToSend.append('mpin', '');  // empty value if not used
+    formDataToSend.append('profile_complete', '');  // empty value if not used
+    formDataToSend.append('notification', 1);  // Assuming 1 is the default notification setting
+    formDataToSend.append('bank_accountname', '');  // empty value if not used
+    formDataToSend.append('bank_accno', '');  // empty value if not used
+    formDataToSend.append('bank_ifsccode', '');  // empty value if not used
+  
+    // Conditionally append fields if they exist
+    if (formData.whatsapp) formDataToSend.append('whatsapp', formData.whatsapp);
+    if (formData.pan) formDataToSend.append('pan', formData.pan);
+    if (formData.authorno) formDataToSend.append('authorno', formData.authorno);
+    if (cus_img) formDataToSend.append('cus_img', cus_img);  // Assuming cus_img is a file or blob
+    if (id_proof) formDataToSend.append('id_proof', id_proof);  // Assuming id_proof is a file or blob
+  
+    // Assuming `updatecustomerMutate` is the function you're calling to send this data
+    updatecustomerMutate(id, formDataToSend);
+  }
+
+
+  const { mutate: getAllStateMutate } = useMutation({
+    mutationFn: allstate,
+    onSuccess: (response) => {
+      if (response?.data) {
+        setStateData(response.data);
+      }
+    },
+    onError: (error) => {
+      console.error('Error fetching states:', error);
+    }
+  });
+
+  const { mutate: getallbranchMutate } = useMutation({
+    mutationFn: getallbranch,
+    onSuccess: (response) => {
+      if (response?.data) {
+        setBranchData(response.data);
+      }
+    },
+    onError: (error) => {
+      console.error('Error fetching cities:', error);
+    }
+  });
+
+  const { mutate: getAllCityMutate } = useMutation({
+    mutationFn: allcity,
+    onSuccess: (response) => {
+      if (response?.data) {
+        setCityData(response.data);
+      }
+    },
+    onError: (error) => {
+      console.error('Error fetching cities:', error);
+    }
+  });
+
+  // api to add customer
+  const { mutate: addcustomerMutate } = useMutation({
+    mutationFn: (data) => addcustomer(data),
+    onSuccess: (response) => {
+      console.log(response);
+      if (response) {
+        toast.success(response.message);
+        navigate('/manageaccount/customer');
+        setFormData({})
+      }
+    },
+    onError: (error) => {
+      console.error('Error adding customer:', error);
+    }
+  });
+
+    const { mutate: updateCustomerData } = useMutation({
+      mutationFn: updatecustomer,
+      onSuccess: (response) => {
+        toast.success(response.message)
+        navigate('/manageaccount/customer');
+        setFormData({})
+        dispatch(setid(null))
+      },
+      onError: (error) => {
+        console.error("Error fetching scheme types:", error);
+      },
+    });
+
+  // input change handler
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    
+    // Special handling for authorno to ensure it's a single string
+    if (name === 'authorno') {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value.toString() // Convert to string explicitly
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
+    
+    setFormErrors(prev => ({
+      ...prev,
+      [name]: ''
+    }));
+  };
+
+
+  useEffect(() => {
+    getAllCountryMutate();
+    getallbranchMutate();
+
+    if (customerId) {
+      getbranchbyidMutate(customerId );
+    }
+
+  }, []);
+
+
+  const handleCancle = () => {
+    navigate('/customer')
+  }
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setcus_img(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProfilePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleCapture = () => {
+    const imageSrc = webcamRef.current.getScreenshot();
+    setProfilePreview(imageSrc);
+    fetch(imageSrc)
+      .then(res => res.blob())
+      .then(blob => {
+        const file = new File([blob], "webcam-photo.jpg", { type: "image/jpeg" });
+        setcus_img(file);
+      });
+    setShowWebcam(false);
+  };
+
+  const handleClearImage = () => {
+    setcus_img(null);
+    setProfilePreview(null);
+  };
+
+  const handleGenderSelect = (gender) => {
+    setSelectedGender(gender);
+    formData.gender = gender;
+    setFormErrors(prev => ({
+      ...prev,
+      gender: ''
+    }));
+  };
+
+  //Branch change handler
+  const handleBranchChange = (e) => {
+    const branchId = e.target.value;
+    console.log(branchId);
+    setSelectedBranch(branchId);
+  };
+  //state change handler
+  const handleStateChange = (e) => {
+    const stateId = e.target.value;
+    setSelectedState(stateId);
+    if (stateId) {
+      getAllCityMutate({ id_state: stateId });
+    } else {
+      setCityData([]);
+    }
+  };
+
+  // Validation function
+  const validateForm = () => {
+    const errors = {};
+    if (!formData.firstName.trim()) errors.firstName = 'First name is required';
+    if (!formData.lastName.trim()) errors.lastName = 'Last name is required';
+    if (!formData.mobile) errors.mobile = 'Mobile number is required';
+    if (!formData.address.trim()) errors.address = 'Address is required';
+    if (!formData.pincode) errors.pincode = 'Pincode is required';
+    if (!selectedState) errors.state = 'State is required';
+    if (!selectedCity) errors.city = 'City is required';
+    if (!selectedGender) errors.gender = 'Gender is required';
+    if (!birthDate) errors.birthDate = 'Birth date is required';
+
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+   const handleUpdate = (formData)=>{
+      if(!validateForm()){
+        toast.error("Required fields missing")
+        return;
+      }
+      updateCustomerData(formData)
+    }
+  
+
+  const handleSubmit = () => {
+    if (!validateForm()) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
+    let formDataToSend = new FormData();
+
+    // Basic fields
+    formDataToSend.append('firstname', formData.firstName);
+    formDataToSend.append('lastname', formData.lastName);
+    formDataToSend.append('mobile', formData.mobile);
+    formDataToSend.append('address', formData.address);
+    formDataToSend.append('pincode', formData.pincode);
+    formDataToSend.append('id_country', countryData);
+    formDataToSend.append('id_state', selectedState);
+    formDataToSend.append('id_city', selectedCity);
+    formDataToSend.append('id_branch', selectedBranch);
+    
+    // Date fields with null checks
+    formDataToSend.append('date_of_birth', birthDate ? birthDate.toISOString() : '');
+    formDataToSend.append('date_of_wed', date_of_wed ? date_of_wed.toISOString() : '');
+    
+    // Other fields
+    formDataToSend.append('gender', selectedGender || '');
+    formDataToSend.append('phone', '');
+    formDataToSend.append('nominee_name', '');
+    formDataToSend.append('nominee_relationship', '');
+    formDataToSend.append('nominee_mobile', '');
+    formDataToSend.append('digital_sign', '');
+    formDataToSend.append('pan', formData.pan || '');
+    
+    // Fix for authorno - ensure it's a string
+    formDataToSend.append('authorno', String(formData.authorno || ''));
+    
+    formDataToSend.append('username', '');
+    formDataToSend.append('passwd', '');
+    formDataToSend.append('mpin', '');
+    formDataToSend.append('profile_complete', '');
+    formDataToSend.append('notification', 1);
+    formDataToSend.append('bank_accountname', '');
+    formDataToSend.append('bank_accno', '');
+    formDataToSend.append('bank_ifsccode', '');
+
+    // Optional fields
+    if (formData.whatsapp) formDataToSend.append('whatsapp', formData.whatsapp);
+    if (cus_img) formDataToSend.append('cus_img', cus_img);
+    if (id_proof) formDataToSend.append('id_proof', id_proof);
+
+    addcustomerMutate(formDataToSend);
+  };
+
+  const handleCityChange = (e) => {
+    const cityId = e.target.value;
+    setSelectedCity(cityId);
+  };
+
+  // pancard number input handler
+  const handlePanInput = (e) => {
+    e.target.value = e.target.value.toUpperCase();
+  };
+
+  // input name capitalization
+  const handleNameInput = (e, name) => {
+    const value = e.target.value;
+    if (value) {
+      e.target.value = value.charAt(0).toUpperCase() + value.slice(1);
+    }
+    setFormData(prev => ({
+      ...prev,
+      [name]: e.target.value
+    }));
+  };
+
+  // Handle id_proof file upload
+  const handleid_proofUpload = (e) => {
+    const file = e.target.files[0];
+    const allowedTypes = [
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'application/vnd.ms-excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'text/plain'
+    ];
+
+    if (file) {
+      if (allowedTypes.includes(file.type)) {
+        setid_proof(file);
+        setid_proofError('');
+      } else {
+        setid_proof(null);
+        setid_proofError('Please upload a valid file format (PDF, DOC, DOCX, XLS, XLSX, or TXT)');
+        e.target.value = '';
+      }
+    }
+  };
+
+  const handleWheel = (e) => {
+    e.target.blur();
+  };
+
+  const handleBack = () => {
+    navigate('/manageaccount/customer');
+  }
+
+  return (
+    <>
+      <div className='flex flex-row justify-between'>
+        <h2 className='text-2xl text-[#023453] font-bold justify-between'>{customerId ? "Edit Customer" : "Add Customer" }</h2>
+        {customerId && (
+          <div className='flex flex-row gap-4'>
+            <button onClick={handleBack} className='bg-[#E2E8F0] text-black px-4 py-2 rounded-md'>Back</button>
+            <button onClick={handleEditSubmit} className='bg-[#61A375] text-white px-4 py-2 rounded-md'>Edit</button>
+          </div>
+        )}
+      </div>
+      <div className='w-full flex flex-col  bg-white border-t-2 border-[#023453] mt-3 overflow-y-auto scrollbar-hide h-[calc(100vh-200px)] '>
+        <div className='flex flex-col pl-8 pr-8 pb-4 pt-2 relative space-y-2'>
+          <div>
+            <h2 className='text-1xl font-semibold mb-4 mt-4'>Basic Information</h2>
+            <div className='grid grid-rows-2 md:grid-cols-2 gap-5  border-gray-300'>
+              <div className='flex flex-col mt-2 gap-3'>
+                <label className='text-gray-700 mb-1 font-medium'>First Name<span className='text-red-400'>*</span></label>
+                <input
+                  type='text'
+                  name='firstname'
+                  className='border-2 border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
+                  placeholder='Enter Here'
+                  value={formData.firstName}
+                  onChange={(e) => handleNameInput(e, 'firstName')}
+                />
+                {formErrors.firstName && <span className="text-red-500 text-sm mt-1">{formErrors.firstName}</span>}
+              </div>
+              <div className='flex flex-col mt-2 gap-3'>
+                <label className='text-gray-700 mb-1 font-medium'>Last Name<span className='text-red-400'>*</span></label>
+                <input
+                  type='text'
+                  name='lastname'
+                  className='border-2 border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
+                  placeholder='Enter Here'
+                  value={formData.lastName}
+                  onChange={(e) => handleNameInput(e, 'lastName')}
+                />
+                {formErrors.lastName && <span className="text-red-500 text-sm mt-1">{formErrors.lastName}</span>}
+              </div>
+              <div className='flex flex-col'>
+                <label className='text-black mb-1 font-medium'>Branch<span className='text-red-400'>*</span></label>
+                <div className="relative">
+                  <select
+                    name='id_branch'
+                    className='appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700'
+                    onChange={handleBranchChange}
+                    value={selectedBranch}
+                  >
+                    <option value='' disabled className="text-gray-700">--Select--</option>
+                    {branchData.map((branch) => (
+                      <option className="text-gray-700" key={branch._id} value={branch._id}>
+                        {branch.branch_name}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                    <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
+                      <path d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              <div className='flex flex-col'>
+                <label className='text-gray-700 mb-1 font-medium'>Mobile<span className='text-red-400'>*</span></label>
+                <input
+                  type='number'
+                  name='mobile'
+                  value={formData.mobile}
+                  onChange={handleInputChange}
+                  onWheel={handleWheel}
+                  onKeyDown={(e) => {
+                    if (e.key === 'ArrowUp' ||
+                      e.key === 'ArrowDown' ||
+                      e.key === 'e' ||
+                      e.key === 'E' ||
+                      e.key === '-') {
+                      e.preventDefault();
+                    }
+                  }}
+                  className='border-2 border-gray-300 rounded-md p-3 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
+                  placeholder='Enter Mobile Number'
+                  maxLength="10"
+                />
+                {formErrors.mobile && <span className="text-red-500 text-sm mt-1">{formErrors.mobile}</span>}
+              </div>
+              <div className='flex flex-col'>
+                <label className='text-gray-700 mb-1 font-medium'>Whatsapp Mobile No</label>
+                <input
+                  type='number'
+                  name='whatsapp'
+                  value={formData.whatsapp}
+                  onChange={handleInputChange}
+                  onWheel={handleWheel}
+                  onKeyDown={(e) => {
+                    if (e.key === 'ArrowUp' ||
+                      e.key === 'ArrowDown' ||
+                      e.key === 'e' ||
+                      e.key === 'E' ||
+                      e.key === '-') {
+                      e.preventDefault();
+                    }
+                  }}
+                  className='border-2 border-gray-300 rounded-md p-3 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
+                  placeholder='Enter Mobile Number'
+                  maxLength="10"
+                />
+              </div>
+              <div className='flex flex-col'>
+                <label className='text-gray-700 mb-1 font-medium'>Address<span className='text-red-400'>*</span></label>
+                <input
+                  type='text'
+                  name='address'
+                  className='border-2 border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
+                  placeholder='Enter Here'
+                  value={formData.address}
+                  onChange={handleInputChange}
+                />
+                {formErrors.address && <span className="text-red-500 text-sm mt-1">{formErrors.address}</span>}
+              </div>
+              <div className='flex flex-col'>
+                <label className='text-gray-700 mb-1 font-medium'>Pincode<span className='text-red-400'>*</span></label>
+                <input
+                  type='number'
+                  name='pincode'
+                  value={formData.pincode}
+                  onChange={handleInputChange}
+                  onWheel={handleWheel}
+                  onKeyDown={(e) => {
+                    if (e.key === 'ArrowUp' ||
+                      e.key === 'ArrowDown' ||
+                      e.key === 'e' ||
+                      e.key === 'E' ||
+                      e.key === '-') {
+                      e.preventDefault();
+                    }
+                  }}
+                  className='border-2 border-gray-300 rounded-md p-3 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
+                  placeholder='Enter Pincode'
+                  maxLength="6"
+                />
+                {formErrors.pincode && <span className="text-red-500 text-sm mt-1">{formErrors.pincode}</span>}
+              </div>
+              <div className='flex flex-col'>
+                <label className='text-black mb-1 font-medium'>Gender<span className='text-red-400'>*</span></label>
+                <div className="flex flex-row gap-6 justify-start">
+                  <button
+                    name='gender'
+                    onClick={() => handleGenderSelect(1)}
+                    className={`rounded-full w-20 h-10 flex items-center justify-center border-2 border-black transition-colors duration-200 ${selectedGender === 1 ? 'bg-[#023453] text-white' : 'bg-white text-black'
+                      }`}
+                  >
+                    Male
+                  </button>
+                  <button
+                    name='gender'
+                    onClick={() => handleGenderSelect(2)}
+                    className={`rounded-full w-20 h-10 flex items-center justify-center border-2 border-black transition-colors duration-200 ${selectedGender === 2 ? 'bg-[#023453] text-white' : 'bg-white text-black'
+                      }`}
+                  >
+                    Female
+                  </button>
+                  <button
+                    name='gender'
+                    onClick={() => handleGenderSelect(3)}
+                    className={`rounded-full w-20 h-10 flex items-center justify-center border-2 border-black transition-colors duration-200 ${selectedGender === 3 ? 'bg-[#023453] text-white' : 'bg-white text-black'
+                      }`}
+                  >
+                    Other
+                  </button>
+                </div>
+                {formErrors.gender && <span className="text-red-500 text-sm mt-1">{formErrors.gender}</span>}
+              </div>
+              <div className='flex flex-col'>
+                <label className='text-black mb-1 font-medium'>State<span className='text-red-400'>*</span></label>
+                <div className="relative">
+                  <select
+                    name='id_state'
+                    className='appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700'
+                    onChange={handleStateChange}
+                    value={selectedState}
+                  >
+                    <option value='' disabled className="text-gray-700">--Select--</option>
+                    {sortedStates.map((state) => (
+                      <option className="text-gray-700" key={state._id} value={state._id}>
+                        {state.state_name}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                    <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
+                      <path d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </div>
+                </div>
+                {formErrors.state && <span className="text-red-500 text-sm mt-1">{formErrors.state}</span>}
+              </div>
+              <div className='flex flex-col'>
+                <label className='text-black mb-1 font-medium'>City<span className='text-red-400'>*</span></label>
+                <div className="relative">
+                  <select
+                    name='id_city'
+                    className='appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700'
+                    defaultValue=''
+                    onChange={handleCityChange}
+                    value={selectedCity}
+                  >
+                    <option value='' disabled className="text-gray-700">--Select--</option>
+                    {sortedCities.map((city) => (
+                      <option className="text-gray-700" key={city._id} value={city._id}>
+                        {city.city_name}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                    <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
+                      <path d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </div>
+                </div>
+                {formErrors.city && <span className="text-red-500 text-sm mt-1">{formErrors.city}</span>}
+              </div>
+              <div className='flex flex-col'>
+                <label className='text-black mb-1 font-medium'>Pan Number</label>
+                <input
+                  type='text'
+                  name='pan'
+                  className='border-2 border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
+                  placeholder='Enter Here'
+                  onInput={handlePanInput}
+                  maxLength="10"
+                  style={{ textTransform: 'uppercase' }}
+                />
+              </div>
+              <div className='flex flex-col'>
+                <label className='text-black mb-1 font-medium'>Aadhar Card Number</label>
+                <input
+                  type='text'
+                  name='authorno'
+                  value={formData.authorno || ''}
+                  onChange={handleInputChange}
+                  className='border-2 border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
+                  placeholder='Enter Here'
+                />
+              </div>
+            </div>
+
+            <div className='grid grid-rows-2 md:grid-cols-2 gap-6 border-gray-300'>
+              <div className='flex flex-col mt-2 gap-3'>
+                <label className='text-gray-700 mb-1 font-medium'>Date Of Wedding</label>
+                <div className="relative">
+                  <DatePicker
+                    name='date_of_wed'
+                    selected={date_of_wed}
+                    onChange={(date) => setDate_of_wed(date)}
+                    dateFormat="dd/MM/yyyy"
+                    placeholderText="Select Date"
+                    className="border-2 border-gray-300 rounded-md p-3 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                    showMonthDropdown
+                    showYearDropdown
+                    dropdownMode="select"
+                    wrapperClassName="w-full"
+                    utcOffset={0}
+                    timeZone="UTC"
+                  />
+                  <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-gray-500 w-14 h-[43px] justify-center items-center flex rounded-r-md pointer-events-none">
+                    <CalendarDays size={20} />
+                  </span>
+                </div>
+              </div>
+              <div className='flex flex-col mt-2 gap-3'>
+                <label className='text-gray-700 mb-1 font-medium'>Date Of Birth<span className='text-red-400'>*</span></label>
+                <div className="relative">
+                  <DatePicker
+                    name='date_of_birth'
+                    selected={birthDate}
+                    onChange={(date) => setBirthDate(date)}
+                    dateFormat="dd/MM/yyyy"
+                    placeholderText="Select Date"
+                    className="border-2 border-gray-300 rounded-md p-3 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                    showMonthDropdown
+                    showYearDropdown
+                    dropdownMode="select"
+                    wrapperClassName="w-full"
+                    utcOffset={0}
+                    timeZone="UTC"
+                  />
+                  <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-gray-500 w-14 h-[43px] justify-center items-center flex rounded-r-md pointer-events-none">
+                    <CalendarDays size={20} />
+                  </span>
+                </div>
+                {formErrors.birthDate && <span className="text-red-500 text-sm mt-1">{formErrors.birthDate}</span>}
+              </div>
+
+
+              <div className='flex flex-col'>
+                <label className='text-black mb-1 font-medium'>Upload Profile Image</label>
+                <div className='flex flex-col sm:flex-row gap-4'>
+                  <div className='flex-1'>
+                    <label
+                      htmlFor="profile-image"
+                      className="flex justify-center items-center w-full h-12 border-2 border-dashed border-gray-300 text-black cursor-pointer px-4"
+                    >
+                      <p className='text-[#023453] truncate'>
+                        {cus_img ? cus_img.name : 'Browse'}
+                      </p>
+                    </label>
+                    <input
+                      className="hidden"
+                      name="profile_image"
+                      id="profile-image"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                    />
+                    <div className='flex flex-col items-center justify-center lg:items-start lg:justify-start lg:w-52 mt-2'>
+                      <button
+                        onClick={() => setShowWebcam(prev => !prev)}
+                        className="mt-2 rounded-lg flex items-center gap-2 bg-[#023453] text-white px-3 py-1 "
+                      >
+                        <Camera size={16} />
+                        <span className='text-sm'>{showWebcam ? 'Close Camera' : 'Open Camera'}</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className='flex items-start justify-center'>
+                    <div className='relative w-20 h-20 bg-gray-200 rounded-md overflow-hidden'>
+                      <img
+                        src={profilePreview ? profilePreview : profileplaceholder}
+                        alt="Profile Preview"
+                        className={`w-full h-full ${profilePreview ? 'object-cover' : 'object-contain'}`}
+                      />
+                      {profilePreview && (
+                        <button
+                          onClick={handleClearImage}
+                          className="absolute top-1 right-1 bg-white rounded-full p-1 shadow-md hover:bg-gray-100"
+                        >
+                          <X size={14} />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {showWebcam && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                  <div className="bg-white p-4 rounded-lg">
+                    <div className="relative">
+                      <Webcam
+                        ref={webcamRef}
+                        screenshotFormat="image/jpeg"
+                        className="rounded-lg"
+                      />
+                      <div className="mt-4 flex justify-center gap-2">
+                        <button
+                          onClick={handleCapture}
+                          className="bg-[#023453] text-white px-4 py-2 rounded-md"
+                        >
+                          Capture
+                        </button>
+                        <button
+                          onClick={() => setShowWebcam(false)}
+                          className="bg-gray-500 text-white px-4 py-2 rounded-md"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              <div className='flex flex-col'>
+                <label className='text-black mb-1 font-medium'>Upload Document</label>
+                <label
+                  htmlFor="id_proof"
+                  className="flex flex-col justify-center items-center w-full h-12 border-2 border-dashed border-gray-300 text-black cursor-pointer p-5 text-center hover:bg-gray-50 transition-colors"
+                >
+                  <p className='text-[#023453]'>
+                    {id_proof ? id_proof.name : 'Browse to upload Document (PNG,JPG,SVG)'}
+                  </p>
+                </label>
+                <input
+                  className="hidden"
+                  name="id_proof"
+                  id="id_proof"
+                  type="file"
+                  accept=".pdf,.doc,.docx,.xls,.xlsx,.txt"
+                  onChange={handleid_proofUpload}
+                />
+                {id_proofError && (
+                  <p className="text-red-500 text-sm mt-1">{id_proofError}</p>
+                )}
+                {id_proof && (
+                  <div className="flex items-center gap-2 mt-2">
+                    <span className="text-sm text-gray-600">
+                      Selected file: {id_proof.name}
+                    </span>
+                    <button
+                      onClick={() => {
+                        setid_proof(null);
+                        document.getElementById('id_proof').value = '';
+                      }}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+          {!customerId && (
+            <div>
+              
+              <div className='bg-white mt-6'>
+                <div className='flex justify-end gap-2 mt-3'>
+                  <button
+                    className='bg-[#E2E8F0] text-black rounded-md p-3 w-full lg:w-20'
+                    type='button'
+                    onClick={handleCancle}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                className="bg-[#61A375] text-white rounded-md p-2 w-full lg:w-20"
+                type="button"
+                onClick={customerId ? handleUpdate : handleSubmit}
+              >
+                {customerId ? "Update" : "Submit"}
+              </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+      </>
+      )
+}
+
+      export default AddCustomer;
