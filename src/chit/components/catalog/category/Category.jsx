@@ -146,7 +146,7 @@ const Category = () => {
     mutationFn: getcategoryTable,
     onSuccess: (response) => {
 
-      setcategoryData(response?.data?.category)
+      setcategoryData(response?.data)
       setTotalPages(response?.data?.totalPages)
     },
     onError: (error) => {
@@ -486,58 +486,58 @@ const Category = () => {
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  {
-                    id_branch === 0 && (
-
-                      <div className="flex flex-col lg:mt-2">
-                        <label className="text-black mb-1 font-medium">
-                          Branch<span className="text-red-400">*</span>
-                        </label>
-                        <div className="relative">
-                          <select
-                            name="id_branch"
-                            className={`appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 ${!id_branch !== 0 ? "cursor-not-allowed bg-gray-100" : ""
-                              }`}
-                            defaultValue=""
-                            onChange={filterInputchange}
-                            value={filters.id_branch}
-                          >
-                            <option value="" className="text-gray-700">
-                              --Select--
-                            </option>
-                            {branchList.map((branch) => (
-                              <option
-                                className="text-gray-700"
-                                key={branch._id}
-                                value={branch._id}
-                              >
-                                {branch.branch_name}
-                              </option>
-                            ))}
-                          </select>
-                          <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                            <svg
-                              className="h-4 w-4 text-gray-400"
-                              fill="none"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="3"
-                              viewBox="0 0 24 24"
-                              stroke="black"
-                            >
-                              <path d="M19 9l-7 7-7-7"></path>
-                            </svg>
-                          </div>
-                        </div>
-                        {formErrors.branch && (
-                          <span className="text-red-500 text-sm mt-1">
-                            {formErrors.branch}
-                          </span>
-                        )}
-                      </div>
-                    )}
+              <div className="space-y-2">
+              {
+                id_branch === "0" && (
+             
+                  <div className="flex flex-col lg:mt-2">
+                <label className="text-black mb-1 font-medium">
+                  Branch<span className="text-red-400">*</span>
+                </label>
+                <div className="relative">
+                  <select
+                    name="id_branch"
+                    className={`appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 ${!id_branch !== 0 ? "cursor-not-allowed bg-gray-100" : ""
+                    }`}
+                    defaultValue=""
+                    onChange={filterInputchange}
+                    value={filters.id_branch}
+                  >
+                    <option value=""  className="text-gray-700">
+                      --Select--
+                    </option>
+                    {branchList.map((branch) => (
+                      <option
+                        className="text-gray-700"
+                        key={branch._id}
+                        value={branch._id}
+                      >
+                        {branch.branch_name}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                    <svg
+                      className="h-4 w-4 text-gray-400"
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="3"
+                      viewBox="0 0 24 24"
+                      stroke="black"
+                    >
+                      <path d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </div>
                 </div>
+                {formErrors.branch && (
+                  <span className="text-red-500 text-sm mt-1">
+                    {formErrors.branch}
+                  </span>
+                )}
+              </div>
+               ) }
+              </div>
 
                 <div className="space-y-2">
                   <label className="text-gray-700 mb-2 mt-2 font-medium">
@@ -605,25 +605,25 @@ const Category = () => {
           />
         )}
 
-        <div className="mt-4">
-          <Table
-            data={categoryData}
-            columns={columns}
-          />
-        </div>
-
-        {categoryData.length > 0 && (
-          <div className="flex justify-between mt-4 p-2">
-            <div className="flex flex-row items-center justify-center gap-2">
-              <div className="flex items-center gap-4">
-                <button
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={currentPage === 1}
-                  className="p-2 text-gray-500 rounded-md"
-                >
-                  Previous
-                </button>
-              </div>
+      <div className="mt-4">
+        <Table
+          data={categoryData}
+          columns={columns}
+        />
+      </div>
+ 
+      {categoryData?.length > 0 && (
+        <div className="flex justify-between mt-4 p-2">
+          <div className="flex flex-row items-center justify-center gap-2">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="p-2 text-gray-500 rounded-md"
+              >
+                Previous
+              </button>
+            </div>
 
               <div className="flex flex-row items-center justify-center gap-2">
                 {paginationButtons}

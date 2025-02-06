@@ -6,7 +6,6 @@ import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import { toast } from 'react-toastify';
 import { addschemeaccount, schemepaymenttodayrate, searchmobileschemeaccount, getschemeaccountbyid, getschemeById, updateschemepayment, extendinstallment, addcloseSchemeAccount, revertschemeAccount, schemeaccountbyid, getallbranchscheme, getallbranchclassification, getemployeebybranch,getallbranch, getallpaymentmode } from '../../../api/Endpoints'
-import { useSelector } from 'react-redux';
 
 const AddSchemePayment = () => {
 
@@ -15,7 +14,7 @@ const AddSchemePayment = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const todaydate = new Date();
-  const formattedDate = new Intl.DateTimeFormat('en-CA').format(todaydate);
+  const formattedDate = todaydate;
   const { id } = useParams(); 
   const [date_payment, setStartDate] = useState(formattedDate);
   const [maturity_date, setMaturityDate] = useState('');

@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { CalendarDays, Search,UserX2Icon } from 'lucide-react'
+import { CalendarDays, Search } from 'lucide-react'
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 
-const AddCloseAccount = () => {
+const AddRvertAccount = () => {
   const navigate = useNavigate()
   const [startDate, setStartDate] = useState(null);
   const [maturityDate, setMaturityDate] = useState(null);
@@ -16,7 +16,7 @@ const AddCloseAccount = () => {
   return (
     <>
       <div className='flex flex-row justify-between'>
-        <h2 className='text-2xl text-[#023453] font-bold justify-between'>Close Account</h2>
+        <h2 className='text-2xl text-[#023453] font-bold justify-between'>Revert Account</h2>
       </div>
       <div className='w-full flex flex-col bg-white pl-8 pr-8 pb-4 border-t-2 border-[#023453] mt-3 overflow-y-auto scrollbar-hide h-[calc(100vh-200px)]'>
         <div className='mb-8'>
@@ -32,14 +32,14 @@ const AddCloseAccount = () => {
               <div className="absolute flex items-center justify-center pointer-events-none 
                     right-[0%] rounded-r-lg top-[68%] -translate-y-1/2
                     w-10 h-[62%]
+                    bg-[#023453]
                     sm:right-0
                     sm:top-[68%]
                     sm:rounded-r-lg
                     md:right-[-20%]
                     md:rounded-lg
                     lg:rounded-lg
-                    lg:right-[-10%]"
-                    style={{ backgroundColor: layout_color }}>
+                    lg:right-[-10%]">
                   <Search size={20} className="text-white" />
                 </div>
             </div>
@@ -110,8 +110,7 @@ const AddCloseAccount = () => {
                     e.preventDefault();
                   }
                 }} className='border-2 border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' placeholder='Enter Product Price' />
-                <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-white w-14 h-[43px] justify-center items-center flex rounded-r-md"
-                style={{ backgroundColor: layout_color }}>INR</span>
+                <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-white bg-[#023453] w-14 h-[43px] justify-center items-center flex rounded-r-md">INR</span>
               </div>
             </div>
             <div className='flex flex-col'>
@@ -122,8 +121,7 @@ const AddCloseAccount = () => {
                     e.preventDefault();
                   }
                 }} className='border-2 border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' placeholder='Enter Product Price' />
-                <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-white w-14 h-[43px] justify-center items-center flex rounded-r-md"
-                style={{ backgroundColor: layout_color }}>INR</span>
+                <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-white bg-[#023453] w-14 h-[43px] justify-center items-center flex rounded-r-md">INR</span>
               </div>
             </div>
             <div className='flex flex-col'>
@@ -134,8 +132,7 @@ const AddCloseAccount = () => {
                     e.preventDefault();
                   }
                 }} className='border-2 border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' placeholder='Enter Product Price' />
-                <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-white w-14 h-[43px] justify-center items-center flex rounded-r-md"
-                style={{ backgroundColor: layout_color }}>INR</span>
+                <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-white bg-[#023453] w-14 h-[43px] justify-center items-center flex rounded-r-md">INR</span>
               </div>
             </div>
             <div className='flex flex-col'>
@@ -168,4 +165,4 @@ const AddCloseAccount = () => {
   )
 }
 
-export default AddCloseAccount;
+export default AddRvertAccount;

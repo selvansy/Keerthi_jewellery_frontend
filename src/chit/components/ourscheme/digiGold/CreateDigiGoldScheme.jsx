@@ -377,7 +377,7 @@ const CreateDigiGoldScheme = () => {
             </div>
              
              {
-              id_branch === 0 && (
+              id_branch === "0" && (
                 <>
                 <div className="flex flex-col">
                 <label className="text-gray-700 mb-2 mt-2 font-medium">

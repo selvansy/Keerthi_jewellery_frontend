@@ -8,7 +8,7 @@ import { getnewarrivalsTable, getallbranch, getBranchById, getallmetal, deletene
 import { CalendarDays, RefreshCcw} from 'lucide-react'
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
-
+import {setid} from "../../../../redux/clientFormSlice"
 import { useSelector,useDispatch } from 'react-redux'
 import { eventEmitter } from '../../../../utils/EventEmitter';
 import { openModal } from '../../../../redux/modalSlice';
@@ -21,7 +21,7 @@ const NewArrivals = () => {
   const roledata = useSelector((state) => state.clientForm.roledata);
   let id_client = roledata?.id_client;
   const id_branch = roledata?.branch;
-
+  let dispatch =  useDispatch();
   const [branchList, setBranchList] = useState([]);
   let [branch, setbranch] = useState("")
   const [newarrivalsData, setnewarrivalsData] = useState([])
@@ -246,7 +246,8 @@ const NewArrivals = () => {
  
 
   const handleEdit = (id) => {
-    navigate(`/catalog/addnewarrivals/${id}`);
+     dispatch(setid(id));
+    navigate(`/catalog/addnewarrivals`);
   };
 
   const columns = [
@@ -492,7 +493,7 @@ const NewArrivals = () => {
 
               <div className="space-y-2">
               {
-                id_branch === 0 && (
+                id_branch === "0" && (
                       <div className="flex flex-col lg:mt-2">
                 <label className="text-black mb-1 font-medium">
                   Branch<span className="text-red-400">*</span>

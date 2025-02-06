@@ -482,6 +482,7 @@ const AddCustomer = () => {
     <>
       <div className='flex flex-row justify-between'>
         <h2 className='text-2xl text-gray-900 font-bold justify-between'>{customerId ? "Edit Customer" : "Add Customer"}</h2>
+        <h2 className='text-2xl text-[#023453] font-bold justify-between'>{customerId ? "Edit Customer" : "Add Customer"}</h2>
         {customerId && (
           <div className='flex flex-row gap-4'>
             <button onClick={handleBack} className='bg-[#E2E8F0] text-black px-4 py-2 rounded-md'>Back</button>

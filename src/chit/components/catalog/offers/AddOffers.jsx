@@ -5,7 +5,7 @@ import {
   getallbranch, getBranchById, allofferstype, updateoffers, createoffers,
   offersbyid,
 } from "../../../api/Endpoints"
-
+import {setid} from "../../../../redux/clientFormSlice";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -201,7 +201,9 @@ const AddOffers = () => {
   const { mutate: createoffersMutate } = useMutation({
     mutationFn: createoffers,
     onSuccess: (response) => {
+
       toast.success(response.message)
+         dispatch(setid(null));
       navigate('/catalog/offers')
     },
     onError: (error) => {
@@ -231,6 +233,7 @@ const AddOffers = () => {
   }, []);
 
   const handleCancle = () => {
+       dispatch(setid(null));
     navigate("/catalog/offers");
   };
 
@@ -253,6 +256,7 @@ const AddOffers = () => {
   const { mutate: updateoffermutate } = useMutation({
     mutationFn: updateoffers,
     onSuccess: (response) => {
+         dispatch(setid(null));
       toast.success(response.message);
       navigate("/catalog/offers");
     },

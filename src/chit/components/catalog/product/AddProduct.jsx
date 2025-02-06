@@ -4,8 +4,9 @@ import { useMutation } from "@tanstack/react-query";
 import { CalendarDays, Search } from 'lucide-react'
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
+import {setid} from "../../../../redux/clientFormSlice";
 import { getallmetal,productbyId,puritybymetal,getBranchById, getallbranch,createproduct, updateproduct,displayselltype,categorybymetalid,  showtype,
-  schemepaymenttodayrate,
+  todaycurrentratebybranch,
 } from "../../../api/Endpoints"
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
@@ -15,7 +16,8 @@ const AddProduct = () => {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
   const navigate = useNavigate();
-  
+  const current_date = new Date();
+  const todaydate = current_date.toISOString();
   let dispatch = useDispatch();
 
   const roledata = useSelector((state) => state.clientForm.roledata);
@@ -24,8 +26,6 @@ const AddProduct = () => {
   const id = useSelector((state) => state.clientForm.id);
   
 
-  const todaydate = new Date();
-  const formattedDate = new Intl.DateTimeFormat('en-CA').format(todaydate);
   const [filtermetaltype, setMetaltype] = useState([]);
   const [filtercategory, setCategory] = useState([]);
   const [filterpurity, setPuritytype] = useState([]);
@@ -141,7 +141,7 @@ const AddProduct = () => {
       } else {
         setSelectedpurity(0);
       }
-      todayrateMutate({ date_payment: formattedDate });
+      todayrateMutate({ id_branch: id_branch,date:todaydate });
     }
 
   
@@ -175,7 +175,7 @@ const AddProduct = () => {
   };
 
   const { mutate: todayrateMutate } = useMutation({
-    mutationFn: schemepaymenttodayrate,
+    mutationFn: todaycurrentratebybranch,
     onSuccess: (response) => {
       if (response.data) {
         console.log("metal -", parseInt(selectedmetal));
@@ -185,26 +185,26 @@ const AddProduct = () => {
         if (parseInt(selectedmetal) === 1) { // Gold
           switch (parseInt(selectedpurity)) {
             case 1:
-              metalRate = response.data.goldrate_24ct;
+              metalRate = response.data.goldrate_24ct.$numberDecimal;
               break;
             case 2:
-              metalRate = response.data.goldrate_22ct;
+              metalRate = response.data.goldrate_22ct.$numberDecimal;
               break;
             case 3:
-              metalRate = response.data.goldrate_20ct;
+              metalRate = response.data.goldrate_20ct.$numberDecimal;
               break;
             case 4:
-              metalRate = response.data.goldrate_18ct;
+              metalRate = response.data.goldrate_18ct.$numberDecimal;
               break;
           }
         } else if (parseInt(selectedmetal) === 2) { // Silver
-          metalRate = response.data.silverrate_1gm;
+          metalRate = response.data.silverrate_1gm.$numberDecimal;
         } else if (parseInt(selectedmetal) === 3) { // Diamond
-          metalRate = response.data.diamond_1gm;
+          metalRate = response.data.diamond_1gm.$numberDecimal;
         } else if (parseInt(selectedmetal) === 4) { // Platinum
-          metalRate = response.data.platinum_1gm;
+          metalRate = response.data.platinum_1gm.$numberDecimal;
         } else if (parseInt(selectedmetal) === 5) { // Coin
-          metalRate = response.data.goldcoin_1gm;
+          metalRate = response.data.goldcoin_1gm.$numberDecimal;
         }
         setCurrentrate(metalRate);
         setFormData(prev => ({ ...prev, current_rate: metalRate }));
@@ -350,6 +350,7 @@ const AddProduct = () => {
     onSuccess: (response) => {
       toast.success(response.message)
       navigate('/catalog/product')
+      dispatch(setid(null));
     },
     onError: (error) => {
       toast.error(error.response.data.message)
@@ -396,6 +397,7 @@ const AddProduct = () => {
   }, []);
 
   const handleCancle = () => {
+    dispatch(setid(null));
     navigate("/catalog/product");
   };
 
@@ -407,15 +409,20 @@ const AddProduct = () => {
     onSuccess: (response) => {  
 
       setFormData(response.data);  
+      setMetalid(response.data.id_metal);
       handlecategorybymetal(response.data.id_metal);
       
       setWeight(response.data.weight  || 0);
       seGst(response.data.gst  || 0);
       setCurrentrate(response.data.current_rate || 0);
       setMetalcost(response.data.metalcost || 0);
-      setSelectedmetal(response.data.id_metal);
       setSelectedpurity(response.data.id_purity); 
+      setSelectedmetal(response?.data?.id_metal)
       setPurityId(response?.data?.id_purity)
+      todayrateMutate({ id_branch: response.data.id_branch,date:todaydate });
+
+
+      
     },
     onError: (error) => {
       console.error("Error fetching countries:", error);
@@ -427,6 +434,7 @@ const AddProduct = () => {
     mutationFn: updateproduct,
     onSuccess: (response) => {
       toast.success(response.message);
+      dispatch(setid(null));
       navigate("/catalog/product");
     },
     onError: (error) => {
@@ -481,7 +489,7 @@ const AddProduct = () => {
 
           <div className="grid grid-rows-2 md:grid-cols-2 gap-5 border-gray-300 mb-10">
           {
-                id_branch === 0 && (
+                id_branch === "0" && (
                
                   <div className="flex flex-col lg:mt-2">
                 <label className="text-black mb-1 font-medium">

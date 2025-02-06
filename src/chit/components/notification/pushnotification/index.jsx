@@ -48,7 +48,7 @@ const Pushnotification = () => {
     to_date: null,
     limit: itemsPerPage,
     id_branch: id_branch,
-    senttype: "1"
+    senttype: ""
   });
 
   function closeIncommingModal() {
@@ -106,10 +106,18 @@ const Pushnotification = () => {
       to_date: null,
       limit: itemsPerPage,
       id_branch: id_branch,
-      senttype: "1"
+      senttype: ""
     })
 
   };
+
+  
+const handleReset = (e) => {
+  
+
+    getnotificationData({from_date: '',to_date: '',page: currentPage,limit: itemsPerPage,id_branch: id_branch,senttype: ""});
+}
+
 
     const { mutate: handlenotificationtype } = useMutation({
       mutationFn: getnotificationtype,
@@ -238,6 +246,10 @@ const Pushnotification = () => {
     {
       header: "Display Type",
       cell: (row) => row.senttype === 1 ? 'Offers' : row.senttype === 2 ? 'New Arrivals' : row.senttype === 3 ? 'Product' : row.senttype === 4 ? 'Wedding' : 'Birthday'
+    },
+    {
+      header: "Branch",
+      cell: (row) => row.id_branch.branch_name
     },
     {
       header: "Create Date",
@@ -441,7 +453,7 @@ const Pushnotification = () => {
 
               <div className="space-y-2">
               {
-                id_branch === 0 &&
+                id_branch === "0" &&
                
                 <>
                   <div className="flex flex-col lg:mt-2">

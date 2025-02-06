@@ -17,11 +17,10 @@ import SettingNotification from "./SettingForm"
 import DatePicker from "react-datepicker";
 import { CalendarDays, RefreshCcw } from 'lucide-react'
 
-const Weddingnotification = () => {
+const Birthdaynotification = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch();
 
-  const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const roledata = useSelector((state) => state.clientForm.roledata);
   const id_branch = roledata?.branch;
 
@@ -36,7 +35,6 @@ const Weddingnotification = () => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedRow, setSelectedRow] = useState(null)
   const [activeDropdown, setActiveDropdown] = useState(null)
-  const [sendDropdown, setSendDropdown] = useState(null)
   const [isviewOpen, setIsviewOpen] = useState(false);
   const [issettingOpen, setIsSettingOpen] = useState(false);
   const [displaysetting, setDiplaySetting] = useState(0);
@@ -52,7 +50,7 @@ const Weddingnotification = () => {
     to_date: null,
     limit: itemsPerPage,
     id_branch: id_branch,
-    senttype: "4"
+    senttype: "5"
   });
 
   const filterInputchange = (e) => {
@@ -69,7 +67,7 @@ const Weddingnotification = () => {
       to_date: to_date,
       limit: itemsPerPage,
       id_branch: filters.id_branch,
-      senttype: "4"
+      senttype: "5"
     };
 
     getnotificationData(filterTosend);
@@ -81,7 +79,7 @@ const Weddingnotification = () => {
       to_date: null,
       limit: itemsPerPage,
       id_branch: id_branch,
-      senttype: "4"
+      senttype: "5"
     })
 
   };
@@ -145,7 +143,7 @@ const Weddingnotification = () => {
   });
 
   useEffect(() => {
-    getnotificationData({ page: currentPage, limit: itemsPerPage, search: search ,senttype:"4"})
+    getnotificationData({ page: currentPage, limit: itemsPerPage, search: search,senttype: "5" })
   }, [currentPage, itemsPerPage, search])
 
   const handleSearch = (e) => {
@@ -153,7 +151,7 @@ const Weddingnotification = () => {
   }
   const handleReset = (e) => {
 
-    getnotificationData({ from_date: '', to_date: '', page: currentPage, limit: itemsPerPage, id_branch: id_branch, senttype: "4" });
+    getnotificationData({ from_date: '', to_date: '', page: currentPage, limit: itemsPerPage, id_branch: id_branch, senttype: "5" });
   }
 
 
@@ -186,7 +184,7 @@ const Weddingnotification = () => {
 
         let response = await deletepushnotification(data.productId);
         toast.success(response.message);
-        getnotificationData({ page: currentPage, limit: itemsPerPage, search: search,senttype: "4" })
+        getnotificationData({ page: currentPage, limit: itemsPerPage, search: search,senttype:"5" })
       } catch (error) {
         console.error('Error:', error);
       }
@@ -197,9 +195,6 @@ const Weddingnotification = () => {
   }, [eventEmitter, notifyData]);
 
 
-  
-
-
   const handleViewnotification = async (id) => {
     setPopuptitle('View Details');
     setDiplaySetting(1);
@@ -208,7 +203,7 @@ const Weddingnotification = () => {
   };
 
   const handleSettingnotification = async () => {
-    setPopuptitle('Setting Wedding Anniversery');
+    setPopuptitle('Setting Birthday Notification');
     setDiplaySetting(2);
     dispatch(setSettingtype(1))
     setIsSettingOpen(true)
@@ -326,8 +321,8 @@ const Weddingnotification = () => {
       <button
         key={i}
         onClick={() => handlePageChange(i)}
-        className={`p-2 w-10 h-10 rounded-md ${currentPage === i ? ' text-white' : 'bg-gray-300 text-gray-900'}`}
-        style={{ backgroundColor: layout_color }} >
+        className={`p-2 w-10 h-10 rounded-md ${currentPage === i ? 'bg-[#023453] text-white' : 'bg-gray-300 text-[#023453]'}`}
+      >
         {i}
       </button>
     );
@@ -345,7 +340,7 @@ const Weddingnotification = () => {
 
   return (
     <div className="flex flex-col p-4">
-      <h2 className="text-2xl text-gray-900 font-bold">Wedding Anniversary</h2>
+      <h2 className="text-2xl text-[#023453] font-bold">Birthday Notification</h2>
       <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
         <div className="relative w-full lg:w-1/3 min-w-[200px]">
           <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
@@ -360,24 +355,24 @@ const Weddingnotification = () => {
         <div className="flex flex-row items-center justify-end gap-2">
           <button
             type="button"
-            className=" rounded-md flex gap-[5px] px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
+            className="bg-[#023453] rounded-md flex gap-[5px] px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
             onClick={handleSettingnotification}
-            style={{ backgroundColor: layout_color }} >
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" stroke-linejoin="round" className="lucide lucide-settings"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" /><circle cx="12" cy="12" r="3" /></svg> Setting
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" stroke-linejoin="round" class="lucide lucide-settings"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" /><circle cx="12" cy="12" r="3" /></svg> Setting
           </button>
           <button
             id="filter"
-            className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
+            className="text-white bg-[#023453] w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
             onClick={() => handleReset()}
-            style={{ backgroundColor: layout_color }}>
+          >
             <RefreshCcw size={20} />
           </button>
 
           <button
             id="filter"
-            className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
+            className="text-white bg-[#023453] w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
             onClick={() => setIsFilterOpen(true)}
-            style={{ backgroundColor: layout_color }} >
+          >
             <SlidersHorizontal size={20} />
           </button>
 
@@ -599,4 +594,4 @@ const Weddingnotification = () => {
   )
 }
 
-export default Weddingnotification
+export default Birthdaynotification

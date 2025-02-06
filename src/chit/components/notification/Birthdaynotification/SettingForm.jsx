@@ -7,7 +7,12 @@ import { toast } from 'react-toastify';
 
 
 
-function SettingNotification({ setIsSettingOpen}) {
+function SettingNotification({ setIsSettingOpen }) {
+
+  
+    
+    const roledata = useSelector((state) => state.clientForm.roledata);
+    const id_branch = roledata?.branch;
   const [formErrors, setFormErrors] = useState({});
   const [image, setImage] = useState([]);
   const [filtertype, settype] = useState([]);
@@ -111,7 +116,7 @@ function SettingNotification({ setIsSettingOpen}) {
     console.log(formData)
     formDataToSend.append("id_branch", formData.id_branch);
     formDataToSend.append("description", formData.description);
-    formDataToSend.append("type", 4);
+    formDataToSend.append("type", 5);
     if (image) formDataToSend.append("image", image);
 
     createweddingbirthMutate(formDataToSend);
@@ -131,7 +136,7 @@ function SettingNotification({ setIsSettingOpen}) {
   });
 
   useEffect(() => { 
-    handleweddingbirthbyid({ type: 4 })
+    handleweddingbirthbyid({ type: 5 })
 
     if (id_branch === "0") {
       getBranchList();
@@ -267,27 +272,27 @@ function SettingNotification({ setIsSettingOpen}) {
         <div className="bg-white p-2 border-t-2 border-gray-300 mt-4">
           <div className="flex justify-end gap-2 mt-3">
 
-                <>
-                  <button
-                    className="bg-[#E2E8F0] text-black rounded-md p-2 w-full lg:w-20"
-                    onClick={handleCancel}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={isLoading}
-                    className="bg-[#023453] text-white rounded-md p-2 w-full lg:w-20"
+            <>
+              <button
+                className="bg-[#E2E8F0] text-black rounded-md p-2 w-full lg:w-20"
+                onClick={handleCancel}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="bg-[#023453] text-white rounded-md p-2 w-full lg:w-20"
 
-                  >
-                    Submit
-                  </button> 
-                
-                </>
-              </div>
-            </div>
-          </form>
-       
+              >
+                Submit
+              </button>
+
+            </>
+          </div>
+        </div>
+      </form>
+
 
     </div>
   );

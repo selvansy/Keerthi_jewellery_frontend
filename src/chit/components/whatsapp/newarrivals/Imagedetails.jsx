@@ -26,15 +26,15 @@ function Imagedetails({ setIsOpen }) {
     <div>
 
       <div className="flex flex-col">
-      <div className="flex flex-col bg-[#f5f5dc] p-5 rounded-lg shadow-lg">
-      <img
-          src={`${data?.imgPath}${data?.img?.[0]}`}
-          alt="Product"
-          className="w-full max-h-[250px] object-cover mb-4"
-        />
-        <h2 className="text-2xl font-bold mb-2 text-left">{data?.name || ''}</h2>
-        <p className="text-lg text-gray-700 mb-4 text-left">{data?.desc || ''}</p>
-      </div>
+        <div className="flex flex-col bg-[#f5f5dc] p-5 rounded-lg shadow-lg">
+          <img
+            src={`${data?.imgPath}${data?.img?.[0]}`}
+            alt="Product"
+            className="w-full max-h-[250px] object-cover mb-4"
+          />
+          <h2 className="text-2xl font-bold mb-2 text-left">{data?.name || ''}</h2>
+          <p className="text-lg text-gray-700 mb-4 text-left">{data?.desc || ''}</p>
+        </div>
       </div>
 
 

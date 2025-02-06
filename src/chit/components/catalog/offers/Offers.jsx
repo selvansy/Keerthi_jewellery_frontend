@@ -499,7 +499,7 @@ const Offers = () => {
 
               <div className="space-y-2">
               {
-                id_branch === 0 && (
+                id_branch === "0" && (
               
                   <div className="flex flex-col lg:mt-2">
                 <label className="text-black mb-1 font-medium">

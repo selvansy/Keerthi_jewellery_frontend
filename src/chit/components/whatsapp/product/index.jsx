@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'react-toastify'
 import {
-  getproductTable,getProductById,getallbranch,getBranchById, deleteproduct, activateproduct, puritybymetal , showtype,displayselltype, getallmetal,categorybymetalid,
+  getproductTable,getProductById,sendwhatsappmessage,getallbranch,getBranchById, deleteproduct, activateproduct, puritybymetal , showtype,displayselltype, getallmetal,categorybymetalid,
   schemepaymenttodayrate} from "../../../api/Endpoints"
   import ModelOne from '../../common/Modelone';
 
@@ -26,7 +26,7 @@ const ProductWhatsapp = () => {
   const navigate = useNavigate()
   let dispatch = useDispatch();
 
-  const layout_color = useSelector((state) => state.clientForm.layoutColor);
+  
   const roledata = useSelector((state) => state.clientForm.roledata);
   const id_branch = roledata?.branch;
 
@@ -360,7 +360,7 @@ const ProductWhatsapp = () => {
           
             let response = await deleteproduct(data.productId);
             toast.success(response.message);
-            await  getproductData({ page: currentPage, limit: itemsPerPage, search: search })
+             getproductData({ page: currentPage, limit: itemsPerPage, search: search })
           } catch (error) {
             console.error('Error:', error);
           }
@@ -375,7 +375,58 @@ const ProductWhatsapp = () => {
       navigate(`/catalog/addproduct`);
     };
 
-     console.log("BranchList",branchList)
+const handleSend = (id,id_branch) => {
+    setSendDropdown(null);
+    dispatch(openModal({
+      modalType: 'SENDCONFIRMATION',
+      header: 'Send Offers Notification',
+      formData: {
+        message: 'Are you sure you want to send?',
+        id: id,
+        id_branch:id_branch
+      },
+      buttons: {
+        cancel: {
+          text: 'Cancel'
+        },
+        submit: {
+          text: 'Send'
+        }
+      }
+    }));
+  };
+  
+  useEffect(() => {
+    const handleSubmit = async (data) => {
+      try {
+        sendwhatsapp({ id: data.id,id_branch:data.id_branch, senttype: 2 });
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    };
+  
+    // Listen for SENDCONFIRMATION_SUBMIT only once when component mounts
+    eventEmitter.on('SENDCONFIRMATION_SUBMIT', handleSubmit);
+  
+    return () => {
+      // Clean up listener on unmount
+      eventEmitter.off('SENDCONFIRMATION_SUBMIT', handleSubmit);
+    };
+  }, [eventEmitter]); // Only depend on eventEmitter to avoid unnecessary re-renders
+  
+  // Mutation to get purity type
+  const { mutate: sendwhatsapp } = useMutation({
+    mutationFn: sendwhatsappmessage,
+    onSuccess: (response) => {
+      console.log("Response", response);
+      toast.success(response.message);
+      getofferData({ page: currentPage, limit: itemsPerPage, search: search });
+    },
+    onError: (error) => {
+      console.error("Error fetching countries:", error);
+    },
+  });
+  
 
     const columns = [
       {
@@ -463,6 +514,12 @@ const ProductWhatsapp = () => {
         cell: (row, rowIndex) => (
           <div className="dropdown-container relative">
             <button
+                onClick={() => {
+                  if (row.whatsapp_sent === 0) {
+                    handleSend(row._id,row.id_branch._id);
+                    setSendDropdown(null);
+                  }
+                }}
               className={`px-4 py-2 text-white font-semibold rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-opacity-75 
               ${row.total_Sent > 0 ? "bg-gray-900 focus:ring-gray-600" : "bg-[#61A375] hover:bg-[#4F8A5D] focus:ring-green-400"}`}
             >
@@ -476,7 +533,10 @@ const ProductWhatsapp = () => {
         header: "Total Sent",
         cell: (row) => row.description
       },
-  
+      {
+        header: "Branch Name",
+        cell: (row) => row.id_branch.branch_name
+      },
     ];
   
 
@@ -591,7 +651,7 @@ const ProductWhatsapp = () => {
 
               <div className="space-y-2">
               {
-                id_branch === 0 &&
+                id_branch === "0" &&
                
                 <>
                   <div className="flex flex-col lg:mt-2">

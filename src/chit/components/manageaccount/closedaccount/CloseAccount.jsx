@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import Table from '../../common/Table'
-import { useNavigate,useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
-import { SlidersHorizontal, Search, X } from 'lucide-react'
-import { addedtype,allschemestatus,getschemeaccountbyid,getallschemetypes,getallbranchscheme,getallbranchclassification,getemployeebybranch,getallbranch,schemeaccounttable, changeschemeaccountStatus, deleteschemeaccount } from '../../../api/Endpoints'
+import { SlidersHorizontal, Search, X, UserX2Icon } from 'lucide-react'
+import { addedtype, allschemestatus, getschemeaccountbyid, getallschemetypes, getallbranchscheme, getallbranchclassification, getemployeebybranch, getallbranch, schemeaccounttable, changeschemeaccountStatus, deleteschemeaccount } from '../../../api/Endpoints'
 import { toast } from 'react-toastify'
-import { CalendarDays, RefreshCcw} from 'lucide-react'
+import { CalendarDays, RefreshCcw,Undo2 } from 'lucide-react'
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 
@@ -32,7 +32,7 @@ const CloaseAccount = () => {
   const [isFilterOpen, setIsFilterOpen] = React.useState(false);
   const [from_date, setFromdate] = useState('');
   const [to_date, setTodate] = useState('');
-  const [branchfilter, setBranch] = useState([]);  
+  const [branchfilter, setBranch] = useState([]);
   const [classifyfilter, setClassify] = useState([]);
   const [employeefilter, setEmployee] = useState([]);
   const [schemetypefilter, setSchemeType] = useState([]);
@@ -42,28 +42,28 @@ const CloaseAccount = () => {
 
   const [ispayable, setIspayable] = useState(false);
 
-  const [ledgerData,setLedgerData]=useState([]);
+  const [ledgerData, setLedgerData] = useState([]);
   const [filters, setFilters] = React.useState({
-    
-    from_date:from_date,
-    to_date:to_date,
-    added_by:'',
-    scheme_status:'',
-    type:'close',
+
+    from_date: from_date,
+    to_date: to_date,
+    added_by: '',
+    scheme_status: '',
+    type: 'close',
     id_classification: '',
     collectionuserid: '',
     id_scheme: '',
     id_branch: '',
-    scheme_type:''
+    scheme_type: ''
   });
 
-  const filterInputchange = (e) =>{
-    const {name, value} = e.target;
-    setFilters(prev=>({...prev,[name]:value}));
-    if(name === "id_branch"){
-      handleClassifyChange(e); 
-      handleemployeebyBranch(e); 
-      getemployeebyBranch(e); 
+  const filterInputchange = (e) => {
+    const { name, value } = e.target;
+    setFilters(prev => ({ ...prev, [name]: value }));
+    if (name === "id_branch") {
+      handleClassifyChange(e);
+      handleemployeebyBranch(e);
+      getemployeebyBranch(e);
       handlebranchscheme(e);
     }
   };
@@ -71,171 +71,171 @@ const CloaseAccount = () => {
 
   //state to save ledger data
   const getLedgerData = async (data) => {
-         console.log(data);
-         if (!data) return;
-         const response = await getschemeaccountbyid({id:data});   
-         if (response) {
-      
-             dispatch(openModal({
-              modalType: 'LEDGER_MODAL',
-              header: 'View Details',
-              formData: {
-                id: response.data._id,  
-                id_scheme: response.data.id_scheme._id,  
-                scheme_type: response.data.id_scheme.scheme_type,  
-                scheme_typename: response.data.scheme_typename,  
-                classification_name: response.data.id_classification.classification_name, 
-                scheme_name: response.data.id_scheme.scheme_name, 
-                total_installments:response.data.id_scheme.total_installments,  
-                min_amount: response.data.id_scheme.min_amount,
-                max_amount: response.data.id_scheme.max_amount,
-                min_weight: response.data.id_scheme.min_weight,
-                max_weight: response.data.id_scheme.max_weight,
-                amount: response.data.id_scheme.amount,
-                id_customer: response.data.id_customer._id,
-                scheme_acc_number:response.data.scheme_acc_number,
-                start_date: response.data.start_date,
-                total_paidamount:response.data.total_paidamount,
-                total_paidinstallments:response.data.total_paidinstallments,
-                total_weight:response.data.total_weight,
-                bill_no: response.data.bill_no,
-                bill_date: response.data.bill_date,
-                id_classification: response.data.id_classification._id,
-                collectionuserid: response.data.collectionuserid,
-                id_branch: response.data.id_branch._id,
-                account_name: response.data.account_name,
-                address: response.data.id_customer.address,
-                customer_name:response.data.id_customer.firstname+' '+response.data.id_customer.lastname,
-                mobile:response.data.id_customer.mobile,
-                payamount: response.data.amount,
-                maturity_month:response.data.id_scheme.maturity_month,
-                maturity_date:response.data.maturity_date,
-                referal_id:response.data.referal_id,
-                columns:columns,
-                schemeaccount:schemeaccount
-              },
-              buttons: {
-                cancel: {
-                  text: 'Cancel'
-                },
-                submit: {
-                  text: 'Update'
-                }
-              }
-            }));
-         } else {
-           toast.error('Customer not created!');
-         }
-       };
+    console.log(data);
+    if (!data) return;
+    const response = await getschemeaccountbyid({ id: data });
+    if (response) {
 
- 
-    //handler to open modal and show the modal with data
-    const handleOpenLedger = (data) => {
-      if (!data) return;
-      getLedgerData(data);        
- 
+      dispatch(openModal({
+        modalType: 'LEDGER_MODAL',
+        header: 'View Details',
+        formData: {
+          id: response.data._id,
+          id_scheme: response.data.id_scheme._id,
+          scheme_type: response.data.id_scheme.scheme_type,
+          scheme_typename: response.data.scheme_typename,
+          classification_name: response.data.id_classification.classification_name,
+          scheme_name: response.data.id_scheme.scheme_name,
+          total_installments: response.data.id_scheme.total_installments,
+          min_amount: response.data.id_scheme.min_amount,
+          max_amount: response.data.id_scheme.max_amount,
+          min_weight: response.data.id_scheme.min_weight,
+          max_weight: response.data.id_scheme.max_weight,
+          amount: response.data.id_scheme.amount,
+          id_customer: response.data.id_customer._id,
+          scheme_acc_number: response.data.scheme_acc_number,
+          start_date: response.data.start_date,
+          total_paidamount: response.data.total_paidamount,
+          total_paidinstallments: response.data.total_paidinstallments,
+          total_weight: response.data.total_weight,
+          bill_no: response.data.bill_no,
+          bill_date: response.data.bill_date,
+          id_classification: response.data.id_classification._id,
+          collectionuserid: response.data.collectionuserid,
+          id_branch: response.data.id_branch._id,
+          account_name: response.data.account_name,
+          address: response.data.id_customer.address,
+          customer_name: response.data.id_customer.firstname + ' ' + response.data.id_customer.lastname,
+          mobile: response.data.id_customer.mobile,
+          payamount: response.data.amount,
+          maturity_month: response.data.id_scheme.maturity_month,
+          maturity_date: response.data.maturity_date,
+          referal_id: response.data.referal_id,
+          columns: columns,
+          schemeaccount: schemeaccount
+        },
+        buttons: {
+          cancel: {
+            text: 'Cancel'
+          },
+          submit: {
+            text: 'Update'
+          }
+        }
+      }));
+    } else {
+      toast.error('Customer not created!');
     }
+  };
 
-  const applyfilterdatatable = (e) =>{
+
+  //handler to open modal and show the modal with data
+  const handleOpenLedger = (data) => {
+    if (!data) return;
+    getLedgerData(data);
+
+  }
+
+  const applyfilterdatatable = (e) => {
 
     e.preventDefault();
-      const filterTosend = {
-        page:currentPage,
-        from_date:from_date,
-        to_date:to_date,
-        limit: itemsPerPage,
-        search: search,
-        added_by:filters.added_by,
-        type:'close',
-        scheme_status:filters.scheme_status,
-        id_classification: filters.id_classification,
-        collectionuserid: filters.collectionuserid,
-        id_scheme: filters.id_scheme,
-        id_branch: filters.id_branch,
-        scheme_type:filters.scheme_type
-      };
-       
-
-        setIsFilterOpen(false)
-        getschemeaccountMutate(filterTosend);
-      
+    const filterTosend = {
+      page: currentPage,
+      from_date: from_date,
+      to_date: to_date,
+      limit: itemsPerPage,
+      search: search,
+      added_by: filters.added_by,
+      type: 'close',
+      scheme_status: filters.scheme_status,
+      id_classification: filters.id_classification,
+      collectionuserid: filters.collectionuserid,
+      id_scheme: filters.id_scheme,
+      id_branch: filters.id_branch,
+      scheme_type: filters.scheme_type
     };
 
-   useEffect(() => {
-      getallbranchMutate();
-      handleAddedtypeChange();
-      handleSchemetypeChange();
-      handleSchemestatusChange();
-    }, []);
 
-    const { mutate: getallbranchMutate } = useMutation({
-      mutationFn: getallbranch,
-      onSuccess: (response) => {
-        console.log('jut')
-        if (response) {
-          setBranch(response.data);
-        }
-      },
-    });
+    setIsFilterOpen(false)
+    getschemeaccountMutate(filterTosend);
 
-    
-    const handleClassifyChange = async (e) => {  
-      if (!e.target.value) return;
-      const response = await getallbranchclassification({ "id_branch": e.target.value });
+  };
+
+  useEffect(() => {
+    getallbranchMutate();
+    handleAddedtypeChange();
+    handleSchemetypeChange();
+    handleSchemestatusChange();
+  }, []);
+
+  const { mutate: getallbranchMutate } = useMutation({
+    mutationFn: getallbranch,
+    onSuccess: (response) => {
+      console.log('jut')
       if (response) {
-        setClassify(response.data);
+        setBranch(response.data);
       }
-    };
+    },
+  });
 
 
-  
-    
-    const handleemployeebyBranch = async (e) => {  
-      if (!e.target.value) return;
-      const response = await getemployeebybranch({ "id_branch": e.target.value });
-      if (response) {
-        setEmployee(response.data);
-      }
-    };
+  const handleClassifyChange = async (e) => {
+    if (!e.target.value) return;
+    const response = await getallbranchclassification({ "id_branch": e.target.value });
+    if (response) {
+      setClassify(response.data);
+    }
+  };
 
 
-  
-    const handlebranchscheme = async (e) => {  
-      if (!e.target.value) return;
-      const response = await getallbranchscheme({ "id_branch": e.target.value });
-      if (response) {
-        setScheme(response.data);
-      }
-    };
 
-    
-    const handleSchemetypeChange = async (e) => {
-  
-      const response = await getallschemetypes();
-      if (response) {
-        setSchemeType(response.data);
-      }
-    };
-  
-    const handleAddedtypeChange = async (e) => {
-  
-      const response = await addedtype();
-      if (response) {
-        setAddedby(response.data);
-      }
-    };
-  
-    const   handleSchemestatusChange = async (e) => {  
 
-      const response = await allschemestatus();
-      if (response) {
-        setSchemestatus(response.data);
-      }
-    };
-  
+  const handleemployeebyBranch = async (e) => {
+    if (!e.target.value) return;
+    const response = await getemployeebybranch({ "id_branch": e.target.value });
+    if (response) {
+      setEmployee(response.data);
+    }
+  };
+
+
+
+  const handlebranchscheme = async (e) => {
+    if (!e.target.value) return;
+    const response = await getallbranchscheme({ "id_branch": e.target.value });
+    if (response) {
+      setScheme(response.data);
+    }
+  };
+
+
+  const handleSchemetypeChange = async (e) => {
+
+    const response = await getallschemetypes();
+    if (response) {
+      setSchemeType(response.data);
+    }
+  };
+
+  const handleAddedtypeChange = async (e) => {
+
+    const response = await addedtype();
+    if (response) {
+      setAddedby(response.data);
+    }
+  };
+
+  const handleSchemestatusChange = async (e) => {
+
+    const response = await allschemestatus();
+    if (response) {
+      setSchemestatus(response.data);
+    }
+  };
+
 
   //mutation to get scheme type
-  const {isLoading, mutate: getschemeaccountMutate } = useMutation({
+  const { isLoading, mutate: getschemeaccountMutate } = useMutation({
     mutationFn: schemeaccounttable,
     onSuccess: (response) => {
 
@@ -248,23 +248,23 @@ const CloaseAccount = () => {
   });
 
   useEffect(() => {
- 
+
     const filterTosend = {
-      page:currentPage,
-      from_date:from_date,
-      to_date:to_date,
+      page: currentPage,
+      from_date: from_date,
+      to_date: to_date,
       limit: itemsPerPage,
       search: search,
-      added_by:filters.added_by,
-      type:'close',
-      scheme_status:filters.scheme_status,
+      added_by: filters.added_by,
+      type: 'close',
+      scheme_status: filters.scheme_status,
       id_classification: filters.id_classification,
       collectionuserid: filters.collectionuserid,
       id_scheme: filters.id_scheme,
       id_branch: filters.id_branch,
-      scheme_type:filters.scheme_type
+      scheme_type: filters.scheme_type
     };
-     
+
     getschemeaccountMutate(filterTosend)
   }, [currentPage, itemsPerPage, search])
 
@@ -276,6 +276,17 @@ const CloaseAccount = () => {
   const handleClick = (e) => {
     e.preventDefault();
     navigate('/manageaccount/addschemeaccount');
+  }
+
+  const handleCloseClick = (e) => {
+    e.preventDefault();
+    navigate('/manageaccount/addcloseaccount');
+  }
+
+
+  const handleRevertClick = (e) => {
+    e.preventDefault();
+    navigate('/manageaccount/addrevertaccount');
   }
 
   const handleStatusToggle = async (id) => {
@@ -350,26 +361,26 @@ const CloaseAccount = () => {
       header: 'Metal Name',
       cell: (row) => {
         return row.id_metal === 1 ? 'Gold' :
-               row.id_metal === 2 ? 'Silver' :
-               row.id_metal === 3 ? 'Diamond' :
-               row.id_metal === 4 ? 'Platinum' : 'Gold Coins';
+          row.id_metal === 2 ? 'Silver' :
+            row.id_metal === 3 ? 'Diamond' :
+              row.id_metal === 4 ? 'Platinum' : 'Gold Coins';
       }
     },
     {
       header: 'Purity Name',
       cell: (row) => {
         return row.id_purity === 1 ? '24CT' :
-               row.id_purity === 2 ? '22CT' :
-               row.id_purity === 3 ? '20CT' :
-               row.id_purity === 4 ? '18CT':
-               row.id_purity === 5 ? 'Gold coin':
-               row.id_purity === 6 ? 'Platinum':
-               row.id_purity === 7 ? 'Diamond': 'Silver'
+          row.id_purity === 2 ? '22CT' :
+            row.id_purity === 3 ? '20CT' :
+              row.id_purity === 4 ? '18CT' :
+                row.id_purity === 5 ? 'Gold coin' :
+                  row.id_purity === 6 ? 'Platinum' :
+                    row.id_purity === 7 ? 'Diamond' : 'Silver'
       }
     },
     {
       header: "A/c No",
-      cell: (row) => row.scheme_acc_number===""?'Not Allocated':row.scheme_acc_number
+      cell: (row) => row.scheme_acc_number === "" ? 'Not Allocated' : row.scheme_acc_number
     },
     {
       header: "Start Date",
@@ -404,19 +415,19 @@ const CloaseAccount = () => {
           return `Amount To Weight`;
         } else if (row.scheme_type === 3) {
           return `Weight`;
-        }  else if (row.scheme_type === 4) {
+        } else if (row.scheme_type === 4) {
           return `Flexible Amount To Bonus`;
-        }  else if (row.scheme_type === 5) {
+        } else if (row.scheme_type === 5) {
           return `Flexiable Amount To Weight`;
-        }  else if (row.scheme_type === 6) {
+        } else if (row.scheme_type === 6) {
           return `Fixed Amount To Weight`;
-        }  else if (row.scheme_type === 7) {
+        } else if (row.scheme_type === 7) {
           return `Fixed Amount End Weight`;
-        }  else if (row.scheme_type === 8) {
+        } else if (row.scheme_type === 8) {
           return `Fixed Amount To Bonus`;
-        }  else if (row.scheme_type === 9) {
+        } else if (row.scheme_type === 9) {
           return `Flexible Amount End Weight`;
-        }  else if (row.scheme_type === 10) {
+        } else if (row.scheme_type === 10) {
           return `Digi Gold`;
         } else {
           return `Amount To Bonus`;
@@ -438,7 +449,7 @@ const CloaseAccount = () => {
         return date.toLocaleDateString('en-GB'); // 'en-GB' gives the d-m-Y format
       }
     },
-    
+
     {
       header: 'Active',
       accessor: 'active',
@@ -452,8 +463,8 @@ const CloaseAccount = () => {
           />
           <div
             className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-black p-[2px] after:duration-300 after:bg-black ${row.active === 1
-                ? 'peer-checked:bg-[#61A375] peer-checked:ring-[#61A375]'
-                : 'peer-checked:bg-gray-400 peer-checked:ring-gray-400'
+              ? 'peer-checked:bg-[#61A375] peer-checked:ring-[#61A375]'
+              : 'peer-checked:bg-gray-400 peer-checked:ring-gray-400'
               } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-white peer-hover:after:scale-95`}
           ></div>
         </label>
@@ -561,6 +572,13 @@ const CloaseAccount = () => {
           >
             <SlidersHorizontal size={20} />
           </button>
+          <button
+            id="filter"
+            className="text-white bg-[#023453] w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
+            onClick={() => handleReset()}
+          >
+            <RefreshCcw size={20} />
+          </button>
                 <button
                       id="filter"
                       className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
@@ -571,11 +589,27 @@ const CloaseAccount = () => {
                     </button>
           
           <button
-            className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
-            onClick={handleClick}
-            style={{ backgroundColor: layout_color }} >
-            + Add Account
+            className="rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
+            onClick={handleCloseClick}
+            style={{ backgroundColor: layout_color }} 
+          >
+            <div className="flex items-center space-x-2">
+              <UserX2Icon className="w-10" />
+              <span>Close Account</span>
+            </div>
+           
           </button>
+          <button
+            className="rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
+            onClick={handleRevertClick}
+            style={{ backgroundColor: layout_color }} 
+          >
+            <div className="flex items-center space-x-2">
+              <Undo2 className="w-10" />
+              <span>Revert Account</span>
+            </div>
+          </button>
+        
         </div>
       </div>
       <div
@@ -590,195 +624,195 @@ const CloaseAccount = () => {
               className="text-gray-500 hover:text-gray-700"
             >
               <X size={20} />
-            </button> 
+            </button>
           </div>
           {/* getallbranchMutate,handleVendorChange,handleGiftChange */}
           <form className='overflow-y-auto  scrollbar-hide'>
-          <div className="p-3 space-y-4 flex-1 overflow-y-auto filterscroll"> 
-            <div className="flex flex-col border-t"></div>
-            <div className="space-y-2">
-              <label className='text-gray-700 text-sm font-medium'>From Date<span className='text-red-400'>*</span></label>
-              <div className="relative">
-                <DatePicker
-                  selected={from_date}
-                  onChange={(date) => setFromdate(date)}
-                  dateFormat="dd-MM-yyyy"
-                  placeholderText="Select Date"
-                  className="border border-gray-300 rounded-md p-3 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                  showMonthDropdown
-                  showYearDropdown
-                  dropdownMode="select"
-                  wrapperClassName="w-full"
-                />
-                <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-gray-500 w-14 h-[43px] justify-center items-center flex rounded-r-md pointer-events-none">
-                  <CalendarDays size={20} />
-                </span>
+            <div className="p-3 space-y-4 flex-1 overflow-y-auto filterscroll">
+              <div className="flex flex-col border-t"></div>
+              <div className="space-y-2">
+                <label className='text-gray-700 text-sm font-medium'>From Date<span className='text-red-400'>*</span></label>
+                <div className="relative">
+                  <DatePicker
+                    selected={from_date}
+                    onChange={(date) => setFromdate(date)}
+                    dateFormat="dd-MM-yyyy"
+                    placeholderText="Select Date"
+                    className="border border-gray-300 rounded-md p-3 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                    showMonthDropdown
+                    showYearDropdown
+                    dropdownMode="select"
+                    wrapperClassName="w-full"
+                  />
+                  <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-gray-500 w-14 h-[43px] justify-center items-center flex rounded-r-md pointer-events-none">
+                    <CalendarDays size={20} />
+                  </span>
+                </div>
               </div>
-            </div>
-            <div className="space-y-2">
-              <label className='text-gray-700 text-sm font-medium'>To Date<span className='text-red-400'>*</span></label>
-              <div className="relative">
-                <DatePicker
-                  selected={to_date}
-                  onChange={(date) => setTodate(date)}
-                  dateFormat="dd-MM-yyyy"
-                  placeholderText="Select Date"
-                  className="border border-gray-300 rounded-md p-3 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                  showMonthDropdown
-                  showYearDropdown
-                  dropdownMode="select"
-                  wrapperClassName="w-full"
-                />
-                <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-gray-500 w-14 h-[43px] justify-center items-center flex rounded-r-md pointer-events-none">
-                  <CalendarDays size={20} />
-                </span>
+              <div className="space-y-2">
+                <label className='text-gray-700 text-sm font-medium'>To Date<span className='text-red-400'>*</span></label>
+                <div className="relative">
+                  <DatePicker
+                    selected={to_date}
+                    onChange={(date) => setTodate(date)}
+                    dateFormat="dd-MM-yyyy"
+                    placeholderText="Select Date"
+                    className="border border-gray-300 rounded-md p-3 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                    showMonthDropdown
+                    showYearDropdown
+                    dropdownMode="select"
+                    wrapperClassName="w-full"
+                  />
+                  <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-gray-500 w-14 h-[43px] justify-center items-center flex rounded-r-md pointer-events-none">
+                    <CalendarDays size={20} />
+                  </span>
+                </div>
               </div>
-            </div>   
 
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
-                Branch Name
-              </label>
-              <div className="relative">
-                <select  name="id_branch" onChange={(e)=>{filterInputchange(e);   }} className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
-                  <option value='' >--Select--</option>
-                  {branchfilter.map((branch)=>(
-                    <option key={branch._id} value={branch._id}>{branch.branch_name}</option>
-                  ))
-                  }
-                </select>
-                <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                  <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
-                    <path d="M19 9l-7 7-7-7"></path>
-                  </svg>
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Branch Name
+                </label>
+                <div className="relative">
+                  <select name="id_branch" onChange={(e) => { filterInputchange(e); }} className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
+                    <option value='' >--Select--</option>
+                    {branchfilter.map((branch) => (
+                      <option key={branch._id} value={branch._id}>{branch.branch_name}</option>
+                    ))
+                    }
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                    <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
+                      <path d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  CLassification
+                </label>
+                <div className="relative">
+                  <select name="id_classification" onChange={(e) => { filterInputchange(e); handleGiftChange(e) }} className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
+                    <option value='' >--Select--</option>
+                    {classifyfilter.map((classify) => (
+                      <option key={classify._id} value={classify._id}>{classify.classification_name}</option>
+                    ))
+                    }
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                    <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
+                      <path d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Agent Collection
+                </label>
+                <div className="relative">
+                  <select name="collectionuserid" onChange={filterInputchange} className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
+                    <option value='' >--Select--</option>
+                    {employeefilter.map((employee) => (
+                      <option key={employee._id} value={employee._id}>{employee.firstname + " " + employee.lastname}</option>
+                    ))
+                    }
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                    <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
+                      <path d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Scheme
+                </label>
+                <div className="relative">
+                  <select name="id_scheme" onChange={filterInputchange} className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
+                    <option value='' >--Select--</option>
+                    {schemefilter.map((scheme) => (
+                      <option key={scheme._id} value={scheme._id}>{scheme.scheme_name}</option>
+                    ))
+                    }
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                    <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
+                      <path d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Scheme Type
+                </label>
+                <div className="relative">
+                  <select name="scheme_type" onChange={filterInputchange} className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
+                    <option value='' >--Select--</option>
+                    {schemetypefilter.map((schemetype) => (
+                      <option key={schemetype._id} value={schemetype._id}>{schemetype.scheme_typename}</option>
+                    ))
+                    }
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                    <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
+                      <path d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Added By
+                </label>
+                <div className="relative">
+                  <select name="added_by" onChange={filterInputchange} className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
+                    <option value='' >--Select--</option>
+                    {addedbyfilter.map((addedby) => (
+                      <option key={addedby.id} value={addedby.id}>{addedby.name}</option>
+                    ))
+                    }
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                    <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
+                      <path d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Status
+                </label>
+                <div className="relative">
+                  <select name="scheme_status" onChange={filterInputchange} className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
+                    <option value='' >--Select--</option>
+                    {schemestatusfilter.map((schemestatus) => (
+                      <option key={schemestatus._id} value={schemestatus._id}>{schemestatus.status_name}</option>
+                    ))
+                    }
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                    <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
+                      <path d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              <div className="p-4 borde">
+                <div className="bg-yellow-300 flex justify-center gap-3">
+                  <button
+                    onClick={applyfilterdatatable}
+                    className="flex-1 px-4 py-2 bg-[#61A375] text-white rounded-md"
+                  >
+                    Apply
+                  </button>
                 </div>
               </div>
             </div>
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
-            CLassification
-              </label>
-              <div className="relative">
-                <select  name="id_classification"  onChange={(e)=>{filterInputchange(e); handleGiftChange(e)}} className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
-                  <option value='' >--Select--</option>
-                  {classifyfilter.map((classify)=>(
-                    <option key={classify._id} value={classify._id}>{classify.classification_name}</option>
-                  ))
-                  }
-                </select>
-                <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                  <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
-                    <path d="M19 9l-7 7-7-7"></path>
-                  </svg>
-                </div>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
-               Agent Collection
-              </label>
-              <div className="relative">
-                <select  name="collectionuserid" onChange={filterInputchange}   className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
-                  <option value='' >--Select--</option>
-                  {employeefilter.map((employee)=>(
-                    <option key={employee._id} value={employee._id}>{employee.firstname + " " + employee.lastname}</option>
-                  ))
-                  }
-                </select>
-                <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                  <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
-                    <path d="M19 9l-7 7-7-7"></path>
-                  </svg>
-                </div>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
-               Scheme
-              </label>
-              <div className="relative">
-                <select  name="id_scheme" onChange={filterInputchange}   className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
-                  <option value='' >--Select--</option>
-                  {schemefilter.map((scheme)=>(
-                    <option key={scheme._id} value={scheme._id}>{scheme.scheme_name}</option>
-                  ))
-                  }
-                </select>
-                <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                  <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
-                    <path d="M19 9l-7 7-7-7"></path>
-                  </svg>
-                </div>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
-               Scheme Type
-              </label>
-              <div className="relative">
-                <select  name="scheme_type" onChange={filterInputchange}   className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
-                  <option value='' >--Select--</option>
-                  {schemetypefilter.map((schemetype)=>(
-                    <option key={schemetype._id} value={schemetype._id}>{schemetype.scheme_typename}</option>
-                  ))
-                  }
-                </select>
-                <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                  <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
-                    <path d="M19 9l-7 7-7-7"></path>
-                  </svg>
-                </div>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
-               Added By
-              </label>
-              <div className="relative">
-                <select  name="added_by" onChange={filterInputchange}  className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
-                  <option value='' >--Select--</option>
-                  {addedbyfilter.map((addedby)=>(
-                    <option key={addedby.id} value={addedby.id}>{addedby.name}</option>
-                  ))
-                  }
-                </select>
-                <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                  <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
-                    <path d="M19 9l-7 7-7-7"></path>
-                  </svg>
-                </div>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
-              Status
-              </label>
-              <div className="relative">
-                <select  name="scheme_status" onChange={filterInputchange}   className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
-                  <option value='' >--Select--</option>
-                  {schemestatusfilter.map((schemestatus)=>(
-                    <option key={schemestatus._id} value={schemestatus._id}>{schemestatus.status_name}</option>
-                  ))
-                  }
-                </select>
-                <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                  <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
-                    <path d="M19 9l-7 7-7-7"></path>
-                  </svg>
-                </div>
-              </div>
-            </div>
-            <div className="p-4 borde">
-              <div className="bg-yellow-300 flex justify-center gap-3">
-                <button
-                  onClick={applyfilterdatatable}
-                  className="flex-1 px-4 py-2 bg-[#61A375] text-white rounded-md"
-                >
-                  Apply
-                </button>
-              </div>
-            </div>
-          </div>
           </form>
         </div>
       </div>
@@ -795,51 +829,51 @@ const CloaseAccount = () => {
         />
       </div>
       {schemeaccount.length > 0 && (
-         <div className="flex justify-between mt-4 p-2">
-         <div className="flex flex-row items-center justify-center gap-2">
-           <div className="flex items-center gap-4">
-             <button
-               onClick={() => handlePageChange(currentPage - 1)}
-               disabled={currentPage === 1}
-               className="p-2 text-gray-500 rounded-md"
-             >
-               Previous
-             </button>
-           </div>
- 
-           <div className="flex flex-row items-center justify-center gap-2">
-             {paginationButtons}
-           </div>
- 
-           <div className="flex items-center">
-             <button
-               onClick={() => handlePageChange(currentPage + 1)}
-               disabled={currentPage === totalPages}
-               className="p-2 text-gray-500 rounded-md"
-             >
-               Next
-             </button>
-           </div>
-         </div>
- 
-         <div className="mt-4 flex gap-2 justify-center items-center">
-           <span className="text-gray-500">Show</span>
-           <select
-             id="itemsPerPage"
-             value={itemsPerPage}
-             onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
-             className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
-           >
-             <option value={5}>5</option>
-             <option value={10}>10</option>
-             <option value={15}>15</option>
-             <option value={20}>20</option>
-           </select>
-           <span className="text-gray-500">entries</span>
-         </div>
-       </div>
+        <div className="flex justify-between mt-4 p-2">
+          <div className="flex flex-row items-center justify-center gap-2">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="p-2 text-gray-500 rounded-md"
+              >
+                Previous
+              </button>
+            </div>
+
+            <div className="flex flex-row items-center justify-center gap-2">
+              {paginationButtons}
+            </div>
+
+            <div className="flex items-center">
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="p-2 text-gray-500 rounded-md"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+
+          <div className="mt-4 flex gap-2 justify-center items-center">
+            <span className="text-gray-500">Show</span>
+            <select
+              id="itemsPerPage"
+              value={itemsPerPage}
+              onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
+              className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
+            >
+              <option value={5}>5</option>
+              <option value={10}>10</option>
+              <option value={15}>15</option>
+              <option value={20}>20</option>
+            </select>
+            <span className="text-gray-500">entries</span>
+          </div>
+        </div>
       )}
-      <Modal/>
+      <Modal />
     </div>
   )
 }
