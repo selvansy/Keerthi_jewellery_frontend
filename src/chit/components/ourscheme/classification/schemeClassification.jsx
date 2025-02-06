@@ -15,6 +15,7 @@ const SchemeClassification = () => {
   
   let navigate = useNavigate()
   let dispatch = useDispatch();
+  const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
   const [schemeType,setSchemeType]=useState([])
   const [search,setSearch]=useState('')
@@ -229,8 +230,8 @@ const SchemeClassification = () => {
       <button
         key={i}
         onClick={() => handlePageChange(i)}
-        className={`p-2 w-10 h-10 rounded-md ${currentPage === i ? 'bg-[#023453] text-white' : 'bg-gray-300 text-[#023453]'}`}
-      >
+        className={`p-2 w-10 h-10 rounded-md ${currentPage === i ? ' text-white' : 'bg-gray-300 text-gray-900'}`}
+        style={{ backgroundColor: layout_color }} >
         {i}
       </button>
     );
@@ -248,7 +249,7 @@ const SchemeClassification = () => {
 
   return (
     <div className="flex flex-col p-4">
-      <h2 className="text-2xl text-[#023453] font-bold">Schemes Classification</h2> 
+      <h2 className="text-2xl text-gray-900 font-bold">Schemes Classification</h2> 
       <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
         <div className="relative w-full lg:w-1/3 min-w-[200px]">
           <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
@@ -263,9 +264,9 @@ const SchemeClassification = () => {
         <div className="flex flex-row items-center justify-end gap-2">
           <button
             type="button"
-            className="bg-[#023453] rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
+            className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
             onClick={handleClick}
-          >
+            style={{ backgroundColor: layout_color }} >
             + Create Classification
           </button>
          

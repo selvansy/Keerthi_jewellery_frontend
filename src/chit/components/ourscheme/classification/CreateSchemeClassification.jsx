@@ -321,11 +321,11 @@ const CreateSchemeClassificaton = () => {
     <>
       <div className="flex flex-row justify-between">
         {id ? (
-          <h2 className="text-2xl text-[#023453] font-bold justify-between">
+          <h2 className="text-2xl text-gray-900 font-bold justify-between">
             Edit Scheme Classification
           </h2>
         ) : (
-          <h2 className="text-2xl text-[#023453] font-bold justify-between">
+          <h2 className="text-2xl text-gray-900 font-bold justify-between">
             Create Scheme Classification
           </h2>
         )}
@@ -486,7 +486,7 @@ const CreateSchemeClassificaton = () => {
                     htmlFor="main_image"
                     className="flex flex-col justify-center items-center w-full h-20 border-2 border-dashed border-gray-300 text-gray-700 cursor-pointer p-5 text-center"
                   >
-                    <p className='text-[#023453] truncate'>
+                    <p className='text-gray-900 truncate'>
                       {logo ? logo.name : logo}
                     </p>
                   </label>
@@ -536,7 +536,7 @@ const CreateSchemeClassificaton = () => {
                     htmlFor="desc_img"
                     className="flex flex-col justify-center items-center w-full h-20 border-2 border-dashed border-gray-300 text-gray-700 cursor-pointer p-5 text-center"
                   >
-                    <p className='text-[#023453] truncate'>
+                    <p className='text-gray-900 truncate'>
                       {desc_img ? desc_img.name : desc_img}
                     </p>
                   </label>

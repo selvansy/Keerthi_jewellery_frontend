@@ -9,7 +9,7 @@ import { ExportToExcel } from '../common/Dropdown/Excelexport';
 import { ExportToPDF } from '../common/Dropdown/ExportPdf';
 import {
     getbranchbyclient,getallbranchclassification, getallScheme, getallbranch,getOutstandingSummaryReport,
-    getallmetal, puritybymetal, allinstallmenttype, wastagetype, getallschemetypes, addscheme
+    getallmetal, puritybymetal, allinstallmenttype, wastagetype, getallschemetypes, addscheme,allbranchclassification 
 } from "../../../chit/api/Endpoints";
 import { SlidersHorizontal, Search, X } from 'lucide-react'
 import { CalendarDays, RefreshCcw} from 'lucide-react'
@@ -18,6 +18,8 @@ import DatePicker from "react-datepicker";
 import { useSelector } from 'react-redux';
 
 export default function OutStandingReport() {
+
+    
 
     // OutStandingWeight
 
@@ -62,7 +64,7 @@ export default function OutStandingReport() {
 
     return (
         <div className="flex flex-col p-4">
-            <h2 className="text-2xl text-[#023453] font-bold">Outstanding Summary Report</h2>
+            <h2 className="text-2xl text-gray-900 font-bold">Outstanding Summary Report</h2>
 
             <OutStandingFilter
                 outreport={outreport}
@@ -79,7 +81,6 @@ export default function OutStandingReport() {
             <OutstandingTable
                 outreport={outreport} 
                 search={search} 
-                getOutstandingReport={getOutstandingReport} 
                 currentPage={currentPage}
                 itemsPerPage={itemsPerPage} 
                 setCurrentPage={setCurrentPage}
@@ -90,7 +91,7 @@ export default function OutStandingReport() {
     )
 }
 
-export const OutstandingTable = ({ outreport, getOutstandingReport, itemsPerPage, currentPage,setItemsPerPage,setSearch,setCurrentPage }) => {
+export const OutstandingTable = ({ outreport, itemsPerPage, currentPage,setItemsPerPage,setSearch,setCurrentPage }) => {
 
 
     const indexOfLastItem = currentPage * itemsPerPage;
@@ -115,8 +116,8 @@ export const OutstandingTable = ({ outreport, getOutstandingReport, itemsPerPage
             <button
                 key={i}
                 onClick={() => handlePageChange(i)}
-                className={`p-2 w-10 h-10 rounded-md ${currentPage === i ? 'bg-[#023453] text-white' : 'bg-gray-300 text-[#023453]'}`}
-            >
+                className={`p-2 w-10 h-10 rounded-md ${currentPage === i ? ' text-white' : 'bg-gray-300 text-gray-900'}`}
+                style={{ backgroundColor: layout_color }} >
                 {i}
             </button>
         );
@@ -229,6 +230,7 @@ export const OutstandingTable = ({ outreport, getOutstandingReport, itemsPerPage
 export const OutStandingFilter = ({ outreport, accExp, search, itemsPerPage, currentPage, getOutstandingReport,setItemsPerPage,setSearch,setCurrentPage }) => {
 
     const roledata = useSelector((state) => state.clientForm.roledata);
+    const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
     const id_role = roledata?.id_role?.id_role;
     const id_client = roledata?.id_client;
@@ -419,9 +421,9 @@ export const OutStandingFilter = ({ outreport, accExp, search, itemsPerPage, cur
             <div className="flex flex-row items-center justify-end gap-2">
                 <button
                     id="filter"
-                    className="text-white bg-[#023453] w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
+                    className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
                     onClick={() => setIsFilterOpen(true)}
-                >
+                    style={{ backgroundColor: layout_color }}>
                     <SlidersHorizontal size={20} />
                 </button>
                 {/* <ExportDropdown 
@@ -437,7 +439,7 @@ export const OutStandingFilter = ({ outreport, accExp, search, itemsPerPage, cur
             >
                 <div className="flex flex-col h-full">
                     <div className="flex justify-between items-center p-3">
-                        <h3 className="text-lg font-semibold text-[#023453]">Filters</h3>
+                        <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
                         <button
                             onClick={() => setIsFilterOpen(false)}
                             className="text-gray-500 hover:text-gray-700"

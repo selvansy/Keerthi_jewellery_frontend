@@ -18,6 +18,7 @@ import StaffuserForm from './StaffuserForm'
 
 const StaffUser = () => {
   const dispatch = useDispatch();
+
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -32,6 +33,7 @@ const StaffUser = () => {
   const debouncedSearch = useDebounce(searchInput, 500)
 
   const roledata = useSelector((state) => state.clientForm.roledata);
+  const layout_color = useSelector((state) => state.clientForm.layoutColor);
  
   const id_role = roledata?.id_role?.id_role;
   const id_client = roledata?.id_client;
@@ -279,8 +281,8 @@ const StaffUser = () => {
       <button
         key={i}
         onClick={() => handlePageChange(i)}
-        className={`p-2 w-10 h-10 rounded-md ${currentPage === i ? 'bg-[#023453] text-white' : 'bg-gray-300 text-[#023453]'}`}
-      >
+        className={`p-2 w-10 h-10 rounded-md ${currentPage === i ? ' text-white' : 'bg-gray-300 text-gray-900'}`}
+        style={{ backgroundColor: layout_color }}  >
         {i}
       </button>
     );
@@ -458,9 +460,9 @@ const StaffUser = () => {
         </div>
         <div className="flex flex-row items-center justify-end gap-2">
           <button
-            className="bg-[#023453] rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
+            className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
             onClick={handleAddEmployeeClick}
-          >
+            style={{ backgroundColor: layout_color }} >
             + Add User
           </button>
         </div>

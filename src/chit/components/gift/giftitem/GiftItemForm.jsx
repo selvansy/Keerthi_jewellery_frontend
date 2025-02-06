@@ -6,6 +6,9 @@ import { setid } from "../../../../redux/clientFormSlice";
 import { toast } from 'react-toastify';
 
 function GiftItemForm({ setIsOpen }) {
+
+    
+    const layout_color = useSelector((state) => state.clientForm.layoutColor);
     const roledata = useSelector((state) => state.clientForm.roledata);
     const [branch, setBranch] = useState([]);
     const [vendorfilter, setVendor] = useState([]);
@@ -288,7 +291,8 @@ const { mutate: updategiftitemMutate } = useMutation({
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="bg-[#023453] text-white rounded-md p-2 w-full lg:w-20" >
+                            className=" text-white rounded-md p-2 w-full lg:w-20" 
+                            style={{ backgroundColor: layout_color }} >
                                         Submit
                                     </button>
                                 

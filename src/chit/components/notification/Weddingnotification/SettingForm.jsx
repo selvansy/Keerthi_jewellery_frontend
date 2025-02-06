@@ -7,12 +7,7 @@ import { toast } from 'react-toastify';
 
 
 
-function SettingNotification({ setIsSettingOpen }) {
-
-  
-    
-    const roledata = useSelector((state) => state.clientForm.roledata);
-    const id_branch = roledata?.branch;
+function SettingNotification({ setIsSettingOpen}) {
   const [formErrors, setFormErrors] = useState({});
   const [image, setImage] = useState([]);
   const [filtertype, settype] = useState([]);
@@ -272,27 +267,27 @@ function SettingNotification({ setIsSettingOpen }) {
         <div className="bg-white p-2 border-t-2 border-gray-300 mt-4">
           <div className="flex justify-end gap-2 mt-3">
 
-            <>
-              <button
-                className="bg-[#E2E8F0] text-black rounded-md p-2 w-full lg:w-20"
-                onClick={handleCancel}
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="bg-[#023453] text-white rounded-md p-2 w-full lg:w-20"
+                <>
+                  <button
+                    className="bg-[#E2E8F0] text-black rounded-md p-2 w-full lg:w-20"
+                    onClick={handleCancel}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="bg-[#023453] text-white rounded-md p-2 w-full lg:w-20"
 
-              >
-                Submit
-              </button>
-
-            </>
-          </div>
-        </div>
-      </form>
-
+                  >
+                    Submit
+                  </button> 
+                
+                </>
+              </div>
+            </div>
+          </form>
+       
 
     </div>
   );

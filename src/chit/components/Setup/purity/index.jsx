@@ -16,6 +16,8 @@ import { useDebounce } from '../../../hooks/useDebounce';
 import { setid } from '../../../../redux/clientFormSlice';
 
 const Purity = () => {
+
+
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const [currentPage, setCurrentPage] = useState(1);
@@ -28,7 +30,9 @@ const Purity = () => {
     const debouncedSearch = useDebounce(searchInput, 500)
     const limit = 10;
     const [isviewOpen, setIsviewOpen] = useState(false);
-
+    
+    
+   const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
     function closeIncommingModal() {
         setIsviewOpen(false);
@@ -314,8 +318,8 @@ const Purity = () => {
             <button
                 key={i}
                 onClick={() => handlePageChange(i)}
-                className={`p-2 w-10 h-10 rounded-md ${currentPage === i ? 'bg-[#023453] text-white' : 'bg-gray-300 text-[#023453]'}`}
-            >
+                className={`p-2 w-10 h-10 rounded-md ${currentPage === i ? ' text-white' : 'bg-gray-300 text-gray-900'}`}
+                style={{ backgroundColor: layout_color }}  >
                 {i}
             </button>
         );
@@ -327,7 +331,7 @@ const Purity = () => {
                 <div>Loading...</div>
             ) : (
                 <>
-                    <h2 className="text-2xl text-[#023453] font-bold">Purity</h2>
+                    <h2 className="text-2xl text-gray-900 font-bold">Purity</h2>
                     <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
                         <div className="relative w-full lg:w-1/3 min-w-[200px]">
                             <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
@@ -341,9 +345,9 @@ const Purity = () => {
                         </div>
                         <div className="flex flex-row items-center justify-end gap-2">
                             <button
-                                className="bg-[#023453] rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
+                                className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
                                 onClick={handleAddpurity}
-                            >
+                                style={{ backgroundColor: layout_color }} >
                                 + Add purity
                             </button>
                         </div>
@@ -428,6 +432,7 @@ export default Purity;
 export const PurityForm = ({ isLoading, setIsOpen, metals }) => {
     const dispatch = useDispatch();
     const id = useSelector((state) => state.clientForm.id);
+    const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
     const [formData, setFormData] = useState({
         purity_name: '',
@@ -585,8 +590,8 @@ export const PurityForm = ({ isLoading, setIsOpen, metals }) => {
                         type="button"
                         onClick={handleSubmit}
                         disabled={isLoading}
-                        className="bg-[#023453] text-white rounded-md p-2 w-full lg:w-20"
-                    >
+                        className=" text-white rounded-md p-2 w-full lg:w-20"
+                        style={{ backgroundColor: layout_color }} >
                         {id ? 'Update' : 'Submit'}
                     </button>
                 </div>

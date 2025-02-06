@@ -374,7 +374,7 @@ const LayoutSettings = ({ onPageChange, isLoading = false, setIsAddClient }) => 
                                                 htmlFor="branch_icon"
                                                 className="flex justify-center items-center w-full h-12 border-2 border-dashed border-gray-300 text-black cursor-pointer px-4"
                                             >
-                                                <p className='text-[#023453] truncate'>
+                                                <p className='text-gray-900 truncate'>
                                                     {branch_favicon ? branch_favicon.name : 'Browse'}
                                                 </p>
                                             </label>
@@ -422,7 +422,7 @@ const LayoutSettings = ({ onPageChange, isLoading = false, setIsAddClient }) => 
                                                 htmlFor="branch_logo"
                                                 className="flex justify-center items-center w-full h-12 border-2 border-dashed border-gray-300 text-black cursor-pointer px-4"
                                             >
-                                                <p className='text-[#023453] truncate'>
+                                                <p className='text-gray-900 truncate'>
                                                     {branch_logo ? branch_logo.name : 'Browse'}
                                                 </p>
                                             </label>
@@ -471,7 +471,7 @@ const LayoutSettings = ({ onPageChange, isLoading = false, setIsAddClient }) => 
                                                 htmlFor="branch_img"
                                                 className="flex justify-center items-center w-full h-12 border-2 border-dashed border-gray-300 text-black cursor-pointer px-4"
                                             >
-                                                <p className='text-[#023453] truncate'>
+                                                <p className='text-gray-900 truncate'>
                                                     {branch_image ? branch_image.name : 'Browse'}
                                                 </p>
                                             </label>
@@ -525,9 +525,9 @@ const LayoutSettings = ({ onPageChange, isLoading = false, setIsAddClient }) => 
                                 </button>
                                 <button
                                     disabled={currentStep === totalPages || isLoading}
-                                    className="bg-[#023453] text-white rounded-md p-2 w-full lg:w-20"
+                                    className=" text-white rounded-md p-2 w-full lg:w-20"
                                     onClick={handleSubmit}
-                                >
+                                    style={{ backgroundColor: layout_color }} >
                                     Submit
                                 </button>
                             </div>

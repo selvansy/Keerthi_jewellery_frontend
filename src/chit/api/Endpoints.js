@@ -266,9 +266,9 @@ export const getallclassification = async (data)=>{
 }
 
 //get all classification id based
-export const allbranchclassification = async (data)=>{
-    const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/admin/allbranchclassification`,data)
-    return response.data
+export const allbranchclassification = async (id) => {
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/classification/branch/${id}`);
+    return response.data;
 }
 
 

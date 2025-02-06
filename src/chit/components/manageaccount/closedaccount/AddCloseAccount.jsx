@@ -32,14 +32,14 @@ const AddCloseAccount = () => {
               <div className="absolute flex items-center justify-center pointer-events-none 
                     right-[0%] rounded-r-lg top-[68%] -translate-y-1/2
                     w-10 h-[62%]
-                    bg-[#023453]
                     sm:right-0
                     sm:top-[68%]
                     sm:rounded-r-lg
                     md:right-[-20%]
                     md:rounded-lg
                     lg:rounded-lg
-                    lg:right-[-10%]">
+                    lg:right-[-10%]"
+                    style={{ backgroundColor: layout_color }}>
                   <Search size={20} className="text-white" />
                 </div>
             </div>
@@ -110,7 +110,8 @@ const AddCloseAccount = () => {
                     e.preventDefault();
                   }
                 }} className='border-2 border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' placeholder='Enter Product Price' />
-                <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-white bg-[#023453] w-14 h-[43px] justify-center items-center flex rounded-r-md">INR</span>
+                <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-white w-14 h-[43px] justify-center items-center flex rounded-r-md"
+                style={{ backgroundColor: layout_color }}>INR</span>
               </div>
             </div>
             <div className='flex flex-col'>
@@ -121,7 +122,8 @@ const AddCloseAccount = () => {
                     e.preventDefault();
                   }
                 }} className='border-2 border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' placeholder='Enter Product Price' />
-                <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-white bg-[#023453] w-14 h-[43px] justify-center items-center flex rounded-r-md">INR</span>
+                <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-white w-14 h-[43px] justify-center items-center flex rounded-r-md"
+                style={{ backgroundColor: layout_color }}>INR</span>
               </div>
             </div>
             <div className='flex flex-col'>
@@ -132,7 +134,8 @@ const AddCloseAccount = () => {
                     e.preventDefault();
                   }
                 }} className='border-2 border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' placeholder='Enter Product Price' />
-                <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-white bg-[#023453] w-14 h-[43px] justify-center items-center flex rounded-r-md">INR</span>
+                <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-white w-14 h-[43px] justify-center items-center flex rounded-r-md"
+                style={{ backgroundColor: layout_color }}>INR</span>
               </div>
             </div>
             <div className='flex flex-col'>

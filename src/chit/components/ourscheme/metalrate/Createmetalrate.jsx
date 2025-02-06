@@ -12,6 +12,8 @@ import profileplaceholder from "../../../../../src/assets/profileplaceholder.png
 
 const CreateMetalRate = () => {
 
+  const layout_color = useSelector((state) => state.clientForm.layoutColor);
+
   let dispatch = useDispatch();
 
   let navigate = useNavigate();
@@ -318,7 +320,8 @@ const CreateMetalRate = () => {
                     className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                     placeholder="Enter Pending Due Installment"
                   />
-                  <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center bg-[#023453] text-white rounded-r-md">
+                  <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                  style={{ backgroundColor: layout_color }}>
                     INR
                   </span>
                 </div>
@@ -354,7 +357,8 @@ const CreateMetalRate = () => {
                     className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                     placeholder="Enter Pending Due Installment"
                   />
-                  <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center bg-[#023453] text-white rounded-r-md">
+                  <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                  style={{ backgroundColor: layout_color }}>
                     INR
                   </span>
                 </div>
@@ -391,7 +395,8 @@ const CreateMetalRate = () => {
                     className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                     placeholder="Enter Pending Due Installment"
                   />
-                  <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center bg-[#023453] text-white rounded-r-md">
+                  <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                  style={{ backgroundColor: layout_color }}>
                     INR
                   </span>
                 </div>
@@ -428,7 +433,8 @@ const CreateMetalRate = () => {
                     className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                     placeholder="Enter Pending Due Installment"
                   />
-                  <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center bg-[#023453] text-white rounded-r-md">
+                  <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                  style={{ backgroundColor: layout_color }}>
                     INR
                   </span>
                 </div>
@@ -466,7 +472,8 @@ const CreateMetalRate = () => {
                     className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                     placeholder="Enter Pending Due Installment"
                   />
-                  <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center bg-[#023453] text-white rounded-r-md">
+                  <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                  style={{ backgroundColor: layout_color }}>
                     INR
                   </span>
                 </div>
@@ -502,7 +509,8 @@ const CreateMetalRate = () => {
                     className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                     placeholder="Enter Pending Due Installment"
                   />
-                  <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center bg-[#023453] text-white rounded-r-md">
+                  <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                  style={{ backgroundColor: layout_color }}>
                     INR
                   </span>
                 </div>
@@ -538,7 +546,8 @@ const CreateMetalRate = () => {
                     className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                     placeholder="Enter Pending Due Installment"
                   />
-                  <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center bg-[#023453] text-white rounded-r-md">
+                  <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                  style={{ backgroundColor: layout_color }}>
                     INR
                   </span>
                 </div>
@@ -574,7 +583,8 @@ const CreateMetalRate = () => {
                     className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                     placeholder="Enter Pending Due Installment"
                   />
-                  <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center bg-[#023453] text-white rounded-r-md">
+                  <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                  style={{ backgroundColor: layout_color }}>
                     INR
                   </span>
                 </div>

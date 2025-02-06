@@ -272,8 +272,8 @@ function SubmenuForm({ setIsOpen, getallsubmenusMutate, menus }) {
                         type="button"
                         onClick={handleSubmit}
                         disabled={isLoading}
-                        className="bg-[#023453] text-white rounded-md p-2 w-full lg:w-20 flex justify-center items-center"
-                    >
+                        className=" text-white rounded-md p-2 w-full lg:w-20 flex justify-center items-center"
+                        style={{ backgroundColor: layout_color }}  >
                         {isLoading ? (
                             <div className="w-4 h-4 border-2 border-t-2 border-white rounded-full animate-spin"></div>
                         ) : (

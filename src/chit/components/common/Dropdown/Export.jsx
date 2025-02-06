@@ -7,7 +7,8 @@ const ExportDropdown = ({ onExportExcel, onExportPDF }) => {
   return (
     <Menu as="div" className="relative inline-block text-left">
       <div>
-        <Menu.Button className="bg-[#023453] text-white hover:bg-[#034571] flex items-center gap-2 px-4 py-2 rounded-md">
+        <Menu.Button className=" text-white hover:bg-[#034571] flex items-center gap-2 px-4 py-2 rounded-md"
+        style={{ backgroundColor: layout_color }} >
           <Download className="h-4 w-4" />
           Export
         </Menu.Button>
@@ -29,9 +30,9 @@ const ExportDropdown = ({ onExportExcel, onExportPDF }) => {
                 <button
                   onClick={onExportExcel}
                   className={`${
-                    active ? 'bg-gray-100 text-[#023453]' : 'text-gray-700'
+                    active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
                   } flex items-center gap-2 w-full px-4 py-2 text-sm cursor-pointer`}
-                >
+                  style={{ backgroundColor: layout_color }} >
                   <FileSpreadsheet className="h-4 w-4" />
                   Export as Excel
                 </button>
@@ -42,9 +43,9 @@ const ExportDropdown = ({ onExportExcel, onExportPDF }) => {
                 <button
                   onClick={onExportPDF}
                   className={`${
-                    active ? 'bg-gray-100 text-[#023453]' : 'text-gray-700'
+                    active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
                   } flex items-center gap-2 w-full px-4 py-2 text-sm cursor-pointer`}
-                >
+                  style={{ backgroundColor: layout_color }} >
                   <FileText className="h-4 w-4" />
                   Export as PDF
                 </button>

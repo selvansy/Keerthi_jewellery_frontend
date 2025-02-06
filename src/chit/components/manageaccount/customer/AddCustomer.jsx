@@ -16,6 +16,7 @@ import { useSelector } from 'react-redux';
 const AddCustomer = () => {
 
   const navigate = useNavigate()
+  const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
   // const { id } = useParams();
   const [cus_img, setcus_img] = useState(null);
@@ -480,6 +481,7 @@ const AddCustomer = () => {
   return (
     <>
       <div className='flex flex-row justify-between'>
+        <h2 className='text-2xl text-gray-900 font-bold justify-between'>{customerId ? "Edit Customer" : "Add Customer"}</h2>
         <h2 className='text-2xl text-[#023453] font-bold justify-between'>{customerId ? "Edit Customer" : "Add Customer"}</h2>
         {customerId && (
           <div className='flex flex-row gap-4'>
@@ -624,27 +626,29 @@ const AddCustomer = () => {
                 <label className='text-black mb-1 font-medium'>Gender<span className='text-red-400'>*</span></label>
                 <div className="flex flex-row gap-6 justify-start">
                   <button
-                    name='gender'
+                    name="gender"
                     onClick={() => handleGenderSelect(1)}
-                    className={`rounded-full w-20 h-10 flex items-center justify-center border-2 border-black transition-colors duration-200 ${selectedGender === 1 ? 'bg-[#023453] text-white' : 'bg-white text-black'
+                    className={`rounded-full w-20 h-10 flex items-center justify-center border-2 border-black transition-colors duration-200 ${selectedGender === 1 ? 'text-white' : 'bg-white text-black'
                       }`}
+                    style={selectedGender === 1 ? { backgroundColor: layout_color } : {}}
                   >
                     Male
                   </button>
+
                   <button
                     name='gender'
                     onClick={() => handleGenderSelect(2)}
-                    className={`rounded-full w-20 h-10 flex items-center justify-center border-2 border-black transition-colors duration-200 ${selectedGender === 2 ? 'bg-[#023453] text-white' : 'bg-white text-black'
+                    className={`rounded-full w-20 h-10 flex items-center justify-center border-2 border-black transition-colors duration-200 ${selectedGender === 2 ? ' text-white' : 'bg-white text-black'
                       }`}
-                  >
+                      style={selectedGender === 2 ? { backgroundColor: layout_color } : {}}>
                     Female
                   </button>
                   <button
                     name='gender'
                     onClick={() => handleGenderSelect(3)}
-                    className={`rounded-full w-20 h-10 flex items-center justify-center border-2 border-black transition-colors duration-200 ${selectedGender === 3 ? 'bg-[#023453] text-white' : 'bg-white text-black'
+                    className={`rounded-full w-20 h-10 flex items-center justify-center border-2 border-black transition-colors duration-200 ${selectedGender === 3 ? ' text-white' : 'bg-white text-black'
                       }`}
-                  >
+                      style={selectedGender === 3 ? { backgroundColor: layout_color } : {}}>
                     Other
                   </button>
                 </div>
@@ -780,7 +784,7 @@ const AddCustomer = () => {
                       htmlFor="profile-image"
                       className="flex justify-center items-center w-full h-12 border-2 border-dashed border-gray-300 text-black cursor-pointer px-4"
                     >
-                      <p className='text-[#023453] truncate'>
+                      <p className='text-gray-900 truncate'>
                         {cus_img ? cus_img.name : 'Browse'}
                       </p>
                     </label>
@@ -795,8 +799,8 @@ const AddCustomer = () => {
                     <div className='flex flex-col items-center justify-center lg:items-start lg:justify-start lg:w-52 mt-2'>
                       <button
                         onClick={() => setShowWebcam(prev => !prev)}
-                        className="mt-2 rounded-lg flex items-center gap-2 bg-[#023453] text-white px-3 py-1 "
-                      >
+                        className="mt-2 rounded-lg flex items-center gap-2 text-white px-3 py-1 "
+                        style={{ backgroundColor: layout_color }}>
                         <Camera size={16} />
                         <span className='text-sm'>{showWebcam ? 'Close Camera' : 'Open Camera'}</span>
                       </button>
@@ -834,8 +838,8 @@ const AddCustomer = () => {
                       <div className="mt-4 flex justify-center gap-2">
                         <button
                           onClick={handleCapture}
-                          className="bg-[#023453] text-white px-4 py-2 rounded-md"
-                        >
+                          className=" text-white px-4 py-2 rounded-md"
+                          style={{ backgroundColor: layout_color }} >
                           Capture
                         </button>
                         <button
@@ -855,7 +859,7 @@ const AddCustomer = () => {
                   htmlFor="id_proof"
                   className="flex flex-col justify-center items-center w-full h-12 border-2 border-dashed border-gray-300 text-black cursor-pointer p-5 text-center hover:bg-gray-50 transition-colors"
                 >
-                  <p className='text-[#023453]'>
+                  <p className='text-gray-900'>
                     {id_proof ? id_proof.name : 'Browse to upload Document (PNG,JPG,SVG)'}
                   </p>
                 </label>

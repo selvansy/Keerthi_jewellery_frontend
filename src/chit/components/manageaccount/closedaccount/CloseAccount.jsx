@@ -11,11 +11,13 @@ import DatePicker from "react-datepicker";
 
 import { openModal } from '../../../../redux/modalSlice';
 import { eventEmitter } from '../../../../utils/EventEmitter';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Modal from '../../common/Modal';
 import { useDebounce } from '../../../hooks/useDebounce';
 
 const CloaseAccount = () => {
+
+  const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
   const dispatch = useDispatch();
   const navigate = useNavigate()
@@ -323,8 +325,8 @@ const CloaseAccount = () => {
       <button
         key={i}
         onClick={() => handlePageChange(i)}
-        className={`p-2 w-10 h-10 rounded-md ${currentPage === i ? 'bg-[#023453] text-white' : 'bg-gray-300 text-[#023453]'}`}
-      >
+        className={`p-2 w-10 h-10 rounded-md ${currentPage === i ? ' text-white' : 'bg-gray-300 text-gray-900'}`}
+        style={{ backgroundColor: layout_color }} >
         {i}
       </button>
     );
@@ -549,7 +551,7 @@ const CloaseAccount = () => {
 
   return (
     <div className="flex flex-col p-4">
-      <h2 className="text-2xl text-[#023453] font-bold">Closed Account</h2>
+      <h2 className="text-2xl text-gray-900 font-bold">Closed Account</h2>
       <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
         <div className="relative w-full lg:w-1/3 min-w-[200px]">
           <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
@@ -564,8 +566,9 @@ const CloaseAccount = () => {
         <div className="flex flex-row items-center justify-end gap-2">
           <button
             id="filter"
-            className="text-white bg-[#023453] w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
+            className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
             onClick={() => setIsFilterOpen(true)}
+            style={{ backgroundColor: layout_color }}
           >
             <SlidersHorizontal size={20} />
           </button>
@@ -576,18 +579,30 @@ const CloaseAccount = () => {
           >
             <RefreshCcw size={20} />
           </button>
+                <button
+                      id="filter"
+                      className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
+                      onClick={() => handleReset()}
+                      style={{ backgroundColor: layout_color }}
+                    >
+                      <RefreshCcw size={20} />
+                    </button>
+          
           <button
-            className="bg-[#023453] rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
+            className="rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
             onClick={handleCloseClick}
+            style={{ backgroundColor: layout_color }} 
           >
             <div className="flex items-center space-x-2">
               <UserX2Icon className="w-10" />
               <span>Close Account</span>
             </div>
+           
           </button>
           <button
-            className="bg-[#023453] rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
+            className="rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
             onClick={handleRevertClick}
+            style={{ backgroundColor: layout_color }} 
           >
             <div className="flex items-center space-x-2">
               <Undo2 className="w-10" />
@@ -603,7 +618,7 @@ const CloaseAccount = () => {
       >
         <div className="flex flex-col h-full">
           <div className="flex justify-between items-center p-3">
-            <h3 className="text-lg font-semibold text-[#023453]">Filters</h3>
+            <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
             <button
               onClick={() => setIsFilterOpen(false)}
               className="text-gray-500 hover:text-gray-700"

@@ -6,8 +6,11 @@ import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import { toast } from 'react-toastify';
 import { addschemeaccount, schemepaymenttodayrate, searchmobileschemeaccount, getschemeaccountbyid, getschemeById, updateschemepayment, extendinstallment, addcloseSchemeAccount, revertschemeAccount, schemeaccountbyid, getallbranchscheme, getallbranchclassification, getemployeebybranch,getallbranch, getallpaymentmode } from '../../../api/Endpoints'
-import {setid} from "../../../../redux/clientFormSlice";
+
 const AddSchemePayment = () => {
+
+  const layout_color = useSelector((state) => state.clientForm.layoutColor);
+
   const navigate = useNavigate();
   const location = useLocation();
   const todaydate = new Date();
@@ -724,7 +727,7 @@ console.log(err);
                       <div onClick={handleSearchmobile} className="absolute flex items-center justify-center 
                         right-[0%] rounded-r-lg top-[70%] -translate-y-1/2
                         w-10 h-[60%]
-                        bg-[#023453]
+                       
                         sm:right-0
                         sm:top-[68%]
                         sm:rounded-r-lg
@@ -886,7 +889,8 @@ console.log(err);
                     <div className='flex flex-col'>
                       <label className='text-black mb-2 font-normal'>Account Number<span className='text-red-400'>*</span></label>
                       <div className="relative">
-                      <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center bg-[#023453] text-white rounded-r-md">{formData.code}</span>
+                      <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md" 
+                      style={{ backgroundColor: layout_color }} >{formData.accountschemeid ? formData.code : "N/A"}</span>
                       <input
                         name='accountschemeid'
                         value={formData.accountschemeid}
@@ -1002,7 +1006,8 @@ console.log(err);
                       placeholder='Enter here'
                     />
 
-                    <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center bg-[#023453] text-white rounded-r-md">INR</span>
+                    <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                    style={{ backgroundColor: layout_color }}>INR</span>
                   </div>
                   <p style={{ color: "red" }}>{errors?.payment_amount}</p>
                 </div>
@@ -1024,7 +1029,8 @@ console.log(err);
                       className='border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
                       placeholder='Enter here'
                     />
-                    <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center bg-[#023453] text-white rounded-r-md">INR</span>
+                    <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                    style={{ backgroundColor: layout_color }}>INR</span>
                   </div>
                 </div>
                 <div className='flex flex-col'>
@@ -1045,7 +1051,8 @@ console.log(err);
                       className='border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
                       placeholder='Enter here'
                     />
-                    <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center bg-[#023453] text-white rounded-r-md">INR</span>
+                    <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                    style={{ backgroundColor: layout_color }}>INR</span>
                   </div>
                 </div>
                 <div className='flex flex-col'>
@@ -1065,7 +1072,8 @@ console.log(err);
                       placeholder='Enter here'
                     />
 
-                    <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center bg-[#023453] text-white rounded-r-md">INR</span>
+                    <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                    style={{ backgroundColor: layout_color }}>INR</span>
                   </div>
                   <p style={{ color: "red" }}>{errors?.total_amt}</p>
                 </div>
@@ -1087,7 +1095,8 @@ console.log(err);
                       className='border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
                       placeholder='Enter here'
                     />
-                    <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center bg-[#023453] text-white rounded-r-md">INR</span>
+                    <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                    style={{ backgroundColor: layout_color }}>INR</span>
                   </div>
                 </div>
                 <div className='flex flex-col'>

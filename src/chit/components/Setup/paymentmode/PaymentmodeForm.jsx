@@ -8,6 +8,7 @@ import { Formik } from 'formik';
 import * as Yup from 'yup';
 
 function PaymentmodeForm({ setIsOpen }) {
+
     const [isLoading, setisLoading] = useState(false);
     const [projects, setProjects] = useState([]);
     const [filtertype, setFiltertype] = useState([]);
@@ -20,6 +21,7 @@ function PaymentmodeForm({ setIsOpen }) {
 
     let dispatch = useDispatch();
     const id = useSelector((state) => state.clientForm.id);
+    const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
     const PaymentmodeSchema = Yup.object().shape({
         mode_name: Yup.string().required('Mode name is required'),
@@ -189,8 +191,8 @@ function PaymentmodeForm({ setIsOpen }) {
                                 <button
                                     type="submit"
                                     disabled={isLoading}
-                                    className="bg-[#023453] text-white rounded-md p-2 w-full lg:w-20"
-                                >
+                                    className=" text-white rounded-md p-2 w-full lg:w-20"
+                                    style={{ backgroundColor: layout_color }} >
                                     {id ? 'Update' : 'Submit'}
                                 </button>
                             </div>

@@ -6,7 +6,10 @@ import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import { toast } from 'react-toastify';
 import { addschemeaccount,searchcustomermobile,getschemeaccountbyid,getschemeById,updateschemeaccount,extendinstallment,addcloseSchemeAccount,revertschemeAccount,schemeaccountbyid,getallbranchscheme, getallbranchclassification, getemployeebybranch,getallbranch } from '../../../api/Endpoints'
+import { useSelector } from 'react-redux';
 const AddSchemeAccount = () => {
+  
+  const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const navigate = useNavigate();
   const location = useLocation();
   const todaydate = new Date(); 
@@ -482,12 +485,12 @@ const AddSchemeAccount = () => {
   return (
     <>
       <div className='flex flex-row justify-between'>
-        <h2 className='text-2xl text-[#023453] font-bold justify-between'>{header}</h2>
+        <h2 className='text-2xl text-gray-900 font-bold justify-between'>{header}</h2>
         {/* {header === 'Add Scheme Account' && ( */}
         <button
-          className="bg-[#023453] rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
+          className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
           onClick={handleAddCustomer}
-        >
+          style={{ backgroundColor: layout_color }} >
           + Add Customer
         </button>
         {/* )} */}
@@ -523,7 +526,8 @@ const AddSchemeAccount = () => {
 
 
             {/* Search Icon */}
-            <div onClick={handleSearchmobile} className="absolute flex items-center justify-center cursor-pointer right-[0%] rounded-r-lg top-[68%] -translate-y-1/2 w-10 h-[62%] bg-[#023453] sm:right-0 sm:top-[68%] sm:rounded-r-lg md:right-[-20%] md:rounded-lg lg:rounded-lg lg:right-[-10%]">
+            <div onClick={handleSearchmobile} className="absolute flex items-center justify-center cursor-pointer right-[0%] rounded-r-lg top-[68%] -translate-y-1/2 w-10 h-[62%] sm:right-0 sm:top-[68%] sm:rounded-r-lg md:right-[-20%] md:rounded-lg lg:rounded-lg lg:right-[-10%]"
+            style={{ backgroundColor: layout_color }}>
               <Search size={20} className="text-white" />
             </div>
           </div>
@@ -714,7 +718,8 @@ const AddSchemeAccount = () => {
                   className='border-2 border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
                   placeholder='Enter Amount'
                 />
-                <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-white bg-[#023453] w-14 h-[43px] justify-center items-center flex rounded-r-md">INR</span>
+                <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-white w-14 h-[43px] justify-center items-center flex rounded-r-md"
+                style={{ backgroundColor: layout_color }}>INR</span>
               </div>
               <p style={{ color: "red" }}>{errors?.amount}</p>
             </div>

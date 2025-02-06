@@ -123,7 +123,7 @@ const AupayConfigure = () => {
                         <div className="w-32 rounded-md bg-green-500 ring-1 hover:bg-gray-100">
                             <div className="py-1">
                                 <button key={row._id}
-                                    className="w-full text-left px-4 py-2 flex flex-row justify-center item-center text-sm text-gray-700  flex items-center gap-2"
+                                    className="w-full text-left px-4 py-2  flex-row justify-center item-center text-sm text-gray-700  flex items-center gap-2"
                                     onClick={() => {
                                         console.log(row.id_branch)
                                         console.log(row.id_client)
@@ -185,8 +185,8 @@ const AupayConfigure = () => {
             <button
                 key={i}
                 onClick={() => handlePageChange(i)}
-                className={`p-2 w-10 h-10 rounded-md ${currentPage === i ? 'bg-[#023453] text-white' : 'bg-gray-300 text-[#023453]'}`}
-            >
+                className={`p-2 w-10 h-10 rounded-md ${currentPage === i ? ' text-white' : 'bg-gray-300 text-gray-900'}`}
+                style={{ backgroundColor: layout_color }} >
                 {i}
             </button>
         );
@@ -214,8 +214,8 @@ const AupayConfigure = () => {
         <div className="flex flex-col p-4 relative">
             <div>
                 <div className="flex justify-between items-center">
-                    <h2 className="text-2xl text-[#023453] font-bold">Aupay Configure</h2>
-                    <h2 className="text-2xl text-[#023453] font-bold">{projectTitle}</h2>
+                    <h2 className="text-2xl text-gray-900 font-bold">Aupay Configure</h2>
+                    <h2 className="text-2xl text-gray-900 font-bold">{projectTitle}</h2>
                 </div>
             </div>
              <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">

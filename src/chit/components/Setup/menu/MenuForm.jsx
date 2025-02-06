@@ -8,6 +8,7 @@ import { Formik } from 'formik';
 import * as Yup from 'yup';
 
 function MenuForm({ setIsOpen }) {
+
   const [formData, setFormData] = useState({
     menu_name: "",
     id_project: "",
@@ -18,6 +19,8 @@ function MenuForm({ setIsOpen }) {
 
   let dispatch = useDispatch();
   const id = useSelector((state) => state.clientForm.id);
+  
+  const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
   const MenuSchema = Yup.object().shape({
     menu_name: Yup.string().required('menu_name is required'),
@@ -178,11 +181,13 @@ function MenuForm({ setIsOpen }) {
                   Cancel
                 </button>
                 {!id ? (
-                  <button type="submit" disabled={isLoading} className="bg-[#023453] text-white rounded-md p-2 w-full lg:w-20">
+                  <button type="submit" disabled={isLoading} className=" text-white rounded-md p-2 w-full lg:w-20"
+                  style={{ backgroundColor: layout_color }} >
                     Submit
                   </button>
                 ) : (
-                  <button disabled={isLoading} className="bg-[#023453] text-white rounded-md p-2 w-full lg:w-20">
+                  <button disabled={isLoading} className=" text-white rounded-md p-2 w-full lg:w-20"
+                  style={{ backgroundColor: layout_color }} >
                     Update
                   </button>
                 )}
