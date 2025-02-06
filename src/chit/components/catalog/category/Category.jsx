@@ -144,7 +144,7 @@ const Category = () => {
     mutationFn: getcategoryTable,
     onSuccess: (response) => {
 
-      setcategoryData(response?.data?.category)
+      setcategoryData(response?.data)
       setTotalPages(response?.data?.totalPages)
     },
     onError: (error) => {
@@ -486,7 +486,7 @@ const handleReset = (e) => {
 
               <div className="space-y-2">
               {
-                id_branch === 0 && (
+                id_branch === "0" && (
              
                   <div className="flex flex-col lg:mt-2">
                 <label className="text-black mb-1 font-medium">
@@ -610,7 +610,7 @@ const handleReset = (e) => {
         />
       </div>
  
-      {categoryData.length > 0 && (
+      {categoryData?.length > 0 && (
         <div className="flex justify-between mt-4 p-2">
           <div className="flex flex-row items-center justify-center gap-2">
             <div className="flex items-center gap-4">

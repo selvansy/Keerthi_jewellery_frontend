@@ -4,16 +4,15 @@ import { useMutation } from "@tanstack/react-query";
 import { CalendarDays, Search } from 'lucide-react'
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
-import {
-  getBranchById, getallbranch,categorybyid, getallmetal, createcategory, puritybymetal,
+import {setid} from "../../../../redux/clientFormSlice";
+import {getallbranch,categorybyid, getallmetal, createcategory, puritybymetal,
   updatecategory,
 } from "../../../api/Endpoints"
 import { toast } from "react-toastify";
-import { useSelector } from "react-redux";
-
+import { useDispatch, useSelector } from "react-redux";
 const AddCategory = () => {
   const navigate = useNavigate();
-
+  let dispatch = useDispatch();
   const roledata = useSelector((state) => state.clientForm.roledata);
   const id_branch = roledata?.branch;
 
@@ -41,10 +40,7 @@ const AddCategory = () => {
   useEffect(() => {
     if (id_branch === '0') {
       getallbranchmuate();
-    } else {
-      branchbyId(id_branch)
-    }
-
+    } 
     if (id_branch !== 0) {
       setFormData({ ...formData, id_branch: id_branch })
     }
@@ -60,16 +56,6 @@ const AddCategory = () => {
     },
     onError: (error) => {
       console.error("Error fetching countries:", error);
-    },
-  });
-  //get branches
-  const { mutate: branchbyId } = useMutation({
-    mutationFn: getBranchById,
-    onSuccess: (response) => {
-      setbranch(response.data);
-    },
-    onError: (error) => {
-      console.error("Error:", error);
     },
   });
 
@@ -144,6 +130,7 @@ const AddCategory = () => {
   const { mutate: createcategoryMutate } = useMutation({
     mutationFn: createcategory,
     onSuccess: (response) => {
+     dispatch(setid(null));
       toast.success(response.message)
       navigate('/catalog/category')
     },
@@ -188,6 +175,7 @@ const AddCategory = () => {
   }, [id]);
 
   const handleCancle = () => {
+          dispatch(setid(null));
     navigate("/catalog/category");
   };
 
@@ -210,6 +198,7 @@ const AddCategory = () => {
   const { mutate: updatecategorymutate } = useMutation({
     mutationFn: updatecategory,
     onSuccess: (response) => {
+      dispatch(setid(null));
       toast.success(response.message);
       navigate("/catalog/category");
     },
@@ -330,8 +319,8 @@ const AddCategory = () => {
                     <option
                       name="type"
                       className="text-gray-700"
-                      key={type._id}
-                      value={type._id}
+                      key={type.id_metal}
+                      value={type.id_metal}
                     >
                       {type.metal_name}
                     </option>

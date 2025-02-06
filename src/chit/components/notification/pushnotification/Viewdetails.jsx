@@ -36,7 +36,7 @@ const [notifypopup,setNotifyPopup]=useState(null)
             noti_name: response.data.noti_name,
             noti_desc: response.data.noti_desc,
             noti_image: response.data.noti_image,
-            imagepath: response.data.imagepath,
+            pathurl: response.data.pathurl,
           });
         } else {
           toast.error("No record data!");
@@ -51,17 +51,15 @@ const [notifypopup,setNotifyPopup]=useState(null)
   return (
     <div>
 
-      <div className="flex  flex-col">
-        <div className="flex  flex-col  bg-[#f5f5dc] p-5 rounded-lg shadow-lg">
+      <div className="flex flex-col">
+        <div className="flex flex-col bg-[#f5f5dc] p-5 rounded-lg shadow-lg">
           <img
-            src=""
+            src={`${notifypopup?.pathurl}${notifypopup?.noti_image}`}
             alt="Product"
-            className="w-64 h-64 object-cover mb-4"
+            className="w-full max-h-[250px] object-cover mb-4"
           />
-          <h2 className="text-2xl font-bold mb-2">{notifypopup?.noti_name || '0'}</h2>
-          <p className="text-lg text-gray-700 mb-4">
-            {notifypopup?.noti_desc || '0'}
-          </p>
+          <h2 className="text-2xl font-bold mb-2 text-left">{notifypopup?.noti_name || ''}</h2>
+          <p className="text-lg text-gray-700 mb-4 text-left">{notifypopup?.noti_desc || ''}</p>
         </div>
       </div>
       <div className="bg-white p-2 border-t-2 border-gray-300 mt-4">

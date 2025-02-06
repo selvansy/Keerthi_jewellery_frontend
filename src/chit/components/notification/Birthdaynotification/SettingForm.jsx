@@ -116,7 +116,7 @@ function SettingNotification({ setIsSettingOpen }) {
     console.log(formData)
     formDataToSend.append("id_branch", formData.id_branch);
     formDataToSend.append("description", formData.description);
-    formDataToSend.append("type", 4);
+    formDataToSend.append("type", 5);
     if (image) formDataToSend.append("image", image);
 
     createweddingbirthMutate(formDataToSend);
@@ -136,7 +136,7 @@ function SettingNotification({ setIsSettingOpen }) {
   });
 
   useEffect(() => { 
-    handleweddingbirthbyid({ type: 4 })
+    handleweddingbirthbyid({ type: 5 })
 
     if (id_branch === "0") {
       getBranchList();

@@ -167,7 +167,7 @@ const AddNotfication = () => {
 
           <div className="grid grid-rows-2 md:grid-cols-2 gap-5 border-gray-300 mb-10">
                {
-                id_branch === 0 && (
+                id_branch === "0" && (
                   <div className="flex flex-col">
                   <label className="text-gray-700 mb-2 mt-2 font-medium">
                     Branch<span className="text-red-400">*</span>

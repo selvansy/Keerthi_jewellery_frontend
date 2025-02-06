@@ -473,10 +473,15 @@ export const schemepaymentbyid = async (data) => {
     return response.data;
 }
  
+export const todaycurrentratebybranch = async (data) => {
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/metalrate/today/${data.id_branch}/${data.date}`);
+    return response.data;
+}
+ 
 
  
 export const schemepaymenttodayrate = async (data) => {
-    const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/admin/schemepaymenttodayrate`,data);
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/metalrate/today/${data.id_branch}/${data.date}`);
     return response.data;
 }
  
@@ -484,7 +489,7 @@ export const schemepaymentdatatable = async (data) => {
     const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/admin/schemepaymentdatatable`,data);
     return response.data;
 }
- 
+
  
 
 
@@ -553,8 +558,8 @@ export const activatenewarrivals= async(id)=>{
 }
 
 
-export const newarrivalsbyid= async(id)=>{
-    const response= await Api.get(`${import.meta.env.VITE_API_URL}/api/client/newarrivals/${id}`)
+export const newarrivalsbyid= async(data)=>{
+    const response= await Api.get(`${import.meta.env.VITE_API_URL}/api/client/newarrivals/${data.id}`)
     return response.data
 }
 
@@ -642,20 +647,15 @@ export const pushnotificationbyid= async(id)=>{
     return response.data
 }
 export const getweddingbirthbyid= async(data)=>{
-    const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/admin/getweddingbirthbyid`,data)
+    const response= await Api.get(`${import.meta.env.VITE_API_URL}/api/client/wedding/${data.type}`)
     return response.data
 }
  
 export const createweddingbirth= async(data)=>{
-    const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/admin/createweddingbirth`,data)
+    const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/wedding`,data)
     return response.data
 }
 
-export const updateweddingbirth= async(data)=>{
-    console.log(data)
-    const response= await Api.patch(`${import.meta.env.VITE_API_URL}/api/admin/updateweddingbirth/${data.id}`,data.data)
-    return response.data
-}
 
 export const getuserpermission= async(data)=>{
     const response= await Api.get(`${import.meta.env.VITE_API_URL}/api/client/useraccess/permissions/${data.id_role}`)
@@ -1422,7 +1422,7 @@ export const getcategoryTable= async(data)=>{
 }
 
 export const categorybyid= async(data)=>{
-    const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/category/${id}`,data)
+    const response= await Api.get(`${import.meta.env.VITE_API_URL}/api/client/category/${data.id}`)
     return response.data
 }
 
@@ -1603,3 +1603,9 @@ export const getProductById = async (id)=>{
 }
 
 
+// Metal Rate
+export const sendwhatsappmessage= async(data)=>{
+    const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/whatsappmessage`,data)
+    return response.data
+}
+ 

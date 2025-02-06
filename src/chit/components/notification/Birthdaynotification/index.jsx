@@ -17,7 +17,7 @@ import SettingNotification from "./SettingForm"
 import DatePicker from "react-datepicker";
 import { CalendarDays, RefreshCcw } from 'lucide-react'
 
-const Weddingnotification = () => {
+const Birthdaynotification = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch();
 
@@ -35,7 +35,6 @@ const Weddingnotification = () => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedRow, setSelectedRow] = useState(null)
   const [activeDropdown, setActiveDropdown] = useState(null)
-  const [sendDropdown, setSendDropdown] = useState(null)
   const [isviewOpen, setIsviewOpen] = useState(false);
   const [issettingOpen, setIsSettingOpen] = useState(false);
   const [displaysetting, setDiplaySetting] = useState(0);
@@ -51,7 +50,7 @@ const Weddingnotification = () => {
     to_date: null,
     limit: itemsPerPage,
     id_branch: id_branch,
-    senttype: "4"
+    senttype: "5"
   });
 
   const filterInputchange = (e) => {
@@ -68,7 +67,7 @@ const Weddingnotification = () => {
       to_date: to_date,
       limit: itemsPerPage,
       id_branch: filters.id_branch,
-      senttype: "4"
+      senttype: "5"
     };
 
     getnotificationData(filterTosend);
@@ -80,7 +79,7 @@ const Weddingnotification = () => {
       to_date: null,
       limit: itemsPerPage,
       id_branch: id_branch,
-      senttype: "4"
+      senttype: "5"
     })
 
   };
@@ -144,7 +143,7 @@ const Weddingnotification = () => {
   });
 
   useEffect(() => {
-    getnotificationData({ page: currentPage, limit: itemsPerPage, search: search ,senttype:"4"})
+    getnotificationData({ page: currentPage, limit: itemsPerPage, search: search,senttype: "5" })
   }, [currentPage, itemsPerPage, search])
 
   const handleSearch = (e) => {
@@ -152,7 +151,7 @@ const Weddingnotification = () => {
   }
   const handleReset = (e) => {
 
-    getnotificationData({ from_date: '', to_date: '', page: currentPage, limit: itemsPerPage, id_branch: id_branch, senttype: "4" });
+    getnotificationData({ from_date: '', to_date: '', page: currentPage, limit: itemsPerPage, id_branch: id_branch, senttype: "5" });
   }
 
 
@@ -185,7 +184,7 @@ const Weddingnotification = () => {
 
         let response = await deletepushnotification(data.productId);
         toast.success(response.message);
-        getnotificationData({ page: currentPage, limit: itemsPerPage, search: search,senttype: "4" })
+        getnotificationData({ page: currentPage, limit: itemsPerPage, search: search,senttype:"5" })
       } catch (error) {
         console.error('Error:', error);
       }
@@ -196,9 +195,6 @@ const Weddingnotification = () => {
   }, [eventEmitter, notifyData]);
 
 
-  
-
-
   const handleViewnotification = async (id) => {
     setPopuptitle('View Details');
     setDiplaySetting(1);
@@ -207,7 +203,7 @@ const Weddingnotification = () => {
   };
 
   const handleSettingnotification = async () => {
-    setPopuptitle('Setting Wedding Anniversery');
+    setPopuptitle('Setting Birthday Notification');
     setDiplaySetting(2);
     dispatch(setSettingtype(1))
     setIsSettingOpen(true)
@@ -344,7 +340,7 @@ const Weddingnotification = () => {
 
   return (
     <div className="flex flex-col p-4">
-      <h2 className="text-2xl text-[#023453] font-bold">Wedding Anniversary</h2>
+      <h2 className="text-2xl text-[#023453] font-bold">Birthday Notification</h2>
       <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
         <div className="relative w-full lg:w-1/3 min-w-[200px]">
           <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
@@ -598,4 +594,4 @@ const Weddingnotification = () => {
   )
 }
 
-export default Weddingnotification
+export default Birthdaynotification
