@@ -99,8 +99,8 @@ const SummaryWiseReport = () => {
       <button
         key={i}
         onClick={() => handlePageChange(i)}
-        className={`p-2 w-10 h-10 rounded-md ${currentPage === i ? 'bg-[#023453] text-white' : 'bg-gray-300 text-[#023453]'}`}
-      >
+        className={`p-2 w-10 h-10 rounded-md ${currentPage === i ? ' text-white' : 'bg-gray-300 text-gray-900'}`}
+        style={{ backgroundColor: layout_color }} >
         {i}
       </button>
     );
@@ -108,7 +108,7 @@ const SummaryWiseReport = () => {
 
   return (
     <div className="flex flex-col p-4">
-      <h2 className="text-2xl text-[#023453] font-bold">Summary Wise Report</h2>
+      <h2 className="text-2xl text-gray-900 font-bold">Summary Wise Report</h2>
       <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
         <div className="relative w-full lg:w-1/3 min-w-[200px]">
           <div className="absolute left-3 top-1/2 transform -translate-y-1/2">

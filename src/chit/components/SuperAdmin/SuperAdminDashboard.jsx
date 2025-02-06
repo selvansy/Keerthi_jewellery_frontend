@@ -138,7 +138,8 @@ function SuperAdminDashboard() {
               <h5 className="text-[#67748E] text-sm">Total Customer</h5>
               <h5 className="text-2xl font-semibold">{cardData?.total_customer}</h5>
             </div>
-            <div className="flex items-center justify-center bg-[#023453] p-3 rounded-md">
+            <div className="flex items-center justify-center p-3 rounded-md"
+            style={{ backgroundColor: layout_color }}>
               <img src={customer} alt="customer" className="w-6 h-6" />
             </div>
           </div>
@@ -148,7 +149,8 @@ function SuperAdminDashboard() {
               <h5 className="text-[#67748E] text-sm">Total Account</h5>
               <h5 className="text-2xl font-semibold">{cardData?.total_account}</h5>
             </div>
-            <div className="flex items-center justify-center bg-[#023453] p-3 rounded-md">
+            <div className="flex items-center justify-center p-3 rounded-md"
+            style={{ backgroundColor: layout_color }}>
               <img src={account} alt="account" className="w-6 h-6" />
             </div>
           </div>
@@ -157,7 +159,8 @@ function SuperAdminDashboard() {
               <h5 className="text-[#67748E] text-sm">Completed Account</h5>
               <h5 className="text-2xl font-semibold">{cardData?.total_complete}</h5>
             </div>
-            <div className="flex items-center justify-center bg-[#023453] p-3 rounded-md">
+            <div className="flex items-center justify-center p-3 rounded-md"
+            style={{ backgroundColor: layout_color }}>
               <img src={completedacc} alt="completedacc" className="w-6 h-6" />
             </div>
           </div>
@@ -166,7 +169,8 @@ function SuperAdminDashboard() {
               <h5 className="text-[#67748E] text-sm">Closed Account</h5>
               <h5 className="text-2xl font-semibold">{cardData?.close}</h5>
             </div>
-            <div className="flex items-center justify-center bg-[#023453] p-3 rounded-md">
+            <div className="flex items-center justify-center p-3 rounded-md"
+            style={{ backgroundColor: layout_color }}>
               <img src={closedacc} alt="closedacc" className="w-6 h-6" />
             </div>
           </div>
@@ -178,7 +182,8 @@ function SuperAdminDashboard() {
           <div className="bg-white rounded-lg shadow-md p-5 ">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-2xl font-bold">Today's Metal Rate</h2>
-              <button className="bg-[#023453] text-white font-bold py-2 px-4 rounded">
+              <button className=" text-white font-bold py-2 px-4 rounded"
+              style={{ backgroundColor: layout_color }} >
                 Add
               </button>
             </div>

@@ -21,7 +21,7 @@ const Schemetype = () => {
     const [isviewOpen, setIsviewOpen] = useState(false);
     const [isLoading, setisLoading] = useState(false);
 
-
+    const layout_color = useSelector((state) => state.clientForm.layoutColor);
     const [schemetypeData, setschemetypeData] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
@@ -87,8 +87,8 @@ const Schemetype = () => {
             <button
                 key={i}
                 onClick={() => handlePageChange(i)}
-                className={`p-2 w-10 h-10 rounded-md ${currentPage === i ? 'bg-[#023453] text-white' : 'bg-gray-300 text-[#023453]'}`}
-            >
+                className={`p-2 w-10 h-10 rounded-md ${currentPage === i ? ' text-white' : 'bg-gray-300 text-gray-900'}`}
+                style={{ backgroundColor: layout_color }} >
                 {i}
             </button>
         );
@@ -277,9 +277,9 @@ const Schemetype = () => {
                         </div>
                         <div className="flex flex-row items-center justify-end gap-2">
                             <button
-                                className="bg-[#023453] rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
+                                className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
                                 onClick={handleAddschemetype}
-                            >
+                                style={{ backgroundColor: layout_color }}  >
                                 + Add schemetype
                             </button>
                         </div>
@@ -363,6 +363,8 @@ const Schemetype = () => {
 export default Schemetype;
 
 export const SchemeForm = ({ isLoading, setIsOpen }) => {
+
+    const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
     const [formData, setFormData] = useState({
         scheme_typename: '',
@@ -467,16 +469,16 @@ export const SchemeForm = ({ isLoading, setIsOpen }) => {
                                 <button
                                     type="submit"
                                     disabled={isLoading}
-                                    className="bg-[#023453] text-white rounded-md p-2 w-full lg:w-20"
-                                >
+                                    className=" text-white rounded-md p-2 w-full lg:w-20"
+                                    style={{ backgroundColor: layout_color }} >
                                     Submit
                                 </button>
                             ) : (
                                 <button
                                     type="submit"
                                     disabled={isLoading}
-                                    className="bg-[#023453] text-white rounded-md p-2 w-full lg:w-20"
-                                >
+                                    className=" text-white rounded-md p-2 w-full lg:w-20"
+                                    style={{ backgroundColor: layout_color }} >
                                     Update
                                 </button>
                             )}

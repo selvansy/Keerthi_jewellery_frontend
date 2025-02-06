@@ -140,9 +140,9 @@ function Addadmin({ isLoading = false, setisAdmin }) {
                                         </button>
                                         <button
                                             disabled={isLoading}
-                                            className="bg-[#023453] text-white rounded-md p-2 w-full lg:w-20"
+                                            className=" text-white rounded-md p-2 w-full lg:w-20"
                                             onClick={(values) => handleSubmit(values)}
-                                        >
+                                            style={{ backgroundColor: layout_color }}  >
                                             Submit
                                         </button>
                                     </div>

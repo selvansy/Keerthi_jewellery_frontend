@@ -9,6 +9,8 @@ import { useDispatch,useSelector } from 'react-redux'
 
 import { addgiftissues, updategiftissues,giftissuesdatatable,searchbarcodenumber, giftissuetype, getcustomerschemeaccount, searchcustomermobile, getallbranch, getschemeaccountbyid } from '../../../api/Endpoints'
 const AddGiftIssued = () => {
+
+  const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const navigate = useNavigate();
   const location = useLocation();
   const todaydate = new Date();
@@ -391,11 +393,11 @@ const AddGiftIssued = () => {
   return (
     <>
       <div className='flex flex-row justify-between'>
-        <h2 className='text-2xl text-[#023453] font-bold justify-between'>Gift Issued</h2>
+        <h2 className='text-2xl text-gray-900 font-bold justify-between'>Gift Issued</h2>
         <button
-          className="bg-[#023453] rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
+          className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
           onClick={handleAddCustomer}
-        >
+          style={{ backgroundColor: layout_color }}>
           + Add Customer
         </button>
       </div>
@@ -432,7 +434,8 @@ const AddGiftIssued = () => {
 
 
               {/* Search Icon */}
-              <div onClick={handleSearchmobile} className="absolute flex items-center justify-center cursor-pointer right-[0%] rounded-r-lg top-[68%] -translate-y-1/2 w-10 h-[62%] bg-[#023453] sm:right-0 sm:top-[68%] sm:rounded-r-lg md:right-[-20%] md:rounded-lg lg:rounded-lg lg:right-[-10%]">
+              <div onClick={handleSearchmobile} className="absolute flex items-center justify-center cursor-pointer right-[0%] rounded-r-lg top-[68%] -translate-y-1/2 w-10 h-[62%] sm:right-0 sm:top-[68%] sm:rounded-r-lg md:right-[-20%] md:rounded-lg lg:rounded-lg lg:right-[-10%]"
+              style={{ backgroundColor: layout_color }}>
                 <Search size={20} className="text-white" />
               </div>
             </div>
@@ -610,7 +613,7 @@ const AddGiftIssued = () => {
             <div onClick={handleSearchbarcode} className="absolute flex items-center justify-center 
                     right-[0%] rounded-r-lg top-[68%] -translate-y-1/2
                     w-10 h-[62%]
-                    bg-[#023453]
+                   
                     sm:right-0
                     sm:top-[68%]
                     sm:rounded-r-lg
@@ -619,7 +622,8 @@ const AddGiftIssued = () => {
                     lg:rounded-lg
                     lg:right-[-12%]
                     cursor-pointer
-                    ">
+                    " 
+                    style={{ backgroundColor: layout_color }}>
               <Search size={20} className="text-white" />
             </div>
           </div>
@@ -629,7 +633,8 @@ const AddGiftIssued = () => {
           <div className="w-full p-3 border-b-2 border-gray-300">
             <table id="barDatatable" className="min-w-full table-auto">
               <thead>
-                <tr className="bg-[#023453] text-white">
+                <tr className=" text-white"
+                style={{ backgroundColor: layout_color }} >
                   <th className="px-2 py-2 text-center">Action</th>
                   <th className="px-2 py-2 text-center">Barcode</th>
                   <th className="px-2 py-2 text-center">Gift Name</th>

@@ -184,8 +184,6 @@ const AppsettingDetails = ({ setIsAddClient,onPageChange, isLoading = false }) =
             <div className="mb-8">
               <h2 className="text-1xl font-bold mb-4 mt-4">App Details</h2>
               <div className="grid grid-rows-2 md:grid-cols-2 gap-4">
-              
-
                 <div className="flex flex-col mt-2">
                   <label className="text-black mb-2 mt-1 font-medium whitespace-nowrap">
                     Android Version<span className="text-red-400"> *</span>
@@ -351,9 +349,9 @@ const AppsettingDetails = ({ setIsAddClient,onPageChange, isLoading = false }) =
                 </button>
                 <button
                   disabled={currentStep === totalPages || isLoading}
-                  className="bg-[#023453] text-white rounded-md p-2 w-full lg:w-20"
+                  className=" text-white rounded-md p-2 w-full lg:w-20"
                   type="submit"
-                >
+                  style={{ backgroundColor: layout_color }} >
                   Submit
                 </button>
               </div>

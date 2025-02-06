@@ -335,9 +335,9 @@ const NotificationDetails = ({ setIsAddClient,onPageChange, isLoading = false })
                 </button>
                 <button
                   disabled={currentStep === totalPages || isLoading}
-                  className="bg-[#023453] text-white rounded-md p-2 w-full lg:w-20"
+                  className=" text-white rounded-md p-2 w-full lg:w-20"
                   type="submit"
-                >
+                  style={{ backgroundColor: layout_color }} >
                   Submit
                 </button>
               </div>

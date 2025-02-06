@@ -17,8 +17,10 @@ import { useDispatch,useSelector } from 'react-redux'
 
 
 const GiftIssued = () => {
-  const navigate = useNavigate()
 
+  const navigate = useNavigate()
+  
+  const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const roledata = useSelector((state) => state.clientForm.roledata);
   const id_role = roledata?.id_role?.id_role;
   const id_client = roledata?.id_client;
@@ -200,8 +202,8 @@ console.log(branch)
       <button
         key={i}
         onClick={() => handlePageChange(i)}
-        className={`p-2 w-10 h-10 rounded-md ${currentPage === i ? 'bg-[#023453] text-white' : 'bg-gray-300 text-[#023453]'}`}
-      >
+        className={`p-2 w-10 h-10 rounded-md ${currentPage === i ? ' text-white' : 'bg-gray-300 text-gray-900'}`}
+        style={{ backgroundColor: layout_color }} >
         {i}
       </button>
     );
@@ -306,7 +308,7 @@ console.log(branch)
   return (
     <div className="flex flex-col p-4">
       <div className='flex flex-col gap-3'>
-        <h2 className="text-2xl text-[#023453] font-bold">Gift Account</h2>
+        <h2 className="text-2xl text-gray-900 font-bold">Gift Account</h2>
         <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4'>
           <div className='flex flex-row items-center justify-between bg-white rounded-lg p-3 h-20 shadow-md'>
             <div className='flex flex-col justify-center'>
@@ -314,7 +316,8 @@ console.log(branch)
               <h5 className="text-xl font-semibold">{giftcount.total_gift}</h5>
             </div>
             <div className='flex items-center justify-center'>
-              <div className='flex bg-[#023453] rounded-md p-3 items-center justify-center'>
+              <div className='flex rounded-md p-3 items-center justify-center'
+              style={{ backgroundColor: layout_color }}>
                 <FaGifts size={24} className="text-white" />
               </div>
             </div>
@@ -325,7 +328,8 @@ console.log(branch)
               <h5 className="text-xl font-semibold">{giftcount.total_schemegift}</h5>
             </div>
             <div className='flex items-center justify-center'>
-              <div className='flex bg-[#023453] rounded-md p-3 items-center justify-center'>
+              <div className='flex rounded-md p-3 items-center justify-center'
+              style={{ backgroundColor: layout_color }}>
                 <img src={chitrcvd} alt="chitrcvd" className='w-6 h-6' />
               </div>
             </div>
@@ -336,7 +340,8 @@ console.log(branch)
               <h5 className="text-xl font-semibold">{giftcount.total_nonschemegift}</h5>
             </div>
             <div className='flex items-center justify-center'>
-              <div className='flex bg-[#023453] rounded-md p-3 items-center justify-center'>
+              <div className='flex rounded-md p-3 items-center justify-center'
+              style={{ backgroundColor: layout_color }}>
                 <img src={nonchitrcvd} alt="nonchitrcvd" className='w-6 h-6' />
               </div>
             </div>
@@ -347,7 +352,8 @@ console.log(branch)
               <h5 className="text-xl font-semibold">{giftcount.total_balancegift}</h5>
             </div>
             <div className='flex items-center justify-center'>
-              <div className='flex bg-[#023453] rounded-md p-3 items-center justify-center'>
+              <div className='flex rounded-md p-3 items-center justify-center'
+              style={{ backgroundColor: layout_color }}>
                 <img src={balancegift} alt="balancegift" className='w-6 h-6' />
               </div>
             </div>
@@ -368,23 +374,23 @@ console.log(branch)
         <div className="flex flex-row items-center justify-end gap-2">
                 <button
                       id="filter"
-                      className="text-white bg-[#023453] w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
+                      className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
                       onClick={() => handleReset()}
-                    >
+                      style={{ backgroundColor: layout_color }}>
                       <RefreshCcw size={20} />
                     </button>
           
           <button
             id="filter"
-            className="text-white bg-[#023453] w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
+            className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
             onClick={() => setIsFilterOpen(true)}
-          >
+            style={{ backgroundColor: layout_color }}>
             <SlidersHorizontal size={20} />
           </button>
           <button
-            className="bg-[#023453] rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
+            className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
             onClick={handleClick}
-          >
+            style={{ backgroundColor: layout_color }} >
             + Add Gift Issues
           </button>
         </div>
@@ -395,7 +401,7 @@ console.log(branch)
       >
         <div className="flex flex-col h-full">
           <div className="flex justify-between items-center p-3">
-            <h3 className="text-lg font-semibold text-[#023453]">Filters</h3>
+            <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
             <button
               onClick={() => setIsFilterOpen(false)}
               className="text-gray-500 hover:text-gray-700"

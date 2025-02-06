@@ -4,6 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 
 import { X } from 'lucide-react'
 import { getClassificationById,getBranchById, getbranchbyclient, updateSchemeClassification, createSchemeClassification, } from "../../../api/Endpoints"
+import { getAllBranch } from "../../../api/Endpoints";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from 'react-redux';
 import { setid } from "../../../../redux/clientFormSlice"
@@ -24,7 +25,7 @@ const CreateDigiGoldScheme = () => {
 
   const [typeOfScheme, setTypeOfScheme] = useState([]);
   const [branchList, setBranchList] = useState([]);
-  const [branch, setbranch] = useState("");
+ 
 
   const [formData, setFormData] = useState({
     classification_name: "",
@@ -47,10 +48,7 @@ const CreateDigiGoldScheme = () => {
     useEffect(() => {
       if (id_branch === '0') {
         getallbranchmuate()
-      }else{
-        branchbyId(id_branch)
       }
-  
       if(id_branch !== 0){
         setFormData({ ...formData, id_branch: id_branch })
       }
@@ -62,24 +60,16 @@ const CreateDigiGoldScheme = () => {
 
     // mutation functions
     const { mutate: getallbranchmuate } = useMutation({
-      mutationFn: getallbranch,
+      mutationFn: getAllBranch,
       onSuccess: (response) => {
-        setBranchData(response.data);
+        setBranchList(response.data);
       },
       onError: (error) => {
         console.error("Error:", error);
       },
     });
   
-    const { mutate: branchbyId } = useMutation({
-      mutationFn: getBranchById,
-      onSuccess: (response) => {
-        setbranch(response.data);
-      },
-      onError: (error) => {
-        console.error("Error:", error);
-      },
-    });
+   
 
 
 

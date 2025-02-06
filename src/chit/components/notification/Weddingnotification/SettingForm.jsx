@@ -8,6 +8,8 @@ import { toast } from 'react-toastify';
 
 
 function SettingNotification({ setIsSettingOpen}) {
+  
+  const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const [formErrors, setFormErrors] = useState({});
   const [image, setImage] = useState([]);
    const [filtertype, settype] = useState([]);
@@ -277,8 +279,8 @@ function SettingNotification({ setIsSettingOpen}) {
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className="bg-[#023453] text-white rounded-md p-2 w-full lg:w-20"
-
+                    className=" text-white rounded-md p-2 w-full lg:w-20"
+                    style={{ backgroundColor: layout_color }} 
                   >
                     Submit
                   </button> 

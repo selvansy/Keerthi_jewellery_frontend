@@ -14,6 +14,7 @@ import { toast } from "react-toastify";
 const AddScheme = () => {
 
   const navigate = useNavigate();
+   const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
   const [branchData, setBranchData] = useState([]);
   const [classificationData, setClassification] = useState([])
@@ -747,8 +748,8 @@ console.log(name)
           <div className="flex items-center gap-3 mb-4 mt-4">
             <button
               onClick={() => setShowPayment(!showPayment)}
-              className="bg-[#023453] p-4 w-9 h-9 hover:bg-[#015173] text-white items-center justify-center flex"
-            >
+              className=" p-4 w-9 h-9 hover:bg-[#015173] text-white items-center justify-center flex"
+              style={{ backgroundColor: layout_color }}>
               {showPayment ? "-" : "+"}
             </button>
             <h2 className="text-lg font-medium text-[#023453]">
@@ -787,7 +788,8 @@ console.log(name)
                         className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                         placeholder="Enter Amount"
                       />
-                      <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center bg-[#023453] text-white rounded-r-md">
+                      <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                      style={{ backgroundColor: layout_color }}>
                         INR
                       </span>
                     </div>
@@ -828,7 +830,8 @@ console.log(name)
                       className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                       placeholder="Enter Max Amount"
                     />
-                    <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center bg-[#023453] text-white rounded-r-md">
+                    <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                    style={{ backgroundColor: layout_color }}>
                       INR
                     </span>
                   </div>
@@ -870,7 +873,8 @@ console.log(name)
                       className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                       placeholder="Enter Max Amount"
                     />
-                    <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center bg-[#023453] text-white rounded-r-md">
+                    <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                    style={{ backgroundColor: layout_color }}>
                       INR
                     </span>
                   </div>
@@ -942,7 +946,8 @@ console.log(name)
                           className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                           placeholder="Enter Max Amount"
                         />
-                        <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center bg-[#023453] text-white rounded-r-md">
+                        <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                        style={{ backgroundColor: layout_color }}>
                           INR
                         </span>
                       </div>
@@ -987,7 +992,8 @@ console.log(name)
                         className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                         placeholder="Enter Max Weight"
                       />
-                      <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center bg-[#023453] text-white rounded-r-md">
+                      <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                      style={{ backgroundColor: layout_color }}>
                         GRM
                       </span>
                     </div>
@@ -1026,7 +1032,8 @@ console.log(name)
                     className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                     placeholder="Enter Buy Gst"
                   />
-                  <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center bg-[#023453] text-white rounded-r-md">
+                  <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                  style={{ backgroundColor: layout_color }}>
                     %
                   </span>
                 </div>
@@ -1135,8 +1142,8 @@ console.log(name)
           <div className="flex items-center gap-3 mb-4 mt-4">
             <button
               onClick={() => setShowFund(!showFund)}
-              className="bg-[#023453] p-4 w-9 h-9 hover:bg-[#015173] text-white items-center justify-center flex"
-            >
+              className=" p-4 w-9 h-9 hover:bg-[#015173] text-white items-center justify-center flex"
+              style={{ backgroundColor: layout_color }}>
               {showFund ? "-" : "+"}
             </button>
             <h2 className="text-lg font-medium text-[#023453]">Fund Details</h2>
@@ -1206,7 +1213,8 @@ console.log(name)
                     className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                     placeholder="Enter Min Fund"
                   />
-                  <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center bg-[#023453] text-white rounded-r-md">
+                  <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                  style={{ backgroundColor: layout_color }}>
                     INR
                   </span>
                 </div>
@@ -1237,7 +1245,8 @@ console.log(name)
                     className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                     placeholder="Enter Max Fund"
                   />
-                  <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center bg-[#023453] text-white rounded-r-md">
+                  <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                  style={{ backgroundColor: layout_color }}>
                     INR
                   </span>
                 </div>
@@ -1247,8 +1256,8 @@ console.log(name)
           <div className="flex items-center gap-3 mb-4 mt-4">
             <button
               onClick={() => setShowPaymentPercentage(!showPaymentPercentage)}
-              className="bg-[#023453] p-4 w-9 h-9 hover:bg-[#015173] text-white items-center justify-center flex"
-            >
+              className=" p-4 w-9 h-9 hover:bg-[#015173] text-white items-center justify-center flex"
+              style={{ backgroundColor: layout_color }}>
               {showPaymentPercentage ? "-" : "+"}
             </button>
             <h2 className="text-lg font-medium text-[#023453]">
@@ -1284,7 +1293,8 @@ console.log(name)
                     className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                     placeholder="Enter First Payment Percentage"
                   />
-                  <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center bg-[#023453] text-white rounded-r-md">
+                  <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                  style={{ backgroundColor: layout_color }}>
                     %
                   </span>
                 </div>
@@ -1315,7 +1325,7 @@ console.log(name)
                     className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                     placeholder="Enter No Of Days (max 600)"
                   />
-                  {/* <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center bg-[#023453] text-white rounded-r-md">INR</span> */}
+                  {/* <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md">INR</span> */}
                 </div>
               </div>
               <div className="flex flex-col lg:mt-2">
@@ -1345,7 +1355,8 @@ console.log(name)
                     className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                     placeholder="Enter Max Fund"
                   />
-                  <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center bg-[#023453] text-white rounded-r-md">
+                  <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                  style={{ backgroundColor: layout_color }}>
                     %
                   </span>
                 </div>
@@ -1375,7 +1386,7 @@ console.log(name)
                     className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                     placeholder="Enter No Of Days"
                   />
-                  {/* <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center bg-[#023453] text-white rounded-r-md">INR</span> */}
+                  {/* <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md">INR</span> */}
                 </div>
               </div>
               <div className="flex flex-col lg:mt-2">
@@ -1404,7 +1415,8 @@ console.log(name)
                     className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                     placeholder="Enter Third Payment Percentage"
                   />
-                  <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center bg-[#023453] text-white rounded-r-md">
+                  <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                  style={{ backgroundColor: layout_color }}>
                     %
                   </span>
                 </div>
@@ -1434,7 +1446,7 @@ console.log(name)
                     className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                     placeholder="Enter No Of Days"
                   />
-                  {/* <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center bg-[#023453] text-white rounded-r-md">INR</span> */}
+                  {/* <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md">INR</span> */}
                 </div>
               </div>
               <div className="flex flex-col lg:mt-2">
@@ -1464,7 +1476,8 @@ console.log(name)
                     className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                     placeholder="Enter Fourth Payment Percentage"
                   />
-                  <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center bg-[#023453] text-white rounded-r-md">
+                  <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                  style={{ backgroundColor: layout_color }}>
                     %
                   </span>
                 </div>
@@ -1494,7 +1507,7 @@ console.log(name)
                     className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                     placeholder="Enter No Of Days"
                   />
-                  {/* <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center bg-[#023453] text-white rounded-r-md">INR</span> */}
+                  {/* <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md">INR</span> */}
                 </div>
               </div>
               <div className="flex flex-col lg:mt-2">
@@ -1524,7 +1537,8 @@ console.log(name)
                     className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                     placeholder="Enter Fifth Payment Percentage"
                   />
-                  <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center bg-[#023453] text-white rounded-r-md">
+                  <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                  style={{ backgroundColor: layout_color }}>
                     %
                   </span>
                 </div>
@@ -1554,7 +1568,7 @@ console.log(name)
                     className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                     placeholder="Enter No Of Days"
                   />
-                  {/* <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center bg-[#023453] text-white rounded-r-md">INR</span> */}
+                  {/* <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md">INR</span> */}
                 </div>
               </div>
             </div>
@@ -1563,8 +1577,8 @@ console.log(name)
           <div className="flex items-center gap-3 mb-4 mt-4">
             <button
               onClick={() => setShowAdvanced(!showAdvanced)}
-              className="bg-[#023453] p-4 w-9 h-9 hover:bg-[#015173] text-white items-center justify-center flex"
-            >
+              className=" p-4 w-9 h-9 hover:bg-[#015173] text-white items-center justify-center flex"
+              style={{ backgroundColor: layout_color }}>
               {showAdvanced ? "-" : "+"}
             </button>
             <h2 className="text-lg font-medium text-[#023453]">
@@ -1598,7 +1612,7 @@ console.log(name)
                     className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                     placeholder="Enter Limit Installment"
                   />
-                  {/* <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center bg-[#023453] text-white rounded-r-md">INR</span> */}
+                  {/* <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md">INR</span> */}
                 </div>
               </div>
               <div className="flex flex-col mt-2">
@@ -1627,7 +1641,7 @@ console.log(name)
                     className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                     placeholder="Enter Pending Due Installment"
                   />
-                  {/* <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center bg-[#023453] text-white rounded-r-md">INR</span> */}
+                  {/* <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md">INR</span> */}
                 </div>
               </div>
               <div className="flex flex-col mt-2">
@@ -1656,7 +1670,7 @@ console.log(name)
                     className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                     placeholder="Enter Paid Installment"
                   />
-                  {/* <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center bg-[#023453] text-white rounded-r-md">INR</span> */}
+                  {/* <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md">INR</span> */}
                 </div>
               </div>
               <div className="flex flex-col mt-2">
@@ -1685,7 +1699,7 @@ console.log(name)
                     className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                     placeholder="Enter Pending Due Installment"
                   />
-                  {/* <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center bg-[#023453] text-white rounded-r-md">INR</span> */}
+                  {/* <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md">INR</span> */}
                 </div>
               </div>
               <div className="flex flex-col mt-2">
@@ -1713,7 +1727,7 @@ console.log(name)
                     className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                     placeholder="Enter Scheme Customer Limit"
                   />
-                  {/* <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center bg-[#023453] text-white rounded-r-md">INR</span> */}
+                  {/* <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md">INR</span> */}
                 </div>
               </div>
 
@@ -1775,7 +1789,7 @@ console.log(name)
                     className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                     placeholder="Enter Pending Due Installment"
                   />
-                  {/* <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center bg-[#023453] text-white rounded-r-md">INR</span> */}
+                  {/* <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md">INR</span> */}
                 </div>
               </div>
               <div className="flex flex-col mt-2">
@@ -1803,7 +1817,8 @@ console.log(name)
                     className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                     placeholder="Enter Gift Percentage"
                   />
-                  <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center bg-[#023453] text-white rounded-r-md">
+                  <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                  style={{ backgroundColor: layout_color }}>
                     %
                   </span>
                 </div>
@@ -1833,7 +1848,8 @@ console.log(name)
                     className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                     placeholder="Enter Pending Due Installment"
                   />
-                  <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center bg-[#023453] text-white rounded-r-md">
+                  <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                  style={{ backgroundColor: layout_color }}>
                     INR
                   </span>
                 </div>
@@ -1863,7 +1879,8 @@ console.log(name)
                     className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                     placeholder="Enter Reward Amount"
                   />
-                  <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center bg-[#023453] text-white rounded-r-md">
+                  <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                  style={{ backgroundColor: layout_color }}>
                     INR
                   </span>
                 </div>
@@ -1894,7 +1911,7 @@ console.log(name)
                     className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                     placeholder="Enter Not Paid Installment"
                   />
-                  {/* <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center bg-[#023453] text-white rounded-r-md">INR</span> */}
+                  {/* <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md">INR</span> */}
                 </div>
               </div>
               <div className="flex flex-col mt-2">
@@ -1922,7 +1939,8 @@ console.log(name)
                     className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                     placeholder="Enter Convenience Fee"
                   />
-                  <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center bg-[#023453] text-white rounded-r-md">
+                  <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                  style={{ backgroundColor: layout_color }}>
                     %
                   </span>
                 </div>
@@ -1952,7 +1970,8 @@ console.log(name)
                     className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                     placeholder="Enter Fine Amount"
                   />
-                  <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center bg-[#023453] text-white rounded-r-md">
+                  <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                  style={{ backgroundColor: layout_color }}>
                     INR
                   </span>
                 </div>
@@ -1983,7 +2002,8 @@ console.log(name)
                     className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                     placeholder="Enter Min Amount"
                   />
-                  <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center bg-[#023453] text-white rounded-r-md">
+                  <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                  style={{ backgroundColor: layout_color }}>
                     INR
                   </span>
                 </div>
@@ -1997,25 +2017,25 @@ console.log(name)
                     <div
                       onClick={() => setDisplayRef(true)}
                       className={`${displayRef
-                        ? "bg-[#023453] text-white"
+                        ? " text-white"
                         : "bg-white text-[#888888]"
                         } p-3 w-full cursor-pointer transition-colors duration-200 text-center`}
-                    >
+                        style={{ backgroundColor: layout_color }}>
                       Yes
                     </div>
                     <div className="w-px bg-gray-300" />
                     <div
                       onClick={() => setDisplayRef(false)}
                       className={`${!displayRef
-                        ? "bg-[#023453] text-white"
+                        ? " text-white"
                         : "bg-white text-[#888888]"
                         } p-3 w-full cursor-pointer transition-colors duration-200 text-center`}
-                    >
+                        style={{ backgroundColor: layout_color }}>
                       No
                     </div>
                   </div>
                 </div>
-                <div className="flex flex-col lg:mt-2">
+                <div className="flex flex-col mx-2">
                   <label className="text-black mb-2 font-normal">
                     Display Weight In Ledger<span className="text-red-400"> *</span>
                   </label>
@@ -2023,20 +2043,20 @@ console.log(name)
                     <div
                       onClick={() => setWeightRef(true)}
                       className={`${displayWeightRef
-                        ? "bg-[#023453] text-white"
+                        ? " text-white"
                         : "bg-white text-[#888888]"
                         } p-3 w-full cursor-pointer transition-colors duration-200 text-center`}
-                    >
+                        style={{ backgroundColor: layout_color }}>
                       Yes
                     </div>
                     <div className="w-px bg-gray-300" />
                     <div
                       onClick={() => setWeightRef(false)}
                       className={`${!displayWeightRef
-                        ? "bg-[#023453] text-white"
+                        ? " text-white"
                         : "bg-white text-[#888888]"
                         } p-3 w-full cursor-pointer transition-colors duration-200 text-center`}
-                    >
+                        style={{ backgroundColor: layout_color }}>
                       No
                     </div>
                   </div>

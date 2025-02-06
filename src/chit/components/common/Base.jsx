@@ -15,9 +15,11 @@ import {
   Settings2,
   MessageCircle,
   Bell,
-
+  X ,
+  Star,
+  RefreshCcw
 } from 'lucide-react';
-import { DollarSign, Star, Share2 } from "lucide-react";
+
 import logo from '../../../assets/logo1.png'
 import RouteList from '../../../routes/RouteList';
 import { useNavigate } from 'react-router-dom';
@@ -130,7 +132,7 @@ const Base = ({ renderContent: RenderContent }) => {
     const route = RouteList.find(route => {
       return route.name === selectedSection || route.name === selectedParentSection;
     });
-    console.log("ParentRoute", route)
+
     if (route) {
 
       setSelectedRoute(route);
@@ -209,7 +211,8 @@ const Base = ({ renderContent: RenderContent }) => {
         <div className="absolute left-6 top-1/2 w-[1px] h-full bg-white -translate-x-1/2" />
       )}
       <div className="relative flex items-center">
-        <div className={`absolute left-6 w-3 h-3 rounded-full border-2 border-white -translate-x-1/2 z-10 ${selectedSubSection === text ? 'bg-[#023453]' : 'bg-gray-400'}`} />
+        <div className={`absolute left-6 w-3 h-3 rounded-full border-2 border-white -translate-x-1/2 z-10 ${selectedSubSection === text ? '' : 'bg-gray-400'}`} 
+        />
         <div
           className={`w-full flex items-center px-4 rounded-md py-2 pl-12 transition-colors cursor-pointer text-sm font-semibold
             ${selectedSubSection === text
@@ -241,7 +244,7 @@ const Base = ({ renderContent: RenderContent }) => {
           className={`w-full flex items-center px-4 py-3 cursor-pointer rounded-md text-gray-300 transition-colors
             ${isSelected
               ? 'border-2 border-white'
-              : 'hover:bg-[#005073] border-2 border-transparent'
+              : 'hover:bg-[#005070] border-2 border-transparent'
             }`}
           onClick={() => {
             if (hasSubmenu) {
@@ -345,11 +348,11 @@ const Base = ({ renderContent: RenderContent }) => {
   };
 
   const handleClick = (text) => {
-    console.log("DashboardMenu", text)
+   
     setSelectedSection(text);
 
     const route = RouteList.find(route => route.name === text);
-    console.log("AllRoutes", route)
+   
     if (route) {
       navigate(route.path);
     }
@@ -413,6 +416,7 @@ const Base = ({ renderContent: RenderContent }) => {
   ];
 
   return (
+
     <div className="min-h-screen flex flex-col">
       <header className="fixed top-0 right-0 left-0 bg-white shadow-md z-30">
         <div className="container mx-auto px-4 py-3">
@@ -492,10 +496,10 @@ const Base = ({ renderContent: RenderContent }) => {
         </nav>
       </aside>
 
-      <div className="flex flex-col min-h-screen bg-[#f5f5f5]  pt-14 lg:pl-64 pb-10">
+      <div className="flex flex-col min-h-screen bg-[#f5f5f5]  pt-14 lg:pl-64 pb-10 ">
         {/* SettingsButton  */}
-        <div className='settingsButton flex flex-row justify-end items-center'>
-          <button className="flex flex-row items-center justify-center px-4 py-2 text-white font-semibold rounded-s-lg shadow-md"
+        <div className='settingsButton flex flex-row justify-end items-center '>
+          <button className="flex flex-row items-center justify-center px-4 py-2 text-white font-semibold rounded-s-lg shadow-lg"
             onClick={() => setSettingsOpen((prev) => !prev)} 
             style={{ backgroundColor: layout_color }} >
             <Settings />
@@ -503,18 +507,29 @@ const Base = ({ renderContent: RenderContent }) => {
 
           {
             settingsOpen === true && (
+
+        
               <div
                 ref={settingsRef}
-                className={`fixed top-0 right-0 h-full w-64 lg:w-1/4 bg-[#f5f5f5] border-gray-900  transform transition-transform duration-300 ease-in-out ${settingsOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 z-50 pt-16 lg:pt-4  flex flex-col`}
+                className={`fixed top-0 right-0 h-full scrollbar-hide w-64 lg:w-1/4 bg-[#f5f5f5] border-l-2 border-gray-300  transform transition-transform duration-300 ease-in-out ${settingsOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 z-50 pt-16 lg:pt-4  flex flex-col`}
               >
-                <nav className="flex-1 text-gray-900 overflow-y-auto scrollbar-hide border-l ">
+                <nav className="flex-1 text-gray-900">
                   <div className='flex flex-col'>
                     {/* Title  */}
-                    <div className='p-3 border-l'>
-                      <h3 className='text-xl font-semibold text-start px-3'>Template Customizer</h3>
-                      <p className='text-[#6D6B77] px-3'>Customize and preview in real time</p>
+                   
+                     <div className='flex justify-between items-center'>
+                     <div className='p-3 border-l'>
+                     <h3 className='text-xl font-semibold text-start px-3'>Template Customizer</h3>
+                     <p className='text-[#6D6B77] px-3'>Customize and preview in real time</p>
+                     </div>
+                     <div className='p-3 text-xl'>
+                    <div className='flex items-center gap-2'>
+                    <RefreshCcw size={24} onClick={()=>dispatch(setLayoutColor("#023453"))}/>
+                    <X size={28}  onClick={() => setSettingsOpen((prev) => !prev)} />
                     </div>
-                    
+                    </div>
+                    </div>
+
                     <div className='m-2 p-3 '>
                       <h4 className='text-xl font-semibold text-start px-3'>Color Palette</h4>
                       <div className="grid grid-cols-5">
@@ -575,7 +590,7 @@ const Base = ({ renderContent: RenderContent }) => {
                     <h3 className="text-xl font-medium mb-2 px-3 m-2">Quick Links</h3>
                     <div className="grid grid-cols-2 gap-4 px-3">
                       {quickLinks.map((link, index) => (
-                        <div key={index} className="flex flex-col items-center p-4 border rounded-lg shadow-lg hover:bg-gray-300 cursor-pointer"
+                        <div key={index} className="flex flex-col items-center p-4 bg-white border rounded-lg shadow-lg hover:bg-gray-300 cursor-pointer"
                         onClick={()=>navigate(link.link)}>
                           <div className="text-2xl mb-2">{link.icon}</div>
                           <span className="text-sm font-medium text-gray-700">{link.name}</span>
@@ -587,8 +602,18 @@ const Base = ({ renderContent: RenderContent }) => {
 
                 </nav>
               </div>
+              
             )
           }
+
+
+       {settingsOpen && (
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 z-30"
+            onClick={() => setSettingsOpen((prev) => !prev)} 
+          />
+        )}
+
         </div>
         <main className="bg-[#F5F5F5] px-6 pt-4 pb-4 mb-6">
           <div className='h-full'>

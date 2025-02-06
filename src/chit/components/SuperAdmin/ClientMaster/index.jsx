@@ -150,8 +150,8 @@ const ClientMaster = () => {
       <button
         key={i}
         onClick={() => handlePageChange(i)}
-        className={`p-2 w-10 h-10 rounded-md ${currentPage === i ? 'bg-[#023453] text-white' : 'bg-gray-300 text-[#023453]'}`}
-      >
+        className={`p-2 w-10 h-10 rounded-md ${currentPage === i ? ' text-white' : 'bg-gray-300 text-[#023453]'}`}
+        style={{ backgroundColor: layout_color }} >
         {i}
       </button>
     );
@@ -300,14 +300,14 @@ const ClientMaster = () => {
         <div className="flex flex-row items-center justify-end gap-2">
           <button
             id="filter"
-            className="text-white bg-[#023453] w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors"
-          >
+            className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors"
+            style={{ backgroundColor: layout_color }}>
             <SlidersHorizontal size={20} />
           </button>
           <button
-            className="bg-[#023453] text-sm font-montserrat rounded-md px-4 py-3 text-white whitespace-nowrap hover:bg-[#034571] transition-colors"
+            className=" text-sm font-montserrat rounded-md px-4 py-3 text-white whitespace-nowrap hover:bg-[#034571] transition-colors"
             onClick={handleAddClientClick}
-          >
+            style={{ backgroundColor: layout_color }}  >
             + Add Client
           </button>
         </div>

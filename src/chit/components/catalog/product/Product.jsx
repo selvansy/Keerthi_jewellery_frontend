@@ -22,7 +22,7 @@ const Product = () => {
   const navigate = useNavigate()
   let dispatch = useDispatch();
 
-  
+  const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const roledata = useSelector((state) => state.clientForm.roledata);
   const id_branch = roledata?.branch;
 
@@ -529,8 +529,8 @@ const Product = () => {
       <button
         key={i}
         onClick={() => handlePageChange(i)}
-        className={`p-2 w-10 h-10 rounded-md ${currentPage === i ? 'bg-[#023453] text-white' : 'bg-gray-300 text-[#023453]'}`}
-      >
+        className={`p-2 w-10 h-10 rounded-md ${currentPage === i ? ' text-white' : 'bg-gray-300 text-[#023453]'}`}
+        style={{ backgroundColor: layout_color }}>
         {i}
       </button>
     );
@@ -563,24 +563,24 @@ const Product = () => {
         <div className="flex flex-row items-center justify-end gap-2">
           <button
             type="button"
-            className="bg-[#023453] rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
+            className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
             onClick={handleClick}
-          >
+            style={{ backgroundColor: layout_color }} >
             + Create product
           </button>
       <button
             id="filter"
-            className="text-white bg-[#023453] w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
+            className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
             onClick={() => handleReset()}
-          >
+            style={{ backgroundColor: layout_color }}>
             <RefreshCcw size={20} />
           </button>
 
           <button
             id="filter"
-            className="text-white bg-[#023453] w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
+            className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
             onClick={() => setIsFilterOpen(true)}
-          >
+            style={{ backgroundColor: layout_color }}>
             <SlidersHorizontal size={20} />
           </button>
 

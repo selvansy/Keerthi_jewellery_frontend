@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { CalendarDays, Camera, X } from 'lucide-react'
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
-import { updatecustomer ,getcustomerById,getallbranch, allcountry, allstate, addcustomer, allcity } from '../../../api/Endpoints';
+import { updatecustomer, getcustomerById, getallbranch, allcountry, allstate, addcustomer, allcity } from '../../../api/Endpoints';
 
 
 import { useMutation } from '@tanstack/react-query';
@@ -16,6 +16,7 @@ import { useSelector } from 'react-redux';
 const AddCustomer = () => {
 
   const navigate = useNavigate()
+  const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
   // const { id } = useParams();
   const [cus_img, setcus_img] = useState(null);
@@ -51,7 +52,7 @@ const AddCustomer = () => {
     authorno: '',
   });
 
- 
+
   const [formErrors, setFormErrors] = useState({});
   const [customerData, setcustomerData] = useState(null);
   const customerId = useSelector((state) => state.clientForm.id);
@@ -117,7 +118,7 @@ const AddCustomer = () => {
     },
   });
 
- 
+
 
   const adjustDate = (dateString) => {
     if (!dateString) return null;
@@ -137,7 +138,7 @@ const AddCustomer = () => {
     let formDataToSend = new FormData();
 
     const id = formData.id;  // Ensure the 'id' is correctly coming from formData or another source
-  
+
     if (!id) {
       console.error('Customer ID is missing!');
       return;  // Exit early if ID is not available
@@ -152,11 +153,11 @@ const AddCustomer = () => {
     formDataToSend.append('id_state', selectedState);
     formDataToSend.append('id_city', selectedCity);
     formDataToSend.append('id_branch', selectedBranch);
-  
+
     // Add date of birth and wedding date with conditional handling
     formDataToSend.append('date_of_birth', birthDate ? birthDate.toISOString() : '');
     formDataToSend.append('date_of_wed', date_of_wed ? date_of_wed.toISOString() : '');
-  
+
     formDataToSend.append('gender', selectedGender);
     formDataToSend.append('phone', '');  // empty value if not used
     formDataToSend.append('nominee_name', '');  // empty value if not used
@@ -173,14 +174,14 @@ const AddCustomer = () => {
     formDataToSend.append('bank_accountname', '');  // empty value if not used
     formDataToSend.append('bank_accno', '');  // empty value if not used
     formDataToSend.append('bank_ifsccode', '');  // empty value if not used
-  
+
     // Conditionally append fields if they exist
     if (formData.whatsapp) formDataToSend.append('whatsapp', formData.whatsapp);
     if (formData.pan) formDataToSend.append('pan', formData.pan);
     if (formData.authorno) formDataToSend.append('authorno', formData.authorno);
     if (cus_img) formDataToSend.append('cus_img', cus_img);  // Assuming cus_img is a file or blob
     if (id_proof) formDataToSend.append('id_proof', id_proof);  // Assuming id_proof is a file or blob
-  
+
     // Assuming `updatecustomerMutate` is the function you're calling to send this data
     updatecustomerMutate(id, formDataToSend);
   }
@@ -238,23 +239,23 @@ const AddCustomer = () => {
     }
   });
 
-    const { mutate: updateCustomerData } = useMutation({
-      mutationFn: updatecustomer,
-      onSuccess: (response) => {
-        toast.success(response.message)
-        navigate('/manageaccount/customer');
-        setFormData({})
-        dispatch(setid(null))
-      },
-      onError: (error) => {
-        console.error("Error fetching scheme types:", error);
-      },
-    });
+  const { mutate: updateCustomerData } = useMutation({
+    mutationFn: updatecustomer,
+    onSuccess: (response) => {
+      toast.success(response.message)
+      navigate('/manageaccount/customer');
+      setFormData({})
+      dispatch(setid(null))
+    },
+    onError: (error) => {
+      console.error("Error fetching scheme types:", error);
+    },
+  });
 
   // input change handler
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    
+
     // Special handling for authorno to ensure it's a single string
     if (name === 'authorno') {
       setFormData(prev => ({
@@ -267,7 +268,7 @@ const AddCustomer = () => {
         [name]: value
       }));
     }
-    
+
     setFormErrors(prev => ({
       ...prev,
       [name]: ''
@@ -280,7 +281,7 @@ const AddCustomer = () => {
     getallbranchMutate();
 
     if (customerId) {
-      getbranchbyidMutate(customerId );
+      getbranchbyidMutate(customerId);
     }
 
   }, []);
@@ -362,14 +363,14 @@ const AddCustomer = () => {
     return Object.keys(errors).length === 0;
   };
 
-   const handleUpdate = (formData)=>{
-      if(!validateForm()){
-        toast.error("Required fields missing")
-        return;
-      }
-      updateCustomerData(formData)
+  const handleUpdate = (formData) => {
+    if (!validateForm()) {
+      toast.error("Required fields missing")
+      return;
     }
-  
+    updateCustomerData(formData)
+  }
+
 
   const handleSubmit = () => {
     if (!validateForm()) {
@@ -389,11 +390,11 @@ const AddCustomer = () => {
     formDataToSend.append('id_state', selectedState);
     formDataToSend.append('id_city', selectedCity);
     formDataToSend.append('id_branch', selectedBranch);
-    
+
     // Date fields with null checks
     formDataToSend.append('date_of_birth', birthDate ? birthDate.toISOString() : '');
     formDataToSend.append('date_of_wed', date_of_wed ? date_of_wed.toISOString() : '');
-    
+
     // Other fields
     formDataToSend.append('gender', selectedGender || '');
     formDataToSend.append('phone', '');
@@ -402,10 +403,10 @@ const AddCustomer = () => {
     formDataToSend.append('nominee_mobile', '');
     formDataToSend.append('digital_sign', '');
     formDataToSend.append('pan', formData.pan || '');
-    
+
     // Fix for authorno - ensure it's a string
     formDataToSend.append('authorno', String(formData.authorno || ''));
-    
+
     formDataToSend.append('username', '');
     formDataToSend.append('passwd', '');
     formDataToSend.append('mpin', '');
@@ -480,7 +481,7 @@ const AddCustomer = () => {
   return (
     <>
       <div className='flex flex-row justify-between'>
-        <h2 className='text-2xl text-[#023453] font-bold justify-between'>{customerId ? "Edit Customer" : "Add Customer" }</h2>
+        <h2 className='text-2xl text-gray-900 font-bold justify-between'>{customerId ? "Edit Customer" : "Add Customer"}</h2>
         {customerId && (
           <div className='flex flex-row gap-4'>
             <button onClick={handleBack} className='bg-[#E2E8F0] text-black px-4 py-2 rounded-md'>Back</button>
@@ -624,27 +625,29 @@ const AddCustomer = () => {
                 <label className='text-black mb-1 font-medium'>Gender<span className='text-red-400'>*</span></label>
                 <div className="flex flex-row gap-6 justify-start">
                   <button
-                    name='gender'
+                    name="gender"
                     onClick={() => handleGenderSelect(1)}
-                    className={`rounded-full w-20 h-10 flex items-center justify-center border-2 border-black transition-colors duration-200 ${selectedGender === 1 ? 'bg-[#023453] text-white' : 'bg-white text-black'
+                    className={`rounded-full w-20 h-10 flex items-center justify-center border-2 border-black transition-colors duration-200 ${selectedGender === 1 ? 'text-white' : 'bg-white text-black'
                       }`}
+                    style={selectedGender === 1 ? { backgroundColor: layout_color } : {}}
                   >
                     Male
                   </button>
+
                   <button
                     name='gender'
                     onClick={() => handleGenderSelect(2)}
-                    className={`rounded-full w-20 h-10 flex items-center justify-center border-2 border-black transition-colors duration-200 ${selectedGender === 2 ? 'bg-[#023453] text-white' : 'bg-white text-black'
+                    className={`rounded-full w-20 h-10 flex items-center justify-center border-2 border-black transition-colors duration-200 ${selectedGender === 2 ? ' text-white' : 'bg-white text-black'
                       }`}
-                  >
+                      style={selectedGender === 2 ? { backgroundColor: layout_color } : {}}>
                     Female
                   </button>
                   <button
                     name='gender'
                     onClick={() => handleGenderSelect(3)}
-                    className={`rounded-full w-20 h-10 flex items-center justify-center border-2 border-black transition-colors duration-200 ${selectedGender === 3 ? 'bg-[#023453] text-white' : 'bg-white text-black'
+                    className={`rounded-full w-20 h-10 flex items-center justify-center border-2 border-black transition-colors duration-200 ${selectedGender === 3 ? ' text-white' : 'bg-white text-black'
                       }`}
-                  >
+                      style={selectedGender === 3 ? { backgroundColor: layout_color } : {}}>
                     Other
                   </button>
                 </div>
@@ -780,7 +783,7 @@ const AddCustomer = () => {
                       htmlFor="profile-image"
                       className="flex justify-center items-center w-full h-12 border-2 border-dashed border-gray-300 text-black cursor-pointer px-4"
                     >
-                      <p className='text-[#023453] truncate'>
+                      <p className='text-gray-900 truncate'>
                         {cus_img ? cus_img.name : 'Browse'}
                       </p>
                     </label>
@@ -795,8 +798,8 @@ const AddCustomer = () => {
                     <div className='flex flex-col items-center justify-center lg:items-start lg:justify-start lg:w-52 mt-2'>
                       <button
                         onClick={() => setShowWebcam(prev => !prev)}
-                        className="mt-2 rounded-lg flex items-center gap-2 bg-[#023453] text-white px-3 py-1 "
-                      >
+                        className="mt-2 rounded-lg flex items-center gap-2 text-white px-3 py-1 "
+                        style={{ backgroundColor: layout_color }}>
                         <Camera size={16} />
                         <span className='text-sm'>{showWebcam ? 'Close Camera' : 'Open Camera'}</span>
                       </button>
@@ -834,8 +837,8 @@ const AddCustomer = () => {
                       <div className="mt-4 flex justify-center gap-2">
                         <button
                           onClick={handleCapture}
-                          className="bg-[#023453] text-white px-4 py-2 rounded-md"
-                        >
+                          className=" text-white px-4 py-2 rounded-md"
+                          style={{ backgroundColor: layout_color }} >
                           Capture
                         </button>
                         <button
@@ -855,7 +858,7 @@ const AddCustomer = () => {
                   htmlFor="id_proof"
                   className="flex flex-col justify-center items-center w-full h-12 border-2 border-dashed border-gray-300 text-black cursor-pointer p-5 text-center hover:bg-gray-50 transition-colors"
                 >
-                  <p className='text-[#023453]'>
+                  <p className='text-gray-900'>
                     {id_proof ? id_proof.name : 'Browse to upload Document (PNG,JPG,SVG)'}
                   </p>
                 </label>
@@ -891,7 +894,7 @@ const AddCustomer = () => {
           </div>
           {!customerId && (
             <div>
-              
+
               <div className='bg-white mt-6'>
                 <div className='flex justify-end gap-2 mt-3'>
                   <button
@@ -902,20 +905,20 @@ const AddCustomer = () => {
                     Cancel
                   </button>
                   <button
-                className="bg-[#61A375] text-white rounded-md p-2 w-full lg:w-20"
-                type="button"
-                onClick={customerId ? handleUpdate : handleSubmit}
-              >
-                {customerId ? "Update" : "Submit"}
-              </button>
+                    className="bg-[#61A375] text-white rounded-md p-2 w-full lg:w-20"
+                    type="button"
+                    onClick={customerId ? handleUpdate : handleSubmit}
+                  >
+                    {customerId ? "Update" : "Submit"}
+                  </button>
                 </div>
               </div>
             </div>
           )}
         </div>
       </div>
-      </>
-      )
+    </>
+  )
 }
 
-      export default AddCustomer;
+export default AddCustomer;

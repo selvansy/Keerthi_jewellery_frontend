@@ -1,6 +1,10 @@
 import React from 'react'
+import { useSelector } from 'react-redux';
 
 function Card() {
+
+  const layout_color = useSelector((state) => state.clientForm.layoutColor);
+
   return (
     <div className='my-3 py-3'>
          {/* Cards Section */}
@@ -11,7 +15,8 @@ function Card() {
               <h5 className="text-[#67748E] text-sm">Total Customer</h5>
               <h5 className="text-2xl font-semibold">2,300</h5>
             </div>
-            <div className="flex items-center justify-center bg-[#023453] p-3 rounded-md">
+            <div className="flex items-center justify-center p-3 rounded-md"
+            style={{ backgroundColor: layout_color }}>
               {/* <img src={customer} alt="customer" className="w-6 h-6" /> */}
             </div>
           </div>
@@ -21,7 +26,8 @@ function Card() {
               <h5 className="text-[#67748E] text-sm">Total Account</h5>
               <h5 className="text-2xl font-semibold">1,245</h5>
             </div>
-            <div className="flex items-center justify-center bg-[#023453] p-3 rounded-md">
+            <div className="flex items-center justify-center p-3 rounded-md"
+            style={{ backgroundColor: layout_color }}>
               {/* <img src={account} alt="account" className="w-6 h-6" /> */}
             </div>
           </div>
@@ -30,7 +36,8 @@ function Card() {
               <h5 className="text-[#67748E] text-sm">Total Account</h5>
               <h5 className="text-2xl font-semibold">1,245</h5>
             </div>
-            <div className="flex items-center justify-center bg-[#023453] p-3 rounded-md">
+            <div className="flex items-center justify-center p-3 rounded-md"
+            style={{ backgroundColor: layout_color }}>
               {/* <img src={account} alt="account" className="w-6 h-6" /> */}
             </div>
           </div>

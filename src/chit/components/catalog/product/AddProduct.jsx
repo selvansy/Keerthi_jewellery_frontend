@@ -11,6 +11,9 @@ import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 
 const AddProduct = () => {
+
+  const layout_color = useSelector((state) => state.clientForm.layoutColor);
+
   const navigate = useNavigate();
   
   let dispatch = useDispatch();
@@ -580,7 +583,7 @@ const AddProduct = () => {
                   value={formData.id_category}
                   onChange={handleInputChange}
            
-                  className={`appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 cursor-not-allowed bg-gray-100`}
+                  className={`appearance-none border-2 border-gray-300 rounded-md p-2 w-full pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 cursor-not-allowed bg-gray-100`}
 
                 >
                   <option value="">--Select---</option>
@@ -802,7 +805,8 @@ const AddProduct = () => {
                   placeholder="Enter Here"
                   onChange={handleInputChange}
                 />
-                <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center bg-[#023453] text-white rounded-r-md">INR</span>
+                <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                style={{ backgroundColor: layout_color }}>INR</span>
               </div>
               {formErrors.current_rate && (
                 <span className="text-red-500 text-sm mt-1">
@@ -823,7 +827,8 @@ const AddProduct = () => {
                   placeholder="Enter Here"
                   onChange={handleInputChange}
                 />
-                <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center bg-[#023453] text-white rounded-r-md">INR</span>
+                <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                style={{ backgroundColor: layout_color }}>INR</span>
               </div>
               {formErrors.weight && (
                 <span className="text-red-500 text-sm mt-1">
@@ -844,7 +849,8 @@ const AddProduct = () => {
                   placeholder="Enter Here"
                   onChange={handleInputChange}
                 />
-                <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center bg-[#023453] text-white rounded-r-md">INR</span>
+                <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                style={{ backgroundColor: layout_color }}>INR</span>
               </div>
               {formErrors.gst && (
                 <span className="text-red-500 text-sm mt-1">
@@ -866,7 +872,8 @@ const AddProduct = () => {
                   placeholder="Enter Here"
                   onChange={handleInputChange}
                 />
-                <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center bg-[#023453] text-white rounded-r-md">% </span>
+                <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                style={{ backgroundColor: layout_color }}>% </span>
               </div>
               {formErrors.metalcost && (
                 <span className="text-red-500 text-sm mt-1">
@@ -888,7 +895,8 @@ const AddProduct = () => {
                   placeholder="Enter Here"
                   onChange={handleInputChange}
                 />
-                <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center bg-[#023453] text-white rounded-r-md">INR</span>
+                <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                style={{ backgroundColor: layout_color }}>INR</span>
               </div>
               {formErrors.totalprice && (
                 <span className="text-red-500 text-sm mt-1">

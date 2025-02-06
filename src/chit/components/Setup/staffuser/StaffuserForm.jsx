@@ -524,8 +524,8 @@ function StaffuserForm({ setIsOpen}) {
                                                         </button> :
                                                         <button
                                                             disabled={isLoading}
-                                                            className="bg-[#023453] text-white rounded-md p-2 w-full lg:w-20"
-
+                                                            className=" text-white rounded-md p-2 w-full lg:w-20"
+                                                            style={{ backgroundColor: layout_color }} 
                                                         >
                                                             Update
                                                         </button>
@@ -537,8 +537,8 @@ function StaffuserForm({ setIsOpen}) {
                                                         type="submit"
                                                         disabled={isLoading}
                                                         onClick={handleSubmit}
-                                                        className="bg-[#023453] text-white rounded-md p-2 w-full lg:w-20"
-
+                                                        className=" text-white rounded-md p-2 w-full lg:w-20"
+                                                        style={{ backgroundColor: layout_color }} 
                                                     >
                                                         submit
                                                     </button>

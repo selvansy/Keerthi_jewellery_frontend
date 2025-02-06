@@ -3,10 +3,12 @@ import React from "react";
 import jsPDF from "jspdf";
 
 import "jspdf-autotable"; // For table support
+import { useSelector } from "react-redux";
 
 export const ExportToPDF = ({ apiData = [], fileName = "ExportedData" }) => {
     
-
+  const layout_color = useSelector((state) => state.clientForm.layoutColor);
+  
     const exportToPDF = (data, fileName) => {
       if (!data || data.length === 0) {
         alert("No data to export!");
@@ -38,8 +40,8 @@ export const ExportToPDF = ({ apiData = [], fileName = "ExportedData" }) => {
     return (
   <button
         onClick={() => exportToPDF(apiData, fileName)}
-        className="flex items-center p-2 bg-[#023453]  text-white rounded-md gap-4"
-  >
+        className="flex items-center p-2  text-white rounded-md gap-4"
+        style={{ backgroundColor: layout_color }} >
   <p>Export to PDF</p>
   <svg
           xmlns="http://www.w3.org/2000/svg"

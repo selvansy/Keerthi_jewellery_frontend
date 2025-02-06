@@ -193,7 +193,7 @@ const AdminMaster = () => {
     return (
         <div className="flex flex-col p-4 relative">
             {isAdmin ? 
-            (<h2 className="text-2xl text-[#023453] font-bold">Admin's Master</h2>) : (<h2 className="text-2xl text-[#023453] font-bold">Admin's</h2>)}
+            (<h2 className="text-2xl text-gray-900 font-bold">Admin's Master</h2>) : (<h2 className="text-2xl text-gray-900 font-bold">Admin's</h2>)}
             {!isAdmin && (
                 <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
                     <div className="relative w-full lg:w-1/3 min-w-[200px]">
@@ -208,14 +208,14 @@ const AdminMaster = () => {
                     <div className="flex flex-row items-center justify-end gap-2">
                         <button
                             id="filter"
-                            className=" text-white bg-[#023453] w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
-                        >
+                            className=" text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
+                            style={{ backgroundColor: layout_color }} >
                             <SlidersHorizontal size={20} />
                         </button>
                         <button
-                            className="bg-[#023453] rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
+                            className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
                             onClick={handleAddClient}
-                        >
+                            style={{ backgroundColor: layout_color }}  >
                             + Add admin
                         </button>
                     </div>
@@ -228,7 +228,7 @@ const AdminMaster = () => {
             >
                 <div className="flex flex-col h-full">
                     <div className="flex justify-between items-center p-3">
-                        <h3 className="text-lg font-semibold text-[#023453]">Filters</h3>
+                        <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
                         <button
                             onClick={() => setIsFilterOpen(false)}
                             className="text-gray-500 hover:text-gray-700"
