@@ -606,10 +606,13 @@ const handleReset = (e) => {
               onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
               className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
             >
-              <option value={5}>5</option>
-              <option value={10}>10</option>
-              <option value={15}>15</option>
-              <option value={20}>20</option>
+               <option value={10}>10</option>
+                  <option value={25}>25</option>
+                  <option value={50}>50</option>
+                  <option value={100}>100</option>
+                  <option value={250}>250</option>
+                  <option value={500}>500</option>
+                  <option value={1000}>1000</option>
             </select>
             <span className="text-gray-500">entries</span>
           </div>
