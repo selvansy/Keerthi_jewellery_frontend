@@ -336,7 +336,7 @@ export const getgiftvendorById = async (id) => {
 }
 
 export const giftaccountcount = async (data) => {
-    const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/giftaccountcount`,data);
+    const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/giftissues/cards`,data);
     return response.data;
 }
 
@@ -456,20 +456,20 @@ export const getallgiftissues = async () => {
 //Scheme Payment
  
 export const addschemepayment = async (data) => {
-    const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/admin/schemepayment`,data);
+    const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/payment`,data);
     return response.data;
 }
  
 export const updateschemepayment = async (data) => {
-    const response = await Api.patch(`${import.meta.env.VITE_API_URL}/api/admin/schemepayment/${data.id}`,data);
+    const response = await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/payment/${data.id}`,data);
     return response.data;
 }
 export const deleteschemepayment = async (id) => {
-    const response = await Api.delete(`${import.meta.env.VITE_API_URL}/api/admin/schemepayment/${id}`);
+    const response = await Api.delete(`${import.meta.env.VITE_API_URL}/api/client/payment/${id}`);
     return response.data;
 }
-export const schemepaymentbyid = async (data) => {
-    const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/admin/schemepaymentbyid`,data);
+export const getschemepaymentbyid = async (data) => {
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/payment/${data.id}`);
     return response.data;
 }
  
@@ -486,7 +486,7 @@ export const schemepaymenttodayrate = async (data) => {
 }
  
 export const schemepaymentdatatable = async (data) => {
-    const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/admin/schemepaymentdatatable`,data);
+    const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/payment/table`,data);
     return response.data;
 }
 
@@ -1209,10 +1209,22 @@ export const getallbranchcustomer = async (data) => {
     const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/admin/getallbranchcustomer`,data);
     return response.data;
 }
+export const searchcustomermobile = async (data) => {
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/customer/branch/${data.id_branch}/search?mobile=${data.search_mobile}`);
+    return response.data;
+}
 
-
+export const searchmobileschemeaccount = async (data) => {
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/schemeaccount/branch/${data.id_branch}/customer/search?mobile=${data.search_mobile}`);
+    return response.data;
+}
 export const getschemeaccountbyid = async (data) => {
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/schemeaccount/${data.id}`);
+    return response.data;       
+}
+
+export const geallschemebyclassification = async (data) => {
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/scheme/classification/${data.id_classification}`);
     return response.data;
 }
 export const schemeaccountbyid = async (data) => {
@@ -1595,23 +1607,13 @@ export const sendwhatsappmessage= async(data)=>{
     return response.data
 }
  
-export const searchcustomermobile = async (data) => {
-    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/branch/${data.id_branch}/customer/search?mobile=${data.search_mobile}`);
+
+export const getmultipaymentmode = async () => {
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/common/multipaymentmode`);
     return response.data;
 }
 
-export const searchmobileschemeaccount = async (data) => {
-   
-    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/schemeaccount/branch/${data.id_branch}/customer/search?mobile=${data.search_mobile}`);
+export const searcaccountnumber = async (data) => {
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/schemeaccount/${data.account_number}/payment`);
     return response.data;
 }
-
-
-// 
-
-export const closeBill = async (data) => {
-   
-    const response = await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/schemeaccount/${data.id_scheme_account}/close`);
-    return response.data;
-}
-

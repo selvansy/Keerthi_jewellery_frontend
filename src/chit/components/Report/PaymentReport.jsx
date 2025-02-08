@@ -248,11 +248,11 @@ function ModeWisePayment() {
  const columns = [
             {
               header: 'PAYMENT MODE',
-              cell: (row) => `${row.mode_name}`,
+              cell: (row) => `${row?.mode_name}`,
             },
             {
               header: 'COLLECTION',
-              cell: (row) => `${row.collection_amount}`,
+              cell: (row) => `${row?.collection_amount}`,
             }
           ]
 

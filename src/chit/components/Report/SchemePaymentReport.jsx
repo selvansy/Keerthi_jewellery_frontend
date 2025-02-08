@@ -225,114 +225,150 @@ function SchemePaymentReport() {
     },
     {
       header: 'TXT Id',
-      cell: (row) => row.id_transaction,
+      cell: (row) => row?.id_transaction,
     },
     {
       header: "Paid Date",
-      cell: (row) => row.date_payment
+      cell: (row) => {
+        const paidDate = new Date(row?.date_payment);
+        return paidDate.toLocaleDateString();
+      }
     },
+
     {
       header: "Scheme Name",
       cell: (row) => {
         let scheme_name = "";
-        if (row.id_scheme.scheme_type === 0 || row.id_scheme.scheme_type === 1 || row.id_scheme.scheme_type === 2) {
-          scheme_name = row.id_scheme.scheme_name + "(₹. " + row.id_scheme.amount + ")";
-        } else if (row.id_scheme.scheme_type === 3) {
-          scheme_name = row.id_scheme.scheme_name + "(" + row.id_scheme.min_weight + " Grm - " + row.id_scheme.max_weight + " Grm)";
+        if (row?.id_scheme.scheme_type === 0 || row?.id_scheme.scheme_type === 1 || row?.id_scheme.scheme_type === 2) {
+          scheme_name = row?.id_scheme.scheme_name + "(₹. " + row?.id_scheme.amount + ")";
+        } else if (row?.id_scheme.scheme_type === 3) {
+          scheme_name = row?.id_scheme.scheme_name + "(" + row?.id_scheme.min_weight + " Grm - " + row?.id_scheme.max_weight + " Grm)";
         } else {
-          scheme_name = row.id_scheme.scheme_name + "(₹" + row.id_scheme.min_amount + " - " + row.id_scheme.max_amount + ")";
+          scheme_name = row?.id_scheme.scheme_name + "(₹" + row?.id_scheme.min_amount + " - " + row?.id_scheme.max_amount + ")";
         }
         return scheme_name;
       }
     },
+    
     {
-      header: "Accounter Name",
-      cell: (row) => row.id_scheme_account.account_name
+      header: "Customer Name",
+      cell: (row) => row?.id_scheme_account?.account_name
     },
     {
       header: "Mobile",
-      cell: (row) => row.id_customer.mobile
+      cell: (row) => row?.id_customer?.mobile
     },
     {
       header: "A/c Number",
-      cell: (row) => row.id_scheme_account?.scheme_acc_number === "" ? 'Not Allocated' : row.id_scheme_account?.scheme_acc_number
+      cell: (row) => row?.id_scheme_account?.scheme_acc_number === "" ? 'Not Allocated' : row?.id_scheme_account?.scheme_acc_number
     },
     {
       header: "Start Date",
       cell: (row) => {
-        const startDate = new Date(row.id_scheme_account.start_date);
+        const startDate = new Date(row?.id_scheme_account?.start_date);
         return startDate.toLocaleDateString();
       }
     },
     {
       header: "Maturity Date",
       cell: (row) => {
-        const maturityDate = new Date(row.id_scheme_account.maturity_date);
+        const maturityDate = new Date(row?.id_scheme_account?.maturity_date);
         return maturityDate.toLocaleDateString();
       }
     },
     {
       header: "Total Installment",
-      cell: (row) => row.id_scheme_account.total_installments
+      cell: (row) => row?.id_scheme_account?.total_installments
     },
     {
       header: "Paid Installment",
-      cell: (row) => row.paid_installments
+      cell: (row) => row?.paid_installments
     },
     {
       header: "GST AMT",
-      cell: (row) => row.gst_amount 
+      cell: (row) => row?.gst_amount 
     },
     {
       header: "Fine AMT",
-      cell: (row) => row.fine_amount
+      cell: (row) => row?.fine_amount
     },
     {
       header: "Total Paid",
-      cell: (row) => row.total_amt
+      cell: (row) => row?.total_amt
     },
     {
       header: "Paid Weight",
-      cell: (row) => row.metal_weight
+      cell: (row) => row?.metal_weight
     },
     {
       header: "Metal Rate",
-      cell: (row) => row.metal_rate
+      cell: (row) => row?.metal_rate
     },
     {
       header: "Cash",
-      cell: (row) => row.cash_amount
+      cell: (row) => row?.cash_amount
     },
     {
       header: "Card Amount",
-      cell: (row) => row.card_amount
+      cell: (row) => row?.card_amount
     },
     {
       header: "Gpay",
-      cell: (row) => row.gpay_amount
+      cell: (row) => row?.gpay_amount
     },
     {
       header: "Phonepay",
-      cell: (row) => row.total_weight
+      cell: (row) => row?.phonepay_amount
     },
     
     {
       header: "Payment Mode",
-      cell: (row) => row.payment_mode.mode_name
+      cell: (row) => row?.payment_mode?.mode_name
     },
     {
       header: "Payment Type",
-      cell: (row) => row.payment_type === 1 ? "OFFLINE" : "ONLINE"
+      cell: (row) => row?.payment_type === 1 ? "OFFLINE" : "ONLINE"
+    },
+    {
+      header: "Classification Name",
+      cell: (row) => row?.id_scheme_account?.id_classification?.classification_name
+    },
+    {
+      header: 'Scheme Type',
+      cell: (row) => {
+        if (row?.id_scheme?.scheme_type === 1) {
+          return `Amount End Weight`;
+        } else if (row?.id_scheme?.scheme_type === 2) {
+          return `Amount To Weight`;
+        } else if (row?.id_scheme?.scheme_type === 3) {
+          return `Weight`;
+        }  else if (row?.id_scheme?.scheme_type === 4) {
+          return `Flexible Amount To Bonus`;
+        }  else if (row?.id_scheme?.scheme_type === 5) {
+          return `Flexiable Amount To Weight`;
+        }  else if (row?.id_scheme?.scheme_type === 6) {
+          return `Fixed Amount To Weight`;
+        }  else if (row?.id_scheme?.scheme_type === 7) {
+          return `Fixed Amount End Weight`;
+        }  else if (row?.id_scheme?.scheme_type === 8) {
+          return `Fixed Amount To Bonus`;
+        }  else if (row?.id_scheme?.scheme_type === 9) {
+          return `Flexible Amount End Weight`;
+        }  else if (row?.id_scheme?.scheme_type === 10) {
+          return `Digi Gold`;
+        } else {
+          return `Amount To Bonus`;
+        }
+      }
     },
     {
       header: "Added BY",
-      cell: (row) => row.added_by === 0 ? "ADMIN" : row.added_by === 1 ? "WEB APP" : "MOBILE APP"
+      cell: (row) => row?.added_by === 0 ? "ADMIN" : row?.added_by === 1 ? "WEB APP" : "MOBILE APP"
     },
     {
       header: "Branch Name",
-      cell: (row) => row.id_branch.branch_name
-    },
-    
+      cell: (row) => row?.id_branch?.branch_name
+    }   
   
   ];
 

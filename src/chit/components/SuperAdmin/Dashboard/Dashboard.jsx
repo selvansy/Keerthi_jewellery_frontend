@@ -163,11 +163,11 @@ function Dashboard() {
   const PaymentColumns = [
     {
       header: 'PAYMENT MODE',
-      cell: (row) => `${row.mode_name}`,
+      cell: (row) => `${row?.mode_name}`,
     },
     {
       header: 'COLLECTION',
-      cell: (row) => `${row.collection_amount}`,
+      cell: (row) => `${row?.collection_amount}`,
     }
   ]
 
@@ -180,13 +180,13 @@ function Dashboard() {
     {
       header: 'Paid Date',
       cell: (row) => {
-        const paidDate = new Date(row.date_payment)
+        const paidDate = new Date(row?.date_payment)
         return paidDate.toLocaleDateString();
       }
     },
     {
       header: 'Paid Amount',
-      cell: (row) => `${row.payment_amount}`,
+      cell: (row) => `${row?.payment_amount}`,
     },
 
   ]

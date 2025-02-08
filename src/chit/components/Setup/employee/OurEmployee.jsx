@@ -179,11 +179,11 @@ const OurEmployee = () => {
     },
     {
       header: 'Employee Name',
-      cell: (row) => `${row.firstname} ${row.lastname}`,
+      cell: (row) => `${row?.firstname} ${row?.lastname}`,
     },
     {
       header: "Date of Joining", 
-      cell: (row) => formatDate(row.date_of_join)
+      cell: (row) => formatDate(row?.date_of_join)
     },
     {
       header: 'Active',
@@ -193,8 +193,8 @@ const OurEmployee = () => {
           <input
             type="checkbox"
             className="sr-only peer"
-            checked={row.active === true}
-            onChange={() => handleStatusToggle(row._id)} 
+            checked={row?.active === true}
+            onChange={() => handleStatusToggle(row?._id)} 
           />
           <div
             className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-black p-[2px] after:duration-300 after:bg-black ${
@@ -214,8 +214,8 @@ const OurEmployee = () => {
             className="p-1 hover:bg-gray-100 rounded-full"
             onClick={(e) => {
               e.stopPropagation();
-              setSelectedRow(row._id);
-              setActiveDropdown(activeDropdown === row._id ? null : row._id);
+              setSelectedRow(row?._id);
+              setActiveDropdown(activeDropdown === row?._id ? null : row?._id);
             }}
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
@@ -223,7 +223,7 @@ const OurEmployee = () => {
             </svg>
           </button>
           
-          {activeDropdown === row._id && (
+          {activeDropdown === row?._id && (
             <div 
               className="absolute right-[47px] lg:right-[163px] md:right-[150px] sm:right-[100px] transform -translate-x-8" 
               style={{
@@ -241,7 +241,7 @@ const OurEmployee = () => {
                   <button
                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
                     onClick={() => {
-                      handleEdit(row._id);
+                      handleEdit(row?._id);
                       setActiveDropdown(null);
                     }}
                   >
@@ -253,7 +253,7 @@ const OurEmployee = () => {
                   <button
                     className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
                     onClick={() => {
-                      handleDelete(row._id);
+                      handleDelete(row?._id);
                       setActiveDropdown(null);
                     }}
                   >

@@ -126,16 +126,16 @@ const ProjectAccess = () => {
 
     {
       header: 'Client Name',
-      cell: (row) => `${row.id_client.company_name}`,
+      cell: (row) => `${row?.id_client.company_name}`,
     },
     {
       header: 'Branch Name',
-      cell: (row) => `${row.id_branch.branch_name}`,
+      cell: (row) => `${row?.id_branch.branch_name}`,
     },
     {
       header: 'Project Name',
       cell: (row) => {
-        const proj_name = row.id_project.map((project) => project.project_name).join(', ');
+        const proj_name = row?.id_project.map((project) => project.project_name).join(', ');
         return proj_name;
       }
     },
@@ -148,8 +148,8 @@ const ProjectAccess = () => {
             className="p-1 hover:bg-gray-100 rounded-full"
             onClick={(e) => {
               e.stopPropagation();
-              setSelectedRow(row._id);
-              setActiveDropdown(activeDropdown === row._id ? null : row._id);
+              setSelectedRow(row?._id);
+              setActiveDropdown(activeDropdown === row?._id ? null : row?._id);
             }}
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
@@ -157,7 +157,7 @@ const ProjectAccess = () => {
             </svg>
           </button>
 
-          {activeDropdown === row._id && (
+          {activeDropdown === row?._id && (
             <div
               className="absolute right-[47px] lg:right-[163px] md:right-[150px] sm:right-[100px] transform -translate-x-8"
               style={{
@@ -175,7 +175,7 @@ const ProjectAccess = () => {
                   <button
                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
                     onClick={() => {
-                      handleEdit(row._id);
+                      handleEdit(row?._id);
                       setActiveDropdown(null);
                     }}
                   >
@@ -187,7 +187,7 @@ const ProjectAccess = () => {
                   <button
                     className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
                     onClick={() => {
-                      handleDelete(row._id);
+                      handleDelete(row?._id);
                       setActiveDropdown(null);
                     }}
                   >

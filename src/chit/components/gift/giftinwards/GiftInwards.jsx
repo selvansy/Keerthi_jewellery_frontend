@@ -190,48 +190,48 @@ const Giftinwards = () => {
     },
     {
       header: 'Invoice No',
-      cell: (row) => row.invoice_no,
+      cell: (row) => row?.invoice_no,
     },
     {
       header: "Barcode",
-      cell: (row) => row.barcode
+      cell: (row) => row?.barcode
     },
     {
       header: "Gift Name",
-      cell: (row) => row.id_gift.gift_name
+      cell: (row) => row?.id_gift.gift_name
     },
     {
       header: "Vendor Name",
-      cell: (row) => row.gift_vendorid.vendor_name
+      cell: (row) => row?.gift_vendorid.vendor_name
     },
     {
       header: "Qty",
-      cell: (row) => row.qty
+      cell: (row) => row?.qty
     },
     {
       header: "Price",
-      cell: (row) => row.price
+      cell: (row) => row?.price
     },
     {
       header: "Gst",
-      cell: (row) => row.gst_percenty
+      cell: (row) => row?.gst_percenty
     },
     {
       header: "Total",
-      cell: (row) => row.price
+      cell: (row) => row?.price
     },
     {
       header: "Sell Price",
-      cell: (row) => row.cus_sellprice
+      cell: (row) => row?.cus_sellprice
     },
     {
       header: "Branch Name",
-      cell: (row) => row.id_branch.branch_name
+      cell: (row) => row?.id_branch.branch_name
     },
     {
       header: "Create Date",
       cell: (row) => {
-        const date = new Date(row.createdAt);
+        const date = new Date(row?.createdAt);
         return date.toLocaleDateString('en-GB'); // 'en-GB' gives the d-m-Y format
       }
     },
@@ -243,8 +243,8 @@ const Giftinwards = () => {
           <input
             type="checkbox"
             className="sr-only peer"
-            checked={row.active === true}
-            onChange={() => handleStatusToggle(row._id)}
+            checked={row?.active === true}
+            onChange={() => handleStatusToggle(row?._id)}
           />
           <div
             className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-black p-[2px] after:duration-300 after:bg-black ${row.active === true
@@ -263,8 +263,8 @@ const Giftinwards = () => {
             className="p-1 hover:bg-gray-100 rounded-full"
             onClick={(e) => {
               e.stopPropagation();
-              setSelectedRow(row._id);
-              setActiveDropdown(activeDropdown === row._id ? null : row._id);
+              setSelectedRow(row?._id);
+              setActiveDropdown(activeDropdown === row?._id ? null : row?._id);
             }}
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
@@ -272,7 +272,7 @@ const Giftinwards = () => {
             </svg>
           </button>
 
-          {activeDropdown === row._id && (
+          {activeDropdown === row?._id && (
             <div
               className="absolute right-[47px] lg:right-[163px] md:right-[150px] sm:right-[100px] transform -translate-x-8"
               style={{
@@ -290,7 +290,7 @@ const Giftinwards = () => {
                   <button
                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
                     onClick={() => {
-                      handleEdit(row._id);
+                      handleEdit(row?._id);
                       setActiveDropdown(null);
                     }}
                   >
@@ -302,7 +302,7 @@ const Giftinwards = () => {
                   <button
                     className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
                     onClick={() => {
-                      handleDelete(row._id);
+                      handleDelete(row?._id);
                       setActiveDropdown(null);
                     }}
                   >

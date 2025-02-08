@@ -69,48 +69,48 @@ const AupayConfigure = () => {
         },
         {
             header: 'Client NAME',
-            cell: (row) => `${row.company_name}`,
+            cell: (row) => `${row?.company_name}`,
         },
         {
             header: 'GENERAL SETTING',
-            cell: (row) => row.general ? <CircleCheckBig className='text-green-500' /> : <ShieldAlert className='text-red-500' />,
+            cell: (row) => row?.general ? <CircleCheckBig className='text-green-500' /> : <ShieldAlert className='text-red-500' />,
         },
         {
             header: 'NOTIFICATION',
-            cell: (row) => row.notification ? <CircleCheckBig className='text-green-500' /> : <ShieldAlert className='text-red-500' />,
+            cell: (row) => row?.notification ? <CircleCheckBig className='text-green-500' /> : <ShieldAlert className='text-red-500' />,
         },
         {
             header: 'SMS',
-            cell: (row) => row.sms ? <CircleCheckBig className='text-green-500' /> : <ShieldAlert className='text-red-500' />,
+            cell: (row) => row?.sms ? <CircleCheckBig className='text-green-500' /> : <ShieldAlert className='text-red-500' />,
         },
         {
             header: 'WHATSAPP',
-            cell: (row) => row.whatsapp ? <CircleCheckBig className='text-green-500' /> : <ShieldAlert className='text-red-500' />,
+            cell: (row) => row?.whatsapp ? <CircleCheckBig className='text-green-500' /> : <ShieldAlert className='text-red-500' />,
         },
         {
             header: 'GATEWAY',
-            cell: (row) => row.gateway ? <CircleCheckBig className='text-green-500' /> : <ShieldAlert className='text-red-500' />,
+            cell: (row) => row?.gateway ? <CircleCheckBig className='text-green-500' /> : <ShieldAlert className='text-red-500' />,
         },
         {
             header: 'S3 BUCKET',
-            cell: (row) => row.bucket ? <CircleCheckBig className='text-green-500' /> : <ShieldAlert className='text-red-500' />,
+            cell: (row) => row?.bucket ? <CircleCheckBig className='text-green-500' /> : <ShieldAlert className='text-red-500' />,
         },
         {
             header: 'APP SETTING',
-            cell: (row) => row.app ? <CircleCheckBig className='text-green-500' /> : <ShieldAlert className='text-red-500' />,
+            cell: (row) => row?.app ? <CircleCheckBig className='text-green-500' /> : <ShieldAlert className='text-red-500' />,
         },
         {
             header: 'LAYOUT',
-            cell: (row) => row.layout ? <CircleCheckBig className='text-green-500' /> : <ShieldAlert className='text-red-500' />,
+            cell: (row) => row?.layout ? <CircleCheckBig className='text-green-500' /> : <ShieldAlert className='text-red-500' />,
         },
         {
             header: 'Sign Date',
-            cell: (row) => `${row.sign_date || '0000-00-00'}`,
+            cell: (row) => `${row?.sign_date || '0000-00-00'}`,
           },
       
           {
             header: 'Launch Date',
-            cell: (row) => `${row.launch_date || '0000-00-00' }`,
+            cell: (row) => `${row?.launch_date || '0000-00-00' }`,
           },
         {
             header: 'Actions',
@@ -122,20 +122,20 @@ const AupayConfigure = () => {
                     <div className=" right-[47px] lg:right-[235px] md:right-[150px] sm:right-[100px] transform -translate-x-8">
                         <div className="w-32 rounded-md bg-green-500 ring-1 hover:bg-gray-100">
                             <div className="py-1">
-                                <button key={row._id}
+                                <button key={row?._id}
                                     className="w-full text-left px-4 py-2  flex-row justify-center item-center text-sm text-gray-700  flex items-center gap-2"
                                     onClick={() => {
-                                        console.log(row.id_branch)
-                                        console.log(row.id_client)
-                                        dispatch(setClientId(row.id_client))
-                                        dispatch(setProjectId(row.id_project))
-                                        dispatch(setAupayurl(row.aupay_url))
-                                        dispatch(setbranchId(row.id_branch))
-                                        setSelectedRow(row._id);
-                                        setActiveDropdown(activeDropdown === row._id ? null : row._id);
+                                        console.log(row?.id_branch)
+                                        console.log(row?.id_client)
+                                        dispatch(setClientId(row?.id_client))
+                                        dispatch(setProjectId(row?.id_project))
+                                        dispatch(setAupayurl(row?.aupay_url))
+                                        dispatch(setbranchId(row?.id_branch))
+                                        setSelectedRow(row?._id);
+                                        setActiveDropdown(activeDropdown === row?._id ? null : row?._id);
                                         dispatch(pagehandler(0))
                                         setIsAddClient(true)
-                                        dispatch(setSelectedProject(row.project_name))
+                                        dispatch(setSelectedProject(row?.project_name))
                                     }}
                                 >
                                     Configure

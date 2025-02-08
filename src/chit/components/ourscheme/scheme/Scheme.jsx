@@ -300,58 +300,58 @@ const Scheme = () => {
     {
       header: 'Scheme',
       cell: (row) => {
-        if (row.scheme_type === 0 || row.scheme_type === 1 || row.scheme_type === 2) {
-          return `${row.scheme_name} (₹ ${row.amount})`;
-        } else if (row.scheme_type === 3) {
-          return `${row.scheme_name} (GRM ${row.min_weight} - ${row.max_weight})`;
+        if (row?.scheme_type === 0 || row?.scheme_type === 1 || row?.scheme_type === 2) {
+          return `${row?.scheme_name} (₹ ${row?.amount})`;
+        } else if (row?.scheme_type === 3) {
+          return `${row?.scheme_name} (GRM ${row?.min_weight} - ${row?.max_weight})`;
         } else {
-          return `${row.scheme_name} (₹  ${row.min_amount} - ${row.max_amount})`;
+          return `${row?.scheme_name} (₹  ${row?.min_amount} - ${row?.max_amount})`;
         }
       }
     },
     {
       header: "Code",
-      cell: (row) => row.code
+      cell: (row) => row?.code
     },
     {
       header: 'Metal Name',
       cell: (row) => {
-        return row.id_metal === 1 ? 'Gold' :
-               row.id_metal === 2 ? 'Silver' :
-               row.id_metal === 3 ? 'Diamond' :
-               row.id_metal === 4 ? 'Platinum' : 'Gold Coins';
+        return row?.id_metal === 1 ? 'Gold' :
+               row?.id_metal === 2 ? 'Silver' :
+               row?.id_metal === 3 ? 'Diamond' :
+               row?.id_metal === 4 ? 'Platinum' : 'Gold Coins';
       }
     },
     {
       header: "Installments",
-      cell: (row) => row.total_installments
+      cell: (row) => row?.total_installments
     },
     {
       header: "Maturity Month",
-      cell: (row) => row.maturity_month
+      cell: (row) => row?.maturity_month
     },
     {
       header: 'Scheme Type',
       cell: (row) => {
-        if (row.scheme_type === 1) {
+        if (row?.scheme_type === 1) {
           return `Amount End Weight`;
-        } else if (row.scheme_type === 2) {
+        } else if (row?.scheme_type === 2) {
           return `Amount To Weight`;
-        } else if (row.scheme_type === 3) {
+        } else if (row?.scheme_type === 3) {
           return `Weight`;
-        }  else if (row.scheme_type === 4) {
+        }  else if (row?.scheme_type === 4) {
           return `Flexible Amount To Bonus`;
-        }  else if (row.scheme_type === 5) {
+        }  else if (row?.scheme_type === 5) {
           return `Flexiable Amount To Weight`;
-        }  else if (row.scheme_type === 6) {
+        }  else if (row?.scheme_type === 6) {
           return `Fixed Amount To Weight`;
-        }  else if (row.scheme_type === 7) {
+        }  else if (row?.scheme_type === 7) {
           return `Fixed Amount End Weight`;
-        }  else if (row.scheme_type === 8) {
+        }  else if (row?.scheme_type === 8) {
           return `Fixed Amount To Bonus`;
-        }  else if (row.scheme_type === 9) {
+        }  else if (row?.scheme_type === 9) {
           return `Flexible Amount End Weight`;
-        }  else if (row.scheme_type === 10) {
+        }  else if (row?.scheme_type === 10) {
           return `Digi Gold`;
         } else {
           return `Amount To Bonus`;
@@ -360,13 +360,13 @@ const Scheme = () => {
     },
     {
       header: "Classification",
-      cell: (row) => row.id_classification?.classification_name || 'N/A' // Optional chaining for safety
+      cell: (row) => row?.id_classification?.classification_name || 'N/A' // Optional chaining for safety
     },
     
     {
       header: "Create Date",
       cell: (row) => {
-        const date = new Date(row.createdAt);
+        const date = new Date(row?.createdAt);
         return date.toLocaleDateString('en-GB'); // 'en-GB' gives the d-m-Y format
       }
     },
@@ -378,11 +378,11 @@ const Scheme = () => {
           <input
             type="checkbox"
             className="sr-only peer"
-            checked={row.active === true}
-            onChange={() => handleStatusToggle(row._id)}
+            checked={row?.active === true}
+            onChange={() => handleStatusToggle(row?._id)}
           />
           <div
-            className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-black p-[2px] after:duration-300 after:bg-black ${row.active === true
+            className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-black p-[2px] after:duration-300 after:bg-black ${row?.active === true
               ? 'peer-checked:bg-[#61A375] peer-checked:ring-[#61A375]'
               : 'peer-checked:bg-gray-400 peer-checked:ring-gray-400'
               } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-white peer-hover:after:scale-95`}
@@ -398,8 +398,8 @@ const Scheme = () => {
             className="p-1 hover:bg-gray-100 rounded-full"
             onClick={(e) => {
               e.stopPropagation();
-              setSelectedRow(row._id);
-              setActiveDropdown(activeDropdown === row._id ? null : row._id);
+              setSelectedRow(row?._id);
+              setActiveDropdown(activeDropdown === row?._id ? null : row?._id);
             }}
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
@@ -407,7 +407,7 @@ const Scheme = () => {
             </svg>
           </button>
 
-          {activeDropdown === row._id && (
+          {activeDropdown === row?._id && (
             <div
               className="absolute right-[47px] lg:right-[163px] md:right-[150px] sm:right-[100px] transform -translate-x-8"
               style={{
@@ -425,7 +425,7 @@ const Scheme = () => {
                   <button
                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
                     onClick={() => {
-                      handleEdit(row._id);
+                      handleEdit(row?._id);
                       setActiveDropdown(null);
                     }}
                   >
@@ -438,7 +438,7 @@ const Scheme = () => {
                   <button
                     className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
                     onClick={() => {
-                      handleDelete(row._id);
+                      handleDelete(row?._id);
                       setActiveDropdown(null);
                     }}
                   >
