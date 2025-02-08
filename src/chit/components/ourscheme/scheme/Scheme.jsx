@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify"
 import {
-  getSchemeTable,getallbranch, changeschemestatus, getClassificationByBranch, getallmetal, getallschemetypes, getschemeById, allinstallmenttype, allFundtype, addscheme,
+  getSchemeTable,getallbranch, changeschemestatus, allbranchclassification, getallmetal, getallschemetypes, getschemeById, allinstallmenttype, allFundtype, addscheme,
   updateScheme, puritybymetal, buygsttype, wastagetype
 } from "../../../api/Endpoints"
 import { setid } from "../../../../redux/clientFormSlice"
@@ -19,7 +19,9 @@ const Scheme = () => {
   let dispatch = useDispatch();
   const navigate = useNavigate()
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
-
+ const roledata = useSelector((state) => state.clientForm.roledata);
+  let id_client = roledata?.id_client;
+  const id_branch = roledata?.branch;
   const [classificationData, setClassification] = useState([])
   const [metalData, setMetalData] = useState([]);
   const [purityData, setPurityData] = useState([]);
@@ -45,22 +47,20 @@ const Scheme = () => {
 
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [from_date, setFromdate] = useState("");
- 
-
   const [to_date, setTodate] = useState("");
   const [branchList, setBranchList] = useState([]);
   const [filters, setFilters] = React.useState({
-    from_date: null,
-    to_date: null,
+    from_date: "",
+    to_date: "",
     page: currentPage,
     limit: itemsPerPage,
     id_classification: "",
     id_metal: metalid,
+    id_branch:id_branch,
     id_purity: "",
     weekmonth: "",
     scheme_type: "",
-    buytgsttype: "",
-    installment_type: "",
+    buytgsttype: ""
 
   });
 
@@ -80,10 +80,10 @@ const Scheme = () => {
     } 
   }, [metalid]);
   
-  const { mutate: getClassificationByBranchmuate } = useMutation({
-    mutationFn: getClassificationByBranch,
+  const { mutate: allbranchclassificationmuate } = useMutation({
+    mutationFn: allbranchclassification,
     onSuccess: (response) => {
-      setMetalData(response.data);
+      setClassification(response.data);
     },
     onError: (error) => {
       console.error("Error:", error);
@@ -169,26 +169,25 @@ const Scheme = () => {
     const { name, value } = e.target;
      
 
-    if(name === 'id_purity' || name === 'weekmonth'){
+    if(name === 'id_purity' || name === 'weekmonth' || name ==="scheme_type" || name === "buytgsttype"  || name === "wastagebenefit"){
       setFilters({
         ...filters,
         [name]:Number(value)
       })
       return
     }
-
+      if(name === "id_branch"){
+        allbranchclassificationmuate(value);
+      }
     if (name === "id_metal") {
-      const foundMetal = metalData.find(metal => metal._id === value);
-      if (foundMetal) {
+
         setMetalid(value);
         setFilters({
           ...filters,
-          [name]: foundMetal.id_metal,
+          [name]: value,
           id_purity: ''
         });
       }
-      return;
-    }
 
     setFilters(prev => ({ ...prev, [name]: value }));
 
@@ -200,15 +199,17 @@ const Scheme = () => {
     const filterTosend = {
       from_date: from_date,
       to_date: to_date,
+      search:search,
       page: currentPage,
       limit: itemsPerPage,
+      id_branch:filters.id_branch,
       id_classification: filters.id_classification,
       metalid: filters.metalid,
       id_purity: filters.id_purity,
       weekmonth: filters.weekmonth,
+      wastagebenefit:filters.wastagebenefit,
       scheme_type: filters.scheme_type,
-      buytgsttype: filters.buytgsttype,
-      installment_type: filters.installment_type,
+      buytgsttype: filters.buytgsttype
 
     };
 
@@ -218,14 +219,26 @@ const Scheme = () => {
 
 
 
-  useEffect(() => {
-    getSchemeDataTable({ page: currentPage, limit: itemsPerPage, search: search })
-  }, [search])
 
 
   useEffect(() => {
-    getSchemeDataTable({ page: currentPage, limit: itemsPerPage })
-  }, [currentPage, itemsPerPage])
+    getSchemeDataTable({
+      from_date: from_date,
+      to_date: to_date,
+      search:search,
+      page: currentPage,
+      limit: itemsPerPage,
+      id_branch:filters.id_branch,
+      id_classification: filters.id_classification,
+      metalid: filters.metalid,
+      id_purity: filters.id_purity,
+      weekmonth: filters.weekmonth,
+      wastagebenefit:filters.wastagebenefit,
+      scheme_type: filters.scheme_type,
+      buytgsttype: filters.buytgsttype
+
+    })
+  }, [currentPage, itemsPerPage,search])
 
   const { mutate: getSchemeDataTable } = useMutation({
     mutationFn: getSchemeTable,
@@ -242,11 +255,11 @@ const Scheme = () => {
           limit: itemsPerPage,
           id_classification: "",
           metalid: "",
+          wastagebenefit:"",
           id_purity: "",
           weekmonth: "",
           scheme_type: "",
           buytgsttype: "",
-          installment_type: "",
           saving_type:""
         })
       }
@@ -269,7 +282,22 @@ const Scheme = () => {
     let response = await changeschemestatus(id);
     if (response) {
       toast.success(response.message);
-      getSchemeTable({ page: currentPage, limit: itemsPerPage, search: search })
+      getSchemeTable({
+        from_date: from_date,
+        to_date: to_date,
+        search:search,
+        page: currentPage,
+        limit: itemsPerPage,
+        id_branch:filters.id_branch,
+        id_classification: filters.id_classification,
+        metalid: filters.metalid,
+        id_purity: filters.id_purity,
+        weekmonth: filters.weekmonth,
+        wastagebenefit:filters.wastagebenefit,
+        scheme_type: filters.scheme_type,
+        buytgsttype: filters.buytgsttype
+  
+      })
     }
   };
 
@@ -370,7 +398,7 @@ const Scheme = () => {
     },
     {
       header: "Classification",
-      cell: (row) => row?.id_classification?.classification_name || 'N/A' // Optional chaining for safety
+      cell: (row) => row?.classificationDetails?.classification_name || 'N/A' // Optional chaining for safety
     },
     
     {
@@ -477,7 +505,6 @@ const Scheme = () => {
     getAllWastage();
     gstTypeDataTable();
     getSavingType();
-    handleallbranch(); 
     setIsFilterOpen(true);
   }
   return (
@@ -491,7 +518,7 @@ const Scheme = () => {
           <input
             placeholder="Search..."
             className="p-3 pl-10 pr-3 border-2 bg-[#F5F5F5] border-gray-500 rounded-md w-full"
-            onClick={handleSearch}
+            onChange={handleSearch}
           />
         </div>
         <div className="flex flex-row items-center justify-end gap-2">
@@ -508,7 +535,13 @@ const Scheme = () => {
                   style={{ backgroundColor: layout_color }}>
                   <RefreshCcw size={20} />
                 </button>
-          
+            <button
+                        id="filter"
+                        className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
+                        onClick={() => handleReset()}
+                        style={{ backgroundColor: layout_color }}>
+                        <RefreshCcw size={20} />
+                    </button>
           <button
             id="filter"
             className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
@@ -524,8 +557,7 @@ const Scheme = () => {
 
       <div
         className={`fixed inset-y-0 right-0 w-80 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-40 
-                ${isFilterOpen ? 'translate-x-0' : 'translate-x-full'}`}
-      >
+                ${isFilterOpen ? 'translate-x-0' : 'translate-x-full'}`} >
         <div className="flex flex-col h-full">
           <div className="flex justify-between items-center p-3">
             <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
@@ -646,7 +678,7 @@ const Scheme = () => {
                         --Select--
                       </option>
                       {metalData.map((metal) => (
-                        <option key={metal._id} value={metal._id}>
+                        <option key={metal.id_metal} value={metal.id_metal}>
                           {metal.metal_name}
                         </option>
                       ))}
@@ -690,7 +722,7 @@ const Scheme = () => {
                         --Select--
                       </option>
                       {purityData.map((purity) => (
-                        <option key={purity._id} value={purity.id_purity}>
+                        <option key={purity.id_purity} value={purity.id_purity}>
                           {purity.purity_name}
                         </option>
                       ))}
@@ -771,7 +803,7 @@ const Scheme = () => {
                         --Select--
                       </option>
                       {schemeTypeData.map((type) => (
-                        <option key={type._id} value={type.scheme_name}>
+                        <option key={type.scheme_type} value={type.scheme_type}>
                           {type.scheme_typename}
                         </option>
                       ))}
@@ -846,7 +878,7 @@ const Scheme = () => {
                       className="appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700"
                       defaultValue=""
                       onChange={filterInputchange}
-                      value={filters.installment_type}
+                      value={filters.wastagebenefit}
                     >
                       <option value="" disabled className="text-gray-700">
                         --Select--
