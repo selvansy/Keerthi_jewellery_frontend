@@ -30,7 +30,7 @@ function Dashboard() {
 
   const id_role = roledata?.id_role;
   const id_client = roledata?.id_client;
-  const id_branch = roledata?.branch;
+  const id_branch  = roledata?.id_branch;
 
 
   let [data, setData] = useState([]);
@@ -39,15 +39,13 @@ function Dashboard() {
   let [cardData, setCardData] = useState(null)
   let [metalRate, setMetalRate] = useState({})
 
-
-
   const [paymentMode, setpaymentMode] = useState([])
 
   const date = new Date();
   const todayDate = date.toISOString();
 
-  const [from_date, setFromdate] = useState("");
-  const [to_date, setTodate] = useState("");
+  const [from_date, setFromdate] = useState(todayDate);
+  const [to_date, setTodate] = useState(todayDate);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(10);
@@ -133,9 +131,9 @@ function Dashboard() {
       page: 1,
       limit: 10,
       added_by: "",
-      from_date: "",
-      to_date: "",
-      id_branch: "",
+      from_date: from_date,
+      to_date: to_date,
+      id_branch: id_branch,
       id_scheme: "",
       id_classification: "",
       collectionuserid: "",

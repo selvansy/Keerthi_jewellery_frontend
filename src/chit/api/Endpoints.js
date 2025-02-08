@@ -1178,6 +1178,7 @@ export const addschemeaccount = async (data) => {
     return response.data;
 }
 export const schemeaccounttable = async (data) => {
+    console.log("data",data)
     const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/schemeaccount/table`,data);
     return response.data;
 } 

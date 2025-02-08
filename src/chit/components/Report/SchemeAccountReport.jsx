@@ -77,67 +77,7 @@ function SchemeAccountReport() {
         
           },[])
   
-    useEffect(()=>{
-     if(schaccExp.length !== 0){
-        const tableColumn = Object.keys(schaccExp[0]);
-        const tableRows = schaccExp.map((item) => Object.values(item));
-        console.log("tableColumn",tableColumn)
-        console.log("row",tableRows)
-     }
-    },[schaccExp])   
-    
-
-  const exportToExcel = () => {
-    console.log("dfghjk")
-    const ws = XLSX.utils.json_to_sheet(tableData);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Scheme Wise Report');
-    XLSX.writeFile(wb, 'SchemeWiseAccountReport.xlsx');
-  };
-
-  const exportToPDF = async () => {
-    console.log("fvbnm,")
-    try {
-      setIsExporting(true);
-      
-      if (!reportData || reportData.length === 0) {
-        alert('No data to export');
-        return;
-      }
-
-      const doc = new jsPDF();
-      
-      doc.text('Scheme Wise Account Report', 14, 15);
-      
-      const chunkSize = 100;
-      const tableData = [];
-      
-      for (let i = 0; i < reportData.length; i += chunkSize) {
-        const chunk = reportData.slice(i, i + chunkSize).map(item => [
-          item.scheme_id,
-          item.scheme_name,
-          item.customer_name,
-          item.mobile_no,
-        ]);
-        tableData.push(...chunk);
-      }
-
-      doc.autoTable({
-        head: [['Scheme ID', 'Scheme Name', 'Customer Name', 'Mobile No']],
-        body: tableData,
-        startY: 20,
-        margin: { top: 20 },
-        styles: { fontSize: 8 },
-      });
-
-      doc.save('scheme-wise-report.pdf');
-    } catch (error) {
-      console.error('Error generating PDF:', error);
-      alert('Error generating PDF. Please try again.');
-    } finally {
-      setIsExporting(false);
-    }
-  };
+  
 
   const currentItems = schemeaccount.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(schemeaccount.length / itemsPerPage);
@@ -416,50 +356,39 @@ function SchemeAccountReport() {
   };
 
 
-  const handleApplyFilters = () => {
-    // Here you can implement the filtering logic
-    console.log('Applying filters:', filters);
-    setIsFilterOpen(false);
-  };
 
   //mutation to get scheme type
   const { mutate: getschemeaccountMutate } = useMutation({
     mutationFn: schemeaccounttable,
     onSuccess: (response) => {
-
+  
       setschemeaccount(response.data)
-    let arrayData = [];
-      if(response.data.length !==0){
-            for(var i=0;i<response.data.length;i++){
-                arrayData.push({
-                    scheme_acc_number:response.data[i].scheme_acc_number,
-                    account_name:response.data[i].account_name,
-                    mobile:response.data[i].mobile,
-                    total_paidinstallments:response.data[i].total_paidinstallments,
-                    total_paidamount:response.data[i].total_paidamount,
-                    total_weight:response.data[i].total_weight,
-                    start_date:response.data[i].start_date,
-                    maturity_date:response.data[i].maturity_date,
-                    total_paidinstallments:response.data[i].total_paidinstallments,
-                    total_paidamount:response.data[i].total_paidamount,
-                    total_weight:response.data[i].total_weight,
-                    branch_name:response.data[i].branch_name
-            
-                  });
-            }
+      let arrayData = [];
+      if (response.data.length !== 0) {
+          for (let item of response.data) {
+              arrayData.push({
+                  Acc_number: item.scheme_acc_number,
+                  Name: item.account_name,
+                  Mobile: item.mobile,
+                  Total_paidinstallments: item.total_paidinstallments,
+                  Total_paidamount: item.total_paidamount,
+                  Total_weight: item.total_weight,
+                  Start_date: new Date(item.start_date).toISOString(),
+                  Maturity_date:new Date(item.maturity_date).toISOString(),
+              });
+          }
       }
- 
+      
      console.log(arrayData)
       setschaccExp(arrayData)
       
-    //   setTotalPages(response.totalPages)
+   
     },
     onError: (error) => {
       console.error('Error fetching countries:', error);
     }
   });
 
- 
 
   return (
     <div className="flex flex-col p-4">
@@ -483,12 +412,10 @@ function SchemeAccountReport() {
           style={{ backgroundColor: layout_color }} >
           <SlidersHorizontal size={20} />
         </button>
-        {/* <ExportDropdown 
-          onExportExcel={exportToExcel} 
-          onExportPDF={exportToPDF} 
-        /> */}
+      
         <ExportToExcel apiData={schemeaccount} fileName="SchemeAccount Report" />
         <ExportToPDF  apiData={schaccExp} fileName="scheme account"/>
+
       </div>
       <div 
       className={`fixed inset-y-0 right-0 w-80 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-40 
@@ -734,17 +661,7 @@ function SchemeAccountReport() {
       </div>
       <div className="mt-4 flex gap-2 justify-center items-center">
         <span className="text-gray-500">Show</span>
-        <select
-          id="itemsPerPage"
-          value={itemsPerPage}
-          onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
-          className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
-        >
-          <option value={5}>5</option>
-          <option value={10}>10</option>
-          <option value={15}>15</option>
-          <option value={20}>20</option>
-        </select>
+        <select name="dataTable_length" aria-controls="dataTable" className=""><option value="10">10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option><option value="250">250</option><option value="500">500</option><option value="1000">1,000</option></select>
         <span className="text-gray-500">entries</span>
       </div>
     </div>

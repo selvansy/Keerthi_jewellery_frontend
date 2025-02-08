@@ -14,6 +14,8 @@ import { eventEmitter } from '../../../../utils/EventEmitter';
 import { useDispatch, useSelector } from 'react-redux';
 import Modal from '../../common/Modal';
 import ModelOne from '../../common/Modelone';
+import { ExportToExcel } from '../../common/Dropdown/Excelexport';
+import { ExportToPDF } from '../../common/Dropdown/ExportPdf';
 import { useDebounce } from '../../../hooks/useDebounce';
 import Ledgerdetails from "./ledgerdetails"
 const Schemeaccount = () => {
@@ -24,6 +26,7 @@ const Schemeaccount = () => {
 const [popuptitle, setPopuptitle] = useState(0);
   const [search, setSearch] = useState('')
   const [schemeaccount, setschemeaccount] = useState([])
+ const [schaccExp,setschaccExp] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -63,7 +66,7 @@ const [popuptitle, setPopuptitle] = useState(0);
     if(name === "id_branch"){
       handleClassifyChange(e); 
       handleemployeebyBranch(e); 
-      getemployeebyBranch(e); 
+      handleemployeebyBranch(e); 
       handlebranchscheme(e);
     }
   };
@@ -136,8 +139,6 @@ const [popuptitle, setPopuptitle] = useState(0);
       }
     };
 
-
-  
     
     const handleemployeebyBranch = async (e) => {  
       if (!e.target.value) return;
@@ -190,6 +191,30 @@ const [popuptitle, setPopuptitle] = useState(0);
 
       setschemeaccount(response.data)
       setTotalPages(response.totalPages);
+  
+      let arrayData = [];
+      if(response.data.length !==0){
+            for(var i=0;i<response.data.length;i++){
+                arrayData.push({
+                    scheme_acc_number:response.data[i].scheme_acc_number,
+                    account_name:response.data[i].account_name,
+                    mobile:response.data[i].mobile,
+                    total_paidinstallments:response.data[i].total_paidinstallments,
+                    total_paidamount:response.data[i].total_paidamount,
+                    total_weight:response.data[i].total_weight,
+                    start_date:response.data[i].start_date,
+                    maturity_date:response.data[i].maturity_date,
+                    total_paidinstallments:response.data[i].total_paidinstallments,
+                    total_paidamount:response.data[i].total_paidamount,
+                    total_weight:response.data[i].total_weight,
+                    branch_name:response.data[i].branch_name
+            
+                  });
+            }
+      }
+
+      setschaccExp(arrayData)
+      
     },
     onError: (error) => {
       console.error('Error fetching countries:', error);
@@ -422,7 +447,7 @@ const [popuptitle, setPopuptitle] = useState(0);
     {
       header: 'Actions',
       cell: (row, rowIndex) => (
-        <div className="dropdown-container relative group sticky right-0 z-20 bg-white">
+        <div className="dropdown-container relative group  right-0 z-20 bg-white">
           <button
             className="p-1 hover:bg-gray-100 rounded-full"
             onClick={(e) => {
@@ -521,6 +546,12 @@ const [popuptitle, setPopuptitle] = useState(0);
             style={{ backgroundColor: layout_color }}>
             <SlidersHorizontal size={20} />
           </button>
+            <div className="flex flex-row items-center justify-end gap-2">
+          
+                    <ExportToExcel apiData={schemeaccount} fileName="SchemeAccount Report" />
+                    <ExportToPDF apiData={schaccExp} fileName="scheme account" />
+                  </div>
+
           <button
             className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
             onClick={handleClick}
@@ -610,7 +641,7 @@ const [popuptitle, setPopuptitle] = useState(0);
             CLassification
               </label>
               <div className="relative">
-                <select  name="id_classification"  onChange={(e)=>{filterInputchange(e); handleGiftChange(e)}} className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
+                <select  name="id_classification"  onChange={(e)=>{filterInputchange(e); handlePageChange(e)}} className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
                   <option value='' >--Select--</option>
                   {classifyfilter.map((classify)=>(
                     <option key={classify._id} value={classify._id}>{classify.classification_name}</option>

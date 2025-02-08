@@ -10,7 +10,9 @@ import { CalendarDays, RefreshCcw} from 'lucide-react'
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 
+
 const PaymentWiseReport = () => {
+
   const navigate = useNavigate();
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -38,55 +40,7 @@ const PaymentWiseReport = () => {
     { scheme: 'Scheme 10', account: 'Account 10', amount: 10000 },
   ];
 
-  // const exportToExcel = () => {
-  //   const ws = XLSX.utils.json_to_sheet(tableData);
-  //   const wb = XLSX.utils.book_new();
-  //   XLSX.utils.book_append_sheet(wb, ws, 'Scheme Wise Report');
-  //   XLSX.writeFile(wb, 'SchemeWiseAccountReport.xlsx');
-  // };
 
-  const exportToPDF = async () => {
-    try {
-      setIsExporting(true);
-      
-      if (!reportData || reportData.length === 0) {
-        alert('No data to export');
-        return;
-      }
-
-      const doc = new jsPDF();
-      
-      doc.text('Scheme Wise Account Report', 14, 15);
-      
-      const chunkSize = 100;
-      const tableData = [];
-      
-      for (let i = 0; i < reportData.length; i += chunkSize) {
-        const chunk = reportData.slice(i, i + chunkSize).map(item => [
-          item.scheme_id,
-          item.scheme_name,
-          item.customer_name,
-          item.mobile_no,
-        ]);
-        tableData.push(...chunk);
-      }
-
-      doc.autoTable({
-        head: [['Scheme ID', 'Scheme Name', 'Customer Name', 'Mobile No']],
-        body: tableData,
-        startY: 20,
-        margin: { top: 20 },
-        styles: { fontSize: 8 },
-      });
-
-      doc.save('scheme-wise-report.pdf');
-    } catch (error) {
-      console.error('Error generating PDF:', error);
-      alert('Error generating PDF. Please try again.');
-    } finally {
-      setIsExporting(false);
-    }
-  };
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -311,17 +265,7 @@ const PaymentWiseReport = () => {
         </div>
         <div className="mt-4 flex gap-2 justify-center items-center">
           <span className="text-gray-500">Show</span>
-          <select
-            id="itemsPerPage"
-            value={itemsPerPage}
-            onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
-            className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
-          >
-            <option value={5}>5</option>
-            <option value={10}>10</option>
-            <option value={15}>15</option>
-            <option value={20}>20</option>
-          </select>
+          <select name="dataTable_length" aria-controls="dataTable" className=""><option value="10">10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option><option value="250">250</option><option value="500">500</option><option value="1000">1,000</option></select>
           <span className="text-gray-500">entries</span>
         </div>
       </div>

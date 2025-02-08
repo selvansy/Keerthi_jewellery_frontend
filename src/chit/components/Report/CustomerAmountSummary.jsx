@@ -33,55 +33,6 @@ const CustomerAccountSummary = () => {
     { scheme: 'Scheme 10', account: 'Account 10', amount: 10000 },
   ];
 
-  // const exportToExcel = () => {
-  //   const ws = XLSX.utils.json_to_sheet(tableData);
-  //   const wb = XLSX.utils.book_new();
-  //   XLSX.utils.book_append_sheet(wb, ws, 'Scheme Wise Report');
-  //   XLSX.writeFile(wb, 'SchemeWiseAccountReport.xlsx');
-  // };
-
-  const exportToPDF = async () => {
-    try {
-      setIsExporting(true);
-      
-      if (!reportData || reportData.length === 0) {
-        alert('No data to export');
-        return;
-      }
-
-      const doc = new jsPDF();
-      
-      doc.text('Scheme Wise Account Report', 14, 15);
-      
-      const chunkSize = 100;
-      const tableData = [];
-      
-      for (let i = 0; i < reportData.length; i += chunkSize) {
-        const chunk = reportData.slice(i, i + chunkSize).map(item => [
-          item.scheme_id,
-          item.scheme_name,
-          item.customer_name,
-          item.mobile_no,
-        ]);
-        tableData.push(...chunk);
-      }
-
-      doc.autoTable({
-        head: [['Scheme ID', 'Scheme Name', 'Customer Name', 'Mobile No']],
-        body: tableData,
-        startY: 20,
-        margin: { top: 20 },
-        styles: { fontSize: 8 },
-      });
-
-      doc.save('scheme-wise-report.pdf');
-    } catch (error) {
-      console.error('Error generating PDF:', error);
-      alert('Error generating PDF. Please try again.');
-    } finally {
-      setIsExporting(false);
-    }
-  };
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);

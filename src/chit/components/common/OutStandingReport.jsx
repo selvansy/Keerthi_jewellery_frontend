@@ -8,9 +8,12 @@ import ExportDropdown from '../../components/common/Dropdown/Export';
 import { ExportToExcel } from '../common/Dropdown/Excelexport';
 import { ExportToPDF } from '../common/Dropdown/ExportPdf';
 import {
-    getbranchbyclient,getallbranchclassification, getallScheme, getallbranch,getOutstandingSummaryReport,
+    getbranchbyclient,getallbranchclassification, getallScheme, getallbranch,
     getallmetal, puritybymetal, allinstallmenttype, wastagetype, getallschemetypes, addscheme,allbranchclassification 
 } from "../../../chit/api/Endpoints";
+
+import {getOutstandingSummaryReport} from "../../api/BackendUrl"
+
 import { SlidersHorizontal, Search, X } from 'lucide-react'
 import { CalendarDays, RefreshCcw} from 'lucide-react'
 import "react-datepicker/dist/react-datepicker.css";
@@ -19,18 +22,30 @@ import { useSelector } from 'react-redux';
 
 export default function OutStandingReport() {
 
+
     
+    useEffect(() => {
+        console.log("dfghjkl")
+        getOutstandingReport()
+    }, [])
+
 
     // OutStandingWeight
 
     const [outreport, setoutreport] = useState([])
-    const [accExp, setaccExp] = useState([]);
+   
     const [search, setSearch] = useState('')
+    const [accExp, setaccExp] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(5);
+     const [totalPages, setTotalPages] = useState(0);
 
-    //mutation to get scheme type
-    const { mutate: getOutstandingReport } = useMutation({
+
+     console.log(accExp)
+
+   
+       //mutation to get scheme type
+       const { mutate: getOutstandingReport } = useMutation({
         mutationFn: getOutstandingSummaryReport,
         onSuccess: (response) => {
 
@@ -68,37 +83,89 @@ export default function OutStandingReport() {
 
             <OutStandingFilter
                 outreport={outreport}
-                accExp={accExp}
+             
                 getOutstandingReport={getOutstandingReport}
                 currentPage={currentPage}
                 itemsPerPage={itemsPerPage}
                 setCurrentPage={setCurrentPage}
                 setSearch={setSearch}
                 setItemsPerPage={setItemsPerPage}
-
+                setoutreport={setoutreport}
+                totalPages={totalPages}
                 />
 
             <OutstandingTable
-                outreport={outreport} 
+             
                 search={search} 
                 currentPage={currentPage}
                 itemsPerPage={itemsPerPage} 
+               
                 setCurrentPage={setCurrentPage}
                 setSearch={setSearch}
                 setItemsPerPage={setItemsPerPage}
+            
                 />
         </div>
     )
 }
 
-export const OutstandingTable = ({ outreport, itemsPerPage, currentPage,setItemsPerPage,setSearch,setCurrentPage }) => {
+export const OutstandingTable = ({itemsPerPage, currentPage,setItemsPerPage,setSearch,setCurrentPage }) => {
 
+   
+    const layout_color = useSelector((state) => state.clientForm.layoutColor);
+
+    const [outreport, setoutreport] = useState([])
+    const [accExp, setaccExp] = useState([]);
+    const [totalPages, setTotalPages] = useState(0);
 
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 
+
     const currentItems = outreport?.slice(indexOfFirstItem, indexOfLastItem);
-    const totalPages = Math.ceil(outreport?.length / itemsPerPage);
+    
+
+    useEffect(() => {
+      
+        getOutstandingReport()
+     
+    }, [])
+    
+    
+
+      //mutation to get scheme type
+      const { mutate: getOutstandingReport } = useMutation({
+        mutationFn: getOutstandingSummaryReport,
+        onSuccess: (response) => {
+            console.log("Res",response)
+            setoutreport(response.data)
+            setTotalPages(response.totalPages)
+
+            let arrayData = [];
+
+            if (response.data.length !== 0) {
+
+                for (const i in response.data) {
+                    arrayData.push({
+                        scheme_name: response.data[i].scheme_name,
+                        code: response.data[i].scheme_name,
+                        open: response.data[i].scheme_name,
+                        close: response.data[i].scheme_name,
+                        complete: response.data[i].scheme_name,
+                        total: response.data[i].scheme_name
+                    });
+                }
+
+            }
+
+
+            setaccExp(arrayData)
+
+        },
+        onError: (error) => {
+            console.error('Error fetching countries:', error);
+        }
+    });
 
 
     const handlePageChange = (pageNumber) => {
@@ -210,24 +277,18 @@ export const OutstandingTable = ({ outreport, itemsPerPage, currentPage,setItems
             </div>
             <div className="mt-4 flex gap-2 justify-center items-center">
                 <span className="text-gray-500">Show</span>
-                <select
-                    id="itemsPerPage"
-                    value={itemsPerPage}
-                    onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
-                    className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
-                >
-                    <option value={5}>5</option>
-                    <option value={10}>10</option>
-                    <option value={15}>15</option>
-                    <option value={20}>20</option>
-                </select>
+                <select name="dataTable_length" aria-controls="dataTable" className="">
+                    <option value="10">10</option><option value="25">25</option>
+                    <option value="50">50</option><option value="100">100</option><option value="250">250</option><option value="500">500</option><option value="1000">1,000</option></select>
                 <span className="text-gray-500">entries</span>
             </div>
         </div>
     </>
 }
 
-export const OutStandingFilter = ({ outreport, accExp, search, itemsPerPage, currentPage, getOutstandingReport,setItemsPerPage,setSearch,setCurrentPage }) => {
+export const OutStandingFilter = ({  search, itemsPerPage, currentPage}) => {
+
+
 
     const roledata = useSelector((state) => state.clientForm.roledata);
     const layout_color = useSelector((state) => state.clientForm.layoutColor);
@@ -242,6 +303,9 @@ export const OutStandingFilter = ({ outreport, accExp, search, itemsPerPage, cur
     const [branchList, setBranchList] = useState([]);
     const [schemeTypeData, setSchemeTypeData] = useState([]);
     const [classificationData, setClassification] = useState([])
+    const [outreport, setoutreport] = useState([])
+    const [accExp, setaccExp] = useState([]);
+    
 
     const [from_date, setFromdate] = useState('');
     const [to_date, setTodate] = useState('');
@@ -254,18 +318,24 @@ export const OutStandingFilter = ({ outreport, accExp, search, itemsPerPage, cur
         id_branch: '',
     });
 
-    useEffect(() => {
-        if (id_branch === '0') {
-            branchbyClient({ id_client: id_client })
-        }
-    }, [id_branch]);
+   
+     useEffect(() => {
+       if (id_branch === '0') {
+        getBranchList();
+       } 
+   
+       if (id_branch !== '0') {
+         setFilters({ ...filters, id_branch: id_branch })
+       }
+   
+     }, [id_branch]);
 
     useEffect(() => {
         if (isFilterOpen === true) {
             getBranchList();
             getOutstandingReport();
             getAllSchemeTypes()
-            allclassification({ id_branch: id_branch })
+            allclassification({ id: id_branch })
         }
 
     }, [isFilterOpen])
@@ -292,15 +362,43 @@ export const OutStandingFilter = ({ outreport, accExp, search, itemsPerPage, cur
     }, [currentPage, itemsPerPage, search])
 
 
-    const { mutate: branchbyClient } = useMutation({
-        mutationFn: getbranchbyclient,
+
+    console.log(accExp)
+    
+
+      //mutation to get scheme type
+      const { mutate: getOutstandingReport } = useMutation({
+        mutationFn: getOutstandingSummaryReport,
         onSuccess: (response) => {
-            setBranchData(response.data);
+         
+            setoutreport(response.data)
+        
+            let arrayData = [];
+
+            if (response.data.length !== 0) {
+
+                for (const i in response.data) {
+                    arrayData.push({
+                        scheme_name: response.data[i].scheme_name,
+                        code: response.data[i].code,
+                        open: response.data[i].total_open,
+                        close: response.data[i].total_close,
+                        complete: response.data[i].total_complete,
+                        total: response.data[i].total_account
+                    });
+                }
+
+            }
+
+
+            setaccExp(arrayData)
+
         },
         onError: (error) => {
-            console.error("Error fetching branches:", error);
-        },
+            console.error('Error fetching countries:', error);
+        }
     });
+
 
 
 
@@ -406,6 +504,12 @@ export const OutStandingFilter = ({ outreport, accExp, search, itemsPerPage, cur
     };
 
 
+
+
+    
+
+
+
     return <>
         <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
             <div className="relative w-full lg:w-1/3 min-w-[200px]">
@@ -426,12 +530,10 @@ export const OutStandingFilter = ({ outreport, accExp, search, itemsPerPage, cur
                     style={{ backgroundColor: layout_color }}>
                     <SlidersHorizontal size={20} />
                 </button>
-                {/* <ExportDropdown 
-                        onExportExcel={exportToExcel} 
-                        onExportPDF={exportToPDF} 
-                    /> */}
+              
                 <ExportToExcel apiData={outreport} fileName="Account Summary Report" />
                 <ExportToPDF apiData={accExp} fileName="Account Summary Report" />
+
             </div>
             <div
                 className={`fixed inset-y-0 right-0 w-80 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-40 

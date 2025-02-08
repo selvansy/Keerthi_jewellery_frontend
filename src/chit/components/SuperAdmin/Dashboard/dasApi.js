@@ -14,7 +14,7 @@ export const getpaymentmodesummary = async(data) => {
     return response.data;
 }
 
-// /api/client/metalrate/today/676e4a9dd3e747cfc70968a2/2025-02-06T04:16:36.625+00:00
+
 
 export const todayMetalRate = async(data)=>{
     

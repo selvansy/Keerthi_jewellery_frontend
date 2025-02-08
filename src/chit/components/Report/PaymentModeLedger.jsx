@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import Table from '../../components/common/Table';
+import Table from '../common/Table';
 import { useMutation } from '@tanstack/react-query'
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-import { addedtype,allschemestatus,getallschemetypes,getallbranchscheme,getallbranchclassification,getemployeebybranch,getallbranch,getpaymentmodesummary } from '../../api/Endpoints'
+import { addedtype,allschemestatus,getallschemetypes,getallbranchscheme,getallbranchclassification,getemployeebybranch,getallbranch } from '../../api/Endpoints'
 import { SlidersHorizontal, Search, X } from 'lucide-react'
 import { CalendarDays, RefreshCcw} from 'lucide-react'
 import "react-datepicker/dist/react-datepicker.css";
@@ -11,10 +11,15 @@ import DatePicker from "react-datepicker";
 import { ExportToExcel } from '../common/Dropdown/Excelexport';
 import { ExportToPDF } from '../common/Dropdown/ExportPdf';
 import { useSelector } from 'react-redux';
+import {getpaymentmodesummary} from "../../api/BackendUrl"
 
 function ModeWisePayment() {
     
     const layout_color = useSelector((state) => state.clientForm.layoutColor);
+    const roledata = useSelector((state) => state.clientForm.roledata);
+    const id_branch = roledata?.branch;
+    console.log("Id",id_branch)
+
     const [paymentMode, setpaymentMode] = useState([])
     const [paymentExp,setpaymentExp] = useState([]);
      const [branchfilter, setBranch] = useState([]);  
@@ -33,10 +38,10 @@ function ModeWisePayment() {
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const [, setIsExporting] = useState(false);
 
-    const [isFilterOpen, setIsFilterOpen] = React.useState(false); 
+    const [isFilterOpen, setIsFilterOpen] = useState(false); 
     const [from_date, setFromdate] = useState('');
     const [to_date, setTodate] = useState('');
-     const [filters, setFilters] = React.useState({
+     const [filters, setFilters] = useState({
        from_date:from_date,
        to_date:to_date,
        added_by:'',
@@ -44,89 +49,63 @@ function ModeWisePayment() {
        id_classification: '',
        collectionuserid: '',
        id_scheme: '',
-       id_branch: '',
+       id_branch: "",
        scheme_type:''
      });
+
+
+     useEffect(() => {
+
+      let sendData = {
+        from_date:from_date,
+        to_date:to_date,
+        id_branch: id_branch,
+      }
+       
+      getpaymentModeMutate(sendData)
+
+     }, [])
+     
    
 
      useEffect(() => {
+      if (id_branch === '0') {
+        getallbranchMutate()
+      }
+      if(id_branch !== 0 && isFilterOpen === true){
+        setFilters({ ...filters, id_branch: id_branch })
+      }
+      
+    }, [id_branch]);
+
+
+     useEffect(() => {
+
+   if(isFilterOpen === true){
+    const filterTosend = {
+      test:1,
+      page:currentPage,
+      from_date:from_date,
+      to_date:to_date,
+      limit: itemsPerPage,
+      search: search,
+      added_by:filters.added_by,
+      scheme_status:filters.scheme_status,
+      id_classification: filters.id_classification,
+      collectionuserid: filters.collectionuserid,
+      id_scheme: filters.id_scheme,
+      id_branch: id_branch,
+      scheme_type:filters.scheme_type,
+
+    };
    
-        const filterTosend = {
-          page:currentPage,
-          from_date:from_date,
-          to_date:to_date,
-          limit: itemsPerPage,
-          search: search,
-          added_by:filters.added_by,
-          scheme_status:filters.scheme_status,
-          id_classification: filters.id_classification,
-          collectionuserid: filters.collectionuserid,
-          id_scheme: filters.id_scheme,
-          id_branch: filters.id_branch,
-          scheme_type:filters.scheme_type
-        };
-         
-        getpaymentModeMutate(filterTosend)
-      }, [currentPage, itemsPerPage, search])
+     
+    getpaymentModeMutate(filterTosend)
+
+   } 
+      }, [currentPage, itemsPerPage, search,filters])
   
-    useEffect(()=>{
-          getpaymentModeMutate();
-        
-          },[])
  
-    
-
-  const exportToExcel = () => {
-    console.log("dfghjk")
-    const ws = XLSX.utils.json_to_sheet(tableData);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Scheme Wise Report');
-    XLSX.writeFile(wb, 'SchemeWiseAccountReport.xlsx');
-  };
-
-  const exportToPDF = async () => {
-    console.log("fvbnm,")
-    try {
-      setIsExporting(true);
-      
-      if (!reportData || reportData.length === 0) {
-        alert('No data to export');
-        return;
-      }
-
-      const doc = new jsPDF();
-      
-      doc.text('Scheme Wise Account Report', 14, 15);
-      
-      const chunkSize = 100;
-      const tableData = [];
-      
-      for (let i = 0; i < reportData.length; i += chunkSize) {
-        const chunk = reportData.slice(i, i + chunkSize).map(item => [
-          item.scheme_id,
-          item.scheme_name,
-          item.customer_name,
-          item.mobile_no,
-        ]);
-        tableData.push(...chunk);
-      }
-
-      doc.autoTable({
-        head: [['Scheme ID', 'Scheme Name', 'Customer Name', 'Mobile No']],
-        body: tableData,
-        startY: 20,
-        margin: { top: 20 },
-        styles: { fontSize: 8 },
-      });
-
-      doc.save('scheme-wise-report.pdf');
-    } catch (error) {
-      console.error('Error generating PDF:', error);
-      alert('Error generating PDF. Please try again.');
-    } finally {
-      setIsExporting(false);
-    }
-  };
 
   const currentItems = paymentMode.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(paymentMode.length / itemsPerPage);
@@ -159,10 +138,10 @@ function ModeWisePayment() {
       scheme_type:filters.scheme_type
     };
      
-    if(from_date!=="" && to_date!=="" && filters.added_by!=="" && filters.scheme_status!=="" && filters.id_classification!=="" && filters.collectionuserid!==""  && filters.id_scheme!==""  && filters.id_branch!=="" && filters.scheme_type!==""){
+    
       setIsFilterOpen(false)
       getpaymentModeMutate(filterTosend);
-    }
+    
   };
 
   const handlePageChange = (pageNumber) => {
@@ -296,7 +275,7 @@ function ModeWisePayment() {
   const { mutate: getpaymentModeMutate } = useMutation({
     mutationFn: getpaymentmodesummary,
     onSuccess: (response) => {
-
+        console.log("Res",response)
       setpaymentMode(response.data)
     let arrayData = [];
       if(response.data.length !==0){
@@ -333,7 +312,7 @@ function ModeWisePayment() {
 
   return (
     <div className="flex flex-col p-4">
-    <h2 className="text-2xl text-gray-900 font-bold">Scheme Account Report</h2>
+    <h2 className="text-2xl text-gray-900 font-bold">Payment Mode Ledger Report</h2>
     <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
       <div className="relative w-full lg:w-1/3 min-w-[200px]">
         <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
@@ -353,10 +332,7 @@ function ModeWisePayment() {
           style={{ backgroundColor: layout_color }}>
           <SlidersHorizontal size={20} />
         </button>
-        {/* <ExportDropdown 
-          onExportExcel={exportToExcel} 
-          onExportPDF={exportToPDF} 
-        /> */}
+       
         <ExportToExcel apiData={paymentMode} fileName="paymentMode Report" />
         <ExportToPDF  apiData={paymentExp} fileName="scheme account"/>
       </div>
@@ -604,17 +580,7 @@ function ModeWisePayment() {
       </div>
       <div className="mt-4 flex gap-2 justify-center items-center">
         <span className="text-gray-500">Show</span>
-        <select
-          id="itemsPerPage"
-          value={itemsPerPage}
-          onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
-          className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
-        >
-          <option value={5}>5</option>
-          <option value={10}>10</option>
-          <option value={15}>15</option>
-          <option value={20}>20</option>
-        </select>
+        <select name="dataTable_length" aria-controls="dataTable" className=""><option value="10">10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option><option value="250">250</option><option value="500">500</option><option value="1000">1,000</option></select>
         <span className="text-gray-500">entries</span>
       </div>
     </div>

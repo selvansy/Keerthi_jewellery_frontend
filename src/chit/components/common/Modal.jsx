@@ -299,7 +299,7 @@ const Modal = () => {
                     return (
                         <div className="text-center py-4">
                             <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-message-circle-reply"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/><path d="m10 15-3-3 3-3"/><path d="M7 12h7a2 2 0 0 1 2 2v1"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" strokeLinejoin="round" className="lucide lucide-message-circle-reply"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/><path d="m10 15-3-3 3-3"/><path d="M7 12h7a2 2 0 0 1 2 2v1"/></svg>
                             </div>
                             <p className="text-lg text-gray-700">
                                 {formData.message}
