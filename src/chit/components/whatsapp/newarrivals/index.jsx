@@ -53,7 +53,7 @@ const NewArrivalsWhatsapp = () => {
 
   const [to_date, setTodate] = useState("");
 
-  const [filters, setFilters] = React.useState({
+  const [filters, setFilters] = useState({
     from_date: null,
     to_date: null,
     limit: itemsPerPage,

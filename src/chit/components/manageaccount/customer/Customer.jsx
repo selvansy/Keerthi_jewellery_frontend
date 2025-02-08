@@ -196,7 +196,7 @@ const Customer = () => {
           />
           <div
             className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-black p-[2px] after:duration-300 after:bg-black ${
-              row?.active === 1
+              row.active === true
                 ? 'peer-checked:bg-[#61A375] peer-checked:ring-[#61A375]'   
                 : 'peer-checked:bg-gray-400 peer-checked:ring-gray-400'
             } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-white peer-hover:after:scale-95`}

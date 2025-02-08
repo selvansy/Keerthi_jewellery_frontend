@@ -26,10 +26,11 @@ const ProductWhatsapp = () => {
   const navigate = useNavigate()
   let dispatch = useDispatch();
 
+  const layout_color = useSelector((state) => state.clientForm.layoutColor);
   
   const roledata = useSelector((state) => state.clientForm.roledata);
   const id_branch = roledata?.branch;
-  const layout_color = useSelector((state) => state.clientForm.layoutColor);
+ 
   const [productData, setproductData] = useState([])
    const [issettingOpen, setIsSettingOpen] = useState(false);
 
@@ -535,7 +536,7 @@ const handleSend = (id,id_branch) => {
       },
       {
         header: "Branch Name",
-        cell: (row) => row?.id_branch.branch_name
+        cell: (row) => row.id_branch?.branch_name
       },
     ];
   

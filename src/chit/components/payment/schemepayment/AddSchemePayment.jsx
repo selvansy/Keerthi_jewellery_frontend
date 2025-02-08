@@ -805,7 +805,7 @@ const AddSchemePayment = () => {
                       {isExpanded && (
                         <div className='lg:w-1/2 w-full items-center justify-center lg:pl-10 lg:pr-10'>
                           <div className='bg-[#F8F9FA] lg:w-full rounded-lg flex flex-col p-4 lg:h-full'>
-                            <h2 class="text-xl font-bold text-[#023453] mb-4 text-center">Scheme Details</h2>
+                            <h2 className="text-xl font-bold text-[#023453] mb-4 text-center">Scheme Details</h2>
                             <div>
                               <div class="flex justify-between py-1">
                                 <span class="text-gray-600">A/C Name</span>

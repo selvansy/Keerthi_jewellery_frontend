@@ -12,6 +12,7 @@ import profileplaceholder from "../../../../../../src/assets/profileplaceholder.
 const LayoutSettings = ({ onPageChange, isLoading = false, setIsAddClient }) => {
 
     const navigate = useNavigate();
+    const layout_color = useSelector((state) => state.clientForm.layoutColor);
     const currentStep = useSelector((state) => state.clientForm.currentStep);
     const totalPages = useSelector((state) => state.clientForm.totalSteps);
     const id = useSelector((state) => state.clientForm.id_client);

@@ -13,6 +13,7 @@ import Table from '../common/Table'
 
 function SuperAdminDashboard() {
 
+  const layout_color = useSelector((state) => state.clientForm.layoutColor);
   let [data,setData] = useState([]);
   let [paymentData,setPaymentData] = useState([])
   let [cardData,setCardData] = useState(null)

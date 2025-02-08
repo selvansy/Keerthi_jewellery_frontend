@@ -10,6 +10,7 @@ import { pagehandler } from '../../../../../redux/clientFormSlice';
 
 const GeneralDetails = ({setIsAddClient, onPageChange, isLoading = false }) => {
   const navigate = useNavigate();
+  const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const currentStep = useSelector((state) => state.clientForm.currentStep);  
   const id = useSelector((state)=>state.clientForm.id_client);
  const aupay_url = useSelector((state) => state.clientForm.aupay_url);

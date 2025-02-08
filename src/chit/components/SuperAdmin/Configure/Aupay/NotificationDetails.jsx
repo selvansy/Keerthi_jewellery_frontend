@@ -10,6 +10,8 @@ import { useMutation } from '@tanstack/react-query'
 
 const NotificationDetails = ({ setIsAddClient,onPageChange, isLoading = false }) => {
   const navigate = useNavigate();
+
+  const layout_color = useSelector((state) => state.clientForm.layoutColor);
   
   const currentStep = useSelector((state) => state.clientForm.currentStep);
   const totalPages = useSelector((state) => state.clientForm.totalSteps);

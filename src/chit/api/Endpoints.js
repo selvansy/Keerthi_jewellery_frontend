@@ -690,7 +690,7 @@ export const getpaymentmodesummary = async (data) => {
 }
 
 export const getpaymentDashboard = async (data) => {
-    const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/admin/getdashboardaccountcount `,data);
+    const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/dashboard`,data);
     return response.data;
 }
 
@@ -1401,13 +1401,6 @@ export const buygsttype = async () => {
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/common/buygsttype`);
     return response.data;
 }
-
-
-
-
-
-
-
 
 
 
