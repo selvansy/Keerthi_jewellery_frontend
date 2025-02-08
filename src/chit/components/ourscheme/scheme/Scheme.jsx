@@ -5,9 +5,9 @@ import { useNavigate } from 'react-router-dom'
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify"
 import {
-  getSchemeTable, changeschemestatus, getClassificationByBranch, getallmetal, getallschemetypes, getschemeById, allinstallmenttype, allFundtype, addscheme,
-  updateScheme, puritybymetal, buygsttype, allwastagetype,getBranchbyclient
-} from "../../../api/BackendUrl"
+  getSchemeTable,getallbranch, changeschemestatus, getClassificationByBranch, getallmetal, getallschemetypes, getschemeById, allinstallmenttype, allFundtype, addscheme,
+  updateScheme, puritybymetal, buygsttype, wastagetype
+} from "../../../api/Endpoints"
 import { setid } from "../../../../redux/clientFormSlice"
 import { useDispatch, useSelector } from 'react-redux';
 import { CalendarDays, RefreshCcw} from 'lucide-react'
@@ -64,6 +64,14 @@ const Scheme = () => {
 
   });
 
+    const handleallbranch = async (e) => {  
+  
+      const response = await getallbranch();
+      if (response) {
+        console.log(response.data)
+        setBranchList(response.data);
+      }
+    };
 
   useEffect(() => {
    
@@ -71,16 +79,18 @@ const Scheme = () => {
       getPurity(metalid);
     } 
   }, [metalid]);
+  
+  const { mutate: getClassificationByBranchmuate } = useMutation({
+    mutationFn: getClassificationByBranch,
+    onSuccess: (response) => {
+      setMetalData(response.data);
+    },
+    onError: (error) => {
+      console.error("Error:", error);
+    },
+  });
 
-  useEffect(() => {
-    getAllMetals();
-    getAllInstallmentTypes();
-    getAllSchemeTypes();
-    getAllWastage()
-    gstTypeDataTable()
-    getSavingType();
-  }, []);
-
+  
   const { mutate: getAllMetals } = useMutation({
     mutationFn: getallmetal,
     onSuccess: (response) => {
@@ -126,7 +136,7 @@ const Scheme = () => {
   });
 
   const { mutate: getAllWastage } = useMutation({
-    mutationFn: allwastagetype,
+    mutationFn: wastagetype,
     onSuccess: (response) => {
       setWastage(response.data);
     },
@@ -458,6 +468,18 @@ const Scheme = () => {
     }
   ];
 
+  const handleClickfilter = (e) => {
+
+    handleallbranch();
+    getAllMetals();
+    getAllInstallmentTypes();
+    getAllSchemeTypes();
+    getAllWastage();
+    gstTypeDataTable();
+    getSavingType();
+    handleallbranch(); 
+    setIsFilterOpen(true);
+  }
   return (
     <div className="flex flex-col p-4">
       <h2 className="text-2xl text-gray-900 font-bold">Schemes</h2>
@@ -490,7 +512,10 @@ const Scheme = () => {
           <button
             id="filter"
             className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
-            onClick={() => setIsFilterOpen(true)}
+            onClick={(e) => {
+              handleClickfilter(e);
+            }}
+
             style={{ backgroundColor: layout_color }} >
             <SlidersHorizontal size={20} />
           </button>
@@ -554,6 +579,25 @@ const Scheme = () => {
                 </div>
               </div>
 
+              <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Branch Name
+              </label>
+              <div className="relative">
+                <select  name="id_branch" onChange={(e)=>{filterInputchange(e);   }} className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
+                  <option value='' >--Select--</option>
+                  {branchList.map((branch)=>(
+                    <option key={branch._id} value={branch._id}>{branch.branch_name}</option>
+                  ))
+                  }
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                  <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
+                    <path d="M19 9l-7 7-7-7"></path>
+                  </svg>
+                </div>
+              </div>
+            </div>
               <div className="space-y-2">
                 <div className="flex flex-col">
                   <label className="text-gray-700 mb-2 font-medium">
@@ -931,10 +975,13 @@ const Scheme = () => {
             onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
             className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
           >
-            <option value={5}>5</option>
             <option value={10}>10</option>
-            <option value={15}>15</option>
-            <option value={20}>20</option>
+<option value={25}>25</option>
+<option value={50}>50</option>
+<option value={100}>100</option>
+<option value={250}>250</option>
+<option value={500}>500</option>
+<option value={1000}>1000</option>
           </select>
           <span className="text-gray-500">entries</span>
         </div>

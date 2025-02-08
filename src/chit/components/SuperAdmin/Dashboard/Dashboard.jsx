@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useMutation } from '@tanstack/react-query';
 import { useDispatch, useSelector } from 'react-redux';
 import { SlidersHorizontal, Search, X } from 'lucide-react'
-import { getpaymentDashboard } from "../../../api/Endpoints"
-import { getpaymentmodesummary, schemepaymentdatatable, todayMetalRate } from "./dasApi"
+import { getpaymentDashboard,getpaymentmodesummary,getallbranch, schemepaymentdatatable, schemepaymenttodayrate } from "../../../api/Endpoints"
 import { CalendarDays } from 'lucide-react'
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
@@ -24,7 +23,7 @@ import { useNavigate } from 'react-router-dom';
 function Dashboard() {
 
   let navigate = useNavigate();
-
+  const [search, setSearch] = useState('')
   const roledata = useSelector((state) => state.clientForm.roledata);
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
@@ -39,13 +38,15 @@ function Dashboard() {
   let [cardData, setCardData] = useState(null)
   let [metalRate, setMetalRate] = useState({})
 
+  const [branchList, setBranchList] = useState([])
+
   const [paymentMode, setpaymentMode] = useState([])
 
   const date = new Date();
   const todayDate = date.toISOString();
-
-  const [from_date, setFromdate] = useState(todayDate);
-  const [to_date, setTodate] = useState(todayDate);
+ 
+  const [from_date, setFromdate] = useState("");
+  const [to_date, setTodate] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(10);
@@ -57,6 +58,34 @@ function Dashboard() {
     id_branch: id_branch,
   });
 
+  
+
+  useEffect(() => {
+    if(id_branch){
+      getTodaysMetalRate({ id_branch: id_branch, date: todayDate })
+      
+      
+    let payload = {
+      from_date: "",
+      to_date: "",
+      id_branch: id_branch
+    }
+    PaymentMode(payload);
+    CardSummary(payload);
+    console.log("br---",id_branch)
+  }
+  }, [roledata])
+
+    const handleallbranch = async (e) => {  
+  
+      const response = await getallbranch();
+      if (response) {
+        console.log(response.data)
+        setBranchList(response.data);
+      }
+    };
+
+
   const filterInputchange = (e) => {
     const { name, value } = e.target;
     setFilters(prev => ({ ...prev, [name]: value }));
@@ -65,6 +94,9 @@ function Dashboard() {
 
   const applyfilterdatatable = (e) => {
     e.preventDefault();
+    setData([]);
+    setpaymentMode([]);
+    setCardData(null);
     const filterTosend = {
       from_date: from_date,
       to_date: to_date,
@@ -74,6 +106,8 @@ function Dashboard() {
     };
 
     getschemePaymentMutate(filterTosend)
+    PaymentMode(filterTosend);
+    CardSummary(filterTosend);
     setIsFilterOpen(false)
     setFromdate("")
     setTodate("")
@@ -106,7 +140,7 @@ function Dashboard() {
     mutationFn: schemepaymentdatatable,
     onSuccess: (response) => {
       setData(response.data)
-      setTotalPages(response.data.totalPages)
+      setTotalPages(response.totalPages)
     },
     onError: (error) => {
       console.error('Error:', error);
@@ -114,7 +148,7 @@ function Dashboard() {
   });
 
   const { mutate: getTodaysMetalRate } = useMutation({
-    mutationFn: todayMetalRate,
+    mutationFn: schemepaymenttodayrate,
     onSuccess: (response) => {
 
       setMetalRate(response.data)
@@ -139,22 +173,10 @@ function Dashboard() {
       collectionuserid: "",
       search: ""
     };
-
+    handleallbranch();
 
     getschemePaymentMutate(parsedData);
-  }, [])
-
-
-  useEffect(() => {
-    let payload = {
-      from_date: "",
-      to_date: "",
-      id_branch: id_branch
-    }
-    PaymentMode(payload);
-    CardSummary(payload);
-    getTodaysMetalRate({ id: id_branch, date: todayDate })
-  }, [id_branch])
+  }, [currentPage, itemsPerPage, search])
 
 
 
@@ -190,6 +212,18 @@ function Dashboard() {
   ]
 
 
+
+
+  const handleItemsPerPageChange = (value) => {
+    setItemsPerPage(value);
+    setCurrentPage(1);
+
+  };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
   const paginationButtons = [];
   for (let i = 1; i <= totalPages; i++) {
     paginationButtons.push(
@@ -203,15 +237,6 @@ function Dashboard() {
     );
   }
 
-  const handleItemsPerPageChange = (value) => {
-
-    setItemsPerPage(value);
-    setCurrentPage(1);
-  };
-
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
 
 
   const total = cardData?.total_account;
@@ -462,9 +487,10 @@ function Dashboard() {
           <div className="bg-white rounded-lg shadow-md p-5 ">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-2xl font-bold">Today's Metal Rate</h2>
-              <button className=" text-white font-bold py-2 px-4 rounded" style={{ backgroundColor: layout_color }}>
-                Add
-              </button>
+              <div className="flex items-center justify-center p-3 rounded-md">
+                <img src={plus} alt="plus" className="w-6 h-6" />
+                <h6 className='text-gray-900 text-md font-medium px-2 font- cursor-pointer' onClick={() => navigate("/ourscheme/createmetalrate")}>Add Metal</h6>
+              </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Gold Rate */}
@@ -547,48 +573,51 @@ function Dashboard() {
 
             {data.length > 0 && (
               <div className="flex justify-between mt-4 p-2">
-                <div className="flex flex-row items-center justify-center gap-2">
-                  <div className="flex items-center gap-4">
-                    <button
-                      onClick={() => handlePageChange(currentPage - 1)}
-                      disabled={currentPage === 1}
-                      className="p-2 text-gray-500 rounded-md"
-                    >
-                      Previous
-                    </button>
-                  </div>
-
-                  <div className="flex flex-row items-center justify-center gap-2">
-                    {paginationButtons}
-                  </div>
-
-                  <div className="flex items-center">
-                    <button
-                      onClick={() => handlePageChange(currentPage + 1)}
-                      disabled={currentPage === totalPages}
-                      className="p-2 text-gray-500 rounded-md"
-                    >
-                      Next
-                    </button>
-                  </div>
-                </div>
-
-                <div className="mt-4 flex gap-2 justify-center items-center">
-                  <span className="text-gray-500">Show</span>
-                  <select
-                    id="itemsPerPage"
-                    value={itemsPerPage}
-                    onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
-                    className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
+              <div className="flex flex-row items-center justify-center gap-2">
+                <div className="flex items-center gap-4">
+                  <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="p-2 text-gray-500 rounded-md"
                   >
-                    <option value={5}>5</option>
-                    <option value={10}>10</option>
-                    <option value={15}>15</option>
-                    <option value={20}>20</option>
-                  </select>
-                  <span className="text-gray-500">entries</span>
+                    Previous
+                  </button>
+                </div>
+      
+                <div className="flex flex-row items-center justify-center gap-2">
+                  {paginationButtons}
+                </div>
+      
+                <div className="flex items-center">
+                  <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className="p-2 text-gray-500 rounded-md"
+                  >
+                    Next
+                  </button>
                 </div>
               </div>
+      
+              <div className="mt-4 flex gap-2 justify-center items-center">
+                <span className="text-gray-500">Show</span>
+                <select
+                  id="itemsPerPage"
+                  value={itemsPerPage}
+                  onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
+                  className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
+                >
+                  <option value={10}>10</option>
+                  <option value={25}>25</option>
+                  <option value={50}>50</option>
+                  <option value={100}>100</option>
+                  <option value={250}>250</option>
+                  <option value={500}>500</option>
+                  <option value={1000}>1000</option>
+                </select>
+                <span className="text-gray-500">entries</span>
+              </div>
+            </div>
             )}
           </div>
           {/* Pie chart Section */}
@@ -598,7 +627,7 @@ function Dashboard() {
               <h2 className="text-lg font-bold px-3">Account</h2>
               <div className="flex items-center justify-center p-3 rounded-md">
                 <img src={plus} alt="plus" className="w-6 h-6" />
-                <h6 className='text-gray-900 text-md font-medium px-2 font-'>Add Account</h6>
+                <h6 className='text-gray-900 text-md font-medium px-2 font- cursor-pointer' onClick={() => navigate("/manageaccount/addschemeaccount")}>Add Account</h6>
               </div>
             </div>
 

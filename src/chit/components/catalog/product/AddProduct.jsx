@@ -12,14 +12,11 @@ import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 
 const AddProduct = () => {
-
-  const layout_color = useSelector((state) => state.clientForm.layoutColor);
-
   const navigate = useNavigate();
   const current_date = new Date();
   const todaydate = current_date.toISOString();
   let dispatch = useDispatch();
-
+  const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const roledata = useSelector((state) => state.clientForm.roledata);
   const id_branch = roledata?.branch;
   
@@ -40,9 +37,11 @@ const AddProduct = () => {
   const [metalcost, setMetalcost] = useState(0);
   const [branchList, setBranchList] = useState([]);
   const [metalid, setMetalid] = useState('')
-  let [branch,setbranch] = useState("")
+  let [branch,setbranch] = useState("");
 
-  const [proimage, setproductImgPath] = useState([]);
+  const MAX_IMAGES = 3;
+
+  const [product_image, setproductImgPath] = useState([]);
   const [formData, setFormData] = useState({
     product_name: '',
     code: '',
@@ -55,7 +54,7 @@ const AddProduct = () => {
     sell: '', 
     id_branch: branch,
     description: '',
-    proimage: '',
+    product_image: '',
     showprice: ''
   });
 
@@ -159,9 +158,6 @@ const AddProduct = () => {
         let calc2 = 0;
         if(parseInt(gst) >0){
           calc2 = parseInt(calc1)*parseInt(gst)/100;
-          console.log(parseInt(gst));
-          console.log(calc1);
-          console.log(calc2);
         } 
 
         let subtotal = calc1+calc2;
@@ -178,9 +174,6 @@ const AddProduct = () => {
     mutationFn: todaycurrentratebybranch,
     onSuccess: (response) => {
       if (response.data) {
-        console.log("metal -", parseInt(selectedmetal));
-        console.log("purity -", parseInt(selectedpurity));
-
         let metalRate = 0;
         if (parseInt(selectedmetal) === 1) { // Gold
           switch (parseInt(selectedpurity)) {
@@ -306,10 +299,20 @@ const AddProduct = () => {
   const handleImageChange = (e) => {
     const files = e.target.files;
     if (files.length > 0) {
-      // Add the new files to the state
-      setproductImgPath((prevState) => [...prevState, ...Array.from(files)]);
-    }
+      const existingImages = product_image.filter(img => typeof img === "string");
+      const totalImages = existingImages.length + files.length;
+      
+      if (totalImages > MAX_IMAGES) {
+        toast.error(`Maximum ${MAX_IMAGES} images allowed`);
+        return;
+      }
+      
 
+      setproductImgPath(prevState => [
+        ...prevState,
+        ...Array.from(files)
+      ]);
+    }
   };
 
   //handle wheel
@@ -336,8 +339,7 @@ const AddProduct = () => {
     if (!formData.description) errors.description = "Description is required";
     if (!formData.showprice) errors.showprice = "Display Price is required";
 
-    
-    if (proimage.length === 0) errors.proimage = "Product Image is required";
+    if (product_image.length === 0) errors.product_image = "Product Image is required";
 
     console.log(errors);
     setFormErrors(errors);
@@ -377,7 +379,16 @@ const AddProduct = () => {
     formDataToSend.append("sell", formData.sell);
     formDataToSend.append("description", formData.description);
     formDataToSend.append("showprice", formData.showprice);
-    if (proimage) formDataToSend.append("proimage", proimage);
+    if (product_image && product_image.length > 0) {
+      product_image.forEach((image, index) => {
+        if (image instanceof File) {
+          formDataToSend.append("product_image", image);
+        }
+        else if (typeof image === "string") {
+          formDataToSend.append("product_image", image);
+        }
+      });
+    }
 
    createproductMutate(formDataToSend);
   };
@@ -401,17 +412,13 @@ const AddProduct = () => {
     navigate("/catalog/product");
   };
 
-  //Edit form --------------------------
-
   //get product by id
   const { mutate: fetchproductById } = useMutation({
     mutationFn: productbyId,
     onSuccess: (response) => {  
-
       setFormData(response.data);  
       setMetalid(response.data.id_metal);
       handlecategorybymetal(response.data.id_metal);
-      
       setWeight(response.data.weight  || 0);
       seGst(response.data.gst  || 0);
       setCurrentrate(response.data.current_rate || 0);
@@ -420,15 +427,13 @@ const AddProduct = () => {
       setSelectedmetal(response?.data?.id_metal)
       setPurityId(response?.data?.id_purity)
       todayrateMutate({ id_branch: response.data.id_branch,date:todaydate });
-
-
-      
+      setproductImgPath(response.data.product_image)
     },
     onError: (error) => {
       console.error("Error fetching countries:", error);
     },
   });
-
+console.log(product_image)
   //update product
   const { mutate: updateproductmutate } = useMutation({
     mutationFn: updateproduct,
@@ -442,12 +447,8 @@ const AddProduct = () => {
     },
   });
 
-
-
   const handleUpdate = () => {
     if (!validateForm()) return;
-
-
 
     const formDataToSend = new FormData();
     formDataToSend.append("id_branch", formData.id_branch);
@@ -462,10 +463,18 @@ const AddProduct = () => {
     formDataToSend.append("sell", formData.sell);
     formDataToSend.append("description", formData.description);
     formDataToSend.append("showprice", formData.showprice);
-    if (proimage) formDataToSend.append("proimage", proimage);
+    if (product_image && product_image.length > 0) {
+      product_image.forEach((image, index) => {
+        if (image instanceof File) {
+          formDataToSend.append("product_image", image);
+        }
+        else if (typeof image === "string") {
+          formDataToSend.append("product_image", image);
+        }
+      });
+    }
     updateproductmutate({ id: formData._id, data: formDataToSend });
   };
-
 
   const handleRemoveImage = (index) => {
     setproductImgPath((prevState) => prevState.filter((_, i) => i !== index));
@@ -591,7 +600,7 @@ const AddProduct = () => {
                   value={formData.id_category}
                   onChange={handleInputChange}
            
-                  className={`appearance-none border-2 border-gray-300 rounded-md p-2 w-full pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 cursor-not-allowed bg-gray-100`}
+                  className={`appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 cursor-not-allowed bg-gray-100`}
 
                 >
                   <option value="">--Select---</option>
@@ -813,7 +822,7 @@ const AddProduct = () => {
                   placeholder="Enter Here"
                   onChange={handleInputChange}
                 />
-                <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                  <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
                 style={{ backgroundColor: layout_color }}>INR</span>
               </div>
               {formErrors.current_rate && (
@@ -835,8 +844,8 @@ const AddProduct = () => {
                   placeholder="Enter Here"
                   onChange={handleInputChange}
                 />
-                <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
-                style={{ backgroundColor: layout_color }}>INR</span>
+                 <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                style={{ backgroundColor: layout_color }}>GRM</span>
               </div>
               {formErrors.weight && (
                 <span className="text-red-500 text-sm mt-1">
@@ -881,7 +890,7 @@ const AddProduct = () => {
                   onChange={handleInputChange}
                 />
                 <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
-                style={{ backgroundColor: layout_color }}>% </span>
+                style={{ backgroundColor: layout_color }}>%</span>
               </div>
               {formErrors.metalcost && (
                 <span className="text-red-500 text-sm mt-1">
@@ -903,7 +912,7 @@ const AddProduct = () => {
                   placeholder="Enter Here"
                   onChange={handleInputChange}
                 />
-                <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+ <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
                 style={{ backgroundColor: layout_color }}>INR</span>
               </div>
               {formErrors.totalprice && (
@@ -940,28 +949,28 @@ const AddProduct = () => {
               <div className="flex gap-4">
                 <div className="flex-1">
                   <label
-                    htmlFor="proimage"
+                    htmlFor="product_image"
                     className="flex flex-col justify-center items-center w-full h-20 border-2 border-dashed border-gray-300 text-gray-700 cursor-pointer p-5 text-center"
                   >
-                    {proimage.length > 0
-                      ? `${proimage.length} file(s) selected`
+                    {product_image.length > 0
+                      ? `${product_image.length} file(s) selected`
                       : "Browse to find or drag image(s) here"}
                   </label>
                   <input
                     onChange={handleImageChange}
                     className="hidden max-w-[190px]"
-                    name="proimage"
-                    id="proimage"
+                    name="product_image"
+                    id="product_image"
                     type="file"
                     accept="image/*"
-                    multiple // Allow multiple files
+                    multiple 
                   />
                 </div>
 
                 {/* Display the selected images */}
-                {proimage.length > 0 && (
+                {product_image.length > 0 && (
                   <div className="flex gap-4 flex-wrap">
-                    {proimage.map((file, index) => (
+                    {product_image.map((file, index) => (
                       <div
                         key={index}
                         className="w-20 h-20 border border-gray-300 rounded-md overflow-hidden relative"
@@ -976,8 +985,8 @@ const AddProduct = () => {
                         <img
                           src={
                             typeof file === "string"
-                              ? file
-                              : URL.createObjectURL(file) // Use URL.createObjectURL to preview image
+                              ? `${formData.pathurl}${file}`
+                              : URL.createObjectURL(file)
                           }
                           alt="Description image preview"
                           className="w-full h-full object-cover"
@@ -987,8 +996,8 @@ const AddProduct = () => {
                   </div>
                 )}
               </div>
-              {formErrors.proimage && (
-                <span className="text-red-500 text-sm mt-1">{formErrors.proimage}</span>
+              {formErrors.product_image && (
+                <span className="text-red-500 text-sm mt-1">{formErrors.product_image}</span>
               )}
             </div>
 
