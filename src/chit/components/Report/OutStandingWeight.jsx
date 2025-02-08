@@ -8,15 +8,38 @@ import {
 
 import {OutstandingTable} from "../common/OutStandingReport"
 import {OutStandingFilter} from "../common/OutStandingReport"
+import {  todayMetalRate } from "../SuperAdmin/Dashboard/dasApi"
+import { useDispatch, useSelector } from 'react-redux';
 
 export default function OutStandingWeight() { 
 
  
+   
+  const roledata = useSelector((state) => state.clientForm.roledata);
+  const layout_color = useSelector((state) => state.clientForm.layoutColor);
+
+  const id_role = roledata?.id_role;
+  const id_client = roledata?.id_client;
+  const id_branch  = roledata?.id_branch;
+
+
     const [accsumm, setaccsumm] = useState([])
     const [accExp, setaccExp] = useState([]);
+    let [metalRate, setMetalRate] = useState({})
     const [search, setSearch] = useState('')
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(5);
+     const date = new Date();
+      const todayDate = date.toISOString();
+    
+   useEffect(() => {
+    let payload = {
+        todayDate:todayDate,
+        id: id_branch
+      }
+        getTodaysMetalRate(payload)
+    }, [id_branch])
+    
    
      //mutation to get scheme type
      const { mutate: getSchemes } = useMutation({
@@ -24,18 +47,20 @@ export default function OutStandingWeight() {
         onSuccess: (response) => {
            
             setaccsumm(response.data)
+      
+
             let arrayData = [];
 
             if (response.data.length !== 0) {
 
                 for (const i in response.data) {
                     arrayData.push({
-                        scheme_name:response.data[i].scheme_name,
-                        code:response.data[i].scheme_name,
-                        open:response.data[i].scheme_name,
-                        close:response.data[i].scheme_name,
-                        complete:response.data[i].scheme_name,
-                        total:response.data[i].scheme_name
+                        scheme_name: response.data[i].scheme_name,
+                        code: response.data[i].code,
+                        open: response.data[i].total_open,
+                        close: response.data[i].total_close,
+                        complete: response.data[i].total_complete,
+                        total: response.data[i].total_account
                     });
                 }
 
@@ -50,6 +75,18 @@ export default function OutStandingWeight() {
         }
     });
 
+
+      const { mutate: getTodaysMetalRate } = useMutation({
+        mutationFn: todayMetalRate,
+        onSuccess: (response) => {
+            console.log(response)
+          setMetalRate(response.data)
+    
+        },
+        onError: (error) => {
+          console.error('Error:', error);
+        }
+      });
    
     return ( 
               <div className="flex flex-col p-4">
@@ -62,7 +99,7 @@ export default function OutStandingWeight() {
                  currentPage={currentPage} 
                  itemsPerPage={itemsPerPage} />
 
-                   <Card/>
+                <Card metalRate={metalRate}/>
 
                  <OutstandingTable 
                  accsumm={accsumm} search={search} getSchemes={getSchemes}  currentPage={currentPage} 

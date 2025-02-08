@@ -807,35 +807,35 @@ const AddSchemePayment = () => {
                           <div className='bg-[#F8F9FA] lg:w-full rounded-lg flex flex-col p-4 lg:h-full'>
                             <h2 className="text-xl font-bold text-[#023453] mb-4 text-center">Scheme Details</h2>
                             <div>
-                              <div class="flex justify-between py-1">
-                                <span class="text-gray-600">A/C Name</span>
-                                <span class="text-gray-900">{selectedScheme?.account_name || 'N/A'}</span>
+                              <div className="flex justify-between py-1">
+                                <span className="text-gray-600">A/C Name</span>
+                                <span className="text-gray-900">{selectedScheme?.account_name || 'N/A'}</span>
                               </div>
-                              <div class="flex justify-between py-1">
-                                <span class="text-gray-600">Address</span>
-                                <span class="text-gray-900">{selectedScheme?.id_customer?.address || 'N/A'}</span>
+                              <div className="flex justify-between py-1">
+                                <span className="text-gray-600">Address</span>
+                                <span className="text-gray-900">{selectedScheme?.id_customer?.address || 'N/A'}</span>
                               </div>
-                              <div class="flex justify-between py-1">
-                                <span class="text-gray-600">Joined On</span>
-                                <span class="text-gray-900">
+                              <div className="flex justify-between py-1">
+                                <span className="text-gray-600">Joined On</span>
+                                <span className="text-gray-900">
                                 {selectedScheme?.start_date ? new Date(selectedScheme.start_date).toLocaleDateString('en-GB') : 'N/A'}
                               </span>
 
                               </div>
                               
-                              <div class="flex justify-between py-1">
-                                <span class="text-gray-600">Scheme A/C No</span>
-                                <span class="text-gray-900">{selectedScheme?.scheme_acc_number || 'N/A'}</span>
+                              <div className="flex justify-between py-1">
+                                <span className="text-gray-600">Scheme A/C No</span>
+                                <span className="text-gray-900">{selectedScheme?.scheme_acc_number || 'N/A'}</span>
                               </div>
 
-                              <div class="flex justify-between py-1">
-                                <span class="text-gray-600">No of Gift Issues</span>
-                                <span class="text-gray-900">{selectedScheme?.total_gifts_issued || '0'}</span>
+                              <div className="flex justify-between py-1">
+                                <span className="text-gray-600">No of Gift Issues</span>
+                                <span className="text-gray-900">{selectedScheme?.total_gifts_issued || '0'}</span>
                               </div>
 
-                              <div class="flex justify-between py-1">
-                                <span class="text-gray-600">Scheme Type</span>
-                                <span class="text-gray-900">
+                              <div className="flex justify-between py-1">
+                                <span className="text-gray-600">Scheme Type</span>
+                                <span className="text-gray-900">
                                   {selectedScheme?.id_scheme?.scheme_type === 0 ? "Amount To Bonus" :
                                     selectedScheme?.id_scheme?.scheme_type === 1 ? "Amount End Weight" :
                                       selectedScheme?.id_scheme?.scheme_type === 2 ? "Amount To Weight" :
@@ -853,19 +853,19 @@ const AddSchemePayment = () => {
 
 
 
-                              <div class="flex justify-between py-1">
-                                <span class="text-gray-600">Total Paid Installment</span>
-                                <span class="text-gray-900">{selectedScheme?.total_paidinstallments || '0'}</span>
+                              <div className="flex justify-between py-1">
+                                <span className="text-gray-600">Total Paid Installment</span>
+                                <span className="text-gray-900">{selectedScheme?.total_paidinstallments || '0'}</span>
                               </div>
 
-                              <div class="flex justify-between py-1">
-                                <span class="text-gray-600">Total Paid Amount</span>
-                                <span class="text-green-500">{selectedScheme?.total_paidamount || '0.00'}</span>
+                              <div className="flex justify-between py-1">
+                                <span className="text-gray-600">Total Paid Amount</span>
+                                <span className="text-green-500">{selectedScheme?.total_paidamount || '0.00'}</span>
                               </div>
 
-                              <div class="flex justify-between py-1">
-                                <span class="text-gray-600">Total Metal Weight</span>
-                                <span class="text-gray-900">{selectedScheme?.total_weight || '0.00'}</span>
+                              <div className="flex justify-between py-1">
+                                <span className="text-gray-600">Total Metal Weight</span>
+                                <span className="text-gray-900">{selectedScheme?.total_weight || '0.00'}</span>
                               </div>
                             </div>
                           </div>
@@ -976,35 +976,35 @@ const AddSchemePayment = () => {
                 </div>
                 <div className='lg:w-1/2 w-full items-center justify-center lg:pl-10 lg:pr-10'>
                   <div className='bg-[#F8F9FA] lg:w-full rounded-lg flex-col p-4 lg:h-full hidden lg:block shadow-md'>
-                    <h2 class="text-xl font-bold text-[#023453] mb-4 text-center">Scheme Details</h2>
+                    <h2 className="text-xl font-bold text-[#023453] mb-4 text-center">Scheme Details</h2>
                     <div>
-                      <div class="flex justify-between py-1">
-                        <span class="text-gray-600">A/C Name</span>
-                        <span class="text-gray-900">{selectedScheme?.account_name || 'N/A'}</span>
+                      <div className="flex justify-between py-1">
+                        <span className="text-gray-600">A/C Name</span>
+                        <span className="text-gray-900">{selectedScheme?.account_name || 'N/A'}</span>
                       </div>
-                      <div class="flex justify-between py-1">
-                        <span class="text-gray-600">Address</span>
-                        <span class="text-gray-900">{selectedScheme?.id_customer?.address || 'N/A'}</span>
+                      <div className="flex justify-between py-1">
+                        <span className="text-gray-600">Address</span>
+                        <span className="text-gray-900">{selectedScheme?.id_customer?.address || 'N/A'}</span>
                       </div>
-                      <div class="flex justify-between py-1">
-                        <span class="text-gray-600">Joined On</span>
-                        <span class="text-gray-900">{selectedScheme?.start_date ? new Date(selectedScheme.start_date).toLocaleDateString('en-GB') : 'N/A'}</span>
+                      <div className="flex justify-between py-1">
+                        <span className="text-gray-600">Joined On</span>
+                        <span className="text-gray-900">{selectedScheme?.start_date ? new Date(selectedScheme.start_date).toLocaleDateString('en-GB') : 'N/A'}</span>
                       </div>
                     
 
-                      <div class="flex justify-between py-1">
-                        <span class="text-gray-600">Scheme A/C No</span>
-                        <span class="text-gray-900">{selectedScheme?.scheme_acc_number || 'N/A'}</span>
+                      <div className="flex justify-between py-1">
+                        <span className="text-gray-600">Scheme A/C No</span>
+                        <span className="text-gray-900">{selectedScheme?.scheme_acc_number || 'N/A'}</span>
                       </div>
 
-                      <div class="flex justify-between py-1">
-                        <span class="text-gray-600">No of Gift Issues</span>
-                        <span class="text-gray-900">{selectedScheme?.total_gifts_issued || '0'}</span>
+                      <div className="flex justify-between py-1">
+                        <span className="text-gray-600">No of Gift Issues</span>
+                        <span className="text-gray-900">{selectedScheme?.total_gifts_issued || '0'}</span>
                       </div>
 
-                      <div class="flex justify-between py-1">
-                        <span class="text-gray-600">Scheme Type</span>
-                        <span class="text-gray-900">
+                      <div className="flex justify-between py-1">
+                        <span className="text-gray-600">Scheme Type</span>
+                        <span className="text-gray-900">
                           {selectedScheme?.id_scheme?.scheme_type === 0 ? "Amount To Bonus" :
                             selectedScheme?.id_scheme?.scheme_type === 1 ? "Amount End Weight" :
                               selectedScheme?.id_scheme?.scheme_type === 2 ? "Amount To Weight" :
@@ -1022,19 +1022,19 @@ const AddSchemePayment = () => {
 
 
 
-                      <div class="flex justify-between py-1">
-                        <span class="text-gray-600">Total Paid Installment</span>
-                        <span class="text-gray-900">{selectedScheme?.total_paidinstallments || '0'}</span>
+                      <div className="flex justify-between py-1">
+                        <span className="text-gray-600">Total Paid Installment</span>
+                        <span className="text-gray-900">{selectedScheme?.total_paidinstallments || '0'}</span>
                       </div>
 
-                      <div class="flex justify-between py-1">
-                        <span class="text-gray-600">Total Paid Amount</span>
-                        <span class="text-green-500">{selectedScheme?.total_paidamount || '0.00'}</span>
+                      <div className="flex justify-between py-1">
+                        <span className="text-gray-600">Total Paid Amount</span>
+                        <span className="text-green-500">{selectedScheme?.total_paidamount || '0.00'}</span>
                       </div>
 
-                      <div class="flex justify-between py-1">
-                        <span class="text-gray-600">Total Metal Weight</span>
-                        <span class="text-gray-900">{selectedScheme?.total_weight || '0.00'}</span>
+                      <div className="flex justify-between py-1">
+                        <span className="text-gray-600">Total Metal Weight</span>
+                        <span className="text-gray-900">{selectedScheme?.total_weight || '0.00'}</span>
                       </div>
                     </div>
                   </div>

@@ -34,7 +34,7 @@ import OutStandingDigiGold from "../chit/components/Report/OutStandingDigiGold";
 import AgenReferralReport from "../chit/components/Report/AgenReferralReport";
 import AgentIncentiveReport from "../chit/components/Report/AgentIncentiveReport";
 import AgentCollectionReport from "../chit/components/Report/AgentCollectionReport";
-import ModeWisePayment from "../chit/components/Report/PaymentReport";
+import ModeWisePayment from "../chit/components/Report/PaymentModeLedger";
 import GiftStock from "../chit/components/Report/GiftStock";
 import Branch from "../chit/components/Setup/branch/Branch";
 import AddBranch from "../chit/components/Setup/branch/AddBranch";

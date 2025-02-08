@@ -6,6 +6,8 @@ import { SlidersHorizontal, Search, X } from 'lucide-react'
 import { addedtype,allschemestatus,getschemeaccountbyid,getallschemetypes,getallbranchscheme,getallbranchclassification,getemployeebybranch,getallbranch,schemeaccounttable, changeschemeaccountStatus, deleteschemeaccount } from '../../../api/Endpoints'
 import { toast } from 'react-toastify'
 import { CalendarDays, RefreshCcw} from 'lucide-react'
+import { ExportToExcel } from '../../common/Dropdown/Excelexport';
+import { ExportToPDF } from '../../common/Dropdown/ExportPdf';
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 
@@ -24,6 +26,7 @@ const DigiGold = () => {
 
   const [search, setSearch] = useState('')
   const [schemeaccount, setschemeaccount] = useState([])
+ const [schaccExp,setschaccExp] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -63,7 +66,7 @@ const DigiGold = () => {
     if(name === "id_branch"){
       handleClassifyChange(e); 
       handleemployeebyBranch(e); 
-      getemployeebyBranch(e); 
+      handleemployeebyBranch(e); 
       handlebranchscheme(e);
     }
   };
@@ -225,7 +228,7 @@ const DigiGold = () => {
       }
     };
   
-    const   handleSchemestatusChange = async (e) => {  
+    const handleSchemestatusChange = async (e) => {  
 
       const response = await allschemestatus();
       if (response) {
@@ -241,6 +244,24 @@ const DigiGold = () => {
 
       setschemeaccount(response.data)
       setTotalPages(response.totalPages);
+      let arrayData = [];
+
+      if (response.data.length !== 0) {
+
+          for (const i in response.data) {
+              arrayData.push({
+                  scheme_name:response.data[i].scheme_name,
+                  code:response.data[i].scheme_name,
+                  open:response.data[i].scheme_name,
+                  close:response.data[i].scheme_name,
+                  complete:response.data[i].scheme_name,
+                  total:response.data[i].scheme_name
+              });
+          }
+
+      }
+
+      setschaccExp(arrayData)
     },
     onError: (error) => {
       console.error('Error fetching countries:', error);
@@ -589,6 +610,13 @@ const DigiGold = () => {
             style={{ backgroundColor: layout_color }}>
             <SlidersHorizontal size={20} />
           </button>
+
+            <div className="flex flex-row items-center justify-end gap-2">
+          
+                    <ExportToExcel apiData={schemeaccount} fileName="SchemeAccount Report" />
+                    <ExportToPDF apiData={schaccExp} fileName="scheme account" />
+                  </div>
+
           <button
             className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
             onClick={handleClick}

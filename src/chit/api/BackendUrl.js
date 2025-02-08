@@ -394,6 +394,10 @@ export const schemepaymenttodayrate = async (data) => {
 }
 
 
+export const getOutstandingSummaryReport = async () => {
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/reports/accountsummary`);
+    return response.data;
+}
 
 
 

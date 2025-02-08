@@ -8,7 +8,8 @@ import { toast } from 'react-toastify'
 import { CalendarDays, RefreshCcw} from 'lucide-react'
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
-
+import { ExportToExcel } from '../../common/Dropdown/Excelexport';
+import { ExportToPDF } from '../../common/Dropdown/ExportPdf';
 import { openModal } from '../../../../redux/modalSlice';
 import { eventEmitter } from '../../../../utils/EventEmitter';
 import { useDispatch, useSelector } from 'react-redux';
@@ -24,6 +25,7 @@ const CompleteAccount = () => {
 
   const [search, setSearch] = useState('')
   const [schemeaccount, setschemeaccount] = useState([])
+  const [schaccExp,setschaccExp] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -63,7 +65,7 @@ const CompleteAccount = () => {
     if(name === "id_branch"){
       handleClassifyChange(e); 
       handleemployeebyBranch(e); 
-      getemployeebyBranch(e); 
+      handleemployeebyBranch(e); 
       handlebranchscheme(e);
     }
   };
@@ -238,14 +240,33 @@ const CompleteAccount = () => {
   const {isLoading, mutate: getschemeaccountMutate } = useMutation({
     mutationFn: schemeaccounttable,
     onSuccess: (response) => {
-
+      console.log(response)
       setschemeaccount(response.data)
       setTotalPages(response.totalPages);
+      let arrayData = [];
+      if (response.data.length !== 0) {
+          for (const i in response.data) {
+              arrayData.push({
+                account_name:response.data[i].account_name,
+                mobile:response.data[i].mobile,
+                mobile:response.data[i].id_customer.mobile,
+                scheme_name: response.data.id_scheme.scheme_name, 
+                total_paidamount:response.data[i].total_paidamount,
+                total_weight:response.data[i].total_weight,
+                branch_name:response.data[i].branch_name
+              });
+          }
+
+      }
+      console.log(arrayData)
+      setschaccExp(arrayData)
     },
     onError: (error) => {
       console.error('Error fetching countries:', error);
     }
   });
+
+  console.log(schaccExp)
 
   useEffect(() => {
  
@@ -584,6 +605,12 @@ const CompleteAccount = () => {
             style={{ backgroundColor: layout_color }} >
             + Add Account
           </button>
+
+            <div className="flex flex-row items-center justify-end gap-2">
+          
+                    <ExportToExcel apiData={schemeaccount} fileName="SchemeAccount Report" />
+                    <ExportToPDF apiData={schaccExp} fileName="scheme account" />
+                  </div>
         </div>
       </div>
       <div
@@ -667,7 +694,7 @@ const CompleteAccount = () => {
             CLassification
               </label>
               <div className="relative">
-                <select  name="id_classification"  onChange={(e)=>{filterInputchange(e); handleGiftChange(e)}} className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
+                <select  name="id_classification"  onChange={(e)=>{filterInputchange(e); handlePageChange(e)}} className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
                   <option value='' >--Select--</option>
                   {classifyfilter.map((classify)=>(
                     <option key={classify._id} value={classify._id}>{classify.classification_name}</option>

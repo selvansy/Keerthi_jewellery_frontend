@@ -4,6 +4,7 @@ import jsPDF from "jspdf";
 
 import "jspdf-autotable"; // For table support
 import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 export const ExportToPDF = ({ apiData = [], fileName = "ExportedData" }) => {
     
@@ -11,7 +12,7 @@ export const ExportToPDF = ({ apiData = [], fileName = "ExportedData" }) => {
   
     const exportToPDF = (data, fileName) => {
       if (!data || data.length === 0) {
-        alert("No data to export!");
+        toast.error("No data to export!");
         return;
       }
    
