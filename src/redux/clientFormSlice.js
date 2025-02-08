@@ -26,6 +26,7 @@ const initialState = {
   layoutColor:"#023453",
   selectedProject: null,
   pushnotifyId:null,
+  id_scheme_account:null,
   settingtype:null,
   accessmenudata:[],
   id:null,
@@ -75,6 +76,9 @@ const clientFormSlice = createSlice({
     setPushnotifyId: (state, action) => {
       state.pushnotifyId = action.payload;
     },
+    setScemeAccountId: (state, action) => {
+      state.id_scheme_account = action.payload;
+    },
     setSettingtype: (state, action) => {
       state.settingtype = action.payload;
     },
@@ -108,6 +112,6 @@ const clientFormSlice = createSlice({
   },
 });
 
-export const { pagehandler, setTotalPage, resetPage,setid,setSuperAdmin,setPushnotifyId,setSettingtype,setAccessmenudata,setWhatsappData,setLayoutColor,
+export const { pagehandler, setTotalPage, resetPage,setid,setSuperAdmin,setPushnotifyId,setSettingtype,setAccessmenudata,setWhatsappData,setLayoutColor,setScemeAccountId,
   setSelectedProject, setClientId, setProjectId,setAupayurl,setAusaleurl,setPawnurl, setbranchId,setClientData,setBranchForm,setReviewForm,setRoleData } = clientFormSlice.actions;
 export default clientFormSlice.reducer;

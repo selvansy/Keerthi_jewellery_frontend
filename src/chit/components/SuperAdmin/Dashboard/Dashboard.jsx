@@ -8,7 +8,9 @@ import completedacc from '../../../../assets/completedacc.svg'
 import account from '../../../../assets/account.svg';
 import closedacc from '../../../../assets/closedacc.svg';
 import gold from "../../../../assets/gold.svg";
-import silver from "../../../../assets/silver.svg"
+import silver from "../../../../assets/silver.svg";
+import platinum from "../../../../assets/platinum.webp";
+import diamond from "../../../../assets/diamond.svg";
 import plus from "../../../../assets/plus.svg"
 import Table from '../../common/Table'
 import { useNavigate } from 'react-router-dom';
@@ -113,11 +115,11 @@ function Dashboard() {
   const PaymentColumns = [
     {
       header: 'PAYMENT MODE',
-      cell: (row) => `${row.mode_name}`,
+      cell: (row) => `${row?.mode_name}`,
     },
     {
       header: 'COLLECTION',
-      cell: (row) => `${row.collection_amount}`,
+      cell: (row) => `${row?.collection_amount}`,
     }
   ]
 
@@ -131,13 +133,13 @@ function Dashboard() {
     {
       header: 'Paid Date',
       cell: (row) => {
-        const paidDate = new Date(row.date_payment)
+        const paidDate = new Date(row?.date_payment)
         return paidDate.toLocaleDateString();
       }
     },
     {
       header: 'Paid Amount',
-      cell: (row) => `${row.payment_amount}`,
+      cell: (row) => `${row?.payment_amount}`,
     },
    
   ]
@@ -264,6 +266,34 @@ function Dashboard() {
                 <img src={silver} alt="Silver" className="h-20 w-20 mx-auto mb-2" />
                 <h3 className="text-xl font-medium text-center mb-1"> {metalRate?.silverrate_1gm?.$numberDecimal }</h3>
                 <p className="text-sm text-center text-gray-600">Silver</p>
+                {/* <p className="text-xs text-blue-500 text-center mt-1">+5% from yesterday</p> */}
+              </div>
+                {/* Gold Rate */}
+                <div className="p-4 rounded-lg bg-[#E8B9233D] border border-gray-200">
+                <img src={gold} alt="Gold (20CT)" className="h-20 w-20 mx-auto mb-2" />
+                <h3 className="text-2xl font-medium text-center mb-1">{metalRate?.goldrate_20ct?.$numberDecimal }</h3>
+                <p className="text-sm text-center text-gray-600">Gold (20CT)</p>
+                {/* <p className="text-xs text-blue-500 text-center mt-1">+5% from yesterday</p> */}
+              </div>
+                {/* Platinum Rate */}
+                <div className="p-4 rounded-lg bg-[#E8B9233D] border border-gray-200">
+                <img src={platinum} alt="Platinum" className="h-20 w-20 mx-auto mb-2" />
+                <h3 className="text-2xl font-medium text-center mb-1">{metalRate?.goldrate_22ct?.$numberDecimal }</h3>
+                <p className="text-sm text-center text-gray-600">Platinum</p>
+                {/* <p className="text-xs text-blue-500 text-center mt-1">+5% from yesterday</p> */}
+              </div>
+                {/* Gold Rate */}
+                <div className="p-4 rounded-lg bg-[#E8B9233D] border border-gray-200">
+                <img src={gold} alt="Gold (22CT)" className="h-20 w-20 mx-auto mb-2" />
+                <h3 className="text-2xl font-medium text-center mb-1">{metalRate?.goldrate_22ct?.$numberDecimal }</h3>
+                <p className="text-sm text-center text-gray-600">Gold COIN</p>
+                {/* <p className="text-xs text-blue-500 text-center mt-1">+5% from yesterday</p> */}
+              </div>
+              {/* Diamond Rate */}
+              <div className="p-4 rounded-lg bg-gray-100 border border-gray-200">
+                <img src={diamond} alt="Diamond" className="h-20 w-20 mx-auto mb-2" />
+                <h3 className="text-xl font-medium text-center mb-1"> {metalRate?.silverrate_1gm?.$numberDecimal }</h3>
+                <p className="text-sm text-center text-gray-600">Diamond</p>
                 {/* <p className="text-xs text-blue-500 text-center mt-1">+5% from yesterday</p> */}
               </div>
             </div>

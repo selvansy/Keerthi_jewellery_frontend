@@ -17,7 +17,9 @@ import {
   Bell,
   X ,
   Star,
-  RefreshCcw
+  RefreshCcw,
+  LucidePrinter,
+  PawPrintIcon
 } from 'lucide-react';
 
 import logo from '../../../assets/logo1.png'
@@ -94,15 +96,15 @@ const Base = ({ renderContent: RenderContent }) => {
           response.data.forEach((menurow) => {
             let submenuArray = [];
             let menuItem = {
-              text: menurow.menu_name,
+              text: menurow?.menu_name,
               hasSubmenu: true,
             };
 
-            if (menurow.menu_list.length > 0) {
-              menurow.menu_list.forEach((submenurow) => {
+            if (menurow?.menu_list.length > 0) {
+              menurow?.menu_list.forEach((submenurow) => {
                 submenuArray.push({
-                  text: submenurow.submenu_name,
-                  action: () => handleClick(submenurow.submenu_name),
+                  text: submenurow?.submenu_name,
+                  action: () => handleClick(submenurow?.submenu_name),
                 });
               });
 
@@ -411,6 +413,8 @@ const Base = ({ renderContent: RenderContent }) => {
     { name: "Customer",link:"/manageaccount/addcustomer" , icon: <User className="text-blue-500" /> },
     { name: "Manage Account",link:"/manageaccount/addschemeaccount", icon: <Settings className="text-purple-500" /> },
     { name: "Payment",link:"/payment/addschemepayment", icon: <CreditCard className="text-green-500" /> },
+    { name: "Card Print",link:"/cardprint/printone", icon: <LucidePrinter className="text-green-500" /> },
+    { name: "Receipt Print",link:"/receiptprint/printone", icon: <PawPrintIcon className="text-green-500" /> }
     // { name: "Agent Incentive",link:"", icon: <DollarSign className="text-orange-500" /> },
     // { name: "Referral Incentive",link:"", icon: <Share2 className="text-teal-500" /> },
   ];

@@ -263,95 +263,103 @@ function SchemeAccountReport() {
     },
     {
       header: 'Account Name',
-      cell: (row) => row.account_name,
+      cell: (row) => row?.account_name,
     },
     {
       header: "Mobile",
-      cell: (row) => row.mobile
+      cell: (row) => row?.mobile
     },
+    
     {
       header: 'Scheme',
       cell: (row) => {
-        if (row.scheme_type === 0 || row.scheme_type === 1 || row.scheme_type === 2) {
-          return `${row.scheme_name} (₹ ${row.amount})`;
-        } else if (row.scheme_type === 3) {
-          return `${row.scheme_name} (GRM ${row.min_weight} - ${row.max_weight})`;
+        if (row?.scheme_type === 0 || row?.scheme_type === 1 || row?.scheme_type === 2) {
+          return `${row?.scheme_name} (₹ ${row?.amount})`;
+        } else if (row?.scheme_type === 3) {
+          return `${row?.scheme_name} (GRM ${row?.min_weight} - ${row?.max_weight})`;
         } else {
-          return `${row.scheme_name} (₹  ${row.min_amount} - ${row.max_amount})`;
+          return `${row?.scheme_name} (₹  ${row?.min_amount} - ${row?.max_amount})`;
         }
       }
     },
     {
       header: 'Metal Name',
       cell: (row) => {
-        return row.id_metal === 1 ? 'Gold' :
-               row.id_metal === 2 ? 'Silver' :
-               row.id_metal === 3 ? 'Diamond' :
-               row.id_metal === 4 ? 'Platinum' : 'Gold Coins';
+        return row?.id_metal === 1 ? 'Gold' :
+               row?.id_metal === 2 ? 'Silver' :
+               row?.id_metal === 3 ? 'Diamond' :
+               row?.id_metal === 4 ? 'Platinum' : 'Gold Coins';
       }
     },
     {
       header: 'Purity Name',
       cell: (row) => {
-        return row.id_purity === 1 ? '24CT' :
-               row.id_purity === 2 ? '22CT' :
-               row.id_purity === 3 ? '20CT' :
-               row.id_purity === 4 ? '18CT':
-               row.id_purity === 5 ? 'Gold coin':
-               row.id_purity === 6 ? 'Platinum':
-               row.id_purity === 7 ? 'Diamond': 'Silver'
+        return row?.id_purity === 1 ? '24CT' :
+               row?.id_purity === 2 ? '22CT' :
+               row?.id_purity === 3 ? '20CT' :
+               row?.id_purity === 4 ? '18CT':
+               row?.id_purity === 5 ? 'Gold coin':
+               row?.id_purity === 6 ? 'Platinum':
+               row?.id_purity === 7 ? 'Diamond': 'Silver'
       }
     },
     {
       header: "A/c No",
-      cell: (row) => row.scheme_acc_number===""?'Not Allocated':row.scheme_acc_number
+      cell: (row) => row?.scheme_acc_number===""?'Not Allocated':row?.scheme_acc_number
     },
     {
       header: "Start Date",
-      cell: (row) => row.start_date
+      cell: (row) => {
+        const date = new Date(row?.start_date);
+        return date.toLocaleDateString('en-GB'); // 'en-GB' gives the d-m-Y format
+      }
     },
     {
       header: "Maturity Date",
-      cell: (row) => row.maturity_date
+      cell: (row) => {
+        const date = new Date(row?.maturity_date);
+        return date.toLocaleDateString('en-GB'); // 'en-GB' gives the d-m-Y format
+      }
     },
+    
     {
       header: "Total Ins",
-      cell: (row) => row.total_paidinstallments
+      cell: (row) => row?.total_paidinstallments
     },
     {
       header: "Paid Ins",
-      cell: (row) => row.total_paidinstallments
+      cell: (row) => row?.total_paidinstallments
     },
     {
       header: "Paid Amt",
-      cell: (row) => row.total_paidamount
+      cell: (row) => row?.total_paidamount
     },
     {
       header: "Paid Wgt",
-      cell: (row) => row.total_weight
+      cell: (row) => row?.total_weight
     },
     {
       header: 'Scheme Type',
       cell: (row) => {
-        if (row.scheme_type === 1) {
+        if (row?.scheme_type === 1) {
           return `Amount End Weight`;
-        } else if (row.scheme_type === 2) {
+        } else if (row?.scheme_type === 2) {
           return `Amount To Weight`;
-        } else if (row.scheme_type === 3) {
+        } else if (row?.scheme_type === 3) {
           return `Weight`;
-        }  else if (row.scheme_type === 4) {
+        }  else if (row?.scheme_type === 4) {
           return `Flexible Amount To Bonus`;
-        }  else if (row.scheme_type === 5) {
+        }  else if (row?.scheme_type === 5) {
           return `Flexiable Amount To Weight`;
-        }  else if (row.scheme_type === 6) {
+        }  else if (row?.scheme_type === 6) {
           return `Fixed Amount To Weight`;
-        }  else if (row.scheme_type === 7) {
+        }  else if (row?.scheme_type === 7) {
           return `Fixed Amount End Weight`;
-        }  else if (row.scheme_type === 8) {
+        }  else if (row?.scheme_type === 8) {
           return `Fixed Amount To Bonus`;
-        }  else if (row.scheme_type === 9) {
+        }  else if (row?.scheme_type === 9) {
           return `Flexible Amount End Weight`;
-        }  else if (row.scheme_type === 10) {
+        }  else if (row?.scheme_type === 10) {
           return `Digi Gold`;
         } else {
           return `Amount To Bonus`;
@@ -359,22 +367,24 @@ function SchemeAccountReport() {
       }
     },
     {
+      header: "Classification Name",
+      cell: (row) => row?.classification_name
+    },
+    {
       header: "Branch Name",
-      cell: (row) => row.branch_name
+      cell: (row) => row?.branch_name
     },
     {
       header: "Added By",
-      cell: (row) => row.created_through
+      cell: (row) => row?.created_through
     },
     {
       header: "Create Date",
       cell: (row) => {
-        const date = new Date(row.createdAt);
+        const date = new Date(row?.createdAt);
         return date.toLocaleDateString('en-GB'); // 'en-GB' gives the d-m-Y format
       }
-    },
-    // total_installments:
-  
+    }
   ];
 
   const paginationButtons = [];

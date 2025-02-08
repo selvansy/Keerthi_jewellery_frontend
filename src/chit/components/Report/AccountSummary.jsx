@@ -321,47 +321,47 @@ function AccountSummaryReport() {
         },
         {
             header: 'Scheme',
-            cell: (row) => row.scheme_name,
+            cell: (row) => row?.scheme_name,
         },
         {
             header: "Code",
-            cell: (row) => row.code,
+            cell: (row) => row?.code,
         },
         {
             header: "Total Open",
-            cell: (row) => row.total_open
+            cell: (row) => row?.total_open
         },
         {
             header: "Complete",
-            cell: (row) => row.total_complete
+            cell: (row) => row?.total_complete
         },
         {
             header: "Total Close",
-            cell: (row) => row.total_close
+            cell: (row) => row?.total_close
         },
         {
             header: "Total Refund",
-            cell: (row) => row.total_refund
+            cell: (row) => row?.total_refund
         },
         {
             header: "Total partaiclose",
-            cell: (row) => row.total_partaiclose
+            cell: (row) => row?.total_partaiclose
         },
         {
             header: "Total PartialPreclose",
-            cell: (row) => row.total_partaipreclose
+            cell: (row) => row?.total_partaipreclose
         },
         {
             header: "Total PaidAccount",
-            cell: (row) => row.total_paidaccount
+            cell: (row) => row?.total_paidaccount
         },
         {
             header: "Total UnPaidAccount",
-            cell: (row) => row.total_unpaidaccount
+            cell: (row) => row?.total_unpaidaccount
         },
         {
             header: "Total Account",
-            cell: (row) => row.total_account
+            cell: (row) => row?.total_account
         },
         
         

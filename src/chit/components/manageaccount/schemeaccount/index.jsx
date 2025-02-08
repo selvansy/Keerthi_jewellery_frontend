@@ -3,24 +3,25 @@ import Table from '../../common/Table'
 import { useNavigate,useParams } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import { SlidersHorizontal, Search, X } from 'lucide-react'
-import { addedtype,allschemestatus,getschemeaccountbyid,getallschemetypes,getallbranchscheme,getallbranchclassification,getemployeebybranch,getallbranch,schemeaccounttable, changeschemeaccountStatus, deleteschemeaccount } from '../../../api/Endpoints'
+import { addedtype,allschemestatus,getallschemetypes,getallbranchscheme,getallbranchclassification,getemployeebybranch,getallbranch,schemeaccounttable, changeschemeaccountStatus, deleteschemeaccount } from '../../../api/Endpoints'
 import { toast } from 'react-toastify'
 import { CalendarDays, RefreshCcw} from 'lucide-react'
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
-
+import { setScemeAccountId } from "../../../../redux/clientFormSlice"
 import { openModal } from '../../../../redux/modalSlice';
 import { eventEmitter } from '../../../../utils/EventEmitter';
 import { useDispatch, useSelector } from 'react-redux';
 import Modal from '../../common/Modal';
+import ModelOne from '../../common/Modelone';
 import { useDebounce } from '../../../hooks/useDebounce';
-
+import Ledgerdetails from "./ledgerdetails"
 const Schemeaccount = () => {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
   const dispatch = useDispatch();
   const navigate = useNavigate()
-
+const [popuptitle, setPopuptitle] = useState(0);
   const [search, setSearch] = useState('')
   const [schemeaccount, setschemeaccount] = useState([])
   const [currentPage, setCurrentPage] = useState(1);
@@ -38,10 +39,10 @@ const Schemeaccount = () => {
   const [schemefilter, setScheme] = useState([]);
   const [addedbyfilter, setAddedby] = useState([]);
   const [schemestatusfilter, setSchemestatus] = useState([]);
-
+  const [displaysetting, setDiplaySetting] = useState(0);
   const [ispayable, setIspayable] = useState(false);
+  const [isviewOpen, setIsviewOpen] = useState(false);
 
-  const [ledgerData,setLedgerData]=useState([]);
   const [filters, setFilters] = React.useState({
     
     from_date:from_date,
@@ -67,73 +68,22 @@ const Schemeaccount = () => {
     }
   };
 
+  function closeIncommingModal() {
+    setIsviewOpen(false);
+    setIsSettingOpen(false);
+  }
 
   //state to save ledger data
-  const getLedgerData = async (data) => {
-         console.log(data);
-         if (!data) return;
-         const response = await getschemeaccountbyid({id:data});   
-         if (response) {
-      
-             dispatch(openModal({
-              modalType: 'LEDGER_MODAL',
-              header: 'View Details',
-              formData: {
-                id: response.data._id,  
-                id_scheme: response.data.id_scheme._id,  
-                scheme_type: response.data.id_scheme.scheme_type,  
-                scheme_typename: response.data.scheme_typename,  
-                classification_name: response.data.id_classification.classification_name, 
-                scheme_name: response.data.id_scheme.scheme_name, 
-                total_installments:response.data.id_scheme.total_installments,  
-                min_amount: response.data.id_scheme.min_amount,
-                max_amount: response.data.id_scheme.max_amount,
-                min_weight: response.data.id_scheme.min_weight,
-                max_weight: response.data.id_scheme.max_weight,
-                amount: response.data.id_scheme.amount,
-                id_customer: response.data.id_customer._id,
-                scheme_acc_number:response.data.scheme_acc_number,
-                start_date: response.data.start_date,
-                total_paidamount:response.data.total_paidamount,
-                total_paidinstallments:response.data.total_paidinstallments,
-                total_weight:response.data.total_weight,
-                bill_no: response.data.bill_no,
-                bill_date: response.data.bill_date,
-                id_classification: response.data.id_classification._id,
-                collectionuserid: response.data.collectionuserid,
-                id_branch: response.data.id_branch._id,
-                account_name: response.data.account_name,
-                address: response.data.id_customer.address,
-                customer_name:response.data.id_customer.firstname+' '+response.data.id_customer.lastname,
-                mobile:response.data.id_customer.mobile,
-                payamount: response.data.amount,
-                maturity_month:response.data.id_scheme.maturity_month,
-                maturity_date:response.data.maturity_date,
-                referal_id:response.data.referal_id,
-                columns:columns,
-                schemeaccount:schemeaccount
-              },
-              buttons: {
-                cancel: {
-                  text: 'Cancel'
-                },
-                submit: {
-                  text: 'Update'
-                }
-              }
-            }));
-         } else {
-           toast.error('Customer not created!');
-         }
-       };
+  const handleOpenLedger = async (data) => {
+      if (!data) return;
+      setPopuptitle('View Details');
+      setDiplaySetting(1);
+      setIsviewOpen(true);      
+     dispatch(setScemeAccountId(data))    
+    };
 
  
-    //handler to open modal and show the modal with data
-    const handleOpenLedger = (data) => {
-      if (!data) return;
-      getLedgerData(data);        
- 
-    }
+
 
   const applyfilterdatatable = (e) =>{
 
@@ -327,95 +277,103 @@ const Schemeaccount = () => {
     },
     {
       header: 'Account Name',
-      cell: (row) => row.account_name,
+      cell: (row) => row?.account_name,
     },
     {
       header: "Mobile",
-      cell: (row) => row.mobile
+      cell: (row) => row?.mobile
     },
+    
     {
       header: 'Scheme',
       cell: (row) => {
-        if (row.scheme_type === 0 || row.scheme_type === 1 || row.scheme_type === 2) {
-          return `${row.scheme_name} (₹ ${row.amount})`;
-        } else if (row.scheme_type === 3) {
-          return `${row.scheme_name} (GRM ${row.min_weight} - ${row.max_weight})`;
+        if (row?.scheme_type === 0 || row?.scheme_type === 1 || row?.scheme_type === 2) {
+          return `${row?.scheme_name} (₹ ${row?.amount})`;
+        } else if (row?.scheme_type === 3) {
+          return `${row?.scheme_name} (GRM ${row?.min_weight} - ${row?.max_weight})`;
         } else {
-          return `${row.scheme_name} (₹  ${row.min_amount} - ${row.max_amount})`;
+          return `${row?.scheme_name} (₹  ${row?.min_amount} - ${row?.max_amount})`;
         }
       }
     },
     {
       header: 'Metal Name',
       cell: (row) => {
-        return row.id_metal === 1 ? 'Gold' :
-               row.id_metal === 2 ? 'Silver' :
-               row.id_metal === 3 ? 'Diamond' :
-               row.id_metal === 4 ? 'Platinum' : 'Gold Coins';
+        return row?.id_metal === 1 ? 'Gold' :
+               row?.id_metal === 2 ? 'Silver' :
+               row?.id_metal === 3 ? 'Diamond' :
+               row?.id_metal === 4 ? 'Platinum' : 'Gold Coins';
       }
     },
     {
       header: 'Purity Name',
       cell: (row) => {
-        return row.id_purity === 1 ? '24CT' :
-               row.id_purity === 2 ? '22CT' :
-               row.id_purity === 3 ? '20CT' :
-               row.id_purity === 4 ? '18CT':
-               row.id_purity === 5 ? 'Gold coin':
-               row.id_purity === 6 ? 'Platinum':
-               row.id_purity === 7 ? 'Diamond': 'Silver'
+        return row?.id_purity === 1 ? '24CT' :
+               row?.id_purity === 2 ? '22CT' :
+               row?.id_purity === 3 ? '20CT' :
+               row?.id_purity === 4 ? '18CT':
+               row?.id_purity === 5 ? 'Gold coin':
+               row?.id_purity === 6 ? 'Platinum':
+               row?.id_purity === 7 ? 'Diamond': 'Silver'
       }
     },
     {
       header: "A/c No",
-      cell: (row) => row.scheme_acc_number===""?'Not Allocated':row.scheme_acc_number
+      cell: (row) => row?.scheme_acc_number===""?'Not Allocated':row?.scheme_acc_number
     },
     {
       header: "Start Date",
-      cell: (row) => row.start_date
+      cell: (row) => {
+        const date = new Date(row?.start_date);
+        return date.toLocaleDateString('en-GB'); // 'en-GB' gives the d-m-Y format
+      }
     },
     {
       header: "Maturity Date",
-      cell: (row) => row.maturity_date
+      cell: (row) => {
+        const date = new Date(row?.maturity_date);
+        return date.toLocaleDateString('en-GB'); // 'en-GB' gives the d-m-Y format
+      }
     },
+    
     {
       header: "Total Ins",
-      cell: (row) => row.total_paidinstallments
+      cell: (row) => row?.total_paidinstallments
     },
     {
       header: "Paid Ins",
-      cell: (row) => row.total_paidinstallments
+      cell: (row) => row?.total_paidinstallments
     },
     {
       header: "Paid Amt",
-      cell: (row) => row.total_paidamount
+      cell: (row) => row?.total_paidamount
     },
     {
       header: "Paid Wgt",
-      cell: (row) => row.total_weight
+      cell: (row) => row?.total_weight
     },
     {
       header: 'Scheme Type',
       cell: (row) => {
-        if (row.scheme_type === 1) {
+        if (row?.scheme_type === 1) {
           return `Amount End Weight`;
-        } else if (row.scheme_type === 2) {
+        } else if (row?.scheme_type === 2) {
           return `Amount To Weight`;
-        } else if (row.scheme_type === 3) {
+        } else if (row?.scheme_type === 3) {
           return `Weight`;
-        }  else if (row.scheme_type === 4) {
+        }  else if (row?.scheme_type === 4) {
           return `Flexible Amount To Bonus`;
-        }  else if (row.scheme_type === 5) {
+        }  else if (row?.scheme_type === 5) {
           return `Flexiable Amount To Weight`;
-        }  else if (row.scheme_type === 6) {
+        }  else if (row?.scheme_type === 6) {
           return `Fixed Amount To Weight`;
-        }  else if (row.scheme_type === 7) {
+        }  else if (row?.scheme_type === 7) {
           return `Fixed Amount End Weight`;
-        }  else if (row.scheme_type === 8) {
+        }  else if (row?.scheme_type === 8) {
           return `Fixed Amount To Bonus`;
-        }  else if (row.scheme_type === 9) {
+        }  else if (row?.scheme_type === 9) {
           return `Flexible Amount End Weight`;
-        }  else if (row.scheme_type === 10) {
+        }  else if (row?.scheme_type === 10) {
           return `Digi Gold`;
         } else {
           return `Amount To Bonus`;
@@ -423,17 +381,21 @@ const Schemeaccount = () => {
       }
     },
     {
+      header: "Classification Name",
+      cell: (row) => row?.classification_name
+    },
+    {
       header: "Branch Name",
-      cell: (row) => row.branch_name
+      cell: (row) => row?.branch_name
     },
     {
       header: "Added By",
-      cell: (row) => row.created_through
+      cell: (row) => row?.created_through
     },
     {
       header: "Create Date",
       cell: (row) => {
-        const date = new Date(row.createdAt);
+        const date = new Date(row?.createdAt);
         return date.toLocaleDateString('en-GB'); // 'en-GB' gives the d-m-Y format
       }
     },
@@ -445,11 +407,11 @@ const Schemeaccount = () => {
           <input
             type="checkbox"
             className="sr-only peer"
-            checked={row.active === true}
-            onChange={() => handleStatusToggle(row._id)}
+            checked={row?.active === true}
+            onChange={() => handleStatusToggle(row?._id)}
           />
           <div
-            className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-black p-[2px] after:duration-300 after:bg-black ${row.active === 1
+            className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-black p-[2px] after:duration-300 after:bg-black ${row?.active === 1
                 ? 'peer-checked:bg-[#61A375] peer-checked:ring-[#61A375]'
                 : 'peer-checked:bg-gray-400 peer-checked:ring-gray-400'
               } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-white peer-hover:after:scale-95`}
@@ -460,79 +422,73 @@ const Schemeaccount = () => {
     {
       header: 'Actions',
       cell: (row, rowIndex) => (
-        <div className="dropdown-container relative">
+        <div className="dropdown-container relative group sticky right-0 z-20 bg-white">
           <button
             className="p-1 hover:bg-gray-100 rounded-full"
             onClick={(e) => {
               e.stopPropagation();
-              setSelectedRow(row._id);
-              setActiveDropdown(activeDropdown === row._id ? null : row._id);
+              setSelectedRow(row?._id);
+              setActiveDropdown(activeDropdown === row?._id ? null : row?._id);
             }}
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
               <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
             </svg>
           </button>
-
-          {activeDropdown === row._id && (
-            <div
-              className="absolute right-[47px] lg:right-[163px] md:right-[150px] sm:right-[100px] transform -translate-x-8"
-              style={{
-                top: rowIndex >= schemeaccount.length - 2 ? 'auto' : '72%',
-                bottom: rowIndex >= schemeaccount.length - 2 ? '-74%' : 'auto',
-                // top: 'auto',
-                // bottom: '-440%',
-                zIndex: 9999,
-                marginBottom: '8px',
-                filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.15))'
-              }}
-            >
-              <div className="w-32 rounded-md bg-white ring-1 ring-black ring-opacity-5">
-                <div className="py-1">
-                  <button
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                    onClick={() => {
-                      handleEdit(row._id);
-                      setActiveDropdown(null);
-                    }}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                    Edit
-                  </button>
-                  <button
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                    onClick={() => {
-                      handleOpenLedger(row._id);
-                    }}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                    Ledger
-                  </button>
-                  <button
-                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
-                    onClick={() => {
-                      handleDelete(row._id);
-                      setActiveDropdown(null);
-                    }}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                    Delete
-                  </button>
-
-                </div>
+    
+          {/* Use group-hover to show the dropdown on hover */}
+          <div
+            className={`absolute transform z-50 ${activeDropdown === row?._id ? '' : 'hidden'} group-hover:block`}
+            style={{
+              top: rowIndex >= schemeaccount.length - 2 ? 'auto' : '72%',
+              bottom: rowIndex >= schemeaccount.length - 2 ? '-74%' : 'auto',
+            }}
+          >
+            <div className="w-32 rounded-md bg-white ring-1 ring-black ring-opacity-5">
+              <div className="py-1">
+                <button
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                  onClick={() => {
+                    handleEdit(row?._id);
+                    setActiveDropdown(null);
+                  }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                  Edit
+                </button>
+                <button
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                  onClick={() => {
+                    handleOpenLedger(row?._id);
+                  }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                  Ledger
+                </button>
+                <button
+                  className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
+                  onClick={() => {
+                    handleDelete(row?._id);
+                    setActiveDropdown(null);
+                  }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                  Delete
+                </button>
               </div>
             </div>
-          )}
+          </div>
         </div>
       ),
-
     }
+    
+    
   ];
 
   return (
@@ -783,7 +739,7 @@ const Schemeaccount = () => {
           onClick={() => setIsFilterOpen(false)}
         />
       )}
-      <div className="mt-4">
+      <div className="mt-4 overflow-x-auto">
         <Table
           data={schemeaccount}
           columns={columns}
@@ -833,6 +789,21 @@ const Schemeaccount = () => {
            <span className="text-gray-500">entries</span>
          </div>
        </div>
+      )}
+       {displaysetting === 1 && (
+        <ModelOne
+          title={popuptitle}
+          extraClassName='max-w-5xl w-full '
+          setIsOpen={setIsviewOpen}
+          isOpen={isviewOpen}
+          closeModal={closeIncommingModal}
+        >
+
+          <Ledgerdetails
+            setIsOpen={setIsviewOpen}
+          />
+
+        </ModelOne>
       )}
       <Modal/>
     </div>

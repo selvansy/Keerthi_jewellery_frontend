@@ -93,15 +93,15 @@ const Branch = () => {
     },
     {
       header: "Branch Name",
-      cell: (row) => row.branch_name,
+      cell: (row) => row?.branch_name,
     },
     {
       header: "Phone Number",
-      cell: (row) => row.mobile,
+      cell: (row) => row?.mobile,
     },
     {
       header: "Create Date",
-      cell: (row) => formatDate(row.createdAt),
+      cell: (row) => formatDate(row?.createdAt),
     },
     {
       header: "Active",
@@ -111,12 +111,12 @@ const Branch = () => {
           <input
             type="checkbox"
             className="sr-only peer"
-            checked={row.active === true}
-            onChange={() => handleStatusToggle(row._id)}
+            checked={row?.active === true}
+            onChange={() => handleStatusToggle(row?._id)}
           />
           <div
             className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-black p-[2px] after:duration-300 after:bg-black ${
-              row.active === 1
+              row?.active === 1
                 ? "peer-checked:bg-[#61A375] peer-checked:ring-[#61A375]"
                 : "peer-checked:bg-gray-400 peer-checked:ring-gray-400"
             } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-white peer-hover:after:scale-95`}
@@ -132,8 +132,8 @@ const Branch = () => {
             className="p-1 hover:bg-gray-100 rounded-full"
             onClick={(e) => {
               e.stopPropagation();
-              setSelectedRow(row._id);
-              setActiveDropdown(activeDropdown === row._id ? null : row._id);
+              setSelectedRow(row?._id);
+              setActiveDropdown(activeDropdown === row?._id ? null : row?._id);
             }}
           >
             <svg
@@ -146,7 +146,7 @@ const Branch = () => {
             </svg>
           </button>
 
-          {activeDropdown === row._id && (
+          {activeDropdown === row?._id && (
             <div
               className="absolute right-[47px] lg:right-[163px] md:right-[150px] sm:right-[100px] transform -translate-x-8"
               style={{
@@ -164,7 +164,7 @@ const Branch = () => {
                   <button
                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
                     onClick={() => {
-                      handleEdit(row._id);
+                      handleEdit(row?._id);
                       setActiveDropdown(null);
                     }}
                   >
@@ -187,7 +187,7 @@ const Branch = () => {
                   <button
                     className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
                     onClick={() => {
-                      handleDelete(row._id);
+                      handleDelete(row?._id);
                       setActiveDropdown(null);
                     }}
                   >

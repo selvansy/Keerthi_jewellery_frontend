@@ -3,14 +3,15 @@ import Table from '../../common/Table'
 import { useNavigate,useParams } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import { SlidersHorizontal, Search, X } from 'lucide-react'
-import { addedtype,allschemestatus,getallschemetypes,getallbranchscheme,getallbranchclassification,getemployeebybranch,getallbranchcustomer,getallbranch,schemepaymentdatatable, changeschemeaccountStatus, deleteschemeaccount } from '../../../api/Endpoints'
+import { addedtype,allschemestatus,getallschemetypes,getallbranchscheme,getallbranchclassification,getemployeebybranch,getallbranchcustomer,getallbranch,schemepaymentdatatable, changeschemeaccountStatus, deleteschemepayment } from '../../../api/Endpoints'
 import { toast } from 'react-toastify'
 import { CalendarDays, RefreshCcw} from 'lucide-react'
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import { useSelector } from 'react-redux'
 const SchemePayment = () => {
-
+  const roledata = useSelector((state) => state.clientForm.roledata);
+  const branch = roledata?.branch;
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   
   const navigate = useNavigate()
@@ -41,7 +42,7 @@ const SchemePayment = () => {
     id_classification: '',
     collectionuserid: '',
     id_scheme: '',
-    id_branch: '',
+    id_branch: branch,
     scheme_type:''
   });
 
@@ -58,6 +59,7 @@ const SchemePayment = () => {
 
   
   const applyfilterdatatable = (e) =>{
+    e.preventDefault();   
       const filterTosend = {
         page:currentPage,
         from_date:from_date,
@@ -73,10 +75,10 @@ const SchemePayment = () => {
         scheme_type:filters.scheme_type
       };
        
-      if(from_date!=="" && to_date!=="" && filters.added_by!=="" && filters.scheme_status!=="" && filters.id_classification!=="" && filters.collectionuserid!==""  && filters.id_scheme!==""  && filters.id_branch!=="" && filters.scheme_type!==""){
+     
         setIsFilterOpen(false)
         getschemeaccountMutate(filterTosend);
-      }
+      
     };
 
    useEffect(() => {
@@ -205,7 +207,7 @@ const SchemePayment = () => {
   };
 
   const handleDelete = async (id) => {
-    let response = await deleteschemeaccount(id);
+    let response = await deleteschemepayment(id);
     if (response) {
       toast.success(response.message);
       getschemeaccountMutate({ page: currentPage, limit: itemsPerPage, search: search })
@@ -243,112 +245,149 @@ const SchemePayment = () => {
     },
     {
       header: 'TXT Id',
-      cell: (row) => row.id_transaction,
+      cell: (row) => row?.id_transaction,
     },
     {
       header: "Paid Date",
-      cell: (row) => row.date_payment
+      cell: (row) => {
+        const paidDate = new Date(row?.date_payment);
+        return paidDate.toLocaleDateString();
+      }
     },
+
     {
       header: "Scheme Name",
       cell: (row) => {
         let scheme_name = "";
-        if (row.id_scheme.scheme_type === 0 || row.id_scheme.scheme_type === 1 || row.id_scheme.scheme_type === 2) {
-          scheme_name = row.id_scheme.scheme_name + "(₹. " + row.id_scheme.amount + ")";
-        } else if (row.id_scheme.scheme_type === 3) {
-          scheme_name = row.id_scheme.scheme_name + "(" + row.id_scheme.min_weight + " Grm - " + row.id_scheme.max_weight + " Grm)";
+        if (row?.id_scheme.scheme_type === 0 || row?.id_scheme.scheme_type === 1 || row?.id_scheme.scheme_type === 2) {
+          scheme_name = row?.id_scheme.scheme_name + "(₹. " + row?.id_scheme.amount + ")";
+        } else if (row?.id_scheme.scheme_type === 3) {
+          scheme_name = row?.id_scheme.scheme_name + "(" + row?.id_scheme.min_weight + " Grm - " + row?.id_scheme.max_weight + " Grm)";
         } else {
-          scheme_name = row.id_scheme.scheme_name + "(₹" + row.id_scheme.min_amount + " - " + row.id_scheme.max_amount + ")";
+          scheme_name = row?.id_scheme.scheme_name + "(₹" + row?.id_scheme.min_amount + " - " + row?.id_scheme.max_amount + ")";
         }
         return scheme_name;
       }
     },
+    
     {
-      header: "Accounter Name",
-      cell: (row) => row.id_scheme_account.account_name
+      header: "Customer Name",
+      cell: (row) => row?.id_scheme_account?.account_name
     },
     {
       header: "Mobile",
-      cell: (row) => row.id_customer.mobile
+      cell: (row) => row?.id_customer?.mobile
     },
     {
       header: "A/c Number",
-      cell: (row) => row.id_scheme_account?.scheme_acc_number === "" ? 'Not Allocated' : row.id_scheme_account?.scheme_acc_number
+      cell: (row) => row?.id_scheme_account?.scheme_acc_number === "" ? 'Not Allocated' : row?.id_scheme_account?.scheme_acc_number
     },
     {
       header: "Start Date",
       cell: (row) => {
-        const startDate = new Date(row.id_scheme_account.start_date);
+        const startDate = new Date(row?.id_scheme_account?.start_date);
         return startDate.toLocaleDateString();
       }
     },
     {
       header: "Maturity Date",
       cell: (row) => {
-        const maturityDate = new Date(row.id_scheme_account.maturity_date);
+        const maturityDate = new Date(row?.id_scheme_account?.maturity_date);
         return maturityDate.toLocaleDateString();
       }
     },
     {
       header: "Total Installment",
-      cell: (row) => row.id_scheme_account.total_installments
+      cell: (row) => row?.id_scheme_account?.total_installments
     },
     {
       header: "Paid Installment",
-      cell: (row) => row.paid_installments
+      cell: (row) => row?.paid_installments
     },
     {
       header: "GST AMT",
-      cell: (row) => row.gst_amount 
+      cell: (row) => row?.gst_amount 
     },
     {
       header: "Fine AMT",
-      cell: (row) => row.fine_amount
+      cell: (row) => row?.fine_amount
     },
     {
       header: "Total Paid",
-      cell: (row) => row.total_amt
+      cell: (row) => row?.total_amt
     },
     {
       header: "Paid Weight",
-      cell: (row) => row.metal_weight
+      cell: (row) => row?.metal_weight
     },
     {
       header: "Metal Rate",
-      cell: (row) => row.metal_rate
+      cell: (row) => row?.metal_rate
     },
     {
       header: "Cash",
-      cell: (row) => row.cash_amount
+      cell: (row) => row?.cash_amount
     },
     {
       header: "Card Amount",
-      cell: (row) => row.card_amount
+      cell: (row) => row?.card_amount
     },
     {
       header: "Gpay",
-      cell: (row) => row.gpay_amount
+      cell: (row) => row?.gpay_amount
     },
     {
       header: "Phonepay",
-      cell: (row) => row.total_weight
+      cell: (row) => row?.phonepay_amount
     },
     
     {
       header: "Payment Mode",
-      cell: (row) => row.payment_mode.mode_name
+      cell: (row) => row?.payment_mode?.mode_name
     },
     {
       header: "Payment Type",
-      cell: (row) => row.payment_type === 1 ? "OFFLINE" : "ONLINE"
+      cell: (row) => row?.payment_type === 1 ? "OFFLINE" : "ONLINE"
+    },
+    {
+      header: "Classification Name",
+      cell: (row) => row?.id_scheme_account?.id_classification?.classification_name
+    },
+    {
+      header: 'Scheme Type',
+      cell: (row) => {
+        if (row?.id_scheme?.scheme_type === 1) {
+          return `Amount End Weight`;
+        } else if (row?.id_scheme?.scheme_type === 2) {
+          return `Amount To Weight`;
+        } else if (row?.id_scheme?.scheme_type === 3) {
+          return `Weight`;
+        }  else if (row?.id_scheme?.scheme_type === 4) {
+          return `Flexible Amount To Bonus`;
+        }  else if (row?.id_scheme?.scheme_type === 5) {
+          return `Flexiable Amount To Weight`;
+        }  else if (row?.id_scheme?.scheme_type === 6) {
+          return `Fixed Amount To Weight`;
+        }  else if (row?.id_scheme?.scheme_type === 7) {
+          return `Fixed Amount End Weight`;
+        }  else if (row?.id_scheme?.scheme_type === 8) {
+          return `Fixed Amount To Bonus`;
+        }  else if (row?.id_scheme?.scheme_type === 9) {
+          return `Flexible Amount End Weight`;
+        }  else if (row?.id_scheme?.scheme_type === 10) {
+          return `Digi Gold`;
+        } else {
+          return `Amount To Bonus`;
+        }
+      }
     },
     {
       header: "Added BY",
-      cell: (row) => row.added_by === 0 ? "ADMIN" : row.added_by === 1 ? "WEB APP" : "MOBILE APP"
+      cell: (row) => row?.added_by === 0 ? "ADMIN" : row?.added_by === 1 ? "WEB APP" : "MOBILE APP"
     },
     {
       header: "Branch Name",
-      cell: (row) => row.id_branch.branch_name
+      cell: (row) => row?.id_branch?.branch_name
     },
     
     
@@ -360,8 +399,8 @@ const SchemePayment = () => {
             className="p-1 hover:bg-gray-100 rounded-full"
             onClick={(e) => {
               e.stopPropagation();
-              setSelectedRow(row._id);
-              setActiveDropdown(activeDropdown === row._id ? null : row._id);
+              setSelectedRow(row?._id);
+              setActiveDropdown(activeDropdown === row?._id ? null : row?._id);
             }}
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
@@ -369,7 +408,7 @@ const SchemePayment = () => {
             </svg>
           </button>
 
-          {activeDropdown === row._id && (
+          {activeDropdown === row?._id && (
             <div
               className="absolute right-[47px] lg:right-[163px] md:right-[150px] sm:right-[100px] transform -translate-x-8"
               style={{
@@ -387,7 +426,7 @@ const SchemePayment = () => {
                   <button
                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
                     onClick={() => {
-                      handleEdit(row._id);
+                      handleEdit(row?._id);
                       setActiveDropdown(null);
                     }}
                   >
@@ -399,7 +438,7 @@ const SchemePayment = () => {
                   <button
                     className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
                     onClick={() => {
-                      handleDelete(row._id);
+                      handleDelete(row?._id);
                       setActiveDropdown(null);
                     }}
                   >
@@ -665,49 +704,51 @@ const SchemePayment = () => {
           columns={columns}
         />
       </div>
-      <div className="flex justify-between mt-4 p-2">
-        <div className="flex flex-row items-center justify-center gap-2">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-              className="p-2 text-gray-500 rounded-md"
-            >
-              Previous
-            </button>
-          </div>
-
-          <div className="flex flex-row items-center justify-center gap-2">
-            {paginationButtons}
-          </div>
-
-          <div className="flex items-center">
-            <button
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className="p-2 text-gray-500 rounded-md"
-            >
-              Next
-            </button>
-          </div>
-        </div>
-
-        <div className="mt-4 flex gap-2 justify-center items-center">
-          <span className="text-gray-500">Show</span>
-          <select
-            id="itemsPerPage"
-            value={itemsPerPage}
-            onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
-            className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
-          >
-            <option value={5}>5</option>
-            <option value={10}>10</option>
-            <option value={15}>15</option>
-            <option value={20}>20</option>
-          </select>
-          <span className="text-gray-500">entries</span>
-        </div>
-      </div>
+      {paymentaccount.length > 0 && (
+         <div className="flex justify-between mt-4 p-2">
+         <div className="flex flex-row items-center justify-center gap-2">
+           <div className="flex items-center gap-4">
+             <button
+               onClick={() => handlePageChange(currentPage - 1)}
+               disabled={currentPage === 1}
+               className="p-2 text-gray-500 rounded-md"
+             >
+               Previous
+             </button>
+           </div>
+ 
+           <div className="flex flex-row items-center justify-center gap-2">
+             {paginationButtons}
+           </div>
+ 
+           <div className="flex items-center">
+             <button
+               onClick={() => handlePageChange(currentPage + 1)}
+               disabled={currentPage === totalPages}
+               className="p-2 text-gray-500 rounded-md"
+             >
+               Next
+             </button>
+           </div>
+         </div>
+ 
+         <div className="mt-4 flex gap-2 justify-center items-center">
+           <span className="text-gray-500">Show</span>
+           <select
+             id="itemsPerPage"
+             value={itemsPerPage}
+             onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
+             className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
+           >
+             <option value={5}>5</option>
+             <option value={10}>10</option>
+             <option value={15}>15</option>
+             <option value={20}>20</option>
+           </select>
+           <span className="text-gray-500">entries</span>
+         </div>
+       </div>
+      )}
     </div>
   )
 }

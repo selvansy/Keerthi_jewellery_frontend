@@ -80,7 +80,7 @@ import AccountSummaryReport from "../chit/components/Report/AccountSummary";
 import OutStandingReport from "../chit/components/common/OutStandingReport";
 import OutStandingAmount from "../chit/components/Report/OutStandingAmout";
 import CardPrint from "../chit/components/print/CardPrint/printone";
-
+import ReceiptPrint from "../chit/components/print/ReceiptPrint/printone";
   
 import NewArrivalsWhatsapp from "../chit/components/whatsapp/newarrivals/index";
 import ProductWhatsapp from "../chit/components/whatsapp/product/index";
@@ -106,6 +106,11 @@ const RouteList = [
     name: "Card Print",
     path:'/cardprint/printone',
     element:<Base renderContent={CardPrint}/>
+  },
+  {
+    name: "Receipt Print",
+    path:'/receiptprint/printone',
+    element:<Base renderContent={ReceiptPrint}/>
   },
   {
     name: "Metal Rate",
@@ -427,7 +432,7 @@ const RouteList = [
     element:<Base renderContent={ModeWisePayment}/>
   },
   {
-    name: "Gift Stock",
+    name: "Gift Stock Report",
     path:'/reports/giftstock',
     element:<Base renderContent={GiftStock}/>
   },
@@ -524,6 +529,11 @@ const RouteList = [
     {
       name: "Add Scheme Payment",
       path:'/payment/addschemepayment',
+      element:<Base renderContent={AddSchemePayment}/>
+    },
+     {
+      name: "Add Scheme Payment",
+      path:'/payment/addschemepayment/:id',
       element:<Base renderContent={AddSchemePayment}/>
     },
      // super admin routes
