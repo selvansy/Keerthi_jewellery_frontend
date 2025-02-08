@@ -241,7 +241,7 @@ const GiftInwardsCreation = () => {
       }
     });
 
-    console.log(giftitemfilter);
+  
     
   
   return (

@@ -16,6 +16,7 @@ import ProgressSteps from '../../common/ProgressSteps';
 const ClientMaster = () => {
 
   const navigate = useNavigate()
+  const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
   const [isFilterOpen, setIsFilterOpen] = React.useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);

@@ -177,15 +177,12 @@ const ClientForm = () => {
       updateclientMutate(formData);
     } else {
       addclientMutate(formData);
-
-
     }
 
   };
 
   const handleCheckboxChange = (projectId, project_name) => (e) => {
-    console.log(project_name);
-    console.log(e.target.checked);
+   
     setProjectId((prevState) => {
       let updatedProjectIds = [...prevState];
       if (e.target.checked) {

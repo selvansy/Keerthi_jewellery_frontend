@@ -6,6 +6,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import { toast } from 'react-toastify';
 import { addschemeaccount, schemepaymenttodayrate, searchmobileschemeaccount, getschemeaccountbyid, getschemeById, updateschemepayment, extendinstallment, addcloseSchemeAccount, revertschemeAccount, schemeaccountbyid, getallbranchscheme, getallbranchclassification, getemployeebybranch,getallbranch, getallpaymentmode } from '../../../api/Endpoints'
+import { useSelector } from 'react-redux';
 
 const AddSchemePayment = () => {
 
@@ -15,7 +16,7 @@ const AddSchemePayment = () => {
   const location = useLocation();
   const todaydate = new Date();
   const formattedDate = todaydate;
-  const { id } = useParams(); 
+
   const [date_payment, setStartDate] = useState(formattedDate);
   const [maturity_date, setMaturityDate] = useState('');
   const [searchmobile, setSearchMobile] = useState('');
@@ -33,6 +34,7 @@ const AddSchemePayment = () => {
   const [paymentamount, setPaymentAmount] = useState(0);
   const [metal_rate, setMetalRate] = useState(0);
   const [fine_amount, setFineAmount] = useState(0);
+  
   useEffect(() => {
     if (id) {
       handlepaymentbyid({ id: id });
@@ -170,21 +172,7 @@ console.log({ ...prev, id_customer: customerlist._id,mobile:customerlist.mobile 
   };
 
 
-  // const { mutate: handleautosearchmobile } = useMutation({
-  //   mutationFn: searchmobilenoincustomer,
-  //   onSuccess: (response) => {
 
-  //     if (response.data > 0) {
-
-  //       const filteredSuggestions = response.data.filter((number) =>
-  //         number.includes(searchmobile)
-  //       );
-  //       setSuggestions(filteredSuggestions);
-  //     }
-
-
-  //   },
-  // });
 
   const { mutate: getallbranchMutate } = useMutation({
     mutationFn: getallbranch,
@@ -755,61 +743,61 @@ console.log(err);
                       {isExpanded && (
                         <div className='lg:w-1/2 w-full items-center justify-center lg:pl-10 lg:pr-10'>
                           <div className='bg-[#F8F9FA] lg:w-full rounded-lg flex flex-col p-4 lg:h-full'>
-                            <h2 class="text-xl font-bold text-[#023453] mb-4 text-center">Scheme Details</h2>
+                            <h2 className="text-xl font-bold text-[#023453] mb-4 text-center">Scheme Details</h2>
                             <div>
-                              <div class="flex justify-between py-1">
-                                <span class="text-gray-600">Joined On</span>
-                                <span class="text-gray-900">2024-12-12 15:52:55</span>
+                              <div className="flex justify-between py-1">
+                                <span className="text-gray-600">Joined On</span>
+                                <span className="text-gray-900">2024-12-12 15:52:55</span>
                               </div>
 
-                              <div class="flex justify-between py-1">
-                                <span class="text-gray-600">A/C Name</span>
-                                <span class="text-gray-900">Arun</span>
+                              <div className="flex justify-between py-1">
+                                <span className="text-gray-600">A/C Name</span>
+                                <span className="text-gray-900">Arun</span>
                               </div>
 
-                              <div class="flex justify-between py-1">
-                                <span class="text-gray-600">Last Paid Date</span>
-                                <span class="text-gray-900">12-12-2024</span>
+                              <div className="flex justify-between py-1">
+                                <span className="text-gray-600">Last Paid Date</span>
+                                <span className="text-gray-900">12-12-2024</span>
                               </div>
 
-                              <div class="flex justify-between py-1">
-                                <span class="text-gray-600">Last Paid Installment</span>
-                                <span class="text-gray-900">1</span>
+                              <div className="flex justify-between py-1">
+                                <span className="text-gray-600">Last Paid Installment</span>
+                                <span className="text-gray-900">1</span>
                               </div>
 
-                              <div class="flex justify-between py-1">
-                                <span class="text-gray-600">Last Paid Amount</span>
-                                <span class="text-green-500">₹200.00</span>
+                              <div className="flex justify-between py-1">
+                                <span className="text-gray-600">Last Paid Amount</span>
+                                <span className="text-green-500">₹200.00</span>
                               </div>
 
-                              <div class="flex justify-between py-1">
-                                <span class="text-gray-600">No of Gift Issues</span>
-                                <span class="text-gray-900">0</span>
+                              <div className="flex justify-between py-1">
+                                <span className="text-gray-600">No of Gift Issues</span>
+                                <span className="text-gray-900">0</span>
                               </div>
 
-                              <div class="flex justify-between py-1">
-                                <span class="text-gray-600">Scheme Type</span>
-                                <span class="text-gray-900">2024-12-12 15:52:55</span>
+                              <div className="flex justify-between py-1">
+                                <span className="text-gray-600">Scheme Type</span>
+                                <span className="text-gray-900">2024-12-12 15:52:55</span>
                               </div>
 
-                              <div class="flex justify-between py-1">
-                                <span class="text-gray-600">Scheme A/C No</span>
-                                <span class="text-gray-900">Arun</span>
+                              <div className="flex justify-between py-1">
+                                <span className="text-gray-600">Scheme A/C No</span>
+                                <span className="text-gray-900">Arun</span>
                               </div>
 
-                              <div class="flex justify-between py-1">
-                                <span class="text-gray-600">Total Paid Installment</span>
-                                <span class="text-gray-900">12-12-2024</span>
+                              <div className="flex justify-between py-1">
+                                <span className="text-gray-600">Total Paid Installment</span>
+                                <span className="text-gray-900">12-12-2024</span>
                               </div>
 
-                              <div class="flex justify-between py-1">
-                                <span class="text-gray-600">Total Paid Amount</span>
-                                <span class="text-green-500">₹200.00</span>
+                              <div className="flex justify-between py-1">
+                                <span className="text-gray-600">Total Paid Amount</span>
+                                <span className="text-green-500">₹200.00</span>
                               </div>
 
-                              <div class="flex justify-between py-1">
-                                <span class="text-gray-600">Total Metal Weight</span>
-                                <span class="text-gray-900">0.541Grm</span>
+                              <div className="flex justify-between py-1">
+                                <span className="text-gray-600">Total Metal Weight</span>
+                                <span className="text-gray-900">0.541Grm</span>
                               </div>
                             </div>
                           </div>
@@ -907,77 +895,77 @@ console.log(err);
               </div>
               <div className='lg:w-1/2 w-full items-center justify-center lg:pl-10 lg:pr-10'>
                 <div className='bg-[#F8F9FA] lg:w-full rounded-lg flex-col p-4 lg:h-full hidden lg:block shadow-md'>
-                  <h2 class="text-xl font-bold text-[#023453] mb-4 text-center">Scheme Details</h2>
+                  <h2 className="text-xl font-bold text-[#023453] mb-4 text-center">Scheme Details</h2>
                   <div>
-                    <div class="flex justify-between py-1">
-                      <span class="text-gray-600">Customer Name</span>
-                      <span class="text-gray-900">{customerdata.customer_name || 'N/A'}</span>
+                    <div className="flex justify-between py-1">
+                      <span className="text-gray-600">Customer Name</span>
+                      <span className="text-gray-900">{customerdata.customer_name || 'N/A'}</span>
                     </div>
-                    <div class="flex justify-between py-1">
-                      <span class="text-gray-600">Address</span>
-                      <span class="text-gray-900">{customerdata.address || 'N/A'}</span>
+                    <div className="flex justify-between py-1">
+                      <span className="text-gray-600">Address</span>
+                      <span className="text-gray-900">{customerdata.address || 'N/A'}</span>
                     </div>
-                    <div class="flex justify-between py-1">
-                      <span class="text-gray-600">Joined On</span>
-                      <span class="text-gray-900">{selectedScheme?.start_date || 'N/A'}</span>
+                    <div className="flex justify-between py-1">
+                      <span className="text-gray-600">Joined On</span>
+                      <span className="text-gray-900">{selectedScheme?.start_date || 'N/A'}</span>
                     </div>
-                    <div class="flex justify-between py-1">
-                      <span class="text-gray-600">Joined On</span>
-                      <span class="text-gray-900">{selectedScheme?.start_date || 'N/A'}</span>
-                    </div>
-
-                    <div class="flex justify-between py-1">
-                      <span class="text-gray-600">A/C Name</span>
-                      <span class="text-gray-900">{selectedScheme?.account_name || 'N/A'}</span>
+                    <div className="flex justify-between py-1">
+                      <span className="text-gray-600">Joined On</span>
+                      <span className="text-gray-900">{selectedScheme?.start_date || 'N/A'}</span>
                     </div>
 
-                    <div class="flex justify-between py-1">
-                      <span class="text-gray-600">Scheme A/C No</span>
-                      <span class="text-gray-900">{selectedScheme?.scheme_acc_number || 'N/A'}</span>
+                    <div className="flex justify-between py-1">
+                      <span className="text-gray-600">A/C Name</span>
+                      <span className="text-gray-900">{selectedScheme?.account_name || 'N/A'}</span>
                     </div>
 
-                    <div class="flex justify-between py-1">
-                      <span class="text-gray-600">No of Gift Issues</span>
-                      <span class="text-gray-900">{selectedScheme?.gift_issues || '0'}</span>
+                    <div className="flex justify-between py-1">
+                      <span className="text-gray-600">Scheme A/C No</span>
+                      <span className="text-gray-900">{selectedScheme?.scheme_acc_number || 'N/A'}</span>
                     </div>
 
-                    <div class="flex justify-between py-1">
-                      <span class="text-gray-600">Scheme Type</span>
-                      <span class="text-gray-900">{selectedScheme?.scheme_typename || 'N/A'}</span>
+                    <div className="flex justify-between py-1">
+                      <span className="text-gray-600">No of Gift Issues</span>
+                      <span className="text-gray-900">{selectedScheme?.gift_issues || '0'}</span>
+                    </div>
+
+                    <div className="flex justify-between py-1">
+                      <span className="text-gray-600">Scheme Type</span>
+                      <span className="text-gray-900">{selectedScheme?.scheme_typename || 'N/A'}</span>
                     </div>
 
 
-                    <div class="flex justify-between py-1">
-                      <span class="text-gray-600">Last Paid Date</span>
-                      <span class="text-gray-900">{selectedScheme?.last_paid_date || '0000-00-00'}</span>
+                    <div className="flex justify-between py-1">
+                      <span className="text-gray-600">Last Paid Date</span>
+                      <span className="text-gray-900">{selectedScheme?.last_paid_date || '0000-00-00'}</span>
                     </div>
 
-                    <div class="flex justify-between py-1">
-                      <span class="text-gray-600">Last Paid Installment</span>
-                      <span class="text-gray-900">{selectedScheme?.last_paid_installment || '0'}</span>
+                    <div className="flex justify-between py-1">
+                      <span className="text-gray-600">Last Paid Installment</span>
+                      <span className="text-gray-900">{selectedScheme?.last_paid_installment || '0'}</span>
                     </div>
 
-                    <div class="flex justify-between py-1">
-                      <span class="text-gray-600">Last Paid Amount</span>
-                      <span class="text-green-500">{selectedScheme?.last_paid_amount || '0.00'}</span>
+                    <div className="flex justify-between py-1">
+                      <span className="text-gray-600">Last Paid Amount</span>
+                      <span className="text-green-500">{selectedScheme?.last_paid_amount || '0.00'}</span>
                     </div>
-                    <div class="flex justify-between py-1">
-                      <span class="text-gray-600">Last Paid Weight</span>
-                      <span class="text-green-500">{selectedScheme?.last_paid_weight || '0.00'}</span>
+                    <div className="flex justify-between py-1">
+                      <span className="text-gray-600">Last Paid Weight</span>
+                      <span className="text-green-500">{selectedScheme?.last_paid_weight || '0.00'}</span>
                     </div>
-                    <div class="flex justify-between py-1">
-                      <span class="text-gray-600">Total Paid Installment</span>
-                      <span class="text-gray-900">{selectedScheme?.total_paidinstallments || '0'}</span>
-                    </div>
-
-                    <div class="flex justify-between py-1">
-                      <span class="text-gray-600">Total Paid Amount</span>
-                      <span class="text-green-500">{selectedScheme?.total_paidamount || '0.00'}</span>
+                    <div className="flex justify-between py-1">
+                      <span className="text-gray-600">Total Paid Installment</span>
+                      <span className="text-gray-900">{selectedScheme?.total_paidinstallments || '0'}</span>
                     </div>
 
-                    <div class="flex justify-between py-1">
-                      <span class="text-gray-600">Total Metal Weight</span>
-                      <span class="text-gray-900">{selectedScheme?.total_weight || '0.00'}</span>
+                    <div className="flex justify-between py-1">
+                      <span className="text-gray-600">Total Paid Amount</span>
+                      <span className="text-green-500">{selectedScheme?.total_paidamount || '0.00'}</span>
+                    </div>
+
+                    <div className="flex justify-between py-1">
+                      <span className="text-gray-600">Total Metal Weight</span>
+                      <span className="text-gray-900">{selectedScheme?.total_weight || '0.00'}</span>
                     </div>
                   </div>
                 </div>

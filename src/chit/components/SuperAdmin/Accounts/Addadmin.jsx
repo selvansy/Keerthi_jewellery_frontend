@@ -7,7 +7,7 @@ import * as Yup from 'yup';
 
 function Addadmin({ isLoading = false, setisAdmin }) {
 
-
+    const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
     let [errorMessage, setErrorMessage] = useState("");
     let [submit, setSubmit] = useState(false);
