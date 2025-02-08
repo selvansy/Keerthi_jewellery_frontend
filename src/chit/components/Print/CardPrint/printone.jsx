@@ -129,7 +129,7 @@ const CardPrint = () => {
       grandTotal += parseFloat(row?.total_amt || 0);
 
       printContent += `
-        <tr class="fixedhgt">
+        <tr className="fixedhgt">
           <td>${index + 1}</td>
           <td>${row?.date_payment}</td>
           <td>${row?.payment_receipt}</td>

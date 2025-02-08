@@ -29,7 +29,7 @@ function Dashboard() {
 
   const id_role = roledata?.id_role;
   const id_client = roledata?.id_client;
-  const id_branch = roledata?.branch;
+  const id_branch  = roledata?.id_branch;
 
 
   let [data, setData] = useState([]);
@@ -165,9 +165,9 @@ function Dashboard() {
       page: 1,
       limit: 10,
       added_by: "",
-      from_date: "",
-      to_date: "",
-      id_branch: "",
+      from_date: from_date,
+      to_date: to_date,
+      id_branch: id_branch,
       id_scheme: "",
       id_classification: "",
       collectionuserid: "",

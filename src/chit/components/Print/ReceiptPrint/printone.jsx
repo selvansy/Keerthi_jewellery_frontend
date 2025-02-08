@@ -69,72 +69,72 @@ const AccountSearchAndPrint = () => {
     }
 console.log(paymentData)
     const str = `
-      <div class="main_section">
+      <div className="main_section">
         <div>
-          <p class="meena_name">${complist?.branch_name}</p>
-          <p class="address">${city_details?.city_name} ${complist?.pincode}.</p>
+          <p className="meena_name">${complist?.branch_name}</p>
+          <p className="address">${city_details?.city_name} ${complist?.pincode}.</p>
         </div>
-        <div class="mt mt-5">
-          <p class="chitreceipt">CHIT RECEIPT</p>
+        <div className="mt mt-5">
+          <p className="chitreceipt">CHIT RECEIPT</p>
         </div>
-        <div class="mt">
-          <div class="details_count">
-            <div class="details">
-              <p class="details_list">Receipt No</p>
-              <p class="details_list">:</p>
+        <div className="mt">
+          <div className="details_count">
+            <div className="details">
+              <p className="details_list">Receipt No</p>
+              <p className="details_list">:</p>
             </div>
-            <p class="details_list">RC${selectedRowData?.payment_receipt}</p>
+            <p className="details_list">RC${selectedRowData?.payment_receipt}</p>
           </div>
-          <div class="details_count">
-            <div class="details">
-              <p class="details_list">Receipt Date</p>
-              <p class="details_list">:</p>
+          <div className="details_count">
+            <div className="details">
+              <p className="details_list">Receipt Date</p>
+              <p className="details_list">:</p>
             </div>
-            <p class="details_list">${selectedRowData?.date_payment}</p>
+            <p className="details_list">${selectedRowData?.date_payment}</p>
           </div>
-          <div class="details_count">
-            <div class="details">
-              <p class="details_list">Name</p>
-              <p class="details_list">:</p>
+          <div className="details_count">
+            <div className="details">
+              <p className="details_list">Name</p>
+              <p className="details_list">:</p>
             </div>
-            <p class="details_list">${schemeaccount_details?.account_name}</p>
+            <p className="details_list">${schemeaccount_details?.account_name}</p>
           </div>
-          <div class="details_count">
-            <div class="details">
-              <p class="details_list">Account No</p>
-              <p class="details_list">:</p>
+          <div className="details_count">
+            <div className="details">
+              <p className="details_list">Account No</p>
+              <p className="details_list">:</p>
             </div>
-            <p class="details_list">${schemeaccount_details?.scheme_acc_number}</p>
+            <p className="details_list">${schemeaccount_details?.scheme_acc_number}</p>
           </div>
-          <div class="details_count">
-            <div class="details">
-              <p class="details_list">Scheme Name</p>
-              <p class="details_list">:</p>
+          <div className="details_count">
+            <div className="details">
+              <p className="details_list">Scheme Name</p>
+              <p className="details_list">:</p>
             </div>
-            <p class="details_list">${scheme_name}</p>
+            <p className="details_list">${scheme_name}</p>
           </div>
-          <div class="details_count">
-            <div class="details">
-              <p class="details_list">Paid Amount</p>
-              <p class="details_list">:</p>
+          <div className="details_count">
+            <div className="details">
+              <p className="details_list">Paid Amount</p>
+              <p className="details_list">:</p>
             </div>
-            <p class="details_list">Rs.${selectedRowData?.total_amt}</p>
+            <p className="details_list">Rs.${selectedRowData?.total_amt}</p>
           </div>
         </div>
 
-        <div class="amount_details">
+        <div className="amount_details">
           <div>
-            <p class="paidamt">Total Installment</p>
-            <p class="paidamt">${calculationdata?.total_paid_installments}/${schemeaccount_details?.total_installment}</p>
+            <p className="paidamt">Total Installment</p>
+            <p className="paidamt">${calculationdata?.total_paid_installments}/${schemeaccount_details?.total_installment}</p>
           </div>
           <div>
-            <p class="paidamt">Total Amount</p>
-            <p class="paidamt">${calculationdata?.total_paid_amount}</p>
+            <p className="paidamt">Total Amount</p>
+            <p className="paidamt">${calculationdata?.total_paid_amount}</p>
           </div>
           ${scheme_details?.scheme_type !== 0 && scheme_details?.scheme_type !== 1 && scheme_details?.scheme_type !== 4 && scheme_details?.scheme_type !== 7 && scheme_details?.scheme_type !== 8 && scheme_details?.scheme_type !== 9 ? `
             <div>
-              <p class="paidamt">Total Weight</p>
-              <p class="paidamt">${calculationdata?.total_paid_weight}</p>
+              <p className="paidamt">Total Weight</p>
+              <p className="paidamt">${calculationdata?.total_paid_weight}</p>
             </div>
           ` : ''}
         </div>

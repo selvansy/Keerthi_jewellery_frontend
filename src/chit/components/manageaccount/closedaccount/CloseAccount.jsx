@@ -8,7 +8,8 @@ import { toast } from 'react-toastify'
 import { CalendarDays, RefreshCcw,Undo2 } from 'lucide-react'
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
-
+import { ExportToExcel } from '../../common/Dropdown/Excelexport';
+import { ExportToPDF } from '../../common/Dropdown/ExportPdf';
 import { openModal } from '../../../../redux/modalSlice';
 import { eventEmitter } from '../../../../utils/EventEmitter';
 import { useDispatch, useSelector } from 'react-redux';
@@ -24,6 +25,7 @@ const CloaseAccount = () => {
 
   const [search, setSearch] = useState('')
   const [schemeaccount, setschemeaccount] = useState([])
+  const [schaccExp,setschaccExp] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -63,7 +65,7 @@ const CloaseAccount = () => {
     if (name === "id_branch") {
       handleClassifyChange(e);
       handleemployeebyBranch(e);
-      getemployeebyBranch(e);
+      handleemployeebyBranch(e);
       handlebranchscheme(e);
     }
   };
@@ -238,9 +240,31 @@ const CloaseAccount = () => {
   const { isLoading, mutate: getschemeaccountMutate } = useMutation({
     mutationFn: schemeaccounttable,
     onSuccess: (response) => {
-
+     console.log("table",response)
       setschemeaccount(response.data)
       setTotalPages(response.totalPages);
+      let arrayData = [];
+      if(response.data.length !==0){
+            for(var i=0;i<response.data.length;i++){
+                arrayData.push({
+                    scheme_acc_number:response.data[i].scheme_acc_number,
+                    account_name:response.data[i].account_name,
+                    mobile:response.data[i].mobile,
+                    total_paidinstallments:response.data[i].total_paidinstallments,
+                    total_paidamount:response.data[i].total_paidamount,
+                    total_weight:response.data[i].total_weight,
+                    start_date:response.data[i].start_date,
+                    maturity_date:response.data[i].maturity_date,
+                    total_paidinstallments:response.data[i].total_paidinstallments,
+                    total_paidamount:response.data[i].total_paidamount,
+                    total_weight:response.data[i].total_weight,
+                    branch_name:response.data[i].branch_name
+            
+                  });
+            }
+      }
+
+            setschaccExp(arrayData)
     },
     onError: (error) => {
       console.error('Error fetching countries:', error);
@@ -584,6 +608,12 @@ const CloaseAccount = () => {
           >
             <SlidersHorizontal size={20} />
           </button>
+
+            <div className="flex flex-row items-center justify-end gap-2">
+          
+                    <ExportToExcel apiData={schemeaccount} fileName="SchemeAccount Report" />
+                    <ExportToPDF apiData={schaccExp} fileName="scheme account" />
+                  </div>
          
           <button
                 id="filter"
@@ -699,7 +729,7 @@ const CloaseAccount = () => {
                   CLassification
                 </label>
                 <div className="relative">
-                  <select name="id_classification" onChange={(e) => { filterInputchange(e); handleGiftChange(e) }} className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
+                  <select name="id_classification" onChange={(e) => { filterInputchange(e); handlePageChange(e) }} className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
                     <option value='' >--Select--</option>
                     {classifyfilter.map((classify) => (
                       <option key={classify._id} value={classify._id}>{classify.classification_name}</option>

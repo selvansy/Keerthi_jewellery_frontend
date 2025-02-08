@@ -3,8 +3,9 @@ import Table from '../../common/Table'
 import { Search } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
-import {  getcustomertable,changecustomerStatus, deletecustomer } from '../../../api/Endpoints'
-
+import { getcustomertable, changecustomerStatus, deletecustomer } from '../../../api/Endpoints'
+import { ExportToExcel } from '../../common/Dropdown/Excelexport';
+import { ExportToPDF } from '../../common/Dropdown/ExportPdf';
 import { toast } from 'react-toastify';
 import { eventEmitter } from '../../../../utils/EventEmitter';
 import { openModal } from '../../../../redux/modalSlice';
@@ -27,7 +28,7 @@ const Customer = () => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [searchInput, setSearchInput] = useState('')
   // const debouncedSearch = useDebounce(searchInput, 500)
-  
+
   const paginationButtons = [];
   for (let i = 1; i <= totalPages; i++) {
     paginationButtons.push(
@@ -57,7 +58,7 @@ const Customer = () => {
   const { mutate: getcustomertableMutate, isLoading } = useMutation({
     mutationFn: getcustomertable,
     onSuccess: (response) => {
-   
+
       if (response?.data) {
         setcustomerData(response.data);
         setTotalPages(response.totalPages);
@@ -69,7 +70,7 @@ const Customer = () => {
     mutationFn: deletecustomer,
     onSuccess: (response) => {
       toast.success(response.message);
-      getcustomertableMutate({ page: currentPage, limit: itemsPerPage });  
+      getcustomertableMutate({ page: currentPage, limit: itemsPerPage });
     }
   });
 
@@ -122,7 +123,7 @@ const Customer = () => {
           text: 'Delete'
         }
       }
-      }));
+    }));
 
     eventEmitter.on('CONFIRMATION_SUBMIT', async (data) => {
       try {
@@ -143,16 +144,16 @@ const Customer = () => {
 
   const handleStatusToggle = async (id) => {
     let response = await changecustomerStatus(id);
-    if(response){
+    if (response) {
       toast.success(response.message);
       setcustomerData((prevData) =>
         prevData.map((customer) =>
-          customer._id === id 
+          customer._id === id
             ? { ...customer, active: customer.active === true ? false : true }
             : customer
         )
       );
-      getcustomertableMutate({ page: currentPage, limit: itemsPerPage });  
+      getcustomertableMutate({ page: currentPage, limit: itemsPerPage });
     }
   };
 
@@ -176,11 +177,11 @@ const Customer = () => {
       cell: (row) => `${row?.firstname} ${row?.lastname}`,
     },
     {
-      header: "Mobile", 
+      header: "Mobile",
       cell: (row) => `${row?.mobile}`,
     },
     {
-      header: "Create Date", 
+      header: "Create Date",
       cell: (row) => formatDate(row?.date_add)
     },
     {
@@ -192,14 +193,13 @@ const Customer = () => {
             type="checkbox"
             className="sr-only peer"
             checked={row?.active === true}
-            onChange={() => handleStatusToggle(row?._id)} 
+            onChange={() => handleStatusToggle(row?._id)}
           />
           <div
-            className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-black p-[2px] after:duration-300 after:bg-black ${
-              row.active === true
-                ? 'peer-checked:bg-[#61A375] peer-checked:ring-[#61A375]'   
+            className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-black p-[2px] after:duration-300 after:bg-black ${row.active === true
+                ? 'peer-checked:bg-[#61A375] peer-checked:ring-[#61A375]'
                 : 'peer-checked:bg-gray-400 peer-checked:ring-gray-400'
-            } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-white peer-hover:after:scale-95`}
+              } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-white peer-hover:after:scale-95`}
           ></div>
         </label>
       )
@@ -208,7 +208,7 @@ const Customer = () => {
       header: 'Actions',
       cell: (row, rowIndex) => (
         <div className="dropdown-container relative">
-          <button 
+          <button
             className="p-1 hover:bg-gray-100 rounded-full"
             onClick={(e) => {
               e.stopPropagation();
@@ -220,13 +220,13 @@ const Customer = () => {
               <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
             </svg>
           </button>
-          
+
           {activeDropdown === row?._id && (
-            <div 
-              className="absolute right-[47px] lg:right-[163px] md:right-[150px] sm:right-[100px] transform -translate-x-8" 
+            <div
+              className="absolute right-[47px] lg:right-[163px] md:right-[150px] sm:right-[100px] transform -translate-x-8"
               style={{
                 top: rowIndex >= customerData.length - 2 ? 'auto' : '72%',
-                 bottom: rowIndex >= customerData.length - 2 ? '-74%' : 'auto',
+                bottom: rowIndex >= customerData.length - 2 ? '-74%' : 'auto',
                 // top: 'auto',
                 // bottom: '-440%',
                 zIndex: 9999,
@@ -281,7 +281,7 @@ const Customer = () => {
 
   return (
     <div className="flex flex-col p-4">
-      <h2 className="text-2xl text-gray-900 font-bold">Customer</h2> 
+      <h2 className="text-2xl text-gray-900 font-bold">Customer</h2>
       <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
         <div className="relative w-full lg:w-1/3 min-w-[200px]">
           <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
@@ -291,31 +291,38 @@ const Customer = () => {
               <Search className="text-gray-500" />
             )}
           </div>
-          <input 
+          <input
             placeholder="Search..."
             className="p-3 pl-10 pr-3 border-2 bg-[#F5F5F5] border-gray-500 rounded-md w-full"
             value={searchInput}
             onChange={handleSearch}
           />
         </div>
+
         <div className="flex flex-row items-center justify-end gap-2">
-          <button
+           
+        <button
             className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
             onClick={handleAddcustomerClick}
             style={{ backgroundColor: layout_color }}  >
             + Add Customer
           </button>
+
+
+          <ExportToExcel apiData={customerData} fileName="customer Report" />
+          <ExportToPDF apiData={customerData} fileName="customer account" />
         </div>
+
       </div>
 
       <div className="mt-4">
-      <Table 
-              data={customerData}
-              columns={columns}
-              onPageChange={handlePageChange}
-              selectedRow={selectedRow}
-              activeDropdown={activeDropdown}
-            />
+        <Table
+          data={customerData}
+          columns={columns}
+          onPageChange={handlePageChange}
+          selectedRow={selectedRow}
+          activeDropdown={activeDropdown}
+        />
       </div>
       <div className="flex justify-between mt-4 p-2">
         <div className="flex flex-row items-center justify-center gap-2">
