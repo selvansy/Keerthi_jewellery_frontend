@@ -62,26 +62,26 @@ function SuperAdminDashboard() {
   const columns = [
     {
       header: 'PAYMENT MODE',
-      cell: (row) => `${row.mode_name}`,
+      cell: (row) => `${row?.mode_name}`,
     },
     {
       header: 'COLLECTION',
-      cell: (row) => `${row.collection_amount}`,
+      cell: (row) => `${row?.collection_amount}`,
     }
   ]
 
   const PaymentColumns = [
     {
       header: 'Scheme name',
-      cell: (row) => `${row.total_open}`,
+      cell: (row) => `${row?.total_open}`,
     },
     {
       header: 'Paid Date',
-      cell: (row) => `${row.total_complete}`,
+      cell: (row) => `${row?.total_complete}`,
     },
     {
       header: 'Paid Amount',
-      cell: (row) => `${row.total_complete}`,
+      cell: (row) => `${row?.total_complete}`,
     },
    
   ]

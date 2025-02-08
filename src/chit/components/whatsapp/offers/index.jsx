@@ -338,11 +338,11 @@ const ProductWhatsapp = () => {
     },
     {
       header: 'Name',
-      cell: (row) => row.name,
+      cell: (row) => row?.name,
     },
     {
       header: "Description",
-      cell: (row) => row.description
+      cell: (row) => row?.description
     },
     {
       header: 'Image',
@@ -352,8 +352,8 @@ const ProductWhatsapp = () => {
             className="p-1 hover:bg-gray-100 rounded-full"
             onClick={(e) => {
               e.stopPropagation();
-              setSelectedRow(row._id);
-              setActiveDropdown(activeDropdown === row._id ? null : row._id);
+              setSelectedRow(row?._id);
+              setActiveDropdown(activeDropdown === row?._id ? null : row?._id);
             }}
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
@@ -361,7 +361,7 @@ const ProductWhatsapp = () => {
             </svg>
           </button>
 
-          {activeDropdown === row._id && (
+          {activeDropdown === row?._id && (
             <div
               className="absolute right-[47px] lg:right-[163px] md:right-[150px] sm:right-[100px] transform -translate-x-8"
               style={{
@@ -379,7 +379,7 @@ const ProductWhatsapp = () => {
                   <button
                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
                     onClick={() => {
-                      handleImagedetails(row._id);
+                      handleImagedetails(row?._id);
                     }}
 
 
@@ -392,7 +392,7 @@ const ProductWhatsapp = () => {
                   <button
                     className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
                     onClick={() => {
-                      handleDelete(row._id);
+                      handleDelete(row?._id);
                       setActiveDropdown(null);
                     }}
 
@@ -418,27 +418,27 @@ const ProductWhatsapp = () => {
         <div className="dropdown-container relative">
           <button
             onClick={() => {
-              if (row.whatsapp_sent === 0) {
-                handleSend(row._id,row.id_branch._id);
+              if (row?.whatsapp_sent === 0) {
+                handleSend(row?._id,row?.id_branch._id);
                 setSendDropdown(null);
               }
             }}
             className={`px-4 py-2 text-white font-semibold rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-opacity-75 
-            ${row.whatsapp_sent > 0 ? "bg-gray-900 focus:ring-gray-600 cursor-not-allowed opacity-50" : "bg-[#61A375] hover:bg-[#4F8A5D] focus:ring-green-400 cursor-pointer"}`}
-            disabled={row.whatsapp_sent > 0}
+            ${row?.whatsapp_sent > 0 ? "bg-gray-900 focus:ring-gray-600 cursor-not-allowed opacity-50" : "bg-[#61A375] hover:bg-[#4F8A5D] focus:ring-green-400 cursor-pointer"}`}
+            disabled={row?.whatsapp_sent > 0}
           >
-            {row.whatsapp_sent > 0 ? "Sent" : "Send"}
+            {row?.whatsapp_sent > 0 ? "Sent" : "Send"}
           </button>
         </div>
       ),
     },
     {
       header: "Total Sent",
-      cell: (row) => row.whatsapp_sent
+      cell: (row) => row?.whatsapp_sent
     },
     {
       header: "Branch Name",
-      cell: (row) => row.id_branch.branch_name
+      cell: (row) => row?.id_branch.branch_name
     },
 
   ];

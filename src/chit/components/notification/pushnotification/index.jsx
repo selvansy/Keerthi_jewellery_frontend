@@ -229,32 +229,32 @@ const handleReset = (e) => {
     },
     {
       header: 'Title',
-      cell: (row) => row.noti_name,
+      cell: (row) => row?.noti_name,
     },
     {
       header: "Image",
-      cell: (row) => row.noti_image
+      cell: (row) => row?.noti_image
     },
     {
       header: "Description",
-      cell: (row) => row.noti_desc
+      cell: (row) => row?.noti_desc
     },
     {
       header: "No.of Messages sent",
-      cell: (row) => row.total_sent
+      cell: (row) => row?.total_sent
     },
     {
       header: "Display Type",
-      cell: (row) => row.senttype === 1 ? 'Offers' : row.senttype === 2 ? 'New Arrivals' : row.senttype === 3 ? 'Product' : row.senttype === 4 ? 'Wedding' : 'Birthday'
+      cell: (row) => row?.senttype === 1 ? 'Offers' : row?.senttype === 2 ? 'New Arrivals' : row?.senttype === 3 ? 'Product' : row?.senttype === 4 ? 'Wedding' : 'Birthday'
     },
     {
       header: "Branch",
-      cell: (row) => row.id_branch.branch_name
+      cell: (row) => row?.id_branch.branch_name
     },
     {
       header: "Create Date",
       cell: (row) => {
-        const date = new Date(row.createdAt);
+        const date = new Date(row?.createdAt);
         return date.toLocaleDateString('en-GB'); // 'en-GB' gives the d-m-Y format
       }
     },
@@ -266,8 +266,8 @@ const handleReset = (e) => {
             className="p-1 hover:bg-gray-100 rounded-full"
             onClick={(e) => {
               e.stopPropagation();
-              setSelectedRow(row._id);
-              setActiveDropdown(activeDropdown === row._id ? null : row._id);
+              setSelectedRow(row?._id);
+              setActiveDropdown(activeDropdown === row?._id ? null : row?._id);
             }}
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
@@ -275,7 +275,7 @@ const handleReset = (e) => {
             </svg>
           </button>
 
-          {activeDropdown === row._id && (
+          {activeDropdown === row?._id && (
             <div
               className="absolute right-[47px] lg:right-[163px] md:right-[150px] sm:right-[100px] transform -translate-x-8"
               style={{
@@ -293,7 +293,7 @@ const handleReset = (e) => {
                   <button
                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
                     onClick={() => {
-                      handleViewnotification({ id: row._id });
+                      handleViewnotification({ id: row?._id });
                       setActiveDropdown(null);
                     }}
 
@@ -307,7 +307,7 @@ const handleReset = (e) => {
                   <button
                     className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
                     onClick={() => {
-                      handleDelete(row._id);
+                      handleDelete(row?._id);
                       setActiveDropdown(null);
                     }}
 

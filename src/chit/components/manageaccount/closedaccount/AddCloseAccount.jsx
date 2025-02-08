@@ -3,12 +3,13 @@ import { useNavigate } from 'react-router-dom'
 import { CalendarDays, Search,UserX2Icon } from 'lucide-react'
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
-
+import { setid } from "../../../../redux/clientFormSlice"
+import { useSelector, useDispatch } from 'react-redux'
 const AddCloseAccount = () => {
   const navigate = useNavigate()
   const [startDate, setStartDate] = useState(null);
   const [maturityDate, setMaturityDate] = useState(null);
-
+  const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const handleCancle = () => {
     navigate('/manageaccount/closedaccount')
   }

@@ -14,6 +14,7 @@ import chitrcvd from '../../../../assets/chitrcvd.svg';
 import nonchitrcvd from '../../../../assets/nonchitrcvd.svg';
 import balancegift from '../../../../assets/giftblnc.svg';
 import { useDispatch,useSelector } from 'react-redux'
+import { setbranchId } from '../../../../redux/clientFormSlice';
 
 
 const GiftIssued = () => {
@@ -22,10 +23,8 @@ const GiftIssued = () => {
   
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const roledata = useSelector((state) => state.clientForm.roledata);
-  const id_role = roledata?.id_role?.id_role;
-  const id_client = roledata?.id_client;
   const branch = roledata?.branch;
-console.log(branch)
+
   const [search, setSearch] = useState('')
   const [giftissues, setGiftissues] = useState([])
   const [currentPage, setCurrentPage] = useState(1);
@@ -45,7 +44,7 @@ console.log(branch)
   const [filters, setFilters] = React.useState({
     from_date: '',
     to_date: '',
-    id_branch: '',
+    id_branch: branch,
     gift_vendorid: '',
     id_gift: ''
   });
@@ -76,24 +75,33 @@ console.log(branch)
       gift_vendorid: filters.gift_vendorid,
       id_gift: filters.id_gift
     };
+    setbranchId(filters.id_branch);
 
-    if (from_date !== "" && to_date !== "" && id_branch !== "" && gift_vendorid !== "" && id_gift !== "") {
       setIsFilterOpen(false)
       giftissuesMutate(filterTosend);
-    }
+    
+    giftaccountcountMutate(filterTosend);
   };
 
   useEffect(() => {
     getallbranchMutate();
     getallissuetypeMutate();
-    giftaccountcountMutate({id_branch:id_branch});
   }, []);
 
-  
+  useEffect(() => {
+    console.log("id_branch---",branch)
+    if(branch){
+       giftaccountcountMutate({id_branch:branch});
+    }
+  }, [branch]);
+
   const { mutate: giftaccountcountMutate } = useMutation({
     mutationFn: giftaccountcount,
     onSuccess: (response) => {
-    setGiftcount(response.data);
+      if(response){
+        setGiftcount(response?.data);
+      }
+   
       
     },
   });
@@ -155,8 +163,9 @@ console.log(branch)
       gift_vendorid: '',
       id_gift: ''
     };
-
     giftissuesMutate(filterTosend)
+    giftaccountcountMutate(filterTosend);
+
   }, [currentPage, itemsPerPage, search])
 
 
@@ -219,35 +228,35 @@ console.log(branch)
     },
     {
       header: 'Customer Name',
-      cell: (row) => row.id_customer.firstname,
+      cell: (row) => row?.id_customer?.firstname,
     },
     {
       header: "Mobile",
-      cell: (row) => row.id_customer.mobile
+      cell: (row) => row?.id_customer?.mobile
     },
     {
       header: "Gift Name",
       cell: (row) => {
-        const gift_names = row.gifts.map((val) => val.id_gift.gift_name);
+        const gift_names = row?.gifts?.map((val) => val.id_gift.gift_name);
         return gift_names.join(", ");
       }
     },
     
     {
       header: "No.Of Gifts",
-      cell: (row) => row.gifts.length
+      cell: (row) => row?.gifts?.length
     },
     {
       header: "Issue Type",
-      cell: (row) => row.issue_type === 1 ? 'Scheme Gift' : 'Non Scheme Gift'
+      cell: (row) => row?.issue_type === 1 ? 'Scheme Gift' : 'Non Scheme Gift'
     },
     {
       header: "Issues Date",
-      cell: (row) => format(new Date(row.create_date), 'dd/MM/yyyy')
+      cell: (row) => format(new Date(row?.create_date), 'dd/MM/yyyy')
     },
     {
       header: "Branch Name",
-      cell: (row) => row.id_branch.branch_name
+      cell: (row) => row?.id_branch.branch_name
     },
     {
       header: 'Actions',
@@ -257,8 +266,8 @@ console.log(branch)
             className="p-1 hover:bg-gray-100 rounded-full"
             onClick={(e) => {
               e.stopPropagation();
-              setSelectedRow(row._id);
-              setActiveDropdown(activeDropdown === row._id ? null : row._id);
+              setSelectedRow(row?._id);
+              setActiveDropdown(activeDropdown === row?._id ? null : row?._id);
             }}
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
@@ -266,7 +275,7 @@ console.log(branch)
             </svg>
           </button>
 
-          {activeDropdown === row._id && (
+          {activeDropdown === row?._id && (
             <div
               className="absolute right-[47px] lg:right-[163px] md:right-[150px] sm:right-[100px] transform -translate-x-8"
               style={{
@@ -285,7 +294,7 @@ console.log(branch)
                   <button
                     className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
                     onClick={() => {
-                      handleDelete(row._id);
+                      handleDelete(row?._id);
                       setActiveDropdown(null);
                     }}
                   >
@@ -313,7 +322,7 @@ console.log(branch)
           <div className='flex flex-row items-center justify-between bg-white rounded-lg p-3 h-20 shadow-md'>
             <div className='flex flex-col justify-center'>
               <h5 className="text-[#67748E]">Total Gift</h5>
-              <h5 className="text-xl font-semibold">{giftcount.total_gift}</h5>
+              <h5 className="text-xl font-semibold">{giftcount?.total_gift}</h5>
             </div>
             <div className='flex items-center justify-center'>
               <div className='flex rounded-md p-3 items-center justify-center'
@@ -325,7 +334,7 @@ console.log(branch)
           <div className='flex flex-row items-center justify-between bg-white rounded-lg p-3 h-20 shadow-md'>
             <div className='flex flex-col justify-center'>
               <h5 className="text-[#67748E]">Chit Received Gift</h5>
-              <h5 className="text-xl font-semibold">{giftcount.total_schemegift}</h5>
+              <h5 className="text-xl font-semibold">{giftcount?.chit_gift}</h5>
             </div>
             <div className='flex items-center justify-center'>
               <div className='flex rounded-md p-3 items-center justify-center'
@@ -337,7 +346,7 @@ console.log(branch)
           <div className='flex flex-row items-center justify-between bg-white rounded-lg p-3 h-20 shadow-md'>
             <div className='flex flex-col justify-center'>
               <h5 className="text-[#67748E]">Non-Chit Received Gift</h5>
-              <h5 className="text-xl font-semibold">{giftcount.total_nonschemegift}</h5>
+              <h5 className="text-xl font-semibold">{giftcount?.nonchit_gift}</h5>
             </div>
             <div className='flex items-center justify-center'>
               <div className='flex rounded-md p-3 items-center justify-center'
@@ -349,7 +358,7 @@ console.log(branch)
           <div className='flex flex-row items-center justify-between bg-white rounded-lg p-3 h-20 shadow-md'>
             <div className='flex flex-col justify-center'>
               <h5 className="text-[#67748E]">Balance Gift</h5>
-              <h5 className="text-xl font-semibold">{giftcount.total_balancegift}</h5>
+              <h5 className="text-xl font-semibold">{giftcount?.balance_gift}</h5>
             </div>
             <div className='flex items-center justify-center'>
               <div className='flex rounded-md p-3 items-center justify-center'

@@ -66,10 +66,10 @@ const Table = ({
               ) : (
                 data.map((row, rowIndex) => (
                   <tr
-                    key={row.id || row._id || rowIndex}
+                    key={row?.id || row?._id || rowIndex}
                     className={`
-                      ${selectedRow === row._id ? 'bg-blue-100' : ''}
-                      ${selectedRow !== row._id ? 'hover:bg-gray-50' : ''}
+                      ${selectedRow === row?._id ? 'bg-blue-100' : ''}
+                      ${selectedRow !== row?._id ? 'hover:bg-gray-50' : ''}
                       transition-colors cursor-pointer
                     `}
                   >
@@ -80,9 +80,9 @@ const Table = ({
                           px-6 py-4 text-sm text-gray-900
                           ${column.sticky === 'right' ? 'right-0' : ''}
                           ${column.sticky === 'left' ? 'left-0' : ''}
-                          ${selectedRow === row._id && activeDropdown ? 'bg-slate-100' : ''}
+                          ${selectedRow === row?._id && activeDropdown ? 'bg-slate-100' : ''}
                           // ${rowIndex % 2 === 0 ? 'bg-white' : ''}
-                          ${selectedRow !== row._id && rowIndex % 2 !== 0 ? 'bg-[#F3F7FF]' : ''}
+                          ${selectedRow !== row?._id && rowIndex % 2 !== 0 ? 'bg-[#F3F7FF]' : ''}
                         `}
                         style={{
                           zIndex: column.sticky ? 10 : 0

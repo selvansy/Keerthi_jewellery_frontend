@@ -143,44 +143,44 @@ const Wallet = () => {
   //   },
   //   {
   //     header: 'Account Name',
-  //     cell: (row) => row.account_name,
+  //     cell: (row) => row?.account_name,
   //   },
   //   {
   //     header: "Mobile",
-  //     cell: (row) => row.mobile
+  //     cell: (row) => row?.mobile
   //   },
   //   {
   //     header: "Scheme Name",
-  //     cell: (row) => row.scheme_name
+  //     cell: (row) => row?.scheme_name
   //   },
   //   {
   //     header: "A/c No",
-  //     cell: (row) => row.scheme_acc_number===""?'Not Allocated':row.scheme_acc_number
+  //     cell: (row) => row?.scheme_acc_number===""?'Not Allocated':row?.scheme_acc_number
   //   },
   //   {
   //     header: "Start Date",
-  //     cell: (row) => row.start_date
+  //     cell: (row) => row?.start_date
   //   },
   //   {
   //     header: "Maturity Date",
-  //     cell: (row) => row.maturity_date
+  //     cell: (row) => row?.maturity_date
   //   },
   //   {
   //     header: "Paid Installment",
-  //     cell: (row) => row.total_paidinstallments
+  //     cell: (row) => row?.total_paidinstallments
   //   },
   //   {
   //     header: "Paid Amount",
-  //     cell: (row) => row.total_paidamount
+  //     cell: (row) => row?.total_paidamount
   //   },
   //   {
   //     header: "Paid Weight",
-  //     cell: (row) => row.total_weight
+  //     cell: (row) => row?.total_weight
   //   },
 
   //   {
   //     header: "Branch Name",
-  //     cell: (row) => row.branch_name
+  //     cell: (row) => row?.branch_name
   //   },
   
   // ];

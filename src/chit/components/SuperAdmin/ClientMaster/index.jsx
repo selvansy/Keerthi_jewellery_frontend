@@ -172,36 +172,36 @@ const ClientMaster = () => {
     },
     {
       header: 'Company name',
-      cell: (row) => `${row.company_name}`,
+      cell: (row) => `${row?.company_name}`,
     },
     {
       header: 'Shop Contactno.',
-      cell: (row) => `${row.shop_contact}`,
+      cell: (row) => `${row?.shop_contact}`,
     },
     {
       header: 'M.D Full Name ',
-      cell: (row) => `${row.md_name}`,
+      cell: (row) => `${row?.md_name}`,
     },
     {
       header: 'M.D Mobile Number',
-      cell: (row) => `${row.md_mobile}`,
+      cell: (row) => `${row?.md_mobile}`,
     },
     {
       header: 'Organization Spoc Name',
-      cell: (row) => `${row.organiz_spocname}`,
+      cell: (row) => `${row?.organiz_spocname}`,
     },
     {
       header: 'Organization Spoc mobile',
-      cell: (row) => `${row.organiz_spoccontact}`,
+      cell: (row) => `${row?.organiz_spoccontact}`,
     },
     {
       header: 'Sign Date',
-      cell: (row) => `${row.sign_date || '0000-00-00'}`,
+      cell: (row) => `${row?.sign_date || '0000-00-00'}`,
     },
 
     {
       header: 'Launch Date',
-      cell: (row) => `${row.launch_date || '0000-00-00' }`,
+      cell: (row) => `${row?.launch_date || '0000-00-00' }`,
     },
 
     {
@@ -212,8 +212,8 @@ const ClientMaster = () => {
             className="p-1 hover:bg-gray-100 rounded-full"
             onClick={(e) => {
               e.stopPropagation();
-              setSelectedRow(row._id);
-              setActiveDropdown(activeDropdown === row._id ? null : row._id);
+              setSelectedRow(row?._id);
+              setActiveDropdown(activeDropdown === row?._id ? null : row?._id);
             }}
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
@@ -221,7 +221,7 @@ const ClientMaster = () => {
             </svg>
           </button>
 
-          {activeDropdown === row._id && (
+          {activeDropdown === row?._id && (
             <div
               className="absolute right-[47px] lg:right-[235px] md:right-[150px] sm:right-[100px] transform -translate-x-8"
               style={{
@@ -237,7 +237,7 @@ const ClientMaster = () => {
                   <button
                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
                     onClick={() => {
-                      handleEdit(row._id);
+                      handleEdit(row?._id);
                       setActiveDropdown(null);
                     }}
                   >
@@ -249,7 +249,7 @@ const ClientMaster = () => {
                   <button
                     className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
                     onClick={() => {
-                      handleDelete(row._id);
+                      handleDelete(row?._id);
                       setActiveDropdown(null);
                     }}
                   >
