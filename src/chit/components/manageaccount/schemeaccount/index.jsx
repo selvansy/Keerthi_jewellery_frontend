@@ -18,7 +18,8 @@ import { ExportToExcel } from '../../common/Dropdown/Excelexport';
 import { ExportToPDF } from '../../common/Dropdown/ExportPdf';
 import { useDebounce } from '../../../hooks/useDebounce';
 import Ledgerdetails from "./ledgerdetails"
-const Schemeaccount = () => {
+
+const Schemeaccount = () => { 
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
   const dispatch = useDispatch();
@@ -204,9 +205,6 @@ const [popuptitle, setPopuptitle] = useState(0);
                     total_weight:response.data[i].total_weight,
                     start_date:response.data[i].start_date,
                     maturity_date:response.data[i].maturity_date,
-                    total_paidinstallments:response.data[i].total_paidinstallments,
-                    total_paidamount:response.data[i].total_paidamount,
-                    total_weight:response.data[i].total_weight,
                     branch_name:response.data[i].branch_name
             
                   });

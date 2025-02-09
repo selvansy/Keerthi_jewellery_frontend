@@ -600,7 +600,7 @@ console.log(product_image)
                   value={formData.id_category}
                   onChange={handleInputChange}
            
-                  className={`appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 cursor-not-allowed bg-gray-100`}
+                  className={`appearance-none border-2 border-gray-300 rounded-md p-2 w-full pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 cursor-not-allowed bg-gray-100`}
 
                 >
                   <option value="">--Select---</option>

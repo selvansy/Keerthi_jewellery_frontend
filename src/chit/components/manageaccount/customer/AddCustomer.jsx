@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { CalendarDays, Camera, X } from 'lucide-react'
+import { CalendarDays, Camera, X, Send } from 'lucide-react'
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import { updatecustomer, getcustomerById, getallbranch, allcountry, allstate, addcustomer, allcity } from '../../../api/Endpoints';
 
-
+import {sendOtp , closeBill} from "../../../api/BackendUrl"
 import { useMutation } from '@tanstack/react-query';
 import Webcam from 'react-webcam';
 import profileplaceholder from '../../../../assets/profileplaceholder.png'
@@ -18,7 +18,14 @@ const AddCustomer = () => {
   const navigate = useNavigate()
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
-  // const { id } = useParams();
+    const [showVerification, setShowVerification] = useState(false)
+    const [refundtype, setRefundType] = useState(false)
+    const [mobileNum, setMobileNum] = useState("");
+    const [isOtpVerified, setIsOtpVerified] = useState(false);
+    const [otpNumber, setOtpNumber] = useState("");
+    const [timer, setTimer] = useState(0);
+    const [canResend, setCanResend] = useState(false);
+  
   const [cus_img, setcus_img] = useState(null);
   const [id_proof, setid_proof] = useState(null);
   const [id_proofError, setid_proofError] = useState('');
@@ -56,7 +63,92 @@ const AddCustomer = () => {
   const [formErrors, setFormErrors] = useState({});
   const [customerData, setcustomerData] = useState(null);
   const customerId = useSelector((state) => state.clientForm.id);
-  console.log(customerId)
+  
+   
+
+  useEffect(() => {
+    let countdown;
+    
+    if (timer > 0) {
+      countdown = setInterval(() => {
+        setTimer((prev) => prev - 1);
+      }, 1000);
+    } else if (timer === 0 && !canResend) {
+      setCanResend(true);
+    }
+  
+    return () => clearInterval(countdown);
+  }, [timer]);
+
+    const validateMobile = (mobileNum)=>{
+        if (!mobileNum){
+          errors.mobileNum = 'Mobile is required'
+        }else if (!/^\d{10}$/.test(mobileNum)) {
+          errors.mobileNum = "Mobile number must be 10 digits";
+          
+        }
+      } 
+    
+      const handleMobileNumber = (e)=>{
+        const num = e.target.value;
+        if(validateMobile(num)){
+          toast.error("Mobile must be 10 digits");
+          return;
+        }
+        setMobileNum(e.target.value)
+      }
+    
+      const SendOtpToMobile = ()=>{
+        const payload = {
+          mobile: mobileNum || mobile,
+          otp: otpNumber,
+          branchId: branchId
+         }
+         postSendOtpMobile(payload)
+      }
+    
+    
+      const { mutate: postSendOtpMobile } = useMutation({
+        mutationFn: sendOtp,
+        onSuccess: (response) => {
+          if (response) {
+            toast.success(response.message);
+          }
+        },
+      });
+    
+    
+      const handleVerifyOtp = (num)=>{
+    
+        if(validateMobile(num)){
+          toast.error("Mobile must be 10 digits");
+          return;
+        }
+    
+        const payload = {
+          mobile: mobileNum || mobile,
+          otp: otpNumber,
+          branchId: branchId
+         }
+         postVerifyOtp(payload)
+         setTimer(60);
+         setCanResend(false);
+      }
+    
+      
+      const { mutate: postVerifyOtp } = useMutation({
+        mutationFn: sendOtp,
+        onSuccess: (response) => {
+          if (response) {
+            toast.success(response.message);
+            setTimer(60);
+            setCanResend(false);
+          }
+        },
+      });
+  
+
+ 
 
   const { mutate: getAllCountryMutate } = useMutation({
     mutationFn: allcountry,
@@ -482,7 +574,6 @@ const AddCustomer = () => {
     <>
       <div className='flex flex-row justify-between'>
         <h2 className='text-2xl text-gray-900 font-bold justify-between'>{customerId ? "Edit Customer" : "Add Customer"}</h2>
-        <h2 className='text-2xl text-[#023453] font-bold justify-between'>{customerId ? "Edit Customer" : "Add Customer"}</h2>
         {customerId && (
           <div className='flex flex-row gap-4'>
             <button onClick={handleBack} className='bg-[#E2E8F0] text-black px-4 py-2 rounded-md'>Back</button>
@@ -891,6 +982,83 @@ const AddCustomer = () => {
                   </div>
                 )}
               </div>
+
+              <div className="flex flex-col w-full mt-2">
+            <div className="flex flex-row items-center">
+              <input
+                type="checkbox"
+                className="w-8 h-5 accent-blue-600"
+                name="showVerification"
+                checked={showVerification}
+                onChange={() => setShowVerification(!showVerification)}
+              />
+              <h2 className="text-lg text-[#023453] font-bold whitespace-nowrap px-2 my-3">
+                To verify account with OTP verification, kindly check the checkbox.
+              </h2>
+            </div>
+
+
+          </div>
+
+          {showVerification && (
+            <div className="grid grid-rows-2 md:grid-cols-2 gap-4">
+              {/* Mobile Number Input */}
+              <div className="flex flex-col mt-2 relative">
+                <label className="text-black mb-1 font-normal">
+                  Mobile Number <span className="text-red-400">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="mobile"
+                  className="border-2 w-full border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black"
+                  placeholder="Enter Here"
+                  onChange={handleMobileNumber}
+                  defaultValue={""}
+                />
+                <div
+                  onClick={SendOtpToMobile}
+                  className="absolute flex items-center justify-center cursor-pointer right-0 top-[30px] w-10 h-10 bg-[#023453] rounded-md  transition"
+                >
+                  <Send size={22} className="text-white" />
+                </div>
+              </div>
+
+              {/* OTP Input */}
+              <div className="flex flex-col mt-2 relative">
+                <label className="text-black mb-1 font-normal">
+                  OTP Number <span className="text-red-400">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="otp"
+                  className="border-2 w-full border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black"
+                  placeholder="Enter OTP"
+                  onChange={(e) => setOtpNumber(e.target.value)}
+                />
+                <div
+                  onClick={()=>handleVerifyOtp(otpNumber)}
+                  className="absolute flex items-center justify-center cursor-pointer right-0 top-[30px] w-10 h-10 bg-[#023453] rounded-md  transition"
+                >
+                  <Send size={22} className="text-white" />
+                </div>
+              </div>
+
+              {/* Countdown Timer */}
+              <div className="flex flex-col text-sm text-gray-600 mt-1">
+                {canResend ? (
+                  <span
+                    className="text-blue-600 cursor-pointer hover:underline"
+                    onClick={SendOtpToMobile}
+                  >
+                    Resend OTP
+                  </span>
+                ) : (
+                  `Resend OTP in ${timer} seconds`
+                )}
+              </div>
+            </div>
+          )}
+
             </div>
           </div>
           {!customerId && (

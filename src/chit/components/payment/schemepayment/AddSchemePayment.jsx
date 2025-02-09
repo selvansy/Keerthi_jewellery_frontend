@@ -80,13 +80,11 @@ const AddSchemePayment = () => {
       setFormData({
         id_scheme_account: response.data.id_scheme_account._id,
         id_scheme: response.data.id_scheme._id,
-        id_classification: response.data.id_classification,
         mobile: response.data.id_customer.mobile,
         id_customer: response.data.id_customer._id,
         code: response.data.id_scheme.code,
         scheme_type: response.data.id_scheme.scheme_type,
         scheme_acc_number: response.data.id_scheme_account.scheme_acc_number,
-        accountschemeid: response.data.id_scheme_account.accountschemeid,
         id_branch: response.data.id_scheme.id_branch,
         id_classification: response.data.id_scheme.id_classification,
         id: response.data._id,
@@ -105,7 +103,6 @@ const AddSchemePayment = () => {
         fine_amount: response.data.fine_amount,
         buy_gst: response.data.gst_amount,
         cash_amount:response.data.cash_amount,
-        debitcard_amount:response.data.debitcard_amount,
         gpay_amount:response.data.gpay_amount,
         card_amount:response.data.card_amount,
         debitcard_amount:response.data.debitcard_amount,
@@ -455,7 +452,7 @@ const AddSchemePayment = () => {
         id_branch: scheme.id_scheme.id_branch,
         id_classification: scheme.id_scheme.id_classification,
         id_scheme_account: scheme._id,
-        code: scheme.code
+       
       }));
 
       setErrors(prev => ({

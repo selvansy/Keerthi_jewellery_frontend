@@ -372,6 +372,35 @@ function SchemePaymentReport() {
   
   ];
 
+
+  const handleReset = (e) => {
+    setFromdate("");
+    setTodate("");
+    setFilters(prev => ({
+      from_date:null,
+        to_date:null,
+        added_by:'',
+        scheme_status:'',
+        id_classification: '',
+        collectionuserid: '',
+        id_scheme: '',
+        id_branch: '',
+        scheme_type:''
+    }));
+    toast.success("Filter is cleared");
+ 
+    getschemepaymentMutate({
+      from_date:null,
+        to_date:null,
+        added_by:'',
+        scheme_status:'',
+        id_classification: '',
+        collectionuserid: '',
+        id_scheme: '',
+        id_branch: '',
+        scheme_type:''
+    });
+  }
  
 
   return (
@@ -396,10 +425,13 @@ function SchemePaymentReport() {
           style={{ backgroundColor: layout_color }}>
           <SlidersHorizontal size={20} />
         </button>
-        {/* <ExportDropdown 
-          onExportExcel={exportToExcel} 
-          onExportPDF={exportToPDF} 
-        /> */}
+        <button
+            id="filter"
+            className="text-white bg-[#023453] w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
+            onClick={() => handleReset()}
+          >
+            <RefreshCcw size={20} />
+          </button>
            <ExportToExcel apiData={schemepayment} fileName="SchemePayment Report" />
                 <ExportToPDF  apiData={schaccExp} fileName="schemePayment Report"/>
       </div>

@@ -6,9 +6,9 @@ import DatePicker from "react-datepicker";
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { useMutation } from "@tanstack/react-query";
+import {sendOtp , closeBill} from "../../../api/BackendUrl"
 import { searchmobileschemeaccount, allschemestatus, getallbranch, getallpaymentmodes } from "../../../api/Endpoints"
 import { useDebounce } from '../../../hooks/useDebounce';
-import { setbranchId } from "../../../../redux/clientFormSlice"
 
 const AddCloseAccount = () => {
 
@@ -43,7 +43,7 @@ const AddCloseAccount = () => {
   const [mobileNum, setMobileNum] = useState("");
   const [isOtpVerified, setIsOtpVerified] = useState(false);
   const [otpNumber, setOtpNumber] = useState("");
-  const [timer, setTimer] = useState(60);
+  const [timer, setTimer] = useState(0);
   const [canResend, setCanResend] = useState(false);
 
   const debouncedOtpNumber = useDebounce(otpNumber);
@@ -66,16 +66,6 @@ const AddCloseAccount = () => {
   });
 
 
-  useEffect(() => {
-    let countdown;
-    if (otpNumber && timer > 0) {
-      countdown = setInterval(() => setTimer((prev) => prev - 1), 1000);
-    } else if (timer === 0) {
-      setCanResend(true);
-    }
-    return () => clearInterval(countdown);
-  }, [otpNumber, timer]);
-
   const handleCheckboxChange = (e) => {
     setOtp(e.target.checked);
     if (e.target.checked) {
@@ -94,7 +84,8 @@ const AddCloseAccount = () => {
     if (!formData.comments) errors.comments = 'Comments is required';
     if (!formData.bill_no) errors.bill_no = 'Bill_no is required';
     if (!formData.bill_date) errors.bill_date = 'bill_dateis required';
-    if (!mobile) errors.mobile = 'Mobile is required';
+    if (!mobile) errors.mobile = 'Mobile is required'
+    
 
 
     setErrors(errors);
@@ -102,14 +93,20 @@ const AddCloseAccount = () => {
   };
 
 
-
-
-  const handleSendOtp = () => {
-    const mobileToSend = mobileNum || selectedScheme?.id_customer?.mobile;
-    console.log("OTP sent to:", mobileToSend);
-    setTimer(60);
-    setCanResend(false);
-  };
+  
+  useEffect(() => {
+    let countdown;
+    
+    if (timer > 0) {
+      countdown = setInterval(() => {
+        setTimer((prev) => prev - 1);
+      }, 1000);
+    } else if (timer === 0 && !canResend) {
+      setCanResend(true);
+    }
+  
+    return () => clearInterval(countdown);
+  }, [timer]);
 
 
   const handleCancle = () => {
@@ -117,12 +114,9 @@ const AddCloseAccount = () => {
   }
 
   useEffect(() => {
-
-    getallbranchMutate();
-
-    return () => {
-      dispatch(setbranchId(null))
-    }
+    
+     getallbranchMutate();
+   
   }, [])
 
 
@@ -148,31 +142,13 @@ const AddCloseAccount = () => {
   }, [searchmobile, branchId]);
 
 
-
-
   const handleSearchmobile = () => {
 
     if (mobile === "") { toast.error('Mobile Number is required!'); }
     setSearchMobile(mobile);
   };
 
-  const handleVerifyOtp = () => {
-    // SendOtp();
-    console.log("otp", otpNumber);
-    setTimer(60);
-    setCanResend(false);
-  }
-
-
-  const { mutate: SendOtp } = useMutation({
-    mutationFn: searchmobileschemeaccount,
-    onSuccess: (response) => {
-      if (response) {
-        toast.success(response.message)
-      }
-
-    },
-  });
+  
 
 
   const { mutate: getallbranchMutate } = useMutation({
@@ -243,8 +219,6 @@ const AddCloseAccount = () => {
 
     setStartDate(formattedDate)
     // setFormData(prev => ({ ...prev, bill_date: formattedDate }));
-
-
   };
 
 
@@ -303,26 +277,99 @@ const AddCloseAccount = () => {
 
   };
 
+  const validateMobile = (mobileNum)=>{
+    if (!mobileNum){
+      errors.mobileNum = 'Mobile is required'
+    }else if (!/^\d{10}$/.test(mobileNum)) {
+      errors.mobileNum = "Mobile number must be 10 digits";
+      
+    }
+  } 
 
+  const handleMobileNumber = (e)=>{
+    const num = e.target.value;
+    if(validateMobile(num)){
+      toast.error("Mobile must be 10 digits");
+      return;
+    }
+    setMobileNum(e.target.value)
+  }
+
+  const SendOtpToMobile = ()=>{
+    const payload = {
+      mobile: mobileNum || mobile,
+      otp: otpNumber,
+      branchId: branchId
+     }
+     postSendOtpMobile(payload)
+  }
+
+
+  const { mutate: postSendOtpMobile } = useMutation({
+    mutationFn: sendOtp,
+    onSuccess: (response) => {
+      if (response) {
+        toast.success(response.message);
+      }
+    },
+  });
+
+
+  const handleVerifyOtp = (num)=>{
+
+    if(validateMobile(num)){
+      toast.error("Mobile must be 10 digits");
+      return;
+    }
+
+    const payload = {
+      mobile: mobileNum || mobile,
+      otp: otpNumber,
+      branchId: branchId
+     }
+     postVerifyOtp(payload)
+     setTimer(60);
+     setCanResend(false);
+  }
+
+  
+  const { mutate: postVerifyOtp } = useMutation({
+    mutationFn: sendOtp,
+    onSuccess: (response) => {
+      if (response) {
+        toast.success(response.message);
+        setTimer(60);
+        setCanResend(false);
+      }
+    },
+  });
 
   const handleSubmit = () => {
-
-    console.log(formData)
 
     if (!isValidForm(formData)) {
       toast.error('Please fill in all required fields');
       return;
     }
 
+    console.log("FormData----",formData)
 
-
-    console.log("submittedData", formData)
+    BillClose(formData);
+    
   }
+
+  const { mutate: BillClose } = useMutation({
+    mutationFn: closeBill,
+    onSuccess: (response) => {
+      if (response) {
+        toast.success(response.message);
+        setTimer(60);
+        setCanResend(false);
+      }
+    },
+  });
 
 
   const scheData = schemestatus.filter((account) => account.id_status !== 2 && account.id_status !== 0)
-
-  console.log("schemedata", scheData)
 
 
   return (
@@ -372,7 +419,7 @@ const AddCloseAccount = () => {
               value={mobile || ""}
               onChange={handleChange}
             />
-            <div onClick={handleSearchmobile} className="absolute flex items-center justify-center cursor-pointer right-[0%] rounded-r-lg top-[70%] -translate-y-1/2 w-10 h-[65%] sm:right-0 sm:top-[68%] sm:rounded-r-lg md:right-[20%] md:rounded-lg lg:rounded-r-lg lg:left-[47%]"
+            <div onClick={handleSearchmobile} className="absolute flex items-center justify-center cursor-pointer right-[0%] top-[70%] -translate-y-1/2 w-10 h-[60%] sm:right-0 sm:top-[68%] sm:rounded-r-lg md:right-[20%] md:rounded-lg lg:rounded-r-md lg:left-[47%]"
               style={{ backgroundColor: layout_color }}>
               <Search size={22} className="text-white" />
             </div>
@@ -530,14 +577,14 @@ const AddCloseAccount = () => {
               <input type='text' className='border-2 border-gray-300 rounded-md p-2 w-full pr-16 '
                 placeholder='Paid Installment'
 
-                value={selectedScheme?.total_installments}
+                value={selectedScheme?.total_paidinstallments}
                 disabled />
             </div>
             <div className='flex flex-col'>
               <label className='text-black mb-1 font-normal'>Paid Amount</label>
               <div className="relative">
                 <input type='number'
-                  value={selectedScheme?.amount}
+                  value={selectedScheme?.last_paid_amount}
                   min='0'
                   onKeyDown={(e) => {
                     if (e.key === '-' || e.key === 'e' || e.key === 'E') {
@@ -557,7 +604,7 @@ const AddCloseAccount = () => {
               <div className="relative">
                 <input type='number'
 
-                  value={selectedScheme?.gift_issues}
+                  value={selectedScheme?.general?.gift_issues}
                   min='0'
                   onKeyDown={(e) => {
                     if (e.key === '-' || e.key === 'e' || e.key === 'E') {
@@ -580,6 +627,7 @@ const AddCloseAccount = () => {
                   }
                 }} className='border-2 border-gray-300 rounded-md p-2 w-full pr-16 '
                   placeholder='Enter Product Price'
+                  value={selectedScheme?.total_paidamount}
                   disabled
                 />
                 <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-white bg-[#023453] w-14 h-[43px] justify-center items-center flex rounded-r-md">INR</span>
@@ -631,11 +679,11 @@ const AddCloseAccount = () => {
                   name="mobile"
                   className="border-2 w-full border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black"
                   placeholder="Enter Here"
-                  onChange={(e) => setMobileNum(e.target.value)}
+                  onChange={handleMobileNumber}
                   defaultValue={selectedScheme?.id_customer?.mobile || ""}
                 />
                 <div
-                  onClick={handleSendOtp}
+                  onClick={SendOtpToMobile}
                   className="absolute flex items-center justify-center cursor-pointer right-0 top-[30px] w-10 h-10 bg-[#023453] rounded-md  transition"
                 >
                   <Send size={22} className="text-white" />
@@ -655,7 +703,7 @@ const AddCloseAccount = () => {
                   onChange={(e) => setOtpNumber(e.target.value)}
                 />
                 <div
-                  onClick={handleVerifyOtp}
+                  onClick={()=>handleVerifyOtp(otpNumber)}
                   className="absolute flex items-center justify-center cursor-pointer right-0 top-[30px] w-10 h-10 bg-[#023453] rounded-md  transition"
                 >
                   <Send size={22} className="text-white" />
@@ -667,7 +715,7 @@ const AddCloseAccount = () => {
                 {canResend ? (
                   <span
                     className="text-blue-600 cursor-pointer hover:underline"
-                    onClick={handleSendOtp}
+                    onClick={SendOtpToMobile}
                   >
                     Resend OTP
                   </span>

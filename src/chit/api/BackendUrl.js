@@ -30,6 +30,7 @@ export const getAllClients = async () => {
 }
  
 export const getpaymentmodesummary = async (data) => {
+    console.log("data----",data)
     const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/dashboard/summary/paymentmode`,data);
     return response.data;
 }
@@ -399,11 +400,37 @@ export const getOutstandingSummaryReport = async () => {
     return response.data;
 }
 
+export const postOutstandingSummaryReport = async (data) => {
+    const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/reports/outstanding`,data);
+    return response.data;
+}
 
 
+export const sendOtp = async(data)=>{
+    
+    const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/schemeaccount/close/${data.mobile}/branch/${data.branchId}`)
+    return response.data
+}
 
+export const verifyOtp = async(data)=>{
 
+    const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/schemeaccount/verifyotp`,data)
+    return response.data
+}
 
+export const closeBill = async(data)=>{
+
+    const response= await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/schemeaccount/${data.id_branch}/close`,data)
+    return response.data
+}
+
+//  
+
+export const revertBill = async(data)=>{
+
+    const response= await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/schemeaccount/${data.id_branch}/revert`,data)
+    return response.data
+}
  
 
 
