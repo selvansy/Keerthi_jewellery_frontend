@@ -42,8 +42,6 @@ const AddSchemeAccount = () => {
     console.log(id);
     if (id) {
       handleschemeaccountbyid({ id: id });
-
-
     }
   }, [id])
 
@@ -149,7 +147,7 @@ const AddSchemeAccount = () => {
           collectionuserid: '',
           scheme_acc_number: '',
           id_scheme: '',
-          id_branch: '',
+          id_branch: id_branch,
           account_name: response.data.firstname + ' ' + response.data.lastname,
           address: response.data.address,
           customer_name: response.data.firstname + ' ' + response.data.lastname,

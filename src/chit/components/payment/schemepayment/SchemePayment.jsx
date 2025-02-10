@@ -3,19 +3,22 @@ import Table from '../../common/Table'
 import { useNavigate,useParams } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import { SlidersHorizontal, Search, X } from 'lucide-react'
-import { addedtype,allschemestatus,getallschemetypes,getallbranchscheme,getallbranchclassification,getemployeebybranch,getallbranchcustomer,getallbranch,schemepaymentdatatable, changeschemeaccountStatus, deleteschemepayment } from '../../../api/Endpoints'
+import { addedtype,allschemestatus,getallschemetypes,getallbranchscheme,getallbranchclassification,getemployeebybranch,getallbranchcustomer,getallbranch,schemepaymentdatatable, changeschemeaccountStatus, deleteschemepayment  } from '../../../api/Endpoints'
 import { toast } from 'react-toastify'
 import { CalendarDays, RefreshCcw} from 'lucide-react'
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import { useSelector } from 'react-redux'
+
 const SchemePayment = () => {
   const roledata = useSelector((state) => state.clientForm.roledata);
   const branch = roledata?.branch;
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   
   const navigate = useNavigate()
+  
   const [search, setSearch] = useState('')
+  const [isLoading,setisLoading] = useState(false)
   const [paymentaccount, setPaymentaccount] = useState([])
    const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
@@ -202,14 +205,19 @@ const SchemePayment = () => {
 
   //mutation to get scheme type
   const { mutate: getschemepaymentMutate } = useMutation({
-    mutationFn: schemepaymentdatatable,
+    mutationFn: ()=>{
+      setisLoading(true)
+       schemepaymentdatatable
+      },
     onSuccess: (response) => {
 
       setPaymentaccount(response.data)
       setTotalPages(response.totalPages)
+      setisLoading(false)
     },
     onError: (error) => {
-      console.error('Error fetching countries:', error);
+      console.error('Error:', error);
+      setisLoading(false)
     }
   });
 
@@ -759,6 +767,7 @@ const SchemePayment = () => {
         <Table
           data={paymentaccount}
           columns={columns}
+          isLoading={isLoading}
         />
       </div>
       {paymentaccount.length > 0 && (

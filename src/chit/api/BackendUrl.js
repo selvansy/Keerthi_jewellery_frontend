@@ -423,15 +423,15 @@ export const verifyOtp = async(data)=>{
 
 export const closeBill = async(data)=>{
 
-    const response= await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/schemeaccount/${data.id_branch}/close`,data)
+    const response= await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/schemeaccount/${data.id_scheme_account}/close`,data)
     return response.data
 }
 
 //  
 
 export const revertBill = async(data)=>{
-
-    const response= await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/schemeaccount/${data.id_branch}/revert`,data)
+     console.log("data----",data)
+    const response= await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/schemeaccount/${data.id_scheme_account}/revert`)
     return response.data
 }
  

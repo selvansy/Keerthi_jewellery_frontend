@@ -28,6 +28,7 @@ const Giftvendor = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [isviewOpen, setIsviewOpen] = useState(false);
+  const [isLoading,setisLoading] = useState(false)
 
   function closeIncommingModal() {
     setIsviewOpen(false);
@@ -38,14 +39,22 @@ const Giftvendor = () => {
   const debouncedSearch = useDebounce(searchInput, 500)
   const limit = 10;
 
-  const { isLoading, mutate: getAllgiftvendorsMutate } = useMutation({
-    mutationFn: getAllgiftvendors,
+  const {  mutate: getAllgiftvendorsMutate } = useMutation({
+    mutationFn: ()=>{
+     setisLoading(true)
+     getAllgiftvendors
+    },
     onSuccess: (response) => {
       if (response) {
         setgiftvendorData(response.data);
         setTotalPages(Math.ceil(response.data.total / limit));
+       
       }
+      setisLoading(false)
     },
+    onError:()=>{
+        setisLoading(false)
+    }
   });
 
 
@@ -313,6 +322,7 @@ const Giftvendor = () => {
               totalPages={totalPages}
               onPageChange={handlePageChange}
               pageSize={limit}
+              isLoading={isLoading}
             />
           </div>
 

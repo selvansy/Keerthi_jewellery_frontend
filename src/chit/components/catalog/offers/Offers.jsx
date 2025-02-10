@@ -23,7 +23,8 @@ const Offers = () => {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const roledata = useSelector((state) => state.clientForm.roledata);
   let id_client = roledata?.id_client;
-
+  const [isLoading,setisLoading] = useState(false)
+ 
   const id_branch = roledata?.branch;
 
 
@@ -180,13 +181,18 @@ const Offers = () => {
 
   //mutation to get scheme type
   const { mutate: getofferData } = useMutation({
-    mutationFn: getoffersTable,
+    mutationFn: ()=>{
+      setisLoading(true)
+      getoffersTable
+    },
     onSuccess: (response) => {
+      setisLoading(false)
       setofferData(response.data)
       setTotalPages(response.data.totalPages)
     },
     onError: (error) => {
-      console.error('Error fetching countries:', error);
+      console.error('Error:', error);
+      setisLoading(false)
     }
   });
 
@@ -643,6 +649,7 @@ const Offers = () => {
         <Table
           data={offerData}
           columns={columns}
+          isLoading={isLoading}
         />
       </div>
       {offerData.length > 0 && (

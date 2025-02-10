@@ -31,8 +31,9 @@ const ProductWhatsapp = () => {
   const roledata = useSelector((state) => state.clientForm.roledata);
   const id_branch = roledata?.branch;
  
+  const [isLoading,setisLoading] = useState(false)
   const [productData, setproductData] = useState([])
-   const [issettingOpen, setIsSettingOpen] = useState(false);
+  const [issettingOpen, setIsSettingOpen] = useState(false);
 
   const [filtercategory, setCategory] = useState([]);
   const [search, setSearch] = useState('')
@@ -320,14 +321,18 @@ const ProductWhatsapp = () => {
 
   //mutation to get scheme type
   const { mutate: getproductData } = useMutation({
-    mutationFn: getproductTable,
+    mutationFn: ()=>{
+      setisLoading(true)
+       getproductTable
+    },
     onSuccess: (response) => {
-
+      setisLoading(false)
       setproductData(response.data)
       setTotalPages(response.totalPages)
     },
     onError: (error) => {
-      console.error('Error fetching countries:', error);
+      console.error('Error:', error);
+      setisLoading(false)
     }
   });
 
@@ -951,6 +956,7 @@ const handleSend = (id,id_branch) => {
         <Table
           data={productData}
           columns={columns}
+          isLoading={isLoading}
         />
       </div>
       {productData?.length > 0 && (

@@ -21,6 +21,7 @@ function SchemePaymentReport() {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
     
    const [schemepayment, setschemepayment] = useState([])
+   const [isLoading,setisLoading] = useState(false)
    const [schaccExp,setschaccExp] = useState([]);
    const [search, setSearch] = useState('')
    const [startDate,setStartDate] = useState(Date.now());
@@ -182,7 +183,10 @@ function SchemePaymentReport() {
 
   //mutation to get scheme type
   const { mutate: getschemepaymentMutate } = useMutation({
-    mutationFn: schemepaymentdatatable,
+    mutationFn: ()=>{
+      setisLoading(true)
+       schemepaymentdatatable
+    },
     onSuccess: (response) => {
       setschemepayment(response.data)
       let arrayData = [];
@@ -207,13 +211,13 @@ function SchemePaymentReport() {
       }
       
       }
- 
-
       setschaccExp(arrayData)
+      setisLoading(false)
 
     },
     onError: (error) => {
-      console.error('Error fetching countries:', error);
+      console.error('Error:', error);
+      setisLoading(false)
     }
   });
 
@@ -563,7 +567,7 @@ function SchemePaymentReport() {
     )}
     </div>
     <div className="mt-4">
-      <Table data={schemepayment} columns={columns}/>
+      <Table data={schemepayment} columns={columns} isLoading={isLoading}/>
     </div>
 
     <div className="flex justify-between mt-4 p-2">

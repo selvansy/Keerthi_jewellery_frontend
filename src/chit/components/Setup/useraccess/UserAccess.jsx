@@ -28,6 +28,7 @@ const UserAccess = () => {
   const modal = useSelector((state) => state.modal);
   const [searchInput, setSearchInput] = useState('')
   const debouncedSearch = useDebounce(searchInput, 500)
+  const [isLoading,setisLoading] = useState(false)
   
  // get all clients
   const { mutate: getAllClientsMutate } = useMutation({
@@ -122,16 +123,21 @@ const UserAccess = () => {
 
   
   //get staff user data with pagination 
-  const { mutate: getAllStaffUserTable, isLoading } = useMutation({
-    mutationFn: (formdata) => staffUserDataTable(formdata),
+  const { mutate: getAllStaffUserTable} = useMutation({
+    mutationFn: (formdata) => {
+      setisLoading(true)
+      staffUserDataTable(formdata)
+    },
     onSuccess: (response) => {
       if (response) {
         setStaffData(response.data)
         setTotalPages(response.totalPages)
       }
+      setisLoading(false)
     },
     onError: (error) => {
-      console.error('Error fetching staff data:', error);
+      setisLoading(false)
+      console.error('Error:', error);
     }
   });
 
@@ -477,6 +483,7 @@ const UserAccess = () => {
         <Table
           data={staffData}
           columns={columns}
+          isLoading={isLoading}
         />
         {staffData.length > 0 && (
           <div className="flex justify-between mt-4 p-2">

@@ -32,7 +32,7 @@ const NewArrivalsWhatsapp = () => {
   const [newarrivalsData, setnewarrivalsData] = useState([])
   const [popuptitle, setPopuptitle] = useState(0);
   const [issettingOpen, setIsSettingOpen] = useState(false);
-
+  const [isLoading,setisLoading] = useState(false)
 
 
 
@@ -198,13 +198,18 @@ const NewArrivalsWhatsapp = () => {
 
   //mutation to get scheme type
   const { mutate: getnewarrivalsData } = useMutation({
-    mutationFn: getnewarrivalsTable,
+    mutationFn: ()=>{
+      setisLoading(true)
+       getnewarrivalsTable
+    },
     onSuccess: (response) => {
       setnewarrivalsData(response.data)
       setTotalPages(response.data.totalPages)
+      setisLoading(false)
     },
     onError: (error) => {
       console.error('Errors:', error);
+      setisLoading(false)
     }
   });
 
@@ -649,6 +654,7 @@ const NewArrivalsWhatsapp = () => {
         <Table
           data={newarrivalsData}
           columns={columns}
+          isLoading={isLoading}
         />
       </div>
 

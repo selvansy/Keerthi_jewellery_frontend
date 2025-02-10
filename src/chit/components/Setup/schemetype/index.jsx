@@ -31,6 +31,7 @@ const Schemetype = () => {
     const [projects, setProjects] = useState([]);
     const [menus, setMenus] = useState([]);
     const [searchInput, setSearchInput] = useState('')
+ 
     const debouncedSearch = useDebounce(searchInput, 500)
     const limit = 10;
 
@@ -39,13 +40,20 @@ const Schemetype = () => {
     }
 
     const { mutate: getschemetypetableMutate } = useMutation({
-        mutationFn: getschemetypetable,
+        mutationFn: ()=>{
+            setisLoading(true)
+             getschemetypetable
+        },
         onSuccess: (response) => {
             if (response) {
                 setschemetypeData(response.data);
                 setTotalPages(Math.ceil(response.data.total / limit));
             }
+            setisLoading(false)
         },
+        onError:()=>{
+              setisLoading(false)
+        }
     });
 
     const handleStatusToggle = async (id, currentStatus) => {
@@ -299,6 +307,7 @@ const Schemetype = () => {
                             totalPages={totalPages}
                             onPageChange={handlePageChange}
                             pageSize={limit}
+                            isLoading={isLoading}
                         />
                     </div>
                     {schemetypeData.length > 0 && (

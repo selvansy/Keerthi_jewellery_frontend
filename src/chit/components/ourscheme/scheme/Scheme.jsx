@@ -22,6 +22,8 @@ const Scheme = () => {
  const roledata = useSelector((state) => state.clientForm.roledata);
   let id_client = roledata?.id_client;
   const id_branch = roledata?.branch;
+
+  const [isLoading,setisLoading] = useState(false)
   const [classificationData, setClassification] = useState([])
   const [metalData, setMetalData] = useState([]);
   const [purityData, setPurityData] = useState([]);
@@ -242,10 +244,6 @@ const Scheme = () => {
   };
 
 
-
-
-
-
   useEffect(() => {
     getSchemeDataTable({
       from_date: "",
@@ -266,16 +264,21 @@ const Scheme = () => {
   }, [currentPage, itemsPerPage,search])
 
   const { mutate: getSchemeDataTable } = useMutation({
-    mutationFn: getSchemeTable,
+    mutationFn: ()=>{ 
+      setisLoading(true)
+      getSchemeTable
+    },
     onSuccess: (response) => {
     
       if(response){
       setSchemeData(response.data);
       
       }
+      setisLoading(false)
     },
     onError: (error) => {
-      console.error("Error fetching branches:", error);
+      setisLoading(false)
+      console.error("Error:", error);
     },
   });
 
@@ -483,14 +486,14 @@ const Scheme = () => {
     },
     {
       header: "Classification",
-      cell: (row) => row?.classificationDetails?.classification_name || 'N/A' // Optional chaining for safety
+      cell: (row) => row?.classificationDetails?.classification_name || 'N/A' 
     },
     
     {
       header: "Create Date",
       cell: (row) => {
         const date = new Date(row?.createdAt);
-        return date.toLocaleDateString('en-GB'); // 'en-GB' gives the d-m-Y format
+        return date.toLocaleDateString('en-GB'); 
       }
     },
     {
@@ -984,7 +987,7 @@ const Scheme = () => {
 
       <div className="mt-4">
 
-        <Table data={schemeData} columns={columns} />
+        <Table data={schemeData} columns={columns} isLoading={isLoading}/>
       </div>
 
       <div className="flex justify-between mt-4 p-2">
@@ -1023,12 +1026,12 @@ const Scheme = () => {
             className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
           >
             <option value={10}>10</option>
-<option value={25}>25</option>
-<option value={50}>50</option>
-<option value={100}>100</option>
-<option value={250}>250</option>
-<option value={500}>500</option>
-<option value={1000}>1000</option>
+            <option value={25}>25</option>
+            <option value={50}>50</option>
+            <option value={100}>100</option>
+            <option value={250}>250</option>
+            <option value={500}>500</option>
+            <option value={1000}>1000</option>
           </select>
           <span className="text-gray-500">entries</span>
         </div>

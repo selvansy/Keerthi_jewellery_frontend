@@ -34,7 +34,7 @@ const GiftInwardsCreation = () => {
     id_branch:id_branch,
   })
   useEffect(() => {
-    console.log('work')
+  
     getallbranchMutate();
     if(id_branch !=="0"){
       handleVendorChange(id_branch);

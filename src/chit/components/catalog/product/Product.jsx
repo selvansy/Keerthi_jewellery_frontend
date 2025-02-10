@@ -23,6 +23,8 @@ const Product = () => {
   const navigate = useNavigate()
   let dispatch = useDispatch();
 
+  const [isLoading,setisLoading] = useState(false)
+
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const roledata = useSelector((state) => state.clientForm.roledata);
   const id_branch = roledata?.branch;
@@ -310,13 +312,19 @@ const Product = () => {
 
   //mutation to get scheme type
   const { mutate: getproductData } = useMutation({
-    mutationFn: getproductTable,
+    mutationFn: ()=>{
+      setisLoading(true)
+      getproductTable
+      
+    },
     onSuccess: (response) => {
+      setisLoading(false)
       setproductData(response.data)
       setTotalPages(response.data.totalPages)
     },
     onError: (error) => {
-      console.error('Error fetching countries:', error);
+      console.error('Error:', error);
+      setisLoading(false)
     }
   });
 
@@ -970,6 +978,7 @@ const Product = () => {
         <Table
           data={productData}
           columns={columns}
+          isLoading={isLoading}
         />
       </div>
       {productData.length > 0 && (

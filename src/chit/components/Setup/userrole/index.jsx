@@ -30,20 +30,28 @@ const Userrole = () => {
   const [searchInput,setSearchInput]=useState('')
   const debouncedSearch = useDebounce(searchInput, 500)
   const limit = 10;
+  const [isLoading,setisLoading] = useState(false)
 
   function closeIncommingModal() {
     setIsviewOpen(false);
 }
 
 
-  const { isLoading, mutate: getalluserroletableMutate } = useMutation({
-    mutationFn: getalluserroletable,
+  const { mutate: getalluserroletableMutate } = useMutation({
+    mutationFn: ()=>{
+      setisLoading(true)
+       getalluserroletable
+    },
     onSuccess: (response) => {
       if (response) {
         setuserroleData(response.data);
         setTotalPages(Math.ceil(response.data.total / limit));
       }
+      setisLoading(false)
     },
+    onError:()=>{
+      setisLoading(false)
+    }
   });
 
   const handleStatusToggle = async (id, currentStatus) => {
@@ -295,6 +303,7 @@ const Userrole = () => {
               totalPages={totalPages}
               onPageChange={handlePageChange}
               pageSize={limit}
+              isLoading={isLoading}
             />
           </div>
           {userroleData.length > 0 && (

@@ -23,6 +23,8 @@ const Pushnotification = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch();
 
+  const [isLoading,setisLoading] = useState(false)
+  
   const roledata = useSelector((state) => state.clientForm.roledata);
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const id_branch = roledata?.branch;
@@ -72,14 +74,19 @@ const Pushnotification = () => {
 
   //mutation to get scheme type
   const { mutate: getnotificationData } = useMutation({
-    mutationFn: pushnotificationdatatable,
+    mutationFn: ()=>{ 
+      setisLoading(true)
+      pushnotificationdatatable
+    },
     onSuccess: (response) => {
-      console.log(response)
+      
       setnotifyData(response.data)
       setTotalPages(response.totalPages)
+      setisLoading(false)
     },
     onError: (error) => {
       console.error('Error fetching countries:', error);
+      setisLoading(false)
     }
   });
 
@@ -585,6 +592,7 @@ const Pushnotification = () => {
         <Table
           data={notifyData}
           columns={columns}
+          isLoading={isLoading}
         />
       </div>
       {notifyData.length > 0 && (

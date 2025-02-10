@@ -21,7 +21,7 @@ const ClientMaster = () => {
   const [isFilterOpen, setIsFilterOpen] = React.useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [selectedRow, setSelectedRow] = useState(null);
-
+  const [isLoading,setisLoading] = useState(false)
   const [userroleData, setuserroleData] = useState([]);
    const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
@@ -77,9 +77,16 @@ const ClientMaster = () => {
   const [clientTable, setClientTable] = useState([]);
 
   const { mutate: getClients } = useMutation({
-    mutationFn: getallclienttable,
+    mutationFn: ()=>{
+      setisLoading(true)
+       getallclienttable
+    },
     onSuccess: (response) => {
       setClientTable(response.data);
+      setisLoading(false)
+    },
+    onError:()=>{
+      setisLoading(false)
     }
   });
 
@@ -390,6 +397,7 @@ const ClientMaster = () => {
           data={clientTable}
           columns={columns}
           selectedRow={selectedRow}
+          isLoading={isLoading}
         />
 
       </div>

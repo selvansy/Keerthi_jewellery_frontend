@@ -20,10 +20,12 @@ const Paymentmode = () => {
   
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
   const [paymentmodeData, setpaymentmodeData] = useState([]);
    const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [isLoading,setisLoading] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [searchInput,setSearchInput]=useState('')
   const debouncedSearch = useDebounce(searchInput, 500)
@@ -36,14 +38,21 @@ const Paymentmode = () => {
     }
   
 
-  const { isLoading, mutate: getallpaymentmodesMutate } = useMutation({
-    mutationFn: getallpaymentmodes,
+  const { mutate: getallpaymentmodesMutate } = useMutation({
+    mutationFn: ()=>{
+      setisLoading(false)
+       getallpaymentmodes
+    },
     onSuccess: (response) => {
       if (response) {
         setpaymentmodeData(response.data);
         setTotalPages(response.totalPages);
       }
+      setisLoading(false)
     },
+    onError:()=>{
+        setisLoading(false)
+    }
   });
 
 
@@ -312,6 +321,7 @@ const Paymentmode = () => {
             <Table
               data={paymentmodeData}
               columns={columns}
+              isLoading={isLoading}
             />
           </div>
           {paymentmodeData.length > 0 && (

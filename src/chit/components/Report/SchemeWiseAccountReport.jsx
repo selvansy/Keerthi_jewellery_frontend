@@ -128,7 +128,7 @@ const SchemeWiseAccountReport = () => {
         </div> */}
       </div>
       <div className="mt-4">
-        <Table data={currentItems} />
+        <Table data={currentItems} isLoading={isLoading}/>
       </div>
 
       <div className="flex justify-between mt-4 p-2">

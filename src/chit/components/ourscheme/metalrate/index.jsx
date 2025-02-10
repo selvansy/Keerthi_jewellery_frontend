@@ -18,8 +18,9 @@ const MetalRate = () => {
   let navigate = useNavigate()
   let dispatch = useDispatch();
 
-  const [schemeType, setMetalRate] = useState([])
-  const [search, setSearch] = useState('')
+  const [isLoading,setisLoading] = useState(false)
+  const [schemeType,setMetalRate]=useState([])
+  const [search,setSearch]=useState('')
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(10);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -77,14 +78,19 @@ const MetalRate = () => {
 
 
   //mutation to get scheme type 
-  const { mutate: getmetalratetablemutate } = useMutation({
-    mutationFn: getmetalratetable,
+  const {mutate: getmetalratetablemutate } = useMutation({
+    mutationFn: ()=>{
+    setisLoading(true)
+    getmetalratetable
+  },
     onSuccess: (response) => {
-      console.log(response)
+   
       setMetalRate(response.data)
       setTotalPages(response.totalPages)
+      setisLoading(false)
     },
     onError: (error) => {
+      setisLoading(false)
       console.error('Error:', error);
     }
   });
@@ -464,9 +470,10 @@ const MetalRate = () => {
         />
       )}
       <div className="mt-4">
-        <Table
-          data={schemeType}
-          columns={columns}
+        <Table 
+        data={schemeType}
+        columns={columns}
+        isLoading={isLoading}
         />
       </div>
       {schemeType.length > 0 && (

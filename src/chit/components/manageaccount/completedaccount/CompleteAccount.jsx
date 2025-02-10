@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Table from '../../common/Table'
-import { useNavigate,useParams } from 'react-router-dom'
+import { useNavigate} from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import { SlidersHorizontal, Search, X } from 'lucide-react'
 import { addedtype,allschemestatus,getallschemetypes,getallbranchscheme,getallbranchclassification,getemployeebybranch,getallbranch,schemeaccounttable, changeschemeaccountStatus, deleteschemeaccount } from '../../../api/Endpoints'
@@ -23,7 +23,8 @@ const CompleteAccount = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate()
-const [popuptitle, setPopuptitle] = useState(0);
+
+  const [isLoading,setisLoading] = useState(false)
   const [search, setSearch] = useState('')
   const [schemeaccount, setschemeaccount] = useState([])
  const [schaccExp,setschaccExp] = useState([]);
@@ -229,9 +230,13 @@ const [popuptitle, setPopuptitle] = useState(0);
   
 
   //mutation to get scheme type
-  const {isLoading, mutate: getschemeaccountMutate } = useMutation({
-    mutationFn: schemeaccounttable,
+  const { mutate: getschemeaccountMutate } = useMutation({
+    mutationFn: ()=>{
+      setisLoading(true)
+    schemeaccounttable
+    },
     onSuccess: (response) => {
+
 
       setschemeaccount(response.data)
       setTotalPages(response.totalPages);
@@ -255,10 +260,11 @@ const [popuptitle, setPopuptitle] = useState(0);
       }
 
       setschaccExp(arrayData)
-      
+      setisLoading(false)
     },
     onError: (error) => {
       console.error('Error fetching countries:', error);
+      setisLoading(false)
     }
   });
 
@@ -779,6 +785,7 @@ const [popuptitle, setPopuptitle] = useState(0);
         <Table
           data={schemeaccount}
           columns={columns}
+          isLoading={isLoading}
         />
       </div>
       {schemeaccount.length > 0 && (

@@ -154,15 +154,7 @@ const AddRvertAccount = () => {
   const scheData = schemestatus.filter((account) => account.id_status !== 2 && account.id_status !== 0)
 
 
-  const { mutate: SendOtp } = useMutation({
-    mutationFn: searchmobileschemeaccount,
-    onSuccess: (response) => {
-      if (response) {
-        toast.success(response.message)
-      }
 
-    },
-  });
 
 
   const { mutate: getallbranchMutate } = useMutation({
@@ -384,8 +376,6 @@ const AddRvertAccount = () => {
 
 
   
-
-
   return (
     <>
       <div className='flex flex-row justify-between'>
@@ -433,13 +423,13 @@ const AddRvertAccount = () => {
               value={mobile || ""}
               onChange={handleChange}
             />
-            <div onClick={handleSearchmobile} className="absolute flex items-center justify-center cursor-pointer right-[0%] rounded-r-lg top-[70%] -translate-y-1/2 w-10 h-[60%] sm:right-0 sm:top-[68%] sm:rounded-r-lg md:right-[20%] md:rounded-lg lg:rounded-r-lg lg:left-[47%]"
-              style={{ backgroundColor: layout_color }}>
-              <Search size={22} className="text-white" />
-            </div>
-            {errors.mobile && <div className="text-red-500 text-sm">{errors.mobile}</div>}
-
+            <div onClick={handleSearchmobile} className="absolute flex items-center justify-center cursor-pointer right-[0%] top-[70%] -translate-y-1/2 w-10 h-[56%]  sm:right-0 sm:top-[70%] sm:rounded-r-lg  md:right-[20%] md:rounded-r-lg lg:rounded-r-lg  lg:left-[47%]"
+                         style={{ backgroundColor: layout_color }}>
+                         <Search size={22} className="text-white" />
+                       </div>
+          
           </div>
+          {errors.mobile && <div className="text-red-500 text-sm">{errors.mobile}</div>}
           <div className='lg:flex lg:flex-col lg:mt-2 md:flex md:flex-col md:mt-2 hidden'></div>
 
 

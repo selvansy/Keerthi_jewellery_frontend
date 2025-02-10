@@ -36,6 +36,7 @@ const AupayConfigure = () => {
     const debouncedSearch = useDebounce(searchInput, 500)
     const currentStep = useSelector((state) => state.clientForm.currentStep);
     const projectTitle = useSelector((state) => state.clientForm.selectedProject);
+    const [isLoading,setisLoading] = useState(false)
 
     const dispatch = useDispatch();
     const [filters, setFilters] = React.useState({
@@ -44,11 +45,16 @@ const AupayConfigure = () => {
     });
 
     const { mutate: getallconfigureData } = useMutation({
-        mutationFn: getconfigurationtable,
+        mutationFn: ()=>{
+            setisLoading(true)
+             getconfigurationtable
+        },
         onSuccess: (response) => {
-            console.log(response);
             setAupayData(response.data);
-
+            setisLoading(false)
+        },
+        onError:()=>{
+            setisLoading(false)
         }
     });
 
@@ -236,7 +242,7 @@ const AupayConfigure = () => {
                 {!isAddClient ? (
                     <>
 
-                    <Table data={aupayData} columns={columns} selectedRow={selectedRow} />
+                    <Table data={aupayData} columns={columns} selectedRow={selectedRow} isLoading={isLoading}/>
                     
                     {aupayData.length > 0 && (
                     <div className="flex justify-between mt-4 p-2">

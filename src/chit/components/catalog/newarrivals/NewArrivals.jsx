@@ -16,6 +16,7 @@ import Modal from '../../../components/common/Modal';
 
 const NewArrivals = () => {
   const navigate = useNavigate()
+  const [isLoading,setisLoading] = useState(false)
 
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const roledata = useSelector((state) => state.clientForm.roledata);
@@ -163,14 +164,18 @@ const NewArrivals = () => {
 
   //mutation to get scheme type
   const { mutate: getnewarrivalsData } = useMutation({
-    mutationFn: getnewarrivalsTable,
+    mutationFn: ()=>{
+      setisLoading(true)
+      getnewarrivalsTable
+    },
     onSuccess: (response) => {
-      console.log("Res",response)
+      setisLoading(false)
       setnewarrivalsData(response.data)
       setTotalPages(response.data.totalPages)
     },
     onError: (error) => {
       console.error('Errors:', error);
+      setisLoading(false)
     }
   });
 
@@ -623,6 +628,8 @@ const NewArrivals = () => {
         <Table
           data={newarrivalsData}
           columns={columns}
+          isLoading={isLoading}
+          
         />
       </div>
 

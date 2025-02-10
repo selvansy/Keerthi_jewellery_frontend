@@ -23,6 +23,7 @@ const CloaseAccount = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate()
 
+  const [isLoading,setisLoading] = useState(false)
   const [search, setSearch] = useState('')
   const [schemeaccount, setschemeaccount] = useState([])
   const [schaccExp, setschaccExp] = useState([]);
@@ -56,7 +57,7 @@ const CloaseAccount = () => {
     to_date: to_date,
     added_by: '',
     scheme_status: "",
-    type:"close",
+    type: "close",
     id_classification: '',
     collectionuserid: '',
     id_scheme: '',
@@ -224,7 +225,7 @@ const CloaseAccount = () => {
     if (!e.target.value) return;
     const response = await getallbranchclassification({ "id_branch": e.target.value });
     if (response) {
-      console.log(response)
+    
       setClassify(response.data);
     }
   };
@@ -276,10 +277,13 @@ const CloaseAccount = () => {
 
 
   //mutation to get scheme type
-  const { isLoading, mutate: getschemeaccountMutate } = useMutation({
-    mutationFn: schemeaccounttable,
+  const { mutate: getschemeaccountMutate } = useMutation({
+    mutationFn: ()=>{
+      setisLoading(true)
+    schemeaccounttable
+    },
     onSuccess: (response) => {
-      console.log("table", response)
+   
       setschemeaccount(response.data)
       setTotalPages(response.totalPages);
       let arrayData = [];
@@ -303,10 +307,12 @@ const CloaseAccount = () => {
      
       }
 
-      setschaccExp(arrayData)
+            setschaccExp(arrayData)
+            setisLoading(false)
     },
     onError: (error) => {
       console.error('Error fetching countries:', error);
+      setisLoading(false)
     }
   });
 
@@ -319,7 +325,7 @@ const CloaseAccount = () => {
       limit: itemsPerPage,
       search: search,
       added_by: filters.added_by,
-      type:"close",
+      type: "close",
       scheme_status: filters.scheme_status,
       id_classification: filters.id_classification,
       collectionuserid: filters.collectionuserid,
@@ -353,7 +359,7 @@ const CloaseAccount = () => {
   }
 
   const handleStatusToggle = async (id) => {
-    console.log(id);
+
     let response = await changeschemeaccountStatus(id);
     if (response) {
       toast.success(response.message);
@@ -886,6 +892,7 @@ const CloaseAccount = () => {
         <Table
           data={schemeaccount}
           columns={columns}
+          isLoading={isLoading}
         />
       </div>
       {schemeaccount.length > 0 && (

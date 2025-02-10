@@ -24,9 +24,8 @@ function AccountSummaryReport() {
     const id_role = roledata?.id_role?.id_role;
     const id_client = roledata?.id_client;
     const id_branch = roledata?.branch;
-  
-  const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
+    const [isLoading,setisLoading] = useState(false)
     const [accsumm, setaccsumm] = useState([])
     const [accExp, setaccExp] = useState([]);
     const [classificationData, setClassification] = useState([])
@@ -188,8 +187,11 @@ function AccountSummaryReport() {
   
 
     //mutation to get scheme type
-    const { mutate: getaccountSummarymuate } = useMutation({
-        mutationFn:getaccountSummaryReport,
+    const { mutate: OutstandingReport } = useMutation({
+        mutationFn: ()=>{ 
+            setisLoading(true)
+            getOutstandingReport
+        },
         onSuccess: (response) => {
   
             setaccsumm(response.data)
@@ -210,9 +212,11 @@ function AccountSummaryReport() {
             }
 
             setaccExp(arrayData)
+            setisLoading(false)
 
         },
         onError: (error) => {
+            setisLoading(false)
             console.error('Error:', error);
         }
     });
@@ -576,7 +580,7 @@ function AccountSummaryReport() {
                 )}
             </div>
             <div className="mt-4">
-                <Table data={accsumm} columns={columns} />
+                <Table data={accsumm} columns={columns} isLoading={isLoading}/>
             </div>
 
             <div className="flex justify-between mt-4 p-2">

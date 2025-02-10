@@ -38,13 +38,21 @@ const Submenu = () => {
   }
 
     const { mutate: getallsubmenusMutate } = useMutation({
-      mutationFn: getallsubmenudatatable,
+      mutationFn: ()=>{
+        setisLoading(true)
+         getallsubmenudatatable
+      },
       onSuccess: (response) => {
         if (response) {
           setsubmenuData(response.data);
           setTotalPages(Math.ceil(response.data.total / limit));
+         
         }
+        setisLoading(false)
       },
+      onError:()=>{
+        setisLoading(false)
+      }
     });
 
   const { mutate: getallmenuMutate } = useMutation({
@@ -373,6 +381,7 @@ const Submenu = () => {
               totalPages={totalPages}
               onPageChange={handlePageChange}
               pageSize={limit}
+              isLoading={isLoading}
             />
           </div>
           {submenuData.length > 0 && (

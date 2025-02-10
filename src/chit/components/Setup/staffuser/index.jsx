@@ -19,7 +19,8 @@ import StaffuserForm from './StaffuserForm'
 const StaffUser = () => {
   const dispatch = useDispatch();
 
-   const [currentPage, setCurrentPage] = useState(1);
+  const [isLoading,setisLoading] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [clientData, setClientData] = useState([])
@@ -146,16 +147,21 @@ const StaffUser = () => {
 
 
   //get staff user data with pagination 
-  const { mutate: getAllgetstaffusertable, isLoading } = useMutation({
-    mutationFn: (formdata) => getstaffusertable(formdata),
+  const { mutate: getAllgetstaffusertable } = useMutation({
+    mutationFn: (formdata) =>{
+      setisLoading(true)
+     getstaffusertable(formdata)
+    },
     onSuccess: (response) => {
       if (response) {
         setStaffData(response.data)
         setTotalPages(response.totalPages)
       }
+      setisLoading(false)
     },
     onError: (error) => {
-      console.error('Error fetching staff data:', error);
+      setisLoading(false)
+      console.error('Error:', error);
     }
   });
 
@@ -472,6 +478,7 @@ const StaffUser = () => {
         <Table
           data={staffData}
           columns={columns}
+          isLoading={isLoading}
         />
         {staffData.length > 0 && (
           <div className="flex justify-between mt-4 p-2">

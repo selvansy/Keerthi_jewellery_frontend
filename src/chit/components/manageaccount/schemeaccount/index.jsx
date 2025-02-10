@@ -23,6 +23,7 @@ const Schemeaccount = () => {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
   const dispatch = useDispatch();
+  const [isLoading,setisLoading] = useState(false)
   const navigate = useNavigate()
 const [popuptitle, setPopuptitle] = useState(0);
   const [search, setSearch] = useState('')
@@ -221,10 +222,13 @@ const [popuptitle, setPopuptitle] = useState(0);
   
 
   //mutation to get scheme type
-  const {isLoading, mutate: getschemeaccountMutate } = useMutation({
-    mutationFn: schemeaccounttable,
+  const { mutate: getschemeaccountMutate } = useMutation({
+    mutationFn: ()=>{
+      setisLoading(true)
+       schemeaccounttable
+    },
     onSuccess: (response) => {
-
+      
       setschemeaccount(response.data)
       setTotalPages(response.totalPages);
   
@@ -247,10 +251,12 @@ const [popuptitle, setPopuptitle] = useState(0);
       }
 
       setschaccExp(arrayData)
+      setisLoading(false)
       
     },
     onError: (error) => {
       console.error('Error fetching countries:', error);
+      setisLoading(false)
     }
   });
 
@@ -798,6 +804,7 @@ const [popuptitle, setPopuptitle] = useState(0);
         <Table
           data={schemeaccount}
           columns={columns}
+          isLoading={isLoading}
         />
       </div>
       {schemeaccount.length > 0 && (

@@ -15,30 +15,35 @@ import { getpaymentmodesummary } from "../../api/BackendUrl"
 import { toast } from 'react-toastify';
 
 function ModeWisePayment() {
+    
+    const layout_color = useSelector((state) => state.clientForm.layoutColor);
+    const roledata = useSelector((state) => state.clientForm.roledata);
+    const id_branch = roledata?.branch;
+   
 
-  const layout_color = useSelector((state) => state.clientForm.layoutColor);
-  const roledata = useSelector((state) => state.clientForm.roledata);
-  const id_branch = roledata?.branch;
+    const [paymentMode, setpaymentMode] = useState([])
+    
+const [isLoading,setisLoading] = useState(false)
 
 
-  const [paymentMode, setpaymentMode] = useState([])
-
-  const [branchfilter, setBranch] = useState([]);
-  const [branchId, setbranchId] = useState("")
-  const [classifyfilter, setClassify] = useState([]);
-  const [employeefilter, setEmployee] = useState([]);
-  const [schemetypefilter, setSchemeType] = useState([]);
-  const [schemefilter, setScheme] = useState([]);
-  const [addedbyfilter, setAddedby] = useState([]);
-  const [schemestatusfilter, setSchemestatus] = useState([]);
-
-  const [search, setSearch] = useState('')
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5);
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-
+    
+     const [branchfilter, setBranch] = useState([]);  
+     const [branchId,setbranchId] = useState("")
+     const [classifyfilter, setClassify] = useState([]);
+     const [employeefilter, setEmployee] = useState([]);
+     const [schemetypefilter, setSchemeType] = useState([]);
+     const [schemefilter, setScheme] = useState([]);
+     const [addedbyfilter, setAddedby] = useState([]);
+     const [schemestatusfilter, setSchemestatus] = useState([]);
+    
+    const [search, setSearch] = useState('')
+ 
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(5);
+     const [totalPages, setTotalPages] = useState(0);
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    
 
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [from_date, setFromdate] = useState('');
@@ -134,13 +139,18 @@ function ModeWisePayment() {
 
   //mutation to get scheme type
   const { mutate: getpaymentModeMutate } = useMutation({
-    mutationFn: getpaymentmodesummary,
+    mutationFn: ()=>{
+      setisLoading(true)
+       getpaymentmodesummary
+    },
     onSuccess: (response) => {
 
       setpaymentMode(response.data)
+      setisLoading(false)
     },
     onError: (error) => {
       console.error('Error:', error);
+      setisLoading(false)
     }
   });
 
@@ -169,7 +179,7 @@ function ModeWisePayment() {
       <h2 className="text-2xl text-gray-900 font-bold">Payment Mode Ledger Report</h2>
       <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
         <div className="relative w-full lg:w-1/3 min-w-[200px]">
-          <div className="absolute left-3 top-1/2 transform -translate-y-1/2" onClick={handleSearch}>
+          <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
             <Search className="text-gray-500" />
           </div>
           <input
@@ -300,6 +310,7 @@ function ModeWisePayment() {
         <Table
           data={paymentMode}
           columns={columns}
+          isLoading={isLoading}
         />
       </div>
 
