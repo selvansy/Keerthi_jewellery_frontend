@@ -23,7 +23,7 @@ const Userrole = () => {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   
   const [userroleData, setuserroleData] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
+   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [activeDropdown, setActiveDropdown] = useState(null);
@@ -160,6 +160,80 @@ const Userrole = () => {
 
   const columns = [
     {
+      header: 'Actions',
+      cell: (row, rowIndex) => (
+          <div className="dropdown-container relative"
+          style={{
+              top: rowIndex >= userroleData.length - 2 ? "auto" : "72%",
+              bottom: rowIndex >= userroleData.length - 2 ? "-74%" : "auto", 
+              // top: 'auto',
+              // bottom: '-440%',
+     
+              marginBottom: "-15px",
+              filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.15))",
+            }}
+          >
+              <button
+                  className="p-1 hover:bg-gray-100 rounded-full"
+                  onClick={(e) => {
+                      e.stopPropagation();
+                      setActiveDropdown(activeDropdown === row?._id ? null : row?._id);
+                  }}
+              >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
+                  </svg>
+              </button>
+
+              {activeDropdown === row?._id && (
+                  <div
+                      className="relative"
+                    
+                  >
+                      <div className="w-32 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+                          <div className="py-1">
+                              <button
+                                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                                  onClick={() => {
+                                      handleEdit(row?._id);
+                                      setActiveDropdown(null);
+                                  }}
+                              >
+                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                  </svg>
+                                  Edit
+                              </button>
+                              <button
+                                  className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
+                                  onClick={() => {
+                                      handleDelete(row?._id);
+                                      setActiveDropdown(null);
+                                  }}
+                              >
+                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                  </svg>
+                                  Delete
+                              </button>
+                              <button
+                                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                                  onClick={() => setActiveDropdown(null)}
+                              >
+                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                  </svg>
+                                  Cancel
+                              </button>
+                          </div>
+                      </div>
+                  </div>
+              )}
+          </div>
+      ),
+      sticky: 'right'
+  },
+    {
       header: 'S.No',
       cell: (_, index) => index + 1 + (currentPage - 1) * limit,
     },
@@ -186,75 +260,6 @@ const Userrole = () => {
           ></div>
         </label>
       )
-    },
-    { 
-      header: 'Actions',
-      cell: (row, rowIndex) => (
-        <div className="dropdown-container relative">
-          <button
-            className="p-1 hover:bg-gray-100 rounded-full"
-            onClick={(e) => {
-              e.stopPropagation();
-              setActiveDropdown(activeDropdown === row?._id ? null : row?._id);
-            }}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
-              <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
-            </svg>
-          </button>
-
-          {activeDropdown === row?._id && (
-            <div
-              className="absolute"
-              style={{
-                top: rowIndex >= userroleData?.length - 2 ? 'auto' : '72%',
-                bottom: rowIndex >= userroleData?.length - 2 ? '100%' : 'auto',
-                left: '-83%',
-                zIndex: 9999,
-              }}
-            >
-              <div className="w-32 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
-                <div className="py-1">
-                  <button
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                    onClick={() => {
-                      handleEdit(row?._id);
-                      setActiveDropdown(null);
-                    }}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                    Edit
-                  </button>
-                  <button
-                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
-                    onClick={() => {
-                      handleDelete(row?._id);
-                      setActiveDropdown(null);
-                    }}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                    Delete
-                  </button>
-                  <button
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                    onClick={() => setActiveDropdown(null)}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      ),
-      sticky: 'right'
     }
   ];
 

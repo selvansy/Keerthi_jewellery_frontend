@@ -29,7 +29,7 @@ const [popuptitle, setPopuptitle] = useState(0);
   const [search, setSearch] = useState('')
   const [schemeaccount, setschemeaccount] = useState([])
  const [schaccExp,setschaccExp] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
+   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedRow, setSelectedRow] = useState(null)
@@ -47,20 +47,53 @@ const [popuptitle, setPopuptitle] = useState(0);
   const [displaysetting, setDiplaySetting] = useState(0);
   const [ispayable, setIspayable] = useState(false);
   const [isviewOpen, setIsviewOpen] = useState(false);
-
+  const roledata = useSelector((state) => state.clientForm.roledata);
+  let id_client = roledata?.id_client;
+  const id_branch = roledata?.branch;
+  const [branchList, setBranchList] = useState([]);
+  let [branch, setbranch] = useState("");
   const [filters, setFilters] = React.useState({
     
     from_date:from_date,
     to_date:to_date,
     added_by:'',
     scheme_status:'',
+    id_branch:id_branch,
     type:'all',
     id_classification: '',
     collectionuserid: '',
     id_scheme: '',
-    id_branch: '',
     scheme_type:''
   });
+
+  
+  const handleReset = (e) => {
+    setFromdate("");
+    setTodate("");
+    setFilters(prev=>({...prev,added_by:'',
+      scheme_status:'',
+      id_branch:id_branch,
+      type:'all',
+      id_classification: '',
+      collectionuserid: '',
+      id_scheme: '',
+      scheme_type:''}));    
+      toast.success("Filter is cleared");
+      getschemeaccountMutate({
+      page: currentPage,
+      limit: itemsPerPage,
+      added_by:'',
+      search:"",
+      scheme_status:'',
+      id_branch:id_branch,
+      type:'all',
+      id_classification: '',
+      collectionuserid: '',
+      id_scheme: '',
+      scheme_type:''
+    });
+
+  }
 
   const filterInputchange = (e) =>{
     const {name, value} = e.target;
@@ -109,19 +142,21 @@ const [popuptitle, setPopuptitle] = useState(0);
         scheme_type:filters.scheme_type
       };
        
-
         setIsFilterOpen(false)
         getschemeaccountMutate(filterTosend);
       
     };
 
-   useEffect(() => {
+ 
+    const handleClickfilter = (e) => {
       getallbranchMutate();
       handleAddedtypeChange();
       handleSchemetypeChange();
       handleSchemestatusChange();
-    }, []);
-
+      setIsFilterOpen(true);
+    }
+  
+    
     const { mutate: getallbranchMutate } = useMutation({
       mutationFn: getallbranch,
       onSuccess: (response) => {
@@ -301,6 +336,83 @@ const [popuptitle, setPopuptitle] = useState(0);
 
   const columns = [
     {
+      header: 'Actions',
+      cell: (row, rowIndex) => (
+        <div className="dropdown-container relative group  right-0 z-20 bg-white">
+          <button
+            className="p-1 hover:bg-gray-100 rounded-full"
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedRow(row?._id);
+              setActiveDropdown(activeDropdown === row?._id ? null : row?._id);
+            }}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
+            </svg>
+          </button>
+    
+          {/* Use group-hover to show the dropdown on hover */}
+          <div
+            className={`absolute transform z-50 ${activeDropdown === row?._id ? '' : 'hidden'} `}
+            style={{
+              top: rowIndex >= schemeaccount.length - 2 ? 'auto' : '72%',
+              bottom: rowIndex >= schemeaccount.length - 2 ? '-74%' : 'auto',
+            }}
+          >
+            <div className="w-32 rounded-md bg-white ring-1 ring-black ring-opacity-5">
+              <div className="py-1">
+                <button
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                  onClick={() => {
+                    handleEdit(row?._id);
+                    setActiveDropdown(null);
+                  }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                  Edit
+                </button>
+                <button
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                  onClick={() => {
+                    handleOpenLedger(row?._id);
+                  }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                  Ledger
+                </button>
+                <button
+                  className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
+                  onClick={() => {
+                    handleDelete(row?._id);
+                    setActiveDropdown(null);
+                  }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                  Delete
+                </button>
+                <button
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                    onClick={() => setActiveDropdown(null)}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    Cancel
+                  </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
       header: 'S.No',
       cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
     },
@@ -367,7 +479,7 @@ const [popuptitle, setPopuptitle] = useState(0);
     
     {
       header: "Total Ins",
-      cell: (row) => row?.total_paidinstallments
+      cell: (row) => row?.total_installments
     },
     {
       header: "Paid Ins",
@@ -447,75 +559,8 @@ const [popuptitle, setPopuptitle] = useState(0);
           ></div>
         </label>
       )
-    },
-    {
-      header: 'Actions',
-      cell: (row, rowIndex) => (
-        <div className="dropdown-container relative group  right-0 z-20 bg-white">
-          <button
-            className="p-1 hover:bg-gray-100 rounded-full"
-            onClick={(e) => {
-              e.stopPropagation();
-              setSelectedRow(row?._id);
-              setActiveDropdown(activeDropdown === row?._id ? null : row?._id);
-            }}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
-              <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
-            </svg>
-          </button>
-    
-          {/* Use group-hover to show the dropdown on hover */}
-          <div
-            className={`absolute transform z-50 ${activeDropdown === row?._id ? '' : 'hidden'} group-hover:block`}
-            style={{
-              top: rowIndex >= schemeaccount.length - 2 ? 'auto' : '72%',
-              bottom: rowIndex >= schemeaccount.length - 2 ? '-74%' : 'auto',
-            }}
-          >
-            <div className="w-32 rounded-md bg-white ring-1 ring-black ring-opacity-5">
-              <div className="py-1">
-                <button
-                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                  onClick={() => {
-                    handleEdit(row?._id);
-                    setActiveDropdown(null);
-                  }}
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                  </svg>
-                  Edit
-                </button>
-                <button
-                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                  onClick={() => {
-                    handleOpenLedger(row?._id);
-                  }}
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                  </svg>
-                  Ledger
-                </button>
-                <button
-                  className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
-                  onClick={() => {
-                    handleDelete(row?._id);
-                    setActiveDropdown(null);
-                  }}
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
-                  Delete
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      ),
     }
+  
     
     
   ];
@@ -535,7 +580,21 @@ const [popuptitle, setPopuptitle] = useState(0);
           />
         </div>
         <div className="flex flex-row items-center justify-end gap-2">
-        <button
+      
+           
+
+          <button
+            className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
+            onClick={handleClick}
+            style={{ backgroundColor: layout_color }} >
+            + Add Account
+          </button>
+          <div className="flex flex-row items-center justify-end gap-2">
+          
+          <ExportToExcel apiData={schemeaccount} fileName="SchemeAccount Report" />
+          <ExportToPDF apiData={schaccExp} fileName="scheme account" />
+        </div>
+          <button
           id="filter"
           className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
           onClick={() => handleReset()}
@@ -546,21 +605,11 @@ const [popuptitle, setPopuptitle] = useState(0);
           <button
             id="filter"
             className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
-            onClick={() => setIsFilterOpen(true)}
+            onClick={(e) => {
+              handleClickfilter(e);
+            }}
             style={{ backgroundColor: layout_color }}>
             <SlidersHorizontal size={20} />
-          </button>
-            <div className="flex flex-row items-center justify-end gap-2">
-          
-                    <ExportToExcel apiData={schemeaccount} fileName="SchemeAccount Report" />
-                    <ExportToPDF apiData={schaccExp} fileName="scheme account" />
-                  </div>
-
-          <button
-            className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
-            onClick={handleClick}
-            style={{ backgroundColor: layout_color }} >
-            + Add Account
           </button>
         </div>
       </div>

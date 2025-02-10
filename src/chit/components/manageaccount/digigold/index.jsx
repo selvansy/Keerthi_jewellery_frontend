@@ -3,22 +3,22 @@ import Table from '../../common/Table'
 import { useNavigate,useParams } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import { SlidersHorizontal, Search, X } from 'lucide-react'
-import { addedtype,allschemestatus,getschemeaccountbyid,getallschemetypes,getallbranchscheme,getallbranchclassification,getemployeebybranch,getallbranch,schemeaccounttable, changeschemeaccountStatus, deleteschemeaccount } from '../../../api/Endpoints'
+import { addedtype,allschemestatus,getallschemetypes,getallbranchscheme,getallbranchclassification,getemployeebybranch,getallbranch,schemeaccounttable, changeschemeaccountStatus, deleteschemeaccount } from '../../../api/Endpoints'
 import { toast } from 'react-toastify'
 import { CalendarDays, RefreshCcw} from 'lucide-react'
-import { ExportToExcel } from '../../common/Dropdown/Excelexport';
-import { ExportToPDF } from '../../common/Dropdown/ExportPdf';
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
-
+import { setScemeAccountId } from "../../../../redux/clientFormSlice"
 import { openModal } from '../../../../redux/modalSlice';
 import { eventEmitter } from '../../../../utils/EventEmitter';
 import { useDispatch, useSelector } from 'react-redux';
 import Modal from '../../common/Modal';
+import ModelOne from '../../common/Modelone';
+import { ExportToExcel } from '../../common/Dropdown/Excelexport';
+import { ExportToPDF } from '../../common/Dropdown/ExportPdf';
 import { useDebounce } from '../../../hooks/useDebounce';
-
+import Ledgerdetails from "./ledgerdetails"
 const DigiGold = () => {
-
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
   const dispatch = useDispatch();
@@ -28,7 +28,7 @@ const DigiGold = () => {
   const [search, setSearch] = useState('')
   const [schemeaccount, setschemeaccount] = useState([])
  const [schaccExp,setschaccExp] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
+   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedRow, setSelectedRow] = useState(null)
@@ -43,23 +43,56 @@ const DigiGold = () => {
   const [schemefilter, setScheme] = useState([]);
   const [addedbyfilter, setAddedby] = useState([]);
   const [schemestatusfilter, setSchemestatus] = useState([]);
-
+  const [displaysetting, setDiplaySetting] = useState(0);
   const [ispayable, setIspayable] = useState(false);
-
-  const [ledgerData,setLedgerData]=useState([]);
+  const [isviewOpen, setIsviewOpen] = useState(false);
+  const roledata = useSelector((state) => state.clientForm.roledata);
+  let id_client = roledata?.id_client;
+  const id_branch = roledata?.branch;
+  const [branchList, setBranchList] = useState([]);
+  let [branch, setbranch] = useState("");
   const [filters, setFilters] = React.useState({
     
     from_date:from_date,
     to_date:to_date,
     added_by:'',
     scheme_status:'',
+    id_branch:id_branch,
     type:'all',
     id_classification: '',
     collectionuserid: '',
     id_scheme: '',
-    id_branch: '',
     scheme_type:10
   });
+
+  
+  const handleReset = (e) => {
+    setFromdate("");
+    setTodate("");
+    setFilters(prev=>({...prev,added_by:'',
+      scheme_status:'',
+      id_branch:id_branch,
+      type:'all',
+      id_classification: '',
+      collectionuserid: '',
+      id_scheme: '',
+      scheme_type:10}));    
+      toast.success("Filter is cleared");
+      getschemeaccountMutate({
+      page: currentPage,
+      limit: itemsPerPage,
+      added_by:'',
+      search:"",
+      scheme_status:'',
+      id_branch:id_branch,
+      type:'all',
+      id_classification: '',
+      collectionuserid: '',
+      id_scheme: '',
+      scheme_type:10
+    });
+
+  }
 
   const filterInputchange = (e) =>{
     const {name, value} = e.target;
@@ -72,73 +105,22 @@ const DigiGold = () => {
     }
   };
 
+  function closeIncommingModal() {
+    setIsviewOpen(false);
+    setIsSettingOpen(false);
+  }
 
   //state to save ledger data
-  const getLedgerData = async (data) => {
-         console.log(data);
-         if (!data) return;
-         const response = await getschemeaccountbyid({id:data});   
-         if (response) {
-      
-             dispatch(openModal({
-              modalType: 'LEDGER_MODAL',
-              header: 'View Details',
-              formData: {
-                id: response.data._id,  
-                id_scheme: response.data.id_scheme._id,  
-                scheme_type: response.data.id_scheme.scheme_type,  
-                scheme_typename: response.data.scheme_typename,  
-                classification_name: response.data.id_classification.classification_name, 
-                scheme_name: response.data.id_scheme.scheme_name, 
-                total_installments:response.data.id_scheme.total_installments,  
-                min_amount: response.data.id_scheme.min_amount,
-                max_amount: response.data.id_scheme.max_amount,
-                min_weight: response.data.id_scheme.min_weight,
-                max_weight: response.data.id_scheme.max_weight,
-                amount: response.data.id_scheme.amount,
-                id_customer: response.data.id_customer._id,
-                scheme_acc_number:response.data.scheme_acc_number,
-                start_date: response.data.start_date,
-                total_paidamount:response.data.total_paidamount,
-                total_paidinstallments:response.data.total_paidinstallments,
-                total_weight:response.data.total_weight,
-                bill_no: response.data.bill_no,
-                bill_date: response.data.bill_date,
-                id_classification: response.data.id_classification._id,
-                collectionuserid: response.data.collectionuserid,
-                id_branch: response.data.id_branch._id,
-                account_name: response.data.account_name,
-                address: response.data.id_customer.address,
-                customer_name:response.data.id_customer.firstname+' '+response.data.id_customer.lastname,
-                mobile:response.data.id_customer.mobile,
-                payamount: response.data.amount,
-                maturity_month:response.data.id_scheme.maturity_month,
-                maturity_date:response.data.maturity_date,
-                referal_id:response.data.referal_id,
-                columns:columns,
-                schemeaccount:schemeaccount
-              },
-              buttons: {
-                cancel: {
-                  text: 'Cancel'
-                },
-                submit: {
-                  text: 'Update'
-                }
-              }
-            }));
-         } else {
-           toast.error('Customer not created!');
-         }
-       };
+  const handleOpenLedger = async (data) => {
+      if (!data) return;
+      setPopuptitle('View Details');
+      setDiplaySetting(1);
+      setIsviewOpen(true);      
+     dispatch(setScemeAccountId(data))    
+    };
 
  
-    //handler to open modal and show the modal with data
-    const handleOpenLedger = (data) => {
-      if (!data) return;
-      getLedgerData(data);        
- 
-    }
+
 
   const applyfilterdatatable = (e) =>{
 
@@ -152,26 +134,28 @@ const DigiGold = () => {
         added_by:filters.added_by,
         scheme_status:filters.scheme_status,
         type:'all',
-        id_classification: "",
+        id_classification: filters.id_classification,
         collectionuserid: filters.collectionuserid,
-        id_scheme: "",
+        id_scheme: filters.id_scheme,
         id_branch: filters.id_branch,
-        scheme_type:10
+        scheme_type:filters.scheme_type
       };
        
-
         setIsFilterOpen(false)
         getschemeaccountMutate(filterTosend);
       
     };
 
-   useEffect(() => {
+ 
+    const handleClickfilter = (e) => {
       getallbranchMutate();
       handleAddedtypeChange();
       handleSchemetypeChange();
       handleSchemestatusChange();
-    }, []);
-
+      setIsFilterOpen(true);
+    }
+  
+    
     const { mutate: getallbranchMutate } = useMutation({
       mutationFn: getallbranch,
       onSuccess: (response) => {
@@ -191,8 +175,6 @@ const DigiGold = () => {
       }
     };
 
-
-  
     
     const handleemployeebyBranch = async (e) => {  
       if (!e.target.value) return;
@@ -229,7 +211,7 @@ const DigiGold = () => {
       }
     };
   
-    const handleSchemestatusChange = async (e) => {  
+    const   handleSchemestatusChange = async (e) => {  
 
       const response = await allschemestatus();
       if (response) {
@@ -248,21 +230,23 @@ const DigiGold = () => {
 
       setschemeaccount(response.data)
       setTotalPages(response.totalPages);
+  
       let arrayData = [];
-
-      if (response.data.length !== 0) {
-
-          for (const i in response.data) {
-              arrayData.push({
-                  scheme_name:response.data[i].scheme_name,
-                  code:response.data[i].scheme_name,
-                  open:response.data[i].scheme_name,
-                  close:response.data[i].scheme_name,
-                  complete:response.data[i].scheme_name,
-                  total:response.data[i].scheme_name
-              });
-          }
-
+      if(response.data.length !==0){
+            for(var i=0;i<response.data.length;i++){
+                arrayData.push({
+                    scheme_acc_number:response.data[i].scheme_acc_number,
+                    account_name:response.data[i].account_name,
+                    mobile:response.data[i].mobile,
+                    total_paidinstallments:response.data[i].total_paidinstallments,
+                    total_paidamount:response.data[i].total_paidamount,
+                    total_weight:response.data[i].total_weight,
+                    start_date:response.data[i].start_date,
+                    maturity_date:response.data[i].maturity_date,
+                    branch_name:response.data[i].branch_name
+            
+                  });
+            }
       }
 
       setschaccExp(arrayData)
@@ -285,11 +269,11 @@ const DigiGold = () => {
       added_by:filters.added_by,
       scheme_status:filters.scheme_status,
       type:'all',
-      id_classification: "",
+      id_classification: filters.id_classification,
       collectionuserid: filters.collectionuserid,
-      id_scheme: "",
+      id_scheme: filters.id_scheme,
       id_branch: filters.id_branch,
-      scheme_type:10
+      scheme_type:filters.scheme_type
     };
      
     getschemeaccountMutate(filterTosend)
@@ -349,6 +333,72 @@ const DigiGold = () => {
   }
 
   const columns = [
+    {
+      header: 'Actions',
+      cell: (row, rowIndex) => (
+        <div className="dropdown-container relative group  right-0 z-20 bg-white">
+          <button
+            className="p-1 hover:bg-gray-100 rounded-full"
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedRow(row?._id);
+              setActiveDropdown(activeDropdown === row?._id ? null : row?._id);
+            }}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
+            </svg>
+          </button>
+    
+          {/* Use group-hover to show the dropdown on hover */}
+          <div
+            className={`absolute transform z-50 ${activeDropdown === row?._id ? '' : 'hidden'} `}
+            style={{
+              top: rowIndex >= schemeaccount.length - 2 ? 'auto' : '72%',
+              bottom: rowIndex >= schemeaccount.length - 2 ? '-74%' : 'auto',
+            }}
+          >
+            <div className="w-32 rounded-md bg-white ring-1 ring-black ring-opacity-5">
+              <div className="py-1">
+            
+                <button
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                  onClick={() => {
+                    handleOpenLedger(row?._id);
+                  }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                  Ledger
+                </button>
+                <button
+                  className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
+                  onClick={() => {
+                    handleDelete(row?._id);
+                    setActiveDropdown(null);
+                  }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                  Delete
+                </button>
+                <button
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                    onClick={() => setActiveDropdown(null)}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    Cancel
+                  </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      ),
+    },
     {
       header: 'S.No',
       cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
@@ -416,7 +466,7 @@ const DigiGold = () => {
     
     {
       header: "Total Ins",
-      cell: (row) => row?.total_paidinstallments
+      cell: (row) => row?.total_installments
     },
     {
       header: "Paid Ins",
@@ -478,17 +528,6 @@ const DigiGold = () => {
       }
     },
     {
-      header: "Added By",
-      cell: (row) => row?.created_through
-    },
-    {
-      header: "Create Date",
-      cell: (row) => {
-        const date = new Date(row?.createdAt);
-        return date.toLocaleDateString('en-GB'); // 'en-GB' gives the d-m-Y format
-      }
-    },
-    {
       header: 'Active',
       accessor: 'active',
       cell: (row) => (
@@ -507,83 +546,9 @@ const DigiGold = () => {
           ></div>
         </label>
       )
-    },
-    {
-      header: 'Actions',
-      cell: (row, rowIndex) => (
-        <div className="dropdown-container relative">
-          <button
-            className="p-1 hover:bg-gray-100 rounded-full"
-            onClick={(e) => {
-              e.stopPropagation();
-              setSelectedRow(row?._id);
-              setActiveDropdown(activeDropdown === row?._id ? null : row?._id);
-            }}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
-              <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
-            </svg>
-          </button>
-
-          {activeDropdown === row?._id && (
-            <div
-              className="absolute right-[47px] lg:right-[163px] md:right-[150px] sm:right-[100px] transform -translate-x-8"
-              style={{
-                top: rowIndex >= schemeaccount.length - 2 ? 'auto' : '72%',
-                bottom: rowIndex >= schemeaccount.length - 2 ? '-74%' : 'auto',
-                // top: 'auto',
-                // bottom: '-440%',
-                zIndex: 9999,
-                marginBottom: '8px',
-                filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.15))'
-              }}
-            >
-              <div className="w-32 rounded-md bg-white ring-1 ring-black ring-opacity-5">
-                <div className="py-1">
-                  <button
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                    onClick={() => {
-                      handleEdit(row?._id);
-                      setActiveDropdown(null);
-                    }}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                    Edit
-                  </button>
-                  <button
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                    onClick={() => {
-                      handleOpenLedger(row?._id);
-                    }}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                    Ledger
-                  </button>
-                  <button
-                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
-                    onClick={() => {
-                      handleDelete(row?._id);
-                      setActiveDropdown(null);
-                    }}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                    Delete
-                  </button>
-
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      ),
-
     }
+    
+    
   ];
 
   return (
@@ -601,40 +566,42 @@ const DigiGold = () => {
           />
         </div>
         <div className="flex flex-row items-center justify-end gap-2">
-                <button
-                      id="filter"
-                      className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
-                      onClick={() => handleReset()}
-                      style={{ backgroundColor: layout_color }}>
-                      <RefreshCcw size={20} />
-                    </button>
-          
-          <button
-            id="filter"
-            className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
-            onClick={() => setIsFilterOpen(true)}
-            style={{ backgroundColor: layout_color }}>
-            <SlidersHorizontal size={20} />
-          </button>
-
-            <div className="flex flex-row items-center justify-end gap-2">
-          
-                    <ExportToExcel apiData={schemeaccount} fileName="SchemeAccount Report" />
-                    <ExportToPDF apiData={schaccExp} fileName="scheme account" />
-                  </div>
-
-          <button
-            className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
-            onClick={handleClick}
-            style={{ backgroundColor: layout_color }} >
-            + Add Account
-          </button>
-        </div>
+             
+                  
+       
+                 <button
+                   className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
+                   onClick={handleClick}
+                   style={{ backgroundColor: layout_color }} >
+                   + Add Account
+                 </button>
+                 <div className="flex flex-row items-center justify-end gap-2">
+                 
+                 <ExportToExcel apiData={schemeaccount} fileName="SchemeAccount Report" />
+                 <ExportToPDF apiData={schaccExp} fileName="scheme account" />
+               </div>
+                 <button
+                 id="filter"
+                 className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
+                 onClick={() => handleReset()}
+                 style={{ backgroundColor: layout_color }}>
+                 <RefreshCcw size={20} />
+               </button>
+                 
+                 <button
+                   id="filter"
+                   className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
+                   onClick={(e) => {
+                     handleClickfilter(e);
+                   }}
+                   style={{ backgroundColor: layout_color }}>
+                   <SlidersHorizontal size={20} />
+                 </button>
+               </div>
       </div>
       <div
         className={`fixed inset-y-0 right-0 w-80 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-40 
-          ${isFilterOpen ? 'translate-x-0' : 'translate-x-full'}`}
-      >
+          ${isFilterOpen ? 'translate-x-0' : 'translate-x-full'}`}>
         <div className="flex flex-col h-full">
           <div className="flex justify-between items-center p-3">
             <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
@@ -707,7 +674,25 @@ const DigiGold = () => {
                 </div>
               </div>
             </div>
-            
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">
+            CLassification
+              </label>
+              <div className="relative">
+                <select  name="id_classification"  onChange={(e)=>{filterInputchange(e); handlePageChange(e)}} className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
+                  <option value='' >--Select--</option>
+                  {classifyfilter.map((classify)=>(
+                    <option key={classify._id} value={classify._id}>{classify.classification_name}</option>
+                  ))
+                  }
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                  <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
+                    <path d="M19 9l-7 7-7-7"></path>
+                  </svg>
+                </div>
+              </div>
+            </div>
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">
                Agent Collection
@@ -727,8 +712,26 @@ const DigiGold = () => {
                 </div>
               </div>
             </div>
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">
+               Scheme
+              </label>
+              <div className="relative">
+                <select  name="id_scheme" onChange={filterInputchange}   className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
+                  <option value='' >--Select--</option>
+                  {schemefilter.map((scheme)=>(
+                    <option key={scheme._id} value={scheme._id}>{scheme.scheme_name}</option>
+                  ))
+                  }
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                  <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
+                    <path d="M19 9l-7 7-7-7"></path>
+                  </svg>
+                </div>
+              </div>
+            </div>
             
-           
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">
                Added By
@@ -787,7 +790,7 @@ const DigiGold = () => {
           onClick={() => setIsFilterOpen(false)}
         />
       )}
-      <div className="mt-4">
+      <div className="mt-4 overflow-x-auto">
         <Table
           data={schemeaccount}
           columns={columns}
@@ -841,6 +844,21 @@ const DigiGold = () => {
            <span className="text-gray-500">entries</span>
          </div>
        </div>
+      )}
+       {displaysetting === 1 && (
+        <ModelOne
+          title={popuptitle}
+          extraClassName='max-w-5xl w-full '
+          setIsOpen={setIsviewOpen}
+          isOpen={isviewOpen}
+          closeModal={closeIncommingModal}
+        >
+
+          <Ledgerdetails
+            setIsOpen={setIsviewOpen}
+          />
+
+        </ModelOne>
       )}
       <Modal/>
     </div>

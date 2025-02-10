@@ -3,12 +3,13 @@ import Table from '../../common/Table'
 import { useNavigate,useParams } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import { SlidersHorizontal, Search, X } from 'lucide-react'
-import { addedtype,allschemestatus,getallschemetypes,getallbranchscheme,getallbranchclassification,getemployeebybranch,getallbranchcustomer,getallbranch,schemepaymentdatatable, changeschemeaccountStatus, deleteschemepayment } from '../../../api/Endpoints'
+import { addedtype,allschemestatus,getallschemetypes,getallbranchscheme,getallbranchclassification,getemployeebybranch,getallbranchcustomer,getallbranch,schemepaymentdatatable, changeschemeaccountStatus, deleteschemepayment  } from '../../../api/Endpoints'
 import { toast } from 'react-toastify'
 import { CalendarDays, RefreshCcw} from 'lucide-react'
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import { useSelector } from 'react-redux'
+
 const SchemePayment = () => {
   const roledata = useSelector((state) => state.clientForm.roledata);
   const branch = roledata?.branch;
@@ -19,7 +20,7 @@ const SchemePayment = () => {
   const [search, setSearch] = useState('')
   const [isLoading,setisLoading] = useState(false)
   const [paymentaccount, setPaymentaccount] = useState([])
-  const [currentPage, setCurrentPage] = useState(1);
+   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedRow, setSelectedRow] = useState(null)
@@ -36,6 +37,8 @@ const SchemePayment = () => {
   const [schemestatusfilter, setSchemestatus] = useState([]);
 
 
+
+
   const [filters, setFilters] = React.useState({
     from_date:from_date,
     to_date:to_date,
@@ -48,14 +51,64 @@ const SchemePayment = () => {
     scheme_type:''
   });
 
+  
+  const handleReset = (e) => {
+    setFromdate("");
+    setTodate("");
+    setFilters(prev => ({
+      ...prev, 
+      from_date:"",
+      to_date:"",
+      added_by:'',
+      scheme_status:'',
+      id_classification: '',
+      collectionuserid: '',
+      id_scheme: '',
+      id_branch: branch,
+      scheme_type:''
+    }));
+      toast.success("Filter is cleared");
+    const filterTosend = {
+      page:currentPage,
+      from_date:"",
+      to_date:"",
+      limit: itemsPerPage,
+      search: search,
+      added_by:"",
+      scheme_status:"",
+      id_classification: "",
+      collectionuserid: "",
+      id_scheme: "",
+      id_branch: branch,
+      scheme_type:""
+    };
+     
+    getschemepaymentMutate(filterTosend);
+  };
+
+  
+ 
+  const handleClickfilter = (e) => {
+    handleClassifyChange(e); 
+    getallbranchMutate();
+    handleAddedtypeChange();
+    handleSchemetypeChange();
+    handleSchemestatusChange();
+    handlebranchscheme(e);
+    setIsFilterOpen(true);
+  }
+
   const filterInputchange = (e) =>{
     const {name, value} = e.target;
     setFilters(prev=>({...prev,[name]:value}));
     if(name === "id_branch"){
       handleClassifyChange(e); 
       handleemployeebyBranch(e); 
-      getemployeebyBranch(e); 
       handlebranchscheme(e);
+      getallbranchMutate();
+      handleAddedtypeChange();
+      handleSchemetypeChange();
+      handleSchemestatusChange();
     }
   };
 
@@ -79,16 +132,10 @@ const SchemePayment = () => {
        
      
         setIsFilterOpen(false)
-        getschemeaccountMutate(filterTosend);
+        getschemepaymentMutate(filterTosend);
       
     };
 
-   useEffect(() => {
-      getallbranchMutate();
-      handleAddedtypeChange();
-      handleSchemetypeChange();
-      handleSchemestatusChange();
-    }, []);
 
     const { mutate: getallbranchMutate } = useMutation({
       mutationFn: getallbranch,
@@ -114,7 +161,7 @@ const SchemePayment = () => {
     
     const handleemployeebyBranch = async (e) => {  
       if (!e.target.value) return;
-      const response = await getemployeebyBranch({ "id_branch": e.target.value });
+      const response = await getemployeebybranch({ "id_branch": e.target.value });
       if (response) {
         setEmployee(response.data);
       }
@@ -157,7 +204,7 @@ const SchemePayment = () => {
   
 
   //mutation to get scheme type
-  const { mutate: getschemeaccountMutate } = useMutation({
+  const { mutate: getschemepaymentMutate } = useMutation({
     mutationFn: ()=>{
       setisLoading(true)
        schemepaymentdatatable
@@ -191,7 +238,7 @@ const SchemePayment = () => {
       scheme_type:filters.scheme_type
     };
      
-    getschemeaccountMutate(filterTosend)
+    getschemepaymentMutate(filterTosend)
   }, [currentPage, itemsPerPage, search])
 
 
@@ -209,7 +256,7 @@ const SchemePayment = () => {
     let response = await changeschemeaccountStatus(id);
     if (response) {
       toast.success(response.message);
-      getschemeaccountMutate({ page: currentPage, limit: itemsPerPage, search: search })
+      getschemepaymentMutate({ page: currentPage, limit: itemsPerPage, search: search })
     }
   };
 
@@ -217,7 +264,7 @@ const SchemePayment = () => {
     let response = await deleteschemepayment(id);
     if (response) {
       toast.success(response.message);
-      getschemeaccountMutate({ page: currentPage, limit: itemsPerPage, search: search })
+      getschemepaymentMutate({ page: currentPage, limit: itemsPerPage, search: search })
     }
   };
 
@@ -480,19 +527,30 @@ const SchemePayment = () => {
           />
         </div>
         <div className="flex flex-row items-center justify-end gap-2">
-          <button
-            id="filter"
-            className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
-            onClick={() => setIsFilterOpen(true)}
-            style={{ backgroundColor: layout_color }}>
-            <SlidersHorizontal size={20} />
-          </button>
-          <button
+        <button
             className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
             onClick={handleClick}
             style={{ backgroundColor: layout_color }} >
             + Add Payment
           </button>
+           <button
+              id="filter"
+              className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
+              onClick={() => handleReset()}
+              style={{ backgroundColor: layout_color }}
+            >
+              <RefreshCcw size={20} />
+            </button>
+          <button
+            id="filter"
+            className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
+            o onClick={(e) => {
+              handleClickfilter(e);
+            }}
+            style={{ backgroundColor: layout_color }}>
+            <SlidersHorizontal size={20} />
+          </button>
+          
         </div>
       </div>
       <div

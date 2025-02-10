@@ -41,7 +41,7 @@ const AddCategory = () => {
     if (id_branch === '0') {
       getallbranchmuate();
     } 
-    if (id_branch !== 0) {
+    if (id_branch !== "0") {
       setFormData({ ...formData, id_branch: id_branch })
     }
 
@@ -175,7 +175,7 @@ const AddCategory = () => {
   }, [id]);
 
   const handleCancle = () => {
-          dispatch(setid(null));
+    dispatch(setid(null));
     navigate("/catalog/category");
   };
 
@@ -253,7 +253,7 @@ const AddCategory = () => {
         <div className="flex flex-col p-4 bg-white relative">
 
           <div className="grid grid-rows-2 md:grid-cols-2 gap-5 border-gray-300 mb-10">
-            { id_branch !== 0 && (
+            { id_branch !== "0" && (
           
                   <div className="flex flex-col lg:mt-2">
                     <label className="text-black mb-2 font-medium">

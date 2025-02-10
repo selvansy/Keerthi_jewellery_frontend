@@ -5,7 +5,7 @@ import { useMutation } from '@tanstack/react-query'
 import { SlidersHorizontal, Search, X, UserX2Icon } from 'lucide-react'
 import { addedtype, allschemestatus, getschemeaccountbyid, getallschemetypes, getallbranchscheme, getallbranchclassification, getemployeebybranch, getallbranch, schemeaccounttable, changeschemeaccountStatus, deleteschemeaccount } from '../../../api/Endpoints'
 import { toast } from 'react-toastify'
-import { CalendarDays, RefreshCcw,Undo2 } from 'lucide-react'
+import { CalendarDays, RefreshCcw, Undo2 } from 'lucide-react'
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import { ExportToExcel } from '../../common/Dropdown/Excelexport';
@@ -26,7 +26,7 @@ const CloaseAccount = () => {
   const [isLoading,setisLoading] = useState(false)
   const [search, setSearch] = useState('')
   const [schemeaccount, setschemeaccount] = useState([])
-  const [schaccExp,setschaccExp] = useState([]);
+  const [schaccExp, setschaccExp] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -42,6 +42,11 @@ const CloaseAccount = () => {
   const [schemefilter, setScheme] = useState([]);
   const [addedbyfilter, setAddedby] = useState([]);
   const [schemestatusfilter, setSchemestatus] = useState([]);
+  const roledata = useSelector((state) => state.clientForm.roledata);
+  let id_client = roledata?.id_client;
+  const id_branch = roledata?.branch;
+  const [branchList, setBranchList] = useState([]);
+  let [branch, setbranch] = useState("");
 
   const [ispayable, setIspayable] = useState(false);
 
@@ -56,10 +61,50 @@ const CloaseAccount = () => {
     id_classification: '',
     collectionuserid: '',
     id_scheme: '',
-    id_branch: '',
+    id_branch: id_branch,
     scheme_type: ''
   });
 
+
+  const handleReset = (e) => {
+    setFromdate("");
+    setTodate("");
+    setFilters(prev => ({
+      ...prev, added_by: '',
+      scheme_status: 2,
+      id_branch: id_branch,
+      type: 'close',
+      id_classification: '',
+      collectionuserid: '',
+      id_scheme: '',
+      scheme_type: ''
+    }));
+    toast.success("Filter is cleared");
+    getschemeaccountMutate({
+      page: currentPage,
+      limit: itemsPerPage,
+      added_by: '',
+      search: "",
+      scheme_status: "",
+      id_branch: id_branch,
+      type: 'close',
+      id_classification: '',
+      collectionuserid: '',
+      id_scheme: '',
+      scheme_type: ''
+    });
+
+  }
+
+  
+ 
+  const handleClickfilter = (e) => {
+    getallbranchMutate();
+    handleAddedtypeChange();
+    handleSchemetypeChange();
+    handleSchemestatusChange();
+    setIsFilterOpen(true);
+  }
   const filterInputchange = (e) => {
     const { name, value } = e.target;
     setFilters(prev => ({ ...prev, [name]: value }));
@@ -149,7 +194,7 @@ const CloaseAccount = () => {
       limit: itemsPerPage,
       search: search,
       added_by: filters.added_by,
-      type: 1,
+      type:"close",
       scheme_status: filters.scheme_status,
       id_classification: filters.id_classification,
       collectionuserid: filters.collectionuserid,
@@ -162,15 +207,10 @@ const CloaseAccount = () => {
     setIsFilterOpen(false)
     getschemeaccountMutate(filterTosend);
 
-  };
+  }; 
+ 
 
-  useEffect(() => {
-    getallbranchMutate();
-    handleAddedtypeChange();
-    handleSchemetypeChange();
-    handleSchemestatusChange();
-  }, []);
-
+ 
   const { mutate: getallbranchMutate } = useMutation({
     mutationFn: getallbranch,
     onSuccess: (response) => {
@@ -247,21 +287,24 @@ const CloaseAccount = () => {
       setschemeaccount(response.data)
       setTotalPages(response.totalPages);
       let arrayData = [];
-      if(response.data.length !==0){
-            for(var i=0;i<response.data.length;i++){
-                arrayData.push({
-                    scheme_acc_number:response.data[i].scheme_acc_number,
-                    account_name:response.data[i].account_name,
-                    mobile:response.data[i].mobile,
-                    total_paidinstallments:response.data[i].total_paidinstallments,
-                    total_paidamount:response.data[i].total_paidamount,
-                    total_weight:response.data[i].total_weight,
-                    start_date:response.data[i].start_date,
-                    maturity_date:response.data[i].maturity_date,
-                    branch_name:response.data[i].branch_name
-            
-                  });
-            }
+
+      if (response.data.length !== 0) {
+        for (var i = 0; i < response.data.length; i++) {
+          arrayData.push({
+            scheme_acc_number: response.data[i].scheme_acc_number,
+            account_name: response.data[i].account_name,
+            mobile: response.data[i].mobile,
+            total_paidinstallments: response.data[i].total_paidinstallments,
+            total_paidamount: response.data[i].total_paidamount,
+            total_weight: response.data[i].total_weight,
+            start_date: response.data[i].start_date,
+            maturity_date: response.data[i].maturity_date,
+            branch_name: response.data[i].branch_name
+
+          });
+        }
+
+     
       }
 
             setschaccExp(arrayData)
@@ -360,6 +403,72 @@ const CloaseAccount = () => {
 
   const columns = [
     {
+      header: 'Actions',
+      cell: (row, rowIndex) => (
+        <div className="dropdown-container relative group  right-0 z-20 bg-white">
+          <button
+            className="p-1 hover:bg-gray-100 rounded-full"
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedRow(row?._id);
+              setActiveDropdown(activeDropdown === row?._id ? null : row?._id);
+            }}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
+            </svg>
+          </button>
+    
+          {/* Use group-hover to show the dropdown on hover */}
+          <div
+            className={`absolute transform z-50 ${activeDropdown === row?._id ? '' : 'hidden'} `}
+            style={{
+              top: rowIndex >= schemeaccount.length - 2 ? 'auto' : '72%',
+              bottom: rowIndex >= schemeaccount.length - 2 ? '-74%' : 'auto',
+            }}
+          >
+            <div className="w-32 rounded-md bg-white ring-1 ring-black ring-opacity-5">
+              <div className="py-1">
+               
+                <button
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                  onClick={() => {
+                    handleOpenLedger(row?._id);
+                  }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                  Ledger
+                </button>
+                <button
+                  className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
+                  onClick={() => {
+                    handleDelete(row?._id);
+                    setActiveDropdown(null);
+                  }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                  Delete
+                </button>
+                <button
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                    onClick={() => setActiveDropdown(null)}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    Cancel
+                  </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
       header: 'S.No',
       cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
     },
@@ -371,7 +480,7 @@ const CloaseAccount = () => {
       header: "Mobile",
       cell: (row) => row?.mobile
     },
-    
+
     {
       header: 'Scheme',
       cell: (row) => {
@@ -388,26 +497,26 @@ const CloaseAccount = () => {
       header: 'Metal Name',
       cell: (row) => {
         return row?.id_metal === 1 ? 'Gold' :
-               row?.id_metal === 2 ? 'Silver' :
-               row?.id_metal === 3 ? 'Diamond' :
-               row?.id_metal === 4 ? 'Platinum' : 'Gold Coins';
+          row?.id_metal === 2 ? 'Silver' :
+            row?.id_metal === 3 ? 'Diamond' :
+              row?.id_metal === 4 ? 'Platinum' : 'Gold Coins';
       }
     },
     {
       header: 'Purity Name',
       cell: (row) => {
         return row?.id_purity === 1 ? '24CT' :
-               row?.id_purity === 2 ? '22CT' :
-               row?.id_purity === 3 ? '20CT' :
-               row?.id_purity === 4 ? '18CT':
-               row?.id_purity === 5 ? 'Gold coin':
-               row?.id_purity === 6 ? 'Platinum':
-               row?.id_purity === 7 ? 'Diamond': 'Silver'
+          row?.id_purity === 2 ? '22CT' :
+            row?.id_purity === 3 ? '20CT' :
+              row?.id_purity === 4 ? '18CT' :
+                row?.id_purity === 5 ? 'Gold coin' :
+                  row?.id_purity === 6 ? 'Platinum' :
+                    row?.id_purity === 7 ? 'Diamond' : 'Silver'
       }
     },
     {
       header: "A/c No",
-      cell: (row) => row?.scheme_acc_number===""?'Not Allocated':row?.scheme_acc_number
+      cell: (row) => row?.scheme_acc_number === "" ? 'Not Allocated' : row?.scheme_acc_number
     },
     {
       header: "Start Date",
@@ -423,10 +532,10 @@ const CloaseAccount = () => {
         return date.toLocaleDateString('en-GB'); 
       }
     },
-    
+
     {
       header: "Total Ins",
-      cell: (row) => row?.total_paidinstallments
+      cell: (row) => row?.total_installments
     },
     {
       header: "Paid Ins",
@@ -449,19 +558,19 @@ const CloaseAccount = () => {
           return `Amount To Weight`;
         } else if (row?.scheme_type === 3) {
           return `Weight`;
-        }  else if (row?.scheme_type === 4) {
+        } else if (row?.scheme_type === 4) {
           return `Flexible Amount To Bonus`;
-        }  else if (row?.scheme_type === 5) {
+        } else if (row?.scheme_type === 5) {
           return `Flexiable Amount To Weight`;
-        }  else if (row?.scheme_type === 6) {
+        } else if (row?.scheme_type === 6) {
           return `Fixed Amount To Weight`;
-        }  else if (row?.scheme_type === 7) {
+        } else if (row?.scheme_type === 7) {
           return `Fixed Amount End Weight`;
-        }  else if (row?.scheme_type === 8) {
+        } else if (row?.scheme_type === 8) {
           return `Fixed Amount To Bonus`;
-        }  else if (row?.scheme_type === 9) {
+        } else if (row?.scheme_type === 9) {
           return `Flexible Amount End Weight`;
-        }  else if (row?.scheme_type === 10) {
+        } else if (row?.scheme_type === 10) {
           return `Digi Gold`;
         } else {
           return `Amount To Bonus`;
@@ -509,82 +618,6 @@ const CloaseAccount = () => {
       )
     },
 
-    {
-      header: 'Actions',
-      cell: (row, rowIndex) => (
-        <div className="dropdown-container relative">
-          <button
-            className="p-1 hover:bg-gray-100 rounded-full"
-            onClick={(e) => {
-              e.stopPropagation();
-              setSelectedRow(row?._id);
-              setActiveDropdown(activeDropdown === row?._id ? null : row?._id);
-            }}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
-              <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
-            </svg>
-          </button>
-
-          {activeDropdown === row?._id && (
-            <div
-              className="absolute right-[47px] lg:right-[163px] md:right-[150px] sm:right-[100px] transform -translate-x-8"
-              style={{
-                top: rowIndex >= schemeaccount.length - 2 ? 'auto' : '72%',
-                bottom: rowIndex >= schemeaccount.length - 2 ? '-74%' : 'auto',
-                // top: 'auto',
-                // bottom: '-440%',
-                zIndex: 9999,
-                marginBottom: '8px',
-                filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.15))'
-              }}
-            >
-              <div className="w-32 rounded-md bg-white ring-1 ring-black ring-opacity-5">
-                <div className="py-1">
-                  <button
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                    onClick={() => {
-                      handleEdit(row?._id);
-                      setActiveDropdown(null);
-                    }}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                    Edit
-                  </button>
-                  <button
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                    onClick={() => {
-                      handleOpenLedger(row?._id);
-                    }}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                    Ledger
-                  </button>
-                  <button
-                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
-                    onClick={() => {
-                      handleDelete(row?._id);
-                      setActiveDropdown(null);
-                    }}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                    Delete
-                  </button>
-
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      ),
-
-    }
   ];
 
   return (
@@ -602,52 +635,55 @@ const CloaseAccount = () => {
           />
         </div>
         <div className="flex flex-row items-center justify-end gap-2">
-          <button
-            id="filter"
-            className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
-            onClick={() => setIsFilterOpen(true)}
-            style={{ backgroundColor: layout_color }}
-          >
-            <SlidersHorizontal size={20} />
-          </button>
-
-            <div className="flex flex-row items-center justify-end gap-2">
-          
-                    <ExportToExcel apiData={schemeaccount} fileName="SchemeAccount Report" />
-                    <ExportToPDF apiData={schaccExp} fileName="scheme account" />
-                  </div>
-         
-          <button
-                id="filter"
-                className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
-                onClick={() => handleReset()}
-                style={{ backgroundColor: layout_color }}
-              >
-                <RefreshCcw size={20} />
-              </button>
-          
-          <button
+        <button
             className="rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
             onClick={handleCloseClick}
-            style={{ backgroundColor: layout_color }} 
+            style={{ backgroundColor: layout_color }}
           >
             <div className="flex items-center space-x-2">
               <UserX2Icon className="w-10" />
               <span>Close Account</span>
             </div>
-           
+
           </button>
           <button
             className="rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
             onClick={handleRevertClick}
-            style={{ backgroundColor: layout_color }} 
+            style={{ backgroundColor: layout_color }}
           >
             <div className="flex items-center space-x-2">
               <Undo2 className="w-10" />
               <span>Revert Account</span>
             </div>
           </button>
-        
+       
+
+          <div className="flex flex-row items-center justify-end gap-2">
+
+            <ExportToExcel apiData={schemeaccount} fileName="SchemeAccount Report" />
+            <ExportToPDF apiData={schaccExp} fileName="scheme account" />
+          </div>
+
+          <button
+            id="filter"
+            className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
+            onClick={() => handleReset()}
+            style={{ backgroundColor: layout_color }}
+          >
+            <RefreshCcw size={20} />
+          </button>
+
+          <button
+            id="filter"
+            className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
+            onClick={(e) => {
+              handleClickfilter(e);
+            }}
+            style={{ backgroundColor: layout_color }}
+          >
+            <SlidersHorizontal size={20} />
+          </button>
+
         </div>
       </div>
       <div
@@ -826,13 +862,26 @@ const CloaseAccount = () => {
                   Status
                 </label>
                 <div className="relative">
-                  <select name="scheme_status" onChange={filterInputchange} className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
-                    <option value='' >--Select--</option>
-                    {schemestatusfilter.map((schemestatus) => (
-                      <option key={schemestatus._id} value={schemestatus._id}>{schemestatus.status_name}</option>
-                    ))
-                    }
+                  <select
+                    name="scheme_status"
+                    onChange={filterInputchange}
+                    className="appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                    defaultValue=""
+                  >
+                    <option value="">--Select--</option>
+                    {schemestatusfilter.map((schemestatus) => {
+                      // Only render options if id_status is not 0 or 2
+                      if (![0, 2].includes(schemestatus.id_status)) {
+                        return (
+                          <option key={schemestatus._id} value={schemestatus._id}>
+                            {schemestatus.status_name}
+                          </option>
+                        );
+                      }
+                      return null; // Do not render anything if condition is not met
+                    })}
                   </select>
+
                   <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
                     <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
                       <path d="M19 9l-7 7-7-7"></path>
@@ -903,13 +952,13 @@ const CloaseAccount = () => {
               onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
               className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
             >
-               <option value={10}>10</option>
-                  <option value={25}>25</option>
-                  <option value={50}>50</option>
-                  <option value={100}>100</option>
-                  <option value={250}>250</option>
-                  <option value={500}>500</option>
-                  <option value={1000}>1000</option>
+              <option value={10}>10</option>
+              <option value={25}>25</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+              <option value={250}>250</option>
+              <option value={500}>500</option>
+              <option value={1000}>1000</option>
             </select>
             <span className="text-gray-500">entries</span>
           </div>

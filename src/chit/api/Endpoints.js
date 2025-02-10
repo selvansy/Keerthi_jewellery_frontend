@@ -314,6 +314,7 @@ export const getallgiftitem = async (id, data) => {
 /* Gift Vendor*/
 
 export const getAllgiftvendors = async (data) => {
+    console.log("Data",data)
     const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/giftvendor/table`,data);
     return response.data;
 }
@@ -490,6 +491,10 @@ export const schemepaymentdatatable = async (data) => {
     const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/payment/table`,data);
     return response.data;
 }
+
+ 
+
+ 
 
  
 
@@ -675,7 +680,7 @@ export const getactivemenuaccess = async (data) => {
     return response.data;
 }
 
-export const getOutstandingReport = async (data) => {
+export const getaccountSummaryReport = async (data) => {
     const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/admin/accountsummaryreport`,data);
     return response.data;
 }
@@ -1629,3 +1634,11 @@ export const todayMetalRate = async(data)=>{
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/metalrate/today/${data.id}/${data.todayDate}`);
     return response.data;
 }
+
+
+export const updatelayoutcolor = async (data) => {
+    console.log(data)
+    const response = await Api.patch(`${import.meta.env.VITE_API_URL}/api/admin/layoutsetting/color`, data);
+    return response;
+}
+

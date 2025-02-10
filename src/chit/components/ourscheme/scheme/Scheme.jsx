@@ -36,7 +36,7 @@ const Scheme = () => {
 
   let [schemeData, setSchemeData] = useState([]);
   const [search, setSearch] = useState('')
-  const [currentPage, setCurrentPage] = useState(1);
+   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
@@ -57,7 +57,7 @@ const Scheme = () => {
     page: currentPage,
     limit: itemsPerPage,
     id_classification: "",
-    id_metal: metalid,
+    id_metal: "",
     id_branch:id_branch,
     id_purity: "",
     weekmonth: "",
@@ -65,7 +65,33 @@ const Scheme = () => {
     buytgsttype: ""
 
   });
+  const handleReset = (e) => {
 
+    setFromdate("");
+    setTodate("");
+    setFilters(prev=>({...prev, id_classification: "",
+      id_metal: "",
+      id_branch:id_branch,
+      id_purity: "",
+      weekmonth: "",
+      scheme_type: "",
+      buytgsttype: ""})); 
+ toast.success("Filter is cleared");
+    getSchemeTable({
+      from_date: "",
+      to_date: "",
+      page: currentPage,
+      limit: itemsPerPage,
+      id_classification: "",
+      id_metal: "",
+      id_branch:id_branch,
+      id_purity: "",
+      weekmonth: "",
+      scheme_type: "",
+      buytgsttype: ""  
+    })
+  }
+ 
     const handleallbranch = async (e) => {  
   
       const response = await getallbranch();
@@ -195,7 +221,6 @@ const Scheme = () => {
 
   };
 
- 
   const applyfilterdatatable = (e) => {
     e.preventDefault();
     const filterTosend = {
@@ -215,29 +240,25 @@ const Scheme = () => {
 
     };
 
-      getSchemeTable(filterTosend)
+      
   };
-
-
-
-
 
 
   useEffect(() => {
     getSchemeDataTable({
-      from_date: from_date,
-      to_date: to_date,
+      from_date: "",
+      to_date: "",
       search:search,
       page: currentPage,
       limit: itemsPerPage,
       id_branch:filters.id_branch,
-      id_classification: filters.id_classification,
-      metalid: filters.metalid,
-      id_purity: filters.id_purity,
-      weekmonth: filters.weekmonth,
-      wastagebenefit:filters.wastagebenefit,
-      scheme_type: filters.scheme_type,
-      buytgsttype: filters.buytgsttype
+      id_classification: "",
+      metalid: "",
+      id_purity: "",
+      weekmonth: "",
+      wastagebenefit:"",
+      scheme_type: "",
+      buytgsttype: ""
 
     })
   }, [currentPage, itemsPerPage,search])
@@ -248,25 +269,10 @@ const Scheme = () => {
       getSchemeTable
     },
     onSuccess: (response) => {
+    
+      if(response){
       setSchemeData(response.data);
-      if(isFilterOpen === true){
-        setIsFilterOpen(false)
-        setFromdate("")
-        setTodate("")
-        setFilters({
-          from_date: null,
-          to_date: null,
-          page: currentPage,
-          limit: itemsPerPage,
-          id_classification: "",
-          metalid: "",
-          wastagebenefit:"",
-          id_purity: "",
-          weekmonth: "",
-          scheme_type: "",
-          buytgsttype: "",
-          saving_type:""
-        })
+      
       }
       setisLoading(false)
     },
@@ -338,6 +344,81 @@ const Scheme = () => {
 
 
   const columns = [
+    {
+      header: 'Actions',
+      cell: (row, rowIndex) => (
+        <div className="dropdown-container relative">
+          <button
+            className="p-1 hover:bg-gray-100 rounded-full"
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedRow(row?._id);
+              setActiveDropdown(activeDropdown === row?._id ? null : row?._id);
+            }}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
+            </svg>
+          </button>
+
+          {activeDropdown === row?._id && (
+            <div
+              className="absolute"
+              style={{
+                top: rowIndex >= schemeData.length - 2 ? 'auto' : '72%',
+                bottom: rowIndex >= schemeData.length - 2 ? '-74%' : 'auto',
+                // top: 'auto',
+                // bottom: '-440%',
+                zIndex: 9999,
+                marginBottom: '8px',
+                filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.15))'
+              }}
+            >
+              <div className="w-32 rounded-md bg-white ring-1 ring-black ring-opacity-5">
+                <div className="py-1">
+                  <button
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                    onClick={() => {
+                      handleEdit(row?._id);
+                      setActiveDropdown(null);
+                    }}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    Edit
+                  </button>
+                
+                  <button
+                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
+                    onClick={() => {
+                      handleDelete(row?._id);
+                      setActiveDropdown(null);
+                    }}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    Delete
+                  </button>
+                  <button
+                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                      onClick={() => setActiveDropdown(null)}
+                  >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                      Cancel
+                  </button>
+
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      ),
+
+    },
     {
       header: 'S.No',
       cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
@@ -434,75 +515,11 @@ const Scheme = () => {
           ></div>
         </label>
       )
-    },
-    {
-      header: 'Actions',
-      cell: (row, rowIndex) => (
-        <div className="dropdown-container relative">
-          <button
-            className="p-1 hover:bg-gray-100 rounded-full"
-            onClick={(e) => {
-              e.stopPropagation();
-              setSelectedRow(row?._id);
-              setActiveDropdown(activeDropdown === row?._id ? null : row?._id);
-            }}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
-              <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
-            </svg>
-          </button>
-
-          {activeDropdown === row?._id && (
-            <div
-              className="absolute right-[47px] lg:right-[163px] md:right-[150px] sm:right-[100px] transform -translate-x-8"
-              style={{
-                top: rowIndex >= schemeData.length - 2 ? 'auto' : '72%',
-                bottom: rowIndex >= schemeData.length - 2 ? '-74%' : 'auto',
-                // top: 'auto',
-                // bottom: '-440%',
-                zIndex: 9999,
-                marginBottom: '8px',
-                filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.15))'
-              }}
-            >
-              <div className="w-32 rounded-md bg-white ring-1 ring-black ring-opacity-5">
-                <div className="py-1">
-                  <button
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                    onClick={() => {
-                      handleEdit(row?._id);
-                      setActiveDropdown(null);
-                    }}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                    Edit
-                  </button>
-                
-                  <button
-                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
-                    onClick={() => {
-                      handleDelete(row?._id);
-                      setActiveDropdown(null);
-                    }}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                    Delete
-                  </button>
-
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      ),
-
     }
+  
   ];
 
+ 
   const handleClickfilter = (e) => {
 
     handleallbranch();
@@ -535,14 +552,14 @@ const Scheme = () => {
             style={{ backgroundColor: layout_color }}>
             + Create Scheme
           </button>
+           
             <button
-                  id="filter"
-                  className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
-                  onClick={() => handleReset()}
-                  style={{ backgroundColor: layout_color }}>
-                  <RefreshCcw size={20} />
-                </button>
-          
+                id="filter"
+                className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
+                onClick={() => handleReset()}
+                style={{ backgroundColor: layout_color }}>
+                <RefreshCcw size={20} />
+            </button>
           <button
             id="filter"
             className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"

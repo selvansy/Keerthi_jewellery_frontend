@@ -9,7 +9,7 @@ import * as Yup from 'yup';
 
 
 function SubmenuForm({ setIsOpen, getallsubmenusMutate, menus }) {
-    const [currentPage, setCurrentPage] = useState(1);
+     const [currentPage, setCurrentPage] = useState(1);
     const totalPages = 2;
     const [projects, setProjects] = useState([]);
     const roledata = useSelector((state) => state.clientForm.roledata);
@@ -18,7 +18,7 @@ function SubmenuForm({ setIsOpen, getallsubmenusMutate, menus }) {
     const id_branch = roledata?.branch;
     const id_project = roledata?.id_project;
     const [isLoading, setisLoading] = useState(false);
-
+    const layout_color = useSelector((state) => state.clientForm.layoutColor);
     let dispatch = useDispatch();
     const id = useSelector((state) => state.clientForm.id);
 

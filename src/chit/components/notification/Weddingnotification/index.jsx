@@ -32,7 +32,7 @@ const Weddingnotification = () => {
 
   const [search, setSearch] = useState('')
 
-  const [currentPage, setCurrentPage] = useState(1);
+   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedRow, setSelectedRow] = useState(null)
@@ -55,6 +55,18 @@ const Weddingnotification = () => {
     id_branch: id_branch,
     senttype: "4"
   });
+ const handleReset = (e) => {
+    setFromdate("");
+    setTodate("");
+    setFilters(prev => ({
+      ...prev, 
+      id_branch: id_branch,
+      senttype: 4
+    }));
+    toast.success("Filter is cleared");
+
+    getnotificationData({ from_date: '', to_date: '', page: currentPage, limit: itemsPerPage, id_branch: id_branch, senttype: 4 });
+  }
 
   const filterInputchange = (e) => {
     const { name, value } = e.target;
@@ -102,7 +114,7 @@ const Weddingnotification = () => {
       getBranches()
     }
 
-    if (id_branch !== 0) {
+    if (id_branch !== "0") {
       setFilters({ ...filters, id_branch: id_branch })
     }
 
@@ -157,10 +169,7 @@ const Weddingnotification = () => {
   const handleSearch = (e) => {
     setSearch(e.target.value)
   }
-  const handleReset = (e) => {
 
-    getnotificationData({ from_date: '', to_date: '', page: currentPage, limit: itemsPerPage, id_branch: id_branch, senttype: "4" });
-  }
 
 
 
@@ -222,41 +231,6 @@ const Weddingnotification = () => {
 
   const columns = [
     {
-      header: 'S.No',
-      cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
-    },
-    {
-      header: 'Title',
-      cell: (row) => row?.noti_name,
-    },
-    {
-      header: "Image",
-      cell: (row) => row?.noti_image
-    },
-    {
-      header: "Description",
-      cell: (row) => row?.noti_desc
-    },
-    {
-      header: "Sent Message",
-      cell: (row) => row?.total_sent
-    },
-    {
-      header: "Display Type",
-      cell: (row) => row?.senttype === 1 ? 'Offers' : row?.senttype === 2 ? 'New Arrivals' : row?.senttype === 3 ? 'Product' : row?.senttype === 4 ? 'Wedding' : 'Birthday'
-    },
-    {
-      header: "Branch",
-      cell: (row) => row?.id_branch.branch_name
-    },
-    {
-      header: "Create Date",
-      cell: (row) => {
-        const date = new Date(row?.createdAt);
-        return date.toLocaleDateString('en-GB'); // 'en-GB' gives the d-m-Y format
-      }
-    },
-    {
       header: 'Actions',
       cell: (row, rowIndex) => (
         <div className="dropdown-container relative">
@@ -275,7 +249,7 @@ const Weddingnotification = () => {
 
           {activeDropdown === row?._id && (
             <div
-              className="absolute right-[47px] lg:right-[163px] md:right-[150px] sm:right-[100px] transform -translate-x-8"
+              className="absolute"
               style={{
                 top: rowIndex >= notifyData.length - 2 ? 'auto' : '72%',
                 bottom: rowIndex >= notifyData.length - 2 ? '-74%' : 'auto',
@@ -315,7 +289,15 @@ const Weddingnotification = () => {
                     </svg>
                     Delete
                   </button>
-
+                  <button
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                    onClick={() => setActiveDropdown(null)}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    Cancel
+                  </button>
                 </div>
               </div>
             </div>
@@ -323,7 +305,43 @@ const Weddingnotification = () => {
         </div>
       ),
 
+    },
+    {
+      header: 'S.No',
+      cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
+    },
+    {
+      header: 'Title',
+      cell: (row) => row?.noti_name,
+    },
+    {
+      header: "Image",
+      cell: (row) => row?.noti_image
+    },
+    {
+      header: "Description",
+      cell: (row) => row?.noti_desc
+    },
+    {
+      header: "Sent Message",
+      cell: (row) => row?.total_sent
+    },
+    {
+      header: "Display Type",
+      cell: (row) => row?.senttype === 1 ? 'Offers' : row?.senttype === 2 ? 'New Arrivals' : row?.senttype === 3 ? 'Product' : row?.senttype === 4 ? 'Wedding' : 'Birthday'
+    },
+    {
+      header: "Branch",
+      cell: (row) => row?.id_branch.branch_name
+    },
+    {
+      header: "Create Date",
+      cell: (row) => {
+        const date = new Date(row?.createdAt);
+        return date.toLocaleDateString('en-GB'); // 'en-GB' gives the d-m-Y format
+      }
     }
+ 
   ];
 
   const paginationButtons = [];
@@ -457,7 +475,7 @@ const Weddingnotification = () => {
                         <div className="relative">
                           <select
                             name="id_branch"
-                            className={`appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 ${!id_branch !== 0 ? "cursor-not-allowed bg-gray-100" : ""
+                            className={`appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 ${!id_branch !== "0" ? "cursor-not-allowed bg-gray-100" : ""
                               }`}
                             defaultValue=""
                             onChange={filterInputchange}

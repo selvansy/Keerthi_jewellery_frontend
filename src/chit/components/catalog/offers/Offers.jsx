@@ -5,15 +5,16 @@ import { useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 
 import { toast } from 'react-toastify'
-import { CalendarDays, RefreshCcw} from 'lucide-react'
+import { CalendarDays, RefreshCcw } from 'lucide-react'
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import Modal from '../../../components/common/Modal';
 import { eventEmitter } from '../../../../utils/EventEmitter';
 import { openModal } from '../../../../redux/modalSlice';
-import {setid} from "../../../../redux/clientFormSlice"
+import { setid } from "../../../../redux/clientFormSlice"
 
-import {getoffersTable,getBranchById,allofferstype,activateoffers,deleteoffers ,allmetal,getallbranch
+import {
+  getoffersTable, getBranchById, allofferstype, activateoffers, deleteoffers, allmetal, getallbranch
 } from "../../../api/Endpoints";
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -25,9 +26,9 @@ const Offers = () => {
   const [isLoading,setisLoading] = useState(false)
  
   const id_branch = roledata?.branch;
- 
- 
-  let dispatch =  useDispatch();
+
+
+  let dispatch = useDispatch();
   const navigate = useNavigate()
   const [offerData, setofferData] = useState([])
   const [search, setSearch] = useState('')
@@ -36,9 +37,9 @@ const Offers = () => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedRow, setSelectedRow] = useState(null)
   const [activeDropdown, setActiveDropdown] = useState(null)
-  
-      const [branchList, setBranchList] = useState([]);
-      let [branch,setbranch] = useState("")
+
+  const [branchList, setBranchList] = useState([]);
+  let [branch, setbranch] = useState("")
 
   const [filtertype, setOfferstype] = useState([]);
   const [filtermetaltype, setMetaltype] = useState([]);
@@ -47,7 +48,7 @@ const Offers = () => {
   const [from_date, setFromdate] = useState("");
 
   const [to_date, setTodate] = useState("");
- 
+
   const [filters, setFilters] = React.useState({
     from_date: null,
     to_date: null,
@@ -57,30 +58,47 @@ const Offers = () => {
   });
   const [formErrors, setFormErrors] = useState({});
 
-  
+
+  const handleReset = (e) => {
+    setFromdate("");
+    setTodate("");
+    setFilters(prev => ({
+      ...prev, added_by: '',
+      id_branch: id_branch,
+      type: ""
+    }));
+    toast.success("Filter is cleared");
+    const filterTosend = {
+      page: currentPage,
+      from_date: from_date,
+      to_date: to_date,
+      limit: itemsPerPage,
+      search: "",
+      type: "",
+      id_branch: id_branch
+    };
+
+    getofferData({ page: currentPage, limit: itemsPerPage, search: search,id_branch:id_branch })
+  }
   useEffect(() => {
     if (id_branch === '0') {
       branchbyClient()
     }
-    if(id_branch !== 0 && isFilterOpen === true){
+    if (id_branch !== "0" && isFilterOpen === true) {
       setFilters({ ...filters, id_branch: id_branch })
     }
-    
+
   }, [id_branch]);
 
-            
+
   useEffect(() => {
-    if(isFilterOpen === true){
-    getallofferstype();
+    if (isFilterOpen === true) {
+      getallofferstype();
     }
   }, [isFilterOpen])
 
-  
-  const handleReset = (e) => {
-    e.preventDefault();
-    setIsFilterOpen(true);
-    navigate('/catalog/offers');
-  }
+
+
 
 
   const filterInputchange = (e) => {
@@ -139,26 +157,26 @@ const Offers = () => {
     },
   });
 
-   const { mutate: branchbyClient } = useMutation({
-              mutationFn: getallbranch,
-              onSuccess: (response) => {
-                setBranchList(response.data);
-              },
-              onError: (error) => {
-                console.error("Error:", error);
-              },
-            });
- 
-    const { mutate: branchbyId } = useMutation({
-                   mutationFn: getBranchById,
-                   onSuccess: (response) => {
-                    console.log("Response",response)
-                     setbranch(response.data);
-                   },
-                   onError: (error) => {
-                     console.error("Error:", error);
-                   },
-                 });
+  const { mutate: branchbyClient } = useMutation({
+    mutationFn: getallbranch,
+    onSuccess: (response) => {
+      setBranchList(response.data);
+    },
+    onError: (error) => {
+      console.error("Error:", error);
+    },
+  });
+
+  const { mutate: branchbyId } = useMutation({
+    mutationFn: getBranchById,
+    onSuccess: (response) => {
+      console.log("Response", response)
+      setbranch(response.data);
+    },
+    onError: (error) => {
+      console.error("Error:", error);
+    },
+  });
 
 
   //mutation to get scheme type
@@ -179,7 +197,7 @@ const Offers = () => {
   });
 
   useEffect(() => {
-    getofferData({ page: currentPage, limit: itemsPerPage, search: search })
+    getofferData({ page: currentPage, limit: itemsPerPage, search: search,id_branch:id_branch })
   }, [currentPage, itemsPerPage, search])
 
   const handleSearch = (e) => {
@@ -195,119 +213,71 @@ const Offers = () => {
     let response = await activateoffers(id);
     if (response) {
       toast.success(response.message);
-      getofferData({ page: currentPage, limit: itemsPerPage, search: search })
+      getofferData({ page: currentPage, limit: itemsPerPage, search: search,id_branch:id_branch })
     }
   };
 
- 
-  
+
+
   const handleDelete = (id) => {
     setActiveDropdown(null);
-      dispatch(openModal({
-        modalType: 'CONFIRMATION',
-        header: 'Delete Scheme',
-        formData: {
-          message: 'Are you sure you want to delete?',
-          OfferId: id
+    dispatch(openModal({
+      modalType: 'CONFIRMATION',
+      header: 'Delete Scheme',
+      formData: {
+        message: 'Are you sure you want to delete?',
+        OfferId: id
+      },
+      buttons: {
+        cancel: {
+          text: 'Cancel'
         },
-        buttons: {
-          cancel: {
-            text: 'Cancel'
-          },
-          submit: {
-            text: 'Delete'
-          }
+        submit: {
+          text: 'Delete'
         }
-      }));
-  
-    
+      }
+    }));
+
+
+  };
+
+  //mutation to get purity type
+  const { mutate: deleteOffer } = useMutation({
+    mutationFn: deleteoffers,
+    onSuccess: (response) => {
+      toast.success(response.message);
+      getofferData({ page: currentPage, limit: itemsPerPage, search: search,id_branch:id_branch })
+    },
+    onError: (error) => {
+      console.error("Error fetching countries:", error);
+    },
+  });
+
+
+  useEffect(() => {
+    eventEmitter.on('CONFIRMATION_SUBMIT', async (data) => {
+      try {
+
+        deleteOffer(data.OfferId);
+
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    });
+    return () => {
+      eventEmitter.off('CONFIRMATION_SUBMIT');
     };
+  }, [eventEmitter, offerData]);
 
-     //mutation to get purity type
-      const { mutate: deleteOffer } = useMutation({
-        mutationFn: deleteoffers,
-        onSuccess: (response) => {
-          toast.success(response.message);
-          getofferData({ page: currentPage, limit: itemsPerPage, search: search })
-        },
-        onError: (error) => {
-          console.error("Error fetching countries:", error);
-        },
-      });
-            
-        
-             useEffect(() => {
-              eventEmitter.on('CONFIRMATION_SUBMIT', async (data) => {
-                try {
-                
-                  deleteOffer(data.OfferId);
-                  
-                } catch (error) {
-                  console.error('Error:', error);
-                }
-              });
-                return () => {
-                  eventEmitter.off('CONFIRMATION_SUBMIT');
-                };
-              }, [eventEmitter,offerData]);
-    
 
- 
 
-    const handleEdit = (id) => {
-      dispatch(setid(id));
-      navigate("/catalog/addoffers");
-    };
+
+  const handleEdit = (id) => {
+    dispatch(setid(id));
+    navigate("/catalog/addoffers");
+  };
 
   const columns = [
-    {
-      header: 'S.No',
-      cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
-    },
-    {
-      header: 'Title',
-      cell: (row) => row?.name,
-    },
-    {
-      header: "Description",
-      cell: (row) => row?.description
-    },
-   
-    {
-      header: "Display Type",
-      cell: (row) => row?.type === 0 ? 'Offers' : row?.type === 0 ? 'Banner' : row?.type === 0 ? 'Popup' : row?.type === 0 ? 'Marquee' : 'Video'
-    },
-    {
-      header: "Branch",
-      cell: (row) => row?.id_branch.branch_name
-    },
-    {
-      header: "Create Date",
-      cell: (row) => {
-        const date = new Date(row?.createdAt);
-        return date.toLocaleDateString('en-GB'); // 'en-GB' gives the d-m-Y format
-      }
-    },
-    {
-      header: 'Active',
-      accessor: 'active',
-      cell: (row) => (
-        <label className="relative inline-flex items-center cursor-pointer">
-          <input
-            type="checkbox"
-            className="sr-only peer"
-            checked={row?.active === true}
-            onChange={() => handleStatusToggle(row?._id)}
-          />
-          <div
-            className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-black p-[2px] after:duration-300 after:bg-black ${row?.active === true
-                ? 'peer-checked:bg-[#61A375] peer-checked:ring-[#61A375]'
-                : 'peer-checked:bg-gray-400 peer-checked:ring-gray-400'
-              } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-white peer-hover:after:scale-95`}
-          ></div>
-        </label>
-      )
-    },
     {
       header: 'Actions',
       cell: (row, rowIndex) => (
@@ -327,7 +297,7 @@ const Offers = () => {
 
           {activeDropdown === row?._id && (
             <div
-              className="absolute right-[47px] lg:right-[163px] md:right-[150px] sm:right-[100px] transform -translate-x-8"
+              className="absolute"
               style={{
                 top: rowIndex >= offerData.length - 2 ? 'auto' : '72%',
                 bottom: rowIndex >= offerData.length - 2 ? '-74%' : 'auto',
@@ -380,7 +350,56 @@ const Offers = () => {
         </div>
       ),
 
+    },
+    {
+      header: 'S.No',
+      cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
+    },
+    {
+      header: 'Title',
+      cell: (row) => row?.name,
+    },
+    {
+      header: "Description",
+      cell: (row) => row?.description
+    },
+
+    {
+      header: "Display Type",
+      cell: (row) => row?.type === 0 ? 'Offers' : row?.type === 0 ? 'Banner' : row?.type === 0 ? 'Popup' : row?.type === 0 ? 'Marquee' : 'Video'
+    },
+    {
+      header: "Branch",
+      cell: (row) => row?.id_branch.branch_name
+    },
+    {
+      header: "Create Date",
+      cell: (row) => {
+        const date = new Date(row?.createdAt);
+        return date.toLocaleDateString('en-GB'); // 'en-GB' gives the d-m-Y format
+      }
+    },
+    {
+      header: 'Active',
+      accessor: 'active',
+      cell: (row) => (
+        <label className="relative inline-flex items-center cursor-pointer">
+          <input
+            type="checkbox"
+            className="sr-only peer"
+            checked={row?.active === true}
+            onChange={() => handleStatusToggle(row?._id)}
+          />
+          <div
+            className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-black p-[2px] after:duration-300 after:bg-black ${row?.active === true
+              ? 'peer-checked:bg-[#61A375] peer-checked:ring-[#61A375]'
+              : 'peer-checked:bg-gray-400 peer-checked:ring-gray-400'
+              } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-white peer-hover:after:scale-95`}
+          ></div>
+        </label>
+      )
     }
+   
   ];
 
   const paginationButtons = [];
@@ -390,7 +409,7 @@ const Offers = () => {
         key={i}
         onClick={() => handlePageChange(i)}
         className={`p-2 w-10 h-10 rounded-md ${currentPage === i ? ' text-white' : 'bg-gray-300 text-gray-900'}`}
-      style={{ backgroundColor: layout_color }} >
+        style={{ backgroundColor: layout_color }} >
         {i}
       </button>
     );
@@ -428,14 +447,14 @@ const Offers = () => {
             style={{ backgroundColor: layout_color }}>
             + Create offers
           </button>
-                <button
-                      id="filter"
-                      className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
-                      onClick={() => handleReset()}
-                      style={{ backgroundColor: layout_color }}>
-                      <RefreshCcw size={20} />
-                    </button>
-          
+          <button
+            id="filter"
+            className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
+            onClick={() => handleReset()}
+            style={{ backgroundColor: layout_color }}>
+            <RefreshCcw size={20} />
+          </button>
+
           <button
             id="filter"
             className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
@@ -504,57 +523,57 @@ const Offers = () => {
               </div>
 
               <div className="space-y-2">
-              {
-                id_branch === "0" && (
-              
-                  <div className="flex flex-col lg:mt-2">
-                <label className="text-black mb-1 font-medium">
-                  Branch<span className="text-red-400">*</span>
-                </label>
-                <div className="relative">
-                  <select
-                    name="id_branch"
-                    className={`appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 ${!id_branch !== 0 ? "cursor-not-allowed bg-gray-100" : ""
-                    }`}
-                    defaultValue=""
-                    onChange={filterInputchange}
-                    value={filters.id_branch}
-                  >
-                    <option value=""  className="text-gray-700">
-                      --Select--
-                    </option>
-                    {branchList.map((branch) => (
-                      <option
-                        className="text-gray-700"
-                        key={branch._id}
-                        value={branch._id}
-                      >
-                        {branch.branch_name}
-                      </option>
-                    ))}
-                  </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                    <svg
-                      className="h-4 w-4 text-gray-400"
-                      fill="none"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="3"
-                      viewBox="0 0 24 24"
-                      stroke="black"
-                    >
-                      <path d="M19 9l-7 7-7-7"></path>
-                    </svg>
-                  </div>
-                </div>
-                {formErrors.branch && (
-                  <span className="text-red-500 text-sm mt-1">
-                    {formErrors.branch}
-                  </span>
-                )}
-              </div>
-                )
-               }
+                {
+                  id_branch === "0" && (
+
+                    <div className="flex flex-col lg:mt-2">
+                      <label className="text-black mb-1 font-medium">
+                        Branch<span className="text-red-400">*</span>
+                      </label>
+                      <div className="relative">
+                        <select
+                          name="id_branch"
+                          className={`appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 ${!id_branch !== "0" ? "cursor-not-allowed bg-gray-100" : ""
+                            }`}
+                          defaultValue=""
+                          onChange={filterInputchange}
+                          value={filters.id_branch}
+                        >
+                          <option value="" className="text-gray-700">
+                            --Select--
+                          </option>
+                          {branchList.map((branch) => (
+                            <option
+                              className="text-gray-700"
+                              key={branch._id}
+                              value={branch._id}
+                            >
+                              {branch.branch_name}
+                            </option>
+                          ))}
+                        </select>
+                        <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                          <svg
+                            className="h-4 w-4 text-gray-400"
+                            fill="none"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="3"
+                            viewBox="0 0 24 24"
+                            stroke="black"
+                          >
+                            <path d="M19 9l-7 7-7-7"></path>
+                          </svg>
+                        </div>
+                      </div>
+                      {formErrors.branch && (
+                        <span className="text-red-500 text-sm mt-1">
+                          {formErrors.branch}
+                        </span>
+                      )}
+                    </div>
+                  )
+                }
               </div>
 
               <div className="space-y-2">
@@ -669,19 +688,19 @@ const Offers = () => {
               onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
               className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
             >
-           <option value={10}>10</option>
-                  <option value={25}>25</option>
-                  <option value={50}>50</option>
-                  <option value={100}>100</option>
-                  <option value={250}>250</option>
-                  <option value={500}>500</option>
-                  <option value={1000}>1000</option>
+              <option value={10}>10</option>
+              <option value={25}>25</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+              <option value={250}>250</option>
+              <option value={500}>500</option>
+              <option value={1000}>1000</option>
             </select>
             <span className="text-gray-500">entries</span>
           </div>
         </div>
       )}
-      <Modal/>
+      <Modal />
     </div>
   )
 }

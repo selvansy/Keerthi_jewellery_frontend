@@ -32,7 +32,7 @@ import { jwtDecode } from 'jwt-decode';
 import { useSelector, useDispatch } from 'react-redux';
 import { setRoleData } from '../../../redux/clientFormSlice';
 import { useMutation } from '@tanstack/react-query';
-import { getactivemenuaccess } from "../../api/Endpoints"
+import { getactivemenuaccess,updatelayoutcolor } from "../../api/Endpoints"
 import { GiConsoleController } from 'react-icons/gi';
 import { setLayoutColor } from "../../../redux/clientFormSlice"
 import { logout } from '../../../redux/authSlice';
@@ -50,6 +50,9 @@ const Base = ({ renderContent: RenderContent }) => {
   const [selectedRoute, setSelectedRoute] = useState('');
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const [menuData, setMenuData] = useState([]);
+
+  const [laycolor, setLaycolor] = useState('');
+
   const [isOpen, setIsOpen] = useState(false);
 
   const [openMenus, setOpenMenus] = useState({
@@ -70,8 +73,14 @@ const Base = ({ renderContent: RenderContent }) => {
   const { info } = useSelector((state) => state.auth);
   const decoded = jwtDecode(info);
 
-  const roledata = useSelector((state) => state.clientForm.roledata);
 
+  let id = decoded.id_role._id;
+
+  // let id = "6792109203f5d0fceab07e92"
+
+
+  const roledata = useSelector((state) => state.clientForm.roledata);
+  const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
   const getRoleCharacter = (id) => {
     switch (id) {
@@ -99,9 +108,32 @@ const Base = ({ renderContent: RenderContent }) => {
     navigate("/");
   };
 
-  const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
+  useEffect(() => {
 
+    if(laycolor!==""){
+      let id_branch = "";
+      if(decoded.branch === "0"){
+         id_branch = decoded.branch;
+      } else {
+         id_branch = decoded.branch;
+      }
+    updatelayoutmutate({
+      id_branch:id_branch,
+      layout_color:laycolor
+    })
+  }
+  }, [laycolor]);
+ //update category
+  const { mutate: updatelayoutmutate } = useMutation({
+    mutationFn: updatelayoutcolor,
+    onSuccess: (response) => {     
+      toast.success(response.message);
+    },
+    onError: (error) => {
+      toast.error(error.response.data.message);
+    },
+  });
 
   useEffect(() => {
     if (decoded.id_role.id_role === 1) {
@@ -110,6 +142,7 @@ const Base = ({ renderContent: RenderContent }) => {
       getAllMenusMutate(decoded.id_role._id);
       setIsSuperAdmin(false);
     }
+
 
     dispatch(setRoleData(decoded));
 
@@ -608,17 +641,19 @@ const Base = ({ renderContent: RenderContent }) => {
                   <div className='flex flex-col'>
                     {/* Title  */}
 
-                    <div className='flex justify-between items-center'>
-                      <div className='p-3 border-l'>
-                        <h3 className='text-xl font-semibold text-start px-3'>Template Customizer</h3>
-                        <p className='text-[#6D6B77] px-3'>Customize and preview in real time</p>
-                      </div>
-                      <div className='p-3 text-xl'>
-                        <div className='flex items-center gap-2'>
-                          <RefreshCcw size={24} onClick={() => dispatch(setLayoutColor("#023453"))} />
-                          <X size={28} onClick={() => setSettingsOpen((prev) => !prev)} />
-                        </div>
-                      </div>
+                   
+                     <div className='flex justify-between items-center'>
+                     <div className='p-3 border-l'>
+                     <h3 className='text-xl font-semibold text-start px-3'>Template Customizer</h3>
+                     <p className='text-[#6D6B77] px-3'>Customize and preview in real time</p>
+                     </div>
+                     <div className='p-3 text-xl'>
+                    <div className='flex items-center gap-2'>
+                    <RefreshCcw size={24} onClick={()=>{dispatch(setLayoutColor("#023453"));  setLaycolor("#023453");} }/>
+                    <X size={28}  onClick={() => setSettingsOpen((prev) => !prev)} />
+                    </div>
+                    </div>
+
                     </div>
 
                     <div className='m-2 p-3 '>
@@ -627,49 +662,49 @@ const Base = ({ renderContent: RenderContent }) => {
                         <div
                           className="w-16 h-12 m-2 p-3 border-2  rounded-md text-center flex justify-center items-center shadow-lg"
                           style={{ backgroundColor: "#023453" }}
-                          onClick={() => dispatch(setLayoutColor("#023453"))} >
+                          onClick={() =>{ dispatch(setLayoutColor("#023453"));  setLaycolor("#023453");}} >
 
                           <p className='text-center text-white text-[12px]'>#023453 </p>
                         </div>
                         <div
                           className="w-16 h-12 m-2 p-3 border-2 rounded-md text-center flex justify-center items-center shadow-lg"
                           style={{ backgroundColor: "#484453" }}
-                          onClick={() => dispatch(setLayoutColor("#484453"))} >
+                          onClick={() =>{ dispatch(setLayoutColor("#484453"));  setLaycolor("#484453");}} >
 
                           <p className='text-center text-white text-[12px]'>#484453 </p>
                         </div>
                         <div
                           className="w-16 h-12 m-2 p-3 border-2  rounded-md text-center flex justify-center items-center shadow-lg"
                           style={{ backgroundColor: "#006EBE" }}
-                          onClick={() => dispatch(setLayoutColor("#006EBE"))} >
+                          onClick={() =>{ dispatch(setLayoutColor("#006EBE"));  setLaycolor("#006EBE");}} >
 
                           <p className='text-center text-white text-[12px]'>#006EBE </p>
                         </div>
                         <div
                           className="w-16 h-12 m-2 p-3 border-2  rounded-md text-center flex justify-center items-center shadow-lg"
                           style={{ backgroundColor: "#4AA147" }}
-                          onClick={() => dispatch(setLayoutColor("#4AA147"))} >
+                          onClick={() =>{ dispatch(setLayoutColor("#4AA147"));  setLaycolor("#4AA147");}} >
 
                           <p className='text-center text-white text-[12px]'>#4AA147 </p>
                         </div>
                         <div
                           className="w-16 h-12 m-2 p-3 border-2  rounded-md text-center flex justify-center items-center shadow-lg"
                           style={{ backgroundColor: "#0094AD" }}
-                          onClick={() => dispatch(setLayoutColor("#0094AD"))} >
+                          onClick={() =>{ dispatch(setLayoutColor("#0094AD"));  setLaycolor("#0094AD");}} >
 
                           <p className='text-center text-white text-[12px]'>#0094AD </p>
                         </div>
                         <div
                           className="w-16 h-12 m-2 p-3 border-2  rounded-md text-center flex justify-center items-center shadow-lg"
                           style={{ backgroundColor: "#034200" }}
-                          onClick={() => dispatch(setLayoutColor("#034200"))} >
+                          onClick={() =>{ dispatch(setLayoutColor("#034200")); setLaycolor("#034200");}} >
 
                           <p className='text-center text-white text-[12px]'>#034200 </p>
                         </div>
                         <div
                           className="w-16 h-12 m-2 p-3 border-2  rounded-md text-center flex justify-center items-center shadow-lg"
                           style={{ backgroundColor: "#DD408B" }}
-                          onClick={() => dispatch(setLayoutColor("#DD408B"))}>
+                          onClick={() => {dispatch(setLayoutColor("#DD408B"));  setLaycolor("#DD408B");}}>
 
                           <p className='text-center text-white text-[12px]'>#DD408B</p>
                         </div>

@@ -464,7 +464,7 @@ console.log(name)
                 </span>
               )}
             </div>
-            {id_branch !== 0 && (
+            {id_branch !== "0" && (
 
               <div className="flex flex-col lg:mt-2">
                 <label className="text-black mb-1 font-medium">
@@ -473,7 +473,7 @@ console.log(name)
                 <div className="relative">
                   <select
                     name="id_branch"
-                    className={`appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 ${!id_branch !== 0 ? "cursor-not-allowed bg-gray-100" : ""
+                    className={`appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 ${!id_branch !== "0" ? "cursor-not-allowed bg-gray-100" : ""
                       }`}
                     onChange={handleChange}
                     value={formData.id_branch}

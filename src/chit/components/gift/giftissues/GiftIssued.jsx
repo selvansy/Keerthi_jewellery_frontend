@@ -23,12 +23,12 @@ const GiftIssued = () => {
   
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const roledata = useSelector((state) => state.clientForm.roledata);
-  const branch = roledata?.branch;
+  const id_branch  = roledata?.branch;
   const [isLoading,setisLoading] = useState(false)
 
   const [search, setSearch] = useState('')
   const [giftissues, setGiftissues] = useState([])
-  const [currentPage, setCurrentPage] = useState(1);
+   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedRow, setSelectedRow] = useState(null)
@@ -41,14 +41,41 @@ const GiftIssued = () => {
   const [giftitemfilter, setGiftitem] = useState([]);
   const [giftcount,setGiftcount]  = useState({});
   const [issuetype, setIssuetype] = useState([]);
-  const [id_branch, setIdrancbh] = useState(branch);
+  
   const [filters, setFilters] = React.useState({
     from_date: '',
     to_date: '',
-    id_branch: branch,
+    id_branch: id_branch,
     gift_vendorid: '',
     id_gift: ''
   });
+
+  
+  
+    const handleReset = (e) => {
+      setFromdate("");
+      setTodate("");
+      setFilters(prev => ({
+        ...prev, 
+        id_branch: id_branch,
+        gift_vendorid:"",
+        id_gift:""
+      }));
+      toast.success("Filter is cleared");
+      const filterTosend = {
+        page:currentPage,
+        from_date:from_date,
+        to_date:to_date,
+        limit: itemsPerPage,
+        search: search,
+        id_branch:filters.id_branch,
+        gift_vendorid:"",
+        id_gift:""
+      };
+      giftaccountcountMutate(filterTosend);
+      giftissuesMutate(filterTosend)
+    }
+  
 
   const filterInputchange = (e) => {
     const { name, value } = e.target;
@@ -90,11 +117,11 @@ const GiftIssued = () => {
   }, []);
 
   useEffect(() => {
-    console.log("id_branch---",branch)
-    if(branch){
-       giftaccountcountMutate({id_branch:branch});
+    console.log("id_branch---",id_branch)
+    if(id_branch){
+       giftaccountcountMutate({id_branch:id_branch});
     }
-  }, [branch]);
+  }, [id_branch]);
 
   const { mutate: giftaccountcountMutate } = useMutation({
     mutationFn: giftaccountcount,
@@ -165,7 +192,7 @@ const GiftIssued = () => {
       to_date: to_date,
       limit: itemsPerPage,
       search: search,
-      id_branch: '',
+      id_branch: id_branch,
       gift_vendorid: '',
       id_gift: ''
     };
@@ -229,6 +256,78 @@ const GiftIssued = () => {
 
   const columns = [
     {
+      header: 'Actions',
+      cell: (row, rowIndex) => (
+        <div className="dropdown-container relative">
+          <button
+            className="p-1 hover:bg-gray-100 rounded-full"
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedRow(row?._id);
+              setActiveDropdown(activeDropdown === row?._id ? null : row?._id);
+            }}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
+            </svg>
+          </button>
+
+          {activeDropdown === row?._id && (
+            <div
+              className="absolute"
+              style={{
+                top: rowIndex >= giftissues.length - 2 ? 'auto' : '72%',
+                bottom: rowIndex >= giftissues.length - 2 ? '-74%' : 'auto',
+                zIndex: 9999,
+                marginBottom: '8px',
+                filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.15))'
+              }}
+            >
+              <div className="w-32 rounded-md bg-white ring-1 ring-black ring-opacity-5">
+                <div className="py-1">
+                  <button
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                    onClick={() => {
+                      handleEdit(row?._id);
+                      setActiveDropdown(null);
+                    }}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    Edit
+                  </button>
+                  <button
+                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
+                    onClick={() => {
+                      handleDelete(row?._id);
+                      setActiveDropdown(null);
+                    }}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    Delete
+                  </button>
+                  <button
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                    onClick={() => setActiveDropdown(null)}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      ),
+
+    },
+    
+    {
       header: 'S.No',
       cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
     },
@@ -263,61 +362,8 @@ const GiftIssued = () => {
     {
       header: "Branch Name",
       cell: (row) => row?.id_branch.branch_name
-    },
-    {
-      header: 'Actions',
-      cell: (row, rowIndex) => (
-        <div className="dropdown-container relative">
-          <button
-            className="p-1 hover:bg-gray-100 rounded-full"
-            onClick={(e) => {
-              e.stopPropagation();
-              setSelectedRow(row?._id);
-              setActiveDropdown(activeDropdown === row?._id ? null : row?._id);
-            }}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
-              <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
-            </svg>
-          </button>
-
-          {activeDropdown === row?._id && (
-            <div
-              className="absolute right-[47px] lg:right-[163px] md:right-[150px] sm:right-[100px] transform -translate-x-8"
-              style={{
-                top: rowIndex >= giftissues.length - 2 ? 'auto' : '72%',
-                bottom: rowIndex >= giftissues.length - 2 ? '-74%' : 'auto',
-                // top: 'auto',
-                // bottom: '-440%',
-                zIndex: 9999,
-                marginBottom: '8px',
-                filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.15))'
-              }}
-            >
-              <div className="w-32 rounded-md bg-white ring-1 ring-black ring-opacity-5">
-                <div className="py-1">
-
-                  <button
-                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
-                    onClick={() => {
-                      handleDelete(row?._id);
-                      setActiveDropdown(null);
-                    }}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                    Delete
-                  </button>
-
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      ),
-
     }
+  
   ];
 
   return (
@@ -328,7 +374,7 @@ const GiftIssued = () => {
           <div className='flex flex-row items-center justify-between bg-white rounded-lg p-3 h-20 shadow-md'>
             <div className='flex flex-col justify-center'>
               <h5 className="text-[#67748E]">Total Gift</h5>
-              <h5 className="text-xl font-semibold">{giftcount?.total_gift}</h5>
+              <h5 className="text-xl font-semibold">{giftcount?.total_gift || 0}</h5>
             </div>
             <div className='flex items-center justify-center'>
               <div className='flex rounded-md p-3 items-center justify-center'
@@ -340,7 +386,7 @@ const GiftIssued = () => {
           <div className='flex flex-row items-center justify-between bg-white rounded-lg p-3 h-20 shadow-md'>
             <div className='flex flex-col justify-center'>
               <h5 className="text-[#67748E]">Chit Received Gift</h5>
-              <h5 className="text-xl font-semibold">{giftcount?.chit_gift}</h5>
+              <h5 className="text-xl font-semibold">{giftcount?.chit_gift || 0}</h5>
             </div>
             <div className='flex items-center justify-center'>
               <div className='flex rounded-md p-3 items-center justify-center'
@@ -352,7 +398,7 @@ const GiftIssued = () => {
           <div className='flex flex-row items-center justify-between bg-white rounded-lg p-3 h-20 shadow-md'>
             <div className='flex flex-col justify-center'>
               <h5 className="text-[#67748E]">Non-Chit Received Gift</h5>
-              <h5 className="text-xl font-semibold">{giftcount?.nonchit_gift}</h5>
+              <h5 className="text-xl font-semibold">{giftcount?.nonchit_gift || 0}</h5>
             </div>
             <div className='flex items-center justify-center'>
               <div className='flex rounded-md p-3 items-center justify-center'
@@ -364,7 +410,7 @@ const GiftIssued = () => {
           <div className='flex flex-row items-center justify-between bg-white rounded-lg p-3 h-20 shadow-md'>
             <div className='flex flex-col justify-center'>
               <h5 className="text-[#67748E]">Balance Gift</h5>
-              <h5 className="text-xl font-semibold">{giftcount?.balance_gift}</h5>
+              <h5 className="text-xl font-semibold">{giftcount?.balance_gift || 0}</h5>
             </div>
             <div className='flex items-center justify-center'>
               <div className='flex rounded-md p-3 items-center justify-center'
@@ -485,7 +531,7 @@ const GiftIssued = () => {
                   </div>
                 </div>
               </div>
-              {branch === "0" && (
+              {id_branch === "0" && (
                  <div className="space-y-2">
                  <label className="block text-sm font-medium text-gray-700">
                    Branch

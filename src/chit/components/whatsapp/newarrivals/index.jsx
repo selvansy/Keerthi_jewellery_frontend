@@ -6,7 +6,7 @@ import { useMutation } from '@tanstack/react-query'
 import { toast } from 'react-toastify'
 import {getNewArrivalsById,sendwhatsappmessage, getallbranch,getnewarrivalsTable, getBranchById, getallmetal, deletenewarrivals, } from "../../../api/Endpoints"
 
-import { CalendarDays } from 'lucide-react'
+import { CalendarDays, RefreshCcw } from 'lucide-react'
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker"; 
 import ModelOne from '../../common/Modelone';
@@ -37,7 +37,7 @@ const NewArrivalsWhatsapp = () => {
 
 
   const [search, setSearch] = useState('')
-  const [currentPage, setCurrentPage] = useState(1);
+   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedRow, setSelectedRow] = useState(null)
@@ -61,6 +61,18 @@ const NewArrivalsWhatsapp = () => {
     type: 2,
   });
 
+ const handleReset = (e) => {
+    setFromdate("");
+    setTodate("");
+    setFilters(prev => ({
+      ...prev, 
+      id_branch: id_branch,
+      type: 2
+    }));
+    toast.success("Filter is cleared");
+
+    getnewarrivalsData({ from_date: '', to_date: '', page: currentPage, limit: itemsPerPage, id_branch: id_branch, type: 2 });
+  }
 
   function closeIncommingModal() {
     setIsviewOpen(false);
@@ -110,7 +122,7 @@ const NewArrivalsWhatsapp = () => {
       getallbranches()
     } 
 
-    if (id_branch !== 0) {
+    if (id_branch !== "0") {
       setFilters({ ...filters, id_branch: id_branch })
     }
 
@@ -491,6 +503,13 @@ const NewArrivalsWhatsapp = () => {
         </div>
         <button
             id="filter"
+            className="text-white bg-[#023453] w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
+            onClick={() => handleReset()}
+          >
+            <RefreshCcw size={20} />
+          </button>
+        <button
+            id="filter"
             className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
             onClick={() => setIsFilterOpen(true)}
             style={{ backgroundColor: layout_color }}>
@@ -568,7 +587,7 @@ const NewArrivalsWhatsapp = () => {
                       <div className="relative">
                         <select
                           name="id_branch"
-                          className={`appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 ${!id_branch !== 0 ? "cursor-not-allowed bg-gray-100" : ""
+                          className={`appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 ${!id_branch !== "0" ? "cursor-not-allowed bg-gray-100" : ""
                             }`}
                           defaultValue=""
                           onChange={filterInputchange}

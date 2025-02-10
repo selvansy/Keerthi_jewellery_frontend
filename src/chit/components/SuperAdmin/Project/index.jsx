@@ -19,7 +19,7 @@ const ProjectMaster = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
-  const [currentPage, setCurrentPage] = useState(1);
+   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [projectData, setProjectData] = useState([]);
@@ -140,38 +140,22 @@ const ProjectMaster = () => {
 
   const columns = [
     {
-      header: 'S.No',
-      cell: (_, index) => index + 1 + (currentPage - 1) * limit,
-    },
-    {
-      header: 'Project Name',
-      accessor: 'project_name',
-    },
-    {
-      header: 'Status',
-      accessor: 'active',
-      cell: (row) => (
-        <label className="relative inline-flex items-center cursor-pointer">
-          <input
-            type="checkbox"
-            className="sr-only peer"
-            checked={row?.active === true}
-            onChange={() => handleStatusToggle(row?._id, row?.active)}
-          />
-          <div
-            className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-black p-[2px] after:duration-300 after:bg-black ${row.active === true
-              ? 'peer-checked:bg-[#61A375] peer-checked:ring-[#61A375]'
-              : 'peer-checked:bg-gray-400 peer-checked:ring-gray-400'
-              } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-white peer-hover:after:scale-95`}
-          ></div>
-        </label>
-      )
-    },
-    {
       header: 'Actions',
       cell: (row, rowIndex) => (
-        <div className="flex items-center justify-start gap-2">
+        <div className="absolute text-center"
+        style={{
+          top: rowIndex >= projectData.length - 2 ? "auto" : "72%",
+          bottom: rowIndex >= projectData.length - 2 ? "-74%" : "auto",
+          // top: 'auto',
+          // bottom: '-440%',
+          zIndex: 9999,
+          marginBottom: "-15px",
+          filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.15))",
+        }}
+        >
           {activeDropdown !== row?._id ? (
+
+
             <button
               className="p-1 hover:bg-gray-100 rounded-full"
               onClick={(e) => {
@@ -240,7 +224,36 @@ const ProjectMaster = () => {
         </div>
       ),
       sticky: 'left',
+    },
+    {
+      header: 'S.No',
+      cell: (_, index) => index + 1 + (currentPage - 1) * limit,
+    },
+    {
+      header: 'Project Name',
+      accessor: 'project_name',
+    },
+    {
+      header: 'Status',
+      accessor: 'active',
+      cell: (row) => (
+        <label className="relative inline-flex items-center cursor-pointer">
+          <input
+            type="checkbox"
+            className="sr-only peer"
+            checked={row?.active === true}
+            onChange={() => handleStatusToggle(row?._id, row?.active)}
+          />
+          <div
+            className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-black p-[2px] after:duration-300 after:bg-black ${row.active === true
+              ? 'peer-checked:bg-[#61A375] peer-checked:ring-[#61A375]'
+              : 'peer-checked:bg-gray-400 peer-checked:ring-gray-400'
+              } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-white peer-hover:after:scale-95`}
+          ></div>
+        </label>
+      )
     }
+    
 
 
   ];

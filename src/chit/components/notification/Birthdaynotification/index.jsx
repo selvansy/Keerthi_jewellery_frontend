@@ -31,7 +31,7 @@ const Birthdaynotification = () => {
 
   const [search, setSearch] = useState('')
 
-  const [currentPage, setCurrentPage] = useState(1);
+   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedRow, setSelectedRow] = useState(null)
@@ -59,6 +59,18 @@ const Birthdaynotification = () => {
 
     setFilters(prev => ({ ...prev, [name]: value }));
   };
+ const handleReset = (e) => {
+    setFromdate("");
+    setTodate("");
+    setFilters(prev => ({
+      ...prev, 
+      id_branch: id_branch,
+      senttype: 5
+    }));
+    toast.success("Filter is cleared");
+
+    getnotificationData({ from_date: '', to_date: '', page: currentPage, limit: itemsPerPage, id_branch: id_branch, senttype: 5 });
+  }
 
   const applyfilterdatatable = (e) => {
 
@@ -100,7 +112,7 @@ const Birthdaynotification = () => {
       getBranches()
     }
 
-    if (id_branch !== 0) {
+    if (id_branch !== "0") {
       setFilters({ ...filters, id_branch: id_branch })
     }
 
@@ -155,12 +167,6 @@ const Birthdaynotification = () => {
   const handleSearch = (e) => {
     setSearch(e.target.value)
   }
-  const handleReset = (e) => {
-
-    getnotificationData({ from_date: '', to_date: '', page: currentPage, limit: itemsPerPage, id_branch: id_branch, senttype: "5" });
-  }
-
-
 
 
   const handleDelete = (id) => {
@@ -217,41 +223,6 @@ const Birthdaynotification = () => {
 
   const columns = [
     {
-      header: 'S.No',
-      cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
-    },
-    {
-      header: 'Title',
-      cell: (row) => row?.noti_name,
-    },
-    {
-      header: "Image",
-      cell: (row) => row?.noti_image
-    },
-    {
-      header: "Description",
-      cell: (row) => row?.noti_desc
-    },
-    {
-      header: "Sent Message",
-      cell: (row) => row?.total_sent
-    },
-    {
-      header: "Display Type",
-      cell: (row) => row?.senttype === 1 ? 'Offers' : row?.senttype === 2 ? 'New Arrivals' : row?.senttype === 3 ? 'Product' : row?.senttype === 4 ? 'Wedding' : 'Birthday'
-    },
-    {
-      header: "Branch",
-      cell: (row) => row?.id_branch.branch_name
-    },
-    {
-      header: "Create Date",
-      cell: (row) => {
-        const date = new Date(row?.createdAt);
-        return date.toLocaleDateString('en-GB'); // 'en-GB' gives the d-m-Y format
-      }
-    },
-    {
       header: 'Actions',
       cell: (row, rowIndex) => (
         <div className="dropdown-container relative">
@@ -270,7 +241,7 @@ const Birthdaynotification = () => {
 
           {activeDropdown === row?._id && (
             <div
-              className="absolute right-[47px] lg:right-[163px] md:right-[150px] sm:right-[100px] transform -translate-x-8"
+              className="absolute"
               style={{
                 top: rowIndex >= notifyData.length - 2 ? 'auto' : '72%',
                 bottom: rowIndex >= notifyData.length - 2 ? '-74%' : 'auto',
@@ -318,7 +289,43 @@ const Birthdaynotification = () => {
         </div>
       ),
 
+    },
+    {
+      header: 'S.No',
+      cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
+    },
+    {
+      header: 'Title',
+      cell: (row) => row?.noti_name,
+    },
+    {
+      header: "Image",
+      cell: (row) => row?.noti_image
+    },
+    {
+      header: "Description",
+      cell: (row) => row?.noti_desc
+    },
+    {
+      header: "Sent Message",
+      cell: (row) => row?.total_sent
+    },
+    {
+      header: "Display Type",
+      cell: (row) => row?.senttype === 1 ? 'Offers' : row?.senttype === 2 ? 'New Arrivals' : row?.senttype === 3 ? 'Product' : row?.senttype === 4 ? 'Wedding' : 'Birthday'
+    },
+    {
+      header: "Branch",
+      cell: (row) => row?.id_branch.branch_name
+    },
+    {
+      header: "Create Date",
+      cell: (row) => {
+        const date = new Date(row?.createdAt);
+        return date.toLocaleDateString('en-GB'); // 'en-GB' gives the d-m-Y format
+      }
     }
+   
   ];
 
   const paginationButtons = [];
@@ -452,7 +459,7 @@ const Birthdaynotification = () => {
                         <div className="relative">
                           <select
                             name="id_branch"
-                            className={`appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 ${!id_branch !== 0 ? "cursor-not-allowed bg-gray-100" : ""
+                            className={`appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 ${!id_branch !== "0" ? "cursor-not-allowed bg-gray-100" : ""
                               }`}
                             defaultValue=""
                             onChange={filterInputchange}

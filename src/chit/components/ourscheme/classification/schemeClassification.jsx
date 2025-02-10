@@ -23,7 +23,7 @@ const SchemeClassification = () => {
   const [branchList, setBranchList] = useState([]);
   const [schemeType, setSchemeType] = useState([])
   const [search, setSearch] = useState('')
-  const [currentPage, setCurrentPage] = useState(1);
+   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(10);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [isviewOpen, setIsviewOpen] = useState(false);
@@ -86,8 +86,8 @@ console.log(filterTosend);
 
   useEffect(() => {
     getClassificationTablemuate({
-      from_date: from_date,
-      to_date: to_date,
+      from_date: "",
+      to_date: "",
       search: search,
       page: currentPage,
       limit: itemsPerPage,
@@ -95,7 +95,22 @@ console.log(filterTosend);
       typesofscheme:1,
     })
   }, [currentPage, itemsPerPage, search])
-
+  const handleReset = (e) => {
+    setFromdate("");
+    setTodate("");
+    setFilters(prev=>({...prev,id_branch:id_branch})); 
+    toast.success("Filter is cleared");
+    getClassificationTablemuate({
+      from_date: "",
+      to_date: "",
+      search: "",
+      page: currentPage,
+      limit: itemsPerPage,
+      id_branch: id_branch,
+      typesofscheme:1,
+    })
+  }
+ 
   const handleSearch = (e) => {
     setSearch(e.target.value)
   }
@@ -177,41 +192,6 @@ console.log(filterTosend);
 
   const columns = [
     {
-      header: 'S.No',
-      cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
-    },
-    {
-      header: 'Classification Name',
-      cell: (row) => row?.classification_name,
-    },
-    {
-      header: "Classification Order",
-      cell: (row) => row?.classification_order
-    },
-    {
-      header: 'Total Join',
-    },
-    {
-      header: 'Active',
-      accessor: 'active',
-      cell: (row) => (
-        <label className="relative inline-flex items-center cursor-pointer">
-          <input
-            type="checkbox"
-            className="sr-only peer"
-            checked={row?.active === true}
-            onChange={() => handleStatusToggle(row?._id)}
-          />
-          <div
-            className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-black p-[2px] after:duration-300 after:bg-black ${row?.active === true
-              ? 'peer-checked:bg-[#61A375] peer-checked:ring-[#61A375]'
-              : 'peer-checked:bg-gray-400 peer-checked:ring-gray-400'
-              } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-white peer-hover:after:scale-95`}
-          ></div>
-        </label>
-      )
-    },
-    {
       header: 'Actions',
       cell: (row, rowIndex) => (
         <div className="dropdown-container relative">
@@ -229,7 +209,7 @@ console.log(filterTosend);
 
           {activeDropdown === row?._id && (
             <div
-              className="absolute right-[47px] lg:right-[163px] md:right-[150px] sm:right-[100px] transform -translate-x-8"
+              className="absolute"
               style={{
                 top: rowIndex >= schemeType.length - 2 ? 'auto' : '72%',
                 bottom: rowIndex >= schemeType.length - 2 ? '-74%' : 'auto',
@@ -282,7 +262,43 @@ console.log(filterTosend);
         </div>
       ),
 
+    },
+    {
+      header: 'S.No',
+      cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
+    },
+    {
+      header: 'Classification Name',
+      cell: (row) => row?.classification_name,
+    },
+    {
+      header: "Classification Order",
+      cell: (row) => row?.classification_order
+    },
+    {
+      header: 'Total Join',
+    },
+    {
+      header: 'Active',
+      accessor: 'active',
+      cell: (row) => (
+        <label className="relative inline-flex items-center cursor-pointer">
+          <input
+            type="checkbox"
+            className="sr-only peer"
+            checked={row?.active === true}
+            onChange={() => handleStatusToggle(row?._id)}
+          />
+          <div
+            className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-black p-[2px] after:duration-300 after:bg-black ${row?.active === true
+              ? 'peer-checked:bg-[#61A375] peer-checked:ring-[#61A375]'
+              : 'peer-checked:bg-gray-400 peer-checked:ring-gray-400'
+              } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-white peer-hover:after:scale-95`}
+          ></div>
+        </label>
+      )
     }
+   
   ];
 
   const paginationButtons = [];
@@ -472,7 +488,7 @@ console.log(filterTosend);
           isLoading={isLoading}
         />
       </div>
-
+{schemeType.length >0 &&(
       <div className="flex justify-between mt-4 p-2">
         <div className="flex flex-row items-center justify-center gap-2">
           <div className="flex items-center gap-4">
@@ -521,6 +537,7 @@ console.log(filterTosend);
 
         <Modal />
       </div>
+)}
     </div>
   )
 }
