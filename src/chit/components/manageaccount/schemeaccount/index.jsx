@@ -27,7 +27,7 @@ const [popuptitle, setPopuptitle] = useState(0);
   const [search, setSearch] = useState('')
   const [schemeaccount, setschemeaccount] = useState([])
  const [schaccExp,setschaccExp] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
+   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedRow, setSelectedRow] = useState(null)
@@ -45,20 +45,53 @@ const [popuptitle, setPopuptitle] = useState(0);
   const [displaysetting, setDiplaySetting] = useState(0);
   const [ispayable, setIspayable] = useState(false);
   const [isviewOpen, setIsviewOpen] = useState(false);
-
+  const roledata = localStorage.getItem('decoded');
+  let id_client = roledata?.id_client;
+  const id_branch = roledata?.branch;
+  const [branchList, setBranchList] = useState([]);
+  let [branch, setbranch] = useState("");
   const [filters, setFilters] = React.useState({
     
     from_date:from_date,
     to_date:to_date,
     added_by:'',
     scheme_status:'',
+    id_branch:id_branch,
     type:'all',
     id_classification: '',
     collectionuserid: '',
     id_scheme: '',
-    id_branch: '',
     scheme_type:''
   });
+
+  
+  const handleReset = (e) => {
+    setFromdate("");
+    setTodate("");
+    setFilters(prev=>({...prev,added_by:'',
+      scheme_status:'',
+      id_branch:id_branch,
+      type:'all',
+      id_classification: '',
+      collectionuserid: '',
+      id_scheme: '',
+      scheme_type:''}));    
+      toast.success("Filter is cleared");
+      getschemeaccountMutate({
+      page: currentPage,
+      limit: itemsPerPage,
+      added_by:'',
+      search:"",
+      scheme_status:'',
+      id_branch:id_branch,
+      type:'all',
+      id_classification: '',
+      collectionuserid: '',
+      id_scheme: '',
+      scheme_type:''
+    });
+
+  }
 
   const filterInputchange = (e) =>{
     const {name, value} = e.target;
@@ -107,19 +140,21 @@ const [popuptitle, setPopuptitle] = useState(0);
         scheme_type:filters.scheme_type
       };
        
-
         setIsFilterOpen(false)
         getschemeaccountMutate(filterTosend);
       
     };
 
-   useEffect(() => {
+ 
+    const handleClickfilter = (e) => {
       getallbranchMutate();
       handleAddedtypeChange();
       handleSchemetypeChange();
       handleSchemestatusChange();
-    }, []);
-
+      setIsFilterOpen(true);
+    }
+  
+    
     const { mutate: getallbranchMutate } = useMutation({
       mutationFn: getallbranch,
       onSuccess: (response) => {
@@ -204,9 +239,6 @@ const [popuptitle, setPopuptitle] = useState(0);
                     total_weight:response.data[i].total_weight,
                     start_date:response.data[i].start_date,
                     maturity_date:response.data[i].maturity_date,
-                    total_paidinstallments:response.data[i].total_paidinstallments,
-                    total_paidamount:response.data[i].total_paidamount,
-                    total_weight:response.data[i].total_weight,
                     branch_name:response.data[i].branch_name
             
                   });
@@ -363,7 +395,7 @@ const [popuptitle, setPopuptitle] = useState(0);
     
     {
       header: "Total Ins",
-      cell: (row) => row?.total_paidinstallments
+      cell: (row) => row?.total_installments
     },
     {
       header: "Paid Ins",
@@ -531,7 +563,21 @@ const [popuptitle, setPopuptitle] = useState(0);
           />
         </div>
         <div className="flex flex-row items-center justify-end gap-2">
-        <button
+      
+           
+
+          <button
+            className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
+            onClick={handleClick}
+            style={{ backgroundColor: layout_color }} >
+            + Add Account
+          </button>
+          <div className="flex flex-row items-center justify-end gap-2">
+          
+          <ExportToExcel apiData={schemeaccount} fileName="SchemeAccount Report" />
+          <ExportToPDF apiData={schaccExp} fileName="scheme account" />
+        </div>
+          <button
           id="filter"
           className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
           onClick={() => handleReset()}
@@ -542,21 +588,11 @@ const [popuptitle, setPopuptitle] = useState(0);
           <button
             id="filter"
             className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
-            onClick={() => setIsFilterOpen(true)}
+            onClick={(e) => {
+              handleClickfilter(e);
+            }}
             style={{ backgroundColor: layout_color }}>
             <SlidersHorizontal size={20} />
-          </button>
-            <div className="flex flex-row items-center justify-end gap-2">
-          
-                    <ExportToExcel apiData={schemeaccount} fileName="SchemeAccount Report" />
-                    <ExportToPDF apiData={schaccExp} fileName="scheme account" />
-                  </div>
-
-          <button
-            className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
-            onClick={handleClick}
-            style={{ backgroundColor: layout_color }} >
-            + Add Account
           </button>
         </div>
       </div>

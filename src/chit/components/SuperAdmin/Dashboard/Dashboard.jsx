@@ -3,7 +3,7 @@ import { useMutation } from '@tanstack/react-query';
 import { useDispatch, useSelector } from 'react-redux';
 import { SlidersHorizontal, Search, X } from 'lucide-react'
 import { getpaymentDashboard,getpaymentmodesummary,getallbranch, schemepaymentdatatable, schemepaymenttodayrate } from "../../../api/Endpoints"
-import { CalendarDays } from 'lucide-react'
+import { CalendarDays, RefreshCcw } from 'lucide-react'
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import customer from "../../../../assets/customer.svg";
@@ -19,17 +19,19 @@ import diamond from "../../../../assets/Dimond 1.svg";
 import plus from "../../../../assets/plus.svg"
 import Table from '../../common/Table'
 import { useNavigate } from 'react-router-dom';
-
+import { toast } from 'react-toastify'
 function Dashboard() {
 
   let navigate = useNavigate();
   const [search, setSearch] = useState('')
-  const roledata = useSelector((state) => state.clientForm.roledata);
+  console.log("decoded",localStorage.getItem('decoded'));
+  const roledata = localStorage.getItem('decoded');
+  // const roledata = useSelector((state) => state.clientForm.roledata);
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
   const id_role = roledata?.id_role;
   const id_client = roledata?.id_client;
-  const id_branch  = roledata?.id_branch;
+  const id_branch  = roledata?.branch;
 
 
   let [data, setData] = useState([]);
@@ -48,7 +50,7 @@ function Dashboard() {
   const [from_date, setFromdate] = useState("");
   const [to_date, setTodate] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
+   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(10);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [filters, setFilters] = useState({
@@ -59,6 +61,29 @@ function Dashboard() {
   });
 
   
+
+ const handleReset = (e) => {
+    setFromdate("");
+    setTodate("");
+    setIsFilterOpen(false);
+    setFilters(prev => ({
+      ...prev, 
+      id_branch: id_branch,
+      type: 1
+    }));
+    toast.success("Filter is cleared");
+    getTodaysMetalRate({ id_branch: id_branch, date: todayDate })
+      
+      
+    let payload = {
+      from_date: "",
+      to_date: "",
+      id_branch: id_branch
+    }
+    PaymentMode(payload);
+    CardSummary(payload);
+    getschemePaymentMutate(payload)
+  }
 
   useEffect(() => {
     if(id_branch){
@@ -72,9 +97,10 @@ function Dashboard() {
     }
     PaymentMode(payload);
     CardSummary(payload);
+    getschemePaymentMutate(payload)
     console.log("br---",id_branch)
   }
-  }, [roledata])
+  }, [roledata,filters])
 
     const handleallbranch = async (e) => {  
   
@@ -299,6 +325,13 @@ function Dashboard() {
       <div className="flex flex-col gap-5 px-4 py-6 bg-gray-100 min-h-screen overflow-y-scroll scrollbar-hide">
         {/* Cards Section */}
         <div className='flex justify-end items-center'>
+        <button
+            id="filter"
+            className="text-white bg-[#023453] mr-2 w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
+            onClick={() => handleReset()}
+            style={{ backgroundColor: layout_color }}>
+            <RefreshCcw size={20} />
+          </button>
           <button
             id="filter"
             className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
@@ -377,7 +410,7 @@ function Dashboard() {
                         <div className="relative">
                           <select
                             name="id_branch"
-                            className={`appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 ${!id_branch !== 0 ? "cursor-not-allowed bg-gray-100" : ""
+                            className={`appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 ${!id_branch !== "0" ? "cursor-not-allowed bg-gray-100" : ""
                               }`}
                             defaultValue=""
                             onChange={filterInputchange}
@@ -445,7 +478,7 @@ function Dashboard() {
           <div className="flex flex-row items-center justify-between bg-white rounded-lg p-4 shadow-md">
             <div className="flex flex-col">
               <h5 className="text-[#67748E] text-sm">Total Customer</h5>
-              <h5 className="text-2xl font-semibold">{cardData?.total_customer}</h5>
+              <h5 className="text-2xl font-semibold">{cardData?.total_customer  || 0}</h5>
             </div>
             <div className="flex items-center justify-center p-3 rounded-md" style={{ backgroundColor: layout_color }}>
               <img src={customer} alt="customer" className="w-6 h-6" />
@@ -455,7 +488,7 @@ function Dashboard() {
           <div className="flex flex-row items-center justify-between bg-white rounded-lg p-4 shadow-md">
             <div className="flex flex-col">
               <h5 className="text-[#67748E] text-sm">Total Account</h5>
-              <h5 className="text-2xl font-semibold">{cardData?.total_account}</h5>
+              <h5 className="text-2xl font-semibold">{cardData?.total_account   || 0}</h5>
             </div>
             <div className="flex items-center justify-center p-3 rounded-md" style={{ backgroundColor: layout_color }}>
               <img src={account} alt="account" className="w-6 h-6" />
@@ -464,7 +497,7 @@ function Dashboard() {
           <div className="flex flex-row items-center justify-between bg-white rounded-lg p-4 shadow-md">
             <div className="flex flex-col">
               <h5 className="text-[#67748E] text-sm">Completed Account</h5>
-              <h5 className="text-2xl font-semibold">{cardData?.total_complete}</h5>
+              <h5 className="text-2xl font-semibold">{cardData?.total_complete   || 0}</h5>
             </div>
             <div className="flex items-center justify-center p-3 rounded-md" style={{ backgroundColor: layout_color }}>
               <img src={completedacc} alt="completedacc" className="w-6 h-6" />
@@ -473,7 +506,7 @@ function Dashboard() {
           <div className="flex flex-row items-center justify-between bg-white rounded-lg p-4 shadow-md">
             <div className="flex flex-col">
               <h5 className="text-[#67748E] text-sm">Closed Account</h5>
-              <h5 className="text-2xl font-semibold">{cardData?.close}</h5>
+              <h5 className="text-2xl font-semibold">{cardData?.close   || 0}</h5>
             </div>
             <div className="flex items-center justify-center p-3 rounded-md" style={{ backgroundColor: layout_color }}>
               <img src={closedacc} alt="closedacc" className="w-6 h-6" />
@@ -496,7 +529,7 @@ function Dashboard() {
               {/* Gold Rate */}
               <div className="p-4 rounded-lg bg-[#E8B9233D] border border-gray-200">
                 <img src={gold22} alt="Gold (22CT)" className="h-20 w-20 mx-auto mb-2" />
-                <h3 className="text-2xl font-medium text-center mb-1">{metalRate?.goldrate_22ct?.$numberDecimal}</h3>
+                <h3 className="text-2xl font-medium text-center mb-1">{metalRate?.goldrate_22ct?.$numberDecimal || 0.00}</h3>
                 <p className="text-sm text-center text-gray-600">Gold (22CT)</p>
                 {/* <p className="text-xs text-blue-500 text-center mt-1">+5% from yesterday</p> */}
               </div>
@@ -504,7 +537,7 @@ function Dashboard() {
               {/* Platinum Rate */}
               <div className="p-4 rounded-lg bg-gray-100 border border-gray-200">
                 <img src={platinum} alt="Platinum" className="h-20 w-20 mx-auto mb-2" />
-                <h3 className="text-2xl font-medium text-center mb-1">{metalRate?.goldrate_22ct?.$numberDecimal}</h3>
+                <h3 className="text-2xl font-medium text-center mb-1">{metalRate?.goldrate_22ct?.$numberDecimal  || 0.00}</h3>
                 <p className="text-sm text-center text-gray-600">Platinum</p>
                 {/* <p className="text-xs text-blue-500 text-center mt-1">+5% from yesterday</p> */}
               </div>
@@ -512,7 +545,7 @@ function Dashboard() {
               {/* Gold Rate */}
               <div className="p-4 rounded-lg bg-[#E8B9233D] border border-gray-200">
                 <img src={gold} alt="Gold (20CT)" className="h-20 w-20 mx-auto mb-2" />
-                <h3 className="text-2xl font-medium text-center mb-1">{metalRate?.goldrate_20ct?.$numberDecimal}</h3>
+                <h3 className="text-2xl font-medium text-center mb-1">{metalRate?.goldrate_20ct?.$numberDecimal  || 0.00}</h3>
                 <p className="text-sm text-center text-gray-600">Gold (20CT)</p>
                 {/* <p className="text-xs text-blue-500 text-center mt-1">+5% from yesterday</p> */}
               </div>
@@ -521,7 +554,7 @@ function Dashboard() {
               {/* Silver Rate */}
               <div className="p-4 rounded-lg bg-gray-100 border border-gray-200">
                 <img src={silver} alt="Silver" className="h-20 w-20 mx-auto mb-2" />
-                <h3 className="text-xl font-medium text-center mb-1"> {metalRate?.silverrate_1gm?.$numberDecimal}</h3>
+                <h3 className="text-xl font-medium text-center mb-1"> {metalRate?.silverrate_1gm?.$numberDecimal  || 0.00}</h3>
                 <p className="text-sm text-center text-gray-600">Silver</p>
                 {/* <p className="text-xs text-blue-500 text-center mt-1">+5% from yesterday</p> */}
               </div>
@@ -529,7 +562,7 @@ function Dashboard() {
               {/* Gold Rate */}
               <div className="p-4 rounded-lg bg-[#E8B9233D] border border-gray-200">
                 <img src={gold18} alt="Gold (22CT)" className="h-20 w-20 mx-auto mb-2" />
-                <h3 className="text-2xl font-medium text-center mb-1">{metalRate?.goldrate_22ct?.$numberDecimal}</h3>
+                <h3 className="text-2xl font-medium text-center mb-1">{metalRate?.goldrate_22ct?.$numberDecimal  || 0.00}</h3>
                 <p className="text-sm text-center text-gray-600">Gold COIN</p>
                 {/* <p className="text-xs text-blue-500 text-center mt-1">+5% from yesterday</p> */}
               </div>
@@ -538,7 +571,7 @@ function Dashboard() {
               {/* Diamond Rate */}
               <div className="p-4 rounded-lg bg-gray-100 border border-gray-200">
                 <img src={diamond} alt="Diamond" className="h-20 w-20 mx-auto mb-2" />
-                <h3 className="text-xl font-medium text-center mb-1"> {metalRate?.silverrate_1gm?.$numberDecimal}</h3>
+                <h3 className="text-xl font-medium text-center mb-1"> {metalRate?.silverrate_1gm?.$numberDecimal  || 0.00}</h3>
                 <p className="text-sm text-center text-gray-600">Diamond</p>
                 {/* <p className="text-xs text-blue-500 text-center mt-1">+5% from yesterday</p> */}
               </div>

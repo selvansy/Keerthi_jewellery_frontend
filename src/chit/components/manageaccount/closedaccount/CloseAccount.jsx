@@ -5,7 +5,7 @@ import { useMutation } from '@tanstack/react-query'
 import { SlidersHorizontal, Search, X, UserX2Icon } from 'lucide-react'
 import { addedtype, allschemestatus, getschemeaccountbyid, getallschemetypes, getallbranchscheme, getallbranchclassification, getemployeebybranch, getallbranch, schemeaccounttable, changeschemeaccountStatus, deleteschemeaccount } from '../../../api/Endpoints'
 import { toast } from 'react-toastify'
-import { CalendarDays, RefreshCcw,Undo2 } from 'lucide-react'
+import { CalendarDays, RefreshCcw, Undo2 } from 'lucide-react'
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import { ExportToExcel } from '../../common/Dropdown/Excelexport';
@@ -25,7 +25,7 @@ const CloaseAccount = () => {
 
   const [search, setSearch] = useState('')
   const [schemeaccount, setschemeaccount] = useState([])
-  const [schaccExp,setschaccExp] = useState([]);
+  const [schaccExp, setschaccExp] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -41,6 +41,11 @@ const CloaseAccount = () => {
   const [schemefilter, setScheme] = useState([]);
   const [addedbyfilter, setAddedby] = useState([]);
   const [schemestatusfilter, setSchemestatus] = useState([]);
+  const roledata = localStorage.getItem('decoded');
+  let id_client = roledata?.id_client;
+  const id_branch = roledata?.branch;
+  const [branchList, setBranchList] = useState([]);
+  let [branch, setbranch] = useState("");
 
   const [ispayable, setIspayable] = useState(false);
 
@@ -55,10 +60,50 @@ const CloaseAccount = () => {
     id_classification: '',
     collectionuserid: '',
     id_scheme: '',
-    id_branch: '',
+    id_branch: id_branch,
     scheme_type: ''
   });
 
+
+  const handleReset = (e) => {
+    setFromdate("");
+    setTodate("");
+    setFilters(prev => ({
+      ...prev, added_by: '',
+      scheme_status: 2,
+      id_branch: id_branch,
+      type: 'close',
+      id_classification: '',
+      collectionuserid: '',
+      id_scheme: '',
+      scheme_type: ''
+    }));
+    toast.success("Filter is cleared");
+    getschemeaccountMutate({
+      page: currentPage,
+      limit: itemsPerPage,
+      added_by: '',
+      search: "",
+      scheme_status: "",
+      id_branch: id_branch,
+      type: 'close',
+      id_classification: '',
+      collectionuserid: '',
+      id_scheme: '',
+      scheme_type: ''
+    });
+
+  }
+
+  
+ 
+  const handleClickfilter = (e) => {
+    getallbranchMutate();
+    handleAddedtypeChange();
+    handleSchemetypeChange();
+    handleSchemestatusChange();
+    setIsFilterOpen(true);
+  }
   const filterInputchange = (e) => {
     const { name, value } = e.target;
     setFilters(prev => ({ ...prev, [name]: value }));
@@ -161,15 +206,10 @@ const CloaseAccount = () => {
     setIsFilterOpen(false)
     getschemeaccountMutate(filterTosend);
 
-  };
+  }; 
+ 
 
-  useEffect(() => {
-    getallbranchMutate();
-    handleAddedtypeChange();
-    handleSchemetypeChange();
-    handleSchemestatusChange();
-  }, []);
-
+ 
   const { mutate: getallbranchMutate } = useMutation({
     mutationFn: getallbranch,
     onSuccess: (response) => {
@@ -240,31 +280,28 @@ const CloaseAccount = () => {
   const { isLoading, mutate: getschemeaccountMutate } = useMutation({
     mutationFn: schemeaccounttable,
     onSuccess: (response) => {
-     console.log("table",response)
+      console.log("table", response)
       setschemeaccount(response.data)
       setTotalPages(response.totalPages);
       let arrayData = [];
-      if(response.data.length !==0){
-            for(var i=0;i<response.data.length;i++){
-                arrayData.push({
-                    scheme_acc_number:response.data[i].scheme_acc_number,
-                    account_name:response.data[i].account_name,
-                    mobile:response.data[i].mobile,
-                    total_paidinstallments:response.data[i].total_paidinstallments,
-                    total_paidamount:response.data[i].total_paidamount,
-                    total_weight:response.data[i].total_weight,
-                    start_date:response.data[i].start_date,
-                    maturity_date:response.data[i].maturity_date,
-                    total_paidinstallments:response.data[i].total_paidinstallments,
-                    total_paidamount:response.data[i].total_paidamount,
-                    total_weight:response.data[i].total_weight,
-                    branch_name:response.data[i].branch_name
-            
-                  });
-            }
+      if (response.data.length !== 0) {
+        for (var i = 0; i < response.data.length; i++) {
+          arrayData.push({
+            scheme_acc_number: response.data[i].scheme_acc_number,
+            account_name: response.data[i].account_name,
+            mobile: response.data[i].mobile,
+            total_paidinstallments: response.data[i].total_paidinstallments,
+            total_paidamount: response.data[i].total_paidamount,
+            total_weight: response.data[i].total_weight,
+            start_date: response.data[i].start_date,
+            maturity_date: response.data[i].maturity_date,
+            branch_name: response.data[i].branch_name
+
+          });
+        }
       }
 
-            setschaccExp(arrayData)
+      setschaccExp(arrayData)
     },
     onError: (error) => {
       console.error('Error fetching countries:', error);
@@ -369,7 +406,7 @@ const CloaseAccount = () => {
       header: "Mobile",
       cell: (row) => row?.mobile
     },
-    
+
     {
       header: 'Scheme',
       cell: (row) => {
@@ -386,26 +423,26 @@ const CloaseAccount = () => {
       header: 'Metal Name',
       cell: (row) => {
         return row?.id_metal === 1 ? 'Gold' :
-               row?.id_metal === 2 ? 'Silver' :
-               row?.id_metal === 3 ? 'Diamond' :
-               row?.id_metal === 4 ? 'Platinum' : 'Gold Coins';
+          row?.id_metal === 2 ? 'Silver' :
+            row?.id_metal === 3 ? 'Diamond' :
+              row?.id_metal === 4 ? 'Platinum' : 'Gold Coins';
       }
     },
     {
       header: 'Purity Name',
       cell: (row) => {
         return row?.id_purity === 1 ? '24CT' :
-               row?.id_purity === 2 ? '22CT' :
-               row?.id_purity === 3 ? '20CT' :
-               row?.id_purity === 4 ? '18CT':
-               row?.id_purity === 5 ? 'Gold coin':
-               row?.id_purity === 6 ? 'Platinum':
-               row?.id_purity === 7 ? 'Diamond': 'Silver'
+          row?.id_purity === 2 ? '22CT' :
+            row?.id_purity === 3 ? '20CT' :
+              row?.id_purity === 4 ? '18CT' :
+                row?.id_purity === 5 ? 'Gold coin' :
+                  row?.id_purity === 6 ? 'Platinum' :
+                    row?.id_purity === 7 ? 'Diamond' : 'Silver'
       }
     },
     {
       header: "A/c No",
-      cell: (row) => row?.scheme_acc_number===""?'Not Allocated':row?.scheme_acc_number
+      cell: (row) => row?.scheme_acc_number === "" ? 'Not Allocated' : row?.scheme_acc_number
     },
     {
       header: "Start Date",
@@ -421,10 +458,10 @@ const CloaseAccount = () => {
         return date.toLocaleDateString('en-GB'); // 'en-GB' gives the d-m-Y format
       }
     },
-    
+
     {
       header: "Total Ins",
-      cell: (row) => row?.total_paidinstallments
+      cell: (row) => row?.total_installments
     },
     {
       header: "Paid Ins",
@@ -447,19 +484,19 @@ const CloaseAccount = () => {
           return `Amount To Weight`;
         } else if (row?.scheme_type === 3) {
           return `Weight`;
-        }  else if (row?.scheme_type === 4) {
+        } else if (row?.scheme_type === 4) {
           return `Flexible Amount To Bonus`;
-        }  else if (row?.scheme_type === 5) {
+        } else if (row?.scheme_type === 5) {
           return `Flexiable Amount To Weight`;
-        }  else if (row?.scheme_type === 6) {
+        } else if (row?.scheme_type === 6) {
           return `Fixed Amount To Weight`;
-        }  else if (row?.scheme_type === 7) {
+        } else if (row?.scheme_type === 7) {
           return `Fixed Amount End Weight`;
-        }  else if (row?.scheme_type === 8) {
+        } else if (row?.scheme_type === 8) {
           return `Fixed Amount To Bonus`;
-        }  else if (row?.scheme_type === 9) {
+        } else if (row?.scheme_type === 9) {
           return `Flexible Amount End Weight`;
-        }  else if (row?.scheme_type === 10) {
+        } else if (row?.scheme_type === 10) {
           return `Digi Gold`;
         } else {
           return `Amount To Bonus`;
@@ -600,52 +637,55 @@ const CloaseAccount = () => {
           />
         </div>
         <div className="flex flex-row items-center justify-end gap-2">
-          <button
-            id="filter"
-            className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
-            onClick={() => setIsFilterOpen(true)}
-            style={{ backgroundColor: layout_color }}
-          >
-            <SlidersHorizontal size={20} />
-          </button>
-
-            <div className="flex flex-row items-center justify-end gap-2">
-          
-                    <ExportToExcel apiData={schemeaccount} fileName="SchemeAccount Report" />
-                    <ExportToPDF apiData={schaccExp} fileName="scheme account" />
-                  </div>
-         
-          <button
-                id="filter"
-                className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
-                onClick={() => handleReset()}
-                style={{ backgroundColor: layout_color }}
-              >
-                <RefreshCcw size={20} />
-              </button>
-          
-          <button
+        <button
             className="rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
             onClick={handleCloseClick}
-            style={{ backgroundColor: layout_color }} 
+            style={{ backgroundColor: layout_color }}
           >
             <div className="flex items-center space-x-2">
               <UserX2Icon className="w-10" />
               <span>Close Account</span>
             </div>
-           
+
           </button>
           <button
             className="rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
             onClick={handleRevertClick}
-            style={{ backgroundColor: layout_color }} 
+            style={{ backgroundColor: layout_color }}
           >
             <div className="flex items-center space-x-2">
               <Undo2 className="w-10" />
               <span>Revert Account</span>
             </div>
           </button>
-        
+       
+
+          <div className="flex flex-row items-center justify-end gap-2">
+
+            <ExportToExcel apiData={schemeaccount} fileName="SchemeAccount Report" />
+            <ExportToPDF apiData={schaccExp} fileName="scheme account" />
+          </div>
+
+          <button
+            id="filter"
+            className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
+            onClick={() => handleReset()}
+            style={{ backgroundColor: layout_color }}
+          >
+            <RefreshCcw size={20} />
+          </button>
+
+          <button
+            id="filter"
+            className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
+            onClick={(e) => {
+              handleClickfilter(e);
+            }}
+            style={{ backgroundColor: layout_color }}
+          >
+            <SlidersHorizontal size={20} />
+          </button>
+
         </div>
       </div>
       <div
@@ -824,13 +864,26 @@ const CloaseAccount = () => {
                   Status
                 </label>
                 <div className="relative">
-                  <select name="scheme_status" onChange={filterInputchange} className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
-                    <option value='' >--Select--</option>
-                    {schemestatusfilter.map((schemestatus) => (
-                      <option key={schemestatus._id} value={schemestatus._id}>{schemestatus.status_name}</option>
-                    ))
-                    }
+                  <select
+                    name="scheme_status"
+                    onChange={filterInputchange}
+                    className="appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                    defaultValue=""
+                  >
+                    <option value="">--Select--</option>
+                    {schemestatusfilter.map((schemestatus) => {
+                      // Only render options if id_status is not 0 or 2
+                      if (![0, 2].includes(schemestatus.id_status)) {
+                        return (
+                          <option key={schemestatus._id} value={schemestatus._id}>
+                            {schemestatus.status_name}
+                          </option>
+                        );
+                      }
+                      return null; // Do not render anything if condition is not met
+                    })}
                   </select>
+
                   <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
                     <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
                       <path d="M19 9l-7 7-7-7"></path>
@@ -900,13 +953,13 @@ const CloaseAccount = () => {
               onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
               className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
             >
-               <option value={10}>10</option>
-                  <option value={25}>25</option>
-                  <option value={50}>50</option>
-                  <option value={100}>100</option>
-                  <option value={250}>250</option>
-                  <option value={500}>500</option>
-                  <option value={1000}>1000</option>
+              <option value={10}>10</option>
+              <option value={25}>25</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+              <option value={250}>250</option>
+              <option value={500}>500</option>
+              <option value={1000}>1000</option>
             </select>
             <span className="text-gray-500">entries</span>
           </div>

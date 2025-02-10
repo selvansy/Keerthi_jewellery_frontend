@@ -10,7 +10,7 @@ import { useSelector, useDispatch } from 'react-redux';
 
 const AddSchemeAccount = () => {
   let dispatch = useDispatch();
-  const roledata = useSelector((state) => state.clientForm.roledata);
+  const roledata = localStorage.getItem('decoded');
   const id_branch = roledata?.branch;
 
   const layout_color = useSelector((state) => state.clientForm.layoutColor);

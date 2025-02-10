@@ -1629,3 +1629,11 @@ export const todayMetalRate = async(data)=>{
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/metalrate/today/${data.id}/${data.todayDate}`);
     return response.data;
 }
+
+
+export const updatelayoutcolor = async (data) => {
+    console.log(data)
+    const response = await Api.patch(`${import.meta.env.VITE_API_URL}/api/admin/layoutsetting/color`, data);
+    return response;
+}
+ 

@@ -16,7 +16,7 @@ import {getpaymentmodesummary} from "../../api/BackendUrl"
 function ModeWisePayment() {
     
     const layout_color = useSelector((state) => state.clientForm.layoutColor);
-    const roledata = useSelector((state) => state.clientForm.roledata);
+    const roledata = localStorage.getItem('decoded');
     const id_branch = roledata?.branch;
     console.log("Id",id_branch)
 

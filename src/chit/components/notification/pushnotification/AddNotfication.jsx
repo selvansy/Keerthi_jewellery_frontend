@@ -12,7 +12,7 @@ const AddNotfication = () => {
   const navigate = useNavigate();
 
   
-  const roledata = useSelector((state) => state.clientForm.roledata);
+  const roledata = localStorage.getItem('decoded');
   const id_branch = roledata?.branch;
 
 

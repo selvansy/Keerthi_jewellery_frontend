@@ -3,7 +3,7 @@ import Table from '../../common/Table'
 import { SlidersHorizontal, Search, X } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
-import {pushnotificationdatatable,getallbranch,getnotificationtype ,deletepushnotification, } from '../../../api/Endpoints'
+import { pushnotificationdatatable, getallbranch, getnotificationtype, deletepushnotification, } from '../../../api/Endpoints'
 import { toast } from 'react-toastify'
 import { setPushnotifyId } from "../../../../redux/clientFormSlice"
 import { eventEmitter } from '../../../../utils/EventEmitter';
@@ -14,7 +14,7 @@ import { useDebounce } from '../../../hooks/useDebounce';
 import Viewnotification from "./Viewdetails"
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
-import { CalendarDays, RefreshCcw} from 'lucide-react' 
+import { CalendarDays, RefreshCcw } from 'lucide-react'
 import Modal from '../../common/Modal'
 
 
@@ -23,13 +23,13 @@ const Pushnotification = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch();
 
-  const roledata = useSelector((state) => state.clientForm.roledata);
+  const roledata = localStorage.getItem('decoded');
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const id_branch = roledata?.branch;
 
 
   const [notifyData, setnotifyData] = useState([])
-    const [filtertype, setNotifyType] = useState([]);
+  const [filtertype, setNotifyType] = useState([]);
   const [search, setSearch] = useState('')
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
@@ -50,6 +50,20 @@ const Pushnotification = () => {
     id_branch: id_branch,
     senttype: ""
   });
+
+
+  const handleReset = (e) => {
+    setFromdate("");
+    setTodate("");
+    setFilters(prev => ({
+      ...prev, 
+      id_branch: id_branch,
+      senttype: ""
+    }));
+    toast.success("Filter is cleared");
+
+    getnotificationData({ from_date: '', to_date: '', page: currentPage, limit: itemsPerPage, id_branch: id_branch, senttype: "" });
+  }
 
   function closeIncommingModal() {
     setIsviewOpen(false);
@@ -111,63 +125,57 @@ const Pushnotification = () => {
 
   };
 
-  
-const handleReset = (e) => {
-  
-
-    getnotificationData({from_date: '',to_date: '',page: currentPage,limit: itemsPerPage,id_branch: id_branch,senttype: ""});
-}
 
 
-    const { mutate: handlenotificationtype } = useMutation({
-      mutationFn: getnotificationtype,
-      onSuccess: (response) => {
-        setNotifyType(response.data);
-      },
-      onError: (error) => {
-        console.error("Error fetching countries:", error);
-      },
-    });
-  
-    const { mutate: getBranchList } = useMutation({
-      mutationFn: getallbranch,
-      onSuccess: (response) => {
-        setBranchList(response.data);
-      },
-      onError: (error) => {
-        console.error("Error fetching countries:", error);
-      },
-    });
+  const { mutate: handlenotificationtype } = useMutation({
+    mutationFn: getnotificationtype,
+    onSuccess: (response) => {
+      setNotifyType(response.data);
+    },
+    onError: (error) => {
+      console.error("Error fetching countries:", error);
+    },
+  });
 
-   useEffect(() => {
-             if (id_branch === '0' && isFilterOpen === true) {
-               getBranches()
-             }
-       
-             if(id_branch !== 0){
-               setFilters({ ...filters, id_branch: id_branch })
-             }
-             
-           }, [id_branch]);
+  const { mutate: getBranchList } = useMutation({
+    mutationFn: getallbranch,
+    onSuccess: (response) => {
+      setBranchList(response.data);
+    },
+    onError: (error) => {
+      console.error("Error fetching countries:", error);
+    },
+  });
 
-            useEffect(() => {
-               handlenotificationtype();
-               getBranchList();
-             }, []);
+  useEffect(() => {
+    if (id_branch === '0' && isFilterOpen === true) {
+      getBranches()
+    }
+
+    if (id_branch !== "0") {
+      setFilters({ ...filters, id_branch: id_branch })
+    }
+
+  }, [id_branch]);
+
+  useEffect(() => {
+    handlenotificationtype();
+    getBranchList();
+  }, []);
 
 
-           
-      
-         const { mutate: getBranches } = useMutation({
-                        mutationFn: getallbranch,
-                        onSuccess: (response) => {
-                          console.log("res",response)
-                         setBranchList(response.data);
-                        },
-                        onError: (error) => {
-                          console.error("Error:", error);
-                        },
-                      });
+
+
+  const { mutate: getBranches } = useMutation({
+    mutationFn: getallbranch,
+    onSuccess: (response) => {
+      console.log("res", response)
+      setBranchList(response.data);
+    },
+    onError: (error) => {
+      console.error("Error:", error);
+    },
+  });
 
   const handleSearch = (e) => {
     setSearch(e.target.value)
@@ -179,42 +187,42 @@ const handleReset = (e) => {
   }
 
 
-   const handleDelete = (id) => {
+  const handleDelete = (id) => {
     console.log(id)
-        setActiveDropdown(null);
-          dispatch(openModal({
-            modalType: 'CONFIRMATION',
-            header: 'Delete Scheme',
-            formData: {
-              message: 'Are you sure you want to delete?',
-              productId: id
-            },
-            buttons: {
-              cancel: {
-                text: 'Cancel'
-              },
-              submit: {
-                text: 'Delete'
-              }
-            }
-          }));
-        };
-    
-         useEffect(() => {
-          eventEmitter.on('CONFIRMATION_SUBMIT', async (data) => {
-            try {
-            
-              let response = await deletepushnotification(data.productId);
-              toast.success(response.message);
-              getnotificationData({ page: currentPage, limit: itemsPerPage, search: search })
-            } catch (error) {
-              console.error('Error:', error);
-            }
-          });
-            return () => {
-              eventEmitter.off('CONFIRMATION_SUBMIT');
-            };
-          }, [eventEmitter,notifyData]);
+    setActiveDropdown(null);
+    dispatch(openModal({
+      modalType: 'CONFIRMATION',
+      header: 'Delete Scheme',
+      formData: {
+        message: 'Are you sure you want to delete?',
+        productId: id
+      },
+      buttons: {
+        cancel: {
+          text: 'Cancel'
+        },
+        submit: {
+          text: 'Delete'
+        }
+      }
+    }));
+  };
+
+  useEffect(() => {
+    eventEmitter.on('CONFIRMATION_SUBMIT', async (data) => {
+      try {
+
+        let response = await deletepushnotification(data.productId);
+        toast.success(response.message);
+        getnotificationData({ page: currentPage, limit: itemsPerPage, search: search })
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    });
+    return () => {
+      eventEmitter.off('CONFIRMATION_SUBMIT');
+    };
+  }, [eventEmitter, notifyData]);
 
 
   const handleViewnotification = async (id) => {
@@ -352,7 +360,7 @@ const handleReset = (e) => {
     setCurrentPage(page);
   };
 
-  
+
 
   return (
     <div className="flex flex-col p-4">
@@ -376,7 +384,7 @@ const handleReset = (e) => {
             style={{ backgroundColor: layout_color }} >
             + Create Notification
           </button>
-      <button
+          <button
             id="filter"
             className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
             onClick={() => handleReset()}
@@ -384,183 +392,183 @@ const handleReset = (e) => {
             <RefreshCcw size={20} />
           </button>
 
-           <button
-                      id="filter"
-                      className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
-                      onClick={() => setIsFilterOpen(true)}
-                      style={{ backgroundColor: layout_color }} >
-                      <SlidersHorizontal size={20} />
+          <button
+            id="filter"
+            className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
+            onClick={() => setIsFilterOpen(true)}
+            style={{ backgroundColor: layout_color }} >
+            <SlidersHorizontal size={20} />
           </button>
 
         </div>
 
         <div
-        className={`fixed inset-y-0 right-0 w-80 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-40 
+          className={`fixed inset-y-0 right-0 w-80 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-40 
                 ${isFilterOpen ? 'translate-x-0' : 'translate-x-full'}`}
-      >
-        <div className="flex flex-col h-full">
-          <div className="flex justify-between items-center p-3">
-            <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
-            <button
-              onClick={() => setIsFilterOpen(false)}
-              className="text-gray-500 hover:text-gray-700"
-            >
-              <X size={20} />
-            </button>
-          </div>
+        >
+          <div className="flex flex-col h-full">
+            <div className="flex justify-between items-center p-3">
+              <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
+              <button
+                onClick={() => setIsFilterOpen(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <X size={20} />
+              </button>
+            </div>
 
-          <form className='overflow-y-auto scrollbar-hide'>
-            <div className="p-3 space-y-4 flex-1 overflow-y-auto filterscroll">
-              <div className="flex flex-col border-t"></div>
-              <div className="space-y-2">
-                <label className='text-gray-700 text-sm font-medium'>From Date<span className='text-red-400'>*</span></label>
-                <div className="relative">
-                  <DatePicker
-                    selected={from_date}
-                    onChange={(date) => setFromdate(date)}
-                    dateFormat="dd-MM-yyyy"
-                    placeholderText="Select Date"
-                    className="border border-gray-300 rounded-md p-3 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                    showMonthDropdown
-                    showYearDropdown
-                    dropdownMode="select"
-                    wrapperClassName="w-full"
-                  />
-                  <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-gray-500 w-14 h-[43px] justify-center items-center flex rounded-r-md pointer-events-none">
-                    <CalendarDays size={20} />
-                  </span>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <label className='text-gray-700 text-sm font-medium'>To Date<span className='text-red-400'>*</span></label>
-                <div className="relative">
-                  <DatePicker
-                    selected={to_date}
-                    onChange={(date) => setTodate(date)}
-                    dateFormat="dd-MM-yyyy"
-                    placeholderText="Select Date"
-                    className="border border-gray-300 rounded-md p-3 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                    showMonthDropdown
-                    showYearDropdown
-                    dropdownMode="select"
-                    wrapperClassName="w-full"
-                  />
-                  <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-gray-500 w-14 h-[43px] justify-center items-center flex rounded-r-md pointer-events-none">
-                    <CalendarDays size={20} />
-                  </span>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-              {
-                id_branch === "0" &&
-               
-                <>
-                  <div className="flex flex-col lg:mt-2">
-                <label className="text-black mb-1 font-medium">
-                  Branch<span className="text-red-400">*</span>
-                </label>
-                <div className="relative">
-                  <select
-                    name="id_branch"
-                    className={`appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700  cursor-not-allowed`}
-               
-                    onChange={filterInputchange}
-                    value={filters.id_branch}
-                  >
-                    <option value="" className="text-gray-700">
-                      --Select--
-                    </option>
-                    {branchList.map((branch) => (
-                      <option
-                        className="text-gray-700"
-                        key={branch._id}
-                        value={branch._id}
-                      >
-                        {branch.branch_name}
-                      </option>
-                    ))}
-                  </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                    <svg
-                      className="h-4 w-4 text-gray-400"
-                      fill="none"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="3"
-                      viewBox="0 0 24 24"
-                      stroke="black"
-                    >
-                      <path d="M19 9l-7 7-7-7"></path>
-                    </svg>
+            <form className='overflow-y-auto scrollbar-hide'>
+              <div className="p-3 space-y-4 flex-1 overflow-y-auto filterscroll">
+                <div className="flex flex-col border-t"></div>
+                <div className="space-y-2">
+                  <label className='text-gray-700 text-sm font-medium'>From Date<span className='text-red-400'>*</span></label>
+                  <div className="relative">
+                    <DatePicker
+                      selected={from_date}
+                      onChange={(date) => setFromdate(date)}
+                      dateFormat="dd-MM-yyyy"
+                      placeholderText="Select Date"
+                      className="border border-gray-300 rounded-md p-3 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                      showMonthDropdown
+                      showYearDropdown
+                      dropdownMode="select"
+                      wrapperClassName="w-full"
+                    />
+                    <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-gray-500 w-14 h-[43px] justify-center items-center flex rounded-r-md pointer-events-none">
+                      <CalendarDays size={20} />
+                    </span>
                   </div>
                 </div>
-              
-              </div>
-                </>
-               }
-              </div>
+                <div className="space-y-2">
+                  <label className='text-gray-700 text-sm font-medium'>To Date<span className='text-red-400'>*</span></label>
+                  <div className="relative">
+                    <DatePicker
+                      selected={to_date}
+                      onChange={(date) => setTodate(date)}
+                      dateFormat="dd-MM-yyyy"
+                      placeholderText="Select Date"
+                      className="border border-gray-300 rounded-md p-3 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                      showMonthDropdown
+                      showYearDropdown
+                      dropdownMode="select"
+                      wrapperClassName="w-full"
+                    />
+                    <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-gray-500 w-14 h-[43px] justify-center items-center flex rounded-r-md pointer-events-none">
+                      <CalendarDays size={20} />
+                    </span>
+                  </div>
+                </div>
 
-              <div className="flex flex-col">
-              <label className="text-gray-700 mb-2 mt-2 font-medium">
-                Type<span className="text-red-400">*</span>
-              </label>
-              <div className="relative">
-                <select
-                  name="senttype"
-                  value={filters.senttype}
-                  onChange={filterInputchange}
-                  className="appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                  
-                >
-                    <option value="">--Select---</option>
-                  {filtertype.map((senttype) => (
-                    <option
+                <div className="space-y-2">
+                  {
+                    id_branch === "0" &&
+
+                    <>
+                      <div className="flex flex-col lg:mt-2">
+                        <label className="text-black mb-1 font-medium">
+                          Branch<span className="text-red-400">*</span>
+                        </label>
+                        <div className="relative">
+                          <select
+                            name="id_branch"
+                            className={`appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700  cursor-not-allowed`}
+
+                            onChange={filterInputchange}
+                            value={filters.id_branch}
+                          >
+                            <option value="" className="text-gray-700">
+                              --Select--
+                            </option>
+                            {branchList.map((branch) => (
+                              <option
+                                className="text-gray-700"
+                                key={branch._id}
+                                value={branch._id}
+                              >
+                                {branch.branch_name}
+                              </option>
+                            ))}
+                          </select>
+                          <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                            <svg
+                              className="h-4 w-4 text-gray-400"
+                              fill="none"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="3"
+                              viewBox="0 0 24 24"
+                              stroke="black"
+                            >
+                              <path d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                          </div>
+                        </div>
+
+                      </div>
+                    </>
+                  }
+                </div>
+
+                <div className="flex flex-col">
+                  <label className="text-gray-700 mb-2 mt-2 font-medium">
+                    Type<span className="text-red-400">*</span>
+                  </label>
+                  <div className="relative">
+                    <select
                       name="senttype"
-                      className="text-gray-700"
-                      key={senttype.id}
-                      value={senttype.id}
+                      value={filters.senttype}
+                      onChange={filterInputchange}
+                      className="appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+
                     >
-                      {senttype.name}
-                    </option>
-                  ))}
-                </select>
-                <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                  <svg
-                    className="h-4 w-4 text-gray-400"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="3"
-                    viewBox="0 0 24 24"
-                    stroke="black"
-                  >
-                    <path d="M19 9l-7 7-7-7"></path>
-                  </svg>
+                      <option value="">--Select---</option>
+                      {filtertype.map((senttype) => (
+                        <option
+                          name="senttype"
+                          className="text-gray-700"
+                          key={senttype.id}
+                          value={senttype.id}
+                        >
+                          {senttype.name}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                      <svg
+                        className="h-4 w-4 text-gray-400"
+                        fill="none"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="3"
+                        viewBox="0 0 24 24"
+                        stroke="black"
+                      >
+                        <path d="M19 9l-7 7-7-7"></path>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-4 borde">
+                  <div className="bg-yellow-300 flex justify-center gap-3">
+                    <button
+                      onClick={applyfilterdatatable}
+                      className="flex-1 px-4 py-2 bg-[#61A375] text-white rounded-md"
+                    >
+                      Apply
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-            
-              <div className="p-4 borde">
-                <div className="bg-yellow-300 flex justify-center gap-3">
-                  <button
-                    onClick={applyfilterdatatable}
-                    className="flex-1 px-4 py-2 bg-[#61A375] text-white rounded-md"
-                  >
-                    Apply
-                  </button>
-                </div>
-              </div>
-            </div>
-          </form>
+            </form>
+          </div>
         </div>
-      </div>
-      {isFilterOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-30"
-          onClick={() => setIsFilterOpen(false)}
-        />
-      )}
+        {isFilterOpen && (
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 z-30"
+            onClick={() => setIsFilterOpen(false)}
+          />
+        )}
 
       </div>
 
@@ -606,13 +614,13 @@ const handleReset = (e) => {
               onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
               className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
             >
-               <option value={10}>10</option>
-                  <option value={25}>25</option>
-                  <option value={50}>50</option>
-                  <option value={100}>100</option>
-                  <option value={250}>250</option>
-                  <option value={500}>500</option>
-                  <option value={1000}>1000</option>
+              <option value={10}>10</option>
+              <option value={25}>25</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+              <option value={250}>250</option>
+              <option value={500}>500</option>
+              <option value={1000}>1000</option>
             </select>
             <span className="text-gray-500">entries</span>
           </div>
@@ -630,7 +638,7 @@ const handleReset = (e) => {
           setIsOpen={setIsviewOpen}
         />
       </ModelOne>
-      <Modal/>
+      <Modal />
     </div>
   )
 }

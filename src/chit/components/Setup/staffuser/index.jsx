@@ -19,7 +19,7 @@ import StaffuserForm from './StaffuserForm'
 const StaffUser = () => {
   const dispatch = useDispatch();
 
-  const [currentPage, setCurrentPage] = useState(1);
+   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [clientData, setClientData] = useState([])
@@ -32,7 +32,7 @@ const StaffUser = () => {
   const [searchInput, setSearchInput] = useState('')
   const debouncedSearch = useDebounce(searchInput, 500)
 
-  const roledata = useSelector((state) => state.clientForm.roledata);
+  const roledata = localStorage.getItem('decoded');
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
  
   const id_role = roledata?.id_role?.id_role;

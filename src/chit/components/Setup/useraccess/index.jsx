@@ -3,7 +3,7 @@ import { getalluserrole,getuserpermission,updatemenupermission } from '../../../
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 const UserAccessForm = () => {
-  const [activeProfile, setActiveProfile] = useState(6);
+  const [activeProfile, setActiveProfile] = useState(1);
   const [id_submenu, setid_submenu] = useState("1,2,3,5,6,7,8,9,11,12,14,20,21,22,23,27,29,31,32,33,34,37,38,41,42,44,45,46,47,57,59,60,61,62,63,64,66,68,69,70,71,72,73");
   const [userRolesList, setUserRoleList] = useState([]);
   const [menuPermissionList, setMenuPermissionList] = useState([]);
@@ -27,6 +27,7 @@ const UserAccessForm = () => {
             if (response) {
               setUserRoleList(response.data);
               console.log(response.data[0]._id);
+              setActiveProfile(response.data[0].id_role);
               setidrole(response.data[0]._id);
               getuserpermissionmutate({id_role:response.data[0]._id});
             }

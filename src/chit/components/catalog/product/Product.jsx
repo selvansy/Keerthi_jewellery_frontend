@@ -5,13 +5,14 @@ import { useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'react-toastify'
 import {
-  getproductTable,getallbranch, getBranchById,deleteproduct, activateproduct, puritybymetal , showtype,displayselltype, getallmetal,categorybymetalid,
-  schemepaymenttodayrate} from "../../../api/Endpoints"
+  getproductTable, getallbranch, getBranchById, deleteproduct, activateproduct, puritybymetal, showtype, displayselltype, getallmetal, categorybymetalid,
+  schemepaymenttodayrate
+} from "../../../api/Endpoints"
 
 import { setid } from "../../../../redux/clientFormSlice"
 import { eventEmitter } from '../../../../utils/EventEmitter';
 import { openModal } from '../../../../redux/modalSlice';
-import { CalendarDays, RefreshCcw} from 'lucide-react' 
+import { CalendarDays, RefreshCcw } from 'lucide-react'
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import Modal from '../../../components/common/Modal';
@@ -23,7 +24,7 @@ const Product = () => {
   let dispatch = useDispatch();
 
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
-  const roledata = useSelector((state) => state.clientForm.roledata);
+  const roledata = localStorage.getItem('decoded');
   const id_branch = roledata?.branch;
 
   const [productData, setproductData] = useState([])
@@ -33,7 +34,7 @@ const Product = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
- 
+
   const [selectedRow, setSelectedRow] = useState(null)
   const [activeDropdown, setActiveDropdown] = useState(null)
   const [metalid, setMetalid] = useState('')
@@ -49,8 +50,8 @@ const Product = () => {
 
   const [to_date, setTodate] = useState("");
   const [branchList, setBranchList] = useState([]);
-  let [branch,setbranch] = useState("")
-  
+  let [branch, setbranch] = useState("")
+
   const [filters, setFilters] = React.useState({
     from_date: null,
     to_date: null,
@@ -65,18 +66,48 @@ const Product = () => {
   });
   const [formErrors, setFormErrors] = useState({});
 
+  const handleReset = (e) => {
+    setFromdate("");
+    setTodate("");
+    setFilters(prev => ({
+      ...prev, added_by: '',
+      id_branch: id_branch,
+      id_metal: "",
+      id_category: "",
+      sell: "",
+      id_purity: "",
+      displayprice: ""
+    }));
+    toast.success("Filter is cleared");
+    const filterTosend = {
+      page: currentPage,
+      from_date: from_date,
+      to_date: to_date,
+      limit: itemsPerPage,
+      search: "",
+      id_metal: "",
+      id_category: "",
+      sell: "",
+      id_purity: "",
+      displayprice: "",
+      id_branch: id_branch
+    };
+
+    getproductData({ page: currentPage, limit: itemsPerPage, search: search,id_branch:id_branch })
+
+  }
 
   const filterInputchange = (e) => {
     const { name, value } = e.target;
 
-    if (name === "id_metal") {     
-        setMetalid(value);
-        setFilters({
-          ...filters,
-          [name]: value,
-          id_purity: ''
-        });
-    
+    if (name === "id_metal") {
+      setMetalid(value);
+      setFilters({
+        ...filters,
+        [name]: value,
+        id_purity: ''
+      });
+
       return;
     }
 
@@ -115,105 +146,105 @@ const Product = () => {
 
     };
 
-      getproductData(filterTosend);
-      setIsFilterOpen(false)
-      setFromdate("")
-      setTodate("")
-      setFilters({
-        from_date: null,
-        to_date: null,
-        limit: itemsPerPage,
-        id_branch: id_branch,
-        id_metal: "",
-        id_category: "",
-        sell: "",
-        id_purity: "",
-        displayprice: ""
-      })
-    
+    getproductData(filterTosend);
+    setIsFilterOpen(false)
+    setFromdate("")
+    setTodate("")
+    setFilters({
+      from_date: null,
+      to_date: null,
+      limit: itemsPerPage,
+      id_branch: id_branch,
+      id_metal: "",
+      id_category: "",
+      sell: "",
+      id_purity: "",
+      displayprice: ""
+    })
+
   };
 
-  
-      useEffect(() => {
-        if (id_branch === '0') {
-          getallbranchmuate()
+
+  useEffect(() => {
+    if (id_branch === '0') {
+      getallbranchmuate()
+    }
+
+    if (id_branch !== "0") {
+      setFilters({ ...filters, id_branch: id_branch })
+    }
+
+  }, [id_branch]);
+
+  useEffect(() => {
+
+    if (metalid) {
+      categoryByMetalId(metalid);
+      getallpurity(metalid)
+    }
+  }, [metalid]);
+
+
+  const { mutate: categoryByMetalId } = useMutation({
+    mutationFn: categorybymetalid,
+    onSuccess: (response) => {
+      console.log("Category", response)
+      setCategory(response.data);
+    },
+    onError: (error) => {
+      console.error("Error:", error);
+    },
+  });
+
+  const { mutate: getallbranchmuate } = useMutation({
+    mutationFn: getallbranch,
+    onSuccess: (response) => {
+      setBranchList(response.data);
+    },
+    onError: (error) => {
+      console.error("Error:", error);
+    },
+  });
+
+  const { mutate: todayrateMutate } = useMutation({
+    mutationFn: schemepaymenttodayrate,
+    onSuccess: (response) => {
+      if (response.data) {
+        console.log("metal -", parseInt(selectedmetal));
+        console.log("purity -", parseInt(selectedpurity));
+
+        let metalRate = 0;
+        if (parseInt(selectedmetal) === 1) { // Gold
+          switch (parseInt(selectedpurity)) {
+            case 1:
+              metalRate = response.data.goldrate_24ct;
+              break;
+            case 2:
+              metalRate = response.data.goldrate_22ct;
+              break;
+            case 3:
+              metalRate = response.data.goldrate_20ct;
+              break;
+            case 4:
+              metalRate = response.data.goldrate_18ct;
+              break;
+          }
+        } else if (parseInt(selectedmetal) === 2) { // Silver
+          metalRate = response.data.silverrate_1gm;
+        } else if (parseInt(selectedmetal) === 3) { // Diamond
+          metalRate = response.data.diamond_1gm;
+        } else if (parseInt(selectedmetal) === 4) { // Platinum
+          metalRate = response.data.platinum_1gm;
+        } else if (parseInt(selectedmetal) === 5) { // Coin
+          metalRate = response.data.goldcoin_1gm;
         }
-  
-        if(id_branch !== 0){
-          setFilters({ ...filters, id_branch: id_branch })
-        }
-        
-      }, [id_branch]);
 
-   useEffect(() => {
-    
-        if (metalid) {
-          categoryByMetalId(metalid);
-          getallpurity(metalid)
-        }
-      }, [metalid]);
+        setFilters(prev => ({ ...prev, current_rate: metalRate }));
 
-      
-        const { mutate: categoryByMetalId } = useMutation({
-          mutationFn: categorybymetalid,
-          onSuccess: (response) => {
-            console.log("Category",response)
-            setCategory(response.data);
-          },
-          onError: (error) => {
-            console.error("Error:", error);
-          },
-        });
+      }
+    },
+  });
 
-        const { mutate: getallbranchmuate } = useMutation({
-          mutationFn: getallbranch,
-          onSuccess: (response) => {
-            setBranchList(response.data);
-          },
-          onError: (error) => {
-            console.error("Error:", error);
-          },
-        });
-
-        const { mutate: todayrateMutate } = useMutation({
-            mutationFn: schemepaymenttodayrate,
-            onSuccess: (response) => {
-              if (response.data) {
-                console.log("metal -", parseInt(selectedmetal));
-                console.log("purity -", parseInt(selectedpurity));
-        
-                let metalRate = 0;
-                if (parseInt(selectedmetal) === 1) { // Gold
-                  switch (parseInt(selectedpurity)) {
-                    case 1:
-                      metalRate = response.data.goldrate_24ct;
-                      break;
-                    case 2:
-                      metalRate = response.data.goldrate_22ct;
-                      break;
-                    case 3:
-                      metalRate = response.data.goldrate_20ct;
-                      break;
-                    case 4:
-                      metalRate = response.data.goldrate_18ct;
-                      break;
-                  }
-                } else if (parseInt(selectedmetal) === 2) { // Silver
-                  metalRate = response.data.silverrate_1gm;
-                } else if (parseInt(selectedmetal) === 3) { // Diamond
-                  metalRate = response.data.diamond_1gm;
-                } else if (parseInt(selectedmetal) === 4) { // Platinum
-                  metalRate = response.data.platinum_1gm;
-                } else if (parseInt(selectedmetal) === 5) { // Coin
-                  metalRate = response.data.goldcoin_1gm;
-                }
-       
-                setFilters(prev => ({ ...prev, current_rate: metalRate }));
-        
-              }
-            },
-          });
-        
 
   //mutation to get sell type
   const { mutate: getdisplayselltype } = useMutation({
@@ -226,15 +257,15 @@ const Product = () => {
     },
   });
 
-    const { mutate: getallpurity } = useMutation({
-      mutationFn: puritybymetal,
-      onSuccess: (response) => {
-        setPuritytype(response.data);
-      },
-      onError: (error) => {
-        console.error("Error:", error);
-      },
-    });
+  const { mutate: getallpurity } = useMutation({
+    mutationFn: puritybymetal,
+    onSuccess: (response) => {
+      setPuritytype(response.data);
+    },
+    onError: (error) => {
+      console.error("Error:", error);
+    },
+  });
 
   //mutation to get purity type
   const { mutate: getMetalData } = useMutation({
@@ -247,7 +278,7 @@ const Product = () => {
     },
   });
 
- 
+
 
   const { mutate: getallshowtype } = useMutation({
     mutationFn: showtype,
@@ -269,19 +300,13 @@ const Product = () => {
     }
 
     if (metalid) {
-      console.log("MetalId",metalid)
+      console.log("MetalId", metalid)
       categoryByMetalId(metalid);
       getallpurity(metalid)
     }
 
   }, [isFilterOpen])
 
-  
-  const handleReset = (e) => {
-    e.preventDefault();
-    setIsFilterOpen(true);
-    navigate('/catalog/product');
-  }
 
   //mutation to get scheme type
   const { mutate: getproductData } = useMutation({
@@ -296,7 +321,7 @@ const Product = () => {
   });
 
   useEffect(() => {
-    getproductData({ page: currentPage, limit: itemsPerPage, search: search })
+    getproductData({ page: currentPage, limit: itemsPerPage, search: search,id_branch:id_branch })
   }, [currentPage, itemsPerPage, search])
 
   const handleSearch = (e) => {
@@ -312,52 +337,52 @@ const Product = () => {
     let response = await activateproduct(id);
     if (response) {
       toast.success(response.message);
-      getproductData({ page: currentPage, limit: itemsPerPage, search: search })
+      getproductData({ page: currentPage, limit: itemsPerPage, search: search,id_branch:id_branch })
     }
   };
 
   const handleDelete = (id) => {
-      setActiveDropdown(null);
-        dispatch(openModal({
-          modalType: 'CONFIRMATION',
-          header: 'Delete Scheme',
-          filters: {
-            message: 'Are you sure you want to delete?',
-            productId: id
-          },
-          buttons: {
-            cancel: {
-              text: 'Cancel'
-            },
-            submit: {
-              text: 'Delete'
-            }
-          }
-        }));
-    
-      
-      };
-  
-       useEffect(() => {
-        eventEmitter.on('CONFIRMATION_SUBMIT', async (data) => {
-          try {
-          
-            let response = await deleteproduct(data.productId);
-            toast.success(response.message);
-            await  getproductData({ page: currentPage, limit: itemsPerPage, search: search })
-          } catch (error) {
-            console.error('Error:', error);
-          }
-        });
-          return () => {
-            eventEmitter.off('CONFIRMATION_SUBMIT');
-          };
-        }, [eventEmitter,productData]);
+    setActiveDropdown(null);
+    dispatch(openModal({
+      modalType: 'CONFIRMATION',
+      header: 'Delete Scheme',
+      filters: {
+        message: 'Are you sure you want to delete?',
+        productId: id
+      },
+      buttons: {
+        cancel: {
+          text: 'Cancel'
+        },
+        submit: {
+          text: 'Delete'
+        }
+      }
+    }));
+
+
+  };
+
+  useEffect(() => {
+    eventEmitter.on('CONFIRMATION_SUBMIT', async (data) => {
+      try {
+
+        let response = await deleteproduct(data.productId);
+        toast.success(response.message);
+        await getproductData({ page: currentPage, limit: itemsPerPage, search: search,id_branch:id_branch })
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    });
+    return () => {
+      eventEmitter.off('CONFIRMATION_SUBMIT');
+    };
+  }, [eventEmitter, productData]);
 
   const handleEdit = (id) => {
-      dispatch(setid(id))
-      navigate(`/catalog/addproduct`);
-    };
+    dispatch(setid(id))
+    navigate(`/catalog/addproduct`);
+  };
 
   const columns = [
     {
@@ -376,21 +401,21 @@ const Product = () => {
       header: 'Metal Name',
       cell: (row) => {
         return row?.id_metal === 1 ? 'Gold' :
-               row?.id_metal === 2 ? 'Silver' :
-               row?.id_metal === 3 ? 'Diamond' :
-               row?.id_metal === 4 ? 'Platinum' : 'Gold Coins';
+          row?.id_metal === 2 ? 'Silver' :
+            row?.id_metal === 3 ? 'Diamond' :
+              row?.id_metal === 4 ? 'Platinum' : 'Gold Coins';
       }
     },
     {
       header: 'Purity Name',
       cell: (row) => {
         return row?.id_purity === 1 ? '24CT' :
-               row?.id_purity === 2 ? '22CT' :
-               row?.id_purity === 3 ? '20CT' :
-               row?.id_purity === 4 ? '18CT':
-               row?.id_purity === 5 ? 'Gold coin':
-               row?.id_purity === 6 ? 'Platinum':
-               row?.id_purity === 7 ? 'Diamond': 'Silver'
+          row?.id_purity === 2 ? '22CT' :
+            row?.id_purity === 3 ? '20CT' :
+              row?.id_purity === 4 ? '18CT' :
+                row?.id_purity === 5 ? 'Gold coin' :
+                  row?.id_purity === 6 ? 'Platinum' :
+                    row?.id_purity === 7 ? 'Diamond' : 'Silver'
       }
     },
     {
@@ -441,8 +466,8 @@ const Product = () => {
           />
           <div
             className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-black p-[2px] after:duration-300 after:bg-black ${row?.active === true
-                ? 'peer-checked:bg-[#61A375] peer-checked:ring-[#61A375]'
-                : 'peer-checked:bg-gray-400 peer-checked:ring-gray-400'
+              ? 'peer-checked:bg-[#61A375] peer-checked:ring-[#61A375]'
+              : 'peer-checked:bg-gray-400 peer-checked:ring-gray-400'
               } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-white peer-hover:after:scale-95`}
           ></div>
         </label>
@@ -568,7 +593,7 @@ const Product = () => {
             style={{ backgroundColor: layout_color }} >
             + Create product
           </button>
-      <button
+          <button
             id="filter"
             className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
             onClick={() => handleReset()}
@@ -648,50 +673,50 @@ const Product = () => {
               </div>
 
               <div className="space-y-2">
-              {
-                id_branch !== 0 && (
-                      <div className="flex flex-col lg:mt-2">
-                <label className="text-black mb-1 font-medium">
-                  Branch<span className="text-red-400">*</span>
-                </label>
-                <div className="relative">
-                  <select
-                    name="id_branch"
-                    className={`appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 ${!id_branch !== 0 ? "cursor-not-allowed bg-gray-100" : ""
-                    }`}
-                    disabled={id_branch !== 0}
-                    value={filters.id_branch || id_branch}
-                  >
-                    <option value="" disabled className="text-gray-700">
-                      --Select--
-                    </option>
-                    
-                      <option
-                        className="text-gray-700"
-                        value={branch._id}
-                      >
-                        {branch.branch_name}
-                      </option>
-                   
-                  </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                    <svg
-                      className="h-4 w-4 text-gray-400"
-                      fill="none"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="3"
-                      viewBox="0 0 24 24"
-                      stroke="black"
-                    >
-                      <path d="M19 9l-7 7-7-7"></path>
-                    </svg>
-                  </div>
-                </div>
-               
-              </div>
-             
-               )}
+                {
+                  id_branch !== "0" && (
+                    <div className="flex flex-col lg:mt-2">
+                      <label className="text-black mb-1 font-medium">
+                        Branch<span className="text-red-400">*</span>
+                      </label>
+                      <div className="relative">
+                        <select
+                          name="id_branch"
+                          className={`appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 ${!id_branch !== "0" ? "cursor-not-allowed bg-gray-100" : ""
+                            }`}
+                          disabled={id_branch !== "0"}
+                          value={filters.id_branch || id_branch}
+                        >
+                          <option value="" disabled className="text-gray-700">
+                            --Select--
+                          </option>
+
+                          <option
+                            className="text-gray-700"
+                            value={branch._id}
+                          >
+                            {branch.branch_name}
+                          </option>
+
+                        </select>
+                        <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                          <svg
+                            className="h-4 w-4 text-gray-400"
+                            fill="none"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="3"
+                            viewBox="0 0 24 24"
+                            stroke="black"
+                          >
+                            <path d="M19 9l-7 7-7-7"></path>
+                          </svg>
+                        </div>
+                      </div>
+
+                    </div>
+
+                  )}
               </div>
 
               <div className="space-y-2">
@@ -740,94 +765,94 @@ const Product = () => {
               </div>
 
               <div className="space-y-2">
-              <div className="flex flex-col">
-              <label className="text-gray-700 mb-2 mt-2 font-medium">
-                Category<span className="text-red-400">*</span>
-              </label>
-              <div className="relative">
-                <select
-                  name="id_category"
-                  value={filters.id_category}
-                  onChange={filterInputchange}
-                  disabled={filtercategory.length === 0}
-                  className={`appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 ${filtercategory.length === 0 ? "cursor-not-allowed bg-gray-100" : ""
-                  }`}
-
-                >
-                  <option value="">--Select---</option>
-                  {filtercategory?.map((category) => (
-                    <option
+                <div className="flex flex-col">
+                  <label className="text-gray-700 mb-2 mt-2 font-medium">
+                    Category<span className="text-red-400">*</span>
+                  </label>
+                  <div className="relative">
+                    <select
                       name="id_category"
-                      className="text-gray-700"
-                      key={category._id}
-                      value={category._id}
+                      value={filters.id_category}
+                      onChange={filterInputchange}
+                      disabled={filtercategory.length === 0}
+                      className={`appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 ${filtercategory.length === 0 ? "cursor-not-allowed bg-gray-100" : ""
+                        }`}
+
                     >
-                      {category.category_name}
-                    </option>
-                  ))}
-                </select>
-                <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                  <svg
-                    className="h-4 w-4 text-gray-400"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="3"
-                    viewBox="0 0 24 24"
-                    stroke="black"
-                  >
-                    <path d="M19 9l-7 7-7-7"></path>
-                  </svg>
+                      <option value="">--Select---</option>
+                      {filtercategory?.map((category) => (
+                        <option
+                          name="id_category"
+                          className="text-gray-700"
+                          key={category._id}
+                          value={category._id}
+                        >
+                          {category.category_name}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                      <svg
+                        className="h-4 w-4 text-gray-400"
+                        fill="none"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="3"
+                        viewBox="0 0 24 24"
+                        stroke="black"
+                      >
+                        <path d="M19 9l-7 7-7-7"></path>
+                      </svg>
+                    </div>
+                  </div>
+                  {formErrors.id_category && (
+                    <span className="text-red-500 text-sm mt-1">
+                      {formErrors.id_category}
+                    </span>
+                  )}
                 </div>
-              </div>
-              {formErrors.id_category && (
-                <span className="text-red-500 text-sm mt-1">
-                  {formErrors.id_category}
-                </span>
-              )}
-            </div>
               </div>
 
               <div className="space-y-2">
-              <div className="flex flex-col">
-              <label className="text-gray-700 mb-2 mt-2 font-medium">
-                Purity<span className="text-red-400">*</span>
-              </label>
-              <div className="relative">
-                <select
-                  name="id_purity"
-                  value={filters.id_purity}
-                  defaultValue=""
-                  disabled={filterpurity.length === 0}
-                  onChange={filterInputchange}
-                  className={`appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 ${filterpurity.length === 0 ? "cursor-not-allowed bg-gray-100" : ""
-                  }`}
+                <div className="flex flex-col">
+                  <label className="text-gray-700 mb-2 mt-2 font-medium">
+                    Purity<span className="text-red-400">*</span>
+                  </label>
+                  <div className="relative">
+                    <select
+                      name="id_purity"
+                      value={filters.id_purity}
+                      defaultValue=""
+                      disabled={filterpurity.length === 0}
+                      onChange={filterInputchange}
+                      className={`appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 ${filterpurity.length === 0 ? "cursor-not-allowed bg-gray-100" : ""
+                        }`}
 
-                >
-                 <option value="" disabled className="text-gray-700">
-                    --Select--
-                  </option>
-                  {filterpurity?.map((purity) => (
-                    <option key={purity._id} value={purity.id_purity}>
-                      {purity.purity_name}
-                    </option>
-                  ))}
-                </select>
-                <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                  <svg
-                    className="h-4 w-4 text-gray-400"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="3"
-                    viewBox="0 0 24 24"
-                    stroke="black"
-                  >
-                    <path d="M19 9l-7 7-7-7"></path>
-                  </svg>
+                    >
+                      <option value="" disabled className="text-gray-700">
+                        --Select--
+                      </option>
+                      {filterpurity?.map((purity) => (
+                        <option key={purity._id} value={purity.id_purity}>
+                          {purity.purity_name}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                      <svg
+                        className="h-4 w-4 text-gray-400"
+                        fill="none"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="3"
+                        viewBox="0 0 24 24"
+                        stroke="black"
+                      >
+                        <path d="M19 9l-7 7-7-7"></path>
+                      </svg>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
 
               </div>
 
@@ -982,22 +1007,22 @@ const Product = () => {
               onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
               className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
             >
-            <option value={10}>10</option>
-                  <option value={25}>25</option>
-                  <option value={50}>50</option>
-                  <option value={100}>100</option>
-                  <option value={250}>250</option>
-                  <option value={500}>500</option>
-                  <option value={1000}>1000</option>
+              <option value={10}>10</option>
+              <option value={25}>25</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+              <option value={250}>250</option>
+              <option value={500}>500</option>
+              <option value={1000}>1000</option>
             </select>
             <span className="text-gray-500">entries</span>
           </div>
         </div>
       )}
 
-     <Modal/>
+      <Modal />
     </div>
   )
 }
 
-export default Product
+export default Product;

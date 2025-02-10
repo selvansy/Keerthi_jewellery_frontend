@@ -13,7 +13,7 @@ import {
 import { setid } from "../../../../redux/clientFormSlice"
 import { eventEmitter } from '../../../../utils/EventEmitter';
 import { openModal } from '../../../../redux/modalSlice';
-import { CalendarDays } from 'lucide-react' 
+import { CalendarDays, RefreshCcw } from 'lucide-react'
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker"; 
 import Imagedetails from "./Imagedetails"
@@ -28,7 +28,7 @@ const ProductWhatsapp = () => {
 
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   
-  const roledata = useSelector((state) => state.clientForm.roledata);
+  const roledata = localStorage.getItem('decoded');
   const id_branch = roledata?.branch;
  
   const [productData, setproductData] = useState([])
@@ -37,7 +37,7 @@ const ProductWhatsapp = () => {
   const [filtercategory, setCategory] = useState([]);
   const [search, setSearch] = useState('')
     const [isviewOpen, setIsviewOpen] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
+   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
     const [popuptitle, setPopuptitle] = useState(0);
@@ -73,7 +73,18 @@ const ProductWhatsapp = () => {
     displayprice: ""
 
   });
+ const handleReset = (e) => {
+    setFromdate("");
+    setTodate("");
+    setFilters(prev => ({
+      ...prev, 
+      id_branch: id_branch,
+      type: 3
+    }));
+    toast.success("Filter is cleared");
 
+    getnewarrivalsData({ from_date: '', to_date: '', page: currentPage, limit: itemsPerPage, id_branch: id_branch, type: 3 });
+  }
 
   function closeIncommingModal() {
     setIsviewOpen(false);
@@ -580,7 +591,13 @@ const handleSend = (id,id_branch) => {
           />
         </div>
         <div className="flex flex-row items-center justify-end gap-2">
-       
+        <button
+            id="filter"
+            className="text-white bg-[#023453] w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
+            onClick={() => handleReset()}
+          >
+            <RefreshCcw size={20} />
+          </button>
 
           <button
             id="filter"

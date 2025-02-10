@@ -22,12 +22,12 @@ const GiftIssued = () => {
   const navigate = useNavigate()
   
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
-  const roledata = useSelector((state) => state.clientForm.roledata);
+  const roledata = localStorage.getItem('decoded');
   const branch = roledata?.branch;
 
   const [search, setSearch] = useState('')
   const [giftissues, setGiftissues] = useState([])
-  const [currentPage, setCurrentPage] = useState(1);
+   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedRow, setSelectedRow] = useState(null)
@@ -48,6 +48,33 @@ const GiftIssued = () => {
     gift_vendorid: '',
     id_gift: ''
   });
+
+  
+  
+    const handleReset = (e) => {
+      setFromdate("");
+      setTodate("");
+      setFilters(prev => ({
+        ...prev, 
+        id_branch: branch,
+        gift_vendorid:"",
+        id_gift:""
+      }));
+      toast.success("Filter is cleared");
+      const filterTosend = {
+        page:currentPage,
+        from_date:from_date,
+        to_date:to_date,
+        limit: itemsPerPage,
+        search: search,
+        id_branch:filters.id_branch,
+        gift_vendorid:"",
+        id_gift:""
+      };
+      giftaccountcountMutate(filterTosend);
+      giftissuesMutate(filterTosend)
+    }
+  
 
   const filterInputchange = (e) => {
     const { name, value } = e.target;
@@ -322,7 +349,7 @@ const GiftIssued = () => {
           <div className='flex flex-row items-center justify-between bg-white rounded-lg p-3 h-20 shadow-md'>
             <div className='flex flex-col justify-center'>
               <h5 className="text-[#67748E]">Total Gift</h5>
-              <h5 className="text-xl font-semibold">{giftcount?.total_gift}</h5>
+              <h5 className="text-xl font-semibold">{giftcount?.total_gift || 0}</h5>
             </div>
             <div className='flex items-center justify-center'>
               <div className='flex rounded-md p-3 items-center justify-center'
@@ -334,7 +361,7 @@ const GiftIssued = () => {
           <div className='flex flex-row items-center justify-between bg-white rounded-lg p-3 h-20 shadow-md'>
             <div className='flex flex-col justify-center'>
               <h5 className="text-[#67748E]">Chit Received Gift</h5>
-              <h5 className="text-xl font-semibold">{giftcount?.chit_gift}</h5>
+              <h5 className="text-xl font-semibold">{giftcount?.chit_gift || 0}</h5>
             </div>
             <div className='flex items-center justify-center'>
               <div className='flex rounded-md p-3 items-center justify-center'
@@ -346,7 +373,7 @@ const GiftIssued = () => {
           <div className='flex flex-row items-center justify-between bg-white rounded-lg p-3 h-20 shadow-md'>
             <div className='flex flex-col justify-center'>
               <h5 className="text-[#67748E]">Non-Chit Received Gift</h5>
-              <h5 className="text-xl font-semibold">{giftcount?.nonchit_gift}</h5>
+              <h5 className="text-xl font-semibold">{giftcount?.nonchit_gift || 0}</h5>
             </div>
             <div className='flex items-center justify-center'>
               <div className='flex rounded-md p-3 items-center justify-center'
@@ -358,7 +385,7 @@ const GiftIssued = () => {
           <div className='flex flex-row items-center justify-between bg-white rounded-lg p-3 h-20 shadow-md'>
             <div className='flex flex-col justify-center'>
               <h5 className="text-[#67748E]">Balance Gift</h5>
-              <h5 className="text-xl font-semibold">{giftcount?.balance_gift}</h5>
+              <h5 className="text-xl font-semibold">{giftcount?.balance_gift || 0}</h5>
             </div>
             <div className='flex items-center justify-center'>
               <div className='flex rounded-md p-3 items-center justify-center'

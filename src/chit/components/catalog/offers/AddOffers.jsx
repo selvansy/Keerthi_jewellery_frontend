@@ -10,7 +10,7 @@ import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 
 const AddOffers = () => {
-  const roledata = useSelector((state) => state.clientForm.roledata);
+  const roledata = localStorage.getItem('decoded');
   let id_client = roledata?.id_client;
 
   const id_branch = roledata?.branch;
@@ -56,7 +56,7 @@ const AddOffers = () => {
       branchbyId(id_branch)
     }
 
-    if (id_branch !== 0) {
+    if (id_branch !== "0") {
       setFormData({ ...formData, id_branch: id_branch })
     }
 
@@ -306,7 +306,7 @@ const AddOffers = () => {
           <div className="grid grid-rows-2 md:grid-cols-2 gap-5 border-gray-300 mb-10">
             <div className="flex flex-col">
               {
-                id_branch !== 0 && (
+                id_branch !== "0" && (
                     <div className="flex flex-col lg:mt-2">
                       <label className="text-black mb-1 font-medium">
                         Branch<span className="text-red-400">*</span>
@@ -314,7 +314,7 @@ const AddOffers = () => {
                       <div className="relative">
                         <select
                           name="id_branch"
-                          className={`appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 ${!id_branch !== 0 ? "cursor-not-allowed bg-gray-100" : ""
+                          className={`appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 ${!id_branch !== "0" ? "cursor-not-allowed bg-gray-100" : ""
                             }`}
                       
                           value={formData.id_branch || id_branch}

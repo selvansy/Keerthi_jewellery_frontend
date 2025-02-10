@@ -36,8 +36,8 @@ export default function OutStandingReport() {
    
     const [search, setSearch] = useState('')
     const [accExp, setaccExp] = useState([]);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage, setItemsPerPage] = useState(5);
+     const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(10);
      const [totalPages, setTotalPages] = useState(0);
 
 
@@ -290,7 +290,7 @@ export const OutStandingFilter = ({  search, itemsPerPage, currentPage}) => {
 
 
 
-    const roledata = useSelector((state) => state.clientForm.roledata);
+    const roledata = localStorage.getItem('decoded');
     const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
     const id_role = roledata?.id_role?.id_role;

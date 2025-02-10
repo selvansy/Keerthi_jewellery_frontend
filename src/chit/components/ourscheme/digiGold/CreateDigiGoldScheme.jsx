@@ -17,7 +17,7 @@ const CreateDigiGoldScheme = () => {
 
   let navigate = useNavigate();
   const id = useSelector((state) => state.clientForm.id);
-  const roledata = useSelector((state) => state.clientForm.roledata);
+  const roledata = localStorage.getItem('decoded');
 
   const id_role = roledata?.id_role;
   const id_client = roledata?.id_client;
@@ -49,7 +49,7 @@ const CreateDigiGoldScheme = () => {
       if (id_branch === '0') {
         getallbranchmuate()
       }
-      if(id_branch !== 0){
+      if(id_branch !== "0"){
         setFormData({ ...formData, id_branch: id_branch })
       }
       

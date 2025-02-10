@@ -17,7 +17,7 @@ const Giftinwards = () => {
   const navigate = useNavigate()
   const [search, setSearch] = useState('')
   const [giftinward, setGiftinward] = useState([])
-  const [currentPage, setCurrentPage] = useState(1);
+   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedRow, setSelectedRow] = useState(null)
@@ -30,7 +30,7 @@ const Giftinwards = () => {
   // const [id_branch, setIdrancbh] = useState('676e4a9dd3e747cfc70968a2');
   const [giftitemfilter, setGiftitem] = useState([]);
 
-  const roledata = useSelector((state) => state.clientForm.roledata);
+  const roledata = localStorage.getItem('decoded');
   const id_role = roledata?.id_role?.id_role;
   const id_client = roledata?.id_client;
   const id_branch = roledata?.branch;
@@ -38,7 +38,7 @@ const Giftinwards = () => {
   const [filters, setFilters] = React.useState({
     from_date:from_date,
     to_date:to_date,
-    id_branch: id_branch ===0 && '',
+    id_branch: id_branch,
     gift_vendorid:'',
     id_gift:''
   });
@@ -49,6 +49,31 @@ const Giftinwards = () => {
   };
 
   
+
+  const handleReset = (e) => {
+    setFromdate("");
+    setTodate("");
+    setFilters(prev => ({
+      ...prev, 
+      id_branch: id_branch,
+      gift_vendorid:"",
+      id_gift:""
+    }));
+    toast.success("Filter is cleared");
+    const filterTosend = {
+      page:currentPage,
+      from_date:from_date,
+      to_date:to_date,
+      limit: itemsPerPage,
+      search: search,
+      id_branch:filters.id_branch,
+      gift_vendorid:filters.gift_vendorid,
+      id_gift:filters.id_gift
+    };
+    getgiftinwardMutate(filterTosend);
+  }
+
+
   const applyfilterdatatable = (e) =>{
       const filterTosend = {
         page:currentPage,
@@ -61,10 +86,9 @@ const Giftinwards = () => {
         id_gift:filters.id_gift
       };
       
-      if(from_date!=="" && to_date!=="" && id_branch!=="" && gift_vendorid!=="" && id_gift!==""){
         setIsFilterOpen(false)
         getgiftinwardMutate(filterTosend);
-      }
+      
     };
 
    useEffect(() => {

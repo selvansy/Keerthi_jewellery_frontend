@@ -29,7 +29,7 @@ const AupayConfigure = () => {
     const [activeDropdown, setActiveDropdown] = useState(null);
     const [aupayData, setAupayData] = useState([]);
     const [project_type, setProjectType] = useState(1);
-    const [currentPage, setCurrentPage] = useState(1);
+     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
     const [itemsPerPage, setItemsPerPage] = useState(10);
     const [searchInput,setSearchInput]=useState('')

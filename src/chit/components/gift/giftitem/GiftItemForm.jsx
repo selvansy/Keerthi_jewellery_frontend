@@ -9,7 +9,7 @@ function GiftItemForm({ setIsOpen }) {
 
     
     const layout_color = useSelector((state) => state.clientForm.layoutColor);
-    const roledata = useSelector((state) => state.clientForm.roledata);
+    const roledata = localStorage.getItem('decoded');
     const [branch, setBranch] = useState([]);
     const [vendorfilter, setVendor] = useState([]);
     const [gift_image, setGiftImage] = useState(null);

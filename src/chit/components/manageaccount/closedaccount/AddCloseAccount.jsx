@@ -14,7 +14,7 @@ const AddCloseAccount = () => {
 
   let dispatch = useDispatch();
 
-  const roledata = useSelector((state) => state.clientForm.roledata);
+  const roledata = localStorage.getItem('decoded');
   const id_branch = useSelector((state) => state.clientForm.id_branch);
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
 

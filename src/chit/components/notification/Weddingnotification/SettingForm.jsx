@@ -8,6 +8,10 @@ import { toast } from 'react-toastify';
 
 
 function SettingNotification({ setIsSettingOpen}) {
+  
+    const roledata = localStorage.getItem('decoded');
+    const id_branch = roledata?.branch;
+  
   const [formErrors, setFormErrors] = useState({});
   const [image, setImage] = useState([]);
   const [filtertype, settype] = useState([]);

@@ -18,7 +18,7 @@ const ProjectMaster = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
-  const [currentPage, setCurrentPage] = useState(1);
+   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [projectData, setProjectData] = useState([]);

@@ -21,7 +21,7 @@ const Birthdaynotification = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch();
 
-  const roledata = useSelector((state) => state.clientForm.roledata);
+  const roledata = localStorage.getItem('decoded');
   const id_branch = roledata?.branch;
 
   const [notifyData, setnotifyData] = useState([])
@@ -30,7 +30,7 @@ const Birthdaynotification = () => {
 
   const [search, setSearch] = useState('')
 
-  const [currentPage, setCurrentPage] = useState(1);
+   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedRow, setSelectedRow] = useState(null)
@@ -58,6 +58,18 @@ const Birthdaynotification = () => {
 
     setFilters(prev => ({ ...prev, [name]: value }));
   };
+ const handleReset = (e) => {
+    setFromdate("");
+    setTodate("");
+    setFilters(prev => ({
+      ...prev, 
+      id_branch: id_branch,
+      senttype: 5
+    }));
+    toast.success("Filter is cleared");
+
+    getnotificationData({ from_date: '', to_date: '', page: currentPage, limit: itemsPerPage, id_branch: id_branch, senttype: 5 });
+  }
 
   const applyfilterdatatable = (e) => {
 
@@ -99,7 +111,7 @@ const Birthdaynotification = () => {
       getBranches()
     }
 
-    if (id_branch !== 0) {
+    if (id_branch !== "0") {
       setFilters({ ...filters, id_branch: id_branch })
     }
 
@@ -149,12 +161,6 @@ const Birthdaynotification = () => {
   const handleSearch = (e) => {
     setSearch(e.target.value)
   }
-  const handleReset = (e) => {
-
-    getnotificationData({ from_date: '', to_date: '', page: currentPage, limit: itemsPerPage, id_branch: id_branch, senttype: "5" });
-  }
-
-
 
 
   const handleDelete = (id) => {
@@ -446,7 +452,7 @@ const Birthdaynotification = () => {
                         <div className="relative">
                           <select
                             name="id_branch"
-                            className={`appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 ${!id_branch !== 0 ? "cursor-not-allowed bg-gray-100" : ""
+                            className={`appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 ${!id_branch !== "0" ? "cursor-not-allowed bg-gray-100" : ""
                               }`}
                             defaultValue=""
                             onChange={filterInputchange}

@@ -19,7 +19,7 @@ const Scheme = () => {
   let dispatch = useDispatch();
   const navigate = useNavigate()
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
- const roledata = useSelector((state) => state.clientForm.roledata);
+ const roledata = localStorage.getItem('decoded');
   let id_client = roledata?.id_client;
   const id_branch = roledata?.branch;
   const [classificationData, setClassification] = useState([])
@@ -34,7 +34,7 @@ const Scheme = () => {
 
   let [schemeData, setSchemeData] = useState([]);
   const [search, setSearch] = useState('')
-  const [currentPage, setCurrentPage] = useState(1);
+   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
@@ -55,7 +55,7 @@ const Scheme = () => {
     page: currentPage,
     limit: itemsPerPage,
     id_classification: "",
-    id_metal: metalid,
+    id_metal: "",
     id_branch:id_branch,
     id_purity: "",
     weekmonth: "",
@@ -63,7 +63,33 @@ const Scheme = () => {
     buytgsttype: ""
 
   });
+  const handleReset = (e) => {
 
+    setFromdate("");
+    setTodate("");
+    setFilters(prev=>({...prev, id_classification: "",
+      id_metal: "",
+      id_branch:id_branch,
+      id_purity: "",
+      weekmonth: "",
+      scheme_type: "",
+      buytgsttype: ""})); 
+ toast.success("Filter is cleared");
+    getSchemeTable({
+      from_date: "",
+      to_date: "",
+      page: currentPage,
+      limit: itemsPerPage,
+      id_classification: "",
+      id_metal: "",
+      id_branch:id_branch,
+      id_purity: "",
+      weekmonth: "",
+      scheme_type: "",
+      buytgsttype: ""  
+    })
+  }
+ 
     const handleallbranch = async (e) => {  
   
       const response = await getallbranch();
@@ -193,7 +219,6 @@ const Scheme = () => {
 
   };
 
- 
   const applyfilterdatatable = (e) => {
     e.preventDefault();
     const filterTosend = {
@@ -213,7 +238,7 @@ const Scheme = () => {
 
     };
 
-      getSchemeTable(filterTosend)
+      
   };
 
 
@@ -223,19 +248,19 @@ const Scheme = () => {
 
   useEffect(() => {
     getSchemeDataTable({
-      from_date: from_date,
-      to_date: to_date,
+      from_date: "",
+      to_date: "",
       search:search,
       page: currentPage,
       limit: itemsPerPage,
       id_branch:filters.id_branch,
-      id_classification: filters.id_classification,
-      metalid: filters.metalid,
-      id_purity: filters.id_purity,
-      weekmonth: filters.weekmonth,
-      wastagebenefit:filters.wastagebenefit,
-      scheme_type: filters.scheme_type,
-      buytgsttype: filters.buytgsttype
+      id_classification: "",
+      metalid: "",
+      id_purity: "",
+      weekmonth: "",
+      wastagebenefit:"",
+      scheme_type: "",
+      buytgsttype: ""
 
     })
   }, [currentPage, itemsPerPage,search])
@@ -243,25 +268,10 @@ const Scheme = () => {
   const { mutate: getSchemeDataTable } = useMutation({
     mutationFn: getSchemeTable,
     onSuccess: (response) => {
+    
+      if(response){
       setSchemeData(response.data);
-      if(isFilterOpen === true){
-        setIsFilterOpen(false)
-        setFromdate("")
-        setTodate("")
-        setFilters({
-          from_date: null,
-          to_date: null,
-          page: currentPage,
-          limit: itemsPerPage,
-          id_classification: "",
-          metalid: "",
-          wastagebenefit:"",
-          id_purity: "",
-          weekmonth: "",
-          scheme_type: "",
-          buytgsttype: "",
-          saving_type:""
-        })
+      
       }
     },
     onError: (error) => {
@@ -496,6 +506,7 @@ const Scheme = () => {
     }
   ];
 
+ 
   const handleClickfilter = (e) => {
 
     handleallbranch();
@@ -528,20 +539,14 @@ const Scheme = () => {
             style={{ backgroundColor: layout_color }}>
             + Create Scheme
           </button>
+           
             <button
-                  id="filter"
-                  className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
-                  onClick={() => handleReset()}
-                  style={{ backgroundColor: layout_color }}>
-                  <RefreshCcw size={20} />
-                </button>
-            <button
-                        id="filter"
-                        className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
-                        onClick={() => handleReset()}
-                        style={{ backgroundColor: layout_color }}>
-                        <RefreshCcw size={20} />
-                    </button>
+                id="filter"
+                className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
+                onClick={() => handleReset()}
+                style={{ backgroundColor: layout_color }}>
+                <RefreshCcw size={20} />
+            </button>
           <button
             id="filter"
             className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
