@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Table from '../../common/Table'
-import { useNavigate,useParams } from 'react-router-dom'
+import { useNavigate} from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import { SlidersHorizontal, Search, X } from 'lucide-react'
 import { addedtype,allschemestatus,getschemeaccountbyid,getallschemetypes,getallbranchscheme,getallbranchclassification,getemployeebybranch,getallbranch,schemeaccounttable, changeschemeaccountStatus, deleteschemeaccount } from '../../../api/Endpoints'

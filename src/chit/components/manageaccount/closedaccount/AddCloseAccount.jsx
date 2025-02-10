@@ -164,6 +164,7 @@ const AddCloseAccount = () => {
   const { mutate: handlesearchschemeaccount } = useMutation({
     mutationFn: searchmobileschemeaccount,
     onSuccess: (response) => {
+      console.log("res",response)
       if (response) {
         setSchemeData(response.data);
         toast.success(response.message)
@@ -172,15 +173,15 @@ const AddCloseAccount = () => {
     },
   });
 
-  // getallpaymentmodes 
+  const scheData = schemestatus.filter((account) => account.id_status !== 2 && account.id_status !== 0)
+
+
 
   const { mutate: handlePaymentmodes } = useMutation({
     mutationFn: getallpaymentmodes,
     onSuccess: (response) => {
       if (response) {
-
         setPaymentMode(response.data);
-
       }
 
     },
@@ -230,8 +231,9 @@ const AddCloseAccount = () => {
       setMobile(value);
     }
     else if (name === "status") {
-      setStatusId(value);
-      if (value === "4") {
+      const numericValue = Number(value);
+      setStatusId(numericValue);
+      if (numericValue === 4) {
         setRefundType(true);
       } else {
         setRefundType(false);
@@ -369,7 +371,7 @@ const AddCloseAccount = () => {
   });
 
 
-  const scheData = schemestatus.filter((account) => account.id_status !== 2 && account.id_status !== 0)
+  
 
 
   return (
