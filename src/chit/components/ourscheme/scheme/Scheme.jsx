@@ -238,7 +238,7 @@ const Scheme = () => {
 
     };
 
-      
+    getSchemeDataTable(filterTosend)
   };
 
 
