@@ -24,7 +24,7 @@ const Giftitem = () => {
   const dispatch = useDispatch();
 
   const [isviewOpen, setIsviewOpen] = useState(false);
-  const [isLoading, setisLoading] = useState(false)
+  const [isLoading, setisLoading] = useState(true)
 
 
   const [giftitemData, setgiftitemData] = useState([]);
@@ -43,10 +43,7 @@ const Giftitem = () => {
   }
 
   const { mutate: getallgiftitemtableMutate } = useMutation({
-    mutationFn: ()=>{
-      setisLoading(true)
-    getallgiftitemtable
-    },
+    mutationFn: (payload)=> getallgiftitemtable(payload),
     onSuccess: (response) => {
       if (response) {
         setgiftitemData(response.data);
@@ -83,6 +80,9 @@ const Giftitem = () => {
   }, [currentPage, debouncedSearch]);
 
 
+  useEffect(() => {
+    getallgiftitemtableMutate({ search: debouncedSearch, page: currentPage, limit });
+  }, []);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);

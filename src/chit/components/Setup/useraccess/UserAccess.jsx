@@ -28,7 +28,8 @@ const UserAccess = () => {
   const modal = useSelector((state) => state.modal);
   const [searchInput, setSearchInput] = useState('')
   const debouncedSearch = useDebounce(searchInput, 500)
-  const [isLoading,setisLoading] = useState(false)
+  const [isLoading,setisLoading] = useState(true)
+
   
  // get all clients
   const { mutate: getAllClientsMutate } = useMutation({
@@ -124,10 +125,8 @@ const UserAccess = () => {
   
   //get staff user data with pagination 
   const { mutate: getAllStaffUserTable} = useMutation({
-    mutationFn: (formdata) => {
-      setisLoading(true)
-      staffUserDataTable(formdata)
-    },
+    mutationFn: (formdata) => 
+      staffUserDataTable(formdata),
     onSuccess: (response) => {
       if (response) {
         setStaffData(response.data)
@@ -199,6 +198,16 @@ const UserAccess = () => {
       search: debouncedSearch
     });
   }, [currentPage, itemsPerPage, debouncedSearch]);
+
+  useEffect(() => {
+    getAllStaffUserTable({
+      page: currentPage,
+      limit: itemsPerPage,
+      from_date: "",
+      to_date: "",
+      search: debouncedSearch
+    });
+  }, []);
 
   // Update event emitter cleanup
   useEffect(() => {

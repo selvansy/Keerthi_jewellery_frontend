@@ -5,7 +5,7 @@ import Loading from "../common/Loading";
 const Table = ({
   data = [],
   columns = [],
-  isLoading = false,
+  isLoading,
   emptyMessage = "No data available",
   selectedRow,
   activeDropdown
@@ -14,7 +14,6 @@ const Table = ({
     console.error("Data and columns must be arrays");
     return null;
   }
-
 
 
   if (data.length === 0 && !isLoading) {

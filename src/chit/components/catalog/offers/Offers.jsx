@@ -23,7 +23,7 @@ const Offers = () => {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const roledata = useSelector((state) => state.clientForm.roledata);
   let id_client = roledata?.id_client;
-  const [isLoading,setisLoading] = useState(false)
+  const [isLoading,setisLoading] = useState(true)
  
   const id_branch = roledata?.branch;
 
@@ -181,10 +181,7 @@ const Offers = () => {
 
   //mutation to get scheme type
   const { mutate: getofferData } = useMutation({
-    mutationFn: ()=>{
-      setisLoading(true)
-      getoffersTable
-    },
+    mutationFn: (payload)=> getoffersTable(payload),
     onSuccess: (response) => {
       setisLoading(false)
       setofferData(response.data)
@@ -195,6 +192,10 @@ const Offers = () => {
       setisLoading(false)
     }
   });
+
+    useEffect(() => {
+    getofferData({ page: currentPage, limit: itemsPerPage, search: search,id_branch:id_branch })
+  }, [])
 
   useEffect(() => {
     getofferData({ page: currentPage, limit: itemsPerPage, search: search,id_branch:id_branch })

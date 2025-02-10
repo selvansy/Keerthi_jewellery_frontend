@@ -19,7 +19,7 @@ import StaffuserForm from './StaffuserForm'
 const StaffUser = () => {
   const dispatch = useDispatch();
 
-  const [isLoading,setisLoading] = useState(false)
+  const [isLoading,setisLoading] = useState(true)
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -148,10 +148,9 @@ const StaffUser = () => {
 
   //get staff user data with pagination 
   const { mutate: getAllgetstaffusertable } = useMutation({
-    mutationFn: (formdata) =>{
-      setisLoading(true)
-     getstaffusertable(formdata)
-    },
+    mutationFn: (formdata) =>
+     getstaffusertable(formdata),
+    
     onSuccess: (response) => {
       if (response) {
         setStaffData(response.data)
@@ -224,6 +223,16 @@ const StaffUser = () => {
       search: debouncedSearch
     });
   }, [currentPage,itemsPerPage, debouncedSearch,isviewOpen]);
+
+  useEffect(() => {
+    getAllgetstaffusertable({
+      page: currentPage,
+      limit: itemsPerPage,
+      from_date: "",
+      to_date: "",
+      search: debouncedSearch
+    });
+  }, []);
 
   // Update event emitter cleanup
   // useEffect(() => {

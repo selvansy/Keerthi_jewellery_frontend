@@ -23,7 +23,7 @@ const Schemeaccount = () => {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
   const dispatch = useDispatch();
-  const [isLoading,setisLoading] = useState(false)
+  const [isLoading,setisLoading] = useState(true)
   const navigate = useNavigate()
 const [popuptitle, setPopuptitle] = useState(0);
   const [search, setSearch] = useState('')
@@ -223,10 +223,8 @@ const [popuptitle, setPopuptitle] = useState(0);
 
   //mutation to get scheme type
   const { mutate: getschemeaccountMutate } = useMutation({
-    mutationFn: ()=>{
-      setisLoading(true)
-       schemeaccounttable
-    },
+    mutationFn: ()=>
+       schemeaccounttable(payload),
     onSuccess: (response) => {
       
       setschemeaccount(response.data)
@@ -259,6 +257,27 @@ const [popuptitle, setPopuptitle] = useState(0);
       setisLoading(false)
     }
   });
+
+  useEffect(() => {
+ 
+    const filterTosend = {
+      page:currentPage,
+      from_date:from_date,
+      to_date:to_date,
+      limit: itemsPerPage,
+      search: search,
+      added_by:filters.added_by,
+      scheme_status:filters.scheme_status,
+      type:'all',
+      id_classification: filters.id_classification,
+      collectionuserid: filters.collectionuserid,
+      id_scheme: filters.id_scheme,
+      id_branch: filters.id_branch,
+      scheme_type:filters.scheme_type
+    };
+     
+    getschemeaccountMutate(filterTosend)
+  }, [])
 
   useEffect(() => {
  

@@ -21,7 +21,7 @@ function SchemePaymentReport() {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
     
    const [schemepayment, setschemepayment] = useState([])
-   const [isLoading,setisLoading] = useState(false)
+   const [isLoading,setisLoading] = useState(true)
    const [schaccExp,setschaccExp] = useState([]);
    const [search, setSearch] = useState('')
    const [startDate,setStartDate] = useState(Date.now());
@@ -70,6 +70,26 @@ function SchemePaymentReport() {
          
         getschemepaymentMutate(filterTosend)
       }, [currentPage, itemsPerPage, search])
+
+      useEffect(() => {
+   
+        const filterTosend = {
+          page:currentPage,
+          from_date:from_date,
+          to_date:to_date,
+          limit: itemsPerPage,
+          search: search,
+          added_by:filters.added_by,
+          scheme_status:filters.scheme_status,
+          id_classification: filters.id_classification,
+          collectionuserid: filters.collectionuserid,
+          id_scheme: filters.id_scheme,
+          id_branch: filters.id_branch,
+          scheme_type:filters.scheme_type
+        };
+         
+        getschemepaymentMutate(filterTosend)
+      }, [])
   
         
           useEffect(()=>{
@@ -183,10 +203,7 @@ function SchemePaymentReport() {
 
   //mutation to get scheme type
   const { mutate: getschemepaymentMutate } = useMutation({
-    mutationFn: ()=>{
-      setisLoading(true)
-       schemepaymentdatatable
-    },
+    mutationFn: (payload)=>schemepaymentdatatable(payload),
     onSuccess: (response) => {
       setschemepayment(response.data)
       let arrayData = [];

@@ -19,7 +19,7 @@ const SchemeClassification = () => {
   let dispatch = useDispatch();
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
-  const [isLoading,setisLoading] = useState(false)
+  const [isLoading,setisLoading] = useState(true)
   const [branchList, setBranchList] = useState([]);
   const [schemeType, setSchemeType] = useState([])
   const [search, setSearch] = useState('')
@@ -47,10 +47,7 @@ const SchemeClassification = () => {
 
   //mutation to get scheme type 
   const { mutate: getClassificationTablemuate } = useMutation({
-    mutationFn: ()=>{ 
-      setisLoading(true)
-      getClassificationTable
-    },
+    mutationFn: (payload)=> getClassificationTable(payload),
     onSuccess: (response) => {
    
       setSchemeType(response.data)
@@ -78,7 +75,6 @@ const SchemeClassification = () => {
       typesofscheme:1
 
     };
-console.log(filterTosend);
     getClassificationTablemuate(filterTosend)
   };
 
@@ -94,7 +90,23 @@ console.log(filterTosend);
       id_branch: id_branch,
       typesofscheme:1,
     })
+
   }, [currentPage, itemsPerPage, search])
+
+
+  useEffect(() => {
+    getClassificationTablemuate({
+      from_date: "",
+      to_date: "",
+      search: search,
+      page: currentPage,
+      limit: itemsPerPage,
+      id_branch: id_branch,
+      typesofscheme:1,
+    })
+  }, [])
+
+
   const handleReset = (e) => {
     setFromdate("");
     setTodate("");

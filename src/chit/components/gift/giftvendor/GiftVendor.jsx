@@ -22,18 +22,14 @@ const Giftvendor = () => {
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [branch, setBranch] = useState([]);
   const [searchInput,setSearchInput]=useState('')
-  const [isLoading,setisLoading] = useState(false)
+  const [isLoading,setisLoading] = useState(true)
 
   const debouncedSearch = useDebounce(searchInput, 500)
   const limit = 10;
 
   const { mutate: getAllgiftvendorsMutate } = useMutation({
-    mutationFn:(payload)=>{
-      setisLoading(true)
-      return getAllgiftvendors(payload)
-    },
+    mutationFn:(payload)=> getAllgiftvendors(payload),
     onSuccess: (response) => {
-     
       if (response) {
         setgiftvendorData(response.data);
         setTotalPages(Math.ceil(response.data.total / limit));

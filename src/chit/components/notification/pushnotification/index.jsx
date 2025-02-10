@@ -23,7 +23,7 @@ const Pushnotification = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch();
 
-  const [isLoading,setisLoading] = useState(false)
+  const [isLoading,setisLoading] = useState(true)
   
   const roledata = useSelector((state) => state.clientForm.roledata);
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
@@ -74,10 +74,8 @@ const Pushnotification = () => {
 
   //mutation to get scheme type
   const { mutate: getnotificationData } = useMutation({
-    mutationFn: ()=>{ 
-      setisLoading(true)
-      pushnotificationdatatable
-    },
+    mutationFn: (payload)=>
+      pushnotificationdatatable(payload),
     onSuccess: (response) => {
       
       setnotifyData(response.data)
@@ -91,9 +89,12 @@ const Pushnotification = () => {
   });
 
   useEffect(() => {
-    console.log(search)
     getnotificationData({ search: search })
   }, [search])
+
+  useEffect(() => {
+    getnotificationData({ page: currentPage, limit: itemsPerPage })
+  }, [])
 
 
   useEffect(() => {

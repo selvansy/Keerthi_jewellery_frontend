@@ -20,7 +20,7 @@ const OurEmployee = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch();
   const [currentPage, setCurrentPage] = useState(1);
-  const [isLoading,setisLoading] = useState(false)
+  const [isLoading,setisLoading] = useState(true)
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [employeeData, setEmployeeData] = useState([]);
@@ -77,10 +77,8 @@ const OurEmployee = () => {
   }
 
   const { mutate: getallemployeetableMutate } = useMutation({
-    mutationFn: ()=>{
-      setisLoading(true)
-       getallemployeetable
-    },
+    mutationFn: ()=>
+       getallemployeetable(payload),
     onSuccess: (response) => {
     
       if (response?.data) {
@@ -118,6 +116,17 @@ const OurEmployee = () => {
       search: debouncedSearch
     });
   }, [currentPage, itemsPerPage]);
+
+  
+  useEffect(() => {
+    getallemployeetableMutate({
+      page: currentPage,
+      limit: itemsPerPage,
+      from_date: "",
+      to_date: "",
+      search: debouncedSearch
+    });
+  }, []);
 
 
 

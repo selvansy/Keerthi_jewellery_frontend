@@ -38,10 +38,8 @@ const MenuComp = () => {
   }
 
   const {  mutate: getAllMenusMutate } = useMutation({
-    mutationFn: ()=>{
-      setisLoading(true)
-       getallmenudatatable
-    },
+    mutationFn: (payload)=>
+       getallmenudatatable(payload),
     onSuccess: (response) => {
       if (response) {
         setMenuData(response.data);
@@ -79,7 +77,9 @@ const MenuComp = () => {
   }, [currentPage,itemsPerPage, debouncedSearch,isviewOpen]);
 
 
-
+  useEffect(() => {
+    getAllMenusMutate({ search: debouncedSearch, page: currentPage, limit });
+  }, []);
 
 
   const handleEdit = async (id) => {

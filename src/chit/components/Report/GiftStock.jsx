@@ -28,7 +28,7 @@ const GiftStock = () => {
   const roledata = useSelector((state) => state.clientForm.roledata);
   const id_branch = roledata?.branch;
 
-  const [isLoading,setisLoading] = useState(false)
+  const [isLoading,setisLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [giftissues, setGiftissues] = useState([])
   const [giftExp,setgiftExp] = useState([]);
@@ -179,12 +179,9 @@ const GiftStock = () => {
 
   //mutation to get scheme type
   const { mutate: giftissuesMutate } = useMutation({
-    mutationFn: ()=>{
-      setisLoading(true)
-       giftissuesdatatable
-    },
+    mutationFn: (payload)=> giftissuesdatatable(payload),
     onSuccess: (response) => {
-  
+       
       setGiftissues(response.data)
       setTotalPages(response.totalPages)
       let arrayData = [];
@@ -232,6 +229,22 @@ const GiftStock = () => {
 
   }, [currentPage, itemsPerPage, search])
 
+
+  useEffect(() => {
+    const filterTosend = {
+      page: currentPage,
+      from_date: from_date,
+      to_date: to_date,
+      limit: itemsPerPage,
+      search: search,
+      id_branch: '',
+      gift_vendorid: '',
+      id_gift: ''
+    };
+    giftissuesMutate(filterTosend)
+    giftaccountcountMutate(filterTosend);
+
+  }, [])
 
   const handleSearch = (e) => {
     setSearch(e.target.value)

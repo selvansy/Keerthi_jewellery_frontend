@@ -31,7 +31,7 @@ const ProductWhatsapp = () => {
   const roledata = useSelector((state) => state.clientForm.roledata);
   const id_branch = roledata?.branch;
  
-  const [isLoading,setisLoading] = useState(false)
+  const [isLoading,setisLoading] = useState(true)
   const [productData, setproductData] = useState([])
   const [issettingOpen, setIsSettingOpen] = useState(false);
 
@@ -321,10 +321,8 @@ const ProductWhatsapp = () => {
 
   //mutation to get scheme type
   const { mutate: getproductData } = useMutation({
-    mutationFn: ()=>{
-      setisLoading(true)
-       getproductTable
-    },
+    mutationFn: (data)=>
+       getproductTable(data),
     onSuccess: (response) => {
       setisLoading(false)
       setproductData(response.data)
@@ -339,6 +337,10 @@ const ProductWhatsapp = () => {
   useEffect(() => {
     getproductData({ page: currentPage, limit: itemsPerPage, search: search })
   }, [currentPage, itemsPerPage, search])
+
+  useEffect(() => {
+    getproductData({ page: currentPage, limit: itemsPerPage, search: search })
+  }, [])
 
   const handleSearch = (e) => {
     setSearch(e.target.value)

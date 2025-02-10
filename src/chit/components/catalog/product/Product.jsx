@@ -23,7 +23,7 @@ const Product = () => {
   const navigate = useNavigate()
   let dispatch = useDispatch();
 
-  const [isLoading,setisLoading] = useState(false)
+  const [isLoading,setisLoading] = useState(true)
 
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const roledata = useSelector((state) => state.clientForm.roledata);
@@ -166,6 +166,22 @@ const Product = () => {
 
   };
 
+
+  useEffect(()=>{
+    const filterTosend = {
+      from_date: null,
+      to_date: null,
+      limit: itemsPerPage,
+      id_branch: id_branch,
+      id_metal: "",
+      id_category: "",
+      sell: "",
+      id_purity: "",
+      displayprice: ""
+    };
+
+    getproductData(filterTosend);
+  },[])
 
   useEffect(() => {
     if (id_branch === '0') {
@@ -312,11 +328,7 @@ const Product = () => {
 
   //mutation to get scheme type
   const { mutate: getproductData } = useMutation({
-    mutationFn: ()=>{
-      setisLoading(true)
-      getproductTable
-      
-    },
+    mutationFn: (payload)=> getproductTable(payload),
     onSuccess: (response) => {
       setisLoading(false)
       setproductData(response.data)

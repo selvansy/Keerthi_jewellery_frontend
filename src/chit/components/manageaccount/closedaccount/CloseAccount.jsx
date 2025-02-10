@@ -23,7 +23,8 @@ const CloaseAccount = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate()
 
-  const [isLoading,setisLoading] = useState(false)
+  const [isLoading,setisLoading] = useState(true)
+
   const [search, setSearch] = useState('')
   const [schemeaccount, setschemeaccount] = useState([])
   const [schaccExp, setschaccExp] = useState([]);
@@ -278,10 +279,7 @@ const CloaseAccount = () => {
 
   //mutation to get scheme type
   const { mutate: getschemeaccountMutate } = useMutation({
-    mutationFn: ()=>{
-      setisLoading(true)
-    schemeaccounttable
-    },
+    mutationFn: (payload)=> schemeaccounttable(payload),
     onSuccess: (response) => {
    
       setschemeaccount(response.data)
@@ -336,6 +334,27 @@ const CloaseAccount = () => {
 
     getschemeaccountMutate(filterTosend)
   }, [currentPage, itemsPerPage, search])
+
+  useEffect(() => {
+
+    const filterTosend = {
+      page: currentPage,
+      from_date: from_date,
+      to_date: to_date,
+      limit: itemsPerPage,
+      search: search,
+      added_by: filters.added_by,
+      type: "close",
+      scheme_status: filters.scheme_status,
+      id_classification: filters.id_classification,
+      collectionuserid: filters.collectionuserid,
+      id_scheme: filters.id_scheme,
+      id_branch: filters.id_branch,
+      scheme_type: filters.scheme_type
+    };
+
+    getschemeaccountMutate(filterTosend)
+  }, [])
 
 
   const handleSearch = (e) => {

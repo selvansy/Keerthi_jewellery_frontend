@@ -18,7 +18,7 @@ const MetalRate = () => {
   let navigate = useNavigate()
   let dispatch = useDispatch();
 
-  const [isLoading,setisLoading] = useState(false)
+  const [isLoading,setisLoading] = useState(true)
   const [schemeType,setMetalRate]=useState([])
   const [search,setSearch]=useState('')
   const [currentPage, setCurrentPage] = useState(1);
@@ -79,10 +79,7 @@ const MetalRate = () => {
 
   //mutation to get scheme type 
   const {mutate: getmetalratetablemutate } = useMutation({
-    mutationFn: ()=>{
-    setisLoading(true)
-    getmetalratetable
-  },
+    mutationFn: (payload)=> getmetalratetable(payload),
     onSuccess: (response) => {
    
       setMetalRate(response.data)
@@ -101,6 +98,12 @@ const MetalRate = () => {
     setMetalRate([]);
     getmetalratetablemutate({ search: search, page: currentPage, limit: itemsPerPage, from_date: '', to_date: '', id_branch: '' })
   }, [currentPage, itemsPerPage, search])
+
+
+  useEffect(() => {
+   
+    getmetalratetablemutate({ search: search, page: currentPage, limit: itemsPerPage, from_date: '', to_date: '', id_branch: '' })
+  }, [])
 
   const handleSearch = (e) => {
     setSearch(e.target.value)

@@ -85,7 +85,7 @@ export const OutstandingTable = ({itemsPerPage, currentPage,setItemsPerPage,setC
     let dispatch = useDispatch();
 
 
-    const [isLoading,setisLoading] = useState(false)
+    const [isLoading,setisLoading] = useState(true)
     const [totalPages, setTotalPages] = useState(0);
     const [search,setSearch] = useState("")
 
@@ -102,11 +102,8 @@ export const OutstandingTable = ({itemsPerPage, currentPage,setItemsPerPage,setC
 
       //mutation to get scheme type
       const { mutate: getOutstandingReport } = useMutation({
-        mutationFn: ()=>{
-            setisLoading(true)
-            getOutstandingSummaryReport
-            
-        },
+        mutationFn: 
+            getOutstandingSummaryReport,
         onSuccess: (response) => {
           
             dispatch(SetOutreport((response.data)))

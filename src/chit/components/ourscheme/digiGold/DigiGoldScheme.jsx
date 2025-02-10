@@ -20,7 +20,8 @@ const DigiGoldScheme = () => {
 
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const [branchList, setBranchList] = useState([]);
-  const [isLoading,setisLoading] = useState(false)
+  const [isLoading,setisLoading] = useState(true)
+  
   const [schemeType, setSchemeType] = useState([])
   const [search, setSearch] = useState('')
    const [currentPage, setCurrentPage] = useState(1);
@@ -47,10 +48,7 @@ const DigiGoldScheme = () => {
 
   //mutation to get scheme type 
   const { mutate: getClassificationTablemuate } = useMutation({
-    mutationFn: ()=>{
-      setisLoading(true) 
-      getClassificationTable
-    },
+    mutationFn: (payload)=> getClassificationTable(payload),
     onSuccess: (response) => {
     
       setSchemeType(response.data)
@@ -96,6 +94,19 @@ console.log(filterTosend);
     })
   }, [currentPage, itemsPerPage, search])
 
+
+  useEffect(() => {
+    getClassificationTablemuate({
+      from_date: "",
+      to_date: "",
+      search: search,
+      page: currentPage,
+      limit: itemsPerPage,
+      id_branch: id_branch,
+      typesofscheme:2,
+    })
+  }, [])
+
     const handleReset = (e) => {
       setFromdate("");
     setTodate("");
@@ -123,7 +134,6 @@ console.log(filterTosend);
   }
 
   const handleStatusToggle = async (id) => {
-    console.log(id)
     let response = await activateClassification(id);
     if (response) {
       toast.success(response.message);
