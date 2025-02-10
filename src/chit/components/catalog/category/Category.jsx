@@ -27,7 +27,7 @@ const Category = () => {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
   const [search, setSearch] = useState('')
-  const [currentPage, setCurrentPage] = useState(1);
+   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedRow, setSelectedRow] = useState(null)
@@ -42,58 +42,74 @@ const Category = () => {
   const [branchList, setBranchList] = useState([]);
   let [branch, setbranch] = useState("")
   const [filters, setFilters] = React.useState({
-    from_date: null,
-    to_date: null,
-    limit: itemsPerPage,
+    from_date: "",
+    to_date: "",
     id_branch: id_branch,
     id_metal: "",
   });
 
-  const [formErrors, setFormErrors] = useState({});
+  const [formErrors, setFormErrors] = useState({}); 
 
-  useEffect(() => {
+  const handleReset = (e) => {
+    setFromdate("");
+    setTodate("");
+    setFilters(prev => ({
+      ...prev, added_by: '',
+      id_branch: id_branch,
+      id_metal: "",
+    }));
+    toast.success("Filter is cleared");
+    const filterTosend = {
+      page: currentPage,
+      from_date: from_date,
+      to_date: to_date,
+      limit: itemsPerPage,
+      search: "",
+      id_metal: "",
+      id_branch: id_branch
+    };
+
+    getcategoryData(filterTosend);
+
+  }
+
+  
+ 
+  const handleClickfilter = (e) => {
+    getallbranchMutate();
     getMetalData();
-  }, [])
+    setIsFilterOpen(true);
+  }
 
 
   useEffect(() => {
     if (id_branch === '0') {
-      branchbyClient(id_client)
+      getallbranchMutate()
     } else {
       branchbyId(id_branch)
     }
 
-    if (id_branch !== 0) {
+    if (id_branch !== "0") {
       setFilters({ ...filters, id_branch: id_branch })
     }
 
   }, [id_branch]);
 
 
-
-  useEffect(() => {
-    const filterTosend = {
-      search: search,
-    };
-    getcategoryData(filterTosend)
-  }, [search])
-
-
-
   useEffect(() => {
     const filterTosend = {
       page: currentPage,
-      from_date: from_date,
-      to_date: to_date,
+      from_date: "",
+      to_date: "",
       limit: itemsPerPage,
       search: search,
-      id_metal: filters.id_metal,
-      id_branch: filters.id_branch
+      id_branch:id_branch,
+      id_metal: ""
     };
 
     getcategoryData(filterTosend)
 
-  }, [currentPage, itemsPerPage])
+  }, [currentPage, itemsPerPage,search])
 
 
 
@@ -121,7 +137,7 @@ const Category = () => {
 
   };
 
-  const { mutate: branchbyClient } = useMutation({
+  const { mutate: getallbranchMutate } = useMutation({
     mutationFn: getallbranch,
     onSuccess: (response) => {
       setBranchList(response.data);
@@ -171,11 +187,7 @@ const Category = () => {
     setSearch(e.target.value)
   }
 
-  const handleReset = (e) => {
-    e.preventDefault();
-    setIsFilterOpen(true);
-    navigate('/catalog/category');
-  }
+
 
   const handleClick = (e) => {
     navigate('/catalog/addcategory');
@@ -185,7 +197,7 @@ const Category = () => {
     let response = await activatecategory(id);
     if (response) {
       toast.success(response.message);
-      getcategoryData({ page: currentPage, limit: itemsPerPage, search: search })
+      getcategoryData({ page: currentPage, limit: itemsPerPage, search: search,id_metal:id_metal,id_branch:id_branch })
     }
   };
 
@@ -216,7 +228,7 @@ const Category = () => {
     mutationFn: deletecategory,
     onSuccess: (response) => {
       toast.success(response.message);
-      getcategoryData({ page: currentPage, limit: itemsPerPage, search: search })
+      getcategoryData({ page: currentPage, limit: itemsPerPage, search: search,id_metal:id_metal,id_branch:id_branch })
     },
     onError: (error) => {
       console.error("Error fetching countries:", error);
@@ -422,7 +434,9 @@ const Category = () => {
             <button
               id="filter"
               className="text-white w-10 h-10 flex items-center justify-center rounded-md  transition-colors flex-shrink-0"
-              onClick={() => setIsFilterOpen(true)}
+              onClick={(e) => {
+                handleClickfilter(e);
+              }}
               style={{ backgroundColor: layout_color }}>
               <SlidersHorizontal size={20} />
             </button>
@@ -497,7 +511,7 @@ const Category = () => {
                 <div className="relative">
                   <select
                     name="id_branch"
-                    className={`appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 ${!id_branch !== 0 ? "cursor-not-allowed bg-gray-100" : ""
+                    className={`appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 ${!id_branch !== "0" ? "cursor-not-allowed bg-gray-100" : ""
                     }`}
                     defaultValue=""
                     onChange={filterInputchange}

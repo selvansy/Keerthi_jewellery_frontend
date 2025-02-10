@@ -21,7 +21,7 @@ const DigiGoldScheme = () => {
   const [branchList, setBranchList] = useState([]);
   const [schemeType, setSchemeType] = useState([])
   const [search, setSearch] = useState('')
-  const [currentPage, setCurrentPage] = useState(1);
+   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(10);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [isviewOpen, setIsviewOpen] = useState(false);
@@ -79,8 +79,8 @@ console.log(filterTosend);
 
   useEffect(() => {
     getClassificationTablemuate({
-      from_date: from_date,
-      to_date: to_date,
+      from_date: "",
+      to_date: "",
       search: search,
       page: currentPage,
       limit: itemsPerPage,
@@ -88,6 +88,23 @@ console.log(filterTosend);
       typesofscheme:2,
     })
   }, [currentPage, itemsPerPage, search])
+
+    const handleReset = (e) => {
+      setFromdate("");
+    setTodate("");
+    setFilters(prev=>({...prev,id_branch:id_branch})); 
+    toast.success("Filter is cleared");
+      getClassificationTablemuate({
+        from_date: "",
+        to_date: "",
+        search: "",
+        page: currentPage,
+        limit: itemsPerPage,
+        id_branch: id_branch,
+        typesofscheme:2,
+      })
+    }
+   
 
   const handleSearch = (e) => {
     setSearch(e.target.value)

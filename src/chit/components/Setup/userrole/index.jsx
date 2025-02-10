@@ -23,7 +23,7 @@ const Userrole = () => {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   
   const [userroleData, setuserroleData] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
+   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [activeDropdown, setActiveDropdown] = useState(null);

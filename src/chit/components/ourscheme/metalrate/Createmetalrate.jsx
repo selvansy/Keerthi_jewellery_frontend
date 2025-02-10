@@ -56,7 +56,7 @@ const CreateMetalRate = () => {
         branchbyId({id:id_branch})
       }
   
-      if(id_branch !== 0){
+      if(id_branch !== "0"){
         setFormData({ ...formData, id_branch: id_branch })
       }
       

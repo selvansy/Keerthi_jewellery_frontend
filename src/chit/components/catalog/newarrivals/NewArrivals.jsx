@@ -29,7 +29,7 @@ const NewArrivals = () => {
   console.log("Data",newarrivalsData)
 
   const [search, setSearch] = useState('')
-  const [currentPage, setCurrentPage] = useState(1);
+   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedRow, setSelectedRow] = useState(null)
@@ -42,8 +42,8 @@ const NewArrivals = () => {
   const [from_date, setFromdate] = useState("");
   const [to_date, setTodate] = useState("");
   const [filters, setFilters] = React.useState({
-    from_date: null,
-    to_date: null,
+    from_date: "",
+    to_date: "",
     limit: itemsPerPage,
     id_branch: id_branch,
     type: "",
@@ -52,11 +52,33 @@ const NewArrivals = () => {
 
 
 
+  const handleReset = (e) => {
+    setFromdate("");
+    setTodate("");
+    setFilters(prev => ({
+      ...prev, added_by: '',
+      id_branch: id_branch,
+      type: ""
+    }));
+    toast.success("Filter is cleared");
+    const filterTosend = {
+      page: currentPage,
+      from_date: from_date,
+      to_date: to_date,
+      limit: itemsPerPage,
+      search: "",
+      type: "",
+      id_branch: id_branch
+    };
+
+    getnewarrivalsData({ page: currentPage, limit: itemsPerPage, search: search,id_branch:id_branch })
+  }
+
   useEffect(() => {
     if (id_branch === '0') {
       branchbyClient()
     }
-    if (id_branch !== 0) {
+    if (id_branch !== "0") {
       setFilters({ ...filters, id_branch: id_branch })
     }
 
@@ -102,16 +124,7 @@ const NewArrivals = () => {
 
    
       setIsFilterOpen(false)
-      setFromdate("")
-      setTodate("")
-      setFilters({
-        from_date: null,
-        to_date: null,
-        limit: itemsPerPage,
-        id_branch: "",
-
-        type: "",
-      })
+      getnewarrivalsData(filterTosend)
     
   };
 
@@ -161,14 +174,11 @@ const NewArrivals = () => {
     }
   });
 
-    useEffect(() => {
-      getnewarrivalsData({ page: currentPage, limit: itemsPerPage, search: search })
-    }, [search])
-  
-
+   
   useEffect(() => {
-    getnewarrivalsData({ page: currentPage, limit: itemsPerPage})
-  }, [currentPage, itemsPerPage])
+
+    getnewarrivalsData({ page: currentPage, limit: itemsPerPage, search: search,id_branch:id_branch})
+  }, [currentPage, itemsPerPage,search])
 
   const handleSearch = (e) => {
     setSearch(e.target.value)
@@ -178,17 +188,12 @@ const NewArrivals = () => {
     e.preventDefault();
     navigate('/catalog/addnewarrivals');
   }
-  const handleReset = (e) => {
-    e.preventDefault();
-    setIsFilterOpen(true);
-    navigate('/catalog/newarrivals');
-  }
 
   const handleStatusToggle = async (id) => {
     let response = await activatenewarrivals(id);
     if (response) {
       toast.success(response.message);
-      getnewarrivalsData({ page: currentPage, limit: itemsPerPage, search: search })
+      getnewarrivalsData({ page: currentPage, limit: itemsPerPage, search: search,id_branch:id_branch })
     }
   };
  
@@ -220,7 +225,7 @@ const NewArrivals = () => {
       mutationFn: deletenewarrivals,
       onSuccess: (response) => {
         toast.success(response.message);
-        getnewarrivalsData({ page: currentPage, limit: itemsPerPage, search: search })
+        getnewarrivalsData({ page: currentPage, limit: itemsPerPage, search: search,id_branch:id_branch })
       },
       onError: (error) => {
         console.error("Error:", error);
@@ -316,8 +321,8 @@ const NewArrivals = () => {
             <div
               className="absolute right-[47px] lg:right-[163px] md:right-[150px] sm:right-[100px] transform -translate-x-8"
               style={{
-                top: rowIndex >= newarrivalsData.length - 2 ? 'auto' : '72%',
-                bottom: rowIndex >= newarrivalsData.length - 2 ? '-74%' : 'auto',
+                top: rowIndex >= newarrivalsData?.length - 2 ? 'auto' : '72%',
+                bottom: rowIndex >= newarrivalsData?.length - 2 ? '-74%' : 'auto',
                 // top: 'auto',
                 // bottom: '-440%',
                 zIndex: 9999,
@@ -501,7 +506,7 @@ const NewArrivals = () => {
                 <div className="relative">
                 <select
                     name="id_branch"
-                    className={`appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 ${!id_branch !== 0 ? "cursor-not-allowed bg-gray-100" : ""
+                    className={`appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 ${!id_branch !== "0" ? "cursor-not-allowed bg-gray-100" : ""
                     }`}
                     defaultValue=""
                     onChange={filterInputchange}
@@ -620,7 +625,7 @@ const NewArrivals = () => {
         />
       </div>
 
-      {newarrivalsData.length > 0 && (
+      {newarrivalsData?.length > 0 && (
         <div className="flex justify-between mt-4 p-2">
           <div className="flex flex-row items-center justify-center gap-2">
             <div className="flex items-center gap-4">

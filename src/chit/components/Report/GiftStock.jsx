@@ -24,8 +24,10 @@ const GiftStock = () => {
   const navigate = useNavigate()
   
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
+
   const roledata = useSelector((state) => state.clientForm.roledata);
   const id_branch = roledata?.branch;
+
 
   const [search, setSearch] = useState('')
   const [giftissues, setGiftissues] = useState([])

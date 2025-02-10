@@ -19,7 +19,7 @@ import StaffuserForm from './StaffuserForm'
 const StaffUser = () => {
   const dispatch = useDispatch();
 
-  const [currentPage, setCurrentPage] = useState(1);
+   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [clientData, setClientData] = useState([])

@@ -11,8 +11,8 @@ import DatePicker from "react-datepicker";
 
 const Wallet = () => {
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5);
+   const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [, setIsExporting] = useState(false);
   const [dateRange, setDateRange] = useState(null);
   const [isFilterOpen, setIsFilterOpen] = React.useState(false);

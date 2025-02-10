@@ -49,7 +49,7 @@ const CreateDigiGoldScheme = () => {
       if (id_branch === '0') {
         getallbranchmuate()
       }
-      if(id_branch !== 0){
+      if(id_branch !== "0"){
         setFormData({ ...formData, id_branch: id_branch })
       }
       

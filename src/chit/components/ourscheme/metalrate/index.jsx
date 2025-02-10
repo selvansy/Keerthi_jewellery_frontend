@@ -20,9 +20,9 @@ const MetalRate = () => {
 
   const [schemeType,setMetalRate]=useState([])
   const [search,setSearch]=useState('')
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(5);
-  const [itemsPerPage, setItemsPerPage] = useState(5);
+   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
    const [isviewOpen, setIsviewOpen] = useState(false);
 
   const [activeDropdown,setActiveDropdown]=useState(null)
@@ -46,7 +46,12 @@ const MetalRate = () => {
     type: "",
   });
 
-
+  const handleReset = (e) => {
+    setFromdate("");
+    setTodate("");
+  toast.success("Filter is cleared");
+    getmetalratetablemutate({search:search,page:currentPage,limit:itemsPerPage,from_date:'',to_date:'',id_branch:''}) 
+  }
   
     const { mutate: getallbranchmutate } = useMutation({
       mutationFn: getallbranch,
@@ -61,9 +66,10 @@ const MetalRate = () => {
   const applyfilterdatatable = (e) =>{
          e.preventDefault();   
         setIsFilterOpen(false)
-        getmetalratetablemutate({search:search,page:currentPage,limit:itemsPerPage,from_date:filters.from_date,to_date:filters.to_date,id_branch:filters.id_branch})
+        getmetalratetablemutate({search:search,page:currentPage,limit:itemsPerPage,from_date:from_date,to_date:to_date,id_branch:filters.id_branch})
       
     };
+    
     const filterInputchange = (e) =>{
       const {name, value} = e.target;
       setFilters(prev=>({...prev,[name]:value}));    
@@ -137,7 +143,7 @@ const MetalRate = () => {
           
           let response = await deletemetalrate(data.schemeId);
           toast.success(response.message);
-         getmetalratetablemutate({page:currentPage,limit:itemsPerPage,search:search,from_date:filter.from_date,to_date:filter.from_date,id_branch:filter.id_branch})
+         getmetalratetablemutate({page:currentPage,limit:itemsPerPage,search:search,from_date:from_date,to_date:to_date,id_branch:filters.id_branch})
         } catch (error) {
           console.error('Error deleting giftitem:', error);
         }
@@ -290,11 +296,7 @@ const MetalRate = () => {
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
-  const handleReset = (e) => {
-    e.preventDefault();
-    setIsFilterOpen(true);
-    navigate('/catalog/newarrivals');
-  }
+ 
   return (
     <div className="flex flex-col p-4">
       <h2 className="text-2xl text-gray-900 font-bold">Metal Rate</h2> 
@@ -403,7 +405,7 @@ const MetalRate = () => {
                 <div className="relative">
                 <select
                     name="id_branch"
-                    className={`appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 ${!id_branch !== 0 ? "cursor-not-allowed bg-gray-100" : ""
+                    className={`appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 ${!id_branch !== "0" ? "cursor-not-allowed bg-gray-100" : ""
                     }`}
                     defaultValue=""
                     onChange={filterInputchange}

@@ -9,7 +9,7 @@ import { Formik } from 'formik';
 import * as Yup from 'yup';
 
 function StaffuserForm({ setIsOpen}) {
-    const [currentPage, setCurrentPage] = useState(1);
+     const [currentPage, setCurrentPage] = useState(1);
     const totalPages = 2;
     const [activeTab, setActiveTab] = useState('userInfo');
     const [branchData, setBranchData] = useState([]);

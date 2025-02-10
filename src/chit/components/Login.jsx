@@ -4,7 +4,7 @@ import { useMutation } from '@tanstack/react-query';
 import { staffLofgin } from '../api/Endpoints';
 import { useDispatch,useSelector } from 'react-redux';
 import { login  } from '../../redux/authSlice';
-import { setAccessmenudata } from '../../redux/clientFormSlice';
+import { setAccessmenudata,setLayoutColor } from '../../redux/clientFormSlice';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 const Login = () => {
@@ -19,13 +19,13 @@ const Login = () => {
     mutationFn: staffLofgin,
     onSuccess: (response) => {
       console.log(response)
-        dispatch(login(response.token));  
-        const decoded = jwtDecode(response.token);
-        if (decoded.id_role.id_role === 1) {
-          navigate("/superadmin/clientmaster")
-        } else {
-          navigate("/dashboard")
-        }
+      dispatch(login(response.token));  
+      const decoded = jwtDecode(response.token);
+      if (decoded.id_role.id_role === 1) {
+        navigate("/superadmin/clientmaster")
+      } else {
+        navigate("/dashboard")
+      }
     },
     onError: (error) => {
       console.error('Error fetching countries:', error);

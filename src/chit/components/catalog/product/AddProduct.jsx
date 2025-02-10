@@ -75,7 +75,7 @@ const AddProduct = () => {
         getallbranchmuate()
       }
 
-      if(id_branch !== 0){
+      if(id_branch !== "0"){
         setFormData({ ...formData, id_branch: id_branch })
       }
       
@@ -507,7 +507,7 @@ console.log(product_image)
                 <div className="relative">
                   <select
                     name="id_branch"
-                    className={`appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 ${!id_branch !== 0 ? "cursor-not-allowed bg-gray-100" : ""
+                    className={`appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 ${!id_branch !== "0" ? "cursor-not-allowed bg-gray-100" : ""
                     }`}
                     defaultValue=""
                     onChange={handleInputChange}

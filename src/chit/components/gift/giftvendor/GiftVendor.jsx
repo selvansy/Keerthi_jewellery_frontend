@@ -15,7 +15,7 @@ const Giftvendor = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [giftvendorData, setgiftvendorData] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
+   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedRow, setSelectedRow] = useState(null)
   const [totalPages, setTotalPages] = useState(0);

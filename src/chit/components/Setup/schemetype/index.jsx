@@ -23,7 +23,7 @@ const Schemetype = () => {
 
     const layout_color = useSelector((state) => state.clientForm.layoutColor);
     const [schemetypeData, setschemetypeData] = useState([]);
-    const [currentPage, setCurrentPage] = useState(1);
+     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
     const [itemsPerPage, setItemsPerPage] = useState(10);
     const [activeDropdown, setActiveDropdown] = useState(null);

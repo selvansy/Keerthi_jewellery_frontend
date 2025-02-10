@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 
 import { toast } from 'react-toastify'
-import { CalendarDays } from 'lucide-react'
+import { CalendarDays, RefreshCcw } from 'lucide-react'
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import Modal from '../../common/Modal';
@@ -38,7 +38,7 @@ const ProductWhatsapp = () => {
   const [search, setSearch] = useState('')
   const [isviewOpen, setIsviewOpen] = useState(false);
   const [issettingOpen, setIsSettingOpen] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
+   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedRow, setSelectedRow] = useState(null)
@@ -66,7 +66,18 @@ const ProductWhatsapp = () => {
     type: 1,
   });
 
+ const handleReset = (e) => {
+    setFromdate("");
+    setTodate("");
+    setFilters(prev => ({
+      ...prev, 
+      id_branch: id_branch,
+      type: 1
+    }));
+    toast.success("Filter is cleared");
 
+    getnewarrivalsData({ from_date: '', to_date: '', page: currentPage, limit: itemsPerPage, id_branch: id_branch, type: 1 });
+  }
   function closeIncommingModal() {
     setIsviewOpen(false);
     setIsSettingOpen(false);
@@ -114,7 +125,7 @@ const ProductWhatsapp = () => {
       getallbranches()
     }
 
-    if (id_branch !== 0) {
+    if (id_branch !== "0") {
       setFilters({ ...filters, id_branch: id_branch })
     }
 
@@ -481,7 +492,13 @@ const ProductWhatsapp = () => {
           />
         </div>
         <div className="flex flex-row items-center justify-start gap-2">
-
+        <button
+            id="filter"
+            className="text-white bg-[#023453] w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
+            onClick={() => handleReset()}
+          >
+            <RefreshCcw size={20} />
+          </button>
           <button
             id="filter"
             className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
@@ -561,7 +578,7 @@ const ProductWhatsapp = () => {
                       <div className="relative">
                         <select
                           name="id_branch"
-                          className={`appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 ${!id_branch !== 0 ? "cursor-not-allowed bg-gray-100" : ""
+                          className={`appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 ${!id_branch !== "0" ? "cursor-not-allowed bg-gray-100" : ""
                             }`}
                           defaultValue=""
                           onChange={filterInputchange}

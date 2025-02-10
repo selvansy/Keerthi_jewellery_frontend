@@ -19,7 +19,7 @@ const OurEmployee = () => {
 
   const navigate = useNavigate()
   const dispatch = useDispatch();
-  const [currentPage, setCurrentPage] = useState(1);
+   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [employeeData, setEmployeeData] = useState([]);

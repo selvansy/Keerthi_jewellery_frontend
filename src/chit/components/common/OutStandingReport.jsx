@@ -25,8 +25,14 @@ export default function OutStandingReport() {
 
     // OutStandingWeight
 
+
+    const [outreport, setoutreport] = useState([])  
+
+    const [accExp, setaccExp] = useState([]);
+
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(5);
+
      const [totalPages, setTotalPages] = useState(0);
      const [search,setSearch] = useState("")
      const [from_date, setFromdate] = useState('');

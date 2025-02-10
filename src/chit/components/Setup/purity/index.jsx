@@ -20,7 +20,7 @@ const Purity = () => {
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const [currentPage, setCurrentPage] = useState(1);
+     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
     const [itemsPerPage, setItemsPerPage] = useState(10);
     const [metals, setMetals] = useState([]);
