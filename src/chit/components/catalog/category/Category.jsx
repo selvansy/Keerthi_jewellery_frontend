@@ -84,16 +84,18 @@ const Category = () => {
   }
 
 
-  useEffect(() => {
-    if (id_branch === '0') {
-      getallbranchMutate()
-    }
+  // useEffect(() => {
+  //   if (id_branch === '0') {
+  //     branchbyClient(id_client)
+  //   } else {
+  //     branchbyId(id_branch)
+  //   }
 
-    if (id_branch !== "0") {
-      setFilters({ ...filters, id_branch: id_branch })
-    }
+  //   if (id_branch !== 0) {
+  //     setFilters({ ...filters, id_branch: id_branch })
+  //   }
 
-  }, [id_branch]);
+  // }, [id_branch]);
 
 
   useEffect(() => {
@@ -228,7 +230,7 @@ const Category = () => {
 
   };
 
-  //mutation to get purity type
+
   const { mutate: deleteCategory } = useMutation({
     mutationFn: deletecategory,
     onSuccess: (response) => {

@@ -16,7 +16,8 @@ const AddNewArrival = () => {
   const id_branch = roledata?.branch;
 
   const id = useSelector((state) => state.clientForm.id);
-  console.log("---", id)
+
+  const MAX_IMAGES = 3
 
   const [filtertype, setShowType] = useState([]);
 
@@ -101,16 +102,33 @@ const AddNewArrival = () => {
 
 
   //handle description image change
+  // const handleDescriptionImageChange = (e) => {
+  //   const files = e.target.files;
+  //   if (files.length > 0) {
+  //     // Add the new files to the state
+  //     setNewarrivalsImgPath((prevState) => [...prevState, ...Array.from(files)]);
+  //   }
+
+  // };
+
   const handleDescriptionImageChange = (e) => {
     const files = e.target.files;
     if (files.length > 0) {
-      // Add the new files to the state
-      setNewarrivalsImgPath((prevState) => [...prevState, ...Array.from(files)]);
+      const existingImages = new_arrivals_img_path.filter(img => typeof img === "string");
+      const totalImages = existingImages.length + files.length;
+      
+      if (totalImages > MAX_IMAGES) {
+        toast.error(`Maximum ${MAX_IMAGES} images allowed`);
+        return;
+      }
+      
+
+      setNewarrivalsImgPath(prevState => [
+        ...prevState,
+        ...Array.from(files)
+      ]);
     }
-
   };
-
-
 
   //handle wheel
   const handleWheel = (e) => {
@@ -119,8 +137,6 @@ const AddNewArrival = () => {
 
 
   const handleExpriyDateChange = (date) => {
-
-
     const start = new Date(date);
     const day = String(start.getDate()).padStart(2, '0');
     const month = String(start.getMonth() + 1).padStart(2, '0');
@@ -169,12 +185,20 @@ const AddNewArrival = () => {
     const formDataToSend = new FormData();
     formDataToSend.append("name", formData.name);
     formDataToSend.append("show_rate", formData.show_rate);
-    formDataToSend.append("new_arrivals_content", formData.new_arrivals_content);
+    formDataToSend.append("description", formData.new_arrivals_content);
     formDataToSend.append("id_branch", formData.id_branch);
     formDataToSend.append("price", formData.price);
     formDataToSend.append("expiry_date", formData.expiry_date);
-    if (new_arrivals_img_path) formDataToSend.append("new_arrivals_img_path", new_arrivals_img_path);
-    console.log("FormData", formData)
+    if (new_arrivals_img_path && new_arrivals_img_path.length > 0) {
+      new_arrivals_img_path.forEach((image, index) => {
+        if (image instanceof File) {
+          formDataToSend.append("new_arrivals_img_path", image);
+        }
+        else if (typeof image === "string") {
+          formDataToSend.append("new_arrivals_img_path", image);
+        }
+      });
+    }
     createnewarrivalsMutate(formDataToSend);
   };
 
@@ -202,13 +226,17 @@ const AddNewArrival = () => {
           show_rate: response.data.show_rate
 
         });
-      // setIffersImage(`${response.data.pathUrl}/${response.data.desc_img}`);
-      handletypeChange('type', response.data.show_rate);
+        console.log(response.images_Url)
+      setIffersImage(response.images_Url);
+      // handletypeChange('type', response.data.show_rate);
     },
-    onError: (error) => {
-      console.error("Error fetching countries:", error);
-    },
+    // onError: (error) => {
+    //   console.error("Error fetching countries:", error);
+    // },
   });
+
+  
+console.log(new_arrivals_img_path,"kdid")
 
   //update newarrivals
   const { mutate: updateNewarrivalsmutate } = useMutation({
@@ -233,15 +261,23 @@ const AddNewArrival = () => {
     if (!validateForm()) return;
 
 
-
     const formDataToSend = new FormData();
     formDataToSend.append("name", formData.name);
     formDataToSend.append("show_rate", formData.show_rate);
-    formDataToSend.append("new_arrivals_content", formData.new_arrivals_content);
+    formDataToSend.append("description", formData.new_arrivals_content);
     formDataToSend.append("id_branch", formData.id_branch);
     formDataToSend.append("price", formData.price);
     formDataToSend.append("expiry_date", formData.expiry_date);
-    if (new_arrivals_img_path) formDataToSend.append("new_arrivals_img_path", new_arrivals_img_path);
+    if (new_arrivals_img_path && new_arrivals_img_path.length > 0) {
+      new_arrivals_img_path.forEach((image, index) => {
+        if (image instanceof File) {
+          formDataToSend.append("new_arrivals_img_path", image);
+        }
+        else if (typeof image === "string") {
+          formDataToSend.append("new_arrivals_img_path", image);
+        }
+      });
+    }
     updateNewarrivalsmutate({ id: formData._id, data: formDataToSend });
   };
 
@@ -468,8 +504,8 @@ const AddNewArrival = () => {
                         <img
                           src={
                             typeof file === "string"
-                              ? file
-                              : URL.createObjectURL(file) // Use URL.createObjectURL to preview image
+                              ? `${formData.pathurl}${file}`
+                              : URL.createObjectURL(file) 
                           }
                           alt="Description image preview"
                           className="w-full h-full object-cover"
