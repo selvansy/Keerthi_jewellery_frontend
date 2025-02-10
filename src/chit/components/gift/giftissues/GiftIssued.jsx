@@ -24,6 +24,7 @@ const GiftIssued = () => {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const roledata = useSelector((state) => state.clientForm.roledata);
   const branch = roledata?.branch;
+  const [isLoading,setisLoading] = useState(false)
 
   const [search, setSearch] = useState('')
   const [giftissues, setGiftissues] = useState([])
@@ -141,14 +142,19 @@ const GiftIssued = () => {
 
   //mutation to get scheme type
   const { mutate: giftissuesMutate } = useMutation({
-    mutationFn: giftissuesdatatable,
+    mutationFn: ()=>{
+      setisLoading(true)
+    giftissuesdatatable
+    },
     onSuccess: (response) => {
 
       setGiftissues(response.data)
       setTotalPages(response.totalPages)
+      setisLoading(false)
     },
     onError: (error) => {
       console.error('Error fetching countries:', error);
+      setisLoading(false)
     }
   });
 
@@ -563,6 +569,7 @@ const GiftIssued = () => {
         <Table
           data={giftissues}
           columns={columns}
+          isLoading={isLoading}
         />
       </div>
       <div className="flex justify-between mt-4 p-2">

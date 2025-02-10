@@ -36,6 +36,7 @@ const ProjectAccess = () => {
   const id_project = roledata?.id_project;
   const navigate = useNavigate();
   const [isviewOpen, setIsviewOpen] = useState(false);
+  const [isLoading,setisLoading] = useState(false)
 
   function closeIncommingModal() {
     setIsviewOpen(false);
@@ -47,13 +48,20 @@ const ProjectAccess = () => {
 
 
 
-  const { mutate: getallprojectaccesstableMutate, isLoading, refetch } = useMutation({
-    mutationFn: getallprojectaccesstable,
+  const { mutate: getallprojectaccesstableMutate,  refetch } = useMutation({
+    mutationFn: ()=>{ 
+      setisLoading(true)
+      getallprojectaccesstable
+    },
     onSuccess: (response) => {
       if (response) {
         setProjectAccessData(response.data);
       }
+      setisLoading(false)
     },
+    onError:()=>{
+      setisLoading(false)
+    }
   });
 
 
@@ -246,6 +254,7 @@ const ProjectAccess = () => {
         <Table
           data={projectAccessData}
           columns={columns}
+          isLoading={isLoading}
         />
         {projectAccessData.length > 0 && (
           <div className="flex justify-between mt-4 p-2">

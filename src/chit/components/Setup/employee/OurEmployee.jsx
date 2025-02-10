@@ -20,6 +20,7 @@ const OurEmployee = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch();
   const [currentPage, setCurrentPage] = useState(1);
+  const [isLoading,setisLoading] = useState(false)
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [employeeData, setEmployeeData] = useState([]);
@@ -75,15 +76,22 @@ const OurEmployee = () => {
     navigate('/setup/employee/add')
   }
 
-  const { mutate: getallemployeetableMutate, isLoading } = useMutation({
-    mutationFn: getallemployeetable,
+  const { mutate: getallemployeetableMutate } = useMutation({
+    mutationFn: ()=>{
+      setisLoading(true)
+       getallemployeetable
+    },
     onSuccess: (response) => {
-      console.log(response)
+    
       if (response?.data) {
         setEmployeeData(response.data);
         setTotalPages(response.totalPages);
       }
+      setisLoading(false)
     },
+    onError:()=>{
+        setisLoading(false)
+    }
   });
   
 
@@ -312,7 +320,7 @@ const OurEmployee = () => {
       </div>
 
       <div className="mt-4">
-      <Table data={employeeData || []} columns={columns} selectedRow={selectedRow} activeDropdown={activeDropdown} />
+      <Table data={employeeData || [] } columns={columns} selectedRow={selectedRow} activeDropdown={activeDropdown} isLoading={isLoading}/>
       </div>
       <div className="flex justify-between mt-4 p-2">
         <div className="flex flex-row items-center justify-center gap-2">

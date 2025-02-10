@@ -19,6 +19,7 @@ import MenuForm from "./MenuForm"
 const MenuComp = () => {
 
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
+  const [isLoading,setisLoading] = useState(false)
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [MenuData, setMenuData] = useState([]);
@@ -36,14 +37,21 @@ const MenuComp = () => {
     setIsviewOpen(false);
   }
 
-  const { isLoading, mutate: getAllMenusMutate } = useMutation({
-    mutationFn: getallmenudatatable,
+  const {  mutate: getAllMenusMutate } = useMutation({
+    mutationFn: ()=>{
+      setisLoading(true)
+       getallmenudatatable
+    },
     onSuccess: (response) => {
       if (response) {
         setMenuData(response.data);
         setTotalPages(Math.ceil(response.data.total / limit));
       }
+      setisLoading(false)
     },
+    onError:()=>{
+        setisLoading(false)
+    }
   });
 
 
@@ -300,6 +308,7 @@ const MenuComp = () => {
               totalPages={totalPages}
               onPageChange={handlePageChange}
               pageSize={limit}
+              isLoading={isLoading}
             />
           </div>
           {MenuData.length > 0 && (

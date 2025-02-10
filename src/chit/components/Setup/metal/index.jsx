@@ -29,6 +29,7 @@ const Metal = () => {
     setIsviewOpen(false);
   }
 
+  const [isLoading,setisLoading] = useState(false)
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -37,13 +38,17 @@ const Metal = () => {
   const debouncedSearch = useDebounce(searchInput, 500)
   const limit = 10;
 
-  const { isLoading, mutate: getallmetaltableMutate } = useMutation({
-    mutationFn: getallmetaltable,
+  const {  mutate: getallmetaltableMutate } = useMutation({
+    mutationFn: ()=>{
+      setisLoading(true)
+       getallmetaltable
+    },
     onSuccess: (response) => {
       if (response) {
         setMetalData(response.data);
         setTotalPages(Math.ceil(response.data.total / limit));
       }
+      setisLoading(false)
     },
   });
 
@@ -288,6 +293,7 @@ const Metal = () => {
               totalPages={totalPages}
               onPageChange={handlePageChange}
               pageSize={limit}
+              isLoading={isLoading}
             />
           </div>
 

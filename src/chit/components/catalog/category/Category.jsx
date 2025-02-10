@@ -18,10 +18,12 @@ import Modal from '../../../components/common/Modal';
 const Category = () => {
   const navigate = useNavigate()
 
+  const [isLoading,setisLoading] = useState(false)
   const roledata = useSelector((state) => state.clientForm.roledata);
   let id_client = roledata?.id_client;
   const id_branch = roledata?.branch;
   const [categoryData, setcategoryData] = useState([])
+ 
 
   let dispatch = useDispatch();
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
@@ -116,7 +118,7 @@ const Category = () => {
       id_branch: filters.id_branch
     };
 
-    console.log(filterTosend)
+ 
     getcategoryData(filterTosend);
 
   };
@@ -143,14 +145,19 @@ const Category = () => {
 
   //mutation to get scheme type
   const { mutate: getcategoryData } = useMutation({
-    mutationFn: getcategoryTable,
+    mutationFn: ()=> {
+    getcategoryTable
+    setisLoading(true)
+    },
     onSuccess: (response) => {
-
+     
       setcategoryData(response?.data)
       setTotalPages(response?.data?.totalPages)
+      setisLoading(false)
     },
     onError: (error) => {
       console.error('Error:', error);
+      setisLoading(false)
     }
   });
 
@@ -369,7 +376,7 @@ const Category = () => {
         key={i}
         onClick={() => handlePageChange(i)}
         className={`p-2 w-10 h-10 rounded-md ${currentPage === i ? ' text-white' : 'bg-gray-300 text-gray-900'}`}
-        style={{ backgroundColor: layout_color }}>
+        style={{ backgroundColor: layout_color }} >
         {i}
       </button>
     );
@@ -609,6 +616,7 @@ const Category = () => {
         <Table
           data={categoryData}
           columns={columns}
+          isLoading={isLoading}
         />
       </div>
  

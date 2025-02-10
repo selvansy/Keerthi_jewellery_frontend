@@ -23,7 +23,7 @@ const AddCloseAccount = () => {
 
   const [schemedata, setSchemeData] = useState([]);
   const [selectedId, setSelectedId] = useState("");
-  const [statusId, setStatusId] = useState("")
+  const [statusId, setStatusId] = useState(0)
   const [selectedScheme, setSelectedScheme] = useState(null);
   const [schemestatus, setSchemeStatus] = useState([]);
   const [branchfilter, setBranch] = useState([]);
@@ -232,6 +232,7 @@ const AddCloseAccount = () => {
     }
     else if (name === "status") {
       const numericValue = Number(value);
+ 
       setStatusId(numericValue);
       if (numericValue === 4) {
         setRefundType(true);
@@ -259,7 +260,9 @@ const AddCloseAccount = () => {
       }
 
 
-    } else if (name === "refundPayment") {
+    } 
+    
+    else if (name === "refundPayment") {
       setFormData((prev) => ({
         ...prev,
         refund_paymenttype: value
@@ -355,7 +358,16 @@ const AddCloseAccount = () => {
 
     console.log("FormData----",formData)
 
-    BillClose(formData);
+    BillClose({
+      status: formData.status,
+      id_scheme_account:formData.id_scheme_account,
+    comments: formData.comments,
+    bill_no: formData.bill_no,
+    id_branch: formData.id_branch,
+    bill_date: formData.bill_date,
+    return_amount: formData.return_amount,
+    refund_paymenttype: formData.refund_paymenttype
+    });
     
   }
 
@@ -366,6 +378,7 @@ const AddCloseAccount = () => {
         toast.success(response.message);
         setTimer(60);
         setCanResend(false);
+        navigate("/manageaccount/closedaccount")
       }
     },
   });
@@ -421,10 +434,10 @@ const AddCloseAccount = () => {
               value={mobile || ""}
               onChange={handleChange}
             />
-            <div onClick={handleSearchmobile} className="absolute flex items-center justify-center cursor-pointer right-[0%] top-[70%] -translate-y-1/2 w-10 h-[60%] sm:right-0 sm:top-[68%] sm:rounded-r-lg md:right-[20%] md:rounded-lg lg:rounded-r-md lg:left-[47%]"
-              style={{ backgroundColor: layout_color }}>
-              <Search size={22} className="text-white" />
-            </div>
+             <div onClick={handleSearchmobile} className="absolute flex items-center justify-center cursor-pointer right-[0%] top-[70%] -translate-y-1/2 w-10 h-[56%]  sm:right-0 sm:top-[70%] sm:rounded-r-lg  md:right-[20%] md:rounded-r-lg lg:rounded-r-lg  lg:left-[47%]"
+                                     style={{ backgroundColor: layout_color }}>
+                                     <Search size={22} className="text-white" />
+                                   </div>
             {errors.mobile && <div className="text-red-500 text-sm">{errors.mobile}</div>}
 
           </div>

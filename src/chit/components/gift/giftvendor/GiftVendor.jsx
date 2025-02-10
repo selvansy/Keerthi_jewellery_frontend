@@ -22,18 +22,26 @@ const Giftvendor = () => {
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [branch, setBranch] = useState([]);
   const [searchInput,setSearchInput]=useState('')
+  const [isLoading,setisLoading] = useState(false)
 
   const debouncedSearch = useDebounce(searchInput, 500)
   const limit = 10;
 
-  const { isLoading, mutate: getAllgiftvendorsMutate } = useMutation({
-    mutationFn: getAllgiftvendors,
+  const { mutate: getAllgiftvendorsMutate } = useMutation({
+    mutationFn:()=>{
+    setisLoading(true)
+    getAllgiftvendors
+    },
     onSuccess: (response) => {
       if (response) {
         setgiftvendorData(response.data);
         setTotalPages(Math.ceil(response.data.total / limit));
+        setisLoading(false)
       }
     },
+    onError:()=>{
+      setisLoading(false)
+    }
   });
 
   const { mutate: getallbranchMutate } = useMutation({
@@ -399,6 +407,7 @@ const Giftvendor = () => {
               totalPages={totalPages}
               onPageChange={handlePageChange}
               pageSize={limit}
+              isLoading={isLoading}
             />
           </div>
           <div className="flex justify-between mt-4 p-2">

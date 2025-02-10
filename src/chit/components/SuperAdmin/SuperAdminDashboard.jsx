@@ -13,6 +13,7 @@ import Table from '../common/Table'
 
 function SuperAdminDashboard() {
 
+  const [isLoading,setisLoading] = useState(false)
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   let [data,setData] = useState([]);
   let [paymentData,setPaymentData] = useState([])
@@ -211,7 +212,7 @@ function SuperAdminDashboard() {
               <h2 className="text-lg font-bold px-3">Today's Payment</h2>
             </div>
             <div className="rounded-lg p-5 overflow-y-scroll scrollbar-hide h-64">
-            <Table data={data} columns={columns} />
+            <Table data={data} columns={columns} isLoading={isLoading}/>
           </div>
           </div>
           {/* Table Section */}
@@ -229,7 +230,7 @@ function SuperAdminDashboard() {
                 <h6 className='text-gray-900 text-md font-medium px-2 font-'>Add Payment</h6>
               </div>
             </div>
-            <Table data={paymentMode}  columns={PaymentColumns}/>
+            <Table data={paymentMode}  columns={PaymentColumns} isLoading={isLoading}/>
           </div>
           {/* Pie chart Section */}
           <div className="flex flex-col bg-white items-center justify-between mb-2">

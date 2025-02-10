@@ -24,6 +24,7 @@ function Dashboard() {
 
   let navigate = useNavigate();
   const [search, setSearch] = useState('')
+  const [isLoading,setisLoading] = useState(false)
   const roledata = useSelector((state) => state.clientForm.roledata);
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
@@ -122,9 +123,18 @@ function Dashboard() {
 
 
   const { mutate: PaymentMode } = useMutation({
-    mutationFn: (payload) => getpaymentmodesummary(payload),
+   
+    mutationFn: (payload) => {
+      setisLoading(true)
+      getpaymentmodesummary(payload)
+    },
     onSuccess: (response) => {
       setpaymentMode(response.data);
+      setisLoading(false)
+    },
+    onError: (error) => {
+      console.error('Error:', error);
+      setisLoading(false)
     }
   });
 
@@ -137,10 +147,14 @@ function Dashboard() {
 
   //mutation to get scheme type
   const { mutate: getschemePaymentMutate } = useMutation({
-    mutationFn: schemepaymentdatatable,
+    mutationFn: ()=> {
+      setisLoading(true)
+      schemepaymentdatatable
+    },
     onSuccess: (response) => {
       setData(response.data)
       setTotalPages(response.totalPages)
+      setisLoading(false)
     },
     onError: (error) => {
       console.error('Error:', error);
@@ -210,8 +224,6 @@ function Dashboard() {
     },
 
   ]
-
-
 
 
   const handleItemsPerPageChange = (value) => {
@@ -487,9 +499,9 @@ function Dashboard() {
           <div className="bg-white rounded-lg shadow-md p-5 ">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-2xl font-bold">Today's Metal Rate</h2>
-              <div className="flex items-center justify-center p-3 rounded-md">
-                <img src={plus} alt="plus" className="w-6 h-6" />
-                <h6 className='text-gray-900 text-md font-medium px-2 font- cursor-pointer' onClick={() => navigate("/ourscheme/createmetalrate")}>Add Metal</h6>
+              <div className="flex items-center justify-center p-3 rounded-md cursor-pointer" onClick={() => navigate("/ourscheme/createmetalrate")}>
+                <img src={plus} alt="plus" className="w-6 h-6 cursor-pointer" onClick={() => navigate("/ourscheme/createmetalrate")}/>
+                <h6 className='text-gray-900 text-md font-medium px-2 font- cursor-pointer' onClick={() => navigate("/ourscheme/createmetalrate")} >Add Metal</h6>
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -498,7 +510,7 @@ function Dashboard() {
                 <img src={gold22} alt="Gold (22CT)" className="h-20 w-20 mx-auto mb-2" />
                 <h3 className="text-2xl font-medium text-center mb-1">{metalRate?.goldrate_22ct?.$numberDecimal}</h3>
                 <p className="text-sm text-center text-gray-600">Gold (22CT)</p>
-                {/* <p className="text-xs text-blue-500 text-center mt-1">+5% from yesterday</p> */}
+                
               </div>
 
               {/* Platinum Rate */}
@@ -506,7 +518,7 @@ function Dashboard() {
                 <img src={platinum} alt="Platinum" className="h-20 w-20 mx-auto mb-2" />
                 <h3 className="text-2xl font-medium text-center mb-1">{metalRate?.goldrate_22ct?.$numberDecimal}</h3>
                 <p className="text-sm text-center text-gray-600">Platinum</p>
-                {/* <p className="text-xs text-blue-500 text-center mt-1">+5% from yesterday</p> */}
+              
               </div>
 
               {/* Gold Rate */}
@@ -514,7 +526,7 @@ function Dashboard() {
                 <img src={gold} alt="Gold (20CT)" className="h-20 w-20 mx-auto mb-2" />
                 <h3 className="text-2xl font-medium text-center mb-1">{metalRate?.goldrate_20ct?.$numberDecimal}</h3>
                 <p className="text-sm text-center text-gray-600">Gold (20CT)</p>
-                {/* <p className="text-xs text-blue-500 text-center mt-1">+5% from yesterday</p> */}
+              
               </div>
 
 
@@ -523,7 +535,7 @@ function Dashboard() {
                 <img src={silver} alt="Silver" className="h-20 w-20 mx-auto mb-2" />
                 <h3 className="text-xl font-medium text-center mb-1"> {metalRate?.silverrate_1gm?.$numberDecimal}</h3>
                 <p className="text-sm text-center text-gray-600">Silver</p>
-                {/* <p className="text-xs text-blue-500 text-center mt-1">+5% from yesterday</p> */}
+                
               </div>
 
               {/* Gold Rate */}
@@ -531,7 +543,7 @@ function Dashboard() {
                 <img src={gold18} alt="Gold (22CT)" className="h-20 w-20 mx-auto mb-2" />
                 <h3 className="text-2xl font-medium text-center mb-1">{metalRate?.goldrate_22ct?.$numberDecimal}</h3>
                 <p className="text-sm text-center text-gray-600">Gold COIN</p>
-                {/* <p className="text-xs text-blue-500 text-center mt-1">+5% from yesterday</p> */}
+              
               </div>
 
 
@@ -540,7 +552,7 @@ function Dashboard() {
                 <img src={diamond} alt="Diamond" className="h-20 w-20 mx-auto mb-2" />
                 <h3 className="text-xl font-medium text-center mb-1"> {metalRate?.silverrate_1gm?.$numberDecimal}</h3>
                 <p className="text-sm text-center text-gray-600">Diamond</p>
-                {/* <p className="text-xs text-blue-500 text-center mt-1">+5% from yesterday</p> */}
+           
               </div>
 
             </div>
@@ -551,7 +563,7 @@ function Dashboard() {
               <h2 className="text-lg font-bold px-3">Most Payment Collection</h2>
             </div>
             <div className="rounded-lg p-5 overflow-y-scroll scrollbar-hide h-[35rem]">
-              <Table data={paymentMode} columns={PaymentColumns} />
+              <Table data={paymentMode} columns={PaymentColumns} isLoading={isLoading} />
             </div>
           </div>
           {/* Table Section */}
@@ -564,12 +576,15 @@ function Dashboard() {
           <div className="rounded-lg  shadow-md  bg-white p-3 whitespace-normal">
             <div className='p-2 flex justify-between items-center w-full'>
               <h2 className="text-lg font-bold px-3">Today's Payment</h2>
-              <div className="flex items-center justify-center p-3 rounded-md">
-                <img src={plus} alt="plus" className="w-6 h-6" />
-                <h6 className='text-gray-900 text-md font-medium px-2 font- cursor-pointer' onClick={() => navigate("/payment/addschemepayment")}>Add Payment</h6>
+              <div className="flex items-center justify-center p-3 rounded-md cursor-pointer"  onClick={() => navigate("/payment/addschemepayment")} >
+                <img src={plus} alt="plus" className="w-6 h-6 cursor-pointer"  onClick={() => navigate("/payment/addschemepayment")} />
+                <h6 className='text-gray-900 text-md font-medium px-2 font- cursor-pointer' onClick={() => navigate("/payment/addschemepayment")} >Add Payment</h6>
               </div>
             </div>
-            <Table data={data} columns={columns} />
+
+           
+           <Table data={data} columns={columns} isLoading={isLoading}/>
+           
 
             {data.length > 0 && (
               <div className="flex justify-between mt-4 p-2">
@@ -625,8 +640,8 @@ function Dashboard() {
             {/* Title Section */}
             <div className='p-2 flex justify-between items-center w-full'>
               <h2 className="text-lg font-bold px-3">Account</h2>
-              <div className="flex items-center justify-center p-3 rounded-md">
-                <img src={plus} alt="plus" className="w-6 h-6" />
+              <div className="flex items-center justify-center p-3 rounded-md cursor-pointer">
+                <img src={plus} alt="plus" className="w-6 h-6 cursor-pointer" />
                 <h6 className='text-gray-900 text-md font-medium px-2 font- cursor-pointer' onClick={() => navigate("/manageaccount/addschemeaccount")}>Add Account</h6>
               </div>
             </div>

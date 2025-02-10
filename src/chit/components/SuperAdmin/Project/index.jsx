@@ -15,6 +15,7 @@ import { Formik } from 'formik';
 import * as Yup from 'yup';
 import ModelOne from '../../common/Modelone';
 const ProjectMaster = () => {
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
@@ -26,18 +27,28 @@ const ProjectMaster = () => {
   const [isviewOpen, setIsviewOpen] = useState(false);
   const [searchInput, setSearchInput] = useState('')
   const debouncedSearch = useDebounce(searchInput, 500)
+  const [isLoading,setisLoading] = useState(false)
+
+
   const limit = 10;
   function closeIncommingModal() {
     setIsviewOpen(false);
   }
-  const { isLoading, mutate: getallprojecttableMutate } = useMutation({
-    mutationFn: getallprojecttable,
+  const { mutate: getallprojecttableMutate } = useMutation({
+    mutationFn: ()=>{
+      setisLoading(true)
+      getallprojecttable
+    },
     onSuccess: (response) => {
       if (response) {
         setProjectData(response.data);
         setTotalPages(Math.ceil(response.data.total / limit));
       }
+      setisLoading(false)
     },
+    onError:()=>{
+      setisLoading(false)
+    }
   });
 
   const handleStatusToggle = async (id, currentStatus) => {
@@ -269,6 +280,7 @@ const ProjectMaster = () => {
               totalPages={totalPages}
               onPageChange={handlePageChange}
               pageSize={limit}
+              isLoading={isLoading}
             />
           </div>
           {projectData.length > 0 && (

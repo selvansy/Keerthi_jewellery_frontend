@@ -18,6 +18,7 @@ const MetalRate = () => {
   let navigate = useNavigate()
   let dispatch = useDispatch();
 
+  const [isLoading,setisLoading] = useState(false)
   const [schemeType,setMetalRate]=useState([])
   const [search,setSearch]=useState('')
   const [currentPage, setCurrentPage] = useState(1);
@@ -72,13 +73,18 @@ const MetalRate = () => {
 
   //mutation to get scheme type 
   const {mutate: getmetalratetablemutate } = useMutation({
-    mutationFn: getmetalratetable,
+    mutationFn: ()=>{
+    setisLoading(true)
+    getmetalratetable
+  },
     onSuccess: (response) => {
-      console.log(response)
+   
       setMetalRate(response.data)
       setTotalPages(response.totalPages)
+      setisLoading(false)
     },
     onError: (error) => {
+      setisLoading(false)
       console.error('Error:', error);
     }
   });
@@ -466,6 +472,7 @@ const MetalRate = () => {
         <Table 
         data={schemeType}
         columns={columns}
+        isLoading={isLoading}
         />
       </div>
 

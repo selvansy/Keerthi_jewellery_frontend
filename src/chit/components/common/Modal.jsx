@@ -15,6 +15,7 @@ const Modal = () => {
     const [gift_image, setGiftImage] = useState(null);
     const [vendorfilter, setVendor] = useState([]);
     const [branchfilter, setBranchId] = useState([]);
+    const [isLoading,setisLoading] = useState(false)
     useEffect(() => {
         setLocalFormData(formData || {});
     }, [formData]);
@@ -573,6 +574,7 @@ const Modal = () => {
                       <Table   
                         data={localFormData?.schemeaccount}
                         columns={localFormData?.columns} 
+                        isLoading={isLoading}
                         />
                       </div>
                       </div>

@@ -25,7 +25,7 @@ const Branch = () => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [selectedRow, setSelectedRow] = useState(null);
- 
+  const [isLoading,setisLoading] = useState(false)
 
 
   const formatDate = (dateString) => {
@@ -37,14 +37,22 @@ const Branch = () => {
     return `${day}/${month}/${year}`;
   };
 
-  const { mutate: getallbranchtableMutate, isLoading } = useMutation({
-    mutationFn: getallbranchtable,
+  const { mutate: getallbranchtableMutate } = useMutation({
+    mutationFn: ()=>{
+      setisLoading(true)
+       getallbranchtable
+    },
     onSuccess: (response) => {
       if (response) {
         setBranchData(response.data);
         setTotalPages(response.totalPages);
+       
       }
+      setisLoading(false)
     },
+    onError:()=>{
+        setisLoading(false)
+    }
   });
 
   useEffect(() => {
@@ -311,7 +319,7 @@ const Branch = () => {
       </div>
 
       <div className="mt-4">
-        <Table data={branchData} columns={columns} />
+        <Table data={branchData} columns={columns}  isLoading={isLoading}/>
         {branchData.length > 0 && (
           <div className="flex justify-between mt-4 p-2">
             <div className="flex flex-row items-center justify-center gap-2">

@@ -79,7 +79,7 @@ export const OutstandingTable = ({itemsPerPage, currentPage,setItemsPerPage,setC
     let dispatch = useDispatch();
 
 
-  
+    const [isLoading,setisLoading] = useState(false)
     const [totalPages, setTotalPages] = useState(0);
     const [search,setSearch] = useState("")
 
@@ -96,9 +96,13 @@ export const OutstandingTable = ({itemsPerPage, currentPage,setItemsPerPage,setC
 
       //mutation to get scheme type
       const { mutate: getOutstandingReport } = useMutation({
-        mutationFn: getOutstandingSummaryReport,
+        mutationFn: ()=>{
+            setisLoading(true)
+            getOutstandingSummaryReport
+            
+        },
         onSuccess: (response) => {
-
+          
             dispatch(SetOutreport((response.data)))
             let arrayData = [];
 
@@ -116,13 +120,12 @@ export const OutstandingTable = ({itemsPerPage, currentPage,setItemsPerPage,setC
                 }
 
             }
-
-
             dispatch(SetaccExp(arrayData))
-
+            setisLoading(false)
         },
         onError: (error) => {
-            console.error('Error fetching countries:', error);
+            console.error('Error:', error);
+            setisLoading(false)
         }
     });
 
@@ -209,7 +212,7 @@ export const OutstandingTable = ({itemsPerPage, currentPage,setItemsPerPage,setC
     return <>
         {/* Table  */}
         <div className="mt-4">
-            <Table data={outreport} columns={columns} height="250px"/>
+            <Table data={outreport} columns={columns} isLoading={isLoading} height="250px"/>
         </div>
 
         <div className="flex justify-between mt-4 p-2">

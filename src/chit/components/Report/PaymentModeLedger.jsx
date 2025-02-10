@@ -19,10 +19,10 @@ function ModeWisePayment() {
     const layout_color = useSelector((state) => state.clientForm.layoutColor);
     const roledata = useSelector((state) => state.clientForm.roledata);
     const id_branch = roledata?.branch;
-    console.log(id_branch)
+
 
     const [paymentMode, setpaymentMode] = useState([])
-
+    const [isLoading,setisLoading] = useState(false)
     
      const [branchfilter, setBranch] = useState([]);  
      const [branchId,setbranchId] = useState("")
@@ -279,13 +279,18 @@ function ModeWisePayment() {
 
   //mutation to get scheme type
   const { mutate: getpaymentModeMutate } = useMutation({
-    mutationFn: getpaymentmodesummary,
+    mutationFn: ()=>{
+      setisLoading(true)
+       getpaymentmodesummary
+    },
     onSuccess: (response) => {
        
       setpaymentMode(response.data)
+      setisLoading(false)
     },
     onError: (error) => {
       console.error('Error:', error);
+      setisLoading(false)
     }
   });
 
@@ -558,6 +563,7 @@ function ModeWisePayment() {
     <Table
           data={paymentMode}
           columns={columns}
+          isLoading={isLoading}
         />
     </div>
 

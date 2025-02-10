@@ -27,6 +27,7 @@ const Weddingnotification = () => {
 
   const [notifyData, setnotifyData] = useState([])
   const [filtertype, setNotifyType] = useState([]);
+  const [isLoading,setisLoading] = useState(false)
 
 
   const [search, setSearch] = useState('')
@@ -134,13 +135,18 @@ const Weddingnotification = () => {
 
   //mutation to get scheme type
   const { mutate: getnotificationData } = useMutation({
-    mutationFn: pushnotificationdatatable,
+    mutationFn: ()=>{ 
+      setisLoading(true)
+      pushnotificationdatatable
+    },
     onSuccess: (response) => {
       setnotifyData(response.data)
       setTotalPages(response.totalPages)
+      setisLoading(false)
     },
     onError: (error) => {
-      console.error('Error fetching countries:', error);
+      console.error('Error', error);
+      setisLoading(false)
     }
   });
 
@@ -519,6 +525,7 @@ const Weddingnotification = () => {
         <Table
           data={notifyData}
           columns={columns}
+          isLoading={isLoading}
         />
       </div>
       {notifyData.length > 0 && (

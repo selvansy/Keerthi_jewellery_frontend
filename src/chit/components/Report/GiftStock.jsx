@@ -27,6 +27,7 @@ const GiftStock = () => {
   const roledata = useSelector((state) => state.clientForm.roledata);
   const id_branch = roledata?.branch;
 
+  const [isLoading,setisLoading] = useState(false)
   const [search, setSearch] = useState('')
   const [giftissues, setGiftissues] = useState([])
   const [giftExp,setgiftExp] = useState([]);
@@ -177,7 +178,10 @@ const GiftStock = () => {
 
   //mutation to get scheme type
   const { mutate: giftissuesMutate } = useMutation({
-    mutationFn: giftissuesdatatable,
+    mutationFn: ()=>{
+      setisLoading(true)
+       giftissuesdatatable
+    },
     onSuccess: (response) => {
   
       setGiftissues(response.data)
@@ -201,11 +205,13 @@ const GiftStock = () => {
         }
       }
       
-      setgiftExp(arrayData);      
+      setgiftExp(arrayData);  
+      setisLoading(false)    
 
     },
     onError: (error) => {
       console.error('Error:', error);
+      setisLoading(false)
     }
   });
 
@@ -652,6 +658,7 @@ const GiftStock = () => {
         <Table
           data={giftissues}
           columns={columns}
+          isLoading={isLoading}
         />
       </div>
       <div className="flex justify-between mt-4 p-2">

@@ -15,7 +15,9 @@ const SchemePayment = () => {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   
   const navigate = useNavigate()
+  
   const [search, setSearch] = useState('')
+  const [isLoading,setisLoading] = useState(false)
   const [paymentaccount, setPaymentaccount] = useState([])
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
@@ -156,14 +158,19 @@ const SchemePayment = () => {
 
   //mutation to get scheme type
   const { mutate: getschemeaccountMutate } = useMutation({
-    mutationFn: schemepaymentdatatable,
+    mutationFn: ()=>{
+      setisLoading(true)
+       schemepaymentdatatable
+      },
     onSuccess: (response) => {
 
       setPaymentaccount(response.data)
       setTotalPages(response.totalPages)
+      setisLoading(false)
     },
     onError: (error) => {
-      console.error('Error fetching countries:', error);
+      console.error('Error:', error);
+      setisLoading(false)
     }
   });
 
@@ -702,6 +709,7 @@ const SchemePayment = () => {
         <Table
           data={paymentaccount}
           columns={columns}
+          isLoading={isLoading}
         />
       </div>
       {paymentaccount.length > 0 && (

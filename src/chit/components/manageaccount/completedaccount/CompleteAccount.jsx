@@ -23,6 +23,7 @@ const CompleteAccount = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate()
 
+  const [isLoading,setisLoading] = useState(false)
   const [search, setSearch] = useState('')
   const [schemeaccount, setschemeaccount] = useState([])
   const [schaccExp,setschaccExp] = useState([]);
@@ -246,10 +247,13 @@ const CompleteAccount = () => {
   
 
   //mutation to get scheme type
-  const {isLoading, mutate: getschemeaccountMutate } = useMutation({
-    mutationFn: schemeaccounttable,
+  const { mutate: getschemeaccountMutate } = useMutation({
+    mutationFn: ()=>{
+      setisLoading(true)
+    schemeaccounttable
+    },
     onSuccess: (response) => {
-      console.log(response)
+
       setschemeaccount(response.data)
       setTotalPages(response.totalPages);
       let arrayData = [];
@@ -269,9 +273,11 @@ const CompleteAccount = () => {
       }
       
       setschaccExp(arrayData)
+      setisLoading(false)
     },
     onError: (error) => {
       console.error('Error fetching countries:', error);
+      setisLoading(false)
     }
   });
 
@@ -818,6 +824,7 @@ const CompleteAccount = () => {
         <Table
           data={schemeaccount}
           columns={columns}
+          isLoading={isLoading}
         />
       </div>
       {schemeaccount.length > 0 && (

@@ -339,9 +339,10 @@ const Wallet = () => {
         />
       )}
       </div>
-      {console.log(">>",tableData)}
+     
       <div className="mt-4">
-        <Table data={tableData} />
+        <Table data={tableData} 
+        isLoading={isLoading} />
       </div>
 
       <div className="flex justify-between mt-4 p-2">

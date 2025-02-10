@@ -16,6 +16,7 @@ const Giftinwards = () => {
 
   const navigate = useNavigate()
   const [search, setSearch] = useState('')
+  const [isLoading,setisLoading] = useState(false)
   const [giftinward, setGiftinward] = useState([])
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
@@ -104,14 +105,19 @@ const Giftinwards = () => {
 
   //mutation to get scheme type
   const { mutate: getgiftinwardMutate } = useMutation({
-    mutationFn: getallgiftinwardtable,
-    onSuccess: (response) => {
+    mutationFn: ()=>{
+      setisLoading(true)
 
+     getallgiftinwardtable
+    },
+    onSuccess: (response) => {
       setGiftinward(response.data)
       setTotalPages(response.totalPages)
+      setisLoading(false)
     },
     onError: (error) => {
-      console.error('Error fetching countries:', error);
+      console.error('Error:', error);
+      setisLoading(false)
     }
   });
 
@@ -497,6 +503,7 @@ const Giftinwards = () => {
         <Table
           data={giftinward}
           columns={columns}
+          isLoading={isLoading}
         />
       </div>
       {giftinward.length > 0 && (

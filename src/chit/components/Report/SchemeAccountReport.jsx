@@ -28,6 +28,7 @@ function SchemeAccountReport() {
      const [schemefilter, setScheme] = useState([]);
      const [addedbyfilter, setAddedby] = useState([]);
      const [schemestatusfilter, setSchemestatus] = useState([]);
+     const [isLoading,setisLoading] = useState(false)
     
       const [search, setSearch] = useState('')
  
@@ -360,7 +361,10 @@ function SchemeAccountReport() {
 
   //mutation to get scheme type
   const { mutate: getschemeaccountMutate } = useMutation({
-    mutationFn: schemeaccounttable,
+    mutationFn: ()=>{
+      setisLoading(true)
+       schemeaccounttable
+    },
     onSuccess: (response) => {
   
       setschemeaccount(response.data)
@@ -381,11 +385,13 @@ function SchemeAccountReport() {
       }
       
       setschaccExp(arrayData)
+      setisLoading(false)
       
    
     },
     onError: (error) => {
-      console.error('Error fetching countries:', error);
+      console.error('Error:', error);
+      setisLoading(false)
     }
   });
 
@@ -671,6 +677,7 @@ function SchemeAccountReport() {
     <Table
           data={schemeaccount}
           columns={columns}
+          isLoading={isLoading}
         />
     </div>
 

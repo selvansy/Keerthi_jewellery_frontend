@@ -34,6 +34,7 @@ const ProductWhatsapp = () => {
   let dispatch = useDispatch();
   const navigate = useNavigate()
 
+  const [isLoading,setisLoading] = useState(false)
   const [offerData, setofferData] = useState([])
   const [search, setSearch] = useState('')
   const [isviewOpen, setIsviewOpen] = useState(false);
@@ -187,18 +188,21 @@ const ProductWhatsapp = () => {
   });
 
 
-
-
   //mutation to get scheme type
   const { mutate: getofferData } = useMutation({
-    mutationFn: getoffersTable,
+    mutationFn: ()=>{
+      setisLoading(true)
+       getoffersTable
+    },
     onSuccess: (response) => {
-      console.log("Response", response)
+     
       setofferData(response.data)
       setTotalPages(response.data.totalPages)
+      setisLoading(false)
     },
     onError: (error) => {
-      console.error('Error fetching countries:', error);
+      console.error('Error:', error);
+      setisLoading(false)
     }
   });
 
@@ -626,6 +630,7 @@ const ProductWhatsapp = () => {
         <Table
           data={offerData}
           columns={columns}
+          isLoading={isLoading}
         />
       </div>
       {offerData.length > 0 && (

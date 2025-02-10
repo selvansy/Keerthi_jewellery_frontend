@@ -33,7 +33,7 @@ const GiftInwardsCreation = () => {
     cus_sellprice: ''
   })
   useEffect(() => {
-    console.log('work')
+  
     getallbranchMutate();
   }, []);
 

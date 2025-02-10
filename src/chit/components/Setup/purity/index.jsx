@@ -30,6 +30,7 @@ const Purity = () => {
     const debouncedSearch = useDebounce(searchInput, 500)
     const limit = 10;
     const [isviewOpen, setIsviewOpen] = useState(false);
+    const [isLoading,setisLoading] = useState(false)
     
     
    const layout_color = useSelector((state) => state.clientForm.layoutColor);
@@ -38,14 +39,21 @@ const Purity = () => {
         setIsviewOpen(false);
     }
 
-    const { isLoading, mutate: getallpuritytableMutate } = useMutation({
-        mutationFn: getallpuritytable,
+    const {  mutate: getallpuritytableMutate } = useMutation({
+        mutationFn: ()=>{
+            setisLoading(true)
+             getallpuritytable
+        },
         onSuccess: (response) => {
             if (response) {
                 setpurityData(response.data);
                 setTotalPages(Math.ceil(response.data.total / limit));
             }
+            setisLoading(false)
         },
+        onError:()=>{
+              setisLoading(false)
+        }
     });
     const { mutate: getallmetalMutate } = useMutation({
         mutationFn: getallmetal,
@@ -361,6 +369,7 @@ const Purity = () => {
                             totalPages={totalPages}
                             onPageChange={handlePageChange}
                             pageSize={limit}
+                            isLoading={isLoading}
                         />
                     </div>
                     <div className="flex justify-between mt-4 p-2">

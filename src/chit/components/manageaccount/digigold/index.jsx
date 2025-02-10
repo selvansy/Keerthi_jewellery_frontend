@@ -24,6 +24,7 @@ const DigiGold = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate()
 
+  const [isLoading,setisLoading] = useState(false)
   const [search, setSearch] = useState('')
   const [schemeaccount, setschemeaccount] = useState([])
  const [schaccExp,setschaccExp] = useState([]);
@@ -238,8 +239,11 @@ const DigiGold = () => {
   
 
   //mutation to get scheme type
-  const {isLoading, mutate: getschemeaccountMutate } = useMutation({
-    mutationFn: schemeaccounttable,
+  const {mutate: getschemeaccountMutate } = useMutation({
+    mutationFn: ()=>{ 
+      setisLoading(true)
+      schemeaccounttable
+    },
     onSuccess: (response) => {
 
       setschemeaccount(response.data)
@@ -262,9 +266,11 @@ const DigiGold = () => {
       }
 
       setschaccExp(arrayData)
+      setisLoading(false)
     },
     onError: (error) => {
       console.error('Error fetching countries:', error);
+      setisLoading(false)
     }
   });
 
@@ -785,6 +791,7 @@ const DigiGold = () => {
         <Table
           data={schemeaccount}
           columns={columns}
+          isLoading={isLoading}
         />
       </div>
       {schemeaccount.length > 0 && (

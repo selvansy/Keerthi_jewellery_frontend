@@ -16,6 +16,8 @@ import { setid } from '../../../../redux/clientFormSlice'
 
 
 const Customer = () => {
+
+  const [isLoading,setisLoading] = useState(false)
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const navigate = useNavigate()
   const dispatch = useDispatch();
@@ -55,15 +57,23 @@ const Customer = () => {
     navigate('/manageaccount/addcustomer')
   }
 
-  const { mutate: getcustomertableMutate, isLoading } = useMutation({
-    mutationFn: getcustomertable,
+  const { mutate: getcustomertableMutate} = useMutation({
+    mutationFn: ()=>{
+    setisLoading(true)
+    getcustomertable
+    },
     onSuccess: (response) => {
 
       if (response?.data) {
         setcustomerData(response.data);
         setTotalPages(response.totalPages);
+        
       }
+      setisLoading(false)
     },
+    onError:()=>{
+        setisLoading(false)
+    }
   });
 
   const { mutate: deletecustomerMutate } = useMutation({
@@ -322,6 +332,7 @@ const Customer = () => {
           onPageChange={handlePageChange}
           selectedRow={selectedRow}
           activeDropdown={activeDropdown}
+          isLoading={isLoading}
         />
       </div>
       <div className="flex justify-between mt-4 p-2">

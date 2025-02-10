@@ -43,13 +43,20 @@ const Giftitem = () => {
   }
 
   const { mutate: getallgiftitemtableMutate } = useMutation({
-    mutationFn: getallgiftitemtable,
+    mutationFn: ()=>{
+      setisLoading(true)
+    getallgiftitemtable
+    },
     onSuccess: (response) => {
       if (response) {
         setgiftitemData(response.data);
         setTotalPages(Math.ceil(response.data.total / limit));
+        setisLoading(false)
       }
     },
+    onError:()=>{
+        setisLoading(false)
+    }
   });
 
 
@@ -303,6 +310,7 @@ const Giftitem = () => {
               totalPages={totalPages}
               onPageChange={handlePageChange}
               pageSize={limit}
+              isLoading={isLoading}
             />
           </div>
           {giftitemData.length > 0 && (

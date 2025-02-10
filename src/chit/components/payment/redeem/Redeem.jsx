@@ -1,8 +1,10 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Table from '../../common/Table'
 import { Search } from 'lucide-react'
 
 const Redeem = () => {
+
+  const [isLoading,setisLoading] = useState(false)
   
   return (
     <div className="flex flex-col p-4">
@@ -20,7 +22,7 @@ const Redeem = () => {
       </div>
 
       <div className="mt-4">
-        <Table />
+        <Table isLoading={isLoading}/>
       </div>
     </div>
   )

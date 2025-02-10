@@ -20,6 +20,8 @@ const AdminMaster = () => {
     const [selectedRow, setSelectedRow] = useState(null);
     const [active, setActive] = useState(false);
     const [isAdmin, setisAdmin] = useState(false);
+    const [isLoading,setisLoading] = useState(false)
+    
     const [clientTable, setClientTable] = useState([]);
     const { id } = useParams();
     let dispatch = useDispatch();
@@ -44,9 +46,14 @@ const AdminMaster = () => {
 
 
     const { mutate: getClients } = useMutation({
-        mutationFn: getAllClients,
+        mutationFn: ()=>{
+             getAllClients()
+        },
         onSuccess: (response) => {
             setClientTable(response.data);
+        },
+        onError:()=>{
+              setisLoading(false)
         }
     });
 
@@ -297,7 +304,7 @@ const AdminMaster = () => {
             )}
 
             <div className="mt-4">
-                {(!isAdmin) ? (<Table data={clientTable} columns={columns} selectedRow={selectedRow} />) : (
+                {(!isAdmin) ? (<Table data={clientTable} columns={columns} selectedRow={selectedRow} isLoading={isLoading}/>) : (
 
                     <div className="flex flex-col space-x-0 w-full">
                       <Addadmin setisAdmin={setisAdmin}/>

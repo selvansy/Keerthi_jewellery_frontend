@@ -18,6 +18,8 @@ const SchemeClassification = () => {
   let navigate = useNavigate()
   let dispatch = useDispatch();
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
+
+  const [isLoading,setisLoading] = useState(false)
   const [branchList, setBranchList] = useState([]);
   const [schemeType, setSchemeType] = useState([])
   const [search, setSearch] = useState('')
@@ -45,15 +47,20 @@ const SchemeClassification = () => {
 
   //mutation to get scheme type 
   const { mutate: getClassificationTablemuate } = useMutation({
-    mutationFn: getClassificationTable,
+    mutationFn: ()=>{ 
+      setisLoading(true)
+      getClassificationTable
+    },
     onSuccess: (response) => {
-      console.log(response)
+   
       setSchemeType(response.data)
       setTotalPages(response.totalPages)
       setIsFilterOpen(false);
+      setisLoading(false)
     },
     onError: (error) => {
       console.error('Error:', error);
+      setisLoading(false)
     }
   });
 
@@ -462,6 +469,7 @@ console.log(filterTosend);
         <Table
           data={schemeType}
           columns={columns}
+          isLoading={isLoading}
         />
       </div>
 
