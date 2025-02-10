@@ -18,7 +18,7 @@ const MetalRate = () => {
   let navigate = useNavigate()
   let dispatch = useDispatch();
 
-  const [schemeType,setSchemeType]=useState([])
+  const [schemeType,setMetalRate]=useState([])
   const [search,setSearch]=useState('')
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(5);
@@ -38,18 +38,17 @@ const MetalRate = () => {
   const [from_date, setFromdate] = useState("");
   const [to_date, setTodate] = useState("");
   const [filters, setFilters] = React.useState({
-    from_date: null,
-    to_date: null,
+    from_date: "",
+    to_date: "",
+    search:"",
     limit: itemsPerPage,
     id_branch: id_branch,
     type: "",
   });
 
-  useEffect(() => {
-    getallbranch();
-  }, [])
+
   
-    const { mutate: branchbyClient } = useMutation({
+    const { mutate: getallbranchmutate } = useMutation({
       mutationFn: getallbranch,
       onSuccess: (response) => {
         setBranchList(response.data);
@@ -62,7 +61,7 @@ const MetalRate = () => {
   const applyfilterdatatable = (e) =>{
          e.preventDefault();   
         setIsFilterOpen(false)
-        getmetalratetablemutate({page:currentPage,limit:itemsPerPage,from_date:filters.from_date,to_date:filters.to_date,id_branch:filters.id_branch})
+        getmetalratetablemutate({search:search,page:currentPage,limit:itemsPerPage,from_date:filters.from_date,to_date:filters.to_date,id_branch:filters.id_branch})
       
     };
     const filterInputchange = (e) =>{
@@ -76,7 +75,7 @@ const MetalRate = () => {
     mutationFn: getmetalratetable,
     onSuccess: (response) => {
       console.log(response)
-      setSchemeType(response.data)
+      setMetalRate(response.data)
       setTotalPages(response.totalPages)
     },
     onError: (error) => {
@@ -87,7 +86,8 @@ const MetalRate = () => {
 
 
   useEffect(() => {
-    getmetalratetablemutate({page:currentPage,limit:itemsPerPage,from_date:'',to_date:'',id_branch:''})
+    setMetalRate([]);
+    getmetalratetablemutate({search:search,page:currentPage,limit:itemsPerPage,from_date:'',to_date:'',id_branch:''})
   }, [currentPage,itemsPerPage,search])
 
   const handleSearch = (e) => {
@@ -100,6 +100,10 @@ const MetalRate = () => {
   }
 
 
+  const handleClickfilter = (e) => {
+    getallbranchmutate();
+    setIsFilterOpen(true);
+  }
 
   const handleEdit = (id) => {
     dispatch(setid(id))
@@ -314,9 +318,18 @@ const MetalRate = () => {
             + Create metalrate
           </button>
             <button
+                        id="filter"
+                        className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
+                        onClick={() => handleReset()}
+                        style={{ backgroundColor: layout_color }}>
+                        <RefreshCcw size={20} />
+                    </button>
+            <button
             id="filter"
             className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
-            onClick={() => setIsFilterOpen(true)}
+            onClick={(e) => {
+              handleClickfilter(e);
+            }}
             style={{ backgroundColor: layout_color }}>
             <SlidersHorizontal size={20} />
           </button>

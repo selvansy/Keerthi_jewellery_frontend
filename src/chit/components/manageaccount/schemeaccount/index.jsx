@@ -529,13 +529,13 @@ const [popuptitle, setPopuptitle] = useState(0);
           />
         </div>
         <div className="flex flex-row items-center justify-end gap-2">
-                <button
-                      id="filter"
-                      className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
-                      onClick={() => handleReset()}
-                      style={{ backgroundColor: layout_color }}>
-                      <RefreshCcw size={20} />
-                    </button>
+        <button
+          id="filter"
+          className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
+          onClick={() => handleReset()}
+          style={{ backgroundColor: layout_color }}>
+          <RefreshCcw size={20} />
+        </button>
           
           <button
             id="filter"
@@ -560,8 +560,7 @@ const [popuptitle, setPopuptitle] = useState(0);
       </div>
       <div
         className={`fixed inset-y-0 right-0 w-80 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-40 
-          ${isFilterOpen ? 'translate-x-0' : 'translate-x-full'}`}
-      >
+          ${isFilterOpen ? 'translate-x-0' : 'translate-x-full'}`}>
         <div className="flex flex-col h-full">
           <div className="flex justify-between items-center p-3">
             <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
