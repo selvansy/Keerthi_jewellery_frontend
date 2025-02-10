@@ -30,15 +30,18 @@ const GiftInwardsCreation = () => {
     vendor: '',
     qty: '',
     gst_percenty: '',
-    cus_sellprice: ''
+    cus_sellprice: '',
+    id_branch:id_branch,
   })
   useEffect(() => {
   
     getallbranchMutate();
+    if(id_branch !=="0"){
+      handleVendorChange(id_branch);
+    }
   }, []);
 
   const handleVendorChange = async (selectedBranchId) => {
-
     if (!selectedBranchId) return;
     const response = await getgiftvendorbranchById({ "id_branch": selectedBranchId });
     if (response) {
@@ -164,7 +167,7 @@ const GiftInwardsCreation = () => {
     if (!formData.gst_percenty) errors.gst_percenty = 'Gst Percentage is required';
     if (!formData.price) errors.price = 'Price is required';
     if (!formData.cus_sellprice) errors.cus_sellprice = 'Customer Sell Price is required';
-  
+  console.log(errors)
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };

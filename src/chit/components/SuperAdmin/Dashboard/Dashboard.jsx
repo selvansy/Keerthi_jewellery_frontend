@@ -86,6 +86,7 @@ function Dashboard() {
   }
 
   useEffect(() => {
+    console.log("roledata",roledata)
     if(id_branch === "0"){    
       getTodaysMetalRate({ id_branch: roledata.id_branch, date: todayDate })
     } else {
