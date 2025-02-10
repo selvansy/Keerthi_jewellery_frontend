@@ -18,7 +18,7 @@ function SubmenuForm({ setIsOpen, getallsubmenusMutate, menus }) {
     const id_branch = roledata?.branch;
     const id_project = roledata?.id_project;
     const [isLoading, setisLoading] = useState(false);
-
+    const layout_color = useSelector((state) => state.clientForm.layoutColor);
     let dispatch = useDispatch();
     const id = useSelector((state) => state.clientForm.id);
 

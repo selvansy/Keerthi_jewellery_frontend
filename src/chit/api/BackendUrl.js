@@ -393,7 +393,10 @@ export const schemepaymenttodayrate = async (data) => {
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/payment/metalrate/${data}`);
     return response.data;
 }
-
+export const getaccountSummaryReport = async () => {
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/reports/accountsummary`);
+    return response.data;
+}
 
 export const getOutstandingSummaryReport = async () => {
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/reports/accountsummary`);

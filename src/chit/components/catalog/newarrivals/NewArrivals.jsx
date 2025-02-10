@@ -257,50 +257,6 @@ const NewArrivals = () => {
 
   const columns = [
     {
-      header: 'S.No',
-      cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
-    },
-    {
-      header: 'Title',
-      cell: (row) => row?.name,
-    },
-    {
-      header: "Description",
-      cell: (row) => row?.description
-    },
-   
-    {
-      header: "Price",
-      cell: (row) => row?.price.$numberDecimal
-    },
-    {
-      header: "Create Date",
-      cell: (row) => {
-        const date = new Date(row?.createdAt);
-        return date.toLocaleDateString('en-GB'); // 'en-GB' gives the d-m-Y format
-      }
-    },
-    {
-      header: 'Active',
-      accessor: 'active',
-      cell: (row) => (
-        <label className="relative inline-flex items-center cursor-pointer">
-          <input
-            type="checkbox"
-            className="sr-only peer"
-            checked={row?.active === true}
-            onChange={() => handleStatusToggle(row?._id)}
-          />
-          <div
-            className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-black p-[2px] after:duration-300 after:bg-black ${row?.active === true
-              ? 'peer-checked:bg-[#61A375] peer-checked:ring-[#61A375]'
-              : 'peer-checked:bg-gray-400 peer-checked:ring-gray-400'
-              } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-white peer-hover:after:scale-95`}
-          ></div>
-        </label>
-      )
-    },
-    {
       header: 'Actions',
       cell: (row, rowIndex) => (
         <div className="dropdown-container relative">
@@ -319,7 +275,7 @@ const NewArrivals = () => {
 
           {activeDropdown === row?._id && (
             <div
-              className="absolute right-[47px] lg:right-[163px] md:right-[150px] sm:right-[100px] transform -translate-x-8"
+              className="absolute"
               style={{
                 top: rowIndex >= newarrivalsData?.length - 2 ? 'auto' : '72%',
                 bottom: rowIndex >= newarrivalsData?.length - 2 ? '-74%' : 'auto',
@@ -372,7 +328,52 @@ const NewArrivals = () => {
         </div>
       ),
 
+    },
+    {
+      header: 'S.No',
+      cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
+    },
+    {
+      header: 'Title',
+      cell: (row) => row?.name,
+    },
+    {
+      header: "Description",
+      cell: (row) => row?.description
+    },
+   
+    {
+      header: "Price",
+      cell: (row) => row?.price.$numberDecimal
+    },
+    {
+      header: "Create Date",
+      cell: (row) => {
+        const date = new Date(row?.createdAt);
+        return date.toLocaleDateString('en-GB'); // 'en-GB' gives the d-m-Y format
+      }
+    },
+    {
+      header: 'Active',
+      accessor: 'active',
+      cell: (row) => (
+        <label className="relative inline-flex items-center cursor-pointer">
+          <input
+            type="checkbox"
+            className="sr-only peer"
+            checked={row?.active === true}
+            onChange={() => handleStatusToggle(row?._id)}
+          />
+          <div
+            className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-black p-[2px] after:duration-300 after:bg-black ${row?.active === true
+              ? 'peer-checked:bg-[#61A375] peer-checked:ring-[#61A375]'
+              : 'peer-checked:bg-gray-400 peer-checked:ring-gray-400'
+              } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-white peer-hover:after:scale-95`}
+          ></div>
+        </label>
+      )
     }
+  
   ];
 
   const paginationButtons = [];

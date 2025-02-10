@@ -24,7 +24,7 @@ function Dashboard() {
 
   let navigate = useNavigate();
   const [search, setSearch] = useState('')
-  console.log("decoded",localStorage.getItem('decoded'));
+
   const roledata = useSelector((state) => state.clientForm.roledata);
   // const roledata = useSelector((state) => state.clientForm.roledata);
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
@@ -86,23 +86,26 @@ function Dashboard() {
   }
 
   useEffect(() => {
-    if(id_branch){
-      getTodaysMetalRate({ id_branch: id_branch, date: todayDate })
-      
-      
+    if(id_branch === "0"){    
+      getTodaysMetalRate({ id_branch: roledata.id_branch, date: todayDate })
+    } else {
+      getTodaysMetalRate({ id_branch: roledata.branch, date: todayDate })
+    }
+    console.log(roledata)
     let payload = {
       from_date: "",
       to_date: "",
       id_branch: id_branch
     }
+    
     PaymentMode(payload);
     CardSummary(payload);
 
     getschemePaymentMutate(payload)
-    console.log("br---",id_branch)
+ 
 
-  }
-  }, [roledata,filters])
+  
+  }, [roledata])
 
     const handleallbranch = async (e) => {  
   

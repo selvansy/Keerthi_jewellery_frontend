@@ -675,7 +675,7 @@ export const getactivemenuaccess = async (data) => {
     return response.data;
 }
 
-export const getOutstandingReport = async (data) => {
+export const getaccountSummaryReport = async (data) => {
     const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/admin/accountsummaryreport`,data);
     return response.data;
 }

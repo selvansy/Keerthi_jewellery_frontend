@@ -8,7 +8,7 @@ import ExportDropdown from '../../components/common/Dropdown/Export';
 import { ExportToExcel } from '../common/Dropdown/Excelexport';
 import { ExportToPDF } from '../common/Dropdown/ExportPdf';
 import {
-    getbranchbyclient,getallbranchclassification, getallScheme,getallbranch,getOutstandingReport,
+    getbranchbyclient,allbranchclassification, getallScheme,getallbranch,getaccountSummaryReport,
     getallmetal, puritybymetal, allinstallmenttype, wastagetype,getallschemetypes, addscheme
 } from "../../../chit/api/Endpoints";
 import { SlidersHorizontal, Search, X } from 'lucide-react'
@@ -19,12 +19,13 @@ import { useSelector } from 'react-redux';
 
 function AccountSummaryReport() {
 
-    const roledata = useSelector((state) => state.clientForm.roledata);
+    const roledata = localStorage.getItem('decoded');
  
     const id_role = roledata?.id_role?.id_role;
     const id_client = roledata?.id_client;
     const id_branch = roledata?.branch;
-
+  
+  const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
     const [accsumm, setaccsumm] = useState([])
     const [accExp, setaccExp] = useState([]);
@@ -79,7 +80,7 @@ function AccountSummaryReport() {
             scheme_type: filters.scheme_type
         };
 
-        OutstandingReport(filterTosend)
+        getaccountSummarymuate(filterTosend)
     }, [currentPage, itemsPerPage, search])
 
    
@@ -93,7 +94,6 @@ function AccountSummaryReport() {
     useEffect(() => {
         if (isFilterOpen === true) {
             getBranchList();
-            OutstandingReport();
             getAllSchemeTypes()
             allclassification({id_branch:id_branch})
         }
@@ -188,8 +188,8 @@ function AccountSummaryReport() {
   
 
     //mutation to get scheme type
-    const { mutate: OutstandingReport } = useMutation({
-        mutationFn:getOutstandingReport,
+    const { mutate: getaccountSummarymuate } = useMutation({
+        mutationFn:getaccountSummaryReport,
         onSuccess: (response) => {
   
             setaccsumm(response.data)
@@ -258,7 +258,6 @@ function AccountSummaryReport() {
         },
     });
 
-
     const columns = [
         {
             header: 'S.No',
@@ -308,9 +307,10 @@ function AccountSummaryReport() {
             header: "Total Account",
             cell: (row) => row?.total_account
         },
-        
-        
+
+
     ];
+
 
     const handleReset = (e) => {
         setFromdate("");

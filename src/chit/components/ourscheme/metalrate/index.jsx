@@ -1,31 +1,31 @@
-import React, { useEffect,useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Table from '../../common/Table'
-import {setid} from "../../../../redux/clientFormSlice"
+import { setid } from "../../../../redux/clientFormSlice"
 import { useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
-import {getmetalratetable,deletemetalrate,getallbranch } from "../../../api/Endpoints"
+import { getmetalratetable, deletemetalrate, getallbranch } from "../../../api/Endpoints"
 import { eventEmitter } from '../../../../utils/EventEmitter';
 import Modal from '../../common/Modal';
 import { openModal } from '../../../../redux/modalSlice';
 import { toast } from 'react-toastify'
 import { useDispatch, useSelector } from 'react-redux'
 import { SlidersHorizontal, Search, X } from 'lucide-react'
-import { CalendarDays, RefreshCcw} from 'lucide-react'
+import { CalendarDays, RefreshCcw } from 'lucide-react'
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 const MetalRate = () => {
-  
+
   let navigate = useNavigate()
   let dispatch = useDispatch();
 
-  const [schemeType,setMetalRate]=useState([])
-  const [search,setSearch]=useState('')
-   const [currentPage, setCurrentPage] = useState(1);
+  const [schemeType, setMetalRate] = useState([])
+  const [search, setSearch] = useState('')
+  const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(10);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-   const [isviewOpen, setIsviewOpen] = useState(false);
+  const [isviewOpen, setIsviewOpen] = useState(false);
 
-  const [activeDropdown,setActiveDropdown]=useState(null)
+  const [activeDropdown, setActiveDropdown] = useState(null)
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
 
@@ -40,7 +40,7 @@ const MetalRate = () => {
   const [filters, setFilters] = React.useState({
     from_date: "",
     to_date: "",
-    search:"",
+    search: "",
     limit: itemsPerPage,
     id_branch: id_branch,
     type: "",
@@ -49,35 +49,35 @@ const MetalRate = () => {
   const handleReset = (e) => {
     setFromdate("");
     setTodate("");
-  toast.success("Filter is cleared");
-    getmetalratetablemutate({search:search,page:currentPage,limit:itemsPerPage,from_date:'',to_date:'',id_branch:''}) 
+    toast.success("Filter is cleared");
+    getmetalratetablemutate({ search: search, page: currentPage, limit: itemsPerPage, from_date: '', to_date: '', id_branch: '' })
   }
-  
-    const { mutate: getallbranchmutate } = useMutation({
-      mutationFn: getallbranch,
-      onSuccess: (response) => {
-        setBranchList(response.data);
-      },
-      onError: (error) => {
-        console.error("Error:", error);
-      },
-    });
 
-  const applyfilterdatatable = (e) =>{
-         e.preventDefault();   
-        setIsFilterOpen(false)
-        getmetalratetablemutate({search:search,page:currentPage,limit:itemsPerPage,from_date:from_date,to_date:to_date,id_branch:filters.id_branch})
-      
-    };
-    
-    const filterInputchange = (e) =>{
-      const {name, value} = e.target;
-      setFilters(prev=>({...prev,[name]:value}));    
-    };
-  
+  const { mutate: getallbranchmutate } = useMutation({
+    mutationFn: getallbranch,
+    onSuccess: (response) => {
+      setBranchList(response.data);
+    },
+    onError: (error) => {
+      console.error("Error:", error);
+    },
+  });
+
+  const applyfilterdatatable = (e) => {
+    e.preventDefault();
+    setIsFilterOpen(false)
+    getmetalratetablemutate({ search: search, page: currentPage, limit: itemsPerPage, from_date: from_date, to_date: to_date, id_branch: filters.id_branch })
+
+  };
+
+  const filterInputchange = (e) => {
+    const { name, value } = e.target;
+    setFilters(prev => ({ ...prev, [name]: value }));
+  };
+
 
   //mutation to get scheme type 
-  const {mutate: getmetalratetablemutate } = useMutation({
+  const { mutate: getmetalratetablemutate } = useMutation({
     mutationFn: getmetalratetable,
     onSuccess: (response) => {
       console.log(response)
@@ -93,8 +93,8 @@ const MetalRate = () => {
 
   useEffect(() => {
     setMetalRate([]);
-    getmetalratetablemutate({search:search,page:currentPage,limit:itemsPerPage,from_date:'',to_date:'',id_branch:''})
-  }, [currentPage,itemsPerPage,search])
+    getmetalratetablemutate({ search: search, page: currentPage, limit: itemsPerPage, from_date: '', to_date: '', id_branch: '' })
+  }, [currentPage, itemsPerPage, search])
 
   const handleSearch = (e) => {
     setSearch(e.target.value)
@@ -118,93 +118,48 @@ const MetalRate = () => {
 
   const handleDelete = (id) => {
     setActiveDropdown(null);
-      dispatch(openModal({
-        modalType: 'CONFIRMATION',
-        header: 'Delete Scheme',
-        formData: {
-          message: 'Are you sure you want to delete this Scheme?',
-          schemeId: id
+    dispatch(openModal({
+      modalType: 'CONFIRMATION',
+      header: 'Delete Scheme',
+      formData: {
+        message: 'Are you sure you want to delete this Scheme?',
+        schemeId: id
+      },
+      buttons: {
+        cancel: {
+          text: 'Cancel'
         },
-        buttons: {
-          cancel: {
-            text: 'Cancel'
-          },
-          submit: {
-            text: 'Delete'
-          }
+        submit: {
+          text: 'Delete'
         }
-      }));
+      }
+    }));
 
+  };
+
+  useEffect(() => {
+    eventEmitter.on('CONFIRMATION_SUBMIT', async (data) => {
+      try {
+
+        let response = await deletemetalrate(data.schemeId);
+        toast.success(response.message);
+        getmetalratetablemutate({ page: currentPage, limit: itemsPerPage, search: search, from_date: from_date, to_date: to_date, id_branch: filters.id_branch })
+      } catch (error) {
+        console.error('Error deleting giftitem:', error);
+      }
+    });
+    return () => {
+      eventEmitter.off('CONFIRMATION_SUBMIT');
     };
+  }, [eventEmitter, schemeType]);
 
-     useEffect(() => {
-      eventEmitter.on('CONFIRMATION_SUBMIT', async (data) => {
-        try {
-          
-          let response = await deletemetalrate(data.schemeId);
-          toast.success(response.message);
-         getmetalratetablemutate({page:currentPage,limit:itemsPerPage,search:search,from_date:from_date,to_date:to_date,id_branch:filters.id_branch})
-        } catch (error) {
-          console.error('Error deleting giftitem:', error);
-        }
-      });
-        return () => {
-          eventEmitter.off('CONFIRMATION_SUBMIT');
-        };
-      }, [eventEmitter,schemeType]);
-  
 
   const columns = [
-    {
-      header: 'S.No',
-      cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
-    },
-    {
-      header: "Update Date",
-      cell: (row) => {
-        const date = new Date(row?.createdAt);
-        return date.toLocaleDateString('en-GB'); // 'en-GB' gives the d-m-Y format
-      }
-    },
-    {
-      header: "Gold(18CT)", 
-      cell: (row) => row?.goldrate_18ct.$numberDecimal
-    },
-    {
-      header: "Gold(20CT)", 
-      cell: (row) => row?.goldrate_20ct.$numberDecimal
-    },
-    {
-      header: "Gold(22CT)", 
-      cell: (row) => row?.goldrate_22ct.$numberDecimal
-    },
-    {
-      header: "Gold(24CT)", 
-      cell: (row) => row?.goldrate_24ct.$numberDecimal
-    },
-    {
-      header: "Silver", 
-      cell: (row) => row?.silverrate_1gm.$numberDecimal
-    },
-    {
-      header: "Platinum", 
-      cell: (row) => row?.platinum_1gm.$numberDecimal
-    },
-    {
-      header: "Diamond", 
-      cell: (row) => row?.diamond_1gm.$numberDecimal
-    },
-    {
-      header: "Gold Coin", 
-      cell: (row) => row?.goldcoin_1gm.$numberDecimal
-    },
-   
-  
     {
       header: 'Actions',
       cell: (row, rowIndex) => (
         <div className="dropdown-container relative">
-          <button 
+          <button
             className="p-1 hover:bg-gray-100 rounded-full"
             onClick={(e) => {
               e.stopPropagation();
@@ -215,13 +170,13 @@ const MetalRate = () => {
               <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
             </svg>
           </button>
-          
+
           {activeDropdown === row?._id && (
-            <div 
-              className="absolute right-[47px] lg:right-[163px] md:right-[150px] sm:right-[100px] transform -translate-x-8" 
+            <div
+              className="absolute"
               style={{
                 top: rowIndex >= schemeType.length - 2 ? 'auto' : '72%',
-                 bottom: rowIndex >= schemeType.length - 2 ? '-74%' : 'auto',
+                bottom: rowIndex >= schemeType.length - 2 ? '-74%' : 'auto',
                 // top: 'auto',
                 // bottom: '-440%',
                 zIndex: 9999,
@@ -270,8 +225,52 @@ const MetalRate = () => {
           )}
         </div>
       ),
-     
+
+    },
+    {
+      header: 'S.No',
+      cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
+    },
+    {
+      header: "Update Date",
+      cell: (row) => {
+        const date = new Date(row?.createdAt);
+        return date.toLocaleDateString('en-GB'); // 'en-GB' gives the d-m-Y format
+      }
+    },
+    {
+      header: "Gold(18CT)",
+      cell: (row) => row?.goldrate_18ct.$numberDecimal
+    },
+    {
+      header: "Gold(20CT)",
+      cell: (row) => row?.goldrate_20ct.$numberDecimal
+    },
+    {
+      header: "Gold(22CT)",
+      cell: (row) => row?.goldrate_22ct.$numberDecimal
+    },
+    {
+      header: "Gold(24CT)",
+      cell: (row) => row?.goldrate_24ct.$numberDecimal
+    },
+    {
+      header: "Silver",
+      cell: (row) => row?.silverrate_1gm.$numberDecimal
+    },
+    {
+      header: "Platinum",
+      cell: (row) => row?.platinum_1gm.$numberDecimal
+    },
+    {
+      header: "Diamond",
+      cell: (row) => row?.diamond_1gm.$numberDecimal
+    },
+    {
+      header: "Gold Coin",
+      cell: (row) => row?.goldcoin_1gm.$numberDecimal
     }
+
   ];
 
   const paginationButtons = [];
@@ -288,7 +287,7 @@ const MetalRate = () => {
   }
 
   const handleItemsPerPageChange = (value) => {
-    
+
     setItemsPerPage(value);
     setCurrentPage(1);
   };
@@ -296,16 +295,16 @@ const MetalRate = () => {
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
- 
+
   return (
     <div className="flex flex-col p-4">
-      <h2 className="text-2xl text-gray-900 font-bold">Metal Rate</h2> 
+      <h2 className="text-2xl text-gray-900 font-bold">Metal Rate</h2>
       <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
         <div className="relative w-full lg:w-1/3 min-w-[200px]">
           <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
             <Search className="text-gray-500" />
           </div>
-          <input 
+          <input
             placeholder="Search..."
             className="p-3 pl-10 pr-3 border-2 bg-[#F5F5F5] border-gray-500 rounded-md w-full"
             onChange={handleSearch}
@@ -319,14 +318,14 @@ const MetalRate = () => {
             style={{ backgroundColor: layout_color }} >
             + Create metalrate
           </button>
-            <button
-                        id="filter"
-                        className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
-                        onClick={() => handleReset()}
-                        style={{ backgroundColor: layout_color }}>
-                        <RefreshCcw size={20} />
-                    </button>
-            <button
+          <button
+            id="filter"
+            className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
+            onClick={() => handleReset()}
+            style={{ backgroundColor: layout_color }}>
+            <RefreshCcw size={20} />
+          </button>
+          <button
             id="filter"
             className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
             onClick={(e) => {
@@ -335,7 +334,7 @@ const MetalRate = () => {
             style={{ backgroundColor: layout_color }}>
             <SlidersHorizontal size={20} />
           </button>
-            
+
         </div>
       </div>
       <div
@@ -396,52 +395,52 @@ const MetalRate = () => {
               </div>
 
               <div className="space-y-2">
-              {
-                id_branch === "0" && (
-                      <div className="flex flex-col lg:mt-2">
-                <label className="text-black mb-1 font-medium">
-                  Branch<span className="text-red-400">*</span>
-                </label>
-                <div className="relative">
-                <select
-                    name="id_branch"
-                    className={`appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 ${!id_branch !== "0" ? "cursor-not-allowed bg-gray-100" : ""
-                    }`}
-                    defaultValue=""
-                    onChange={filterInputchange}
-                    value={filters.id_branch}
-                  >
-                    <option value=""  className="text-gray-700">
-                      --Select--
-                    </option>
-                    {branchList.map((branch) => (
-                      <option
-                        className="text-gray-700"
-                        key={branch._id}
-                        value={branch._id}
-                      >
-                        {branch.branch_name}
-                      </option>
-                    ))}
-                  </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                    <svg
-                      className="h-4 w-4 text-gray-400"
-                      fill="none"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="3"
-                      viewBox="0 0 24 24"
-                      stroke="black"
-                    >
-                      <path d="M19 9l-7 7-7-7"></path>
-                    </svg>
-                  </div>
-                </div>
-               
-              </div>
-              
-               )}
+                {
+                  id_branch === "0" && (
+                    <div className="flex flex-col lg:mt-2">
+                      <label className="text-black mb-1 font-medium">
+                        Branch<span className="text-red-400">*</span>
+                      </label>
+                      <div className="relative">
+                        <select
+                          name="id_branch"
+                          className={`appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 ${!id_branch !== "0" ? "cursor-not-allowed bg-gray-100" : ""
+                            }`}
+                          defaultValue=""
+                          onChange={filterInputchange}
+                          value={filters.id_branch}
+                        >
+                          <option value="" className="text-gray-700">
+                            --Select--
+                          </option>
+                          {branchList.map((branch) => (
+                            <option
+                              className="text-gray-700"
+                              key={branch._id}
+                              value={branch._id}
+                            >
+                              {branch.branch_name}
+                            </option>
+                          ))}
+                        </select>
+                        <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                          <svg
+                            className="h-4 w-4 text-gray-400"
+                            fill="none"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="3"
+                            viewBox="0 0 24 24"
+                            stroke="black"
+                          >
+                            <path d="M19 9l-7 7-7-7"></path>
+                          </svg>
+                        </div>
+                      </div>
+
+                    </div>
+
+                  )}
               </div>
 
               <div className="p-4 borde">
@@ -465,60 +464,61 @@ const MetalRate = () => {
         />
       )}
       <div className="mt-4">
-        <Table 
-        data={schemeType}
-        columns={columns}
+        <Table
+          data={schemeType}
+          columns={columns}
         />
       </div>
-
-      <div className="flex justify-between mt-4 p-2">
-        <div className="flex flex-row items-center justify-center gap-2">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-              className="p-2 text-gray-500 rounded-md"
-            >
-              Previous
-            </button>
-          </div>
-
+      {schemeType.length > 0 && (
+        <div className="flex justify-between mt-4 p-2">
           <div className="flex flex-row items-center justify-center gap-2">
-            {paginationButtons}
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="p-2 text-gray-500 rounded-md"
+              >
+                Previous
+              </button>
+            </div>
+
+            <div className="flex flex-row items-center justify-center gap-2">
+              {paginationButtons}
+            </div>
+
+            <div className="flex items-center">
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="p-2 text-gray-500 rounded-md"
+              >
+                Next
+              </button>
+            </div>
           </div>
 
-          <div className="flex items-center">
-            <button
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className="p-2 text-gray-500 rounded-md"
+          <div className="mt-4 flex gap-2 justify-center items-center">
+            <span className="text-gray-500">Show</span>
+            <select
+              id="itemsPerPage"
+              value={itemsPerPage}
+              onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
+              className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
             >
-              Next
-            </button>
+              <option value={10}>10</option>
+              <option value={25}>25</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+              <option value={250}>250</option>
+              <option value={500}>500</option>
+              <option value={1000}>1000</option>
+            </select>
+            <span className="text-gray-500">entries</span>
           </div>
-        </div>
 
-        <div className="mt-4 flex gap-2 justify-center items-center">
-          <span className="text-gray-500">Show</span>
-          <select
-            id="itemsPerPage"
-            value={itemsPerPage}
-            onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
-            className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
-          >
-            <option value={10}>10</option>
-<option value={25}>25</option>
-<option value={50}>50</option>
-<option value={100}>100</option>
-<option value={250}>250</option>
-<option value={500}>500</option>
-<option value={1000}>1000</option>
-          </select>
-          <span className="text-gray-500">entries</span>
+          <Modal />
         </div>
-
-        <Modal/>
-      </div>
+      )}
     </div>
   )
 }
