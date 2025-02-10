@@ -38,8 +38,6 @@ Api.interceptors.response.use(
 
       const { data } = error.response;
 
-      console.log(data.message);
-
       toast.error(data.message);
 
     } else {

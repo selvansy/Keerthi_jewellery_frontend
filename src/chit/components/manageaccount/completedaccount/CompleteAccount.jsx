@@ -234,6 +234,15 @@ const CompleteAccount = () => {
         setSchemestatus(response.data);
       }
     };
+
+    const formatDate = (dateString) => {
+      if (!dateString) return '';
+      const date = new Date(dateString);
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = date.getFullYear();
+      return `${day}/${month}/${year}`;
+    };
   
 
   //mutation to get scheme type
@@ -245,20 +254,20 @@ const CompleteAccount = () => {
       setTotalPages(response.totalPages);
       let arrayData = [];
       if (response.data.length !== 0) {
-          for (const i in response.data) {
+          for (let item of response.data) {
               arrayData.push({
-                account_name:response.data[i].account_name,
-                mobile:response.data[i].mobile,
-                mobile:response.data[i].id_customer.mobile,
-                scheme_name: response.data.id_scheme.scheme_name, 
-                total_paidamount:response.data[i].total_paidamount,
-                total_weight:response.data[i].total_weight,
-                branch_name:response.data[i].branch_name
+                  Acc_num: item.scheme_acc_number,
+                  Name: item.account_name,
+                  Mobile: item.mobile,
+                  Paidinstallments: item.total_paidinstallments,
+                  Paidamount: item.total_paidamount,
+                  Total_weight: item.total_weight,
+                  Start_date: formatDate(item.start_date),
+                  Maturity_date:formatDate(item.maturity_date),
               });
           }
-
       }
-      console.log(arrayData)
+      
       setschaccExp(arrayData)
     },
     onError: (error) => {
@@ -608,8 +617,8 @@ const CompleteAccount = () => {
 
             <div className="flex flex-row items-center justify-end gap-2">
           
-                    <ExportToExcel apiData={schemeaccount} fileName="SchemeAccount Report" />
-                    <ExportToPDF apiData={schaccExp} fileName="scheme account" />
+                    <ExportToExcel apiData={schemeaccount} fileName="CompletedAccount Report" />
+                    <ExportToPDF apiData={schaccExp} fileName="CompletedAccount Report" />
                   </div>
         </div>
       </div>

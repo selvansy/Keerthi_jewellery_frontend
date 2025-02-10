@@ -13,6 +13,7 @@ import DatePicker from "react-datepicker";
 import { ExportToExcel } from '../common/Dropdown/Excelexport';
 import { ExportToPDF } from '../common/Dropdown/ExportPdf';
 import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 
 function SchemeAccountReport() {
 
@@ -379,7 +380,6 @@ function SchemeAccountReport() {
           }
       }
       
-     console.log(arrayData)
       setschaccExp(arrayData)
       
    
@@ -388,6 +388,36 @@ function SchemeAccountReport() {
       console.error('Error fetching countries:', error);
     }
   });
+
+  const handleReset = () => {
+    setFromdate("");
+    setTodate("");
+    setFilters(() => ({
+      from_date:from_date,
+       to_date:to_date,
+       added_by:'',
+       scheme_status:'',
+       id_classification: '',
+       collectionuserid: '',
+       id_scheme: '',
+       id_branch: '',
+       scheme_type:''
+    }));
+
+    toast.success("Filter is cleared");
+ 
+    getschemeaccountMutate( {
+      from_date:from_date,
+      to_date:to_date,
+      added_by:'',
+      scheme_status:'',
+      id_classification: '',
+      collectionuserid: '',
+      id_scheme: '',
+      id_branch: '',
+      scheme_type:''
+    });
+  }
 
 
   return (
@@ -412,6 +442,14 @@ function SchemeAccountReport() {
           style={{ backgroundColor: layout_color }} >
           <SlidersHorizontal size={20} />
         </button>
+
+        <button
+            id="filter"
+            className="text-white bg-[#023453] w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
+            onClick={() => handleReset()}
+          >
+            <RefreshCcw size={20} />
+          </button>
       
         <ExportToExcel apiData={schemeaccount} fileName="SchemeAccount Report" />
         <ExportToPDF  apiData={schaccExp} fileName="scheme account"/>
@@ -430,6 +468,8 @@ function SchemeAccountReport() {
           >
             <X size={20} />
           </button>
+
+      
         </div>
          <form className='overflow-y-auto  scrollbar-hide'>
                  <div className="p-3 space-y-4 flex-1 overflow-y-auto filterscroll"> 

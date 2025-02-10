@@ -50,8 +50,8 @@ const CloaseAccount = () => {
     from_date: from_date,
     to_date: to_date,
     added_by: '',
-    scheme_status: '',
-    type: 'close',
+    scheme_status: "",
+    type: 1,
     id_classification: '',
     collectionuserid: '',
     id_scheme: '',
@@ -148,7 +148,7 @@ const CloaseAccount = () => {
       limit: itemsPerPage,
       search: search,
       added_by: filters.added_by,
-      type: 'close',
+      type: 1,
       scheme_status: filters.scheme_status,
       id_classification: filters.id_classification,
       collectionuserid: filters.collectionuserid,
@@ -173,7 +173,6 @@ const CloaseAccount = () => {
   const { mutate: getallbranchMutate } = useMutation({
     mutationFn: getallbranch,
     onSuccess: (response) => {
-      console.log('jut')
       if (response) {
         setBranch(response.data);
       }
@@ -185,10 +184,10 @@ const CloaseAccount = () => {
     if (!e.target.value) return;
     const response = await getallbranchclassification({ "id_branch": e.target.value });
     if (response) {
+      console.log(response)
       setClassify(response.data);
     }
   };
-
 
 
 
@@ -255,9 +254,6 @@ const CloaseAccount = () => {
                     total_weight:response.data[i].total_weight,
                     start_date:response.data[i].start_date,
                     maturity_date:response.data[i].maturity_date,
-                    total_paidinstallments:response.data[i].total_paidinstallments,
-                    total_paidamount:response.data[i].total_paidamount,
-                    total_weight:response.data[i].total_weight,
                     branch_name:response.data[i].branch_name
             
                   });
@@ -280,7 +276,7 @@ const CloaseAccount = () => {
       limit: itemsPerPage,
       search: search,
       added_by: filters.added_by,
-      type: 'close',
+      type: 1,
       scheme_status: filters.scheme_status,
       id_classification: filters.id_classification,
       collectionuserid: filters.collectionuserid,
@@ -411,14 +407,14 @@ const CloaseAccount = () => {
       header: "Start Date",
       cell: (row) => {
         const date = new Date(row?.start_date);
-        return date.toLocaleDateString('en-GB'); // 'en-GB' gives the d-m-Y format
+        return date.toLocaleDateString('en-GB');
       }
     },
     {
       header: "Maturity Date",
       cell: (row) => {
         const date = new Date(row?.maturity_date);
-        return date.toLocaleDateString('en-GB'); // 'en-GB' gives the d-m-Y format
+        return date.toLocaleDateString('en-GB'); 
       }
     },
     
@@ -428,7 +424,7 @@ const CloaseAccount = () => {
     },
     {
       header: "Paid Ins",
-      cell: (row) => row?.total_paidinstallments
+      cell: (row) => row?.last_paid_installment
     },
     {
       header: "Paid Amt",

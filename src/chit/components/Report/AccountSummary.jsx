@@ -52,8 +52,8 @@ function AccountSummaryReport() {
     const [from_date, setFromdate] = useState('');
     const [to_date, setTodate] = useState('');
     const [filters, setFilters] = React.useState({
-        from_date:null,
-        to_date:null,
+        from_date:from_date,
+        to_date:to_date,
         limit: itemsPerPage,
         id_classification: '',
         id_scheme: '',
@@ -110,7 +110,7 @@ function AccountSummaryReport() {
     };
 
     const applyfilterdatatable = (e) => {
-        console.log("vbnm,.")
+    
         e.preventDefault();
         const filterTosend = {
             from_date: from_date,
@@ -185,11 +185,7 @@ function AccountSummaryReport() {
     };
 
 
-    const handleApplyFilters = () => {
-        // Here you can implement the filtering logic
-        console.log('Applying filters:', filters);
-        setIsFilterOpen(false);
-    };
+  
 
     //mutation to get scheme type
     const { mutate: OutstandingReport } = useMutation({
@@ -217,7 +213,7 @@ function AccountSummaryReport() {
 
         },
         onError: (error) => {
-            console.error('Error fetching countries:', error);
+            console.error('Error:', error);
         }
     });
 
@@ -316,6 +312,31 @@ function AccountSummaryReport() {
         
     ];
 
+    const handleReset = (e) => {
+        setFromdate("");
+        setTodate("");
+        setFilters({
+            from_date: "",
+            to_date: "",
+            limit: itemsPerPage,
+            id_branch: "",
+            id_metal: "",
+            category: "",
+            sell: "",
+            purity: "",
+            displayprice: ""
+        })
+        toast.success("Filter is cleared");
+     
+        getproductData({   
+            from_date:from_date,
+            to_date:to_date,
+            limit: itemsPerPage,
+            id_classification: '',
+            id_scheme: '',
+            id_branch: '', });
+      }
+
 
 
 
@@ -341,10 +362,14 @@ function AccountSummaryReport() {
                         style={{ backgroundColor: layout_color }}>
                         <SlidersHorizontal size={20} />
                     </button>
-                    {/* <ExportDropdown 
-                        onExportExcel={exportToExcel} 
-                        onExportPDF={exportToPDF} 
-                    /> */}
+                    <button
+            id="filter"
+            className="text-white bg-[#023453] w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
+            onClick={() => handleReset()}
+          >
+            <RefreshCcw size={20} />
+          </button>
+
                     <ExportToExcel apiData={accsumm} fileName="Account Summary Report" />
                     <ExportToPDF apiData={accExp} fileName="Account Summary Report" />
                 </div>
@@ -533,7 +558,7 @@ function AccountSummaryReport() {
                             <div className="p-4 borde">
                                 <div className="bg-yellow-300 flex justify-center gap-3">
                                     <button
-                                        onClick={handleApplyFilters}
+                                        onClick={applyfilterdatatable}
                                         className="flex-1 px-4 py-2 bg-[#61A375] text-white rounded-md"
                                     >
                                         Apply

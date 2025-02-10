@@ -72,7 +72,7 @@ function Dashboard() {
     }
     PaymentMode(payload);
     CardSummary(payload);
-    console.log("br---",id_branch)
+  
   }
   }, [roledata])
 
