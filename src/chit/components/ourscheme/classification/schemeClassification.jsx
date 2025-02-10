@@ -85,7 +85,7 @@ console.log(filterTosend);
       page: currentPage,
       limit: itemsPerPage,
       id_branch: id_branch,
-      typesofscheme:2,
+      typesofscheme:1,
     })
   }, [currentPage, itemsPerPage, search])
   const handleReset = (e) => {
@@ -100,7 +100,7 @@ console.log(filterTosend);
       page: currentPage,
       limit: itemsPerPage,
       id_branch: id_branch,
-      typesofscheme:2,
+      typesofscheme:1,
     })
   }
  
