@@ -113,7 +113,7 @@ const AddProduct = () => {
         setMetalid(value);
         setFormData({
           ...formData,
-          [name]: id_metal.value,
+          [name]: value,
           id_purity: ''
         });
         handlecategorybymetal(value);
@@ -130,16 +130,9 @@ const AddProduct = () => {
       setMetalcost(value || 0);
     }
 
-
-    if (name === "purity") {
-      const purity = filterpurity.find(
-        (purity) => purity._id === value
-      );
-      if (purity) {
-        setSelectedpurity(purity.id_purity);
-      } else {
-        setSelectedpurity(0);
-      }
+console.log(name)
+    if (name === "id_purity") {
+      setSelectedpurity(value);
       todayrateMutate({ id_branch: id_branch,date:todaydate });
     }
 
@@ -175,7 +168,8 @@ const AddProduct = () => {
     onSuccess: (response) => {
       if (response.data) {
         let metalRate = 0;
-        if (parseInt(selectedmetal) === 1) { // Gold
+        console.log(parseInt(formData.id_metal))
+        if (parseInt(formData.id_metal) === 1) { // Gold
           switch (parseInt(selectedpurity)) {
             case 1:
               metalRate = response.data.goldrate_24ct.$numberDecimal;

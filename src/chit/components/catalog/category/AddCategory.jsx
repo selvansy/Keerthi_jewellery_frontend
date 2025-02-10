@@ -89,6 +89,14 @@ const AddCategory = () => {
       ...prev,
       [name]: value,
     }));
+
+    if(name === "id_metal"){
+      setFormData((prev) => ({
+        ...prev,
+        [name]: Number(value),
+      }));
+  
+    }
     setFormErrors((prev) => ({
       ...prev,
       [name]: "",
@@ -253,7 +261,7 @@ const AddCategory = () => {
         <div className="flex flex-col p-4 bg-white relative">
 
           <div className="grid grid-rows-2 md:grid-cols-2 gap-5 border-gray-300 mb-10">
-            { id_branch !== "0" && (
+            { id_branch === "0" && (
           
                   <div className="flex flex-col lg:mt-2">
                     <label className="text-black mb-2 font-medium">
