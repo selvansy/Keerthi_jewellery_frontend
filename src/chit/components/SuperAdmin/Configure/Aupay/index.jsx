@@ -21,7 +21,7 @@ import {
 
 } from 'lucide-react';
 const AupayConfigure = () => {
-
+  const layout_color = useSelector((state) => state.clientForm.layoutColor);
     // const [isFilterOpen, setIsFilterOpen] = React.useState(false);
     const [selectedRow, setSelectedRow] = useState(null);
     const [project, setProject] = useState([]);
@@ -63,6 +63,43 @@ const AupayConfigure = () => {
 
 
     const columns = [
+        {
+            header: 'Actions',
+            cell: (row, rowIndex) => (
+                <div className="dropdown-container">
+
+
+
+                    <div className=" text-center ">
+                        <div className="w-32 rounded-md  ring-1" style={{ backgroundColor: layout_color }}>
+                            <div className="py-1">
+                                <button key={row?._id}
+                                    className="w-full text-left px-4 py-2  flex-row justify-center item-center text-sm text-white flex items-center gap-2"
+                                    onClick={() => {
+                                        console.log(row?.id_branch)
+                                        console.log(row?.id_client)
+                                        dispatch(setClientId(row?.id_client))
+                                        dispatch(setProjectId(row?.id_project))
+                                        dispatch(setAupayurl(row?.aupay_url))
+                                        dispatch(setbranchId(row?.id_branch))
+                                        setSelectedRow(row?._id);
+                                        setActiveDropdown(activeDropdown === row?._id ? null : row?._id);
+                                        dispatch(pagehandler(0))
+                                        setIsAddClient(true)
+                                        dispatch(setSelectedProject(row?.project_name))
+                                    }}
+                                >
+                                    Configure
+
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            ),
+            sticky: 'right'
+        },
         {
             header: 'S.No',
             cell: (_, index) => index + 1,
@@ -111,44 +148,8 @@ const AupayConfigure = () => {
           {
             header: 'Launch Date',
             cell: (row) => `${row?.launch_date || '0000-00-00' }`,
-          },
-        {
-            header: 'Actions',
-            cell: (row, rowIndex) => (
-                <div className="dropdown-container relative">
-
-
-
-                    <div className=" right-[47px] lg:right-[235px] md:right-[150px] sm:right-[100px] transform -translate-x-8">
-                        <div className="w-32 rounded-md bg-green-500 ring-1 hover:bg-gray-100">
-                            <div className="py-1">
-                                <button key={row?._id}
-                                    className="w-full text-left px-4 py-2  flex-row justify-center item-center text-sm text-gray-700  flex items-center gap-2"
-                                    onClick={() => {
-                                        console.log(row?.id_branch)
-                                        console.log(row?.id_client)
-                                        dispatch(setClientId(row?.id_client))
-                                        dispatch(setProjectId(row?.id_project))
-                                        dispatch(setAupayurl(row?.aupay_url))
-                                        dispatch(setbranchId(row?.id_branch))
-                                        setSelectedRow(row?._id);
-                                        setActiveDropdown(activeDropdown === row?._id ? null : row?._id);
-                                        dispatch(pagehandler(0))
-                                        setIsAddClient(true)
-                                        dispatch(setSelectedProject(row?.project_name))
-                                    }}
-                                >
-                                    Configure
-
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            ),
-            sticky: 'right'
-        }
+          }
+        
     ];
 
     const steps = [

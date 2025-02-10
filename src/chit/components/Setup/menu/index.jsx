@@ -157,39 +157,6 @@ const MenuComp = () => {
 
   const columns = [
     {
-      header: 'S.No',
-      cell: (_, index) => index + 1 + (currentPage - 1) * limit,
-    },
-    {
-      header: 'Menu Name',
-      accessor: 'menu_name',
-    },
-    {
-      header: 'Display Order',
-      accessor: 'display_order',
-    },
-
-    {
-      header: 'Status',
-      accessor: 'active',
-      cell: (row) => (
-        <label className="relative inline-flex items-center cursor-pointer">
-          <input
-            type="checkbox"
-            className="sr-only peer"
-            checked={row?.active === true}
-            onChange={() => handleStatusToggle(row?._id, row?.active)}
-          />
-          <div
-            className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-black p-[2px] after:duration-300 after:bg-black ${row.active === true
-              ? 'peer-checked:bg-[#61A375] peer-checked:ring-[#61A375]'
-              : 'peer-checked:bg-gray-400 peer-checked:ring-gray-400'
-              } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-white peer-hover:after:scale-95`}
-          ></div>
-        </label>
-      )
-    },
-    {
       header: 'Actions',
       cell: (row, rowIndex) => (
         <div className="dropdown-container relative">
@@ -210,9 +177,12 @@ const MenuComp = () => {
               className="absolute"
               style={{
                 top: rowIndex >= MenuData.length - 2 ? 'auto' : '72%',
-                bottom: rowIndex >= MenuData.length - 2 ? '100%' : 'auto',
-                left: '-83%',
+                bottom: rowIndex >= MenuData.length - 2 ? '-74%' : 'auto',
+                // top: 'auto',
+                // bottom: '-440%',
                 zIndex: 9999,
+                marginBottom: '8px',
+                filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.15))'
               }}
             >
               <div className="w-32 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
@@ -257,7 +227,41 @@ const MenuComp = () => {
         </div>
       ),
       sticky: 'right'
+    },
+    {
+      header: 'S.No',
+      cell: (_, index) => index + 1 + (currentPage - 1) * limit,
+    },
+    {
+      header: 'Menu Name',
+      accessor: 'menu_name',
+    },
+    {
+      header: 'Display Order',
+      accessor: 'display_order',
+    },
+
+    {
+      header: 'Status',
+      accessor: 'active',
+      cell: (row) => (
+        <label className="relative inline-flex items-center cursor-pointer">
+          <input
+            type="checkbox"
+            className="sr-only peer"
+            checked={row?.active === true}
+            onChange={() => handleStatusToggle(row?._id, row?.active)}
+          />
+          <div
+            className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-black p-[2px] after:duration-300 after:bg-black ${row.active === true
+              ? 'peer-checked:bg-[#61A375] peer-checked:ring-[#61A375]'
+              : 'peer-checked:bg-gray-400 peer-checked:ring-gray-400'
+              } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-white peer-hover:after:scale-95`}
+          ></div>
+        </label>
+      )
     }
+   
   ];
 
   const handleSearch = (e) => {

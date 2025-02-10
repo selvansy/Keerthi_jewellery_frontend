@@ -225,41 +225,6 @@ const Weddingnotification = () => {
 
   const columns = [
     {
-      header: 'S.No',
-      cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
-    },
-    {
-      header: 'Title',
-      cell: (row) => row?.noti_name,
-    },
-    {
-      header: "Image",
-      cell: (row) => row?.noti_image
-    },
-    {
-      header: "Description",
-      cell: (row) => row?.noti_desc
-    },
-    {
-      header: "Sent Message",
-      cell: (row) => row?.total_sent
-    },
-    {
-      header: "Display Type",
-      cell: (row) => row?.senttype === 1 ? 'Offers' : row?.senttype === 2 ? 'New Arrivals' : row?.senttype === 3 ? 'Product' : row?.senttype === 4 ? 'Wedding' : 'Birthday'
-    },
-    {
-      header: "Branch",
-      cell: (row) => row?.id_branch.branch_name
-    },
-    {
-      header: "Create Date",
-      cell: (row) => {
-        const date = new Date(row?.createdAt);
-        return date.toLocaleDateString('en-GB'); // 'en-GB' gives the d-m-Y format
-      }
-    },
-    {
       header: 'Actions',
       cell: (row, rowIndex) => (
         <div className="dropdown-container relative">
@@ -278,7 +243,7 @@ const Weddingnotification = () => {
 
           {activeDropdown === row?._id && (
             <div
-              className="absolute right-[47px] lg:right-[163px] md:right-[150px] sm:right-[100px] transform -translate-x-8"
+              className="absolute"
               style={{
                 top: rowIndex >= notifyData.length - 2 ? 'auto' : '72%',
                 bottom: rowIndex >= notifyData.length - 2 ? '-74%' : 'auto',
@@ -318,7 +283,15 @@ const Weddingnotification = () => {
                     </svg>
                     Delete
                   </button>
-
+                  <button
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                    onClick={() => setActiveDropdown(null)}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    Cancel
+                  </button>
                 </div>
               </div>
             </div>
@@ -326,7 +299,43 @@ const Weddingnotification = () => {
         </div>
       ),
 
+    },
+    {
+      header: 'S.No',
+      cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
+    },
+    {
+      header: 'Title',
+      cell: (row) => row?.noti_name,
+    },
+    {
+      header: "Image",
+      cell: (row) => row?.noti_image
+    },
+    {
+      header: "Description",
+      cell: (row) => row?.noti_desc
+    },
+    {
+      header: "Sent Message",
+      cell: (row) => row?.total_sent
+    },
+    {
+      header: "Display Type",
+      cell: (row) => row?.senttype === 1 ? 'Offers' : row?.senttype === 2 ? 'New Arrivals' : row?.senttype === 3 ? 'Product' : row?.senttype === 4 ? 'Wedding' : 'Birthday'
+    },
+    {
+      header: "Branch",
+      cell: (row) => row?.id_branch.branch_name
+    },
+    {
+      header: "Create Date",
+      cell: (row) => {
+        const date = new Date(row?.createdAt);
+        return date.toLocaleDateString('en-GB'); // 'en-GB' gives the d-m-Y format
+      }
     }
+ 
   ];
 
   const paginationButtons = [];

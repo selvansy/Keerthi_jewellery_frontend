@@ -73,7 +73,7 @@ const Base = ({ renderContent: RenderContent }) => {
   const { info } = useSelector((state) => state.auth);
   const decoded = jwtDecode(info);
 
-console.log("decode",decoded);
+
   let id = decoded.id_role._id;
 
   // let id = "6792109203f5d0fceab07e92"
@@ -110,7 +110,7 @@ console.log("decode",decoded);
 
 
   useEffect(() => {
-    console.log(laycolor)
+
     if(laycolor!==""){
       let id_branch = "";
       if(decoded.branch === "0"){
