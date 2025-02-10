@@ -25,7 +25,7 @@ function Dashboard() {
   let navigate = useNavigate();
   const [search, setSearch] = useState('')
   console.log("decoded",localStorage.getItem('decoded'));
-  const roledata = localStorage.getItem('decoded');
+  const roledata = useSelector((state) => state.clientForm.roledata);
   // const roledata = useSelector((state) => state.clientForm.roledata);
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
@@ -97,8 +97,10 @@ function Dashboard() {
     }
     PaymentMode(payload);
     CardSummary(payload);
+
     getschemePaymentMutate(payload)
     console.log("br---",id_branch)
+
   }
   }, [roledata,filters])
 

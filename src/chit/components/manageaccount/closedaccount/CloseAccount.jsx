@@ -41,7 +41,7 @@ const CloaseAccount = () => {
   const [schemefilter, setScheme] = useState([]);
   const [addedbyfilter, setAddedby] = useState([]);
   const [schemestatusfilter, setSchemestatus] = useState([]);
-  const roledata = localStorage.getItem('decoded');
+  const roledata = useSelector((state) => state.clientForm.roledata);
   let id_client = roledata?.id_client;
   const id_branch = roledata?.branch;
   const [branchList, setBranchList] = useState([]);
@@ -55,8 +55,8 @@ const CloaseAccount = () => {
     from_date: from_date,
     to_date: to_date,
     added_by: '',
-    scheme_status: '',
-    type: 'close',
+    scheme_status: "",
+    type: 1,
     id_classification: '',
     collectionuserid: '',
     id_scheme: '',
@@ -193,7 +193,7 @@ const CloaseAccount = () => {
       limit: itemsPerPage,
       search: search,
       added_by: filters.added_by,
-      type: 'close',
+      type: 1,
       scheme_status: filters.scheme_status,
       id_classification: filters.id_classification,
       collectionuserid: filters.collectionuserid,
@@ -213,7 +213,6 @@ const CloaseAccount = () => {
   const { mutate: getallbranchMutate } = useMutation({
     mutationFn: getallbranch,
     onSuccess: (response) => {
-      console.log('jut')
       if (response) {
         setBranch(response.data);
       }
@@ -225,10 +224,10 @@ const CloaseAccount = () => {
     if (!e.target.value) return;
     const response = await getallbranchclassification({ "id_branch": e.target.value });
     if (response) {
+      console.log(response)
       setClassify(response.data);
     }
   };
-
 
 
 
@@ -284,6 +283,7 @@ const CloaseAccount = () => {
       setschemeaccount(response.data)
       setTotalPages(response.totalPages);
       let arrayData = [];
+
       if (response.data.length !== 0) {
         for (var i = 0; i < response.data.length; i++) {
           arrayData.push({
@@ -299,6 +299,8 @@ const CloaseAccount = () => {
 
           });
         }
+
+     
       }
 
       setschaccExp(arrayData)
@@ -317,7 +319,7 @@ const CloaseAccount = () => {
       limit: itemsPerPage,
       search: search,
       added_by: filters.added_by,
-      type: 'close',
+      type: 1,
       scheme_status: filters.scheme_status,
       id_classification: filters.id_classification,
       collectionuserid: filters.collectionuserid,
@@ -448,14 +450,14 @@ const CloaseAccount = () => {
       header: "Start Date",
       cell: (row) => {
         const date = new Date(row?.start_date);
-        return date.toLocaleDateString('en-GB'); // 'en-GB' gives the d-m-Y format
+        return date.toLocaleDateString('en-GB');
       }
     },
     {
       header: "Maturity Date",
       cell: (row) => {
         const date = new Date(row?.maturity_date);
-        return date.toLocaleDateString('en-GB'); // 'en-GB' gives the d-m-Y format
+        return date.toLocaleDateString('en-GB'); 
       }
     },
 
@@ -465,7 +467,7 @@ const CloaseAccount = () => {
     },
     {
       header: "Paid Ins",
-      cell: (row) => row?.total_paidinstallments
+      cell: (row) => row?.last_paid_installment
     },
     {
       header: "Paid Amt",

@@ -16,7 +16,7 @@ const AddGiftIssued = () => {
   const todaydate = new Date();
   const { id } = useParams()
   
-  const roledata = localStorage.getItem('decoded');
+  const roledata = useSelector((state) => state.clientForm.roledata);
   const id_role = roledata?.id_role?.id_role;
   const id_client = roledata?.id_client;
   const id_branch = roledata?.branch;

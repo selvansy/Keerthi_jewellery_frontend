@@ -23,7 +23,7 @@ const Pushnotification = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch();
 
-  const roledata = localStorage.getItem('decoded');
+  const roledata = useSelector((state) => state.clientForm.roledata);
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const id_branch = roledata?.branch;
 

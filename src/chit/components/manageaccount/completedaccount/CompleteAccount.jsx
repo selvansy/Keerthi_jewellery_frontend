@@ -45,7 +45,7 @@ const [popuptitle, setPopuptitle] = useState(0);
   const [displaysetting, setDiplaySetting] = useState(0);
   const [ispayable, setIspayable] = useState(false);
   const [isviewOpen, setIsviewOpen] = useState(false);
-  const roledata = localStorage.getItem('decoded');
+  const roledata = useSelector((state) => state.clientForm.roledata);
   let id_client = roledata?.id_client;
   const id_branch = roledata?.branch;
   const [branchList, setBranchList] = useState([]);
@@ -216,6 +216,15 @@ const [popuptitle, setPopuptitle] = useState(0);
       if (response) {
         setSchemestatus(response.data);
       }
+    };
+
+    const formatDate = (dateString) => {
+      if (!dateString) return '';
+      const date = new Date(dateString);
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = date.getFullYear();
+      return `${day}/${month}/${year}`;
     };
   
 
@@ -595,6 +604,7 @@ const [popuptitle, setPopuptitle] = useState(0);
                     <SlidersHorizontal size={20} />
                   </button>
                 </div>
+
       </div>
       <div
         className={`fixed inset-y-0 right-0 w-80 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-40 

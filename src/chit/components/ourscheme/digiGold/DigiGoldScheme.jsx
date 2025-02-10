@@ -25,7 +25,7 @@ const DigiGoldScheme = () => {
   const [totalPages, setTotalPages] = useState(10);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [isviewOpen, setIsviewOpen] = useState(false);
-  const roledata = localStorage.getItem('decoded');
+  const roledata = useSelector((state) => state.clientForm.roledata);
   let id_client = roledata?.id_client;
   const branch = roledata?.branch;
   const [activeDropdown, setActiveDropdown] = useState(null)

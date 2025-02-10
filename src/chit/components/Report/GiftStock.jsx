@@ -15,6 +15,8 @@ import nonchitrcvd from '../../../assets/nonchitrcvd.svg';
 import balancegift from '../../../assets/giftblnc.svg';
 import { useDispatch,useSelector } from 'react-redux'
 import { setbranchId } from '../../../redux/clientFormSlice';
+import { ExportToExcel } from '../common/Dropdown/Excelexport';
+import { ExportToPDF } from '../common/Dropdown/ExportPdf';
 
 
 const GiftStock = () => {
@@ -22,17 +24,20 @@ const GiftStock = () => {
   const navigate = useNavigate()
   
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
-  const roledata = localStorage.getItem('decoded');
-  const branch = roledata?.branch;
+
+  const roledata = useSelector((state) => state.clientForm.roledata);
+  const id_branch = roledata?.branch;
+
 
   const [search, setSearch] = useState('')
   const [giftissues, setGiftissues] = useState([])
+  const [giftExp,setgiftExp] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedRow, setSelectedRow] = useState(null)
   const [activeDropdown, setActiveDropdown] = useState(null)
-  const [isFilterOpen, setIsFilterOpen] = React.useState(false);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [from_date, setFromdate] = useState('');
   const [to_date, setTodate] = useState('');
   const [vendorfilter, setVendor] = useState([]);
@@ -40,11 +45,12 @@ const GiftStock = () => {
   const [giftitemfilter, setGiftitem] = useState([]);
   const [giftcount,setGiftcount]  = useState({});
   const [issuetype, setIssuetype] = useState([]);
-  const [id_branch, setIdrancbh] = useState(branch);
-  const [filters, setFilters] = React.useState({
+
+
+  const [filters, setFilters] = useState({
     from_date: '',
     to_date: '',
-    id_branch: branch,
+    id_branch: id_branch,
     gift_vendorid: '',
     id_gift: ''
   });
@@ -75,25 +81,37 @@ const GiftStock = () => {
       gift_vendorid: filters.gift_vendorid,
       id_gift: filters.id_gift
     };
-    setbranchId(filters.id_branch);
+
+      setbranchId(filters.id_branch);
 
       setIsFilterOpen(false)
       giftissuesMutate(filterTosend);
-    
-    giftaccountcountMutate(filterTosend);
+      giftaccountcountMutate(filterTosend);
   };
 
   useEffect(() => {
+    const requestData = {
+      page: currentPage,
+      from_date: "",
+      to_date: "",
+      limit: itemsPerPage,
+      search: "",
+      id_branch: id_branch,
+      gift_vendorid: "",
+      id_gift: ""
+    };
+
     getallbranchMutate();
+    giftissuesMutate(requestData);
     getallissuetypeMutate();
   }, []);
 
   useEffect(() => {
-    console.log("id_branch---",branch)
-    if(branch){
+    
+    if(id_branch === "0"){
        giftaccountcountMutate({id_branch:branch});
     }
-  }, [branch]);
+  }, [id_branch]);
 
   const { mutate: giftaccountcountMutate } = useMutation({
     mutationFn: giftaccountcount,
@@ -102,7 +120,6 @@ const GiftStock = () => {
         setGiftcount(response?.data);
       }
    
-      
     },
   });
 
@@ -111,7 +128,7 @@ const GiftStock = () => {
   const { mutate: getallbranchMutate } = useMutation({
     mutationFn: getallbranch,
     onSuccess: (response) => {
-      console.log('jut')
+      
       if (response) {
         setBranch(response.data);
       }
@@ -138,17 +155,59 @@ const GiftStock = () => {
     }
   };
 
+  const getGiftNames = (row) => {
+    if (!row?.gifts) return ""; 
+    const giftNames = row.gifts
+      .map((val) => val?.id_gift?.gift_name) 
+      .filter(Boolean); 
+    return giftNames.join(", ");
+  };
+
+ 
+
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
+  const issuedType = (row) => row?.issue_type === 1 ? 'Scheme Gift' : 'Non Scheme Gift';
+  
 
   //mutation to get scheme type
   const { mutate: giftissuesMutate } = useMutation({
     mutationFn: giftissuesdatatable,
     onSuccess: (response) => {
-
+  
       setGiftissues(response.data)
       setTotalPages(response.totalPages)
+      let arrayData = [];
+
+      if (response.data.length !== 0) {
+        for (let i in response.data) {
+          let item = response.data[i]; 
+      
+          arrayData.push({
+            FirstName: item?.id_customer?.firstname,
+            LastName: item?.id_customer?.lastname,
+            mobile: item?.id_customer?.mobile,
+            GiftName: getGiftNames(item),
+            GiftsLength: item.gifts?.length,
+            IssueType: issuedType(item.issue_type),
+            IssueDate: formatDate(item.create_date),
+            branch_name: item?.id_branch?.branch_name
+          });
+        }
+      }
+      
+      setgiftExp(arrayData);      
+
     },
     onError: (error) => {
-      console.error('Error fetching countries:', error);
+      console.error('Error:', error);
     }
   });
 
@@ -218,7 +277,31 @@ const GiftStock = () => {
     );
   }
 
-
+  const handleReset = (e) => {
+    setFromdate("");
+    setTodate("");
+    setFilters(() => ({
+      from_date: '',
+      to_date: '',
+      id_branch: id_branch,
+      gift_vendorid: '',
+      id_gift: ''
+    }));
+    toast.success("Filter is cleared");
+ 
+    giftissuesMutate({ 
+       from_date: '',
+      to_date: '',
+      id_branch: id_branch,
+      gift_vendorid: '',
+      id_gift: '' });
+      giftaccountcountMutate({ 
+        from_date: '',
+        to_date: '',
+        id_branch: id_branch,
+        gift_vendorid: '',
+        id_gift: ''})
+  }
 
 
   const columns = [
@@ -281,8 +364,6 @@ const GiftStock = () => {
               style={{
                 top: rowIndex >= giftissues.length - 2 ? 'auto' : '72%',
                 bottom: rowIndex >= giftissues.length - 2 ? '-74%' : 'auto',
-                // top: 'auto',
-                // bottom: '-440%',
                 zIndex: 9999,
                 marginBottom: '8px',
                 filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.15))'
@@ -313,6 +394,8 @@ const GiftStock = () => {
 
     }
   ];
+
+
 
   return (
     <div className="flex flex-col p-4">
@@ -396,12 +479,20 @@ const GiftStock = () => {
             style={{ backgroundColor: layout_color }}>
             <SlidersHorizontal size={20} />
           </button>
+          
           <button
             className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
             onClick={handleClick}
             style={{ backgroundColor: layout_color }} >
             + Add Gift Issues
           </button>
+
+
+
+
+                 <ExportToExcel apiData={giftExp} fileName="GiftIssues Report" />
+                 <ExportToPDF  apiData={giftExp} fileName="GiftIssues Report"/>
+
         </div>
       </div>
       <div
@@ -479,7 +570,7 @@ const GiftStock = () => {
                   </div>
                 </div>
               </div>
-              {branch === "0" && (
+              {id_branch === "0" && (
                  <div className="space-y-2">
                  <label className="block text-sm font-medium text-gray-700">
                    Branch
@@ -601,12 +692,12 @@ const GiftStock = () => {
             className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
           >
             <option value={10}>10</option>
-<option value={25}>25</option>
-<option value={50}>50</option>
-<option value={100}>100</option>
-<option value={250}>250</option>
-<option value={500}>500</option>
-<option value={1000}>1000</option>
+            <option value={25}>25</option>
+            <option value={50}>50</option>
+            <option value={100}>100</option>
+            <option value={250}>250</option>
+            <option value={500}>500</option>
+            <option value={1000}>1000</option>
           </select>
           <span className="text-gray-500">entries</span>
         </div>

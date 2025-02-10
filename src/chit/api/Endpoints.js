@@ -1,3 +1,4 @@
+
 import Api from "./Api";
 import axios from "axios";
 
@@ -737,8 +738,6 @@ export const getallmenu = async () => {
  
 
 
- 
-
 /* submenu*/
  
 export const getallsubmenudatatable = async (data) => {
@@ -1199,6 +1198,7 @@ export const getallbranchscheme = async (data) => {
     return response.data;
 }
 export const getallbranchclassification = async (data) => {
+    console.log("classii---",data)
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/classification/branch/${data.id_branch}`);
     return response.data;
 }

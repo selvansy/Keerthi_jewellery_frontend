@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import RouteList from "./routes/RouteList";
 import ProtectedRoute from "./routes/ProtectedRoute";
+import ErrorPage from "./chit/components/common/ErrorPage";
  
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
             }
           />
         ))}
+         <Route path="*" element={<ErrorPage/>} />
       </Routes>
     </Router>
   );

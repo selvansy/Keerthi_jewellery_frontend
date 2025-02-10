@@ -29,7 +29,7 @@ const ProjectAccess = () => {
   const modal = useSelector((state) => state.modal);
   const [searchInput, setSearchInput] = useState('')
   const debouncedSearch = useDebounce(searchInput, 500)
-  const roledata = localStorage.getItem('decoded');
+  const roledata = useSelector((state) => state.clientForm.roledata);
   const id_role = roledata?.id_role?.id_role;
   const id_client = roledata?.id_client;
   const id_branch = roledata?.branch;

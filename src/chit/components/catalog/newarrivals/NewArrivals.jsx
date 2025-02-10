@@ -18,7 +18,7 @@ const NewArrivals = () => {
   const navigate = useNavigate()
 
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
-  const roledata = localStorage.getItem('decoded');
+  const roledata = useSelector((state) => state.clientForm.roledata);
   let id_client = roledata?.id_client;
   const id_branch = roledata?.branch;
   let dispatch =  useDispatch();

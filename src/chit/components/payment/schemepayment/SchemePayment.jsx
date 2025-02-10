@@ -10,7 +10,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import { useSelector } from 'react-redux'
 const SchemePayment = () => {
-  const roledata = localStorage.getItem('decoded');
+  const roledata = useSelector((state) => state.clientForm.roledata);
   const branch = roledata?.branch;
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   

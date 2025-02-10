@@ -28,7 +28,7 @@ const ProductWhatsapp = () => {
 
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   
-  const roledata = localStorage.getItem('decoded');
+  const roledata = useSelector((state) => state.clientForm.roledata);
   const id_branch = roledata?.branch;
  
   const [productData, setproductData] = useState([])

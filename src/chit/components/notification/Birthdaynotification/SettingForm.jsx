@@ -11,7 +11,7 @@ function SettingNotification({ setIsSettingOpen }) {
 
   
     
-    const roledata = localStorage.getItem('decoded');
+    const roledata = useSelector((state) => state.clientForm.roledata);
     const id_branch = roledata?.branch;
   const [formErrors, setFormErrors] = useState({});
   const [image, setImage] = useState([]);

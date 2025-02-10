@@ -18,6 +18,8 @@ const initialState = {
     pawn_active: false,
     pawn_url: "",
 },
+accExp:[],
+outreport:[],
   branchdata:[],
   reviewData:[],
   whatsappData:[],
@@ -45,6 +47,12 @@ const clientFormSlice = createSlice({
       if (action.payload >= 0 && action.payload < state.totalSteps) {
         state.currentStep = action.payload;
       }
+    },
+    SetaccExp:(state,action)=>{
+      state.accExp = action.payload
+    },
+    SetOutreport:(state,action)=>{
+      state.outreport = action.payload
     },
     setLayoutColor:(state,action)=>{
       state.layoutColor = action.payload
@@ -112,6 +120,6 @@ const clientFormSlice = createSlice({
   },
 });
 
-export const { pagehandler, setTotalPage, resetPage,setid,setSuperAdmin,setPushnotifyId,setSettingtype,setAccessmenudata,setWhatsappData,setLayoutColor,setScemeAccountId,
+export const { pagehandler, setTotalPage, resetPage,setid,setSuperAdmin,setPushnotifyId,setSettingtype,setAccessmenudata,setWhatsappData,setLayoutColor,setScemeAccountId,SetaccExp,SetOutreport,
   setSelectedProject, setClientId, setProjectId,setAupayurl,setAusaleurl,setPawnurl, setbranchId,setClientData,setBranchForm,setReviewForm,setRoleData } = clientFormSlice.actions;
 export default clientFormSlice.reducer;

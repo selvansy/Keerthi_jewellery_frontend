@@ -36,7 +36,7 @@ const AddScheme = () => {
   let [purity, setPurity] = useState("");
 
   let [scheme_type, setSchemeType] = useState(0);
-  const roledata = localStorage.getItem('decoded');
+  const roledata = useSelector((state) => state.clientForm.roledata);
   let id_client = roledata?.id_client;
   const id_branch = roledata?.branch;
   const [idbranch, setIdbranch] = useState(id_branch);

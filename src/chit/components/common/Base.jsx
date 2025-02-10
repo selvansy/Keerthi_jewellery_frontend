@@ -15,11 +15,14 @@ import {
   Settings2,
   MessageCircle,
   Bell,
-  X ,
+  X,
   Star,
   RefreshCcw,
   LucidePrinter,
-  PawPrintIcon
+  PawPrintIcon,
+  CircleUserRound,
+  UserRoundCheck
+
 } from 'lucide-react';
 
 import logo from '../../../assets/logo1.png'
@@ -31,7 +34,8 @@ import { setRoleData } from '../../../redux/clientFormSlice';
 import { useMutation } from '@tanstack/react-query';
 import { getactivemenuaccess,updatelayoutcolor } from "../../api/Endpoints"
 import { GiConsoleController } from 'react-icons/gi';
-import {setLayoutColor} from "../../../redux/clientFormSlice"
+import { setLayoutColor } from "../../../redux/clientFormSlice"
+import { logout } from '../../../redux/authSlice';
 
 const Base = ({ renderContent: RenderContent }) => {
 
@@ -46,7 +50,11 @@ const Base = ({ renderContent: RenderContent }) => {
   const [selectedRoute, setSelectedRoute] = useState('');
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const [menuData, setMenuData] = useState([]);
+
   const [laycolor, setLaycolor] = useState('');
+
+  const [isOpen, setIsOpen] = useState(false);
+
   const [openMenus, setOpenMenus] = useState({
     schemes: false,
     manageAccount: false,
@@ -64,14 +72,42 @@ const Base = ({ renderContent: RenderContent }) => {
 
   const { info } = useSelector((state) => state.auth);
   const decoded = jwtDecode(info);
+
 console.log("decode",decoded);
   let id = decoded.id_role._id;
 
   // let id = "6792109203f5d0fceab07e92"
 
 
-  const roledata = localStorage.getItem('decoded');
+  const roledata = useSelector((state) => state.clientForm.roledata);
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
+
+  const getRoleCharacter = (id) => {
+    switch (id) {
+      case 1:
+        return "SA";
+      case 2:
+        return "A";
+      case 3:
+        return "BR";
+      case 4:
+        return "B";
+      default:
+        return <UserRoundCheck size={32} />;
+    }
+  };
+
+  const role = getRoleCharacter(roledata?.id_role?.id_role);
+
+
+
+  const handleLogout = () => {
+    sessionStorage.clear();
+    localStorage.clear();
+    dispatch(logout());
+    navigate("/");
+  };
+
 
   useEffect(() => {
     console.log(laycolor)
@@ -238,7 +274,7 @@ console.log("decode",decoded);
         <div className="absolute left-6 top-1/2 w-[1px] h-full bg-white -translate-x-1/2" />
       )}
       <div className="relative flex items-center">
-        <div className={`absolute left-6 w-3 h-3 rounded-full border-2 border-white -translate-x-1/2 z-10 ${selectedSubSection === text ? '' : 'bg-gray-400'}`} 
+        <div className={`absolute left-6 w-3 h-3 rounded-full border-2 border-white -translate-x-1/2 z-10 ${selectedSubSection === text ? '' : 'bg-gray-400'}`}
         />
         <div
           className={`w-full flex items-center px-4 rounded-md py-2 pl-12 transition-colors cursor-pointer text-sm font-semibold
@@ -375,11 +411,11 @@ console.log("decode",decoded);
   };
 
   const handleClick = (text) => {
-   
+
     setSelectedSection(text);
 
     const route = RouteList.find(route => route.name === text);
-   
+
     if (route) {
       navigate(route.path);
     }
@@ -434,12 +470,12 @@ console.log("decode",decoded);
   ]
 
   const quickLinks = [
-    { name: "Metal Rate", link:"/setup/metal", icon: <Star className="text-pink-500" /> },
-    { name: "Customer",link:"/manageaccount/addcustomer" , icon: <User className="text-blue-500" /> },
-    { name: "Manage Account",link:"/manageaccount/addschemeaccount", icon: <Settings className="text-purple-500" /> },
-    { name: "Payment",link:"/payment/addschemepayment", icon: <CreditCard className="text-green-500" /> },
-    { name: "Card Print",link:"/cardprint/printone", icon: <LucidePrinter className="text-green-500" /> },
-    { name: "Receipt Print",link:"/receiptprint/printone", icon: <PawPrintIcon className="text-green-500" /> }
+    { name: "Metal Rate", link: "/setup/metal", icon: <Star className="text-pink-500" /> },
+    { name: "Customer", link: "/manageaccount/addcustomer", icon: <User className="text-blue-500" /> },
+    { name: "Manage Account", link: "/manageaccount/addschemeaccount", icon: <Settings className="text-purple-500" /> },
+    { name: "Payment", link: "/payment/addschemepayment", icon: <CreditCard className="text-green-500" /> },
+    { name: "Card Print", link: "/cardprint/printone", icon: <LucidePrinter className="text-green-500" /> },
+    { name: "Receipt Print", link: "/receiptprint/printone", icon: <PawPrintIcon className="text-green-500" /> }
     // { name: "Agent Incentive",link:"", icon: <DollarSign className="text-orange-500" /> },
     // { name: "Referral Incentive",link:"", icon: <Share2 className="text-teal-500" /> },
   ];
@@ -447,7 +483,71 @@ console.log("decode",decoded);
   return (
 
     <div className="min-h-screen flex flex-col">
-      <header className="fixed top-0 right-0 left-0 bg-white shadow-md z-30">
+      <header className="fixed top-0 right-0 left-0 bg-white shadow-md z-30 h-16">
+        <div className='flex flex-row justify-end mt-3 mr-[32px]'>
+          <button className="flex flex-row items-center p-2 text-gray-900 font-semibold"
+            onClick={() => setSettingsOpen((prev) => !prev)}
+          >
+            <Settings size={28} />
+          </button>
+
+          {
+            roledata ?
+            <div className="relative inline-block text-left">
+            {/* Dropdown Button */}
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="flex items-center gap-2 px-4 py-2 focus:outline-none"
+            >
+              {/* Profile Circle */}
+              <span
+                className="flex items-center justify-center w-9 h-9 text-lg font-semibold text-white rounded-full"
+                style={{ backgroundColor: layout_color }}
+              >
+                {role}
+              </span>
+
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center">
+                  <svg
+                    className="h-4 w-4 text-gray-400"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="3"
+                    viewBox="0 0 24 24"
+                    stroke="black"
+                  >
+                    <path d="M19 9l-7 7-7-7"></path>
+                  </svg>
+                </div>
+
+            </button>
+      
+            {/* Dropdown Menu */}
+            {isOpen && (
+              <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-md shadow-lg">
+                <button
+                  className="block w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
+                  onClick={handleLogout}
+                >
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
+
+              :
+              <button className="flex flex-row items-center px-4 py-2 text-gray-900 font-semibold"
+                onClick={() => setSettingsOpen((prev) => !prev)}
+              >
+                <UserRoundCheck size={32} />
+              </button>
+
+          }
+
+
+        </div>
+
         <div className="container mx-auto px-4 py-3">
           <nav className="flex items-center justify-between lg:justify-end gap-3">
             <button
@@ -528,16 +628,11 @@ console.log("decode",decoded);
       <div className="flex flex-col min-h-screen bg-[#f5f5f5]  pt-14 lg:pl-64 pb-10 ">
         {/* SettingsButton  */}
         <div className='settingsButton flex flex-row justify-end items-center '>
-          <button className="flex flex-row items-center justify-center px-4 py-2 text-white font-semibold rounded-s-lg shadow-lg"
-            onClick={() => setSettingsOpen((prev) => !prev)} 
-            style={{ backgroundColor: layout_color }} >
-            <Settings />
-          </button>
 
           {
             settingsOpen === true && (
 
-        
+
               <div
                 ref={settingsRef}
                 className={`fixed top-0 right-0 h-full scrollbar-hide w-64 lg:w-1/4 bg-[#f5f5f5] border-l-2 border-gray-300  transform transition-transform duration-300 ease-in-out ${settingsOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 z-50 pt-16 lg:pt-4  flex flex-col`}
@@ -545,6 +640,7 @@ console.log("decode",decoded);
                 <nav className="flex-1 text-gray-900">
                   <div className='flex flex-col'>
                     {/* Title  */}
+
                    
                      <div className='flex justify-between items-center'>
                      <div className='p-3 border-l'>
@@ -553,10 +649,11 @@ console.log("decode",decoded);
                      </div>
                      <div className='p-3 text-xl'>
                     <div className='flex items-center gap-2'>
-                    <RefreshCcw size={24} onClick={()=>{dispatch(setLayoutColor("#023453")); localStorage.setItem('layoutcolor', "#023453"); setLaycolor("#023453");} }/>
+                    <RefreshCcw size={24} onClick={()=>{dispatch(setLayoutColor("#023453"));  setLaycolor("#023453");} }/>
                     <X size={28}  onClick={() => setSettingsOpen((prev) => !prev)} />
                     </div>
                     </div>
+
                     </div>
 
                     <div className='m-2 p-3 '>
@@ -565,49 +662,49 @@ console.log("decode",decoded);
                         <div
                           className="w-16 h-12 m-2 p-3 border-2  rounded-md text-center flex justify-center items-center shadow-lg"
                           style={{ backgroundColor: "#023453" }}
-                          onClick={() =>{ dispatch(setLayoutColor("#023453")); localStorage.setItem('layoutcolor', "#023453"); setLaycolor("#023453");}} >
+                          onClick={() =>{ dispatch(setLayoutColor("#023453"));  setLaycolor("#023453");}} >
 
                           <p className='text-center text-white text-[12px]'>#023453 </p>
                         </div>
                         <div
                           className="w-16 h-12 m-2 p-3 border-2 rounded-md text-center flex justify-center items-center shadow-lg"
                           style={{ backgroundColor: "#484453" }}
-                          onClick={() =>{ dispatch(setLayoutColor("#484453")); localStorage.setItem('layoutcolor', "#484453"); setLaycolor("#484453");}} >
+                          onClick={() =>{ dispatch(setLayoutColor("#484453"));  setLaycolor("#484453");}} >
 
                           <p className='text-center text-white text-[12px]'>#484453 </p>
                         </div>
                         <div
                           className="w-16 h-12 m-2 p-3 border-2  rounded-md text-center flex justify-center items-center shadow-lg"
                           style={{ backgroundColor: "#006EBE" }}
-                          onClick={() =>{ dispatch(setLayoutColor("#006EBE")); localStorage.setItem('layoutcolor', "#006EBE"); setLaycolor("#006EBE");}} >
+                          onClick={() =>{ dispatch(setLayoutColor("#006EBE"));  setLaycolor("#006EBE");}} >
 
                           <p className='text-center text-white text-[12px]'>#006EBE </p>
                         </div>
                         <div
                           className="w-16 h-12 m-2 p-3 border-2  rounded-md text-center flex justify-center items-center shadow-lg"
                           style={{ backgroundColor: "#4AA147" }}
-                          onClick={() =>{ dispatch(setLayoutColor("#4AA147")); localStorage.setItem('layoutcolor', "#4AA147"); setLaycolor("#4AA147");}} >
+                          onClick={() =>{ dispatch(setLayoutColor("#4AA147"));  setLaycolor("#4AA147");}} >
 
                           <p className='text-center text-white text-[12px]'>#4AA147 </p>
                         </div>
                         <div
                           className="w-16 h-12 m-2 p-3 border-2  rounded-md text-center flex justify-center items-center shadow-lg"
                           style={{ backgroundColor: "#0094AD" }}
-                          onClick={() =>{ dispatch(setLayoutColor("#0094AD")); localStorage.setItem('layoutcolor', "#4AA147"); setLaycolor("#0094AD");}} >
+                          onClick={() =>{ dispatch(setLayoutColor("#0094AD"));  setLaycolor("#0094AD");}} >
 
                           <p className='text-center text-white text-[12px]'>#0094AD </p>
                         </div>
                         <div
                           className="w-16 h-12 m-2 p-3 border-2  rounded-md text-center flex justify-center items-center shadow-lg"
                           style={{ backgroundColor: "#034200" }}
-                          onClick={() =>{ dispatch(setLayoutColor("#034200")); localStorage.setItem('layoutcolor', "#034200"); setLaycolor("#034200");}} >
+                          onClick={() =>{ dispatch(setLayoutColor("#034200")); setLaycolor("#034200");}} >
 
                           <p className='text-center text-white text-[12px]'>#034200 </p>
                         </div>
                         <div
                           className="w-16 h-12 m-2 p-3 border-2  rounded-md text-center flex justify-center items-center shadow-lg"
                           style={{ backgroundColor: "#DD408B" }}
-                          onClick={() => {dispatch(setLayoutColor("#DD408B")); localStorage.setItem('layoutcolor', "#DD408B"); setLaycolor("#DD408B");}}>
+                          onClick={() => {dispatch(setLayoutColor("#DD408B"));  setLaycolor("#DD408B");}}>
 
                           <p className='text-center text-white text-[12px]'>#DD408B</p>
                         </div>
@@ -616,32 +713,32 @@ console.log("decode",decoded);
                     </div>
                     {/* Quick Links */}
                     <div className='p-3'>
-                    <h3 className="text-xl font-medium mb-2 px-3 m-2">Quick Links</h3>
-                    <div className="grid grid-cols-2 gap-4 px-3">
-                      {quickLinks.map((link, index) => (
-                        <div key={index} className="flex flex-col items-center p-4 bg-white border rounded-lg shadow-lg hover:bg-gray-300 cursor-pointer"
-                        onClick={()=>navigate(link.link)}>
-                          <div className="text-2xl mb-2">{link.icon}</div>
-                          <span className="text-sm font-medium text-gray-700">{link.name}</span>
-                        </div>
-                      ))}
-                    </div>
+                      <h3 className="text-xl font-medium mb-2 px-3 m-2">Quick Links</h3>
+                      <div className="grid grid-cols-2 gap-4 px-3">
+                        {quickLinks.map((link, index) => (
+                          <div key={index} className="flex flex-col items-center p-4 bg-white border rounded-lg shadow-lg hover:bg-gray-300 cursor-pointer"
+                            onClick={() => navigate(link.link)}>
+                            <div className="text-2xl mb-2">{link.icon}</div>
+                            <span className="text-sm font-medium text-gray-700">{link.name}</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
 
                 </nav>
               </div>
-              
+
             )
           }
 
 
-       {settingsOpen && (
-          <div
-            className="fixed inset-0 bg-black bg-opacity-50 z-30"
-            onClick={() => setSettingsOpen((prev) => !prev)} 
-          />
-        )}
+          {settingsOpen && (
+            <div
+              className="fixed inset-0 bg-black bg-opacity-50 z-30"
+              onClick={() => setSettingsOpen((prev) => !prev)}
+            />
+          )}
 
         </div>
         <main className="bg-[#F5F5F5] px-6 pt-4 pb-4 mb-6">

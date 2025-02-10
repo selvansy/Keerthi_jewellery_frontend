@@ -10,7 +10,7 @@ import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 
 const AddOffers = () => {
-  const roledata = localStorage.getItem('decoded');
+  const roledata = useSelector((state) => state.clientForm.roledata);
   let id_client = roledata?.id_client;
 
   const id_branch = roledata?.branch;

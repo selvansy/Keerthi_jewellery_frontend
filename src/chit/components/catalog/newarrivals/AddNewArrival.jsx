@@ -12,7 +12,7 @@ import { useSelector, useDispatch } from 'react-redux'
 const AddNewArrival = () => {
   const navigate = useNavigate();
   let dispatch = useDispatch();
-  const roledata = localStorage.getItem('decoded');
+  const roledata = useSelector((state) => state.clientForm.roledata);
   const id_branch = roledata?.branch;
 
   const id = useSelector((state) => state.clientForm.id);

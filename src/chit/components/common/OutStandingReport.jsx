@@ -11,70 +11,41 @@ import {
     getbranchbyclient,getallbranchclassification, getallScheme, getallbranch,
     getallmetal, puritybymetal, allinstallmenttype, wastagetype, getallschemetypes, addscheme,allbranchclassification 
 } from "../../../chit/api/Endpoints";
-
-import {getOutstandingSummaryReport} from "../../api/BackendUrl"
-
+import {SetaccExp ,SetOutreport} from "../../../redux/clientFormSlice"
+import {getOutstandingSummaryReport , postOutstandingSummaryReport} from "../../api/BackendUrl"
+import {toast} from "react-toastify"
 import { SlidersHorizontal, Search, X } from 'lucide-react'
 import { CalendarDays, RefreshCcw} from 'lucide-react'
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { useDebounce } from '../../hooks/useDebounce';
 
 export default function OutStandingReport() {
 
-
-    
-    useEffect(() => {
-        console.log("dfghjkl")
-        getOutstandingReport()
-    }, [])
-
-
     // OutStandingWeight
 
-    const [outreport, setoutreport] = useState([])
-   
-    const [search, setSearch] = useState('')
+
+    const [outreport, setoutreport] = useState([])  
+
     const [accExp, setaccExp] = useState([]);
-     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage, setItemsPerPage] = useState(10);
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(5);
+
      const [totalPages, setTotalPages] = useState(0);
-
-
-     console.log(accExp)
-
-   
-       //mutation to get scheme type
-       const { mutate: getOutstandingReport } = useMutation({
-        mutationFn: getOutstandingSummaryReport,
-        onSuccess: (response) => {
-
-            setoutreport(response.data)
-            let arrayData = [];
-
-            if (response.data.length !== 0) {
-
-                for (const i in response.data) {
-                    arrayData.push({
-                        scheme_name: response.data[i].scheme_name,
-                        code: response.data[i].scheme_name,
-                        open: response.data[i].scheme_name,
-                        close: response.data[i].scheme_name,
-                        complete: response.data[i].scheme_name,
-                        total: response.data[i].scheme_name
-                    });
-                }
-
-            }
-
-
-            setaccExp(arrayData)
-
-        },
-        onError: (error) => {
-            console.error('Error fetching countries:', error);
-        }
+     const [search,setSearch] = useState("")
+     const [from_date, setFromdate] = useState('');
+     const [to_date, setTodate] = useState('');
+     const [filters, setFilters] = React.useState({
+        from_date: null,
+        to_date: null,
+        limit: itemsPerPage,
+        id_classification: '',
+        id_scheme: '',
+        id_branch: '',
     });
+
 
 
     return (
@@ -82,65 +53,59 @@ export default function OutStandingReport() {
             <h2 className="text-2xl text-gray-900 font-bold">Outstanding Summary Report</h2>
 
             <OutStandingFilter
-                outreport={outreport}
-             
+               
                 getOutstandingReport={getOutstandingReport}
                 currentPage={currentPage}
                 itemsPerPage={itemsPerPage}
                 setCurrentPage={setCurrentPage}
-                setSearch={setSearch}
+             
                 setItemsPerPage={setItemsPerPage}
-                setoutreport={setoutreport}
+              
                 totalPages={totalPages}
                 />
 
             <OutstandingTable
-             
-                search={search} 
+
                 currentPage={currentPage}
                 itemsPerPage={itemsPerPage} 
-               
                 setCurrentPage={setCurrentPage}
-                setSearch={setSearch}
                 setItemsPerPage={setItemsPerPage}
+                
             
                 />
         </div>
     )
 }
 
-export const OutstandingTable = ({itemsPerPage, currentPage,setItemsPerPage,setSearch,setCurrentPage }) => {
+export const OutstandingTable = ({itemsPerPage, currentPage,setItemsPerPage,setCurrentPage }) => {
 
    
     const layout_color = useSelector((state) => state.clientForm.layoutColor);
+    const outreport = useSelector((state) => state.clientForm.outreport);
+    let dispatch = useDispatch();
 
-    const [outreport, setoutreport] = useState([])
-    const [accExp, setaccExp] = useState([]);
+
+  
     const [totalPages, setTotalPages] = useState(0);
+    const [search,setSearch] = useState("")
+
 
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 
 
-    const currentItems = outreport?.slice(indexOfFirstItem, indexOfLastItem);
-    
-
     useEffect(() => {
-      
-        getOutstandingReport()
-     
+
+        getOutstandingReport();
+    
     }, [])
-    
-    
 
       //mutation to get scheme type
       const { mutate: getOutstandingReport } = useMutation({
         mutationFn: getOutstandingSummaryReport,
         onSuccess: (response) => {
-            console.log("Res",response)
-            setoutreport(response.data)
-            setTotalPages(response.totalPages)
 
+            dispatch(SetOutreport((response.data)))
             let arrayData = [];
 
             if (response.data.length !== 0) {
@@ -159,7 +124,7 @@ export const OutstandingTable = ({itemsPerPage, currentPage,setItemsPerPage,setS
             }
 
 
-            setaccExp(arrayData)
+            dispatch(SetaccExp(arrayData))
 
         },
         onError: (error) => {
@@ -167,6 +132,9 @@ export const OutstandingTable = ({itemsPerPage, currentPage,setItemsPerPage,setS
         }
     });
 
+
+    const currentItems = outreport?.slice(indexOfFirstItem, indexOfLastItem);
+    
 
     const handlePageChange = (pageNumber) => {
         setCurrentPage(pageNumber);
@@ -286,12 +254,15 @@ export const OutstandingTable = ({itemsPerPage, currentPage,setItemsPerPage,setS
     </>
 }
 
-export const OutStandingFilter = ({  search, itemsPerPage, currentPage}) => {
+export const OutStandingFilter = ({ getOutstandingReport, itemsPerPage, currentPage }) => {
 
 
 
-    const roledata = localStorage.getItem('decoded');
+    const roledata = useSelector((state) => state.clientForm.roledata);
     const layout_color = useSelector((state) => state.clientForm.layoutColor);
+    const accExp = useSelector((state)=>state.clientForm.accExp);
+    const outreport = useSelector((state) => state.clientForm.outreport);
+
 
     const id_role = roledata?.id_role?.id_role;
     const id_client = roledata?.id_client;
@@ -303,15 +274,14 @@ export const OutStandingFilter = ({  search, itemsPerPage, currentPage}) => {
     const [branchList, setBranchList] = useState([]);
     const [schemeTypeData, setSchemeTypeData] = useState([]);
     const [classificationData, setClassification] = useState([])
-    const [outreport, setoutreport] = useState([])
-    const [accExp, setaccExp] = useState([]);
-    
+    const [search,setSearch] = useState("")
+
 
     const [from_date, setFromdate] = useState('');
     const [to_date, setTodate] = useState('');
     const [filters, setFilters] = React.useState({
-        from_date: null,
-        to_date: null,
+        from_date: "",
+        to_date: "",
         limit: itemsPerPage,
         id_classification: '',
         id_scheme: '',
@@ -333,7 +303,6 @@ export const OutStandingFilter = ({  search, itemsPerPage, currentPage}) => {
     useEffect(() => {
         if (isFilterOpen === true) {
             getBranchList();
-            getOutstandingReport();
             getAllSchemeTypes()
             allclassification({ id: id_branch })
         }
@@ -358,48 +327,38 @@ export const OutStandingFilter = ({  search, itemsPerPage, currentPage}) => {
             scheme_type: filters.scheme_type
         };
 
-        getOutstandingReport(filterTosend)
-    }, [currentPage, itemsPerPage, search])
-
-
-
-    console.log(accExp)
-    
-
-      //mutation to get scheme type
-      const { mutate: getOutstandingReport } = useMutation({
-        mutationFn: getOutstandingSummaryReport,
-        onSuccess: (response) => {
-         
-            setoutreport(response.data)
-        
-            let arrayData = [];
-
-            if (response.data.length !== 0) {
-
-                for (const i in response.data) {
-                    arrayData.push({
-                        scheme_name: response.data[i].scheme_name,
-                        code: response.data[i].code,
-                        open: response.data[i].total_open,
-                        close: response.data[i].total_close,
-                        complete: response.data[i].total_complete,
-                        total: response.data[i].total_account
-                    });
-                }
-
-            }
-
-
-            setaccExp(arrayData)
-
-        },
-        onError: (error) => {
-            console.error('Error fetching countries:', error);
+        if(isFilterOpen === true){
+            getOutstandingReport(filterTosend)
         }
-    });
+    }, [currentPage, itemsPerPage])
 
+    const handleSearch = (e) => {
+        console.log(e.target.value)
+        setSearch(e.target.value)
+      }
 
+     useEffect(() => {
+        
+        const filterTosend = {
+            page: currentPage,
+            from_date: from_date,
+            to_date: to_date,
+            limit: itemsPerPage,
+            search: search,
+            added_by: filters.added_by,
+            scheme_status: filters.scheme_status,
+            id_classification: filters.id_classification,
+            collectionuserid: filters.collectionuserid,
+            id_scheme: filters.id_scheme,
+            id_branch: filters.id_branch,
+            scheme_type: filters.scheme_type
+        };
+
+        if(search !== ""){
+            getOutstandingReport(filterTosend)
+        }
+      
+      }, [search]);
 
 
     const { mutate: getBranchList } = useMutation({
@@ -447,36 +406,33 @@ export const OutStandingFilter = ({  search, itemsPerPage, currentPage}) => {
 
         e.preventDefault();
         const filterTosend = {
+            page: currentPage,
             from_date: from_date,
             to_date: to_date,
             limit: itemsPerPage,
+            search: search,
+            added_by: filters.added_by,
+            scheme_status: filters.scheme_status,
+            id_classification: filters.id_classification,
+            collectionuserid: filters.collectionuserid,
+            id_scheme: filters.id_scheme,
             id_branch: filters.id_branch,
-            id_metal: filters.id_metal,
-            category: filters.category,
-            sell: filters.sell,
-            purity: filters.purity,
-            displayprice: filters.displayprice
-
+            scheme_type: filters.scheme_type
         };
 
-        if ((from_date !== "" && to_date !== "") || filters.id_branch !== "" || filters.id_metal !== "" || filters.category !== "" || filters.sell !== "" || filters.purity !== "" || filters.displayprice !== "") {
-            console.log(filterTosend)
             getproductData(filterTosend);
             setIsFilterOpen(false)
             setFromdate("")
             setTodate("")
             setFilters({
-                from_date: null,
-                to_date: null,
-                limit: itemsPerPage,
-                id_branch: "",
-                id_metal: "",
-                category: "",
-                sell: "",
-                purity: "",
-                displayprice: ""
+        from_date: "",
+        to_date: "",
+        limit: itemsPerPage,
+        id_classification: '',
+        id_scheme: '',
+        id_branch: '',
             })
-        }
+        
     };
 
 
@@ -496,20 +452,31 @@ export const OutStandingFilter = ({  search, itemsPerPage, currentPage}) => {
         }));
     };
 
-
-    const handleApplyFilters = () => {
-        // Here you can implement the filtering logic
-        console.log('Applying filters:', filters);
-        setIsFilterOpen(false);
-    };
-
-
+    const handleReset = (e) => {
+        setFromdate("");
+        setTodate("");
+        setFilters({
+            from_date: "",
+            to_date: "",
+            limit: itemsPerPage,
+            id_classification: '',
+            id_scheme: '',
+            id_branch: '',
+                })
+        toast.success("Filter is cleared");
+     
+        getOutstandingReport({
+            from_date: "",
+            to_date: "",
+            limit: itemsPerPage,
+            id_classification: '',
+            id_scheme: '',
+            id_branch: '',
+                });
+      }
 
 
     
-
-
-
     return <>
         <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
             <div className="relative w-full lg:w-1/3 min-w-[200px]">
@@ -519,6 +486,7 @@ export const OutStandingFilter = ({  search, itemsPerPage, currentPage}) => {
                 <input
                     placeholder="Search..."
                     className="p-3 pl-10 pr-3 border-2 bg-[#F5F5F5] border-gray-500 rounded-md w-full"
+                    onChange={(e)=>handleSearch(e)}
                 />
             </div>
 
@@ -530,6 +498,14 @@ export const OutStandingFilter = ({  search, itemsPerPage, currentPage}) => {
                     style={{ backgroundColor: layout_color }}>
                     <SlidersHorizontal size={20} />
                 </button>
+
+                <button
+            id="filter"
+            className="text-white bg-[#023453] w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
+            onClick={() => handleReset()}
+          >
+            <RefreshCcw size={20} />
+          </button>
               
                 <ExportToExcel apiData={outreport} fileName="Account Summary Report" />
                 <ExportToPDF apiData={accExp} fileName="Account Summary Report" />
@@ -720,7 +696,7 @@ export const OutStandingFilter = ({  search, itemsPerPage, currentPage}) => {
                         <div className="p-4 borde">
                             <div className="bg-yellow-300 flex justify-center gap-3">
                                 <button
-                                    onClick={handleApplyFilters}
+                                    onClick={applyfilterdatatable}
                                     className="flex-1 px-4 py-2 bg-[#61A375] text-white rounded-md"
                                 >
                                     Apply

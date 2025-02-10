@@ -18,7 +18,8 @@ import { ExportToExcel } from '../../common/Dropdown/Excelexport';
 import { ExportToPDF } from '../../common/Dropdown/ExportPdf';
 import { useDebounce } from '../../../hooks/useDebounce';
 import Ledgerdetails from "./ledgerdetails"
-const Schemeaccount = () => {
+
+const Schemeaccount = () => { 
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
   const dispatch = useDispatch();
@@ -45,7 +46,7 @@ const [popuptitle, setPopuptitle] = useState(0);
   const [displaysetting, setDiplaySetting] = useState(0);
   const [ispayable, setIspayable] = useState(false);
   const [isviewOpen, setIsviewOpen] = useState(false);
-  const roledata = localStorage.getItem('decoded');
+  const roledata = useSelector((state) => state.clientForm.roledata);
   let id_client = roledata?.id_client;
   const id_branch = roledata?.branch;
   const [branchList, setBranchList] = useState([]);

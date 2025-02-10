@@ -23,17 +23,7 @@ import Pushnotification from "../chit/components/notification/pushnotification/i
 import AddOffers from "../chit/components/catalog/offers/AddOffers";
 import Customer from "../chit/components/manageaccount/customer/Customer";
 import AddCustomer from "../chit/components/manageaccount/customer/AddCustomer";
-import SchemeWiseAccountReport from "../chit/components/Report/SchemeWiseAccountReport";
-import SummaryWiseReport from "../chit/components/Report/SummaryWiseReport";
-import PaymentWiseReport from "../chit/components/Report/PaymentWiseReport";
-import PendingDuePayment from "../chit/components/Report/PendingDuePayment";
-import CustomerAccountSummary from "../chit/components/Report/CustomerAmountSummary";
 import OutStandingWeight from "../chit/components/Report/OutStandingWeight";
-import DigiGoldReport from "../chit/components/Report/DigiGoldReport";
-import OutStandingDigiGold from "../chit/components/Report/OutStandingDigiGold";
-import AgenReferralReport from "../chit/components/Report/AgenReferralReport";
-import AgentIncentiveReport from "../chit/components/Report/AgentIncentiveReport";
-import AgentCollectionReport from "../chit/components/Report/AgentCollectionReport";
 import ModeWisePayment from "../chit/components/Report/PaymentModeLedger";
 import GiftStock from "../chit/components/Report/GiftStock";
 import Branch from "../chit/components/Setup/branch/Branch";
@@ -352,14 +342,9 @@ const RouteList = [
 
   // Outstanding Report 
   {
-    name: "Outstanding Summary Report",
+    name: "Outstanding Summary",
     path:'/reports/outstandingsummary',
     element:<Base renderContent={OutStandingReport}/>
-  },
-  {
-    name: "Summary Wise Report",
-    path:'/reports/summary',
-    element:<Base renderContent={SummaryWiseReport}/>
   },
   {
     name: "Account Summary Report",
@@ -377,21 +362,6 @@ const RouteList = [
     element:<Base renderContent={SchemeAccountReport}/>
   },
   {
-    name: "Payment Wise Report",
-    path:'/reports/payment',
-    element:<Base renderContent={PaymentWiseReport}/>
-  },
-  {
-    name: "Pending Due Payment",
-    path:'/reports/pendingdue',
-    element:<Base renderContent={PendingDuePayment}/>
-  },
-  {
-    name: "Customer Account Summary",
-    path:'/reports/customeraccount',
-    element:<Base renderContent={CustomerAccountSummary}/>
-  },
-  {
     name: "Outstanding Amount",
     path:'/reports/outstanding',
     element:<Base renderContent={OutStandingAmount}/>
@@ -401,31 +371,27 @@ const RouteList = [
     path:'/reports/outstandingweight',
     element:<Base renderContent={OutStandingWeight}/>
   },
-  {
-    name: "Digi Gold Report",
-    path:'/reports/digigoldreport',
-    element:<Base renderContent={DigiGoldReport}/>
-  },
-  {
-    name: "Out Standing Digi Gold",
-    path:'/reports/outstandingdigigold',
-    element:<Base renderContent={OutStandingDigiGold}/>
-  },
-  {
-    name: "Agent Referral Report",
-    path:'/reports/agenrefferal',
-    element:<Base renderContent={AgenReferralReport}/>
-  },
-  {
-    name: "Agent Incentive Report",
-    path:'/reports/agentincentive',
-    element:<Base renderContent={AgentIncentiveReport}/>
-  },
-  {
-    name: "Agent Collection Report",
-    path:'/reports/agentcollection',
-    element:<Base renderContent={AgentCollectionReport}/>
-  },
+ 
+  // {
+  //   name: "Out Standing Digi Gold",
+  //   path:'/reports/outstandingdigigold',
+  //   element:<Base renderContent={OutStandingDigiGold}/>
+  // },
+  // {
+  //   name: "Agent Referral Report",
+  //   path:'/reports/agenrefferal',
+  //   element:<Base renderContent={AgenReferralReport}/>
+  // },
+  // {
+  //   name: "Agent Incentive Report",
+  //   path:'/reports/agentincentive',
+  //   element:<Base renderContent={AgentIncentiveReport}/>
+  // },
+  // {
+  //   name: "Agent Collection Report",
+  //   path:'/reports/agentcollection',
+  //   element:<Base renderContent={AgentCollectionReport}/>
+  // },
   {
     name: "Payment Mode Ledger",
     path:'/reports/paymentmodeledger',

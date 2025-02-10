@@ -32,7 +32,7 @@ const StaffUser = () => {
   const [searchInput, setSearchInput] = useState('')
   const debouncedSearch = useDebounce(searchInput, 500)
 
-  const roledata = localStorage.getItem('decoded');
+  const roledata = useSelector((state) => state.clientForm.roledata);
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
  
   const id_role = roledata?.id_role?.id_role;

@@ -41,7 +41,7 @@ export const ExportToPDF = ({ apiData = [], fileName = "ExportedData" }) => {
     return (
   <button
         onClick={() => exportToPDF(apiData, fileName)}
-        className="flex items-center p-2  text-white rounded-md gap-4"
+        className="flex items-center p-2  text-white rounded-md gap-2"
         style={{ backgroundColor: layout_color }} >
   <p>PDF</p>
   <svg

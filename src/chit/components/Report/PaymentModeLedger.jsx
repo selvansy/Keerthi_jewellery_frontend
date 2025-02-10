@@ -12,17 +12,20 @@ import { ExportToExcel } from '../common/Dropdown/Excelexport';
 import { ExportToPDF } from '../common/Dropdown/ExportPdf';
 import { useSelector } from 'react-redux';
 import {getpaymentmodesummary} from "../../api/BackendUrl"
+import { toast } from 'react-toastify';
 
 function ModeWisePayment() {
     
     const layout_color = useSelector((state) => state.clientForm.layoutColor);
-    const roledata = localStorage.getItem('decoded');
+    const roledata = useSelector((state) => state.clientForm.roledata);
     const id_branch = roledata?.branch;
-    console.log("Id",id_branch)
+    console.log(id_branch)
 
     const [paymentMode, setpaymentMode] = useState([])
-    const [paymentExp,setpaymentExp] = useState([]);
+
+    
      const [branchfilter, setBranch] = useState([]);  
+     const [branchId,setbranchId] = useState("")
      const [classifyfilter, setClassify] = useState([]);
      const [employeefilter, setEmployee] = useState([]);
      const [schemetypefilter, setSchemeType] = useState([]);
@@ -30,13 +33,13 @@ function ModeWisePayment() {
      const [addedbyfilter, setAddedby] = useState([]);
      const [schemestatusfilter, setSchemestatus] = useState([]);
     
-      const [search, setSearch] = useState('')
+    const [search, setSearch] = useState('')
  
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(5);
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const [, setIsExporting] = useState(false);
+    
 
     const [isFilterOpen, setIsFilterOpen] = useState(false); 
     const [from_date, setFromdate] = useState('');
@@ -45,66 +48,87 @@ function ModeWisePayment() {
        from_date:from_date,
        to_date:to_date,
        added_by:'',
-       scheme_status:'',
-       id_classification: '',
-       collectionuserid: '',
-       id_scheme: '',
-       id_branch: "",
-       scheme_type:''
+       id_branch: branchId,
      });
 
 
+
      useEffect(() => {
+
+      if(id_branch !== "0"){
+        setbranchId(id_branch)
+       }
 
       let sendData = {
         from_date:from_date,
         to_date:to_date,
-        id_branch: id_branch,
+        id_branch: branchId,
       }
        
       getpaymentModeMutate(sendData)
+      getallbranchMutate()
+      handleSchemetypeChange()
+      handleAddedtypeChange()
+      handleSchemestatusChange()
 
      }, [])
      
-   
-
-     useEffect(() => {
-      if (id_branch === '0') {
-        getallbranchMutate()
-      }
-      if(id_branch !== 0 && isFilterOpen === true){
-        setFilters({ ...filters, id_branch: id_branch })
-      }
-      
-    }, [id_branch]);
-
-
+    
      useEffect(() => {
 
    if(isFilterOpen === true){
     const filterTosend = {
-      test:1,
+  
       page:currentPage,
       from_date:from_date,
       to_date:to_date,
       limit: itemsPerPage,
       search: search,
-      added_by:filters.added_by,
-      scheme_status:filters.scheme_status,
-      id_classification: filters.id_classification,
-      collectionuserid: filters.collectionuserid,
-      id_scheme: filters.id_scheme,
-      id_branch: id_branch,
-      scheme_type:filters.scheme_type,
-
+      id_branch: branchId,
     };
    
      
     getpaymentModeMutate(filterTosend)
+    handleSchemetypeChange()
+    handleAddedtypeChange()
+    handleSchemestatusChange()
 
-   } 
-      }, [currentPage, itemsPerPage, search,filters])
+   }}, [currentPage, itemsPerPage, search,filters])
+
+
+   useEffect(() => {
+
+   
+     const filterTosend = {
+   
+       page:currentPage,
+       from_date:from_date,
+       to_date:to_date,
+       limit: itemsPerPage,
+       search: search,
+       id_branch: branchId,
+     };
+    
+     getpaymentModeMutate(filterTosend)
+    
+    }, [ search])
   
+
+   const handleSearch = ()=>{
+
+    const filterTosend = {
+  
+      page:currentPage,
+      from_date:from_date,
+      to_date:to_date,
+      limit: itemsPerPage,
+      search: search,
+      id_branch: branchId,
+    };
+
+    getpaymentModeMutate(filterTosend)
+
+   }
  
 
   const currentItems = paymentMode.slice(indexOfFirstItem, indexOfLastItem);
@@ -113,34 +137,29 @@ function ModeWisePayment() {
     const filterInputchange = (e) =>{
       const {name, value} = e.target;
       setFilters(prev=>({...prev,[name]:value}));
-      if(name === "id_branch"){
-        handleClassifyChange(e); 
-        handleemployeebyBranch(e); 
-        getemployeebyBranch(e); 
-        handlebranchscheme(e);
-      }
+  
     };
 
+    useEffect(()=>{
+      if(branchId){
+        handleClassifyChange(branchId); 
+        handleemployeebyBranch(branchId); 
+        handlebranchscheme(branchId);
+      }
+    },[branchId])
+
     
-  const applyfilterdatatable = (e) =>{
+  const applyfilterdatatable = () =>{
     const filterTosend = {
       page:currentPage,
       from_date:from_date,
       to_date:to_date,
       limit: itemsPerPage,
-      search: search,
-      added_by:filters.added_by,
-      scheme_status:filters.scheme_status,
-      id_classification: filters.id_classification,
-      collectionuserid: filters.collectionuserid,
-      id_scheme: filters.id_scheme,
-      id_branch: filters.id_branch,
-      scheme_type:filters.scheme_type
-    };
      
-    
-      setIsFilterOpen(false)
+    };
+
       getpaymentModeMutate(filterTosend);
+      setIsFilterOpen(false)
     
   };
 
@@ -153,7 +172,6 @@ function ModeWisePayment() {
     setCurrentPage(1);
   };
 
-
   const { mutate: getallbranchMutate } = useMutation({
         mutationFn: getallbranch,
         onSuccess: (response) => {
@@ -164,18 +182,18 @@ function ModeWisePayment() {
       });
   
       
-      const handleClassifyChange = async (e) => {  
-        if (!e.target.value) return;
-        const response = await getallbranchclassification({ "id_branch": e.target.value });
+      const handleClassifyChange = async (branchId) => {  
+      
+        const response = await getallbranchclassification({ id_branch: branchId });
         if (response) {
           setClassify(response.data);
         }
       };
   
       
-      const handleemployeebyBranch = async (e) => {  
-        if (!e.target.value) return;
-        const response = await getemployeebyBranch({ "id_branch": e.target.value });
+      const handleemployeebyBranch = async (branchId) => {  
+       
+        const response = await getemployeebybranch({ id_branch: branchId });
         if (response) {
           setEmployee(response.data);
         }
@@ -183,16 +201,16 @@ function ModeWisePayment() {
   
   
     
-      const handlebranchscheme = async (e) => {  
-        if (!e.target.value) return;
-        const response = await getallbranchscheme({ "id_branch": e.target.value });
+      const handlebranchscheme = async (branchId) => {  
+       
+        const response = await getallbranchscheme({ id_branch: branchId});
         if (response) {
           setScheme(response.data);
         }
       };
   
       
-      const handleSchemetypeChange = async (e) => {
+      const handleSchemetypeChange = async () => {
     
         const response = await getallschemetypes();
         if (response) {
@@ -200,7 +218,7 @@ function ModeWisePayment() {
         }
       };
     
-      const handleAddedtypeChange = async (e) => {
+      const handleAddedtypeChange = async () => {
     
         const response = await addedtype();
         if (response) {
@@ -209,7 +227,7 @@ function ModeWisePayment() {
       };
 
        
-          const handleSchemestatusChange = async (e) => {  
+          const handleSchemestatusChange = async () => {  
       
             const response = await allschemestatus();
             if (response) {
@@ -217,12 +235,7 @@ function ModeWisePayment() {
             }
           };
 
-      useEffect(() => {
-            getallbranchMutate();
-            handleAddedtypeChange();
-            handleSchemetypeChange();
-            handleSchemestatusChange();
-          }, []);
+  
 
  const columns = [
             {
@@ -264,62 +277,49 @@ function ModeWisePayment() {
     }));
   };
 
-
-  const handleApplyFilters = () => {
-    // Here you can implement the filtering logic
-    console.log('Applying filters:', filters);
-    setIsFilterOpen(false);
-  };
-
   //mutation to get scheme type
   const { mutate: getpaymentModeMutate } = useMutation({
     mutationFn: getpaymentmodesummary,
     onSuccess: (response) => {
-        console.log("Res",response)
+       
       setpaymentMode(response.data)
-    let arrayData = [];
-      if(response.data.length !==0){
-            for(var i=0;i<response.data.length;i++){
-                arrayData.push({
-                    scheme_acc_number:response.data[i].scheme_acc_number,
-                    account_name:response.data[i].account_name,
-                    mobile:response.data[i].mobile,
-                    total_paidinstallments:response.data[i].total_paidinstallments,
-                    total_paidamount:response.data[i].total_paidamount,
-                    total_weight:response.data[i].total_weight,
-                    start_date:response.data[i].start_date,
-                    maturity_date:response.data[i].maturity_date,
-                    total_paidinstallments:response.data[i].total_paidinstallments,
-                    total_paidamount:response.data[i].total_paidamount,
-                    total_weight:response.data[i].total_weight,
-                    branch_name:response.data[i].branch_name
-            
-                  });
-            }
-      }
- 
-     console.log(arrayData)
-      setpaymentExp(arrayData)
-      
-    //   setTotalPages(response.totalPages)
     },
     onError: (error) => {
-      console.error('Error fetching countries:', error);
+      console.error('Error:', error);
     }
   });
 
  
+  const handleReset = (e) => {
+    setFromdate("");
+    setTodate("");
+    setFilters(() => ({
+      from_date:from_date,
+       to_date:to_date,
+       added_by:'',
+       id_branch: branchId,
+    }));
+    toast.success("Filter is cleared");
+ 
+    getpaymentModeMutate({
+      from_date:from_date,
+      to_date:to_date,
+      added_by:'',
+      id_branch: branchId,
+    });
+  }
 
   return (
     <div className="flex flex-col p-4">
     <h2 className="text-2xl text-gray-900 font-bold">Payment Mode Ledger Report</h2>
     <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
       <div className="relative w-full lg:w-1/3 min-w-[200px]">
-        <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
+        <div className="absolute left-3 top-1/2 transform -translate-y-1/2" onClick={handleSearch}>
           <Search className="text-gray-500" />
         </div>
         <input
           placeholder="Search..."
+          onChange={(e)=>setSearch(e.target.value)}
           className="p-3 pl-10 pr-3 border-2 bg-[#F5F5F5] border-gray-500 rounded-md w-full"
         />
       </div>
@@ -332,9 +332,17 @@ function ModeWisePayment() {
           style={{ backgroundColor: layout_color }}>
           <SlidersHorizontal size={20} />
         </button>
+
+        <button
+            id="filter"
+            className="text-white bg-[#023453] w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
+            onClick={() => handleReset()}
+          >
+            <RefreshCcw size={20} />
+          </button>
        
         <ExportToExcel apiData={paymentMode} fileName="paymentMode Report" />
-        <ExportToPDF  apiData={paymentExp} fileName="scheme account"/>
+        <ExportToPDF  apiData={paymentMode} fileName="paymentMode Report"/>
       </div>
       <div 
       className={`fixed inset-y-0 right-0 w-80 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-40 
@@ -397,7 +405,7 @@ function ModeWisePayment() {
                        Branch Name
                      </label>
                      <div className="relative">
-                       <select  name="id_branch" onChange={(e)=>{filterInputchange(e);   }} className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
+                       <select  name="id_branch" onChange={(e)=>setbranchId(e.target.value)} className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
                          <option value='' >--Select--</option>
                          {branchfilter.map((branch)=>(
                            <option key={branch._id} value={branch._id}>{branch.branch_name}</option>

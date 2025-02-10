@@ -13,7 +13,7 @@ import { useDispatch, useSelector } from "react-redux";
 const AddCategory = () => {
   const navigate = useNavigate();
   let dispatch = useDispatch();
-  const roledata = localStorage.getItem('decoded');
+  const roledata = useSelector((state) => state.clientForm.roledata);
   const id_branch = roledata?.branch;
 
   const id = useSelector((state) => state.clientForm.id);
