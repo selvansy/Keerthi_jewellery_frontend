@@ -103,8 +103,6 @@ const Category = () => {
   useEffect(() => {
     if (id_branch === '0') {
       getallbranchMutate()
-    } else {
-      branchbyId(id_branch)
     }
 
     if (id_branch !== "0") {

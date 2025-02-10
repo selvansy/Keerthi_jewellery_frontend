@@ -1216,6 +1216,7 @@ export const getallbranchcustomer = async (data) => {
     return response.data;
 }
 export const searchcustomermobile = async (data) => {
+
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/customer/branch/${data.id_branch}/search?search=${data.search_mobile}`);
     return response.data;
 }

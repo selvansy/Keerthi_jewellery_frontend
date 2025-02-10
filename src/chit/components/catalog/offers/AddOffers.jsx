@@ -305,8 +305,7 @@ const AddOffers = () => {
 
           <div className="grid grid-rows-2 md:grid-cols-2 gap-5 border-gray-300 mb-10">
             <div className="flex flex-col">
-              {
-                id_branch !== "0" && (
+              { id_branch === "0" && (
                     <div className="flex flex-col lg:mt-2">
                       <label className="text-black mb-1 font-medium">
                         Branch<span className="text-red-400">*</span>
@@ -355,6 +354,9 @@ const AddOffers = () => {
                     </div>
               )}
             </div>
+            </div>
+
+            <div className="grid grid-rows-2 md:grid-cols-2 gap-5 border-gray-300 mb-10">
             <div className="flex flex-col">
               <label className="text-gray-700 mb-2 mt-2 font-medium">
                 Type<span className="text-red-400">*</span>
