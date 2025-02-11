@@ -59,10 +59,8 @@ const AddProduct = () => {
   });
 
   const [formErrors, setFormErrors] = useState({});
-  console.log("FormErrors",formErrors)
 
    useEffect(() => {
-  
       if (metalid) {
         categoryByMetalId(metalid);
         getallpurity(metalid)
@@ -130,21 +128,14 @@ const AddProduct = () => {
       setMetalcost(value || 0);
     }
 
-console.log(name)
     if (name === "id_purity") {
       setSelectedpurity(value);
       todayrateMutate({ id_branch: id_branch,date:todaydate });
     }
-
-  
-   
   };
 
   const calculateproduct = () => {
   
-   console.log("curent - ",current_rate);
-   console.log("weight - ",weight);
-
     if(current_rate >0 && weight>0){
         let calc1 = parseFloat(current_rate) * parseFloat(weight);
      

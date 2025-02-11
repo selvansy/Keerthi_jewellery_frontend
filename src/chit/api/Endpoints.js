@@ -552,9 +552,9 @@ export const createnewarrivals= async(data)=>{
     return response.data
 }
 
-export const updatenewarrivals= async(data)=>{
+export const updatenewarrivals= async(id,data)=>{
     console.log(data)
-    const response= await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/newarrivals/${data.id}`,data.data)
+    const response= await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/newarrivals/${id}`,data)
     return response.data
 }
 

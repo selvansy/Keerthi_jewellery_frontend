@@ -164,24 +164,17 @@ const NewArrivals = () => {
 
   //mutation to get scheme type
   const { mutate: getnewarrivalsData } = useMutation({
-    mutationFn: ()=>{
-      setisLoading(true)
-      getnewarrivalsTable
-    },
+    mutationFn: () => getnewarrivalsTable(),
     onSuccess: (response) => {
-      setisLoading(false)
-      setnewarrivalsData(response.data)
-      setTotalPages(response.data.totalPages)
+      setnewarrivalsData(response.data);
+      setTotalPages(response.data.totalPages);
     },
-    onError: (error) => {
-      console.error('Errors:', error);
-      setisLoading(false)
-    }
   });
+  
 
    
   useEffect(() => {
-
+    console.log('dj')
     getnewarrivalsData({ page: currentPage, limit: itemsPerPage, search: search,id_branch:id_branch})
   }, [currentPage, itemsPerPage,search])
 
