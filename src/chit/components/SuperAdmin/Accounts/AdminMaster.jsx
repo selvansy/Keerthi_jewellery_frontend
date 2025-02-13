@@ -20,7 +20,8 @@ const AdminMaster = () => {
     const [selectedRow, setSelectedRow] = useState(null);
     const [active, setActive] = useState(false);
     const [isAdmin, setisAdmin] = useState(false);
-    const [isLoading,setisLoading] = useState(false)
+    const [isLoading,setisLoading] = useState(true)
+
     
     const [clientTable, setClientTable] = useState([]);
     const { id } = useParams();
@@ -46,9 +47,8 @@ const AdminMaster = () => {
 
 
     const { mutate: getClients } = useMutation({
-        mutationFn: ()=>{
-             getAllClients()
-        },
+        mutationFn: (data)=>
+             getAllClients(data),
         onSuccess: (response) => {
             setClientTable(response.data);
         },
@@ -57,6 +57,9 @@ const AdminMaster = () => {
         }
     });
 
+    useEffect(() => {
+        getClients();
+    }, [])
 
     useEffect(() => {
         getClients();

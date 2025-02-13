@@ -36,7 +36,7 @@ const ProjectAccess = () => {
   const id_project = roledata?.id_project;
   const navigate = useNavigate();
   const [isviewOpen, setIsviewOpen] = useState(false);
-  const [isLoading,setisLoading] = useState(false)
+  const [isLoading,setisLoading] = useState(true)
 
   function closeIncommingModal() {
     setIsviewOpen(false);
@@ -49,10 +49,8 @@ const ProjectAccess = () => {
 
 
   const { mutate: getallprojectaccesstableMutate,  refetch } = useMutation({
-    mutationFn: ()=>{ 
-      setisLoading(true)
-      getallprojectaccesstable
-    },
+    mutationFn: (data)=>
+      getallprojectaccesstable(data),
     onSuccess: (response) => {
       if (response) {
         setProjectAccessData(response.data);
@@ -92,6 +90,14 @@ const ProjectAccess = () => {
       search: debouncedSearch
     });
   }, [currentPage, itemsPerPage, debouncedSearch, isviewOpen]);
+
+  useEffect(() => {
+    getallprojectaccesstableMutate({
+      page: currentPage,
+      limit: itemsPerPage,
+      search: debouncedSearch
+    });
+  }, []);
 
 
   const handleAddEmployeeClick = async () => {

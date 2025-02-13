@@ -34,7 +34,8 @@ const ProductWhatsapp = () => {
   let dispatch = useDispatch();
   const navigate = useNavigate()
 
-  const [isLoading,setisLoading] = useState(false)
+  const [isLoading,setisLoading] = useState(true)
+
   const [offerData, setofferData] = useState([])
   const [search, setSearch] = useState('')
   const [isviewOpen, setIsviewOpen] = useState(false);
@@ -201,10 +202,8 @@ const ProductWhatsapp = () => {
 
   //mutation to get scheme type
   const { mutate: getofferData } = useMutation({
-    mutationFn: ()=>{
-      setisLoading(true)
-       getoffersTable
-    },
+    mutationFn: (data)=>
+       getoffersTable(data),
     onSuccess: (response) => {
      
       setofferData(response.data)
@@ -220,6 +219,10 @@ const ProductWhatsapp = () => {
   useEffect(() => {
     getofferData({ page: currentPage, limit: itemsPerPage, search: search })
   }, [currentPage, itemsPerPage, search])
+
+  useEffect(() => {
+    getofferData({ page: currentPage, limit: itemsPerPage, search: search })
+  }, [])
 
 
   useEffect(() => {

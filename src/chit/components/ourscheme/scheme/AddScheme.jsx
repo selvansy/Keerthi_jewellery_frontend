@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useParams } from "react-router-dom";
 
 import {
   getClassificationByBranch,getallbranch, getallmetal, getallschemetypes, getschemeById, allinstallmenttype, allFundtype, addscheme,
@@ -14,8 +14,13 @@ import { toast } from "react-toastify";
 const AddScheme = () => {
 
   const navigate = useNavigate();
+
+   let {id} = useParams();
+   
+
    const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
+   const [isSubmitted, setIsSubmitted] = useState(false);
   const [branchData, setBranchData] = useState([]);
   const [classificationData, setClassification] = useState([])
   const [formErrors, setFormErrors] = useState({});
@@ -37,12 +42,30 @@ const AddScheme = () => {
 
   let [scheme_type, setSchemeType] = useState(0);
   const roledata = useSelector((state) => state.clientForm.roledata);
-  let id_client = roledata?.id_client;
+
+
+  let admin = roledata?.id_role?.id_role;
   const id_branch = roledata?.branch;
-  const [idbranch, setIdbranch] = useState(id_branch);
-  const [formData, setFormData] = useState(
-    { id_branch: id_branch, saving_type: 1,reduce_fine_amount:0,min_fund:0,max_fund:0,min_weight:0,max_weight:0,min_amount:0,max_amout:0});
-  const id = useSelector((state) => state.clientForm.id);
+  const branchId = roledata?.id_branch;
+  
+
+  const [idbranch, setIdbranch] = useState("");
+  const [amount,setAmount] = useState(null)
+  const [minAmt,setminAmt] = useState(null);
+  const [maxAmt,setmaxAmt] = useState(null);
+  const [formData, setFormData] = useState({ 
+    id_branch: id_branch, 
+      saving_type: 1,
+      reduce_fine_amount:0,
+      min_fund:0,
+      max_fund:0,
+      min_weight:0,
+      max_weight:0,
+      min_amount:0,
+      max_amount:0,
+      amount:0
+    });
+ 
 
 
   const handleCancle = () => {
@@ -50,38 +73,54 @@ const AddScheme = () => {
   };
 
 
-  // Add a useEffect to watch for metal type changes
+  
   useEffect(() => {
 
-    if (metalid) {
+    if (metalid !== "") {
       getPurity(metalid);
     }
   }, [metalid]);
 
 
 
-  useEffect(() => { 
-      getallbranchmuate();
-  }, []);
-
   useEffect(() => {
-    getAllMetals();
+
+    if( metalid === ""){
+      getAllMetals();
+     }
     getAllInstallmentTypes();
     getAllSchemeTypes();
     getAllWastage()
     gstTypeDataTable()
     getSavingType();
-
-    if (id) {
-      getSchemeId(id)
-      getPurity(purity);
+    
+    if(branchId){
+      allclassification(branchId)
     }
-
+   
   }, []);
 
 
 
-  //helper handlers
+  useEffect(() => {
+ 
+  if (id_branch === "0" && admin === 2) {
+    getallbranchmuate();
+  }
+  }, [id_branch])
+
+
+  useEffect(() => {
+    
+    if (id) {
+      getSchemeId(id)
+    }
+
+    if(purity && id){
+      getPurity(purity);
+    }
+  }, [id])
+  
 
   //wheel prevent handler
   const handleWheel = (e) => {
@@ -90,12 +129,19 @@ const AddScheme = () => {
 
   //handler for field change
   const handleChange = (e) => {
+
     const { name, value } = e.target;
 
     if (name === "id_branch") {
-      allclassification({ id_branch: value });
+     
+      allclassification(value );
       setFormData({ ...formData, id_branch: value });
       setIdbranch(value);
+    }
+
+    if(name === "amount"){
+      setFormData({ ...formData, amount: value });
+      setAmount(value)
     }
 
     if (name === "first_paid_belowdays") {
@@ -114,6 +160,62 @@ const AddScheme = () => {
       return;
     }
 
+
+    if (name === "weekmonth") {
+      const numValue = Number(value);
+      const maTMonth = formData.maturity_month-1;
+
+      if (value === '' || (numValue >= 0 && numValue <= 99)) {
+        if(value === "" || (numValue === 4)){
+          setFormData({
+            ...formData,
+            total_installments: (formData.maturity_month) / 12,
+            [name]: value
+          });
+        }
+
+        if(value === "" || (numValue === 3)){
+          const totalValue = maTMonth * 30;
+       
+          setFormData({
+            ...formData,
+            total_installments: (maTMonth) * 30,
+            [name]: value
+          });
+        }
+       
+        if(value === "" || (numValue === 2)){
+          setFormData({
+            ...formData,
+            total_installments: (maTMonth) * 4,
+            [name]: value
+          });
+        }
+
+        if(value === "" || (numValue === 1)){
+          setFormData({
+            ...formData,
+            total_installments: maTMonth,
+            [name]: value
+          });
+        }
+       
+        if (numValue < 5 && value !== '') {
+          setFormErrors({
+            ...formErrors,
+            total_installments: "Total Installments must be required",
+          });
+        } else {
+          setFormErrors({
+            ...formErrors,
+            weekmonth: "",
+          });
+        }
+      }
+      return;
+    }
+
+
     if (name === "maturity_month") {
       const numValue = Number(value);
       if (value === '' || (numValue >= 0 && numValue <= 99)) {
@@ -122,6 +224,8 @@ const AddScheme = () => {
           total_installments: value - 1,
           [name]: value
         });
+
+        
         if (numValue < 5 && value !== '') {
           setFormErrors({
             ...formErrors,
@@ -143,7 +247,7 @@ const AddScheme = () => {
     if (name === "scheme_type") {
       setSchemeType(value);
     }
-console.log(name)
+
     if (name === 'id_purity' || name === 'weekmonth' || name === "scheme_type" || name === "amount" || name === "min_amount" || name === "max_weight" || name === "max_amount" || name === "min_weight") {
       setFormData({
         ...formData,
@@ -200,11 +304,11 @@ console.log(name)
   const { mutate: getSchemeId } = useMutation({
     mutationFn: getschemeById,
     onSuccess: (response) => {
-      console.log("SchemeDataByid", response.data)
+      
       setFormData(response.data);
       setMetalid(response.data?.id_metal)
       setPurity(response.data?.id_purity)
-      allclassification({ id_branch: response.data?.id_branch });
+      allclassification(response.data?.id_branch);
       setSchemeType(response.data?.scheme_type);
     },
     onError: (error) => {
@@ -213,9 +317,8 @@ console.log(name)
   });
 
   const { mutate: allclassification } = useMutation({
-    mutationFn: getClassificationByBranch,
+    mutationFn: (id_branch)=>getClassificationByBranch(id_branch),
     onSuccess: (response) => {
-
       setClassification(response.data);
     },
     onError: (error) => {
@@ -236,7 +339,7 @@ console.log(name)
   const { mutate: getPurity } = useMutation({
     mutationFn: puritybymetal,
     onSuccess: (response) => {
-      console.log("PurityData", response.data)
+ 
       setPurityData(response.data);
     },
     onError: (error) => {
@@ -280,12 +383,15 @@ console.log(name)
 
   //add scheme mutate
   const { mutate: addNewScheme } = useMutation({
+
     mutationFn: addscheme,
     onSuccess: (response) => {
       toast.success(response.message)
       navigate('/ourscheme/scheme')
+      setIsSubmitted(false);
     },
     onError: (error) => {
+      setIsSubmitted(false);
       console.error("Error fetching scheme types:", error);
     },
   });
@@ -293,14 +399,14 @@ console.log(name)
   const { mutate: updateSchemeData } = useMutation({
     mutationFn:({id,data}) => updateScheme(id,data),
     onSuccess: (response) => {
-
+      setIsSubmitted(false);
       toast.success(response.message)
       navigate('/ourscheme/scheme')
       setFormData(response.data)
 
-      dispatch(setid(null))
     },
     onError: (error) => {
+      setIsSubmitted(false);
       console.error("Error fetching scheme types:", error);
     },
   });
@@ -322,15 +428,15 @@ console.log(name)
       errors.id_metal = "Metal type is required";
     }
 
-    if (formData.scheme_type >= 4) {
+    if (formData.scheme_type >= "4" || formData.scheme_type >= 4  ) {
       if (formData.min_amount ==="") {
         errors.min_amount = "Minimum Amount is required";
       }
       if (formData.max_amount ==="") {
-        errors.min_amount = "Maximum Amount is required";
+        errors.max_amount = "Maximum Amount is required";
       }
     } 
-     if (formData.scheme_type === "3"){   
+     if (formData.scheme_type === "3" || formData.scheme_type >= 3){   
       if (formData.min_weight ==="") {
         errors.min_weight = "Minimum Weight is required";
       }
@@ -338,18 +444,14 @@ console.log(name)
         errors.max_weight = "Minimum Weight is required";
       }
     }
-    if (formData.scheme_type < 3){  
-      if (formData.amount ==="") {
-        errors.amount = "Amount is required";
-      }
-    }
+   
 
     if (!formData.id_purity) {
       errors.id_purity = "Purity is required";
     }
 
     if (!formData.weekmonth) {
-      errors.weekmonth = "Installment type is required";
+      errors.weekmonth = "Installment Type is required";
     }
 
 
@@ -374,36 +476,36 @@ console.log(name)
       errors.maturity_month = "Maturity month must be greater than 5";
     }
 
-    console.log("Errors", errors)
-
+ 
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
 
   const handleSubmit = () => {
-
+    setIsSubmitted(true);
     if (!validateForm(formData)) {
       toast.error("Required fields missing")
+      setIsSubmitted(false);
       return;
     }
     if (id_branch === 0) {
       toast.error("Branch is required!")
     }
 
-    (formData)
     addNewScheme(formData)
   };
 
 
   const handleUpdate = () => {
-
+    setIsSubmitted(true);
     if (!validateForm(formData)) {
       toast.error("Required fields missing")
+      setIsSubmitted(false);
       return;
     }
 
     updateSchemeData({ id: id, data: formData })
-
+    
   }
 
 
@@ -464,7 +566,7 @@ console.log(name)
                 </span>
               )}
             </div>
-            {id_branch !== "0" && (
+            {admin === 2 && (
 
               <div className="flex flex-col lg:mt-2">
                 <label className="text-black mb-1 font-medium">
@@ -473,7 +575,7 @@ console.log(name)
                 <div className="relative">
                   <select
                     name="id_branch"
-                    className={`appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 ${!id_branch !== "0" ? "cursor-not-allowed bg-gray-100" : ""
+                    className={`cursor-pointer appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700
                       }`}
                     onChange={handleChange}
                     value={formData.id_branch}
@@ -491,7 +593,7 @@ console.log(name)
                       </option>
                     ))}
                   </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                  <div className="cursor-pointer pointer-events-none absolute inset-y-0 right-3 flex items-center">
                     <svg
                       className="h-4 w-4 text-gray-400"
                       fill="none"
@@ -520,7 +622,7 @@ console.log(name)
               <select
                 value={formData.id_classification}
                 name="id_classification"
-                className="border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                className="cursor-pointer border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                 defaultValue=""
                 onChange={handleChange}
               >
@@ -550,7 +652,7 @@ console.log(name)
               <div className="relative">
                 <select
                   name="id_metal"
-                  className="appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700"
+                  className="cursor-pointer appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700"
                   defaultValue=""
                   onChange={(e) => {
                     handleChange(e);
@@ -566,7 +668,7 @@ console.log(name)
                     </option>
                   ))}
                 </select>
-                <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                <div className="cursor-pointer pointer-events-none absolute inset-y-0 right-3 flex items-center">
                   <svg
                     className="h-4 w-4 text-gray-400"
                     fill="none"
@@ -593,7 +695,7 @@ console.log(name)
               <div className="relative">
                 <select
                   name="id_purity"
-                  className={`appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 ${!purityData || purityData.length === 0 ? "cursor-not-allowed bg-gray-100" : ""
+                  className={`cursor-pointer appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 ${!purityData || purityData.length === 0 ? "cursor-not-allowed bg-gray-100" : ""
                     }`}
                   defaultValue=""
                   onChange={handleChange}
@@ -608,7 +710,7 @@ console.log(name)
                     </option>
                   ))}
                 </select>
-                <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                <div className="cursor-pointer pointer-events-none absolute inset-y-0 right-3 flex items-center">
                   <svg
                     className="h-4 w-4 text-gray-400"
                     fill="none"
@@ -628,47 +730,7 @@ console.log(name)
                 </span>
               )}
             </div>
-            <div className="flex flex-col lg:mt-2">
-              <label className="text-black mb-1 font-medium">
-                Installment Type<span className="text-red-400">*</span>
-              </label>
-              <div className="relative">
-                <select
-                  name="weekmonth"
-                  className="appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700"
-                  defaultValue=""
-                  onChange={handleChange}
-                  value={formData.weekmonth}
-                >
-                  <option value="" className="text-gray-700">
-                    --Select--
-                  </option>
-                  {installmentTypeData.map((type) => (
-                    <option key={type._id} value={type.installment_type}>
-                      {type.installment_name}
-                    </option>
-                  ))}
-                </select>
-                <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                  <svg
-                    className="h-4 w-4 text-gray-400"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="3"
-                    viewBox="0 0 24 24"
-                    stroke="black"
-                  >
-                    <path d="M19 9l-7 7-7-7"></path>
-                  </svg>
-                </div>
-              </div>
-              {formErrors.weekmonth && (
-                <span className="text-red-500 text-sm mt-1">
-                  {formErrors.weekmonth}
-                </span>
-              )}
-            </div>
+
             <div className="flex flex-col lg:mt-2">
               <label className="text-gray-700 mb-2 font-medium">
                 Maturity Month<span className="text-red-400">*</span>
@@ -704,13 +766,56 @@ console.log(name)
 
             <div className="flex flex-col lg:mt-2">
               <label className="text-black mb-1 font-medium">
+                Installment Type<span className="text-red-400">*</span>
+              </label>
+              <div className="relative">
+                <select
+                  name="weekmonth"
+                  className="cursor-pointer appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700"
+                  defaultValue=""
+                  onChange={handleChange}
+                  value={formData.weekmonth}
+                >
+                  <option value="" className="text-gray-700">
+                    --Select--
+                  </option>
+                  {installmentTypeData.map((type) => (
+                    <option key={type._id} value={type.installment_type}>
+                      {type.installment_name}
+                    </option>
+                  ))}
+                </select>
+                <div className="cursor-pointer pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                  <svg
+                    className="h-4 w-4 text-gray-400"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="3"
+                    viewBox="0 0 24 24"
+                    stroke="black"
+                  >
+                    <path d="M19 9l-7 7-7-7"></path>
+                  </svg>
+                </div>
+              </div>
+              {formErrors.weekmonth && (
+                <span className="text-red-500 text-sm mt-1">
+                  {formErrors.weekmonth}
+                </span>
+              )}
+            </div>
+           
+
+            <div className="flex flex-col lg:mt-2">
+              <label className="text-black mb-1 font-medium">
                 Scheme Type<span className="text-red-400">*</span>
               </label>
               <div className="relative">
                 <select
                   name="scheme_type"
                   value={formData.scheme_type}
-                  className="appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700"
+                  className="cursor-pointer appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700"
                   defaultValue=""
                   onChange={handleChange}
                
@@ -759,7 +864,7 @@ console.log(name)
           {showPayment && (
             <div className="grid grid-rows-2 md:grid-cols-2 gap-5 border-t-2 border-gray-300">
               {
-                scheme_type < 3 && (
+                ( (scheme_type < 3) || (scheme_type < "3") ) && (
                   // Render Amounts field when scheme_type is less than 3
                   <div className="flex flex-col mt-2">
                     <label className="text-black mb-2 font-normal">
@@ -768,9 +873,8 @@ console.log(name)
                     <div className="relative">
                       <input
                         type="number"
-                        min="0"
                         name="amount"
-                        value={formData.amount}
+                        value={amount}
                         onChange={handleChange}
                         onWheel={handleWheel} // Custom handler to prevent scrolling
                         onKeyDown={(e) => {
@@ -801,7 +905,7 @@ console.log(name)
                   </div>
                 )}
 
-              {scheme_type >= 4 && scheme_type <= 10 && (
+              { ((scheme_type >= "4")  || (scheme_type <= "10") ) && (
                 // Render Min Amount field when scheme_type is 3 or greater
                 <div className="flex flex-col lg:mt-2">
                   <label className="text-black mb-2 font-normal">
@@ -812,7 +916,7 @@ console.log(name)
                       type="number"
                       name="min_amount"
                       value={formData.min_amount}
-                      min="0"
+                      
                       onChange={handleChange}
                       onWheel={handleWheel} // Custom handler to prevent scrolling
                       onKeyDown={(e) => {
@@ -855,7 +959,7 @@ console.log(name)
                       type="number"
                       name="min_weight"
                       value={formData.min_weight}
-                      min="0"
+                      
                       onChange={handleChange}
                       onWheel={handleWheel} // Custom handler to prevent scrolling
                       onKeyDown={(e) => {
@@ -916,7 +1020,7 @@ console.log(name)
                 />
               </div>
               {
-                scheme_type >= 4 && scheme_type <= 10 && (
+                  ((scheme_type >= "4")  || (scheme_type <= "10") ) && (
                   <div className="flex flex-col lg:mt-2">
                     {/* Max Amount Field */}
                     <div className="flex flex-col lg:mt-2">
@@ -929,7 +1033,7 @@ console.log(name)
                           name="max_amount"
                           value={formData.max_amount}
                           onChange={handleChange}
-                          min="0"
+                          
                           onWheel={handleWheel} // Custom handler to prevent scrolling
                           onKeyDown={(e) => {
                             // Prevent certain key events for input validation
@@ -975,7 +1079,7 @@ console.log(name)
                         name="max_weight"
                         value={formData.max_weight}
                         onChange={handleChange}
-                        min="0"
+                                                
                         onWheel={handleWheel} // Custom handler to prevent scrolling
                         onKeyDown={(e) => {
                           // Prevent certain key events for input validation
@@ -1015,7 +1119,7 @@ console.log(name)
                     type="number"
                     name="buy_gst"
                     value={formData.buy_gst}
-                    min="0"
+                    
                     onChange={handleChange}
                     onWheel={handleWheel}
                     onKeyDown={(e) => {
@@ -1046,7 +1150,7 @@ console.log(name)
                   <select
                     name="buytgsttype"
                     value={formData.buytgsttype}
-                    className="appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700"
+                    className="cursor-pointer appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700"
                     defaultValue=""
                     onChange={handleChange}
                   >
@@ -1084,7 +1188,7 @@ console.log(name)
                   type="number"
                   name="min_installments"
                   value={formData.min_installments}
-                  min="0"
+                  
                   onChange={handleChange}
                   onWheel={handleWheel}
                   onKeyDown={(e) => {
@@ -1109,8 +1213,8 @@ console.log(name)
                 <div className="relative">
                   <select
                     name="wastagebenefit"
-                    className="appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700"
-                    defaultValue=""
+                    className="cursor-pointer appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700"
+                    
                     onChange={handleChange}
                     value={formData.wastagebenefit}
                   >
@@ -1157,7 +1261,7 @@ console.log(name)
                 <div className="relative">
                   <select
                     name="saving_type"
-                    className="appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700"
+                    className="cursor-pointer appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700"
                     defaultValue=""
                     onChange={handleChange}
                     value={formData.saving_type}
@@ -1196,7 +1300,7 @@ console.log(name)
                     type="number"
                     name="min_fund"
                     value={formData.min_fund}
-                    min="0"
+                    
                     onChange={handleChange}
                     onWheel={handleWheel}
                     onKeyDown={(e) => {
@@ -1226,7 +1330,7 @@ console.log(name)
                 <div className="relative">
                   <input
                     type="number"
-                    min="0"
+                    
                     name="max_fund"
                     value={formData.max_fund}
                     onChange={handleChange}
@@ -1275,7 +1379,7 @@ console.log(name)
                   <input
                     type="number"
                     name="first_paid_percentage"
-                    min="0"
+                    
                     value={formData.first_paid_percentage}
                     onChange={handleChange}
                     onWheel={handleWheel}
@@ -1337,7 +1441,7 @@ console.log(name)
                   <input
                     type="number"
                     name="second_paid_percentage"
-                    min="0"
+                    
                     onChange={handleChange}
                     value={formData.second_paid_percentage}
                     onWheel={handleWheel}
@@ -1458,7 +1562,7 @@ console.log(name)
                   <input
                     type="number"
                     name="fourth_paid_percentage"
-                    min="0"
+                    
                     onChange={handleChange}
                     value={formData.fourth_paid_percentage}
                     onWheel={handleWheel}
@@ -1519,7 +1623,7 @@ console.log(name)
                   <input
                     type="number"
                     name="fifth_paid_percentage"
-                    min="0"
+                    
                     onChange={handleChange}
                     value={formData.fifth_paid_percentage}
                     onWheel={handleWheel}
@@ -1740,7 +1844,7 @@ console.log(name)
                 <div className="relative">
                   <select
                     name="gift_type"
-                    className="appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700"
+                    className="cursor-pointer appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700"
                     defaultValue=""
                     onChange={handleChange}
                     value={formData.saving_type}
@@ -1954,7 +2058,7 @@ console.log(name)
                     type="number"
                     name="fine_amount"
                     onChange={handleChange}
-                    value={formData.fine_amount}
+                    value={formData.min_amount}
                     onWheel={handleWheel}
                     onKeyDown={(e) => {
                       if (
@@ -1985,7 +2089,7 @@ console.log(name)
                     type="number"
                     name="cumulative_fine_amount"
                     value={formData.cumulative_fine_amount}
-                    min="0"
+                    
                     onChange={handleChange}
                     onWheel={handleWheel}
                     onKeyDown={(e) => {
@@ -2076,6 +2180,7 @@ console.log(name)
               <button
                 className="bg-[#61A375] text-white rounded-md p-2 w-full lg:w-20"
                 type="button"
+                disabled={isSubmitted}
                 onClick={id ? handleUpdate : handleSubmit}
               >
                 {id ? "Update" : "Submit"}

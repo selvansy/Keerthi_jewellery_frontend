@@ -27,8 +27,7 @@ const Weddingnotification = () => {
 
   const [notifyData, setnotifyData] = useState([])
   const [filtertype, setNotifyType] = useState([]);
-  const [isLoading,setisLoading] = useState(false)
-
+  const [isLoading,setisLoading] = useState(true)
 
   const [search, setSearch] = useState('')
 
@@ -147,10 +146,7 @@ const Weddingnotification = () => {
 
   //mutation to get scheme type
   const { mutate: getnotificationData } = useMutation({
-    mutationFn: ()=>{ 
-      setisLoading(true)
-      pushnotificationdatatable
-    },
+    mutationFn: (payload)=>  pushnotificationdatatable(payload),
     onSuccess: (response) => {
       setnotifyData(response.data)
       setTotalPages(response.totalPages)
@@ -165,6 +161,10 @@ const Weddingnotification = () => {
   useEffect(() => {
     getnotificationData({ page: currentPage, limit: itemsPerPage, search: search ,senttype:"4"})
   }, [currentPage, itemsPerPage, search])
+
+  useEffect(() => {
+    getnotificationData({ page: currentPage, limit: itemsPerPage, search: search ,senttype:"4"})
+  }, [])
 
   const handleSearch = (e) => {
     setSearch(e.target.value)

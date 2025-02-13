@@ -36,7 +36,7 @@ const AupayConfigure = () => {
     const debouncedSearch = useDebounce(searchInput, 500)
     const currentStep = useSelector((state) => state.clientForm.currentStep);
     const projectTitle = useSelector((state) => state.clientForm.selectedProject);
-    const [isLoading,setisLoading] = useState(false)
+    const [isLoading,setisLoading] = useState(true)
 
     const dispatch = useDispatch();
     const [filters, setFilters] = React.useState({
@@ -45,10 +45,9 @@ const AupayConfigure = () => {
     });
 
     const { mutate: getallconfigureData } = useMutation({
-        mutationFn: ()=>{
-            setisLoading(true)
-             getconfigurationtable
-        },
+        mutationFn: (payload)=>
+             getconfigurationtable(payload),
+        
         onSuccess: (response) => {
             setAupayData(response.data);
             setisLoading(false)
@@ -64,6 +63,9 @@ const AupayConfigure = () => {
 
 
 
+    useEffect(() => {
+        getallconfigureData({ page: currentPage, limit: itemsPerPage, project_type: 1 });
+    }, [])
 
 
 

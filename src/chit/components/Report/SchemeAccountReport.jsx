@@ -28,7 +28,7 @@ function SchemeAccountReport() {
      const [schemefilter, setScheme] = useState([]);
      const [addedbyfilter, setAddedby] = useState([]);
      const [schemestatusfilter, setSchemestatus] = useState([]);
-     const [isLoading,setisLoading] = useState(false)
+     const [isLoading,setisLoading] = useState(true)
     
       const [search, setSearch] = useState('')
  
@@ -75,7 +75,22 @@ function SchemeAccountReport() {
       }, [currentPage, itemsPerPage, search])
   
     useEffect(()=>{
-          getschemeaccountMutate();
+      const filterTosend = {
+        page:currentPage,
+        from_date:from_date,
+        to_date:to_date,
+        limit: itemsPerPage,
+        search: search,
+        added_by:filters.added_by,
+        scheme_status:filters.scheme_status,
+        id_classification: filters.id_classification,
+        collectionuserid: filters.collectionuserid,
+        id_scheme: filters.id_scheme,
+        id_branch: filters.id_branch,
+        scheme_type:filters.scheme_type
+      };
+       
+      getschemeaccountMutate(filterTosend)
         
           },[])
   
@@ -361,10 +376,7 @@ function SchemeAccountReport() {
 
   //mutation to get scheme type
   const { mutate: getschemeaccountMutate } = useMutation({
-    mutationFn: ()=>{
-      setisLoading(true)
-       schemeaccounttable
-    },
+    mutationFn: (payload)=> schemeaccounttable(payload),
     onSuccess: (response) => {
   
       setschemeaccount(response.data)

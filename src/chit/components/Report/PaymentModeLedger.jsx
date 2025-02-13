@@ -23,7 +23,7 @@ function ModeWisePayment() {
 
     const [paymentMode, setpaymentMode] = useState([])
     
-const [isLoading,setisLoading] = useState(false)
+    const [isLoading,setisLoading] = useState(true)
 
 
     
@@ -67,6 +67,18 @@ const [isLoading,setisLoading] = useState(false)
     getpaymentModeMutate(filterTosend);
   }, [currentPage, itemsPerPage, search])
 
+
+  useEffect(() => {
+    const filterTosend = {
+      page: currentPage,
+      from_date: from_date,
+      to_date: to_date,
+      limit: itemsPerPage,
+      search: "",
+      id_branch: id_branch,
+    };
+    getpaymentModeMutate(filterTosend);
+  }, [])
 
 
   const applyfilterdatatable = () => {
@@ -139,10 +151,8 @@ const [isLoading,setisLoading] = useState(false)
 
   //mutation to get scheme type
   const { mutate: getpaymentModeMutate } = useMutation({
-    mutationFn: ()=>{
-      setisLoading(true)
-       getpaymentmodesummary
-    },
+    mutationFn: (payload)=>
+       getpaymentmodesummary(payload),
     onSuccess: (response) => {
 
       setpaymentMode(response.data)

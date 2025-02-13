@@ -19,7 +19,7 @@ import "react-datepicker/dist/react-datepicker.css";
 
 const Customer = () => {
 
-  const [isLoading,setisLoading] = useState(false)
+  const [isLoading,setisLoading] = useState(true)
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const navigate = useNavigate()
   const dispatch = useDispatch();
@@ -86,10 +86,7 @@ const Customer = () => {
   }
 
   const { mutate: getcustomertableMutate} = useMutation({
-    mutationFn: ()=>{
-    setisLoading(true)
-    getcustomertable
-    },
+    mutationFn: (payload)=>  getcustomertable(payload),
     onSuccess: (response) => {
 
       if (response?.data) {
@@ -115,7 +112,6 @@ const Customer = () => {
 
 
   useEffect(() => {
-    console.log(search)
     getcustomertableMutate({
       page: currentPage,
       limit: itemsPerPage,
@@ -125,6 +121,17 @@ const Customer = () => {
       id_branch:filters.id_branch
     });
   }, [currentPage, itemsPerPage,search]);
+
+  useEffect(() => {
+    getcustomertableMutate({
+      page: currentPage,
+      limit: itemsPerPage,
+      search:search,
+      from_date: "",
+      to_date: "",
+      id_branch:filters.id_branch
+    });
+  }, []);
 
 
   const handleReset = (e) => {

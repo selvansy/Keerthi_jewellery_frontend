@@ -40,10 +40,8 @@ const Schemetype = () => {
     }
 
     const { mutate: getschemetypetableMutate } = useMutation({
-        mutationFn: ()=>{
-            setisLoading(true)
-             getschemetypetable
-        },
+        mutationFn: (payload)=>
+             getschemetypetable(payload),
         onSuccess: (response) => {
             if (response) {
                 setschemetypeData(response.data);
@@ -78,6 +76,9 @@ const Schemetype = () => {
     }, [currentPage,itemsPerPage, debouncedSearch,isviewOpen]);
 
 
+    useEffect(() => {
+        getschemetypetableMutate({ search: debouncedSearch, page: currentPage, limit });
+    }, []);
 
 
     const handlePageChange = (page) => {
