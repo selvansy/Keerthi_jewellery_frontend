@@ -30,8 +30,9 @@ const Purity = () => {
     const debouncedSearch = useDebounce(searchInput, 500)
     const limit = 10;
     const [isviewOpen, setIsviewOpen] = useState(false);
-    const [isLoading,setisLoading] = useState(false)
-    
+
+    const [isLoading,setisLoading] = useState(true)
+
     
    const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
@@ -40,10 +41,8 @@ const Purity = () => {
     }
 
     const {  mutate: getallpuritytableMutate } = useMutation({
-        mutationFn: ()=>{
-            setisLoading(true)
-             getallpuritytable
-        },
+        mutationFn: (payload)=>
+             getallpuritytable(payload),
         onSuccess: (response) => {
             if (response) {
                 setpurityData(response.data);

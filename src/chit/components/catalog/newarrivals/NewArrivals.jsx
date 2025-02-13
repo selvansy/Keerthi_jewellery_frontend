@@ -16,7 +16,7 @@ import Modal from '../../../components/common/Modal';
 
 const NewArrivals = () => {
   const navigate = useNavigate()
-  const [isLoading,setisLoading] = useState(false)
+  const [isLoading,setisLoading] = useState(true)
 
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const roledata = useSelector((state) => state.clientForm.roledata);
@@ -27,7 +27,6 @@ const NewArrivals = () => {
   let [branch, setbranch] = useState("")
   const [newarrivalsData, setnewarrivalsData] = useState([])
 
-  console.log("Data",newarrivalsData)
 
   const [search, setSearch] = useState('')
    const [currentPage, setCurrentPage] = useState(1);
@@ -51,6 +50,19 @@ const NewArrivals = () => {
   });
   const [formErrors, setFormErrors] = useState({});
 
+
+  useEffect(() => {
+    const filterTosend = {
+      page: currentPage,
+      from_date: from_date,
+      to_date: to_date,
+      limit: itemsPerPage,
+      search: "",
+      type: "",
+      id_branch: id_branch
+    };
+    getnewarrivalsData(filterTosend);
+  }, [])
 
 
   const handleReset = (e) => {
@@ -164,10 +176,7 @@ const NewArrivals = () => {
 
   //mutation to get scheme type
   const { mutate: getnewarrivalsData } = useMutation({
-    mutationFn: ()=>{
-      setisLoading(true)
-      getnewarrivalsTable
-    },
+    mutationFn: (payload)=> getnewarrivalsTable(payload),
     onSuccess: (response) => {
       setisLoading(false)
       setnewarrivalsData(response.data)

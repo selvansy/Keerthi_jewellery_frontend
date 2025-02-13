@@ -25,7 +25,7 @@ function AccountSummaryReport() {
     const id_client = roledata?.id_client;
     const id_branch = roledata?.branch;
 
-    const [isLoading,setisLoading] = useState(false)
+    const [isLoading,setisLoading] = useState(true)
     const [accsumm, setaccsumm] = useState([])
     const [accExp, setaccExp] = useState([]);
     const [classificationData, setClassification] = useState([])
@@ -188,10 +188,8 @@ function AccountSummaryReport() {
 
     //mutation to get scheme type
     const { mutate: OutstandingReport } = useMutation({
-        mutationFn: ()=>{ 
-            setisLoading(true)
-            getOutstandingReport
-        },
+        mutationFn: (payload)=>
+            getOutstandingReport(payload),
         onSuccess: (response) => {
   
             setaccsumm(response.data)

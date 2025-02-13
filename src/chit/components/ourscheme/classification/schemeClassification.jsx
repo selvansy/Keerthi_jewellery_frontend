@@ -4,26 +4,30 @@ import { SlidersHorizontal, Search, X } from 'lucide-react'
 import { setid } from "../../../../redux/clientFormSlice"
 import { useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
-import { getClassificationTable,getallbranch, deleteClassification, activateClassification } from "../../../api/Endpoints"
+import { getClassificationTable, getallbranch, deleteClassification, activateClassification } from "../../../api/Endpoints"
 import { eventEmitter } from '../../../../utils/EventEmitter';
 import Modal from '../../../components/common/Modal';
 import { openModal } from '../../../../redux/modalSlice';
 import { toast } from 'react-toastify'
 import { useDispatch, useSelector } from 'react-redux'
-import { CalendarDays, RefreshCcw} from 'lucide-react'
+import { CalendarDays, RefreshCcw } from 'lucide-react'
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
+import { useDebounce } from '../../../hooks/useDebounce';
+
 const SchemeClassification = () => {
 
   let navigate = useNavigate()
   let dispatch = useDispatch();
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
-  const [isLoading,setisLoading] = useState(false)
+  const [isLoading, setisLoading] = useState(true)
   const [branchList, setBranchList] = useState([]);
   const [schemeType, setSchemeType] = useState([])
   const [search, setSearch] = useState('')
-   const [currentPage, setCurrentPage] = useState(1);
+
+  const debouncedSearch = useDebounce(search, 600)
+  const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(10);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [isviewOpen, setIsviewOpen] = useState(false);
@@ -32,27 +36,27 @@ const SchemeClassification = () => {
   const branch = roledata?.branch;
   const [activeDropdown, setActiveDropdown] = useState(null)
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [filtered, SetFiltered] = useState(false)
   const [from_date, setFromdate] = useState("");
   const [to_date, setTodate] = useState("");
   const [id_branch, setBranchId] = useState(branch);
   const [filters, setFilters] = React.useState({
     from_date: "",
     to_date: "",
+ 
     page: currentPage,
     limit: itemsPerPage,
     id_branch: id_branch,
-    typesofscheme:1,
+    typesofscheme: 1,
+    search:debouncedSearch
 
   });
 
   //mutation to get scheme type 
   const { mutate: getClassificationTablemuate } = useMutation({
-    mutationFn: ()=>{ 
-      setisLoading(true)
-      getClassificationTable
-    },
+    mutationFn: (payload) => getClassificationTable(payload),
     onSuccess: (response) => {
-   
+
       setSchemeType(response.data)
       setTotalPages(response.totalPages)
       setIsFilterOpen(false);
@@ -71,14 +75,14 @@ const SchemeClassification = () => {
     const filterTosend = {
       from_date: from_date,
       to_date: to_date,
-      search: search,
+      search: debouncedSearch,
       page: currentPage,
       limit: itemsPerPage,
       id_branch: id_branch,
-      typesofscheme:1
+      typesofscheme: 1
 
     };
-console.log(filterTosend);
+    SetFiltered(true)
     getClassificationTablemuate(filterTosend)
   };
 
@@ -88,17 +92,21 @@ console.log(filterTosend);
     getClassificationTablemuate({
       from_date: "",
       to_date: "",
-      search: search,
+      search: debouncedSearch,
       page: currentPage,
       limit: itemsPerPage,
       id_branch: id_branch,
-      typesofscheme:1,
+      typesofscheme: 1,
     })
-  }, [currentPage, itemsPerPage, search])
+
+  }, [currentPage,itemsPerPage,debouncedSearch])
+
+
+
   const handleReset = (e) => {
     setFromdate("");
     setTodate("");
-    setFilters(prev=>({...prev,id_branch:id_branch})); 
+    setFilters(prev => ({ ...prev, id_branch: id_branch }));
     toast.success("Filter is cleared");
     getClassificationTablemuate({
       from_date: "",
@@ -107,10 +115,11 @@ console.log(filterTosend);
       page: currentPage,
       limit: itemsPerPage,
       id_branch: id_branch,
-      typesofscheme:1,
+      typesofscheme: 1,
     })
+    SetFiltered(false)
   }
- 
+
   const handleSearch = (e) => {
     setSearch(e.target.value)
   }
@@ -121,7 +130,6 @@ console.log(filterTosend);
   }
 
   const handleStatusToggle = async (id) => {
-    console.log(id)
     let response = await activateClassification(id);
     if (response) {
       toast.success(response.message);
@@ -129,19 +137,18 @@ console.log(filterTosend);
       getClassificationTablemuate({
         from_date: from_date,
         to_date: to_date,
-        search: search,
+        search: debouncedSearch,
         page: currentPage,
         limit: itemsPerPage,
         id_branch: id_branch,
-        typesofscheme:1,
+        typesofscheme: 1,
       })
     }
   };
 
 
   const handleEdit = (id) => {
-    dispatch(setid(id))
-    navigate("/classification/addclassification")
+    navigate(`/classification/addclassification/${id}`)
   };
 
   const handleDelete = (id) => {
@@ -174,11 +181,11 @@ console.log(filterTosend);
         getClassificationTablemuate({
           from_date: from_date,
           to_date: to_date,
-          search: search,
+          search: debouncedSearch,
           page: currentPage,
           limit: itemsPerPage,
           id_branch: id_branch,
-          typesofscheme:1,
+          typesofscheme: 1,
         })
       } catch (error) {
         console.error('Error deleting giftitem:', error);
@@ -187,7 +194,7 @@ console.log(filterTosend);
     return () => {
       eventEmitter.off('CONFIRMATION_SUBMIT');
     };
-  }, [eventEmitter, schemeType]);
+  }, [eventEmitter]);
 
 
   const columns = [
@@ -213,8 +220,6 @@ console.log(filterTosend);
               style={{
                 top: rowIndex >= schemeType.length - 2 ? 'auto' : '72%',
                 bottom: rowIndex >= schemeType.length - 2 ? '-74%' : 'auto',
-                // top: 'auto',
-                // bottom: '-440%',
                 zIndex: 9999,
                 marginBottom: '8px',
                 filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.15))'
@@ -272,11 +277,8 @@ console.log(filterTosend);
       cell: (row) => row?.classification_name,
     },
     {
-      header: "Classification Order",
-      cell: (row) => row?.classification_order
-    },
-    {
       header: 'Total Join',
+      cell: (row) => row?.totalJoins
     },
     {
       header: 'Active',
@@ -298,7 +300,7 @@ console.log(filterTosend);
         </label>
       )
     }
-   
+
   ];
 
   const paginationButtons = [];
@@ -325,19 +327,20 @@ console.log(filterTosend);
   };
 
 
-  const handleallbranch = async (e) => {
+  const handleallbranch = async () => {
 
     const response = await getallbranch();
     if (response) {
-      console.log(response.data)
       setBranchList(response.data);
     }
   };
 
-  const handleClickfilter = (e) => {
+  const handleClickfilter = () => {
     handleallbranch();
     setIsFilterOpen(true);
   }
+
+
   return (
     <div className="flex flex-col p-4">
       <h2 className="text-2xl text-gray-900 font-bold">Schemes Classification</h2>
@@ -360,24 +363,34 @@ console.log(filterTosend);
             style={{ backgroundColor: layout_color }} >
             + Create Classification
           </button>
-            <button
-              id="filter"
-              className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
-              onClick={() => handleReset()}
-              style={{ backgroundColor: layout_color }}>
-              <RefreshCcw size={20} />
-          </button>
-                    
-          <button
-            id="filter"
-            className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
-            onClick={(e) => {
-              handleClickfilter(e);
-            }}
 
-            style={{ backgroundColor: layout_color }} >
-            <SlidersHorizontal size={20} />
-          </button>
+          {
+            filtered ?
+              <>
+                <button
+                  id="filter"
+                  className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
+                  onClick={() => handleReset()}
+                  style={{ backgroundColor: layout_color }}>
+                  <RefreshCcw size={20} />
+                </button>
+              </>
+              :
+              <>
+
+                <button
+                  id="filter"
+                  className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
+                  onClick={(e) => {
+                    handleClickfilter(e);
+                  }}
+
+                  style={{ backgroundColor: layout_color }} >
+                  <SlidersHorizontal size={20} />
+                </button>
+              </>
+
+          }
         </div>
 
 
@@ -488,56 +501,56 @@ console.log(filterTosend);
           isLoading={isLoading}
         />
       </div>
-{schemeType.length >0 &&(
-      <div className="flex justify-between mt-4 p-2">
-        <div className="flex flex-row items-center justify-center gap-2">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-              className="p-2 text-gray-500 rounded-md"
-            >
-              Previous
-            </button>
-          </div>
-
+      {schemeType.length > 0 && (
+        <div className="flex justify-between mt-4 p-2">
           <div className="flex flex-row items-center justify-center gap-2">
-            {paginationButtons}
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="p-2 text-gray-500 rounded-md"
+              >
+                Previous
+              </button>
+            </div>
+
+            <div className="flex flex-row items-center justify-center gap-2">
+              {paginationButtons}
+            </div>
+
+            <div className="flex items-center">
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="p-2 text-gray-500 rounded-md"
+              >
+                Next
+              </button>
+            </div>
           </div>
 
-          <div className="flex items-center">
-            <button
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className="p-2 text-gray-500 rounded-md"
+          <div className="mt-4 flex gap-2 justify-center items-center">
+            <span className="text-gray-500">Show</span>
+            <select
+              id="itemsPerPage"
+              value={itemsPerPage}
+              onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
+              className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
             >
-              Next
-            </button>
+              <option value={10}>10</option>
+              <option value={25}>25</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+              <option value={250}>250</option>
+              <option value={500}>500</option>
+              <option value={1000}>1000</option>
+            </select>
+            <span className="text-gray-500">entries</span>
           </div>
-        </div>
 
-        <div className="mt-4 flex gap-2 justify-center items-center">
-          <span className="text-gray-500">Show</span>
-          <select
-            id="itemsPerPage"
-            value={itemsPerPage}
-            onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
-            className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
-          >
-            <option value={10}>10</option>
-            <option value={25}>25</option>
-            <option value={50}>50</option>
-            <option value={100}>100</option>
-            <option value={250}>250</option>
-            <option value={500}>500</option>
-            <option value={1000}>1000</option>
-          </select>
-          <span className="text-gray-500">entries</span>
+          <Modal />
         </div>
-
-        <Modal />
-      </div>
-)}
+      )}
     </div>
   )
 }

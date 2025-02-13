@@ -20,11 +20,16 @@ import plus from "../../../../assets/plus.svg"
 import Table from '../../common/Table'
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify'
+import { useParams } from 'react-router-dom';
+
 function Dashboard() {
+
+  const {id} = useParams();
+  console.log(id)
 
   let navigate = useNavigate();
   const [search, setSearch] = useState('')
-  const [isLoading,setisLoading] = useState(false)
+  
   const roledata = useSelector((state) => state.clientForm.roledata);
   // const roledata = useSelector((state) => state.clientForm.roledata);
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
@@ -32,6 +37,8 @@ function Dashboard() {
   const id_role = roledata?.id_role;
   const id_client = roledata?.id_client;
   const id_branch  = roledata?.branch;
+
+ 
 
 
   let [data, setData] = useState([]);
@@ -43,6 +50,7 @@ function Dashboard() {
   const [branchList, setBranchList] = useState([])
 
   const [paymentMode, setpaymentMode] = useState([])
+  const[isLoading,setisLoading] = useState(true)
 
   const date = new Date();
   const todayDate = date.toISOString();
@@ -90,9 +98,8 @@ function Dashboard() {
     if(id_branch === "0"){    
       getTodaysMetalRate({ id_branch: roledata.id_branch, date: todayDate })
     } else {
-      getTodaysMetalRate({ id_branch: roledata.branch, date: todayDate })
+      getTodaysMetalRate({ id_branch: roledata?.branch, date: todayDate })
     }
-    console.log(roledata)
     let payload = {
       from_date: "",
       to_date: "",
@@ -104,15 +111,12 @@ function Dashboard() {
 
     getschemePaymentMutate(payload)
  
-
-  
-  }, [roledata])
+  }, [])
 
     const handleallbranch = async (e) => {  
   
       const response = await getallbranch();
       if (response) {
-        console.log(response.data)
         setBranchList(response.data);
       }
     };
@@ -153,12 +157,10 @@ function Dashboard() {
   };
 
 
-  const { mutate: PaymentMode } = useMutation({
+  const { mutate: PaymentMode} = useMutation({
    
-    mutationFn: (payload) => {
-      setisLoading(true)
-      getpaymentmodesummary(payload)
-    },
+    mutationFn: (payload) => getpaymentmodesummary(payload),
+    
     onSuccess: (response) => {
       setpaymentMode(response.data);
       setisLoading(false)
@@ -169,6 +171,7 @@ function Dashboard() {
     }
   });
 
+
   const { mutate: CardSummary } = useMutation({
     mutationFn: getpaymentDashboard,
     onSuccess: (response) => {
@@ -178,10 +181,7 @@ function Dashboard() {
 
   //mutation to get scheme type
   const { mutate: getschemePaymentMutate } = useMutation({
-    mutationFn: ()=> {
-      setisLoading(true)
-      schemepaymentdatatable
-    },
+    mutationFn: (payload)=> schemepaymentdatatable(payload),
     onSuccess: (response) => {
       setData(response.data)
       setTotalPages(response.totalPages)
@@ -189,6 +189,8 @@ function Dashboard() {
     },
     onError: (error) => {
       console.error('Error:', error);
+      setisLoading(false)
+
     }
   });
 
@@ -336,6 +338,7 @@ function Dashboard() {
     }
   }, [chartData]);
 
+  console.log("ghj",data)
 
   return (
     <>
@@ -624,7 +627,7 @@ function Dashboard() {
            <Table data={data} columns={columns} isLoading={isLoading}/>
            
 
-            {data.length > 0 && (
+            {data?.length > 0 && (
               <div className="flex justify-between mt-4 p-2">
               <div className="flex flex-row items-center justify-center gap-2">
                 <div className="flex items-center gap-4">

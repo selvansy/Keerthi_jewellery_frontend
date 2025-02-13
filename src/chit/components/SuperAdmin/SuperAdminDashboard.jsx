@@ -23,9 +23,8 @@ function SuperAdminDashboard() {
 
  
     const { mutate: PaymentMode } = useMutation({
-    mutationFn: getpaymentmodesummary,
+    mutationFn: (payload)=>getpaymentmodesummary(payload),
     onSuccess: (response) => {
-      console.log(response)
       setData(response.data);
     }
   });

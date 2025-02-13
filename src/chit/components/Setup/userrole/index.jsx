@@ -38,10 +38,9 @@ const Userrole = () => {
 
 
   const { mutate: getalluserroletableMutate } = useMutation({
-    mutationFn: ()=>{
-      setisLoading(true)
-       getalluserroletable
-    },
+    mutationFn: (payload)=>
+       getalluserroletable(payload),
+    
     onSuccess: (response) => {
       if (response) {
         setuserroleData(response.data);
@@ -76,6 +75,9 @@ const Userrole = () => {
   }, [currentPage,debouncedSearch]);
 
 
+  useEffect(() => {
+    getalluserroletableMutate({ search:debouncedSearch,page: currentPage, limit });
+  }, []);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -131,7 +133,6 @@ const Userrole = () => {
 
     eventEmitter.on('CONFIRMATION_SUBMIT', async (data) => {
       try {
-        console.log(data);
         let response = await deleteuserrole(data.userroleId);
         toast.success(response.message);
         getalluserroletableMutate({ page: currentPage, limit });

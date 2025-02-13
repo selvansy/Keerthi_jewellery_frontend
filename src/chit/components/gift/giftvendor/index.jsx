@@ -28,7 +28,7 @@ const Giftvendor = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [isviewOpen, setIsviewOpen] = useState(false);
-  const [isLoading,setisLoading] = useState(false)
+  const [isLoading,setisLoading] = useState(true)
 
   function closeIncommingModal() {
     setIsviewOpen(false);
@@ -40,10 +40,7 @@ const Giftvendor = () => {
   const limit = 10;
 
   const {  mutate: getAllgiftvendorsMutate } = useMutation({
-    mutationFn: ()=>{
-     setisLoading(true)
-     getAllgiftvendors
-    },
+    mutationFn: (payload)=> getAllgiftvendors(payload),
     onSuccess: (response) => {
       if (response) {
         setgiftvendorData(response.data);
@@ -56,6 +53,8 @@ const Giftvendor = () => {
         setisLoading(false)
     }
   });
+
+
 
 
   const handleStatusToggle = async (id, currentStatus) => {
@@ -77,8 +76,12 @@ const Giftvendor = () => {
 
   useEffect(() => {
     getAllgiftvendorsMutate({ search: debouncedSearch, page: currentPage, limit });
-  }, [currentPage, debouncedSearch]);
+  }, []);
 
+
+  useEffect(() => {
+    getAllgiftvendorsMutate({ search: debouncedSearch, page: currentPage, limit });
+  }, [currentPage, debouncedSearch]);
 
 
 
