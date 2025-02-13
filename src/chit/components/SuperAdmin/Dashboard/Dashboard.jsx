@@ -85,28 +85,25 @@ function Dashboard() {
     getschemePaymentMutate(payload)
   }
 
-  useEffect(() => {
-    console.log("roledata",roledata)
-    if(id_branch === "0"){    
-      getTodaysMetalRate({ id_branch: roledata.id_branch, date: todayDate })
-    } else {
-      getTodaysMetalRate({ id_branch: roledata.branch, date: todayDate })
-    }
-    console.log(roledata)
-    let payload = {
-      from_date: "",
-      to_date: "",
-      id_branch: id_branch
-    }
+  // useEffect(() => {
+  //   console.log("roledata",roledata)
+  //   if(id === "0"){    
+  //     getTodaysMetalRate({ id_branch: roledata.id_branch, date: todayDate })
+  //   } else {
+  //     getTodaysMetalRate({ id_branch: roledata.branch, date: todayDate })
+  //   }
+  //   console.log(roledata)
+  //   let payload = {
+  //     from_date: "",
+  //     to_date: "",
+  //     id_branch: id_branch
+  //   }
     
-    PaymentMode(payload);
-    CardSummary(payload);
+  //   PaymentMode(payload);
+  //   CardSummary(payload);
 
-    getschemePaymentMutate(payload)
- 
-
-  
-  }, [roledata])
+  //   getschemePaymentMutate(payload)
+  // }, [roledata])
 
     const handleallbranch = async (e) => {  
   
