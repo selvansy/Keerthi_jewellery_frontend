@@ -16,13 +16,13 @@ const Table = ({
   }
 
 
-  if (data.length === 0 && !isLoading) {
-    return (
-      <div className="flex justify-center items-center h-96 divide-gray-200">
-        <p className="text-gray-500">{emptyMessage}</p>
-      </div>
-    );
-  }
+  // if (data.length === 0 && !isLoading) {
+  //   return (
+  //     <div className="flex justify-center items-center h-96 divide-gray-200">
+  //       <p className="text-gray-500">{emptyMessage}</p>
+  //     </div>
+  //   );
+  // }
 
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
@@ -34,9 +34,7 @@ const Table = ({
             isLoading ?
 
               <Loading />
-
               :
-
               <table className="min-w-full divide-y divide-gray-200 ">
                 <thead className="sticky top-0 z-10">
                   <tr>
@@ -63,46 +61,57 @@ const Table = ({
                 <tbody className="bg-white divide-y divide-gray-200">
 
                   {
-                    data.map((row, rowIndex) => (
-                      <tr
-                        key={row?.id || row?._id || rowIndex}
-                        className={`
-                    ${selectedRow === row?._id ? "bg-blue-100" : ""}
-                    ${selectedRow !== row?._id ? "hover:bg-gray-50" : ""}
-                    transition-colors cursor-pointer
-                  `}
-                      >
-                        {columns.map((column, colIndex) => (
-                          <td
-                            key={`${rowIndex}-${column.accessor || colIndex}`}
-                            className={`
-                        px-6 py-4 text-sm text-gray-900
-                        ${column.sticky === "right" ? "right-0" : ""}
-                        ${column.sticky === "left" ? "left-0" : ""}
-                        ${selectedRow === row?._id && activeDropdown
-                                ? "bg-slate-100"
-                                : ""
-                              }
-                        ${selectedRow !== row?._id && rowIndex % 2 !== 0 ? "bg-[#F3F7FF]" : ""}
+                    (data.length === 0 && !isLoading) ?
+                      <>
+                        <div className="flex mx-auto justify-center items-center h-96 divide-gray-200 w-full">
+                          <p className="text-gray-500 text-center flex items-center mx-auto">{emptyMessage}</p>
+                        </div>
+                      </>
+                      :
+                      <>
+                        {
+                          data.map((row, rowIndex) => (
+                            <tr
+                              key={row?.id || row?._id || rowIndex}
+                              className={`
+                        ${selectedRow === row?._id ? "bg-blue-100" : ""}
+                        ${selectedRow !== row?._id ? "hover:bg-gray-50" : ""}
+                        transition-colors cursor-pointer
                       `}
-                            style={{
-                              zIndex: column.sticky ? 10 : 0,
-                            }}
-                          >
-                            {column.cell ? (
-                              <div className="relative">{column.cell(row, rowIndex)}</div>
-                            ) : (
-                              <span className="truncate block max-w-xs">
-                                {row[column.accessor]}
-                              </span>
-                            )}
-                          </td>
-                        ))}
-                      </tr>
-                    ))
+                            >
+                              {columns.map((column, colIndex) => (
+                                <td
+                                  key={`${rowIndex}-${column.accessor || colIndex}`}
+                                  className={`
+                            px-6 py-4 text-sm text-gray-900
+                            ${column.sticky === "right" ? "right-0" : ""}
+                            ${column.sticky === "left" ? "left-0" : ""}
+                            ${selectedRow === row?._id && activeDropdown
+                                      ? "bg-slate-100"
+                                      : ""
+                                    }
+                            ${selectedRow !== row?._id && rowIndex % 2 !== 0 ? "bg-[#F3F7FF]" : ""}
+                          `}
+                                  style={{
+                                    zIndex: column.sticky ? 10 : 0,
+                                  }}
+                                >
+                                  {column.cell ? (
+                                    <div className="relative">{column.cell(row, rowIndex)}</div>
+                                  ) : (
+                                    <span className="truncate block max-w-xs">
+                                      {row[column.accessor]}
+                                    </span>
+                                  )}
+                                </td>
+                              ))}
+                            </tr>
+                          ))
 
+                        }
+
+                      </>
                   }
-
                 </tbody>
               </table>
           }

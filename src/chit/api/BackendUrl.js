@@ -45,7 +45,7 @@ export const getpaymentDashboard = async (data) => {
 //Category
 
 export const createcategory= async(data)=>{
-     console.log("Category",data)
+    
     const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/category`,data)
     return response.data
 }
@@ -107,7 +107,7 @@ export const activateoffers= async(id)=>{
 }
 
 export const deleteoffers= async(id)=>{
-    console.log("Id",id)
+   
     const response= await Api.delete(`${import.meta.env.VITE_API_URL}/api/client/offer/${id}`)
     return response.data
 }
@@ -181,7 +181,7 @@ export const getSchemeTable= async(data)=>{
 }
 
 export const getschemeById= async(id)=>{
-    console.log("Schemeid",id)
+    
     const response= await Api.get(`${import.meta.env.VITE_API_URL}/api/client/scheme/${id}`)
     return response.data
 }
@@ -196,6 +196,8 @@ export const updateScheme = async (data) => {
     const response = await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/scheme/${data.id}`,data.data);
     return response.data;
 }
+
+
 
 //add scheme
 export const addscheme = async (data)=>{

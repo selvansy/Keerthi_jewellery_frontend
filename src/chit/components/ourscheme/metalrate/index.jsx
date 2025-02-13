@@ -13,10 +13,24 @@ import { SlidersHorizontal, Search, X } from 'lucide-react'
 import { CalendarDays, RefreshCcw } from 'lucide-react'
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
+
 const MetalRate = () => {
 
   let navigate = useNavigate()
   let dispatch = useDispatch();
+
+  const roledata = useSelector((state) => state.clientForm.roledata);
+
+  let admin = roledata?.id_role?.id_role;
+  const id_branch = roledata?.branch;
+  const branchId = roledata?.id_branch;
+
+  useEffect(() => {
+   
+    if (id_branch === "0" && admin === 2) {
+      getallbranchmuate();
+    }
+    }, [id_branch])
 
   const [isLoading,setisLoading] = useState(true)
   const [schemeType,setMetalRate]=useState([])
@@ -24,17 +38,11 @@ const MetalRate = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(10);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [isviewOpen, setIsviewOpen] = useState(false);
 
   const [activeDropdown, setActiveDropdown] = useState(null)
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
-
-
-  const roledata = useSelector((state) => state.clientForm.roledata);
-  let id_client = roledata?.id_client;
-  const id_branch = roledata?.branch;
+  
   const [branchList, setBranchList] = useState([]);
-  let [branch, setbranch] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [from_date, setFromdate] = useState("");
   const [to_date, setTodate] = useState("");
@@ -47,22 +55,24 @@ const MetalRate = () => {
     type: "",
   });
 
-  const handleReset = (e) => {
+  const handleReset = () => {
     setFromdate("");
     setTodate("");
     toast.success("Filter is cleared");
     getmetalratetablemutate({ search: search, page: currentPage, limit: itemsPerPage, from_date: '', to_date: '', id_branch: '' })
   }
 
-  const { mutate: getallbranchmutate } = useMutation({
-    mutationFn: getallbranch,
-    onSuccess: (response) => {
-      setBranchList(response.data);
-    },
-    onError: (error) => {
-      console.error("Error:", error);
-    },
-  });
+    // mutation functions
+    const { mutate: getallbranchmuate } = useMutation({
+      mutationFn: getallbranch,
+      onSuccess: (response) => {
+        setBranchList(response.data);
+      },
+      onError: (error) => {
+        console.error("Error:", error);
+      },
+    });
+  
 
   const applyfilterdatatable = (e) => {
     e.preventDefault();
@@ -100,10 +110,7 @@ const MetalRate = () => {
   }, [currentPage, itemsPerPage, search])
 
 
-  useEffect(() => {
-   
-    getmetalratetablemutate({ search: search, page: currentPage, limit: itemsPerPage, from_date: '', to_date: '', id_branch: '' })
-  }, [])
+
 
   const handleSearch = (e) => {
     setSearch(e.target.value)
@@ -160,7 +167,7 @@ const MetalRate = () => {
     return () => {
       eventEmitter.off('CONFIRMATION_SUBMIT');
     };
-  }, [eventEmitter, schemeType]);
+  }, [eventEmitter]);
 
 
   const columns = [

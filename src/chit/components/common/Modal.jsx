@@ -6,8 +6,10 @@ import { getgiftvendorbranchById} from '../../api/Endpoints';
 import Barcode from 'react-barcode';
 import Table from "./Table";
 const Modal = () => {
+    
     const dispatch = useDispatch();
     const { isOpen, modalType, header, formData, buttons, options: modalOptions, extraData } = useSelector((state) => state.modal);
+    console.log(modalType)
     const [localFormData, setLocalFormData] = useState(formData || {});
     const [options, setOptions] = useState(modalOptions || []);
     const [activeTab, setActiveTab] = useState('userInfo');
@@ -170,6 +172,10 @@ const Modal = () => {
     const handleCancel = () => {
         if (modalType === 'CONFIRMATION') {
             dispatch(closeModal());
+
+            if (modalType === 'NAVIGATION') {
+                dispatch(closeModal())
+            }
         }  if (modalType === 'SENDCONFIRMATION') {
             dispatch(closeModal());
         } else if (modalType === 'ADD_PROJECT') {
@@ -272,6 +278,31 @@ const Modal = () => {
                         </div>
                     </form>
                 );
+
+                case 'NAVIGATION':
+                    return (
+                        <div className="text-center py-4">
+                            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+                                <svg
+                                    className="h-6 w-6 text-red-600"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth="2"
+                                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                                    />
+                                </svg>
+                            </div>
+                            <p className="text-lg text-gray-700">
+                                {formData.message}
+                            </p>
+                        </div>
+                    );
+
             case 'CONFIRMATION':
                 return (
                     <div className="text-center py-4">
@@ -602,7 +633,7 @@ const Modal = () => {
                 <div className="p-6">
                     {renderForm()}
                 </div>
-                <div className="flex justify-end space-x-4 mt-4 border-t p-4">
+                <div className="flex justify-end space-x-6 mt-4 border-t p-4">
                     {buttons?.cancel && (
                         <button
                             onClick={handleCancel}
@@ -621,11 +652,10 @@ const Modal = () => {
                             onClick={handleSubmit}
                             className={`px-4 py-2 rounded-md
                                 ${modalType === 'CONFIRMATION'  || modalType === 'SENDCONFIRMATION'
-                                    ? 'bg-red-600 text-white hover:bg-red-700'
+                                    ? 'bg-red-600 text-white hover:bg-red-700 px-2'
                                     : 'bg-[#61A375] text-white hover:bg-[#528f63]'}`}
                         >
-                            {modalType === 'CONFIRMATION'  || modalType === 'SENDCONFIRMATION'
-                                && 'Yes' }
+                            {(modalType === 'CONFIRMATION'  || modalType === 'SENDCONFIRMATION') && ("YES")}
                         </button>
                     )}
                 </div>

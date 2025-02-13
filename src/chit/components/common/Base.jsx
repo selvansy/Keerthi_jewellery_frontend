@@ -21,7 +21,8 @@ import {
   LucidePrinter,
   PawPrintIcon,
   CircleUserRound,
-  UserRoundCheck
+  UserRoundCheck,
+
 
 } from 'lucide-react';
 
@@ -69,16 +70,11 @@ const Base = ({ renderContent: RenderContent }) => {
   const headerMenuRef = useRef(null);
   const navigate = useNavigate();
   let dispatch = useDispatch();
-
+  
   const { info } = useSelector((state) => state.auth);
   const decoded = jwtDecode(info);
-
-
   let id = decoded.id_role._id;
-
-  // let id = "6792109203f5d0fceab07e92"
-
-
+ 
   const roledata = useSelector((state) => state.clientForm.roledata);
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
@@ -124,6 +120,7 @@ const Base = ({ renderContent: RenderContent }) => {
     })
   }
   }, [laycolor]);
+
  //update category
   const { mutate: updatelayoutmutate } = useMutation({
     mutationFn: updatelayoutcolor,
@@ -144,7 +141,7 @@ const Base = ({ renderContent: RenderContent }) => {
     }
 
 
-    dispatch(setRoleData(decoded));
+    // dispatch(setRoleData(decoded));
 
   }, []);
 
@@ -484,11 +481,17 @@ const Base = ({ renderContent: RenderContent }) => {
 
     <div className="min-h-screen flex flex-col">
       <header className="fixed top-0 right-0 left-0 bg-white shadow-md z-30 h-16">
-        <div className='flex flex-row justify-end mt-3 mr-[32px]'>
+        <div className='flex flex-row justify-end mt-3 mr-[33px]'>
           <button className="flex flex-row items-center p-2 text-gray-900 font-semibold"
             onClick={() => setSettingsOpen((prev) => !prev)}
           >
             <Settings size={28} />
+          </button>
+
+          {/*   */}
+          <button className="flex flex-row items-center p-2 text-gray-900 font-semibold"
+          >
+            <Bell size={28} />
           </button>
 
           {
@@ -497,7 +500,7 @@ const Base = ({ renderContent: RenderContent }) => {
             {/* Dropdown Button */}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="flex items-center gap-2 px-4 py-2 focus:outline-none"
+              className="flex items-center gap-2 p-2 focus:outline-none"
             >
               {/* Profile Circle */}
               <span
@@ -507,7 +510,7 @@ const Base = ({ renderContent: RenderContent }) => {
                 {role}
               </span>
 
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center">
+              <div className="pointer-events-none absolute inset-y-0 left-[44px] top-[10px] flex items-center">
                   <svg
                     className="h-4 w-4 text-gray-400"
                     fill="none"

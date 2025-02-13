@@ -3,8 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 
 import { X } from 'lucide-react'
-import { getClassificationById,getBranchById, getbranchbyclient, updateSchemeClassification, createSchemeClassification, } from "../../../api/Endpoints"
-import { getAllBranch } from "../../../api/Endpoints";
+import { getClassificationById,getBranchById,getallbranch, getbranchbyclient, updateSchemeClassification, createSchemeClassification, } from "../../../api/Endpoints"
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from 'react-redux';
 import { setid } from "../../../../redux/clientFormSlice"
@@ -15,8 +14,10 @@ const CreateDigiGoldScheme = () => {
 
   let dispatch = useDispatch();
 
+  const {id} = useParams()
+
   let navigate = useNavigate();
-  const id = useSelector((state) => state.clientForm.id);
+
   const roledata = useSelector((state) => state.clientForm.roledata);
 
   const id_role = roledata?.id_role;
@@ -25,11 +26,10 @@ const CreateDigiGoldScheme = () => {
 
   const [typeOfScheme, setTypeOfScheme] = useState([]);
   const [branchList, setBranchList] = useState([]);
- 
+  const [branch, setbranch] = useState("");
 
   const [formData, setFormData] = useState({
     classification_name: "",
-    classification_order: "",
     description: "",
     term_desc: "",
     id_branch: id_branch,
@@ -49,18 +49,27 @@ const CreateDigiGoldScheme = () => {
       if (id_branch === '0') {
         getallbranchmuate()
       }
+      
+      if(id_branch && formData.id_branch !== "" && id){
+        branchbyId({id:id_branch})
+      }
+  
       if(id_branch !== "0"){
         setFormData({ ...formData, id_branch: id_branch })
       }
       
     }, [id_branch]);
+
+    useEffect(() => {
+      if (id) {
+        fetchClassificationById(id);
+      }
+    }, [id]);
   
  
-  
-
     // mutation functions
     const { mutate: getallbranchmuate } = useMutation({
-      mutationFn: getAllBranch,
+      mutationFn: getallbranch,
       onSuccess: (response) => {
         setBranchList(response.data);
       },
@@ -69,13 +78,24 @@ const CreateDigiGoldScheme = () => {
       },
     });
   
-   
+    const { mutate: branchbyId } = useMutation({
+      mutationFn: getBranchById,
+      onSuccess: (response) => {
+        setbranch(response.data);
+      },
+      onError: (error) => {
+        console.error("Error:", error);
+      },
+    });
 
 
 
   // input change handler
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
+    let { name, value } = e.target;
+
+    
+
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -109,8 +129,7 @@ const CreateDigiGoldScheme = () => {
     const errors = {};
     if (!formData.classification_name)
       errors.classification_name = "Classification name is required";
-    if (!formData.classification_order)
-      errors.classification_order = "Classification order is required";
+
     if (!formData.description) errors.description = "Description is required";
     if (!formData.term_desc)
       errors.term_desc = "Terms & conditions is required";
@@ -118,6 +137,7 @@ const CreateDigiGoldScheme = () => {
     if (!logo) errors.main_image = "Main image is required";
     if (!desc_img)
       errors.desc_img = "Description image is required";
+    console.log(errors)
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -129,11 +149,10 @@ const CreateDigiGoldScheme = () => {
       toast.success(response.message)
       setFormData({
         classification_name: "",
-        classification_order: "",
         description: "",
         term_desc: "",
         id_branch: id_branch,
-        typeofscheme: 1,
+        typeofscheme: 2,
       });
       handleRemoveLogo()
       handleRemoveDescriptionImage();
@@ -146,18 +165,15 @@ const CreateDigiGoldScheme = () => {
 
   //handle submit
   const handleSubmit = () => {
-    if (!validateForm(formData)) {
+   
+    if (!validateForm()) {
       toast.error("Fill required fields")
       return;
     }
-
+    console.log(formData)
     const formDataToSend = new FormData();
 
     formDataToSend.append("classification_name", formData.classification_name);
-    formDataToSend.append(
-      "classification_order",
-      formData.classification_order
-    );
     formDataToSend.append("description", formData.description);
     formDataToSend.append("term_desc", formData.term_desc);
     formDataToSend.append("id_branch", formData.id_branch);
@@ -166,20 +182,35 @@ const CreateDigiGoldScheme = () => {
 
     if (logo) formDataToSend.append("logo", logo);
     if (desc_img) formDataToSend.append("desc_img", desc_img);
-    console.log(formDataToSend)
 
+    console.log(formDataToSend)
     createSchemeClassificationMutate(formDataToSend);
 
 
   };
 
-  useEffect(() => {
-    if (id) {
-      getSchTypeId(id)
-    }
-  }, [id])
-
   
+    const handleNavigation = () => {
+      setActiveDropdown(null);
+      dispatch(openModal({
+        modalType: 'CONFIRMATION',
+        header: 'Delete Scheme',
+        formData: {
+          message: 'Are you sure you want to navigate to ',
+        },
+        buttons: {
+          cancel: {
+            text: 'Cancel'
+          },
+          submit: {
+            text: 'Delete'
+          }
+        }
+      }));
+  
+  
+    };
+
 
   const handleCancle = () => {
     navigate("/ourscheme/classification");
@@ -191,10 +222,9 @@ const CreateDigiGoldScheme = () => {
   const { mutate: fetchClassificationById } = useMutation({
     mutationFn: getClassificationById,
     onSuccess: (response) => {
-      console.log(response)
+
       setFormData({
           classification_name: response.data.classification_name,
-          classification_order: response.data.classification_order,
           description: response.data.description,
           term_desc: response.data.term_desc,
           id_branch: response.data.id_branch,
@@ -226,11 +256,7 @@ const CreateDigiGoldScheme = () => {
     },
   });
 
-  useEffect(() => {
-    if (id) {
-      fetchClassificationById(id);
-    }
-  }, [id]);
+ 
 
   const handleUpdate = () => {
 
@@ -243,8 +269,7 @@ const CreateDigiGoldScheme = () => {
     const formDataToSend = new FormData();
     if (formData.classification_name) 
       formDataToSend.append("classification_name", formData.classification_name);
-    if (formData.classification_order) 
-      formDataToSend.append("classification_order", formData.classification_order);
+   
     if (formData.description) 
       formDataToSend.append("description", formData.description);
     if (formData.term_desc) 
@@ -313,12 +338,12 @@ const CreateDigiGoldScheme = () => {
     <>
       <div className="flex flex-row justify-between">
         {id ? (
-          <h2 className="text-2xl text-[#023453] font-bold justify-between">
-            Edit DigiGold Scheme
+          <h2 className="text-2xl text-gray-900 font-bold justify-between">
+            Edit DigiGoldScheme
           </h2>
         ) : (
-          <h2 className="text-2xl text-[#023453] font-bold justify-between">
-            Create DigiGold Scheme
+          <h2 className="text-2xl text-gray-900 font-bold justify-between">
+            Create DigiGoldScheme 
           </h2>
         )}
       </div>
@@ -344,38 +369,6 @@ const CreateDigiGoldScheme = () => {
               )}
             </div>
 
-            <div className="flex flex-col">
-              <label className="text-gray-700 mb-2 mt-2 font-medium">
-                Classificaton Order<span className="text-red-400">*</span>
-              </label>
-              <input
-                onChange={handleInputChange}
-                value={formData.classification_order}
-                type="number"
-                name="classification_order"
-                min={1}
-                onWheel={handleWheel}
-                onKeyDown={(e) => {
-                  if (
-                    e.key === "ArrowUp" ||
-                    e.key === "ArrowDown" ||
-                    e.key === "e" ||
-                    e.key === "E" ||
-                    e.key === "-"
-                  ) {
-                    e.preventDefault();
-                  }
-                }}
-                className="border-2 border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                placeholder="Enter Here"
-              />
-              {formErrors.classification_order && (
-                <span className="text-red-500 text-sm mt-1">
-                  {formErrors.classification_order}
-                </span>
-              )}
-            </div>
-             
              {
               id_branch === "0" && (
                 <>
@@ -478,7 +471,7 @@ const CreateDigiGoldScheme = () => {
                     htmlFor="main_image"
                     className="flex flex-col justify-center items-center w-full h-20 border-2 border-dashed border-gray-300 text-gray-700 cursor-pointer p-5 text-center"
                   >
-                    <p className='text-[#023453] truncate'>
+                    <p className='text-gray-900 truncate'>
                       {logo ? logo.name : logo}
                     </p>
                   </label>
@@ -495,7 +488,7 @@ const CreateDigiGoldScheme = () => {
                 <div>
                   <div className="w-20 h-20 border border-gray-300 rounded-md overflow-hidden relative">
                     <img
-                      src={logo ? logoPreview : profileplaceholder}
+                      src={logoPreview ? logoPreview : profileplaceholder}
                       alt="image preview"
                       className={`w-full h-full ${logoPreview ? 'object-cover' : 'object-contain'}`}
                     />
@@ -528,7 +521,7 @@ const CreateDigiGoldScheme = () => {
                     htmlFor="desc_img"
                     className="flex flex-col justify-center items-center w-full h-20 border-2 border-dashed border-gray-300 text-gray-700 cursor-pointer p-5 text-center"
                   >
-                    <p className='text-[#023453] truncate'>
+                    <p className='text-gray-900 truncate'>
                       {desc_img ? desc_img.name : desc_img}
                     </p>
                   </label>
@@ -543,7 +536,7 @@ const CreateDigiGoldScheme = () => {
                 </div>
                 <div className="w-20 h-20 border border-gray-300 rounded-md overflow-hidden relative">
                   <img
-                    src={desc_img ? descPreview : profileplaceholder}
+                    src={descPreview ? descPreview : profileplaceholder}
                     alt="image preview"
                     className={`w-full h-full ${descPreview ? 'object-cover' : 'object-contain'}`}
                   />

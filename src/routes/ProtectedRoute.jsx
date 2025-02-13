@@ -1,7 +1,10 @@
 import { jwtDecode } from 'jwt-decode';
+
 import { Navigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../redux/authSlice';
+import { useEffect } from 'react';
+import { setRoleData } from '../redux/clientFormSlice';
  
 const ProtectedRoute = ({ children }) => {
   const { info } = useSelector((state) => state.auth);
@@ -9,6 +12,16 @@ const ProtectedRoute = ({ children }) => {
  
   const storedToken = localStorage.getItem('token');
   const token = info || storedToken;
+
+    const decoded = jwtDecode(info);
+    let id = decoded.id_role._id;
+
+      useEffect(() => {
+        if(token){
+          dispatch(setRoleData(decoded));
+        }
+      }, [token]);
+
  
   const handleLogout = () => {
     localStorage.removeItem('token');

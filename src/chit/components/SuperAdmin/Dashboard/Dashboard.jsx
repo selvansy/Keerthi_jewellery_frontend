@@ -20,8 +20,12 @@ import plus from "../../../../assets/plus.svg"
 import Table from '../../common/Table'
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify'
+import { useParams } from 'react-router-dom';
 
 function Dashboard() {
+
+  const {id} = useParams();
+  console.log(id)
 
   let navigate = useNavigate();
   const [search, setSearch] = useState('')
@@ -34,7 +38,7 @@ function Dashboard() {
   const id_client = roledata?.id_client;
   const id_branch  = roledata?.branch;
 
-  console.log("RoleData----",roledata)
+ 
 
 
   let [data, setData] = useState([]);
