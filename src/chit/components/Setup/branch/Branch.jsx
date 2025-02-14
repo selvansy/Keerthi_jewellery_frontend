@@ -25,7 +25,7 @@ const Branch = () => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [selectedRow, setSelectedRow] = useState(null);
-  const [isLoading,setisLoading] = useState(false)
+  const [isLoading,setisLoading] = useState(true)
 
 
   const formatDate = (dateString) => {
@@ -38,10 +38,7 @@ const Branch = () => {
   };
 
   const { mutate: getallbranchtableMutate } = useMutation({
-    mutationFn: ()=>{
-      setisLoading(true)
-       getallbranchtable
-    },
+    mutationFn: (payload)=>  getallbranchtable(payload),
     onSuccess: (response) => {
       if (response) {
         setBranchData(response.data);
@@ -65,6 +62,17 @@ const Branch = () => {
       search: debouncedSearch,
     });
   }, [currentPage, itemsPerPage, debouncedSearch]);
+
+  useEffect(() => {
+    getallbranchtableMutate({
+      page: currentPage,
+      limit: itemsPerPage,
+      from_date: "",
+      to_date: "",
+      id_client: '',
+      search: debouncedSearch,
+    });
+  }, []);
 
   const handleCreateBranchClick = () => {
     navigate("/setup/branch/add");

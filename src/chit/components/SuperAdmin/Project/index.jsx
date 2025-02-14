@@ -27,7 +27,7 @@ const ProjectMaster = () => {
   const [isviewOpen, setIsviewOpen] = useState(false);
   const [searchInput, setSearchInput] = useState('')
   const debouncedSearch = useDebounce(searchInput, 500)
-  const [isLoading,setisLoading] = useState(false)
+  const [isLoading,setisLoading] = useState(true)
 
 
   const limit = 10;
@@ -35,10 +35,8 @@ const ProjectMaster = () => {
     setIsviewOpen(false);
   }
   const { mutate: getallprojecttableMutate } = useMutation({
-    mutationFn: ()=>{
-      setisLoading(true)
-      getallprojecttable
-    },
+    mutationFn: (data)=>
+      getallprojecttable(data),
     onSuccess: (response) => {
       if (response) {
         setProjectData(response.data);
@@ -71,6 +69,10 @@ const ProjectMaster = () => {
   useEffect(() => {
     getallprojecttableMutate({ page: currentPage, limit });
   }, [currentPage, itemsPerPage, debouncedSearch, isviewOpen]);
+
+  useEffect(() => {
+    getallprojecttableMutate({ page: currentPage, limit });
+  }, []);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);

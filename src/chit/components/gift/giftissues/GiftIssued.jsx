@@ -24,7 +24,7 @@ const GiftIssued = () => {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const roledata = useSelector((state) => state.clientForm.roledata);
   const id_branch  = roledata?.branch;
-  const [isLoading,setisLoading] = useState(false)
+  const [isLoading,setisLoading] = useState(true)
 
   const [search, setSearch] = useState('')
   const [giftissues, setGiftissues] = useState([])
@@ -169,10 +169,7 @@ const GiftIssued = () => {
 
   //mutation to get scheme type
   const { mutate: giftissuesMutate } = useMutation({
-    mutationFn: ()=>{
-      setisLoading(true)
-    giftissuesdatatable
-    },
+    mutationFn: (payload)=>  giftissuesdatatable(payload),
     onSuccess: (response) => {
 
       setGiftissues(response.data)
@@ -184,6 +181,21 @@ const GiftIssued = () => {
       setisLoading(false)
     }
   });
+
+  useEffect(() => {
+    const filterTosend = {
+      page: currentPage,
+      from_date: from_date,
+      to_date: to_date,
+      limit: itemsPerPage,
+      search: search,
+      id_branch: id_branch,
+      gift_vendorid: '',
+      id_gift: ''
+    };
+    giftissuesMutate(filterTosend)
+
+  }, [])
 
   useEffect(() => {
     const filterTosend = {

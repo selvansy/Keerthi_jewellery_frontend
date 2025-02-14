@@ -137,7 +137,7 @@ export const getpurityById = async (id) => {
 }
  
 export const updatepurity = async (id,data) => {
-    console.log(data)
+
     const response = await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/purity/${id}`, data);
     return response;
 }
@@ -314,7 +314,7 @@ export const getallgiftitem = async (id, data) => {
 /* Gift Vendor*/
 
 export const getAllgiftvendors = async (data) => {
-    console.log("Data",data)
+  
     const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/giftvendor/table`,data);
     return response.data;
 }
@@ -508,7 +508,7 @@ export const activateoffers= async(id)=>{
 }
 
 export const deleteoffers= async(id)=>{
-    console.log("Id",id)
+  
     const response= await Api.delete(`${import.meta.env.VITE_API_URL}/api/client/offer/${id}`)
     return response.data
 }
@@ -579,7 +579,7 @@ export const deletenewarrivals= async(id)=>{
 
 
 export const updateproduct= async(data)=>{
-    console.log(data)
+ 
     const response= await Api.patch(`${import.meta.env.VITE_API_URL}/api/admin/product/${data.id}`,data.data)
     return response.data
 }
@@ -611,7 +611,7 @@ export const categorybymetalid= async(id)=>{
 
 
 export const updatecategory= async(data)=>{
-    console.log(data)
+  
     const response= await Api.patch(`${import.meta.env.VITE_API_URL}/api/admin/category/${data.id}`,data.data)
     return response.data
 }
@@ -630,7 +630,7 @@ export const activatecategory= async(id)=>{
 
 
 export const pushnotificationdatatable= async(data)=>{
-    console.log("Data",data)
+
     const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/pushnotificaiton/table`,data)
     return response.data
 }
@@ -648,7 +648,7 @@ export const createpushnotification= async(data)=>{
 }
 
 export const pushnotificationbyid= async(id)=>{
-    console.log("id",id)
+
     const response= await Api.get(`${import.meta.env.VITE_API_URL}/api/client/pushnotificaiton/${id.id}`)
     return response.data
 }
@@ -675,7 +675,7 @@ export const updatemenupermission= async(data)=>{
 
 
 export const getactivemenuaccess = async (data) => {
-    console.log(data)
+
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/useraccess/menu/${data}`);
     return response.data;
 }
@@ -1182,7 +1182,7 @@ export const addschemeaccount = async (data) => {
     return response.data;
 }
 export const schemeaccounttable = async (data) => {
-    console.log("data",data)
+  
     const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/schemeaccount/table`,data);
     return response.data;
 } 
@@ -1203,7 +1203,7 @@ export const getallbranchscheme = async (data) => {
     return response.data;
 }
 export const getallbranchclassification = async (data) => {
-    console.log("classii---",data)
+  
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/classification/branch/${data.id_branch}`);
     return response.data;
 }
@@ -1459,7 +1459,7 @@ export const getSchemeTable= async(data)=>{
 }
 
 export const getschemeById= async(id)=>{
-    console.log("Schemeid",id)
+  
     const response= await Api.get(`${import.meta.env.VITE_API_URL}/api/client/scheme/${id}`)
     return response.data
 }
@@ -1512,9 +1512,9 @@ export const updateSchemeClassification = async (values) => {
     return response.data;
 }
 
-export const getClassificationByBranch = async (data) => {
+export const getClassificationByBranch = async (id_branch) => {
 
-    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/classification/branch/${data.id_branch}`);
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/classification/branch/${id_branch}`);
     return response.data;
 }
 
@@ -1523,6 +1523,10 @@ export const deleteClassification= async(id)=>{
     return response.data
 }
  
+export const deleteScheme = async (id) => {
+    const response = await Api.delete(`${import.meta.env.VITE_API_URL}/api/client/scheme/${id}`);
+    return response.data;
+}
 
 
 
@@ -1638,7 +1642,7 @@ export const todayMetalRate = async(data)=>{
 
 
 export const updatelayoutcolor = async (data) => {
-    console.log(data)
+   
     const response = await Api.patch(`${import.meta.env.VITE_API_URL}/api/admin/layoutsetting/color`, data);
     return response;
 }

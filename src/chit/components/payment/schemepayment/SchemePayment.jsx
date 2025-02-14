@@ -18,7 +18,8 @@ const SchemePayment = () => {
   const navigate = useNavigate()
   
   const [search, setSearch] = useState('')
-  const [isLoading,setisLoading] = useState(false)
+  const [isLoading,setisLoading] = useState(true)
+  
   const [paymentaccount, setPaymentaccount] = useState([])
    const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
@@ -205,10 +206,7 @@ const SchemePayment = () => {
 
   //mutation to get scheme type
   const { mutate: getschemepaymentMutate } = useMutation({
-    mutationFn: ()=>{
-      setisLoading(true)
-       schemepaymentdatatable
-      },
+    mutationFn: (payload)=> schemepaymentdatatable(payload),
     onSuccess: (response) => {
 
       setPaymentaccount(response.data)
@@ -240,6 +238,27 @@ const SchemePayment = () => {
      
     getschemepaymentMutate(filterTosend)
   }, [currentPage, itemsPerPage, search])
+
+  useEffect(() => {
+ 
+    const filterTosend = {
+      page:currentPage,
+      from_date:from_date,
+      to_date:to_date,
+      limit: itemsPerPage,
+      search: search,
+      added_by:filters.added_by,
+      scheme_status:filters.scheme_status,
+      id_classification: filters.id_classification,
+      collectionuserid: filters.collectionuserid,
+      id_scheme: filters.id_scheme,
+      id_branch: filters.id_branch,
+      scheme_type:filters.scheme_type
+    };
+     
+    getschemepaymentMutate(filterTosend)
+  }, [])
+
 
 
   const handleSearch = (e) => {

@@ -139,7 +139,11 @@ const RouteList = [
     path: "/scheme/addscheme",
     element: <Base renderContent={AddScheme}/>,
   },
- 
+  {
+    name: "Add Scheme",
+    path: "/scheme/addscheme/:id",
+    element: <Base renderContent={AddScheme}/>,
+  },
   {
     name: "Classification",
     path:'/ourscheme/classification',
@@ -162,8 +166,8 @@ const RouteList = [
     element:<Base renderContent={CreateSchemeClassificaton}/>
   },
   {
-    name: "Edit Classification",
-    path:'/editclassification/:id',
+    name: "Add Classification",
+    path:'/classification/addclassification/:id',
     element:<Base renderContent={CreateSchemeClassificaton}/>
   },
   {

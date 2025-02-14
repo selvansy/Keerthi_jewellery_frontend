@@ -20,7 +20,8 @@ const Submenu = () => {
 
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   
-  const [isLoading,setisLoading] = useState(false)
+  const [isLoading,setisLoading] = useState(true)
+
   const [isviewOpen, setIsviewOpen] = useState(false);
   const [submenuData, setsubmenuData] = useState([]);
    const [currentPage, setCurrentPage] = useState(1);
@@ -38,10 +39,8 @@ const Submenu = () => {
   }
 
     const { mutate: getallsubmenusMutate } = useMutation({
-      mutationFn: ()=>{
-        setisLoading(true)
-         getallsubmenudatatable
-      },
+      mutationFn: (payload)=>
+         getallsubmenudatatable(payload),
       onSuccess: (response) => {
         if (response) {
           setsubmenuData(response.data);
@@ -87,6 +86,10 @@ const Submenu = () => {
   useEffect(() => {
     getallsubmenusMutate({ search:debouncedSearch,page: currentPage, limit });
   }, [currentPage,itemsPerPage,debouncedSearch,isviewOpen]);
+
+  useEffect(() => {
+    getallsubmenusMutate({ search:debouncedSearch,page: currentPage, limit });
+  }, []);
 
 
   const handlePageChange = (page) => {

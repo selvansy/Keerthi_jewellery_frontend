@@ -5,25 +5,29 @@ import { useNavigate } from 'react-router-dom'
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify"
 import {
-  getSchemeTable,getallbranch, changeschemestatus, allbranchclassification, getallmetal, getallschemetypes, getschemeById, allinstallmenttype, allFundtype, addscheme,
-  updateScheme, puritybymetal, buygsttype, wastagetype
+  getSchemeTable, getallbranch, changeschemestatus, allbranchclassification, getallmetal, getallschemetypes, getschemeById, allinstallmenttype, allFundtype, addscheme,
+  updateScheme, puritybymetal, buygsttype, wastagetype,deleteScheme
 } from "../../../api/Endpoints"
 import { setid } from "../../../../redux/clientFormSlice"
 import { useDispatch, useSelector } from 'react-redux';
-import { CalendarDays, RefreshCcw} from 'lucide-react'
+import { CalendarDays, RefreshCcw } from 'lucide-react'
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
+import { eventEmitter } from '../../../../utils/EventEmitter';
+import { openModal } from '../../../../redux/modalSlice';
+import Modal from '../../../components/common/Modal';
 
 const Scheme = () => {
 
   let dispatch = useDispatch();
   const navigate = useNavigate()
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
- const roledata = useSelector((state) => state.clientForm.roledata);
+  const roledata = useSelector((state) => state.clientForm.roledata);
   let id_client = roledata?.id_client;
   const id_branch = roledata?.branch;
 
-  const [isLoading,setisLoading] = useState(false)
+  const [isLoading, setisLoading] = useState(true)
+  const [filtered, SetFiltered] = useState(false)
   const [classificationData, setClassification] = useState([])
   const [metalData, setMetalData] = useState([]);
   const [purityData, setPurityData] = useState([]);
@@ -32,11 +36,11 @@ const Scheme = () => {
   const [gstTypeData, setgstTypeData] = useState([]);
   const [wastageType, setWastage] = useState([])
   let [fundtype, setFundType] = useState([]);
-  const [metalid,setMetalid]=useState('')
+  const [metalid, setMetalid] = useState('')
 
   let [schemeData, setSchemeData] = useState([]);
   const [search, setSearch] = useState('')
-   const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
@@ -58,7 +62,7 @@ const Scheme = () => {
     limit: itemsPerPage,
     id_classification: "",
     id_metal: "",
-    id_branch:id_branch,
+    id_branch: id_branch,
     id_purity: "",
     weekmonth: "",
     scheme_type: "",
@@ -69,14 +73,19 @@ const Scheme = () => {
 
     setFromdate("");
     setTodate("");
-    setFilters(prev=>({...prev, id_classification: "",
+    setFilters(prev => ({
+      ...prev,
+
+      id_classification: "",
       id_metal: "",
-      id_branch:id_branch,
+      id_branch: id_branch,
       id_purity: "",
       weekmonth: "",
       scheme_type: "",
-      buytgsttype: ""})); 
- toast.success("Filter is cleared");
+      buytgsttype: ""
+    }));
+
+    toast.success("Filter is cleared");
     getSchemeTable({
       from_date: "",
       to_date: "",
@@ -84,30 +93,29 @@ const Scheme = () => {
       limit: itemsPerPage,
       id_classification: "",
       id_metal: "",
-      id_branch:id_branch,
+      id_branch: id_branch,
       id_purity: "",
       weekmonth: "",
       scheme_type: "",
-      buytgsttype: ""  
+      buytgsttype: ""
     })
   }
- 
-    const handleallbranch = async (e) => {  
-  
-      const response = await getallbranch();
-      if (response) {
-        console.log(response.data)
-        setBranchList(response.data);
-      }
-    };
+
+  const handleallbranch = async (e) => {
+
+    const response = await getallbranch();
+    if (response) {
+      setBranchList(response.data);
+    }
+  };
 
   useEffect(() => {
-   
+
     if (metalid) {
       getPurity(metalid);
-    } 
+    }
   }, [metalid]);
-  
+
   const { mutate: allbranchclassificationmuate } = useMutation({
     mutationFn: allbranchclassification,
     onSuccess: (response) => {
@@ -118,7 +126,7 @@ const Scheme = () => {
     },
   });
 
-  
+
   const { mutate: getAllMetals } = useMutation({
     mutationFn: getallmetal,
     onSuccess: (response) => {
@@ -129,12 +137,12 @@ const Scheme = () => {
     },
   });
 
- 
+
 
   const { mutate: getAllInstallmentTypes } = useMutation({
     mutationFn: allinstallmenttype,
     onSuccess: (response) => {
-    
+
       setInstallmentTypeData(response.data);
     },
     onError: (error) => {
@@ -143,15 +151,15 @@ const Scheme = () => {
   });
 
   const { mutate: getPurity } = useMutation({
-      mutationFn: puritybymetal,
-      onSuccess: (response) => {
-        setPurityData(response.data);
-      },
-      onError: (error) => {
-        console.error("Error fetching purity types:", error);
-        setPurityData([]);
-      },
-    });
+    mutationFn: puritybymetal,
+    onSuccess: (response) => {
+      setPurityData(response.data);
+    },
+    onError: (error) => {
+      console.error("Error fetching purity types:", error);
+      setPurityData([]);
+    },
+  });
 
   const { mutate: getAllSchemeTypes } = useMutation({
     mutationFn: getallschemetypes,
@@ -195,27 +203,27 @@ const Scheme = () => {
 
   const filterInputchange = (e) => {
     const { name, value } = e.target;
-     
 
-    if(name === 'id_purity' || name === 'weekmonth' || name ==="scheme_type" || name === "buytgsttype"  || name === "wastagebenefit"){
+
+    if (name === 'id_purity' || name === 'weekmonth' || name === "scheme_type" || name === "buytgsttype" || name === "wastagebenefit") {
       setFilters({
         ...filters,
-        [name]:Number(value)
+        [name]: Number(value)
       })
       return
     }
-      if(name === "id_branch"){
-        allbranchclassificationmuate(value);
-      }
+    if (name === "id_branch") {
+      allbranchclassificationmuate(value);
+    }
     if (name === "id_metal") {
 
-        setMetalid(value);
-        setFilters({
-          ...filters,
-          [name]: value,
-          id_purity: ''
-        });
-      }
+      setMetalid(value);
+      setFilters({
+        ...filters,
+        [name]: value,
+        id_purity: ''
+      });
+    }
 
     setFilters(prev => ({ ...prev, [name]: value }));
 
@@ -226,20 +234,20 @@ const Scheme = () => {
     const filterTosend = {
       from_date: from_date,
       to_date: to_date,
-      search:search,
+      search: search,
       page: currentPage,
       limit: itemsPerPage,
-      id_branch:filters.id_branch,
+      id_branch: filters.id_branch,
       id_classification: filters.id_classification,
       metalid: filters.metalid,
       id_purity: filters.id_purity,
       weekmonth: filters.weekmonth,
-      wastagebenefit:filters.wastagebenefit,
+      wastagebenefit: filters.wastagebenefit,
       scheme_type: filters.scheme_type,
       buytgsttype: filters.buytgsttype
 
     };
-
+    SetFiltered(true)
     getSchemeDataTable(filterTosend)
   };
 
@@ -248,31 +256,30 @@ const Scheme = () => {
     getSchemeDataTable({
       from_date: "",
       to_date: "",
-      search:search,
+      search: search,
       page: currentPage,
       limit: itemsPerPage,
-      id_branch:filters.id_branch,
+      id_branch: filters.id_branch,
       id_classification: "",
       metalid: "",
       id_purity: "",
       weekmonth: "",
-      wastagebenefit:"",
+      wastagebenefit: "",
       scheme_type: "",
       buytgsttype: ""
 
     })
-  }, [currentPage, itemsPerPage,search])
+  }, [currentPage, itemsPerPage, search])
+
+
 
   const { mutate: getSchemeDataTable } = useMutation({
-    mutationFn: ()=>{ 
-      setisLoading(true)
-      getSchemeTable
-    },
+    mutationFn: (payload) => getSchemeTable(payload),
     onSuccess: (response) => {
-    
-      if(response){
-      setSchemeData(response.data);
-      
+
+      if (response) {
+        setSchemeData(response.data);
+
       }
       setisLoading(false)
     },
@@ -298,25 +305,24 @@ const Scheme = () => {
       getSchemeTable({
         from_date: from_date,
         to_date: to_date,
-        search:search,
+        search: search,
         page: currentPage,
         limit: itemsPerPage,
-        id_branch:filters.id_branch,
+        id_branch: filters.id_branch,
         id_classification: filters.id_classification,
         metalid: filters.metalid,
         id_purity: filters.id_purity,
         weekmonth: filters.weekmonth,
-        wastagebenefit:filters.wastagebenefit,
+        wastagebenefit: filters.wastagebenefit,
         scheme_type: filters.scheme_type,
         buytgsttype: filters.buytgsttype
-  
+
       })
     }
   };
 
   const handleEdit = (id) => {
-    dispatch(setid(id))
-    navigate("/scheme/addscheme")
+    navigate(`/scheme/addscheme/${id}`)
   };
 
   const paginationButtons = [];
@@ -388,7 +394,7 @@ const Scheme = () => {
                     </svg>
                     Edit
                   </button>
-                
+
                   <button
                     className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
                     onClick={() => {
@@ -402,13 +408,13 @@ const Scheme = () => {
                     Delete
                   </button>
                   <button
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                      onClick={() => setActiveDropdown(null)}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                    onClick={() => setActiveDropdown(null)}
                   >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                      Cancel
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    Cancel
                   </button>
 
                 </div>
@@ -443,9 +449,9 @@ const Scheme = () => {
       header: 'Metal Name',
       cell: (row) => {
         return row?.id_metal === 1 ? 'Gold' :
-               row?.id_metal === 2 ? 'Silver' :
-               row?.id_metal === 3 ? 'Diamond' :
-               row?.id_metal === 4 ? 'Platinum' : 'Gold Coins';
+          row?.id_metal === 2 ? 'Silver' :
+            row?.id_metal === 3 ? 'Diamond' :
+              row?.id_metal === 4 ? 'Platinum' : 'Gold Coins';
       }
     },
     {
@@ -465,19 +471,19 @@ const Scheme = () => {
           return `Amount To Weight`;
         } else if (row?.scheme_type === 3) {
           return `Weight`;
-        }  else if (row?.scheme_type === 4) {
+        } else if (row?.scheme_type === 4) {
           return `Flexible Amount To Bonus`;
-        }  else if (row?.scheme_type === 5) {
+        } else if (row?.scheme_type === 5) {
           return `Flexiable Amount To Weight`;
-        }  else if (row?.scheme_type === 6) {
+        } else if (row?.scheme_type === 6) {
           return `Fixed Amount To Weight`;
-        }  else if (row?.scheme_type === 7) {
+        } else if (row?.scheme_type === 7) {
           return `Fixed Amount End Weight`;
-        }  else if (row?.scheme_type === 8) {
+        } else if (row?.scheme_type === 8) {
           return `Fixed Amount To Bonus`;
-        }  else if (row?.scheme_type === 9) {
+        } else if (row?.scheme_type === 9) {
           return `Flexible Amount End Weight`;
-        }  else if (row?.scheme_type === 10) {
+        } else if (row?.scheme_type === 10) {
           return `Digi Gold`;
         } else {
           return `Amount To Bonus`;
@@ -486,14 +492,14 @@ const Scheme = () => {
     },
     {
       header: "Classification",
-      cell: (row) => row?.classificationDetails?.classification_name || 'N/A' 
+      cell: (row) => row?.classificationDetails?.classification_name || 'N/A'
     },
-    
+
     {
       header: "Create Date",
       cell: (row) => {
         const date = new Date(row?.createdAt);
-        return date.toLocaleDateString('en-GB'); 
+        return date.toLocaleDateString('en-GB');
       }
     },
     {
@@ -516,10 +522,10 @@ const Scheme = () => {
         </label>
       )
     }
-  
+
   ];
 
- 
+
   const handleClickfilter = (e) => {
 
     handleallbranch();
@@ -531,6 +537,76 @@ const Scheme = () => {
     getSavingType();
     setIsFilterOpen(true);
   }
+
+
+
+  const handleDelete = (id) => {
+    setActiveDropdown(null);
+    dispatch(openModal({
+      modalType: 'CONFIRMATION',
+      header: 'Delete Scheme',
+      formData: {
+        message: 'Are you sure you want to delete?',
+        schemeId: id
+      },
+      buttons: {
+        cancel: {
+          text: 'Cancel'
+        },
+        submit: {
+          text: 'Delete'
+        }
+      }
+    }));
+
+
+  };
+
+  //mutation to get purity type
+  const { mutate: deleteSchemeId } = useMutation({
+    mutationFn: deleteScheme,
+    onSuccess: (response) => {
+      toast.success(response.message);
+    },
+    onError: (error) => {
+      console.error("Error:", error);
+    },
+  });
+
+
+  useEffect(() => {
+    eventEmitter.on('CONFIRMATION_SUBMIT', async (data) => {
+      try {
+
+        deleteSchemeId(data.schemeId);
+        getSchemeDataTable({
+          from_date: "",
+          to_date: "",
+          search: search,
+          page: currentPage,
+          limit: itemsPerPage,
+          id_branch: filters.id_branch,
+          id_classification: "",
+          metalid: "",
+          id_purity: "",
+          weekmonth: "",
+          wastagebenefit: "",
+          scheme_type: "",
+          buytgsttype: ""
+    
+        })
+
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    });
+    return () => {
+      eventEmitter.off('CONFIRMATION_SUBMIT');
+    };
+  }, [eventEmitter]);
+
+
+
   return (
     <div className="flex flex-col p-4">
       <h2 className="text-2xl text-gray-900 font-bold">Schemes</h2>
@@ -552,24 +628,34 @@ const Scheme = () => {
             style={{ backgroundColor: layout_color }}>
             + Create Scheme
           </button>
-           
-            <button
-                id="filter"
-                className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
-                onClick={() => handleReset()}
-                style={{ backgroundColor: layout_color }}>
-                <RefreshCcw size={20} />
-            </button>
-          <button
-            id="filter"
-            className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
-            onClick={(e) => {
-              handleClickfilter(e);
-            }}
 
-            style={{ backgroundColor: layout_color }} >
-            <SlidersHorizontal size={20} />
-          </button>
+           {
+                      filtered ?
+                        <>
+                          <button
+                            id="filter"
+                            className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
+                            onClick={() => handleReset()}
+                            style={{ backgroundColor: layout_color }}>
+                            <RefreshCcw size={20} />
+                          </button>
+                        </>
+                        :
+                        <>
+          
+                          <button
+                            id="filter"
+                            className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
+                            onClick={(e) => {
+                              handleClickfilter(e);
+                            }}
+          
+                            style={{ backgroundColor: layout_color }} >
+                            <SlidersHorizontal size={20} />
+                          </button>
+                        </>
+          
+                    }
         </div>
       </div>
 
@@ -630,24 +716,24 @@ const Scheme = () => {
               </div>
 
               <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
-                Branch Name
-              </label>
-              <div className="relative">
-                <select  name="id_branch" onChange={(e)=>{filterInputchange(e);   }} className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
-                  <option value='' >--Select--</option>
-                  {branchList.map((branch)=>(
-                    <option key={branch._id} value={branch._id}>{branch.branch_name}</option>
-                  ))
-                  }
-                </select>
-                <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                  <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
-                    <path d="M19 9l-7 7-7-7"></path>
-                  </svg>
+                <label className="block text-sm font-medium text-gray-700">
+                  Branch Name
+                </label>
+                <div className="relative">
+                  <select name="id_branch" onChange={(e) => { filterInputchange(e); }} className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
+                    <option value='' >--Select--</option>
+                    {branchList.map((branch) => (
+                      <option key={branch._id} value={branch._id}>{branch.branch_name}</option>
+                    ))
+                    }
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                    <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
+                      <path d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </div>
                 </div>
               </div>
-            </div>
               <div className="space-y-2">
                 <div className="flex flex-col">
                   <label className="text-gray-700 mb-2 font-medium">
@@ -688,7 +774,7 @@ const Scheme = () => {
                       name="id_metal"
                       className="appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700"
                       defaultValue=""
-                   
+
                       onChange={filterInputchange}
                       value={filters.id_metal}
                     >
@@ -727,10 +813,9 @@ const Scheme = () => {
                   <div className="relative">
                     <select
                       name="id_purity"
-                      className={`appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 ${
-                        !purityData || purityData.length === 0 ? "cursor-not-allowed bg-gray-100" : ""
-                      }`}
-                      disabled={!purityData || purityData.length === 0} 
+                      className={`appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 ${!purityData || purityData.length === 0 ? "cursor-not-allowed bg-gray-100" : ""
+                        }`}
+                      disabled={!purityData || purityData.length === 0}
                       defaultValue=""
                       onChange={filterInputchange}
 
@@ -840,7 +925,7 @@ const Scheme = () => {
                       </svg>
                     </div>
                   </div>
-                 
+
                 </div>
               </div>
 
@@ -881,7 +966,7 @@ const Scheme = () => {
                       </svg>
                     </div>
                   </div>
-                
+
                 </div>
               </div>
 
@@ -919,48 +1004,48 @@ const Scheme = () => {
                       </svg>
                     </div>
                   </div>
-                  
+
                 </div>
               </div>
 
               <div className="space-y-2">
-              <div className="flex flex-col mt-2">
-                <label className="text-black mb-1 font-medium">
-                  Saving Type<span className="text-red-400">*</span>
-                </label>
-                <div className="relative">
-                  <select
-                    name="saving_type"
-                    className="appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700"
-                    defaultValue=""
-                    onChange={filterInputchange}
-                    value={filters.saving_type}
-                  >
-                    <option value="" disabled className="text-gray-700">
-                      --Select--
-                    </option>
-                    {fundtype.map((type) => (
-                    <option key={type._id} value={type.id}>
-                      {type.name}
-                    </option>
-                  ))}
-                  </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                    <svg
-                      className="h-4 w-4 text-gray-400"
-                      fill="none"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="3"
-                      viewBox="0 0 24 24"
-                      stroke="black"
+                <div className="flex flex-col mt-2">
+                  <label className="text-black mb-1 font-medium">
+                    Saving Type<span className="text-red-400">*</span>
+                  </label>
+                  <div className="relative">
+                    <select
+                      name="saving_type"
+                      className="appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700"
+                      defaultValue=""
+                      onChange={filterInputchange}
+                      value={filters.saving_type}
                     >
-                      <path d="M19 9l-7 7-7-7"></path>
-                    </svg>
+                      <option value="" disabled className="text-gray-700">
+                        --Select--
+                      </option>
+                      {fundtype.map((type) => (
+                        <option key={type._id} value={type.id}>
+                          {type.name}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                      <svg
+                        className="h-4 w-4 text-gray-400"
+                        fill="none"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="3"
+                        viewBox="0 0 24 24"
+                        stroke="black"
+                      >
+                        <path d="M19 9l-7 7-7-7"></path>
+                      </svg>
+                    </div>
                   </div>
+
                 </div>
-               
-              </div>
               </div>
 
               <div className="p-4 borde">
@@ -987,7 +1072,7 @@ const Scheme = () => {
 
       <div className="mt-4">
 
-        <Table data={schemeData} columns={columns} isLoading={isLoading}/>
+        <Table data={schemeData} columns={columns} isLoading={isLoading} />
       </div>
 
       <div className="flex justify-between mt-4 p-2">
@@ -1036,7 +1121,10 @@ const Scheme = () => {
           <span className="text-gray-500">entries</span>
         </div>
       </div>
+
+      <Modal />
     </div>
+    
   )
 }
 

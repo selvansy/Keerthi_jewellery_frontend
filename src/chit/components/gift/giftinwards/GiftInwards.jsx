@@ -16,7 +16,7 @@ const Giftinwards = () => {
 
   const navigate = useNavigate()
   const [search, setSearch] = useState('')
-  const [isLoading,setisLoading] = useState(false)
+  const [isLoading,setisLoading] = useState(true)
   const [giftinward, setGiftinward] = useState([])
    const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
@@ -129,11 +129,7 @@ const Giftinwards = () => {
 
   //mutation to get scheme type
   const { mutate: getgiftinwardMutate } = useMutation({
-    mutationFn: ()=>{
-      setisLoading(true)
-
-     getallgiftinwardtable
-    },
+    mutationFn: (payload)=>getallgiftinwardtable(payload),
     onSuccess: (response) => {
       setGiftinward(response.data)
       setTotalPages(response.totalPages)
@@ -144,6 +140,21 @@ const Giftinwards = () => {
       setisLoading(false)
     }
   });
+
+  useEffect(() => {
+    const filterTosend = {
+      page:currentPage,
+      from_date:from_date,
+      to_date:to_date,
+      limit: itemsPerPage,
+      search: search,
+      id_branch:filters.id_branch,
+      gift_vendorid:filters.gift_vendorid,
+      id_gift:filters.id_gift
+    };
+
+    getgiftinwardMutate(filterTosend)
+  }, [])
 
   useEffect(() => {
     const filterTosend = {

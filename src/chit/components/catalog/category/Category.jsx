@@ -18,7 +18,7 @@ import Modal from '../../../components/common/Modal';
 const Category = () => {
   const navigate = useNavigate()
 
-  const [isLoading,setisLoading] = useState(false)
+  const [isLoading,setisLoading] = useState(true)
   const roledata = useSelector((state) => state.clientForm.roledata);
   let id_client = roledata?.id_client;
   const id_branch = roledata?.branch;
@@ -83,6 +83,22 @@ const Category = () => {
     setIsFilterOpen(true);
   }
 
+  useEffect(() => {
+
+    const filterTosend = {
+      page: currentPage,
+      from_date: "",
+      to_date: "",
+      limit: itemsPerPage,
+      search: search,
+      id_branch:id_branch,
+      id_metal: ""
+    };
+    
+    getcategoryData(filterTosend)
+  
+  }, []);
+  
 
   // useEffect(() => {
   //   if (id_branch === '0') {
@@ -96,6 +112,7 @@ const Category = () => {
   //   }
 
   // }, [id_branch]);
+
 
 
   useEffect(() => {
@@ -161,10 +178,7 @@ const Category = () => {
 
   //mutation to get scheme type
   const { mutate: getcategoryData } = useMutation({
-    mutationFn: ()=> {
-    getcategoryTable
-    setisLoading(true)
-    },
+    mutationFn: (payload)=>  getcategoryTable(payload),
     onSuccess: (response) => {
      
       setcategoryData(response?.data)

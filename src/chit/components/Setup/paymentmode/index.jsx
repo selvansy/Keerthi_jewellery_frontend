@@ -25,7 +25,7 @@ const Paymentmode = () => {
    const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [isLoading,setisLoading] = useState(false)
+  const [isLoading,setisLoading] = useState(true)
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [searchInput,setSearchInput]=useState('')
   const debouncedSearch = useDebounce(searchInput, 500)
@@ -39,10 +39,8 @@ const Paymentmode = () => {
   
 
   const { mutate: getallpaymentmodesMutate } = useMutation({
-    mutationFn: ()=>{
-      setisLoading(false)
-       getallpaymentmodes
-    },
+    mutationFn: (payload)=>
+       getallpaymentmodes(payload),
     onSuccess: (response) => {
       if (response) {
         setpaymentmodeData(response.data);
@@ -77,6 +75,10 @@ const Paymentmode = () => {
     getallpaymentmodesMutate({ search:debouncedSearch,page: currentPage, limit:itemsPerPage});
   }, [currentPage,itemsPerPage, debouncedSearch,isviewOpen]);
 
+
+  useEffect(() => {
+    getallpaymentmodesMutate({ search:debouncedSearch,page: currentPage, limit:itemsPerPage});
+  }, []);
 
 
   const handlePageChange = (page) => {
