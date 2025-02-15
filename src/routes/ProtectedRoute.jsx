@@ -1,57 +1,65 @@
 import { jwtDecode } from 'jwt-decode';
-
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../redux/authSlice';
 import { useEffect } from 'react';
 import { setRoleData } from '../redux/clientFormSlice';
- 
+
 const ProtectedRoute = ({ children }) => {
-  const { info } = useSelector((state) => state.auth);
+  const location=useLocation()  
+  const { allowedRoutes } = useSelector((state) => state.menuSlice);
   const dispatch = useDispatch();
- 
   const storedToken = localStorage.getItem('token');
-  const token = info || storedToken;
-
-    const decoded = jwtDecode(info);
-    let id = decoded.id_role._id;
-
-      useEffect(() => {
-        if(token){
-          dispatch(setRoleData(decoded));
-        }
-      }, [token]);
-
- 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    dispatch(logout());
-  };
- 
+  const token =  storedToken;
+  
+  const menuSetting=[...allowedRoutes,'dashboard','']
+  console.log(menuSetting);
+  
   if (!token) {
     return <Navigate to="/" replace />;
   }
- 
+
+  let decoded;
   try {
-    const decodedToken = jwtDecode(token);
-    const currentTime = Date.now() / 1000;
- 
-    if (decodedToken.exp < currentTime) {
-      handleLogout();
-      return <Navigate to="/" replace />;
-    }
-   
-    if (!decodedToken.id_employee) {
-      return <Navigate to="/" replace />;
-    }
- 
-    return children;
+    decoded = jwtDecode(token);
+    
   } catch (error) {
     console.error('Invalid token:', error);
     handleLogout();
     return <Navigate to="/" replace />;
   }
+
+  useEffect(() => {
+    if (decoded) {
+      dispatch(setRoleData(decoded));
+    }
+  }, [token]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    dispatch(logout());
+  };
+
+  const currentTime = Date.now() / 1000;
+
+  // const allowedRoute=menuSetting.includes(location.pathname.slice(1))
+
+  
+
+  // if(!allowedRoute) return "Not access"
+
+  if (decoded.exp < currentTime) {
+    handleLogout();
+    return <Navigate to="/" replace />;
+  }
+
+  if (!decoded.id_employee) {
+    return <Navigate to="/" replace />;
+  }
+
+
+
+  return children;
 };
- 
+
 export default ProtectedRoute;
- 

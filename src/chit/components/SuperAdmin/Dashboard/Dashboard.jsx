@@ -25,7 +25,6 @@ import { useParams } from 'react-router-dom';
 function Dashboard() {
 
   const {id} = useParams();
-  console.log(id)
 
   let navigate = useNavigate();
   const [search, setSearch] = useState('')
@@ -94,7 +93,6 @@ function Dashboard() {
   }
 
   useEffect(() => {
-    console.log("roledata",roledata)
     if(id_branch === "0"){    
       getTodaysMetalRate({ id_branch: roledata.id_branch, date: todayDate })
     } else {
@@ -166,7 +164,6 @@ function Dashboard() {
       setisLoading(false)
     },
     onError: (error) => {
-      console.error('Error:', error);
       setisLoading(false)
     }
   });
@@ -188,7 +185,6 @@ function Dashboard() {
       setisLoading(false)
     },
     onError: (error) => {
-      console.error('Error:', error);
       setisLoading(false)
 
     }
@@ -202,7 +198,6 @@ function Dashboard() {
 
     },
     onError: (error) => {
-      console.error('Error:', error);
     }
   });
 
@@ -308,7 +303,6 @@ function Dashboard() {
 
     function drawChart() {
       if (!window.google) {
-        console.error("Google Charts is not loaded yet.");
         return;
       }
 
@@ -329,7 +323,6 @@ function Dashboard() {
 
       const chartContainer = document.getElementById("piechart_3d");
       if (!chartContainer) {
-        console.error("Chart container not found!");
         return;
       }
 
@@ -338,7 +331,6 @@ function Dashboard() {
     }
   }, [chartData]);
 
-  console.log("ghj",data)
 
   return (
     <>
