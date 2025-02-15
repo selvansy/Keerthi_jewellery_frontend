@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { CalendarDays, Camera, X, Send } from 'lucide-react'
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
-import { updatecustomer, getcustomerById, getallbranch, allcountry, allstate, addcustomer, allcity } from '../../../api/Endpoints';
+import { updatecustomer, getcustomerById, getallbranch, allcountry, allstate, addcustomer, allcity,getBranchById } from '../../../api/Endpoints';
 
 import {sendOtp , closeBill} from "../../../api/BackendUrl"
 import { useMutation } from '@tanstack/react-query';
@@ -14,6 +14,8 @@ import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 const AddCustomer = () => {
+
+  let {id} = useParams();
 
   const navigate = useNavigate()
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
@@ -35,7 +37,7 @@ const AddCustomer = () => {
   const sortedStates = [...stateData].sort((a, b) =>
     a.state_name.localeCompare(b.state_name)
   );
-  const [selectedGender, setSelectedGender] = useState(null);
+  const [selectedGender, setSelectedGender] = useState(3);
   const [birthDate, setBirthDate] = useState(null);
   const [cityData, setCityData] = useState([]);
   const [branchData, setBranchData] = useState([]);
@@ -44,6 +46,7 @@ const AddCustomer = () => {
     a.city_name.localeCompare(b.city_name)
   );
   const [selectedBranch, setSelectedBranch] = useState('');
+
   const [selectedCity, setSelectedCity] = useState('');
   const [showWebcam, setShowWebcam] = useState(false);
   const [profilePreview, setProfilePreview] = useState(null);
@@ -62,10 +65,9 @@ const AddCustomer = () => {
 
   const [formErrors, setFormErrors] = useState({});
   const [customerData, setcustomerData] = useState(null);
-  const customerId = useSelector((state) => state.clientForm.id);
+
   
    
-
   useEffect(() => {
     let countdown;
     
@@ -79,6 +81,19 @@ const AddCustomer = () => {
   
     return () => clearInterval(countdown);
   }, [timer]);
+
+  useEffect(() => {
+    getAllCountryMutate();
+    getallbranchMutate();
+  }, []);
+
+  useEffect(() => {
+    
+    if (id) {
+      getCustomerData(id);
+    }
+  }, [id])
+
 
     const validateMobile = (mobileNum)=>{
         if (!mobileNum){
@@ -100,9 +115,9 @@ const AddCustomer = () => {
     
       const SendOtpToMobile = ()=>{
         const payload = {
-          mobile: mobileNum || mobile,
+          mobile: formData.mobile || mobileNum,
           otp: otpNumber,
-          branchId: branchId
+          branchId: selectedBranch
          }
          postSendOtpMobile(payload)
       }
@@ -116,6 +131,16 @@ const AddCustomer = () => {
           }
         },
       });
+
+        const { mutate: branchbyId } = useMutation({
+          mutationFn: getBranchById,
+          onSuccess: (response) => {
+            setbranch(response.data);
+          },
+          onError: (error) => {
+            console.error("Error:", error);
+          },
+        });
     
     
       const handleVerifyOtp = (num)=>{
@@ -128,7 +153,7 @@ const AddCustomer = () => {
         const payload = {
           mobile: mobileNum || mobile,
           otp: otpNumber,
-          branchId: branchId
+          branchId: selectedBranch
          }
          postVerifyOtp(payload)
          setTimer(60);
@@ -163,27 +188,27 @@ const AddCustomer = () => {
     }
   });
 
-
-
-  const handleSetStateChange = (stateId) => {
-    setSelectedState(stateId)
-    getAllCityMutate({ id_state: stateId });
+  const handleSetStateChange = (e) => {
+    const value = e.target.value;
+    setSelectedState(value)
+    console.log("StateId",value)
+    getAllCityMutate({ id_state: value });
     cityData.map((city) => {
-      if (city._id === stateId) {
+      if (city._id === value) {
         setSelectedCity(city.city_name);
       }
     })
   }
 
-  const handleSetCityChange = (e) => {
-    const cityId = e.target.value;
-    setSelectedCity(cityId);
-  }
+  // const handleSetCityChange = (e) => {
+  //   const cityId = e.target.value;
+  //   setSelectedCity(cityId);
+  // }
 
-  const { mutate: getbranchbyidMutate } = useMutation({
-    mutationFn: getcustomerById,
+  const { mutate: getCustomerData } = useMutation({
+    mutationFn: (id)=>getcustomerById(id),
     onSuccess: (response) => {
-      console.log(response)
+
       if (response?.data) {
         setcustomerData(response.data);
         setSelectedGender(response.data.gender);
@@ -200,12 +225,12 @@ const AddCustomer = () => {
         setProfilePreview(response.data.image);
         setDate_of_wed(adjustDate(response.data.date_of_wed));
         setBirthDate(adjustDate(response.data.date_of_birth));
-        setSelectedState(response.data.id_state);
-        handleSetStateChange(response.data.id_state);
-        setSelectedState(response.data.id_state);
-        setSelectedCity(response.data.id_city);
-        setSelectedBranch(response.data.id_branch);
-        getAllCityMutate({ id_state: response.data.id_state });
+        // handleSetStateChange(response.data.id_state);
+        setSelectedState(response.data.stateDetails._id);
+        setSelectedCity(response.data.cityDetails._id);
+        setSelectedBranch(response.data.branchDetails._id);
+        
+        getAllCityMutate({ id_state: response.data.stateDetails._id });
       }
     },
   });
@@ -218,65 +243,67 @@ const AddCustomer = () => {
     return new Date(year, month - 1, day);
   };
 
-  // const formatDate = (date) => {
-  //   if (!date) return null;
-  //   const year = date.getFullYear();
-  //   const month = String(date.getMonth() + 1).padStart(2, '0');
-  //   const day = String(date.getDate()).padStart(2, '0');
-  //   return `${year}-${month}-${day}`;
-  // };
+  const formatDate = (date) => {
+    if (!date) return null;
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
 
-  const handleEditSubmit = () => {
-    let formDataToSend = new FormData();
+  // const handleEditSubmit = () => {
+  //   let formDataToSend = new FormData();
 
-    const id = formData.id;  // Ensure the 'id' is correctly coming from formData or another source
+  //   const id = formData.id;  // Ensure the 'id' is correctly coming from formData or another source
 
-    if (!id) {
-      console.error('Customer ID is missing!');
-      return;  // Exit early if ID is not available
-    }
-    formDataToSend.append('id', id);
-    formDataToSend.append('firstname', formData.firstName);
-    formDataToSend.append('lastname', formData.lastName);
-    formDataToSend.append('mobile', formData.mobile);
-    formDataToSend.append('address', formData.address);
-    formDataToSend.append('pincode', formData.pincode);
-    formDataToSend.append('id_country', countryData);
-    formDataToSend.append('id_state', selectedState);
-    formDataToSend.append('id_city', selectedCity);
-    formDataToSend.append('id_branch', selectedBranch);
+  //   if (!id) {
+  //     console.error('Customer ID is missing!');
+  //     return;  // Exit early if ID is not available
+  //   }
 
-    // Add date of birth and wedding date with conditional handling
-    formDataToSend.append('date_of_birth', birthDate ? birthDate.toISOString() : '');
-    formDataToSend.append('date_of_wed', date_of_wed ? date_of_wed.toISOString() : '');
 
-    formDataToSend.append('gender', selectedGender);
-    formDataToSend.append('phone', '');  // empty value if not used
-    formDataToSend.append('nominee_name', '');  // empty value if not used
-    formDataToSend.append('nominee_relationship', '');  // empty value if not used
-    formDataToSend.append('nominee_mobile', '');  // empty value if not used
-    formDataToSend.append('digital_sign', '');  // empty value if not used
-    formDataToSend.append('pan', '');  // empty value if not used
-    formDataToSend.append('authorno', '');  // empty value if not used
-    formDataToSend.append('username', '');  // empty value if not used
-    formDataToSend.append('passwd', '');  // empty value if not used
-    formDataToSend.append('mpin', '');  // empty value if not used
-    formDataToSend.append('profile_complete', '');  // empty value if not used
-    formDataToSend.append('notification', 1);  // Assuming 1 is the default notification setting
-    formDataToSend.append('bank_accountname', '');  // empty value if not used
-    formDataToSend.append('bank_accno', '');  // empty value if not used
-    formDataToSend.append('bank_ifsccode', '');  // empty value if not used
+  //   formDataToSend.append('id', id);
+  //   formDataToSend.append('firstname', formData.firstName);
+  //   formDataToSend.append('lastname', formData.lastName);
+  //   formDataToSend.append('mobile', formData.mobile);
+  //   formDataToSend.append('address', formData.address);
+  //   formDataToSend.append('pincode', formData.pincode);
+  //   formDataToSend.append('id_country', countryData);
+  //   formDataToSend.append('id_state', selectedState);
+  //   formDataToSend.append('id_city', selectedCity);
+  //   formDataToSend.append('id_branch', selectedBranch);
 
-    // Conditionally append fields if they exist
-    if (formData.whatsapp) formDataToSend.append('whatsapp', formData.whatsapp);
-    if (formData.pan) formDataToSend.append('pan', formData.pan);
-    if (formData.authorno) formDataToSend.append('authorno', formData.authorno);
-    if (cus_img) formDataToSend.append('cus_img', cus_img);  // Assuming cus_img is a file or blob
-    if (id_proof) formDataToSend.append('id_proof', id_proof);  // Assuming id_proof is a file or blob
+  //   // Add date of birth and wedding date with conditional handling
+  //   formDataToSend.append('date_of_birth', birthDate ? birthDate.toISOString() : '');
+  //   formDataToSend.append('date_of_wed', date_of_wed ? date_of_wed.toISOString() : '');
 
-    // Assuming `updatecustomerMutate` is the function you're calling to send this data
-    updatecustomerMutate(id, formDataToSend);
-  }
+  //   formDataToSend.append('gender', selectedGender);
+  //   formDataToSend.append('phone', '');  // empty value if not used
+  //   formDataToSend.append('nominee_name', '');  // empty value if not used
+  //   formDataToSend.append('nominee_relationship', '');  // empty value if not used
+  //   formDataToSend.append('nominee_mobile', '');  // empty value if not used
+  //   formDataToSend.append('digital_sign', '');  // empty value if not used
+  //   formDataToSend.append('pan', '');  // empty value if not used
+  //   formDataToSend.append('authorno', '');  // empty value if not used
+  //   formDataToSend.append('username', '');  // empty value if not used
+  //   formDataToSend.append('passwd', '');  // empty value if not used
+  //   formDataToSend.append('mpin', '');  // empty value if not used
+  //   formDataToSend.append('profile_complete', '');  // empty value if not used
+  //   formDataToSend.append('notification', 1);  // Assuming 1 is the default notification setting
+  //   formDataToSend.append('bank_accountname', '');  // empty value if not used
+  //   formDataToSend.append('bank_accno', '');  // empty value if not used
+  //   formDataToSend.append('bank_ifsccode', '');  // empty value if not used
+
+  //   // Conditionally append fields if they exist
+  //   if (formData.whatsapp) formDataToSend.append('whatsapp', formData.whatsapp);
+  //   if (formData.pan) formDataToSend.append('pan', formData.pan);
+  //   if (formData.authorno) formDataToSend.append('authorno', formData.authorno);
+  //   if (cus_img) formDataToSend.append('cus_img', cus_img);  // Assuming cus_img is a file or blob
+  //   if (id_proof) formDataToSend.append('id_proof', id_proof);  // Assuming id_proof is a file or blob
+
+  //   // Assuming `updatecustomerMutate` is the function you're calling to send this data
+  //   updatecustomerMutate(id, formDataToSend);
+  // }
 
 
   const { mutate: getAllStateMutate } = useMutation({
@@ -319,7 +346,7 @@ const AddCustomer = () => {
   const { mutate: addcustomerMutate } = useMutation({
     mutationFn: (data) => addcustomer(data),
     onSuccess: (response) => {
-      console.log(response);
+
       if (response) {
         toast.success(response.message);
         navigate('/manageaccount/customer');
@@ -367,18 +394,6 @@ const AddCustomer = () => {
     }));
   };
 
-
-  useEffect(() => {
-    getAllCountryMutate();
-    getallbranchMutate();
-
-    if (customerId) {
-      getbranchbyidMutate(customerId);
-    }
-
-  }, []);
-
-
   const handleCancle = () => {
     navigate('/customer')
   }
@@ -424,19 +439,9 @@ const AddCustomer = () => {
   //Branch change handler
   const handleBranchChange = (e) => {
     const branchId = e.target.value;
-    console.log(branchId);
     setSelectedBranch(branchId);
   };
-  //state change handler
-  const handleStateChange = (e) => {
-    const stateId = e.target.value;
-    setSelectedState(stateId);
-    if (stateId) {
-      getAllCityMutate({ id_state: stateId });
-    } else {
-      setCityData([]);
-    }
-  };
+
 
   // Validation function
   const validateForm = () => {
@@ -444,7 +449,7 @@ const AddCustomer = () => {
     if (!formData.firstName.trim()) errors.firstName = 'First name is required';
     if (!formData.lastName.trim()) errors.lastName = 'Last name is required';
     if (!formData.mobile) errors.mobile = 'Mobile number is required';
-    if (!formData.address.trim()) errors.address = 'Address is required';
+    if (!formData.address || !formData.address.trim()) errors.address = 'Address is required';
     if (!formData.pincode) errors.pincode = 'Pincode is required';
     if (!selectedState) errors.state = 'State is required';
     if (!selectedCity) errors.city = 'City is required';
@@ -455,13 +460,13 @@ const AddCustomer = () => {
     return Object.keys(errors).length === 0;
   };
 
-  const handleUpdate = (formData) => {
-    if (!validateForm()) {
-      toast.error("Required fields missing")
-      return;
-    }
-    updateCustomerData(formData)
-  }
+  // const handleUpdate = (formData) => {
+  //   if (!validateForm()) {
+  //     toast.error("Required fields missing")
+  //     return;
+  //   }
+  //   updateCustomerData(formData)
+  // }
 
 
   const handleSubmit = () => {
@@ -513,7 +518,12 @@ const AddCustomer = () => {
     if (cus_img) formDataToSend.append('cus_img', cus_img);
     if (id_proof) formDataToSend.append('id_proof', id_proof);
 
-    addcustomerMutate(formDataToSend);
+    
+    if(id){
+      updateCustomerData({id:id,data:formDataToSend});
+    }else{
+      addcustomerMutate(formDataToSend);
+    }
   };
 
   const handleCityChange = (e) => {
@@ -573,11 +583,11 @@ const AddCustomer = () => {
   return (
     <>
       <div className='flex flex-row justify-between'>
-        <h2 className='text-2xl text-gray-900 font-bold justify-between'>{customerId ? "Edit Customer" : "Add Customer"}</h2>
-        {customerId && (
+        <h2 className='text-2xl text-gray-900 font-bold justify-between'>{id ? "Edit Customer" : "Add Customer"}</h2>
+        {id && (
           <div className='flex flex-row gap-4'>
             <button onClick={handleBack} className='bg-[#E2E8F0] text-black px-4 py-2 rounded-md'>Back</button>
-            <button onClick={handleEditSubmit} className='bg-[#61A375] text-white px-4 py-2 rounded-md'>Edit</button>
+            <button onClick={handleSubmit} className='bg-[#61A375] text-white px-4 py-2 rounded-md'>Edit</button>
           </div>
         )}
       </div>
@@ -751,7 +761,7 @@ const AddCustomer = () => {
                   <select
                     name='id_state'
                     className='appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700'
-                    onChange={handleStateChange}
+                    onChange={handleSetStateChange}
                     value={selectedState}
                   >
                     <option value='' disabled className="text-gray-700">--Select--</option>
@@ -819,9 +829,9 @@ const AddCustomer = () => {
               </div>
             </div>
 
-            <div className='grid grid-rows-2 md:grid-cols-2 gap-6 border-gray-300'>
+            <div className='grid grid-rows-2 md:grid-cols-2 gap-6 border-gray-300 mt-3'>
               <div className='flex flex-col mt-2 gap-3'>
-                <label className='text-gray-700 mb-1 font-medium'>Date Of Wedding</label>
+                <label className='text-black mb-1 font-medium'>Date Of Wedding</label>
                 <div className="relative">
                   <DatePicker
                     name='date_of_wed'
@@ -842,8 +852,9 @@ const AddCustomer = () => {
                   </span>
                 </div>
               </div>
+
               <div className='flex flex-col mt-2 gap-3'>
-                <label className='text-gray-700 mb-1 font-medium'>Date Of Birth<span className='text-red-400'>*</span></label>
+                <label className='text-black mb-1 font-medium'>Date Of Birth<span className='text-red-400'>*</span></label>
                 <div className="relative">
                   <DatePicker
                     name='date_of_birth'
@@ -996,11 +1007,7 @@ const AddCustomer = () => {
                 To verify account with OTP verification, kindly check the checkbox.
               </h2>
             </div>
-
-
-          </div>
-
-          {showVerification && (
+            {showVerification && (
             <div className="grid grid-rows-2 md:grid-cols-2 gap-4">
               {/* Mobile Number Input */}
               <div className="flex flex-col mt-2 relative">
@@ -1059,9 +1066,10 @@ const AddCustomer = () => {
             </div>
           )}
 
+          </div>
             </div>
           </div>
-          {!customerId && (
+          {!id && (
             <div>
 
               <div className='bg-white mt-6'>
@@ -1076,9 +1084,9 @@ const AddCustomer = () => {
                   <button
                     className="bg-[#61A375] text-white rounded-md p-2 w-full lg:w-20"
                     type="button"
-                    onClick={customerId ? handleUpdate : handleSubmit}
+                    onClick={id ? handleUpdate : handleSubmit}
                   >
-                    {customerId ? "Update" : "Submit"}
+                    {id ? "Update" : "Submit"}
                   </button>
                 </div>
               </div>

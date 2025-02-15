@@ -14,6 +14,7 @@ import { CalendarDays, RefreshCcw } from 'lucide-react'
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import { useDebounce } from '../../../hooks/useDebounce';
+import usePagination from '../../../hooks/usePagination' 
 
 const DigiGoldScheme = () => {
 
@@ -51,6 +52,32 @@ const DigiGoldScheme = () => {
     search:debouncedSearch
 
   });
+
+  
+
+  const handlePageChange = (page) => {
+
+    const pageNumber = Number(page);
+      if (!pageNumber || isNaN(pageNumber) || pageNumber < 1 || pageNumber > totalPages) {
+        return;
+      }
+   
+      setCurrentPage(pageNumber);
+    
+  };
+
+
+    const nextPage = () => {
+      setCurrentPage((prevPage) => (prevPage < totalPages ? prevPage + 1 : prevPage));
+    };
+  
+    const prevPage = () => {
+      setCurrentPage((prevPage) => (prevPage > 1 ? prevPage - 1 : prevPage));
+    };
+  
+
+  const paginationData = {totalItems:totalPages,currentPage:currentPage,itemsPerPage:itemsPerPage,handlePageChange:handlePageChange}
+  const paginationButtons = usePagination(paginationData)
 
   //mutation to get scheme type 
   const { mutate: getClassificationTablemuate } = useMutation({
@@ -146,7 +173,6 @@ const DigiGoldScheme = () => {
     }
   };
 
-
   const handleEdit = (id) => {
     navigate(`/classification/addclassification/${id}`)
   };
@@ -172,11 +198,12 @@ const DigiGoldScheme = () => {
 
   };
 
-  useEffect(() => {
-    eventEmitter.on('CONFIRMATION_SUBMIT', async (data) => {
-      try {
 
-        let response = await deleteClassification(data.schemeId);
+    
+    //mutation to get purity type
+    const { mutate: deleteDigiClass } = useMutation({
+      mutationFn: deleteClassification,
+      onSuccess: (response) => {
         toast.success(response.message);
         getClassificationTablemuate({
           from_date: from_date,
@@ -187,6 +214,22 @@ const DigiGoldScheme = () => {
           id_branch: id_branch,
           typesofscheme: 2,
         })
+        eventEmitter.off('CONFIRMATION_SUBMIT');
+      },
+      onError: (error) => {
+        eventEmitter.off('CONFIRMATION_SUBMIT');
+        console.error("Error:", error);
+      },
+    });
+    
+
+  useEffect(() => {
+    eventEmitter.on('CONFIRMATION_SUBMIT', async (data) => {
+      try {
+
+         deleteDigiClass(data.schemeId);
+      
+    
       } catch (error) {
         console.error('Error deleting:', error);
       }
@@ -194,10 +237,15 @@ const DigiGoldScheme = () => {
     return () => {
       eventEmitter.off('CONFIRMATION_SUBMIT');
     };
-  }, [eventEmitter]);
+  }, []);
 
 
   const columns = [
+   
+    {
+      header: 'S.No',
+      cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
+    },
     {
       header: 'Actions',
       cell: (row, rowIndex) => (
@@ -269,10 +317,6 @@ const DigiGoldScheme = () => {
 
     },
     {
-      header: 'S.No',
-      cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
-    },
-    {
       header: 'Classification Name',
       cell: (row) => row?.classification_name,
     },
@@ -303,18 +347,7 @@ const DigiGoldScheme = () => {
 
   ];
 
-  const paginationButtons = [];
-  for (let i = 1; i <= totalPages; i++) {
-    paginationButtons.push(
-      <button
-        key={i}
-        onClick={() => handlePageChange(i)}
-        className={`p-2 w-10 h-10 rounded-md ${currentPage === i ? ' text-white' : 'bg-gray-300 text-gray-900'}`}
-        style={{ backgroundColor: layout_color }} >
-        {i}
-      </button>
-    );
-  }
+
 
   const handleItemsPerPageChange = (value) => {
 
@@ -322,9 +355,7 @@ const DigiGoldScheme = () => {
     setCurrentPage(1);
   };
 
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
+
 
 
   const handleallbranch = async () => {
@@ -502,54 +533,54 @@ const DigiGoldScheme = () => {
         />
       </div>
       {schemeType.length > 0 && (
-        <div className="flex justify-between mt-4 p-2">
-          <div className="flex flex-row items-center justify-center gap-2">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-                className="p-2 text-gray-500 rounded-md"
-              >
-                Previous
-              </button>
-            </div>
-
-            <div className="flex flex-row items-center justify-center gap-2">
-              {paginationButtons}
-            </div>
-
-            <div className="flex items-center">
-              <button
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                className="p-2 text-gray-500 rounded-md"
-              >
-                Next
-              </button>
-            </div>
-          </div>
-
-          <div className="mt-4 flex gap-2 justify-center items-center">
-            <span className="text-gray-500">Show</span>
-            <select
-              id="itemsPerPage"
-              value={itemsPerPage}
-              onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
-              className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
-            >
-              <option value={10}>10</option>
-              <option value={25}>25</option>
-              <option value={50}>50</option>
-              <option value={100}>100</option>
-              <option value={250}>250</option>
-              <option value={500}>500</option>
-              <option value={1000}>1000</option>
-            </select>
-            <span className="text-gray-500">entries</span>
-          </div>
-
-          <Modal />
-        </div>
+         <div className="flex justify-between mt-4 p-2">
+         <div className={`flex flex-row items-center justify-center gap-2  `}>
+           <div className="flex items-center gap-4">
+             <button
+               onClick={prevPage}
+               disabled={currentPage === 1}
+              
+               className={`p-2 text-gray-500 rounded-md ${currentPage === 1 ? "cursor-not-allowed" : "cursor-pointer"} `}
+             >
+               Previous
+             </button>
+           </div>
+ 
+           <div className="flex flex-row items-center justify-center gap-2">
+             {paginationButtons}
+           </div>
+ 
+           <div className="flex items-center">
+             <button
+               onClick={nextPage}
+               disabled={currentPage === totalPages}
+               
+               className={`p-2 text-gray-500 rounded-md  ${currentPage === totalPages ? "cursor-not-allowed" : "cursor-pointer"}`}
+             >
+               Next
+             </button>
+           </div>
+         </div>
+ 
+         <div className="mt-4 flex gap-2 justify-center items-center">
+           <span className="text-gray-500">Show</span>
+           <select
+             id="itemsPerPage"
+             value={itemsPerPage}
+             onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
+             className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
+           >
+             <option value={10}>10</option>
+             <option value={25}>25</option>
+             <option value={50}>50</option>
+             <option value={100}>100</option>
+             <option value={250}>250</option>
+             <option value={500}>500</option>
+             <option value={1000}>1000</option>
+           </select>
+           <span className="text-gray-500">entries</span>
+         </div>
+       </div>
       )}
     </div>
   )
