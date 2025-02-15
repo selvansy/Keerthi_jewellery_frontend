@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import Table from '../../common/Table'
+import Table from '../../common/Table' 
 import { setid } from "../../../../redux/clientFormSlice"
 import { useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
@@ -13,6 +13,8 @@ import { SlidersHorizontal, Search, X } from 'lucide-react'
 import { CalendarDays, RefreshCcw } from 'lucide-react'
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
+import { useDebounce } from '../../../hooks/useDebounce';
+import usePagination from '../../../hooks/usePagination'
 
 const MetalRate = () => {
 
@@ -26,22 +28,25 @@ const MetalRate = () => {
   const branchId = roledata?.id_branch;
 
   useEffect(() => {
-   
+
     if (id_branch === "0" && admin === 2) {
       getallbranchmuate();
     }
-    }, [id_branch])
+  }, [id_branch])
 
-  const [isLoading,setisLoading] = useState(true)
-  const [schemeType,setMetalRate]=useState([])
-  const [search,setSearch]=useState('')
+  const [isLoading, setisLoading] = useState(true)
+  const [schemeType, setMetalRate] = useState([])
+  const [search, setSearch] = useState('')
+  const debouncedSearch = useDebounce(search, 600)
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(10);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [filtered, SetFiltered] = useState(false)
+  
 
   const [activeDropdown, setActiveDropdown] = useState(null)
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
-  
+
   const [branchList, setBranchList] = useState([]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [from_date, setFromdate] = useState("");
@@ -49,35 +54,97 @@ const MetalRate = () => {
   const [filters, setFilters] = React.useState({
     from_date: "",
     to_date: "",
-    search: "",
+    search: debouncedSearch,
     limit: itemsPerPage,
-    id_branch: id_branch,
+    id_branch: branchId,
     type: "",
   });
+
+
+
+  const handlePageChange = (page) => {
+
+    const pageNumber = Number(page);
+      if (!pageNumber || isNaN(pageNumber) || pageNumber < 1 || pageNumber > totalPages) {
+        return;
+      }
+   
+      setCurrentPage(pageNumber);
+    
+  };
+
+
+    const nextPage = () => {
+      setCurrentPage((prevPage) => (prevPage < totalPages ? prevPage + 1 : prevPage));
+    };
+  
+    const prevPage = () => {
+      setCurrentPage((prevPage) => (prevPage > 1 ? prevPage - 1 : prevPage));
+    };
+  
+
+  const paginationData = {totalItems:totalPages,currentPage:currentPage,itemsPerPage:itemsPerPage,handlePageChange:handlePageChange}
+  const paginationButtons = usePagination(paginationData)
+  
+  useEffect(() => {
+  
+    const payload ={ search: debouncedSearch, page: currentPage, limit: itemsPerPage, from_date: '', to_date: '', id_branch: branchId };
+    getmetalratetablemutate(payload)
+   
+  }, [currentPage, itemsPerPage,debouncedSearch])
+
+  
+    useEffect(() => {
+      eventEmitter.on('CONFIRMATION_SUBMIT',  async(data) => {
+        try {
+          deleteMetalRate(data.metalId);
+        } catch (error) {
+          console.error('Error:', error);
+        }
+      });
+      return () => {
+        eventEmitter.off('CONFIRMATION_SUBMIT');
+      };
+    }, [eventEmitter]);
+  
 
   const handleReset = () => {
     setFromdate("");
     setTodate("");
+    SetFiltered(false)
     toast.success("Filter is cleared");
-    getmetalratetablemutate({ search: search, page: currentPage, limit: itemsPerPage, from_date: '', to_date: '', id_branch: '' })
+    getmetalratetablemutate({ 
+      search: debouncedSearch,
+       page: currentPage, 
+       limit: itemsPerPage, 
+       from_date: '', 
+       to_date: '', 
+       id_branch: branchId })
   }
 
-    // mutation functions
-    const { mutate: getallbranchmuate } = useMutation({
-      mutationFn: getallbranch,
-      onSuccess: (response) => {
-        setBranchList(response.data);
-      },
-      onError: (error) => {
-        console.error("Error:", error);
-      },
-    });
-  
+  // mutation functions
+  const { mutate: getallbranchmuate } = useMutation({
+    mutationFn: getallbranch,
+    onSuccess: (response) => {
+      setBranchList(response.data);
+    },
+    onError: (error) => {
+      console.error("Error:", error);
+    },
+  });
+
 
   const applyfilterdatatable = (e) => {
     e.preventDefault();
     setIsFilterOpen(false)
-    getmetalratetablemutate({ search: search, page: currentPage, limit: itemsPerPage, from_date: from_date, to_date: to_date, id_branch: filters.id_branch })
+    SetFiltered(true)
+    getmetalratetablemutate({ 
+      search: debouncedSearch, 
+        page: currentPage,
+       limit: itemsPerPage,
+        from_date: from_date, 
+        to_date: to_date, 
+        id_branch: filters.id_branch })
 
   };
 
@@ -88,12 +155,13 @@ const MetalRate = () => {
 
 
   //mutation to get scheme type 
-  const {mutate: getmetalratetablemutate } = useMutation({
-    mutationFn: (payload)=> getmetalratetable(payload),
+  const { mutate: getmetalratetablemutate } = useMutation({
+    mutationFn: (payload) => getmetalratetable(payload),
     onSuccess: (response) => {
-   
+     if(response){
       setMetalRate(response.data)
       setTotalPages(response.totalPages)
+     }
       setisLoading(false)
     },
     onError: (error) => {
@@ -102,16 +170,7 @@ const MetalRate = () => {
     }
   });
 
-
-
-  useEffect(() => {
-    setMetalRate([]);
-    getmetalratetablemutate({ search: search, page: currentPage, limit: itemsPerPage, from_date: '', to_date: '', id_branch: '' })
-  }, [currentPage, itemsPerPage, search])
-
-
-
-
+ 
   const handleSearch = (e) => {
     setSearch(e.target.value)
   }
@@ -122,55 +181,73 @@ const MetalRate = () => {
   }
 
 
-  const handleClickfilter = (e) => {
-    getallbranchmutate();
+  const handleClickfilter = () => {
     setIsFilterOpen(true);
+   if(id_branch === "0" && isFilterOpen === true){
+    getallbranchmuate();
+   }
+   
   }
 
   const handleEdit = (id) => {
-    dispatch(setid(id))
-    navigate("/ourscheme/createmetalrate")
+    navigate(`/ourscheme/createmetalrate/${id}`)
   };
 
-  const handleDelete = (id) => {
+
+   const handleDelete = (id) => {
     setActiveDropdown(null);
-    dispatch(openModal({
-      modalType: 'CONFIRMATION',
-      header: 'Delete Scheme',
-      formData: {
-        message: 'Are you sure you want to delete this Scheme?',
-        schemeId: id
-      },
-      buttons: {
-        cancel: {
-          text: 'Cancel'
+    console.log("DeleteId",id)
+        
+        dispatch(openModal({
+          modalType: 'CONFIRMATION',
+          header: 'Delete Scheme',
+          formData: {
+            message: 'Are you sure you want to delete?',
+            metalId: id
+          },
+          buttons: {
+            cancel: {
+              text: 'Cancel'
+            },
+            submit: {
+              text: 'Delete'
+            }
+          }
+        }))
+      };
+    
+    
+      const { mutate: deleteMetalRate } = useMutation({
+        mutationFn: (payload)=> deletemetalrate(payload),
+        onSuccess: (response) => {
+         if(response){
+      
+          const payload = {
+            search: debouncedSearch,
+             page: currentPage, 
+             limit: itemsPerPage,
+             from_date: '', 
+             to_date: '', 
+             id_branch: branchId 
+          }
+          getmetalratetablemutate(payload)
+          toast.success(response.message);
+         }
+       
+         eventEmitter.off('CONFIRMATION_SUBMIT');
         },
-        submit: {
-          text: 'Delete'
-        }
-      }
-    }));
-
-  };
-
-  useEffect(() => {
-    eventEmitter.on('CONFIRMATION_SUBMIT', async (data) => {
-      try {
-
-        let response = await deletemetalrate(data.schemeId);
-        toast.success(response.message);
-        getmetalratetablemutate({ page: currentPage, limit: itemsPerPage, search: search, from_date: from_date, to_date: to_date, id_branch: filters.id_branch })
-      } catch (error) {
-        console.error('Error deleting giftitem:', error);
-      }
-    });
-    return () => {
-      eventEmitter.off('CONFIRMATION_SUBMIT');
-    };
-  }, [eventEmitter]);
-
-
-  const columns = [
+        onError: (error) => {
+          console.error("Error:", error);
+          eventEmitter.off('CONFIRMATION_SUBMIT');
+        },
+      });
+    
+     const columns = [
+  
+    {
+      header: 'S.No',
+      cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
+    },
     {
       header: 'Actions',
       cell: (row, rowIndex) => (
@@ -193,8 +270,6 @@ const MetalRate = () => {
               style={{
                 top: rowIndex >= schemeType.length - 2 ? 'auto' : '72%',
                 bottom: rowIndex >= schemeType.length - 2 ? '-74%' : 'auto',
-                // top: 'auto',
-                // bottom: '-440%',
                 zIndex: 9999,
                 marginBottom: '8px',
                 filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.15))'
@@ -217,8 +292,8 @@ const MetalRate = () => {
                   <button
                     className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
                     onClick={() => {
-                      handleDelete(row?._id);
-                      setActiveDropdown(null);
+                      handleDelete(row._id);
+                   
                     }}
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -244,14 +319,10 @@ const MetalRate = () => {
 
     },
     {
-      header: 'S.No',
-      cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
-    },
-    {
       header: "Update Date",
       cell: (row) => {
         const date = new Date(row?.createdAt);
-        return date.toLocaleDateString('en-GB'); // 'en-GB' gives the d-m-Y format
+        return date.toLocaleDateString('en-GB'); 
       }
     },
     {
@@ -289,18 +360,7 @@ const MetalRate = () => {
 
   ];
 
-  const paginationButtons = [];
-  for (let i = 1; i <= totalPages; i++) {
-    paginationButtons.push(
-      <button
-        key={i}
-        onClick={() => handlePageChange(i)}
-        className={`p-2 w-10 h-10 rounded-md ${currentPage === i ? ' text-white' : 'bg-gray-300 text-gray-900'}`}
-        style={{ backgroundColor: layout_color }} >
-        {i}
-      </button>
-    );
-  }
+
 
   const handleItemsPerPageChange = (value) => {
 
@@ -308,24 +368,13 @@ const MetalRate = () => {
     setCurrentPage(1);
   };
 
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
+  
 
   return (
     <div className="flex flex-col p-4">
       <h2 className="text-2xl text-gray-900 font-bold">Metal Rate</h2>
       <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
-        <div className="relative w-full lg:w-1/3 min-w-[200px]">
-          <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-            <Search className="text-gray-500" />
-          </div>
-          <input
-            placeholder="Search..."
-            className="p-3 pl-10 pr-3 border-2 bg-[#F5F5F5] border-gray-500 rounded-md w-full"
-            onChange={handleSearch}
-          />
-        </div>
+        
         <div className="flex flex-row items-center justify-end gap-2">
           <button
             type="button"
@@ -334,22 +383,33 @@ const MetalRate = () => {
             style={{ backgroundColor: layout_color }} >
             + Create metalrate
           </button>
-          <button
-            id="filter"
-            className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
-            onClick={() => handleReset()}
-            style={{ backgroundColor: layout_color }}>
-            <RefreshCcw size={20} />
-          </button>
-          <button
-            id="filter"
-            className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
-            onClick={(e) => {
-              handleClickfilter(e);
-            }}
-            style={{ backgroundColor: layout_color }}>
-            <SlidersHorizontal size={20} />
-          </button>
+
+          {
+            filtered ?
+              <>
+                <button
+                  id="filter"
+                  className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
+                  onClick={() => handleReset()}
+                  style={{ backgroundColor: layout_color }}>
+                  <RefreshCcw size={20} />
+                </button>
+              </>
+              :
+              <>
+
+                <button
+                  id="filter"
+                  className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
+                  onClick={(e) => {
+                    handleClickfilter(e);
+                  }}
+                  style={{ backgroundColor: layout_color }}>
+                  <SlidersHorizontal size={20} />
+                </button>
+              </>
+
+          }
 
         </div>
       </div>
@@ -480,62 +540,64 @@ const MetalRate = () => {
         />
       )}
       <div className="mt-4">
-        <Table 
-        data={schemeType}
-        columns={columns}
-        isLoading={isLoading}
+        <Table
+          data={schemeType}
+          columns={columns}
+          isLoading={isLoading}
         />
       </div>
-      {schemeType.length > 0 && (
-        <div className="flex justify-between mt-4 p-2">
-          <div className="flex flex-row items-center justify-center gap-2">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-                className="p-2 text-gray-500 rounded-md"
-              >
-                Previous
-              </button>
-            </div>
-
-            <div className="flex flex-row items-center justify-center gap-2">
-              {paginationButtons}
-            </div>
-
-            <div className="flex items-center">
-              <button
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                className="p-2 text-gray-500 rounded-md"
-              >
-                Next
-              </button>
-            </div>
-          </div>
-
-          <div className="mt-4 flex gap-2 justify-center items-center">
-            <span className="text-gray-500">Show</span>
-            <select
-              id="itemsPerPage"
-              value={itemsPerPage}
-              onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
-              className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
+      {
+        (schemeType.length) > 0 &&
+      
+      <div className="flex justify-between mt-4 p-2">
+        <div className={`flex flex-row items-center justify-center gap-2  `}>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={prevPage}
+              disabled={currentPage === 1}
+             
+              className={`p-2 text-gray-500 rounded-md ${currentPage === 1 ? "cursor-not-allowed" : "cursor-pointer"} `}
             >
-              <option value={10}>10</option>
-              <option value={25}>25</option>
-              <option value={50}>50</option>
-              <option value={100}>100</option>
-              <option value={250}>250</option>
-              <option value={500}>500</option>
-              <option value={1000}>1000</option>
-            </select>
-            <span className="text-gray-500">entries</span>
+              Previous
+            </button>
           </div>
 
-          <Modal />
+          <div className="flex flex-row items-center justify-center gap-2">
+            {paginationButtons}
+          </div>
+
+          <div className="flex items-center">
+            <button
+              onClick={nextPage}
+              disabled={currentPage === totalPages}
+              
+              className={`p-2 text-gray-500 rounded-md  ${currentPage === totalPages ? "cursor-not-allowed" : "cursor-pointer"}`}
+            >
+              Next
+            </button>
+          </div>
         </div>
-      )}
+
+        <div className="mt-4 flex gap-2 justify-center items-center">
+          <span className="text-gray-500">Show</span>
+          <select
+            id="itemsPerPage"
+            value={itemsPerPage}
+            onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
+            className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
+          >
+            <option value={10}>10</option>
+            <option value={25}>25</option>
+            <option value={50}>50</option>
+            <option value={100}>100</option>
+            <option value={250}>250</option>
+            <option value={500}>500</option>
+            <option value={1000}>1000</option>
+          </select>
+          <span className="text-gray-500">entries</span>
+        </div>
+      </div>
+}
     </div>
   )
 }

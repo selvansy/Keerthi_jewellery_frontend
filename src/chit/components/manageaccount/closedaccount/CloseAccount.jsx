@@ -15,6 +15,7 @@ import { eventEmitter } from '../../../../utils/EventEmitter';
 import { useDispatch, useSelector } from 'react-redux';
 import Modal from '../../common/Modal';
 import { useDebounce } from '../../../hooks/useDebounce';
+import usePagination from '../../../hooks/usePagination'
 
 const CloaseAccount = () => {
 
@@ -23,9 +24,11 @@ const CloaseAccount = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate()
 
-  const [isLoading,setisLoading] = useState(true)
+  const [isLoading, setisLoading] = useState(true)
 
   const [search, setSearch] = useState('')
+
+  const debouncedSearch = useDebounce(search, 600)
   const [schemeaccount, setschemeaccount] = useState([])
   const [schaccExp, setschaccExp] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -33,6 +36,8 @@ const CloaseAccount = () => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedRow, setSelectedRow] = useState(null)
   const [activeDropdown, setActiveDropdown] = useState(null)
+  const [filtered, SetFiltered] = useState(false)
+
   const [isFilterOpen, setIsFilterOpen] = React.useState(false);
   const [from_date, setFromdate] = useState('');
   const [to_date, setTodate] = useState('');
@@ -66,6 +71,29 @@ const CloaseAccount = () => {
     scheme_type: ''
   });
 
+  const handlePageChange = (page) => {
+
+    const pageNumber = Number(page);
+      if (!pageNumber || isNaN(pageNumber) || pageNumber < 1 || pageNumber > totalPages) {
+        return;
+      }
+   
+      setCurrentPage(pageNumber);
+    
+  };
+
+
+    const nextPage = () => {
+      setCurrentPage((prevPage) => (prevPage < totalPages ? prevPage + 1 : prevPage));
+    };
+  
+    const prevPage = () => {
+      setCurrentPage((prevPage) => (prevPage > 1 ? prevPage - 1 : prevPage));
+    };
+  
+
+  const paginationData = {totalItems:totalPages,currentPage:currentPage,itemsPerPage:itemsPerPage,handlePageChange:handlePageChange}
+  const paginationButtons = usePagination(paginationData)
 
   const handleReset = (e) => {
     setFromdate("");
@@ -80,12 +108,13 @@ const CloaseAccount = () => {
       id_scheme: '',
       scheme_type: ''
     }));
+    SetFiltered(false)
     toast.success("Filter is cleared");
     getschemeaccountMutate({
       page: currentPage,
       limit: itemsPerPage,
       added_by: '',
-      search: "",
+      search: debouncedSearch,
       scheme_status: "",
       id_branch: id_branch,
       type: 'close',
@@ -97,8 +126,8 @@ const CloaseAccount = () => {
 
   }
 
-  
- 
+
+
   const handleClickfilter = (e) => {
     getallbranchMutate();
     handleAddedtypeChange();
@@ -193,9 +222,9 @@ const CloaseAccount = () => {
       from_date: from_date,
       to_date: to_date,
       limit: itemsPerPage,
-      search: search,
+      search: debouncedSearch,
       added_by: filters.added_by,
-      type:"close",
+      type: "close",
       scheme_status: filters.scheme_status,
       id_classification: filters.id_classification,
       collectionuserid: filters.collectionuserid,
@@ -204,14 +233,14 @@ const CloaseAccount = () => {
       scheme_type: filters.scheme_type
     };
 
-
+    SetFiltered(true)
     setIsFilterOpen(false)
     getschemeaccountMutate(filterTosend);
 
-  }; 
- 
+  };
 
- 
+
+
   const { mutate: getallbranchMutate } = useMutation({
     mutationFn: getallbranch,
     onSuccess: (response) => {
@@ -226,7 +255,7 @@ const CloaseAccount = () => {
     if (!e.target.value) return;
     const response = await getallbranchclassification({ "id_branch": e.target.value });
     if (response) {
-    
+
       setClassify(response.data);
     }
   };
@@ -279,9 +308,9 @@ const CloaseAccount = () => {
 
   //mutation to get scheme type
   const { mutate: getschemeaccountMutate } = useMutation({
-    mutationFn: (payload)=> schemeaccounttable(payload),
+    mutationFn: (payload) => schemeaccounttable(payload),
     onSuccess: (response) => {
-   
+
       setschemeaccount(response.data)
       setTotalPages(response.totalPages);
       let arrayData = [];
@@ -302,11 +331,11 @@ const CloaseAccount = () => {
           });
         }
 
-     
-      }
 
-            setschaccExp(arrayData)
-            setisLoading(false)
+      } 
+
+      setschaccExp(arrayData)
+      setisLoading(false)
     },
     onError: (error) => {
       console.error('Error fetching countries:', error);
@@ -321,7 +350,7 @@ const CloaseAccount = () => {
       from_date: from_date,
       to_date: to_date,
       limit: itemsPerPage,
-      search: search,
+      search: debouncedSearch,
       added_by: filters.added_by,
       type: "close",
       scheme_status: filters.scheme_status,
@@ -333,28 +362,8 @@ const CloaseAccount = () => {
     };
 
     getschemeaccountMutate(filterTosend)
-  }, [currentPage, itemsPerPage, search])
+  }, [currentPage, itemsPerPage, debouncedSearch])
 
-  useEffect(() => {
-
-    const filterTosend = {
-      page: currentPage,
-      from_date: from_date,
-      to_date: to_date,
-      limit: itemsPerPage,
-      search: search,
-      added_by: filters.added_by,
-      type: "close",
-      scheme_status: filters.scheme_status,
-      id_classification: filters.id_classification,
-      collectionuserid: filters.collectionuserid,
-      id_scheme: filters.id_scheme,
-      id_branch: filters.id_branch,
-      scheme_type: filters.scheme_type
-    };
-
-    getschemeaccountMutate(filterTosend)
-  }, [])
 
 
   const handleSearch = (e) => {
@@ -382,45 +391,75 @@ const CloaseAccount = () => {
     let response = await changeschemeaccountStatus(id);
     if (response) {
       toast.success(response.message);
-      getschemeaccountMutate({ page: currentPage, limit: itemsPerPage, search: search })
+      getschemeaccountMutate({ page: currentPage, limit: itemsPerPage, search: debouncedSearch })
     }
   };
 
-  const handleDelete = async (id) => {
-    let response = await deleteschemeaccount(id);
-    if (response) {
-      toast.success(response.message);
-      getschemeaccountMutate({ page: currentPage, limit: itemsPerPage, search: search })
-    }
-  };
+
+   const handleDelete = (id) => {
+      setActiveDropdown(null);
+      dispatch(openModal({
+        modalType: 'CONFIRMATION',
+        header: 'Delete Scheme',
+        formData: {
+          message: 'Are you sure you want to delete?',
+          schemeId: id
+        },
+        buttons: {
+          cancel: {
+            text: 'Cancel'
+          },
+          submit: {
+            text: 'Delete'
+          }
+        }
+      }));
+  
+  
+    };
+  
+    //mutation to get purity type
+    const { mutate: deleteSchAcc } = useMutation({
+      mutationFn: (payload)=> deleteschemeaccount(payload),
+      onSuccess: (response) => {
+        toast.success(response.message);
+        getschemeaccountMutate({ page: currentPage, limit: itemsPerPage, search: debouncedSearch })
+        eventEmitter.off('CONFIRMATION_SUBMIT');
+      },
+      onError: (error) => {
+        console.error("Error:", error);
+      },
+    });
+  
+  
+    useEffect(() => {
+      eventEmitter.on('CONFIRMATION_SUBMIT', async (data) => {
+        try {
+          deleteSchAcc(data.schemeId);
+        } catch (error) {
+          console.error('Error:', error);
+        }
+      });
+      return () => {
+        eventEmitter.off('CONFIRMATION_SUBMIT');
+      };
+    }, [eventEmitter]);
 
   const handleEdit = (id) => {
     navigate(`/manageaccount/addschemeaccount/${id}`);
   };
 
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
-
-
   const handleItemsPerPageChange = (value) => {
     setItemsPerPage(value);
     setCurrentPage(1);
   };
-  const paginationButtons = [];
-  for (let i = 1; i <= totalPages; i++) {
-    paginationButtons.push(
-      <button
-        key={i}
-        onClick={() => handlePageChange(i)}
-        className={`p-2 w-10 h-10 rounded-md ${currentPage === i ? ' text-white' : 'bg-gray-300 text-gray-900'}`}
-        style={{ backgroundColor: layout_color }} >
-        {i}
-      </button>
-    );
-  }
 
+ 
   const columns = [
+    {
+      header: 'S.No',
+      cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
+    },
     {
       header: 'Actions',
       cell: (row, rowIndex) => (
@@ -437,7 +476,7 @@ const CloaseAccount = () => {
               <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
             </svg>
           </button>
-    
+
           {/* Use group-hover to show the dropdown on hover */}
           <div
             className={`absolute transform z-50 ${activeDropdown === row?._id ? '' : 'hidden'} `}
@@ -448,7 +487,7 @@ const CloaseAccount = () => {
           >
             <div className="w-32 rounded-md bg-white ring-1 ring-black ring-opacity-5">
               <div className="py-1">
-               
+
                 <button
                   className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
                   onClick={() => {
@@ -473,23 +512,19 @@ const CloaseAccount = () => {
                   Delete
                 </button>
                 <button
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                    onClick={() => setActiveDropdown(null)}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                    Cancel
-                  </button>
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                  onClick={() => setActiveDropdown(null)}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  Cancel
+                </button>
               </div>
             </div>
           </div>
         </div>
       ),
-    },
-    {
-      header: 'S.No',
-      cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
     },
     {
       header: 'Account Name',
@@ -548,7 +583,7 @@ const CloaseAccount = () => {
       header: "Maturity Date",
       cell: (row) => {
         const date = new Date(row?.maturity_date);
-        return date.toLocaleDateString('en-GB'); 
+        return date.toLocaleDateString('en-GB');
       }
     },
 
@@ -633,7 +668,7 @@ const CloaseAccount = () => {
           />
         </div>
         <div className="flex flex-row items-center justify-end gap-2">
-        <button
+          <button
             className="rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
             onClick={handleCloseClick}
             style={{ backgroundColor: layout_color }}
@@ -654,7 +689,7 @@ const CloaseAccount = () => {
               <span>Revert Account</span>
             </div>
           </button>
-       
+
 
           <div className="flex flex-row items-center justify-end gap-2">
 
@@ -662,25 +697,37 @@ const CloaseAccount = () => {
             <ExportToPDF apiData={schaccExp} fileName="scheme account" />
           </div>
 
-          <button
-            id="filter"
-            className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
-            onClick={() => handleReset()}
-            style={{ backgroundColor: layout_color }}
-          >
-            <RefreshCcw size={20} />
-          </button>
 
-          <button
-            id="filter"
-            className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
-            onClick={(e) => {
-              handleClickfilter(e);
-            }}
-            style={{ backgroundColor: layout_color }}
-          >
-            <SlidersHorizontal size={20} />
-          </button>
+
+
+
+          {
+            filtered ?
+              <>
+                <button
+                  id="filter"
+                  className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
+                  onClick={() => handleReset()}
+                  style={{ backgroundColor: layout_color }}
+                >
+                  <RefreshCcw size={20} />
+                </button>
+              </>
+              :
+              <>
+                <button
+                  id="filter"
+                  className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
+                  onClick={(e) => {
+                    handleClickfilter(e);
+                  }}
+                  style={{ backgroundColor: layout_color }}
+                >
+                  <SlidersHorizontal size={20} />
+                </button>
+              </>
+
+          }
 
         </div>
       </div>
@@ -915,52 +962,54 @@ const CloaseAccount = () => {
         />
       </div>
       {schemeaccount.length > 0 && (
-        <div className="flex justify-between mt-4 p-2">
-          <div className="flex flex-row items-center justify-center gap-2">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-                className="p-2 text-gray-500 rounded-md"
-              >
-                Previous
-              </button>
-            </div>
-
-            <div className="flex flex-row items-center justify-center gap-2">
-              {paginationButtons}
-            </div>
-
-            <div className="flex items-center">
-              <button
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                className="p-2 text-gray-500 rounded-md"
-              >
-                Next
-              </button>
-            </div>
-          </div>
-
-          <div className="mt-4 flex gap-2 justify-center items-center">
-            <span className="text-gray-500">Show</span>
-            <select
-              id="itemsPerPage"
-              value={itemsPerPage}
-              onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
-              className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
-            >
-              <option value={10}>10</option>
-              <option value={25}>25</option>
-              <option value={50}>50</option>
-              <option value={100}>100</option>
-              <option value={250}>250</option>
-              <option value={500}>500</option>
-              <option value={1000}>1000</option>
-            </select>
-            <span className="text-gray-500">entries</span>
-          </div>
-        </div>
+         <div className="flex justify-between mt-4 p-2">
+         <div className={`flex flex-row items-center justify-center gap-2  `}>
+           <div className="flex items-center gap-4">
+             <button
+               onClick={prevPage}
+               disabled={currentPage === 1}
+              
+               className={`p-2 text-gray-500 rounded-md ${currentPage === 1 ? "cursor-not-allowed" : "cursor-pointer"} `}
+             >
+               Previous
+             </button>
+           </div>
+   
+           <div className="flex flex-row items-center justify-center gap-2">
+             {paginationButtons}
+           </div>
+   
+           <div className="flex items-center">
+             <button
+               onClick={nextPage}
+               disabled={currentPage === totalPages}
+               
+               className={`p-2 text-gray-500 rounded-md  ${currentPage === totalPages ? "cursor-not-allowed" : "cursor-pointer"}`}
+             >
+               Next
+             </button>
+           </div>
+         </div>
+   
+         <div className="mt-4 flex gap-2 justify-center items-center">
+           <span className="text-gray-500">Show</span>
+           <select
+             id="itemsPerPage"
+             value={itemsPerPage}
+             onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
+             className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
+           >
+             <option value={10}>10</option>
+             <option value={25}>25</option>
+             <option value={50}>50</option>
+             <option value={100}>100</option>
+             <option value={250}>250</option>
+             <option value={500}>500</option>
+             <option value={1000}>1000</option>
+           </select>
+           <span className="text-gray-500">entries</span>
+         </div>
+       </div>
       )}
       <Modal />
     </div>

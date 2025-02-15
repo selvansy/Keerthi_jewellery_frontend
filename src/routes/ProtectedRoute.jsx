@@ -2,9 +2,11 @@ import { jwtDecode } from 'jwt-decode';
 
 import { Navigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { logout } from '../redux/authSlice';
+import { logout,SetMenu,SetsubMenu } from '../redux/authSlice';
 import { useEffect } from 'react';
 import { setRoleData } from '../redux/clientFormSlice';
+import { getactivemenuaccess } from "../chit/api/Endpoints"
+import { useMutation } from '@tanstack/react-query';
  
 const ProtectedRoute = ({ children }) => {
   const { info } = useSelector((state) => state.auth);
@@ -13,14 +15,66 @@ const ProtectedRoute = ({ children }) => {
   const storedToken = localStorage.getItem('token');
   const token = info || storedToken;
 
+ 
+
     const decoded = jwtDecode(info);
     let id = decoded.id_role._id;
 
       useEffect(() => {
         if(token){
+              // getAllMenusMutate(decoded.id_role._id);
           dispatch(setRoleData(decoded));
         }
       }, [token]);
+
+      
+  // const { mutate: getAllMenusMutate } = useMutation({
+  //   mutationFn: getactivemenuaccess,
+  //   onSuccess: (response) => {
+  //     dispatch(SetMenu(response.data)) 
+
+  //     if (response) {
+  //       let menuArray = [];
+  //       if (response.data.length > 0) {
+  //         response.data.forEach((menurow) => {
+  //           let submenuArray = [];
+  //           let menuItem = {
+  //             text: menurow?.menu_name,
+  //             hasSubmenu: true,
+  //           };
+
+  //           if (menurow?.menu_list.length > 0) {
+  //             menurow?.menu_list.forEach((submenurow) => {
+  //               submenuArray.push({
+  //                 text: submenurow?.submenu_name,
+  //                 action: () => handleClick(submenurow?.submenu_name),
+  //               });
+  //             });
+
+  //             // Attach the submenu array to the menu item
+  //             menuItem.submenu = submenuArray;
+        
+  //           }
+
+  //           // Add the menu item to the main menuArray
+  //           menuArray.push(menuItem);
+    
+          
+  //         });
+  //       }
+
+  //       menuArray.unshift(
+  //         {
+  //           text: "Dashboard",
+  //           hasSubmenu: false
+  //         }
+  //       )
+  //       setMenuData(menuArray);
+
+
+  //     }
+  //   },
+  // });
 
  
   const handleLogout = () => {

@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setScemeAccountId } from "../../../../redux/clientFormSlice"
 import { getschemeaccountbyid } from '../../../api/Endpoints'
 import Table from '../../common/Table'
+
 function Ledgerdetails({ setIsOpen }) {
  const layout_color = useSelector((state) => state.clientForm.layoutColor);
   let dispatch = useDispatch();
@@ -21,8 +22,6 @@ function Ledgerdetails({ setIsOpen }) {
     }
 
   }, [id])
-
-
 
 
   const getLedgerData = async (data) => {
