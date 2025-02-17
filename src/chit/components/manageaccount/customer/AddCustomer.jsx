@@ -12,6 +12,7 @@ import profileplaceholder from '../../../../assets/profileplaceholder.png'
 import { toast } from 'react-toastify';
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { useMobileNumber } from '../../../utils/commonFunction';
 
 const AddCustomer = () => {
 
@@ -65,6 +66,8 @@ const AddCustomer = () => {
 
   const [formErrors, setFormErrors] = useState({});
   const [customerData, setcustomerData] = useState(null);
+
+  const mobileProps = useMobileNumber();
 
   
    
@@ -645,21 +648,23 @@ const AddCustomer = () => {
               </div>
               <div className='flex flex-col'>
                 <label className='text-gray-700 mb-1 font-medium'>Mobile<span className='text-red-400'>*</span></label>
-                <input
-                  type='number'
+               
+                 <input
+                  type='text'
+                  {...mobileProps}
                   name='mobile'
                   value={formData.mobile}
                   onChange={handleInputChange}
                   onWheel={handleWheel}
-                  onKeyDown={(e) => {
-                    if (e.key === 'ArrowUp' ||
-                      e.key === 'ArrowDown' ||
-                      e.key === 'e' ||
-                      e.key === 'E' ||
-                      e.key === '-') {
-                      e.preventDefault();
-                    }
-                  }}
+                  // onKeyDown={(e) => {
+                  //   if (e.key === 'ArrowUp' ||
+                  //     e.key === 'ArrowDown' ||
+                  //     e.key === 'e' ||
+                  //     e.key === 'E' ||
+                  //     e.key === '-') {
+                  //     e.preventDefault();
+                  //   }
+                  // }}
                   className='border-2 border-gray-300 rounded-md p-3 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
                   placeholder='Enter Mobile Number'
                   maxLength="10"
