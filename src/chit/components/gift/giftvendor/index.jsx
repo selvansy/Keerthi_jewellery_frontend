@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Table from '../../common/Table';
 import { Search } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { getallgiftvendor, getallbranch, getAllgiftvendors, changegiftvendorStatus, deletegiftvendor, getgiftvendorById, updategiftvendor, addgiftvendor } from '../../../api/Endpoints';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
@@ -13,6 +13,8 @@ import Modal from '../../../components/common/Modal';
 import { useDebounce } from '../../../hooks/useDebounce';
 import { setid } from "../../../../redux/clientFormSlice"
 import GiftVendorForm from "./GiftVendorForm"
+import Loading from '../../common/Loading';
+import usePagination from '../../../hooks/usePagination'
 
 
 const Giftvendor = () => {
@@ -22,39 +24,67 @@ const Giftvendor = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [giftvendorData, setgiftvendorData] = useState([]);
-   const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedRow, setSelectedRow] = useState(null)
   const [totalPages, setTotalPages] = useState(0);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [isviewOpen, setIsviewOpen] = useState(false);
-  const [isLoading,setisLoading] = useState(true)
+  const [isLoading, setisLoading] = useState(true)
+  const [id,setId] = useState("")
 
   function closeIncommingModal() {
     setIsviewOpen(false);
   }
 
   const [searchInput, setSearchInput] = useState('')
-
   const debouncedSearch = useDebounce(searchInput, 500)
+
   const limit = 10;
 
-  const {  mutate: getAllgiftvendorsMutate } = useMutation({
-    mutationFn: (payload)=> getAllgiftvendors(payload),
+
+    const refetchTable = ()=>{
+      getAllgiftvendorsMutate({ search: debouncedSearch, page: currentPage, limit });
+    }
+
+
+  useEffect(() => {
+
+    eventEmitter.on('CONFIRMATION_SUBMIT', (data) => {
+      try {
+
+        deleteGiftVendor(data.giftvendorId);
+        eventEmitter.off('CONFIRMATION_SUBMIT');
+      } catch (error) {
+        eventEmitter.off('CONFIRMATION_SUBMIT');
+        console.error('Error:', error);
+      }
+    });
+
+    return () => {
+      eventEmitter.off('CONFIRMATION_SUBMIT');
+    };
+  }, []);
+
+  useEffect(() => {
+    getAllgiftvendorsMutate({ search: debouncedSearch, page: currentPage, limit });
+  }, [currentPage, debouncedSearch]);
+
+
+  const { mutate: getAllgiftvendorsMutate,refetch} = useMutation({
+    mutationFn: (payload) => getAllgiftvendors(payload),
     onSuccess: (response) => {
       if (response) {
         setgiftvendorData(response.data);
         setTotalPages(Math.ceil(response.data.total / limit));
-       
+
       }
       setisLoading(false)
     },
-    onError:()=>{
-        setisLoading(false)
+    onError: () => {
+      setisLoading(false)
     }
   });
-
-
 
 
   const handleStatusToggle = async (id, currentStatus) => {
@@ -74,25 +104,9 @@ const Giftvendor = () => {
     }
   };
 
-  useEffect(() => {
-    getAllgiftvendorsMutate({ search: debouncedSearch, page: currentPage, limit });
-  }, []);
-
-
-  useEffect(() => {
-    getAllgiftvendorsMutate({ search: debouncedSearch, page: currentPage, limit });
-  }, [currentPage, debouncedSearch]);
-
-
-
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
-
   const handleEdit = (id) => {
-    dispatch(setid(id))
     setIsviewOpen(true)
-
+    setId(id)
   };
 
   const handleAddgiftvendor = () => {
@@ -115,47 +129,51 @@ const Giftvendor = () => {
           text: 'Delete'
         }
       }
-    }));
-
-    eventEmitter.on('CONFIRMATION_SUBMIT', async (data) => {
-      try {
-        console.log(data);
-        let response = await deletegiftvendor(data.giftvendorId);
-        toast.success(response.message);
-        getAllgiftvendorsMutate({ page: currentPage, limit });
-      } catch (error) {
-        console.error('Error deleting gift vendor:', error);
-      }
-    });
+    }))
   };
 
-
+  const { mutate: deleteGiftVendor } = useMutation({
+    mutationFn: (id)=> deletegiftvendor(id),
+    onSuccess: (response, deletedId) => {
+    const deletedData = giftvendorData.filter(e => e._id !== deletedId)
+    setgiftvendorData(deletedData)
+      toast.success(response.message);
+      eventEmitter.off('CONFIRMATION_SUBMIT');
+    },
+    onError: (error) => {
+      console.error("Error:", error);
+    },
+  });
 
 
   const handleItemsPerPageChange = (value) => {
     setItemsPerPage(value);
     setCurrentPage(1);
   };
-  const paginationButtons = [];
-  for (let i = 1; i <= totalPages; i++) {
-    paginationButtons.push(
-      <button
-        key={i}
-        onClick={() => handlePageChange(i)}
-        className={`p-2 w-10 h-10 rounded-md  ${currentPage === i ? ' text-white' : 'text-slate-400'}`}
-        style={{ backgroundColor: layout_color }} >
-        {i}
-      </button>
-    );
-  }
+
+  const handlePageChange = (page) => {
+
+    const pageNumber = Number(page);
+      if (!pageNumber || isNaN(pageNumber) || pageNumber < 1 || pageNumber > totalPages) {
+        return;
+      }
+      setCurrentPage(pageNumber);
+    
+  };
 
 
-
-  useEffect(() => {
-    return () => {
-      eventEmitter.off('CONFIRMATION_SUBMIT');
+    const nextPage = () => {
+      setCurrentPage((prevPage) => (prevPage < totalPages ? prevPage + 1 : prevPage));
     };
-  }, []);
+  
+    const prevPage = () => {
+      setCurrentPage((prevPage) => (prevPage > 1 ? prevPage - 1 : prevPage));
+    };
+  
+
+  const paginationData = {totalItems:totalPages,currentPage:currentPage,itemsPerPage:itemsPerPage,handlePageChange:handlePageChange}
+  const paginationButtons = usePagination(paginationData)
+
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -170,6 +188,11 @@ const Giftvendor = () => {
 
 
   const columns = [
+
+    {
+      header: 'S.No',
+      cell: (_, index) => index + 1 + (currentPage - 1) * limit,
+    },
     {
       header: 'Actions',
       cell: (row, rowIndex) => (
@@ -181,6 +204,7 @@ const Giftvendor = () => {
               setSelectedRow(row?._id);
               setActiveDropdown(activeDropdown === row?._id ? null : row?._id);
             }}
+
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
               <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
@@ -192,7 +216,7 @@ const Giftvendor = () => {
               className="absolute"
               style={{
                 top: rowIndex >= giftvendorData.length - 2 ? 'auto' : '72%',
-                bottom: rowIndex >= giftvendorData.length - 2 ? '-74%' : 'auto',
+                bottom: rowIndex >= giftvendorData.length - 2 ? '-202%' : 'auto',
                 zIndex: 9999,
                 marginBottom: '8px',
                 filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.15))'
@@ -241,18 +265,14 @@ const Giftvendor = () => {
       ),
 
     },
-    
-    {
-      header: 'S.No',
-      cell: (_, index) => index + 1 + (currentPage - 1) * limit,
-    },
     {
       header: 'Vendor Name',
       accessor: 'vendor_name',
+      cell: (row) => row?.vendor_name || 'N/A',
     },
     {
       header: 'Mobile',
-      cell: (row) => row?.mobile || 'N/A',
+      cell: (row) => row?.id_branch?.mobile || 'N/A',
     },
     {
       header: 'Address',
@@ -282,7 +302,7 @@ const Giftvendor = () => {
         </label>
       )
     }
-    
+
   ];
 
   const handleSearch = (e) => {
@@ -292,7 +312,7 @@ const Giftvendor = () => {
   return (
     <div className="flex flex-col p-4 relative">
       {isLoading ? (
-        <div>Loading...</div>
+        <div className='flex justify-center items-center mt-[150px]'><Loading /></div>
       ) : (
         <>
           <h2 className="text-2xl text-gray-900 font-bold">Gift Vendor</h2>
@@ -331,65 +351,68 @@ const Giftvendor = () => {
 
           {giftvendorData.length > 0 && (
             <div className="flex justify-between mt-4 p-2">
-              <div className="flex flex-row items-center justify-center gap-2">
-                <div className="flex items-center gap-4">
-                  <button
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    disabled={currentPage === 1}
-                    className="p-2 text-gray-500 rounded-md"
-                  >
-                    Previous
-                  </button>
-                </div>
-
-                <div className="flex flex-row items-center justify-center gap-2">
-                  {paginationButtons}
-                </div>
-
-                <div className="flex items-center">
-                  <button
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    disabled={currentPage === totalPages}
-                    className="p-2 text-gray-500 rounded-md"
-                  >
-                    Next
-                  </button>
-                </div>
-              </div>
-
-              <div className="mt-4 flex gap-2 justify-center items-center">
-                <span className="text-gray-500">Show</span>
-                <select
-                  id="itemsPerPage"
-                  value={itemsPerPage}
-                  onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
-                  className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
+            <div className="flex flex-row items-center justify-center gap-2">
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={prevPage}
+                  disabled={currentPage === 1}
+                  className={`p-2 text-gray-500 rounded-md ${currentPage === 1 ? "cursor-not-allowed" : "cursor-pointer"}`}
                 >
-                  <option value={10}>10</option>
-                  <option value={25}>25</option>
-                  <option value={50}>50</option>
-                  <option value={100}>100</option>
-                  <option value={250}>250</option>
-                  <option value={500}>500</option>
-                  <option value={1000}>1000</option>
-                </select>
-                <span className="text-gray-500">entries</span>
+                  Previous
+                </button>
+              </div>
+    
+              <div className="flex flex-row items-center justify-center gap-2">
+                {paginationButtons}
+              </div>
+    
+              <div className="flex items-center">
+                <button
+                  onClick={nextPage}
+                  disabled={currentPage === totalPages}
+                  className={`p-2 text-gray-500 rounded-md ${currentPage === totalPages ? "cursor-not-allowed" : "cursor-pointer"}`}
+                >
+                  Next
+                </button>
               </div>
             </div>
+    
+            <div className="mt-4 flex gap-2 justify-center items-center">
+              <span className="text-gray-500">Show</span>
+              <select
+                id="itemsPerPage"
+                value={itemsPerPage}
+                onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
+                className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
+              >
+                 <option value={10}>10</option>
+                      <option value={25}>25</option>
+                      <option value={50}>50</option>
+                      <option value={100}>100</option>
+                      <option value={250}>250</option>
+                      <option value={500}>500</option>
+                      <option value={1000}>1000</option>
+              </select>
+              <span className="text-gray-500">entries</span>
+            </div>
+            <Modal/>
+          </div>
           )}
         </>
       )}
       <ModelOne
-        title={"Add Gift Vendor"}
+        title={id ? "Edit Gift Vendor" : "Add Gift Vendor"}
         extraClassName='max-w-[75%] '
         setIsOpen={setIsviewOpen}
         isOpen={isviewOpen}
         closeModal={closeIncommingModal}
-
       >
         <GiftVendorForm
+          isviewOpen={isviewOpen}
           setIsOpen={setIsviewOpen}
-
+          id={id}
+          setId={setId}
+          refetchTable={refetchTable}
         />
       </ModelOne>
       <Modal />

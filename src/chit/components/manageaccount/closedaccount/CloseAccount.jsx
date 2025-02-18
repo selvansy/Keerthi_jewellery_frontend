@@ -427,6 +427,7 @@ const CloaseAccount = () => {
         eventEmitter.off('CONFIRMATION_SUBMIT');
       },
       onError: (error) => {
+        eventEmitter.off('CONFIRMATION_SUBMIT');
         console.error("Error:", error);
       },
     });
@@ -443,7 +444,7 @@ const CloaseAccount = () => {
       return () => {
         eventEmitter.off('CONFIRMATION_SUBMIT');
       };
-    }, [eventEmitter]);
+    }, []);
 
   const handleEdit = (id) => {
     navigate(`/manageaccount/addschemeaccount/${id}`);

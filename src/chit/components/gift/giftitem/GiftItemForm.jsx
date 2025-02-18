@@ -4,12 +4,15 @@ import { useMutation } from '@tanstack/react-query';
 import { useSelector, useDispatch } from 'react-redux';
 import { setid } from "../../../../redux/clientFormSlice";
 import { toast } from 'react-toastify';
+import { useNavigate, useParams } from 'react-router-dom';
+import SpinLoading from '../../common/SpinLoading';
 
-function GiftItemForm({ setIsOpen }) {
+function GiftItemForm({ setIsOpen,isviewOpen,id,setId,refetchTable  }) {
 
     
     const layout_color = useSelector((state) => state.clientForm.layoutColor);
-    const roledata = useSelector((state) => state.clientForm.roledata);
+
+    let navigate = useNavigate();
     const [branch, setBranch] = useState([]);
     const [vendorfilter, setVendor] = useState([]);
     const [gift_image, setGiftImage] = useState(null);
@@ -18,13 +21,13 @@ function GiftItemForm({ setIsOpen }) {
         gift_name: '',
         gift_image: '',
         gift_vendorid: '',
-        id_branch: '',
+        id_branch: '', 
     });
     const [errors, setErrors] = useState({});
     const [isLoading, setIsLoading] = useState(false);
     
     let dispatch = useDispatch();
-    const id = useSelector((state) => state.clientForm.id);
+
 
     const { mutate: getallbranchMutate } = useMutation({
         mutationFn: getallbranch,
@@ -48,9 +51,10 @@ function GiftItemForm({ setIsOpen }) {
         mutationFn: getgiftitemById,
         onSuccess: (response) => {
             if (response) {
+         
                 setFormData({
                     ...response.data,
-                    gift_image: response.data.gift_image,  // Assuming gift_image is part of the response
+                    gift_image: response.data.gift_image, 
                 });
                 getgiftvendorbranchByIdmuate({ id_branch: response.data.id_branch });
                 setGiftImage(response.data.gift_image);
@@ -59,13 +63,21 @@ function GiftItemForm({ setIsOpen }) {
         },
     });
 
+
+
     useEffect(() => {
-        getallbranchMutate();
-        if (id) {
+        
+        if (id &&(isviewOpen === true)) {
             getGiftitemId(id);
-          
         }
-    }, [id]);
+    }, [id,isviewOpen]);
+
+    useEffect(()=>{
+        getallbranchMutate()
+      return ()=>{
+        setId("")
+      }
+    },[])
 
     const validateForm = () => {
         const newErrors = {};
@@ -83,7 +95,7 @@ function GiftItemForm({ setIsOpen }) {
         });
         setErrors({
             ...response.data,
-            gift_image: response.data.gift_image,  // Assuming gift_image is part of the response
+            gift_image: response.data.gift_image,  
         });
     };
 
@@ -95,14 +107,16 @@ function GiftItemForm({ setIsOpen }) {
             id_branch: '',
         });
         setIsOpen(false);
-        dispatch(setid(null));
+      setId("")
     };
 
     const handlegiftImageChange = (e) => {
         const file = e.target.files[0];
-        console.log("fi--",file)
-        if (file) {
+
+        if (file && file.size <= (500*1024)) {
             setGiftImage(file);
+        }else{
+            toast.error("File size exceeded or no file found")
         }
     };
 
@@ -116,8 +130,9 @@ function GiftItemForm({ setIsOpen }) {
         e.preventDefault();
         const validationErrors = validateForm();
         setErrors(validationErrors);
-    
+     
         if (Object.keys(validationErrors).length === 0) {
+            setIsLoading(true)
             const formDataToSend = new FormData();
                 formDataToSend.append("gift_name", formData.gift_name);
                 if(gift_image  !=="" || gift_image  !==null){
@@ -126,10 +141,8 @@ function GiftItemForm({ setIsOpen }) {
                 formDataToSend.append("gift_vendorid", formData.gift_vendorid);
                 formDataToSend.append("id_branch", formData.id_branch);
             if(id){
-                
                 updategiftitemMutate({ id: id, data: formDataToSend });
-            } else {
-                console.log(gift_image)                
+            } else {               
                 addgiftitemMutate(formDataToSend);
             };
 
@@ -142,9 +155,10 @@ const { mutate: addgiftitemMutate } = useMutation({
     mutationFn: addgiftitem,
     onSuccess: (response) => {
         if (response) {
+            refetchTable()
             toast.success('Gift item added successfully');
-            setIsOpen(false); // Close the modal or form
-            dispatch(setid(null)); // Clear the form ID from redux state
+            setIsOpen(false); 
+             
         }
     },
     onError: (error) => {
@@ -157,9 +171,10 @@ const { mutate: updategiftitemMutate } = useMutation({
     mutationFn:({id,data}) =>updategiftitem(id,data),
     onSuccess: (response) => {
         if (response) {
+            refetchTable()
             toast.success('Gift item updated successfully');
             setIsOpen(false);
-            dispatch(setid(null));
+            setId("")
         }
     },
     onError: (error) => {
@@ -168,7 +183,7 @@ const { mutate: updategiftitemMutate } = useMutation({
 });
     return (
         <div>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form  className="space-y-4">
                 <div className="flex flex-col space-y-2">
                     <label className="font-medium text-gray-700">
                         Gift Item Name<span className="text-red-400">*</span>
@@ -289,13 +304,13 @@ const { mutate: updategiftitemMutate } = useMutation({
                             Cancel
                         </button>
                         <button
-                            type="submit"
-                            disabled={isLoading}
-                            className=" text-white rounded-md p-2 w-full lg:w-20" 
+                            type="button"
+                            onClick={(e)=>handleSubmit(e)}
+                            disabled={isLoading == true}
+                            className=" text-white rounded-md p-2 w-full lg:w-20"
                             style={{ backgroundColor: layout_color }} >
-                                        Submit
-                                    </button>
-                                
+                                {isLoading ? <SpinLoading/> : id ? 'Update' : 'Submit'}
+                        </button>
                             </div>
                         </div>
                     

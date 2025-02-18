@@ -38,8 +38,16 @@ const AddSchemeAccount = () => {
   const [ispayable, setIspayable] = useState(false);
   const [validamount, setValidAmount] = useState(0);
   const [isaccountno, setIsAccountNo] = useState(0);
+
+
+
   useEffect(() => {
-    console.log(id);
+    getallbranchMutate();
+  }, []);
+
+
+  useEffect(() => {
+
     if (id) {
       handleschemeaccountbyid({ id: id });
     }
@@ -47,7 +55,7 @@ const AddSchemeAccount = () => {
 
 
   const handleschemeaccountbyid = async (data) => {
-    console.log(data);
+  
     if (!data) return;
     const response = await getschemeaccountbyid(data);
     if (response) {
@@ -92,13 +100,15 @@ const AddSchemeAccount = () => {
       setMaturityMonth(response.data.id_scheme.maturity_month);
       setMaturityDate(response.data.id_scheme.maturity_date);
       setMobile(response.data.id_customer.mobile);
-      console.log(formData);
+    
       handleStartDateChange(response.data.start_date);
 
     } else {
       toast.error('Customer not created!');
     }
   };
+
+
   const [formData, setFormData] = React.useState({
     id_customer: '',
     mobile: '',
@@ -124,7 +134,7 @@ const AddSchemeAccount = () => {
   });
 
   const handleSearchmobile = () => {
-    console.log("hi");
+
     setSearchError('');
     if (mobile === "") { toast.error('Mobile Number is required!'); }
     handlesearchcustomer({ id_branch: formData.id_branch, search_mobile: mobile });
@@ -135,9 +145,6 @@ const AddSchemeAccount = () => {
     mutationFn: searchcustomermobile,
     onSuccess: (response) => {
       if (response) {
-        console.log(response);
-
-
         setFormData({
 
           id_customer: response.data._id,
@@ -202,28 +209,31 @@ const AddSchemeAccount = () => {
   const { mutate: getallbranchMutate } = useMutation({
     mutationFn: getallbranch,
     onSuccess: (response) => {
-      console.log('jut')
+   
       if (response) {
         setBranch(response.data);
       }
     },
   });
-  useEffect(() => {
-    getallbranchMutate();
-  }, []);
+
+
+  
 
   const filterInputchange = (e) => {
+
     const { name, value } = e.target;
+
     setFormData(prev => ({ ...prev, [name]: value }));
     if (formData.scheme_type !== 6) {
       setFormData(prev => ({ ...prev, amount: 0 }));
     }
-    console.log(name)
+
     if (name === "id_branch") {
+      console.log("IdBranch",value)
       if (value !== "") {
         handleClassifyChange(value);
         handleemployeebyBranch(value);
-        getemployeebybranch(value);
+        getemployeebybranch({id_branch:valuen});
 
       }
     }
@@ -231,7 +241,7 @@ const AddSchemeAccount = () => {
     if (name === "id_classification") {
       handleschemebyclassification(value);
     }
-    console.log(name);
+  
     if (name === 'id_scheme') {
       handleschemebyid(value);
     }
@@ -271,9 +281,6 @@ const AddSchemeAccount = () => {
         }));
       }
     }
-
-
-    isValidForm();
   };
 
 
@@ -493,14 +500,14 @@ const AddSchemeAccount = () => {
     <>
       <div className='flex flex-row justify-between'>
         <h2 className='text-2xl text-gray-900 font-bold justify-between'>{header}</h2>
-        {/* {header === 'Add Scheme Account' && ( */}
+        
         <button
           className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
           onClick={handleAddCustomer}
           style={{ backgroundColor: layout_color }} >
           + Add Customer
         </button>
-        {/* )} */}
+       
       </div>
       <div className='w-full flex flex-col bg-white pl-8 pr-8 pb-4 border-t-2 border-[#023453] mt-3 overflow-y-auto scrollbar-hide h-[calc(100vh-200px)]'>
 
@@ -511,7 +518,7 @@ const AddSchemeAccount = () => {
           <div className='flex flex-col'>
             <label className='text-black mb-1 font-normal'>Branch<span className='text-red-400'>*</span></label>
             <div className="relative">
-              <select name="id_branch" value={formData.id_branch} onChange={(e) => { filterInputchange(e); }} className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
+              <select name="id_branch" value={formData.id_branch} onChange={(e) => { filterInputchange(e)}} className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
                 <option value='' >--Select--</option>
                 {branchfilter.map((branch) => (
                   <option key={branch._id} value={branch._id}>{branch.branch_name}</option>
@@ -551,32 +558,35 @@ const AddSchemeAccount = () => {
 
         <form onSubmit={onSubmit} className='mt-5'>
 
-          <div className='lg:flex lg:flex-col lg:mt-2 md:flex md:flex-col md:mt-2 hidden'></div>
-          <div className='flex flex-col'>
+           <div className='grid grid-rows md:grid-cols-2 gap-3'>
+           <div className='flex flex-col'>
             <label className='text-black mb-1 font-normal'>Customer Name<span className='text-red-400'>*</span></label>
             <input
               disabled
               type='text'
               name='customer_name'
               value={formData.customer_name}
-              className='border-2 border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
-              placeholder=''
+              className='border-2 w-full order-gray-300 rounded-md p-2 pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
+              placeholder='Enter name'
             />
             <p style={{ color: "red" }}>{errors?.customer_name}</p>
           </div>
           <div className='flex flex-col'>
             <label className='text-black mb-1 font-normal'>Address</label>
+          
             <input
               disabled
               type='text'
               name='address'
               value={formData.address}
               className='border-2 border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
-              placeholder=''
+              placeholder='Enter address'
             />
           </div>
-
-          <h2 className='text-1xl font-bold mb-4 mt-4'>Scheme Account Details</h2>
+           </div>
+          
+          <div className="flex flex-col">
+          <h2 className='text-1xl font-bold mb-4 mt-2'>Scheme Account Details</h2>
           <div className='grid grid-rows-2 md:grid-cols-2 gap-5'>
 
             <div className='flex flex-col'>
@@ -589,13 +599,15 @@ const AddSchemeAccount = () => {
                   ))
                   }
                 </select>
-                <p style={{ color: "red" }}>{errors?.id_classification}</p>
+            
                 <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                  <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
-                    <path d="M19 9l-7 7-7-7"></path>
-                  </svg>
-                </div>
+                <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
+                  <path d="M19 9l-7 7-7-7"></path>
+                </svg>
               </div>
+           
+              </div>
+              <p style={{ color: "red" }}>{errors?.id_classification}</p>
             </div>
             <div className='flex flex-col'>
               <label className='text-black mb-1 font-normal'>Scheme<span className='text-red-400'>*</span></label>
@@ -612,13 +624,15 @@ const AddSchemeAccount = () => {
                   ))}
                 </select>
 
-                <p style={{ color: "red" }}>{errors?.id_scheme}</p>
+          
                 <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                  <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
-                    <path d="M19 9l-7 7-7-7"></path>
-                  </svg>
-                </div>
+                <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
+                  <path d="M19 9l-7 7-7-7"></path>
+                </svg>
               </div>
+           
+              </div>
+              <p style={{ color: "red" }}>{errors?.id_scheme}</p>
             </div>
             <div className='flex flex-col'>
               <label className='text-black mb-1 font-normal'>Maturity Month<span className='text-red-400'>*</span></label>
@@ -758,6 +772,8 @@ const AddSchemeAccount = () => {
               </div>
             </div>
           </div>
+          </div>
+          
 
           <div className='bg-white p-2 border-t-2 border-gray-300 mt-4'>
             <div className='flex justify-end gap-2 mt-3'>

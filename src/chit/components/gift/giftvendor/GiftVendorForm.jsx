@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { getgiftvendorById, getallbranch, addgiftvendor, updategiftvendor } from '../../../api/Endpoints'; 
+import { getgiftvendorById, getallbranch, addgiftvendor, updategiftvendor } from '../../../api/Endpoints';
 import { useMutation } from '@tanstack/react-query';
 import { useSelector, useDispatch } from 'react-redux';
-import { setid } from "../../../../redux/clientFormSlice";
+
 import { toast } from 'react-toastify';
+import { Navigate, useNavigate, useParams } from 'react-router-dom';
+import SpinLoading from '../../common/SpinLoading';
 
-function GiftVendorForm({ setIsOpen }) {
-    
+
+function GiftVendorForm({ setIsOpen, isviewOpen,id,refetchTable,setId}) {
+
     const layout_color = useSelector((state) => state.clientForm.layoutColor);
+    let navigate = useNavigate();
 
-    const roledata = useSelector((state) => state.clientForm.roledata);
     const [branch, setBranch] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [formData, setFormData] = useState({
@@ -21,8 +24,20 @@ function GiftVendorForm({ setIsOpen }) {
     });
     const [errors, setErrors] = useState({});
 
-    const dispatch = useDispatch();
-    const id = useSelector((state) => state.clientForm.id);
+   useEffect(() => {
+
+    if (id && (isviewOpen === true)) {
+        getgiftvendorId(id)
+    }
+
+}, [id,isviewOpen]);
+
+useEffect(()=>{
+    getallbranchMutate()
+  return ()=>{
+    setId("")
+  }
+},[])
 
     // Fetch all branches
     const { mutate: getallbranchMutate } = useMutation({
@@ -50,62 +65,84 @@ function GiftVendorForm({ setIsOpen }) {
         },
     });
 
-    // Create or update gift vendor
-    const { mutate: createOrupdategiftvendor } = useMutation({
-        mutationFn: (formData) => {
-            if (id) {
-                return updategiftvendor(id, formData); // Update vendor
-            } else {
-                return addgiftvendor(formData); // Add new vendor
-            }
-        },
-        onSuccess: () => {
-            toast.success(id ? 'Gift Vendor updated successfully!' : 'Gift Vendor created successfully!');
+  
+    const { mutate: createGiftVendorMutate } = useMutation({
+        mutationFn: (formData) => addgiftvendor(formData),
+        onSuccess: (response) => {
+            refetchTable()
+            toast.success(response.message);
             setIsOpen(false);
-            dispatch(setid(null)); // Reset form ID in Redux
+            setIsLoading(false)
         },
         onError: (error) => {
-            toast.error('An error occurred: ' + error.message);
+            toast.error("An error occurred: " + error.message);
         },
     });
+    
+    const { mutate: updateGiftVendorMutate } = useMutation({
+        mutationFn: (formData) => updategiftvendor(id, formData),
+        onSuccess: (response) => {
+            refetchTable()
+            toast.success(response.message);
+            setIsOpen(false);
+            setIsLoading(false)
+          
+        },
+        onError: (error) => {
+            toast.error("An error occurred: " + error.message);
+        },
+    });
+    
 
-    useEffect(() => {
-        getallbranchMutate();
-        if (id) {
-            getgiftvendorId(id);
-        }
-    }, [id]);
+ 
 
     // Handle input change
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value,
-        });
+    
+        // Prevent unnecessary re-renders
+        if (formData[name] === value) return;
+    
+        setFormData((prev) => ({
+            ...prev,
+            [name]: name === "mobile" ? value.replace(/\D/g, "").slice(0, 10) : value,
+        }));
     };
+    
 
     // Handle validation
     const validateForm = () => {
         const newErrors = {};
-        if (!formData.vendor_name) newErrors.vendor_name = 'Vendor name is required';  
+        if (!formData.vendor_name) newErrors.vendor_name = 'Vendor name is required';
         if (!formData.id_branch) newErrors.id_branch = 'Branch is required';
+   
         return newErrors;
     };
 
     // Handle form submit
     const handleSubmit = (e) => {
+        
         e.preventDefault();
+        
         const validationErrors = validateForm();
         setErrors(validationErrors);
-
-        if (Object.keys(validationErrors).length === 0) {
-            // Submit form if no validation errors
-            createOrupdategiftvendor(formData);
-        }
+    
+        if (Object.keys(validationErrors).length > 0) return;
+    
+        try {
+            setIsLoading(true);
+            if (id) {
+                updateGiftVendorMutate(formData);
+            } else {
+                createGiftVendorMutate(formData);
+            }
+            
+        } catch (error) {
+            console.error("Error submitting form:", error);
+        } 
+     
     };
 
-    // Handle cancel
     const handleCancel = () => {
         setFormData({
             vendor_name: '',
@@ -115,12 +152,11 @@ function GiftVendorForm({ setIsOpen }) {
             id_branch: '',
         });
         setIsOpen(false);
-        dispatch(setid(null)); // Reset form ID in Redux
     };
 
     return (
         <div>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form  className="space-y-4">
                 {/* Branch field */}
                 <div className="flex flex-col space-y-2">
                     <label className="font-medium text-gray-700">
@@ -130,7 +166,7 @@ function GiftVendorForm({ setIsOpen }) {
                         name="id_branch"
                         value={formData.id_branch}
                         onChange={handleChange}
-                        className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600"
                     >
                         <option value="">Select Branch</option>
                         {branch.map((branch) => (
@@ -153,7 +189,7 @@ function GiftVendorForm({ setIsOpen }) {
                         value={formData.vendor_name}
                         onChange={handleChange}
                         placeholder="Enter Gift Vendor Name"
-                        className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600"
                     />
                     {errors.vendor_name && <div className="text-red-500 text-sm">{errors.vendor_name}</div>}
                 </div>
@@ -163,32 +199,35 @@ function GiftVendorForm({ setIsOpen }) {
                     <label className="font-medium text-gray-700">
                         Address
                     </label>
-                    <input
-                        type="text"
+                    <textarea
                         name="address"
                         value={formData.address}
                         onChange={handleChange}
                         placeholder="Enter Address"
-                        className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600"
                     />
-               
+                    
                 </div>
 
-                {/* Mobile field */}
+
                 <div className="flex flex-col space-y-2">
                     <label className="font-medium text-gray-700">
-                        Mobile
-                    </label>
+                        Mobile<span className='text-red-400'>*</span></label>
                     <input
-                        type="text"
-                        name="mobile"
+                       type='tel'
+                        name='mobile'
                         value={formData.mobile}
+                        onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '')} 
                         onChange={handleChange}
+                        pattern="\d{10}"
                         placeholder="Enter Mobile"
-                        className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600"
+                        maxLength="10"
                     />
-          
+                    {errors.mobile && <span className="text-red-500 text-sm mt-1">{errors.mobile}</span>}
                 </div>
+
+
 
                 {/* GST Number field */}
                 <div className="flex flex-col space-y-2">
@@ -201,9 +240,10 @@ function GiftVendorForm({ setIsOpen }) {
                         value={formData.gst}
                         onChange={handleChange}
                         placeholder="Enter GST Number"
-                        className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600"
+                        maxLength={"15"}
                     />
-               
+
                 </div>
 
                 {/* Submit/Cancel buttons */}
@@ -217,11 +257,12 @@ function GiftVendorForm({ setIsOpen }) {
                             Cancel
                         </button>
                         <button
-                            type="submit"
-                            disabled={isLoading}
+                            type="button"
+                            onClick={(e)=>handleSubmit(e)}
+                            disabled={isLoading == true}
                             className=" text-white rounded-md p-2 w-full lg:w-20"
                             style={{ backgroundColor: layout_color }} >
-                            {id ? 'Update' : 'Submit'}
+                                {isLoading ? <SpinLoading/> : id ? 'Update' : 'Submit'}
                         </button>
                     </div>
                 </div>

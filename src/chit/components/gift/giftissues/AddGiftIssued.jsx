@@ -620,7 +620,7 @@ const AddGiftIssued = () => {
                     md:right-[-20%]
                     md:rounded-lg
                     lg:rounded-lg
-                    lg:right-[-12%]
+                    lg:right-[-12%] 
                     cursor-pointer
                     " 
                     style={{ backgroundColor: layout_color }}>
