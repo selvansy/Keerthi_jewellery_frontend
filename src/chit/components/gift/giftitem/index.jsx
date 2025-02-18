@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Table from '../../common/Table';
 import { Search } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { getallgiftvendor, getallbranch, getallgiftitemtable, changegiftitemStatus, deletegiftitem, getgiftitemById, updategiftitem, addgiftitem } from '../../../api/Endpoints';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
@@ -12,7 +12,8 @@ import ModelOne from '../../common/Modelone';
 import Modal from '../../../components/common/Modal';
 import { useDebounce } from '../../../hooks/useDebounce';
 import GiftItemForm from './GiftItemForm';
-import { setid } from "../../../../redux/clientFormSlice"
+import Loading from '../../common/Loading';
+import usePagination from '../../../hooks/usePagination'
 
 
 
@@ -22,21 +23,70 @@ const Giftitem = () => {
   
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
+  
   const [isviewOpen, setIsviewOpen] = useState(false);
   const [isLoading, setisLoading] = useState(true)
+   const [id,setId] = useState("")
 
 
   const [giftitemData, setgiftitemData] = useState([]);
-   const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [activeDropdown, setActiveDropdown] = useState(null);
-  const [vendor, setVendor] = useState([]);
+
   const [searchInput, setSearchInput] = useState('')
 
   const debouncedSearch = useDebounce(searchInput, 500)
   const limit = 10;
+
+  useEffect(() => {
+    getallgiftitemtableMutate({ search: debouncedSearch, page: currentPage, limit });
+  }, [currentPage, debouncedSearch]);
+
+  const refetchTable = ()=>{
+    getallgiftitemtableMutate({ search: debouncedSearch, page: currentPage, limit });
+  }
+
+  useEffect(() => {
+
+    eventEmitter.on('CONFIRMATION_SUBMIT', (data) => {
+      try {
+       
+        deleteGiftItem(data.giftitemId);
+  
+      } catch (error) {
+        console.error('Error deleting giftitem:', error);
+      }
+    });
+
+    return () => {
+      eventEmitter.off('CONFIRMATION_SUBMIT');
+    };
+  }, []);
+
+ 
+
+  useEffect(() => {
+    if(id){
+     setIsviewOpen(true)
+    }
+   
+  }, [])
+
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (activeDropdown && !event.target.closest('.dropdown-container')) {
+        setActiveDropdown(null);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [activeDropdown]);
+  
+
 
   function closeIncommingModal() {
     setIsviewOpen(false);
@@ -75,23 +125,9 @@ const Giftitem = () => {
     }
   };
 
-  useEffect(() => {
-    getallgiftitemtableMutate({ search: debouncedSearch, page: currentPage, limit });
-  }, [currentPage, debouncedSearch]);
-
-
-  useEffect(() => {
-    getallgiftitemtableMutate({ search: debouncedSearch, page: currentPage, limit });
-  }, []);
-
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
-
   const handleEdit = (id) => {
-    dispatch(setid(id))
+    setId(id)
     setIsviewOpen(true)
-
   };
 
   const handleAddgiftitem = () => {
@@ -114,61 +150,61 @@ const Giftitem = () => {
           text: 'Delete'
         }
       }
-    }));
+    }))
 
-    eventEmitter.on('CONFIRMATION_SUBMIT', async (data) => {
-      try {
-       
-        let response = await deletegiftitem(data.giftitemId);
-        toast.success(response.message);
-        getallgiftitemtableMutate({ page: currentPage, limit });
-      } catch (error) {
-        console.error('Error deleting giftitem:', error);
-      }
-    });
+    
+
   };
 
+    const { mutate: deleteGiftItem } = useMutation({
+      mutationFn: (id)=> deletegiftitem(id),
+      onSuccess: (response,id) => {
+        const deletedData = giftitemData.filter(e => e._id !== id)
+       setgiftitemData(deletedData)
+        toast.success(response.message);
+        eventEmitter.off('CONFIRMATION_SUBMIT');
+      },
+      onError: (error) => {
+        eventEmitter.off('CONFIRMATION_SUBMIT');
+        console.error("Error:", error);
+      },
+    });
 
-
-
-
+    
   const handleItemsPerPageChange = (value) => {
     setItemsPerPage(value);
     setCurrentPage(1);
   };
-  const paginationButtons = [];
-  for (let i = 1; i <= totalPages; i++) {
-    paginationButtons.push(
-      <button
-        key={i}
-        onClick={() => handlePageChange(i)}
-        className={`p-2 w-10 h-10 rounded-md  ${currentPage === i ? ' text-white' : 'text-slate-400'}`}
-        style={{ backgroundColor: layout_color }} >
-        {i}
-      </button>
-    );
-  }
 
+  const handlePageChange = (page) => {
 
-
-  useEffect(() => {
-    return () => {
-      eventEmitter.off('CONFIRMATION_SUBMIT');
-    };
-  }, []);
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (activeDropdown && !event.target.closest('.dropdown-container')) {
-        setActiveDropdown(null);
+    const pageNumber = Number(page);
+      if (!pageNumber || isNaN(pageNumber) || pageNumber < 1 || pageNumber > totalPages) {
+        return;
       }
-    };
+   
+      setCurrentPage(pageNumber);
+    
+  };
 
-    document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
-  }, [activeDropdown]);
+
+    const nextPage = () => {
+      setCurrentPage((prevPage) => (prevPage < totalPages ? prevPage + 1 : prevPage));
+    };
+  
+    const prevPage = () => {
+      setCurrentPage((prevPage) => (prevPage > 1 ? prevPage - 1 : prevPage));
+    };
+  
+
+  const paginationData = {totalItems:totalPages,currentPage:currentPage,itemsPerPage:itemsPerPage,handlePageChange:handlePageChange}
+  const paginationButtons = usePagination(paginationData)
 
   const columns = [
+    {
+      header: 'S.No',
+      cell: (_, index) => index + 1 + (currentPage - 1) * limit,
+    },
     {
       header: 'Actions',
       cell: (row, rowIndex) => (
@@ -239,11 +275,6 @@ const Giftitem = () => {
       ),
 
     },
-    
-    {
-      header: 'S.No',
-      cell: (_, index) => index + 1 + (currentPage - 1) * limit,
-    },
     {
       header: 'Gift Name',
       cell: (row) => row?.gift_name || 'N/A',
@@ -256,7 +287,7 @@ const Giftitem = () => {
       header: "Create Date",
       cell: (row) => {
         const date = new Date(row?.createdAt);
-        return date.toLocaleDateString('en-GB'); // 'en-GB' gives the d-m-Y format
+        return date.toLocaleDateString('en-GB'); 
       }
     },
     {
@@ -289,7 +320,7 @@ const Giftitem = () => {
   return (
     <div className="flex flex-col p-4 relative">
       {isLoading ? (
-        <div>Loading...</div>
+        <div className='flex justify-center items-center mt-[150px]'><Loading /></div>
       ) : (
         <>
           <h2 className="text-2xl text-gray-900 font-bold">Gift Item</h2>
@@ -323,60 +354,61 @@ const Giftitem = () => {
               onPageChange={handlePageChange}
               pageSize={limit}
               isLoading={isLoading}
-            />
+            /> 
           </div>
           {giftitemData.length > 0 && (
-          <div className="flex justify-between mt-4 p-2">
-            <div className="flex flex-row items-center justify-center gap-2">
-              <div className="flex items-center gap-4">
-                <button
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={currentPage === 1}
-                  className="p-2 text-gray-500 rounded-md"
-                >
-                  Previous
-                </button>
-              </div>
+        <div className="flex justify-between mt-4 p-2">
+        <div className="flex flex-row items-center justify-center gap-2">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={prevPage}
+              disabled={currentPage === 1}
+              className={`p-2 text-gray-500 rounded-md ${currentPage === 1 ? "cursor-not-allowed" : "cursor-pointer"}`}
+            >
+              Previous
+            </button>
+          </div>
 
-              <div className="flex flex-row items-center justify-center gap-2">
-                {paginationButtons}
-              </div>
+          <div className="flex flex-row items-center justify-center gap-2">
+            {paginationButtons}
+          </div>
 
-              <div className="flex items-center">
-                <button
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={currentPage === totalPages}
-                  className="p-2 text-gray-500 rounded-md"
-                >
-                  Next
-                </button>
-              </div>
-            </div>
+          <div className="flex items-center">
+            <button
+              onClick={nextPage}
+              disabled={currentPage === totalPages}
+              className={`p-2 text-gray-500 rounded-md ${currentPage === totalPages ? "cursor-not-allowed" : "cursor-pointer"}`}
+            >
+              Next
+            </button>
+          </div>
+        </div>
 
-            <div className="mt-4 flex gap-2 justify-center items-center">
-              <span className="text-gray-500">Show</span>
-              <select
-                id="itemsPerPage"
-                value={itemsPerPage}
-                onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
-                className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
-              >
-                 <option value={10}>10</option>
+        <div className="mt-4 flex gap-2 justify-center items-center">
+          <span className="text-gray-500">Show</span>
+          <select
+            id="itemsPerPage"
+            value={itemsPerPage}
+            onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
+            className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
+          >
+             <option value={10}>10</option>
                   <option value={25}>25</option>
                   <option value={50}>50</option>
                   <option value={100}>100</option>
                   <option value={250}>250</option>
                   <option value={500}>500</option>
                   <option value={1000}>1000</option>
-              </select>
-              <span className="text-gray-500">entries</span>
-            </div>
-          </div>
+          </select>
+          <span className="text-gray-500">entries</span>
+        </div>
+        <Modal/>
+      </div>
             )}
         </>
       )}
       <ModelOne
-        title={"Add GiftItem"}
+        title={id ? "Edit GiftItem" :"Add GiftItem"}
         extraClassName='max-w-[75%] '
         setIsOpen={setIsviewOpen}
         isOpen={isviewOpen}
@@ -384,8 +416,11 @@ const Giftitem = () => {
 
       >
         <GiftItemForm
+         setId={setId}
+         id={id}
+         refetchTable={refetchTable}
+        isviewOpen ={isviewOpen }
           setIsOpen={setIsviewOpen}
-
         />
       </ModelOne>
       <Modal />

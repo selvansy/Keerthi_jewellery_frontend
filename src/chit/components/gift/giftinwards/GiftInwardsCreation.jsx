@@ -7,13 +7,16 @@ import { toast } from 'react-toastify';
 import { useMutation } from '@tanstack/react-query'
 import Modal from '../../common/Modal'
 import { getgiftvendorbranchById, getgiftitemvendorById,addgiftinward,getgiftinwardById, updategiftinward, getallbranch } from '../../../api/Endpoints';
+import usePagination from '../../../hooks/usePagination'
+
+
+
 const GiftInwardsCreation = () => {
   const navigate = useNavigate()
-  const dispatch = useDispatch()
+ 
   
   const roledata = useSelector((state) => state.clientForm.roledata);
-  const id_role = roledata?.id_role?.id_role;
-  const id_client = roledata?.id_client;
+
   const id_branch = roledata?.branch;
 
   const [vendorfilter, setVendor] = useState([]);
@@ -243,6 +246,8 @@ const GiftInwardsCreation = () => {
         toast.error(error.response.message)
       }
     });
+
+
 
   
     

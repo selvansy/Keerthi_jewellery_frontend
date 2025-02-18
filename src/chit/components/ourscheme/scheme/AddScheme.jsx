@@ -41,6 +41,7 @@ const AddScheme = () => {
   let [purity, setPurity] = useState("");
 
   let [scheme_type, setSchemeType] = useState(0);
+  console.log("SchemeType",scheme_type)
   const roledata = useSelector((state) => state.clientForm.roledata);
 
 
@@ -63,7 +64,9 @@ const AddScheme = () => {
       max_weight:0,
       min_amount:0,
       max_amount:0,
-      amount:0
+      amount:0,
+      buy_gst:0,
+      buytgsttype:0,
     });
  
 
@@ -304,8 +307,9 @@ const AddScheme = () => {
   const { mutate: getSchemeId } = useMutation({
     mutationFn: getschemeById,
     onSuccess: (response) => {
-      
+  
       setFormData(response.data);
+      console.log("response",formData)
       setMetalid(response.data?.id_metal)
       setPurity(response.data?.id_purity)
       allclassification(response.data?.id_branch);
@@ -508,7 +512,7 @@ const AddScheme = () => {
     
   }
 
-
+console.log("gstTypeData",gstTypeData)
 
   return (
     <>
@@ -948,51 +952,7 @@ const AddScheme = () => {
               )
               }
 
-              {scheme_type === "3" && (
-                // Render Min Weight field when scheme_type is 3 or greater
-                <div className="flex flex-col lg:mt-2">
-                  <label className="text-black mb-2 font-normal">
-                    Min Weight <span className="text-red-400"> *</span>
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="number"
-                      name="min_weight"
-                      value={formData.min_weight}
-                      
-                      onChange={handleChange}
-                      onWheel={handleWheel} // Custom handler to prevent scrolling
-                      onKeyDown={(e) => {
-                        // Prevent certain key events for input validation
-                        if (
-                          e.key === "ArrowUp" ||
-                          e.key === "ArrowDown" ||
-                          e.key === "e" ||
-                          e.key === "E" ||
-                          e.key === "-"
-                        ) {
-                          e.preventDefault();
-                        }
-                      }}
-                      className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                      placeholder="Enter Max Amount"
-                    />
-                    <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
-                    style={{ backgroundColor: layout_color }}>
-                      INR
-                    </span>
-                  </div>
-                  {formErrors.min_weight && (
-                    <span className="text-red-500 text-sm mt-1">
-                      {formErrors.min_weight}
-                    </span>
-                  )}
-                </div>
-              )
-              }
-
-
-
+          
               <div className="flex flex-col mt-2">
                 <label className="text-black mb-2 font-normal">
                   Installments<span className="text-red-400"> *</span>
@@ -1066,8 +1026,52 @@ const AddScheme = () => {
                 )
               }
 
+{ ((scheme_type === "3") || (scheme_type === 3)) && (
+                // Render Min Weight field when scheme_type is 3 or greater
+                <div className="flex flex-col lg:mt-2">
+                  <label className="text-black mb-2 font-normal">
+                    Min Weight <span className="text-red-400"> *</span>
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      name="min_weight"
+                      value={formData.min_weight}
+                      
+                      onChange={handleChange}
+                      onWheel={handleWheel} // Custom handler to prevent scrolling
+                      onKeyDown={(e) => {
+                        // Prevent certain key events for input validation
+                        if (
+                          e.key === "ArrowUp" ||
+                          e.key === "ArrowDown" ||
+                          e.key === "e" ||
+                          e.key === "E" ||
+                          e.key === "-"
+                        ) {
+                          e.preventDefault();
+                        }
+                      }}
+                      className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                      placeholder="Enter Max Amount"
+                    />
+                    <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                    style={{ backgroundColor: layout_color }}>
+                      INR
+                    </span>
+                  </div>
+                  {formErrors.min_weight && (
+                    <span className="text-red-500 text-sm mt-1">
+                      {formErrors.min_weight}
+                    </span>
+                  )}
+                </div>
+              )
+              }
+
+
               {
-                scheme_type === "3" && (
+                ((scheme_type === "3")||(scheme_type === 3)) && (
                   // Render Max Weight field when scheme_type is 3
                   <div className="flex flex-col lg:mt-2">
                     <label className="text-black mb-2 font-normal">
@@ -1151,7 +1155,6 @@ const AddScheme = () => {
                     name="buytgsttype"
                     value={formData.buytgsttype}
                     className="cursor-pointer appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700"
-                    defaultValue=""
                     onChange={handleChange}
                   >
                     <option value="" className="text-gray-700">
