@@ -15,14 +15,16 @@ const CreateMetalRate = () => {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
   let dispatch = useDispatch();
+  const {id} = useParams()
+
 
   let navigate = useNavigate();
-  const id = useSelector((state) => state.clientForm.id);
+  // const id = useSelector((state) => state.clientForm.id);
   const roledata = useSelector((state) => state.clientForm.roledata);
 
-  const id_role = roledata?.id_role;
-  const id_client = roledata?.id_client;
+  let admin = roledata?.id_role?.id_role;
   const id_branch = roledata?.branch;
+  const branchId = roledata?.id_branch;
 
   const [typeOfScheme, setTypeOfScheme] = useState([]);
   const [branchdata, setBranchData] = useState([]);
@@ -37,7 +39,7 @@ const CreateMetalRate = () => {
     goldcoin_1gm: 0,
     platinum_1gm: 0,
     diamond_1gm: 0,
-    id_branch: id_branch
+    id_branch: branchId
   });
   
   const [formErrors, setFormErrors] = useState({});
@@ -48,19 +50,20 @@ const CreateMetalRate = () => {
   const [desc_img, setdesc_image] = useState("Browse");
   const [descPreview, setdescPreview] = useState(null);
 
+
   
-    useEffect(() => {
-      if (id_branch === '0') {
-        getallbranchmuate()
-      }else{
-        branchbyId({id:id_branch})
-      }
-  
-      if(id_branch !== "0"){
-        setFormData({ ...formData, id_branch: id_branch })
-      }
-      
-    }, [id_branch]);
+  useEffect(() => {
+    if (id) {
+      fetchmetalrateById(id)
+    }
+  }, [id])
+
+  useEffect(() => {
+   
+    if (id_branch === "0" && admin === 2) {
+      getallbranchmuate();
+    }
+    }, [id_branch])
   
  
     // mutation functions
@@ -74,15 +77,7 @@ const CreateMetalRate = () => {
       },
     });
   
-    const { mutate: branchbyId } = useMutation({
-      mutationFn: getBranchById,
-      onSuccess: (response) => {
-        setbranch(response.data);
-      },
-      onError: (error) => {
-        console.error("Error:", error);
-      },
-    });
+   
 
 
 
@@ -147,7 +142,7 @@ const CreateMetalRate = () => {
         goldcoin_1gm: 0,
         platinum_1gm: 0,
         diamond_1gm: 0,
-        id_branch: id_branch
+        id_branch: branchId
       });
       navigate('/ourscheme/metalrate')
     },
@@ -167,11 +162,6 @@ const CreateMetalRate = () => {
 
   };
 
-  useEffect(() => {
-    if (id) {
-      fetchmetalrateById(id)
-    }
-  }, [id])
 
   
 
@@ -185,7 +175,7 @@ const CreateMetalRate = () => {
   const { mutate: fetchmetalrateById } = useMutation({
     mutationFn: getmetalrateById,
     onSuccess: (response) => {
-      console.log(response)
+ 
       setFormData({
           goldrate_18ct: response.data.goldrate_18ct.$numberDecimal,
           goldrate_20ct: response.data.goldrate_20ct.$numberDecimal,
@@ -197,7 +187,7 @@ const CreateMetalRate = () => {
           diamond_1gm: response.data.diamond_1gm.$numberDecimal,
           id_branch: response.data.id_branch._id
       });
-      setbranchId(response.data.id_branch._id);
+
     
     },
     onError: (error) => {
@@ -214,7 +204,7 @@ const CreateMetalRate = () => {
       handleRemoveLogo()
       handleRemovegoldrate_22ctImage();
       dispatch(setid(null))
-      navigate('/ourscheme/createmetalrate')
+      navigate('/ourscheme/metalrate')
     },
     onError: (error) => {
       toast.error(error.response.data.message);

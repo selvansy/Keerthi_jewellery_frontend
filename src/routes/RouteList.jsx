@@ -3,7 +3,6 @@ import Scheme from "../chit/components/ourscheme/scheme/Scheme";
 import AddScheme from "../chit/components/ourscheme/scheme/AddScheme";
 import MetalRate from "../chit/components/ourscheme/metalrate/index";
 import CreateMetalRate from "../chit/components/ourscheme/metalrate/Createmetalrate";
-import SchemeDetails from "../chit/components/ourscheme/scheme/SchemeDetails";
 import SchemeClassification from "../chit/components/ourscheme/classification/schemeClassification";
 import CreateSchemeClassificaton from "../chit/components/ourscheme/classification/CreateSchemeClassification";
 import DigiGoldScheme from "../chit/components/ourscheme/digiGold/DigiGoldScheme"
@@ -57,7 +56,6 @@ import MenuComp from "../chit/components/Setup/menu/index";
 import Login from "../chit/components/Login";
 import ClientMaster from '../chit/components/SuperAdmin/ClientMaster/index';
 import ClientForm from '../chit/components/SuperAdmin/ClientMaster/ClientForm';
-// import Giftvendor from '../chit/components/gift/giftvendor/GiftVendor';
 import AupayConfigure from "../chit/components/SuperAdmin/Configure/aupay/index";
 import AdminMaster from "../chit/components/SuperAdmin/Accounts/AdminMaster";
 import Dashboard from "../chit/components/SuperAdmin/Dashboard/Dashboard"
@@ -71,7 +69,6 @@ import OutStandingReport from "../chit/components/common/OutStandingReport";
 import OutStandingAmount from "../chit/components/Report/OutStandingAmout";
 import CardPrint from "../chit/components/print/CardPrint/printone";
 import ReceiptPrint from "../chit/components/print/ReceiptPrint/printone";
-  
 import NewArrivalsWhatsapp from "../chit/components/whatsapp/newarrivals/index";
 import ProductWhatsapp from "../chit/components/whatsapp/product/index";
 import OffersWhatsapp from  "../chit/components/whatsapp/offers/index";
@@ -107,7 +104,11 @@ const RouteList = [
     path:'/ourscheme/metalrate',
     element:<Base renderContent={MetalRate}/>
   },
- 
+  {
+    name: "Crate Metal Rate",
+    path:'/ourscheme/createmetalrate/:id',
+    element:<Base renderContent={CreateMetalRate}/>
+  },
   {
     name: "Crate Metal Rate",
     path:'/ourscheme/createmetalrate',
@@ -298,6 +299,11 @@ const RouteList = [
   {
     name: "Add Customer",
     path:'/manageaccount/addcustomer',
+    element:<Base renderContent={AddCustomer}/>
+  },
+  {
+    name: "Add Customer",
+    path:'/manageaccount/addcustomer/:id',
     element:<Base renderContent={AddCustomer}/>
   },
  

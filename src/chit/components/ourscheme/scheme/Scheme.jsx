@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import Table from '../../common/Table'
+import { useDebounce } from '../../../hooks/useDebounce';
 import { SlidersHorizontal, Search, X } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify"
 import {
   getSchemeTable, getallbranch, changeschemestatus, allbranchclassification, getallmetal, getallschemetypes, getschemeById, allinstallmenttype, allFundtype, addscheme,
-  updateScheme, puritybymetal, buygsttype, wastagetype,deleteScheme
+  updateScheme, puritybymetal, buygsttype, wastagetype, deleteScheme
 } from "../../../api/Endpoints"
 import { setid } from "../../../../redux/clientFormSlice"
 import { useDispatch, useSelector } from 'react-redux';
@@ -16,14 +17,15 @@ import DatePicker from "react-datepicker";
 import { eventEmitter } from '../../../../utils/EventEmitter';
 import { openModal } from '../../../../redux/modalSlice';
 import Modal from '../../../components/common/Modal';
+import usePagination from '../../../hooks/usePagination'
 
-const Scheme = () => {
+const Scheme = () => { 
 
   let dispatch = useDispatch();
   const navigate = useNavigate()
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const roledata = useSelector((state) => state.clientForm.roledata);
-  let id_client = roledata?.id_client;
+
   const id_branch = roledata?.branch;
 
   const [isLoading, setisLoading] = useState(true)
@@ -40,6 +42,8 @@ const Scheme = () => {
 
   let [schemeData, setSchemeData] = useState([]);
   const [search, setSearch] = useState('')
+  const debouncedSearch = useDebounce(search, 600)
+
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -47,9 +51,6 @@ const Scheme = () => {
 
   const [selectedRow, setSelectedRow] = useState(null)
   const [activeDropdown, setActiveDropdown] = useState(null)
-
-  const [filtertype, setOfferstype] = useState([]);
-  const [filtermetaltype, setMetaltype] = useState([]);
 
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [from_date, setFromdate] = useState("");
@@ -69,6 +70,34 @@ const Scheme = () => {
     buytgsttype: ""
 
   });
+
+
+  
+
+  const handlePageChange = (page) => {
+
+    const pageNumber = Number(page);
+      if (!pageNumber || isNaN(pageNumber) || pageNumber < 1 || pageNumber > totalPages) {
+        return;
+      }
+   
+      setCurrentPage(pageNumber);
+    
+  };
+
+
+    const nextPage = () => {
+      setCurrentPage((prevPage) => (prevPage < totalPages ? prevPage + 1 : prevPage));
+    };
+  
+    const prevPage = () => {
+      setCurrentPage((prevPage) => (prevPage > 1 ? prevPage - 1 : prevPage));
+    };
+  
+
+  const paginationData = {totalItems:totalPages,currentPage:currentPage,itemsPerPage:itemsPerPage,handlePageChange:handlePageChange}
+  const paginationButtons = usePagination(paginationData)
+
   const handleReset = (e) => {
 
     setFromdate("");
@@ -84,7 +113,7 @@ const Scheme = () => {
       scheme_type: "",
       buytgsttype: ""
     }));
-
+    SetFiltered(false)
     toast.success("Filter is cleared");
     getSchemeTable({
       from_date: "",
@@ -234,7 +263,7 @@ const Scheme = () => {
     const filterTosend = {
       from_date: from_date,
       to_date: to_date,
-      search: search,
+      search: debouncedSearch,
       page: currentPage,
       limit: itemsPerPage,
       id_branch: filters.id_branch,
@@ -256,7 +285,7 @@ const Scheme = () => {
     getSchemeDataTable({
       from_date: "",
       to_date: "",
-      search: search,
+      search: debouncedSearch,
       page: currentPage,
       limit: itemsPerPage,
       id_branch: filters.id_branch,
@@ -269,17 +298,28 @@ const Scheme = () => {
       buytgsttype: ""
 
     })
-  }, [currentPage, itemsPerPage, search])
+  }, [currentPage, itemsPerPage, debouncedSearch])
+
+  useEffect(() => {
+    eventEmitter.on('CONFIRMATION_SUBMIT',  async(data) => {
+      try {
+        deleteSchemeId(data.schemeId);
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    });
+    return () => {
+      eventEmitter.off('CONFIRMATION_SUBMIT');
+    };
+  }, []);
 
 
 
   const { mutate: getSchemeDataTable } = useMutation({
     mutationFn: (payload) => getSchemeTable(payload),
     onSuccess: (response) => {
-
       if (response) {
         setSchemeData(response.data);
-
       }
       setisLoading(false)
     },
@@ -305,7 +345,7 @@ const Scheme = () => {
       getSchemeTable({
         from_date: from_date,
         to_date: to_date,
-        search: search,
+        search: debouncedSearch,
         page: currentPage,
         limit: itemsPerPage,
         id_branch: filters.id_branch,
@@ -325,18 +365,6 @@ const Scheme = () => {
     navigate(`/scheme/addscheme/${id}`)
   };
 
-  const paginationButtons = [];
-  for (let i = 1; i <= totalPages; i++) {
-    paginationButtons.push(
-      <button
-        key={i}
-        onClick={() => handlePageChange(i)}
-        className={`p-2 w-10 h-10 rounded-md ${currentPage === i ? ' text-white' : 'bg-gray-300 text-gray-900'}`}
-        style={{ backgroundColor: layout_color }} >
-        {i}
-      </button>
-    );
-  }
 
   const handleItemsPerPageChange = (value) => {
 
@@ -344,12 +372,15 @@ const Scheme = () => {
     setCurrentPage(1);
   };
 
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
+  
 
 
   const columns = [
+   
+    {
+      header: 'S.No',
+      cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
+    },
     {
       header: 'Actions',
       cell: (row, rowIndex) => (
@@ -424,10 +455,6 @@ const Scheme = () => {
         </div>
       ),
 
-    },
-    {
-      header: 'S.No',
-      cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
     },
     {
       header: 'Scheme',
@@ -567,43 +594,32 @@ const Scheme = () => {
     mutationFn: deleteScheme,
     onSuccess: (response) => {
       toast.success(response.message);
+      getSchemeDataTable({
+        from_date: "",
+        to_date: "",
+        search: debouncedSearch,
+        page: currentPage,
+        limit: itemsPerPage,
+        id_branch: filters.id_branch,
+        id_classification: "",
+        metalid: "",
+        id_purity: "",
+        weekmonth: "",
+        wastagebenefit: "",
+        scheme_type: "",
+        buytgsttype: ""
+
+      })
+      eventEmitter.off('CONFIRMATION_SUBMIT');
     },
     onError: (error) => {
+      eventEmitter.off('CONFIRMATION_SUBMIT');
       console.error("Error:", error);
     },
   });
 
 
-  useEffect(() => {
-    eventEmitter.on('CONFIRMATION_SUBMIT', async (data) => {
-      try {
-
-        deleteSchemeId(data.schemeId);
-        getSchemeDataTable({
-          from_date: "",
-          to_date: "",
-          search: search,
-          page: currentPage,
-          limit: itemsPerPage,
-          id_branch: filters.id_branch,
-          id_classification: "",
-          metalid: "",
-          id_purity: "",
-          weekmonth: "",
-          wastagebenefit: "",
-          scheme_type: "",
-          buytgsttype: ""
-    
-        })
-
-      } catch (error) {
-        console.error('Error:', error);
-      }
-    });
-    return () => {
-      eventEmitter.off('CONFIRMATION_SUBMIT');
-    };
-  }, [eventEmitter]);
+  
 
 
 
@@ -629,33 +645,34 @@ const Scheme = () => {
             + Create Scheme
           </button>
 
-           {
-                      filtered ?
-                        <>
-                          <button
-                            id="filter"
-                            className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
-                            onClick={() => handleReset()}
-                            style={{ backgroundColor: layout_color }}>
-                            <RefreshCcw size={20} />
-                          </button>
-                        </>
-                        :
-                        <>
+          {
+            filtered ?
+              <>
+                <button
+                  id="filter"
+                  className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
+                  onClick={() => handleReset()}
+                  style={{ backgroundColor: layout_color }}>
+                  <RefreshCcw size={20} />
+                </button>
+              </>
+              :
+              <>
+
+                <button
+                  id="filter"
+                  className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
+                  onClick={(e) => {
+                    handleClickfilter(e);
+                  }}
+
+                  style={{ backgroundColor: layout_color }} >
+                  <SlidersHorizontal size={20} />
+                </button>
+              </>
+
+          }
           
-                          <button
-                            id="filter"
-                            className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
-                            onClick={(e) => {
-                              handleClickfilter(e);
-                            }}
-          
-                            style={{ backgroundColor: layout_color }} >
-                            <SlidersHorizontal size={20} />
-                          </button>
-                        </>
-          
-                    }
         </div>
       </div>
 
@@ -1075,13 +1092,16 @@ const Scheme = () => {
         <Table data={schemeData} columns={columns} isLoading={isLoading} />
       </div>
 
-      <div className="flex justify-between mt-4 p-2">
-        <div className="flex flex-row items-center justify-center gap-2">
+      {
+        (schemeData.length > 0) &&
+        <div className="flex justify-between mt-4 p-2">
+        <div className={`flex flex-row items-center justify-center gap-2  `}>
           <div className="flex items-center gap-4">
             <button
-              onClick={() => handlePageChange(currentPage - 1)}
+              onClick={prevPage}
               disabled={currentPage === 1}
-              className="p-2 text-gray-500 rounded-md"
+             
+              className={`p-2 text-gray-500 rounded-md ${currentPage === 1 ? "cursor-not-allowed" : "cursor-pointer"} `}
             >
               Previous
             </button>
@@ -1093,9 +1113,10 @@ const Scheme = () => {
 
           <div className="flex items-center">
             <button
-              onClick={() => handlePageChange(currentPage + 1)}
+              onClick={nextPage}
               disabled={currentPage === totalPages}
-              className="p-2 text-gray-500 rounded-md"
+              
+              className={`p-2 text-gray-500 rounded-md  ${currentPage === totalPages ? "cursor-not-allowed" : "cursor-pointer"}`}
             >
               Next
             </button>
@@ -1121,10 +1142,10 @@ const Scheme = () => {
           <span className="text-gray-500">entries</span>
         </div>
       </div>
-
+      }
       <Modal />
     </div>
-    
+
   )
 }
 

@@ -7,7 +7,7 @@ function Imagedetails({ setIsOpen }) {
   let dispatch = useDispatch();
 
   const data = useSelector((state) => state.clientForm.whatsappData);
-  console.log("Data", data)
+
 
   const handleCancel = (e) => {
     e.preventDefault();

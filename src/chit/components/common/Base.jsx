@@ -36,7 +36,7 @@ import { useMutation } from '@tanstack/react-query';
 import { getactivemenuaccess,updatelayoutcolor } from "../../api/Endpoints"
 import { GiConsoleController } from 'react-icons/gi';
 import { setLayoutColor } from "../../../redux/clientFormSlice"
-import { logout } from '../../../redux/authSlice';
+import { logout, SetMenu } from '../../../redux/authSlice';
 
 const Base = ({ renderContent: RenderContent }) => {
 
@@ -74,6 +74,10 @@ const Base = ({ renderContent: RenderContent }) => {
   const { info } = useSelector((state) => state.auth);
   const decoded = jwtDecode(info);
   let id = decoded.id_role._id;
+
+  // const menus = useSelector((state) => state.auth.menu);
+  // const submenu = useSelector((state) => state.auth.subMenu);
+ 
  
   const roledata = useSelector((state) => state.clientForm.roledata);
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
@@ -95,6 +99,142 @@ const Base = ({ renderContent: RenderContent }) => {
 
   const role = getRoleCharacter(roledata?.id_role?.id_role);
 
+// useEffect(() => {
+  
+//   let menuArray = [];
+//   if (menus.length > 0) {
+//     menus.forEach((menurow) => {
+//       let submenuArray = [];
+//       let menuItem = {
+//         text: menurow?.menu_name,
+//         hasSubmenu: true,
+//       };
+
+//       if (menurow?.menu_list.length > 0) {
+//         menurow?.menu_list.forEach((submenurow) => {
+//           submenuArray.push({
+//             text: submenurow?.submenu_name,
+//             action: () => handleClick(submenurow?.submenu_name),
+//           });
+//         });
+
+//         // Attach the submenu array to the menu item
+//         menuItem.submenu = submenuArray;
+//       }
+
+//       // Add the menu item to the main menuArray
+//       menuArray.push(menuItem);
+    
+//     });
+//   }
+
+//   menuArray.unshift(
+//     {
+//       text: "Dashboard",
+//       hasSubmenu: false
+//     }
+//   )
+//   setMenuData(menuArray);
+
+// }, [])
+
+
+
+useEffect(() => {
+  if (decoded.id_role.id_role === 1) {
+    setIsSuperAdmin(true);
+  } else {
+    getAllMenusMutate(decoded.id_role._id);
+    setIsSuperAdmin(false);
+  }
+
+}, []);
+
+useEffect(() => {
+
+  if(laycolor!==""){
+    let id_branch = "";
+    if(decoded.branch === "0"){
+       id_branch = decoded.branch;
+    } else {
+       id_branch = decoded.branch;
+    }
+  updatelayoutmutate({
+    id_branch:id_branch,
+    layout_color:laycolor
+  })
+}
+}, [laycolor]);
+
+
+useEffect(() => {
+  const route = RouteList.find(route => {
+    return route.name === selectedSection || route.name === selectedParentSection;
+  });
+
+  if (route) {
+
+    setSelectedRoute(route);
+    if (route.name === "Dashboard") {
+      handleClick("Dashboard")
+    }
+
+  }
+}, [selectedSection, selectedParentSection]);
+
+useEffect(() => {
+  const handleClickOutside = (event) => {
+    if (
+      sidebarRef.current &&
+      !sidebarRef.current.contains(event.target) &&
+      !event.target.closest('button[aria-label="toggle-sidebar"]')
+    ) {
+      setIsSidebarOpen(false);
+    }
+
+    if (
+      settingsRef.current &&
+      !settingsRef.current.contains(event.target) &&
+      !event.target.closest('button[aria-label="toggle-settings"]')
+    ) {
+      setSettingsOpen(false);
+    }
+
+    if (
+      headerMenuRef.current &&
+      !headerMenuRef.current.contains(event.target)
+    ) {
+      setIsHeaderMenuOpen(false);
+    }
+  };
+
+  const handleResize = () => {
+    if (window.innerWidth >= 1024) {
+      setIsSidebarOpen(false);
+      setSettingsOpen(false);
+      setIsHeaderMenuOpen(false);
+    }
+  };
+
+  const handleEscape = (event) => {
+    if (event.key === 'Escape') {
+      setIsSidebarOpen(false);
+      setSettingsOpen(false);
+      setIsHeaderMenuOpen(false);
+    }
+  };
+
+  document.addEventListener('mousedown', handleClickOutside);
+  window.addEventListener('resize', handleResize);
+  document.addEventListener('keydown', handleEscape);
+
+  return () => {
+    document.removeEventListener('mousedown', handleClickOutside);
+    window.removeEventListener('resize', handleResize);
+    document.removeEventListener('keydown', handleEscape);
+  };
+}, []);
+
 
 
   const handleLogout = () => {
@@ -105,49 +245,13 @@ const Base = ({ renderContent: RenderContent }) => {
   };
 
 
-  useEffect(() => {
 
-    if(laycolor!==""){
-      let id_branch = "";
-      if(decoded.branch === "0"){
-         id_branch = decoded.branch;
-      } else {
-         id_branch = decoded.branch;
-      }
-    updatelayoutmutate({
-      id_branch:id_branch,
-      layout_color:laycolor
-    })
-  }
-  }, [laycolor]);
-
- //update category
-  const { mutate: updatelayoutmutate } = useMutation({
-    mutationFn: updatelayoutcolor,
-    onSuccess: (response) => {     
-      toast.success(response.message);
-    },
-    onError: (error) => {
-      toast.error(error.response.data.message);
-    },
-  });
-
-  useEffect(() => {
-    if (decoded.id_role.id_role === 1) {
-      setIsSuperAdmin(true);
-    } else {
-      getAllMenusMutate(decoded.id_role._id);
-      setIsSuperAdmin(false);
-    }
-
-
-    // dispatch(setRoleData(decoded));
-
-  }, []);
-
+        
   const { mutate: getAllMenusMutate } = useMutation({
     mutationFn: getactivemenuaccess,
     onSuccess: (response) => {
+      dispatch(SetMenu(response.data)) 
+
       if (response) {
         let menuArray = [];
         if (response.data.length > 0) {
@@ -168,10 +272,13 @@ const Base = ({ renderContent: RenderContent }) => {
 
               // Attach the submenu array to the menu item
               menuItem.submenu = submenuArray;
+        
             }
 
             // Add the menu item to the main menuArray
             menuArray.push(menuItem);
+    
+          
           });
         }
 
@@ -188,75 +295,18 @@ const Base = ({ renderContent: RenderContent }) => {
     },
   });
 
-  useEffect(() => {
-    const route = RouteList.find(route => {
-      return route.name === selectedSection || route.name === selectedParentSection;
-    });
-
-    if (route) {
-
-      setSelectedRoute(route);
-      if (route.name === "Dashboard") {
-        handleClick("Dashboard")
-      }
-
-    }
-  }, [selectedSection, selectedParentSection]);
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        sidebarRef.current &&
-        !sidebarRef.current.contains(event.target) &&
-        !event.target.closest('button[aria-label="toggle-sidebar"]')
-      ) {
-        setIsSidebarOpen(false);
-      }
-
-      if (
-        settingsRef.current &&
-        !settingsRef.current.contains(event.target) &&
-        !event.target.closest('button[aria-label="toggle-settings"]')
-      ) {
-        setSettingsOpen(false);
-      }
-
-      if (
-        headerMenuRef.current &&
-        !headerMenuRef.current.contains(event.target)
-      ) {
-        setIsHeaderMenuOpen(false);
-      }
-    };
-
-    const handleResize = () => {
-      if (window.innerWidth >= 1024) {
-        setIsSidebarOpen(false);
-        setSettingsOpen(false);
-        setIsHeaderMenuOpen(false);
-      }
-    };
-
-    const handleEscape = (event) => {
-      if (event.key === 'Escape') {
-        setIsSidebarOpen(false);
-        setSettingsOpen(false);
-        setIsHeaderMenuOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    window.addEventListener('resize', handleResize);
-    document.addEventListener('keydown', handleEscape);
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      window.removeEventListener('resize', handleResize);
-      document.removeEventListener('keydown', handleEscape);
-    };
-  }, []);
 
 
+ //update category
+  const { mutate: updatelayoutmutate } = useMutation({
+    mutationFn: updatelayoutcolor,
+    onSuccess: (response) => {     
+      toast.success(response.message);
+    },
+    onError: (error) => {
+      toast.error(error.response.data.message);
+    },
+  });
 
   const toggleMenu = (menu) => {
     setOpenMenus(prev => ({
@@ -476,6 +526,9 @@ const Base = ({ renderContent: RenderContent }) => {
     // { name: "Agent Incentive",link:"", icon: <DollarSign className="text-orange-500" /> },
     // { name: "Referral Incentive",link:"", icon: <Share2 className="text-teal-500" /> },
   ];
+
+ 
+
 
   return (
 

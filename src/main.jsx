@@ -11,6 +11,7 @@ import 'react-toastify/dist/ReactToastify.css';
 const queryClient = new QueryClient();
 
 createRoot(document.getElementById('root')).render(
+  
   <QueryClientProvider client={queryClient}>
     <Provider store={store}>
     <App />
@@ -27,4 +28,5 @@ createRoot(document.getElementById('root')).render(
     />
   </Provider>
   </QueryClientProvider>
+  
 )

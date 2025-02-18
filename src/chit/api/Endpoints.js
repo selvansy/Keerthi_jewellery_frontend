@@ -1141,7 +1141,8 @@ export const addcustomer = async (data) => {
     return response.data;
 }
 export const updatecustomer = async (data) => {
-    const response = await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/customer/${data.id}`,data);
+ 
+    const response = await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/customer/${data.id}`,data.data);
     return response.data;
 }
  
@@ -1169,7 +1170,8 @@ export const getallcustomer = async (data) => {
  
 
 export const getcustomerById = async (id) => {
-    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/customer/${id}`,data);
+
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/customer/${id}`);
     return response.data;
 }
 
@@ -1630,10 +1632,6 @@ export const searcaccountnumber = async (data) => {
 }
 
 
-
-
-// /api/client/metalrate/today/676e4a9dd3e747cfc70968a2/2025-02-06T04:16:36.625+00:00
-
 export const todayMetalRate = async(data)=>{
     
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/metalrate/today/${data.id}/${data.todayDate}`);
@@ -1646,4 +1644,5 @@ export const updatelayoutcolor = async (data) => {
     const response = await Api.patch(`${import.meta.env.VITE_API_URL}/api/admin/layoutsetting/color`, data);
     return response;
 }
+
 

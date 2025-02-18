@@ -169,24 +169,38 @@ const SchemeClassification = () => {
         }
       }
     }));
-
+ 
   };
+
+   
+      //mutation to get purity type
+      const { mutate: deleteSchemeClass } = useMutation({
+        mutationFn: deleteClassification,
+        onSuccess: (response) => {
+          toast.success(response.message);
+          getClassificationTablemuate({
+            from_date: from_date,
+            to_date: to_date,
+            search: debouncedSearch,
+            page: currentPage,
+            limit: itemsPerPage,
+            id_branch: id_branch,
+            typesofscheme: 2,
+          })
+          eventEmitter.off('CONFIRMATION_SUBMIT');
+        },
+        onError: (error) => {
+          eventEmitter.off('CONFIRMATION_SUBMIT');
+          console.error("Error:", error);
+        },
+      });
 
   useEffect(() => {
     eventEmitter.on('CONFIRMATION_SUBMIT', async (data) => {
       try {
 
-        let response = await deleteClassification(data.schemeId);
-        toast.success(response.message);
-        getClassificationTablemuate({
-          from_date: from_date,
-          to_date: to_date,
-          search: debouncedSearch,
-          page: currentPage,
-          limit: itemsPerPage,
-          id_branch: id_branch,
-          typesofscheme: 1,
-        })
+        deleteSchemeClass(data.schemeId);
+       
       } catch (error) {
         console.error('Error deleting giftitem:', error);
       }
@@ -194,10 +208,14 @@ const SchemeClassification = () => {
     return () => {
       eventEmitter.off('CONFIRMATION_SUBMIT');
     };
-  }, [eventEmitter]);
+  }, []);
 
 
   const columns = [
+    {
+      header: 'S.No',
+      cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
+    },
     {
       header: 'Actions',
       cell: (row, rowIndex) => (
@@ -268,10 +286,7 @@ const SchemeClassification = () => {
       ),
 
     },
-    {
-      header: 'S.No',
-      cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
-    },
+    
     {
       header: 'Classification Name',
       cell: (row) => row?.classification_name,
@@ -309,7 +324,7 @@ const SchemeClassification = () => {
       <button
         key={i}
         onClick={() => handlePageChange(i)}
-        className={`p-2 w-10 h-10 rounded-md ${currentPage === i ? ' text-white' : 'bg-gray-300 text-gray-900'}`}
+        className={`p-2 w-10 h-10 rounded-md  ${currentPage === i ? ' text-white' : 'text-slate-400'}`}
         style={{ backgroundColor: layout_color }} >
         {i}
       </button>
