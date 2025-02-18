@@ -122,7 +122,15 @@ const Customer = () => {
     e.preventDefault();
     setIsFilterOpen(false)
     SetFiltered(true)
-    getcustomertableMutate({ page: currentPage, limit: itemsPerPage, search: debouncedSearch, from_date: from_date, to_date: to_date, id_branch: filters.id_branch });
+    const payload = {
+       page: currentPage, 
+      limit: itemsPerPage, 
+      search: debouncedSearch, 
+      from_date: from_date,
+       to_date: to_date, 
+       id_branch: filters.id_branch }
+    
+    getcustomertableMutate(payload);
 
   };
 
@@ -226,7 +234,7 @@ const Customer = () => {
        if(response){
         toast.success(response.message);
         const payload = {
-          
+
             page: currentPage,
             limit: itemsPerPage,
             search: debouncedSearch,
@@ -279,7 +287,7 @@ const Customer = () => {
     setItemsPerPage(value);
     setCurrentPage(1);
   };
-
+ 
   const columns = [
     {
       header: 'S.No',

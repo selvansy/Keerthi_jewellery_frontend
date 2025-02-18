@@ -618,11 +618,6 @@ const Scheme = () => {
     },
   });
 
-
-  
-
-
-
   return (
     <div className="flex flex-col p-4">
       <h2 className="text-2xl text-gray-900 font-bold">Schemes</h2>
@@ -658,7 +653,6 @@ const Scheme = () => {
               </>
               :
               <>
-
                 <button
                   id="filter"
                   className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"

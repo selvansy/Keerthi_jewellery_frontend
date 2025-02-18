@@ -175,7 +175,7 @@ const RouteList = [
     name: "Gift Vendor",
     path:'/gift/giftvendor',
     element:<Base renderContent={GiftVendor}/>
-  },
+  }, 
   {
     name: "Gift Item",
     path:'/gift/giftitem',
