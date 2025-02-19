@@ -39,3 +39,19 @@ export const withMobileNumberValidation = (Component, maxLength = 10) => {
     return <Component {...props} onChange={handleChange} maxLength={maxLength} inputMode="numeric" pattern="[0-9]*" />;
   };
 };
+
+export const emptyToZero = (value) => {
+  if (value === undefined || value === null || value === "" || typeof value === "string") {
+    return 0.00;
+  }
+  
+  if (typeof value === "number") {
+    return value;
+  }
+
+  if (typeof value === "string" && value.includes(",")) {
+    return parseFloat(value.replace(/,/g, ""));
+  }
+
+  return isNaN(value) ? 0.00 : parseFloat(value);
+};
