@@ -31,11 +31,12 @@ const AddOffers = () => {
   const [branchList, setBranchList] = useState([]);
   let [branch, setbranch] = useState("")
 
+  const MAX_IMAGES = 3;
+
   const [formData, setFormData] = useState({
     name: "",
     type: "",
     description: "",
-    offer_content: "",
     id_branch: id_branch,
     video: "",
   });
@@ -94,8 +95,6 @@ const AddOffers = () => {
     },
   });
 
-
-
   // input change handler
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -150,8 +149,15 @@ const AddOffers = () => {
   const handleDescriptionImageChange = (e) => {
     const files = e.target.files;
     if (files.length > 0) {
-      // Add the new files to the state
+      const existingImages = offer_img_path.filter(img => typeof img === "string");
+      const totalImages = existingImages.length + files.length;
+
+      if (totalImages > MAX_IMAGES) {
+        toast.error(`Maximum ${MAX_IMAGES} images allowed`);
+        return;
+      }
       setOfferImgPath((prevState) => [...prevState, ...Array.from(files)]);
+
     }
 
   };
@@ -172,7 +178,7 @@ const AddOffers = () => {
     if (!formData.id_branch) errors.id_branch = "Branch is required";
     if (parseInt(formData.type) === 0) {
       if (!formData.name) errors.name = "Title is required";
-      if (!formData.offer_content) errors.offer_content = "Description is required";
+      if (!formData.description) errors.description = "Description is required";
       if (!formData.id_branch) errors.id_branch = "Branch is required";
       if (offer_img_path.length === 0) errors.offer_img_path = "Upload image is required";
     } else if (parseInt(formData.type) === 1) {
@@ -180,12 +186,12 @@ const AddOffers = () => {
     } else if (parseInt(formData.type) === 2) {
       if (offer_img_path.length === 0) errors.offer_img_path = "Upload image is required";
     } else if (parseInt(formData.type) === 3) {
-      if (!formData.offer_content) errors.offer_content = "Description is required";
+      if (!formData.description) errors.description = "Description is required";
     } else if (parseInt(formData.type) === 4) {
       if (video.length === 0) errors.video = "Video is required";
     } else {
       if (!formData.name) errors.name = "Title is required";
-      if (!formData.offer_content) errors.offer_content = "Description is required";
+      if (!formData.description) errors.description = "Description is required";
       if (!formData.id_branch) errors.id_branch = "Branch is required";
       if (offer_img_path.length === 0) errors.offer_img_path = "Upload image is required";
       if (video.length === 0) errors.video = "Video is required";
@@ -201,7 +207,6 @@ const AddOffers = () => {
   const { mutate: createoffersMutate } = useMutation({
     mutationFn: createoffers,
     onSuccess: (response) => {
-
       toast.success(response.message)
          dispatch(setid(null));
       navigate('/catalog/offers')
@@ -220,10 +225,19 @@ const AddOffers = () => {
     const formDataToSend = new FormData();
     formDataToSend.append("name", formData.name);
     formDataToSend.append("type", formData.type);
-    formDataToSend.append("offer_content", formData.offer_content);
+    formDataToSend.append("description", formData.description);
     formDataToSend.append("id_branch", formData.id_branch);
     formDataToSend.append("video", formData.video);
-    if (offer_img_path) formDataToSend.append("offer_img_path", offer_img_path);
+    if (offer_img_path && offer_img_path.length > 0) {
+      offer_img_path.forEach((image, index) => {
+        if (image instanceof File) {
+          formDataToSend.append("offer_img_path", image);
+        }
+        else if (typeof image === "string") {
+          formDataToSend.append("offer_img_path", image);
+        }
+      });
+    }
 
     createoffersMutate(formDataToSend);
   };
@@ -274,11 +288,21 @@ const AddOffers = () => {
     const formDataToSend = new FormData();
     formDataToSend.append("name", formData.name);
     formDataToSend.append("type", formData.type);
-    formDataToSend.append("offer_content", formData.offer_content);
+    formDataToSend.append("description", formData.description);
     formDataToSend.append("id_branch", formData.id_branch);
     formDataToSend.append("video", formData.video);
-    console.log(offer_img_path);
-    if (offer_img_path) formDataToSend.append("offer_img_path", offer_img_path);
+
+    if (offer_img_path && offer_img_path.length > 0) {
+      offer_img_path.forEach((image, index) => {
+        if (image instanceof File) {
+          formDataToSend.append("offer_img_path", image);
+        }
+        else if (typeof image === "string") {
+          formDataToSend.append("offer_img_path", image);
+        }
+      });
+    }
+
     updateoffermutate({ id: formData._id, data: formDataToSend });
   };
 
@@ -450,6 +474,7 @@ const AddOffers = () => {
                   Upload Image<span className="text-red-400">*</span>
                 </label>
                 <div className="flex gap-4">
+                {offer_img_path.length < MAX_IMAGES && (
                   <div className="flex-1">
                     <label
                       htmlFor="offer_img_path"
@@ -466,11 +491,11 @@ const AddOffers = () => {
                       id="offer_img_path"
                       type="file"
                       accept="image/*"
-                      multiple // Allow multiple files
+                      multiple
                     />
                   </div>
+                )}
 
-                  {/* Display the selected images */}
                   {offer_img_path.length > 0 && (
                     <div className="flex gap-4 flex-wrap">
                       {offer_img_path.map((file, index) => (
@@ -489,7 +514,7 @@ const AddOffers = () => {
                             src={
                               typeof file === "string"
                                 ? file
-                                : URL.createObjectURL(file) // Use URL.createObjectURL to preview image
+                                : URL.createObjectURL(file)
                             }
                             alt="Description image preview"
                             className="w-full h-full object-cover"
@@ -511,16 +536,16 @@ const AddOffers = () => {
                   Description<span className="text-red-400">*</span>
                 </label>
                 <textarea
-                  name="offer_content"
-                  value={formData.offer_content}
+                  name="description"
+                  value={formData.description}
                   type="text"
                   onChange={handleInputChange}
                   className="border-2 border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                   placeholder="Enter Here"
                 />
-                {formErrors.offer_content && (
+                {formErrors.description && (
                   <span className="text-red-500 text-sm mt-1">
-                    {formErrors.offer_content}
+                    {formErrors.description}
                   </span>
                 )}
               </div>

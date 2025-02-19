@@ -4,31 +4,38 @@ import { format } from 'date-fns';
 import { useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import { SlidersHorizontal, Search, X } from 'lucide-react'
-import { giftaccountcount,getgiftvendorbranchById, giftissuetype, getgiftitemvendorById, getallbranch, giftissuesdatatable, changegiftinwardStatus, deletegiftinward, deletegiftissues } from '../../../api/Endpoints'
+import { giftaccountcount, getgiftvendorbranchById, giftissuetype, getgiftitemvendorById, getallbranch, giftissuesdatatable, changegiftinwardStatus, deletegiftinward, deletegiftissues } from '../../../api/Endpoints'
 import { toast } from 'react-toastify'
-import { CalendarDays, RefreshCcw} from 'lucide-react'
+import { CalendarDays, RefreshCcw } from 'lucide-react'
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import { FaGifts } from "react-icons/fa";
 import chitrcvd from '../../../../assets/chitrcvd.svg';
 import nonchitrcvd from '../../../../assets/nonchitrcvd.svg';
 import balancegift from '../../../../assets/giftblnc.svg';
-import { useDispatch,useSelector } from 'react-redux'
+import { openModal } from '../../../../redux/modalSlice';
+import Modal from '../../../components/common/Modal';
+import { useDispatch, useSelector } from 'react-redux'
+import { eventEmitter } from '../../../../utils/EventEmitter';
 import { setbranchId } from '../../../../redux/clientFormSlice';
+import usePagination from '../../../hooks/usePagination'
+import { useDebounce } from '../../../hooks/useDebounce';
 
 
 const GiftIssued = () => {
 
   const navigate = useNavigate()
-  
+   const dispatch = useDispatch();
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const roledata = useSelector((state) => state.clientForm.roledata);
-  const id_branch  = roledata?.branch;
-  const [isLoading,setisLoading] = useState(true)
+  const id_branch = roledata?.branch;
+  const [isLoading, setisLoading] = useState(true)
+  const [filtered, SetFiltered] = useState(false)
 
   const [search, setSearch] = useState('')
+    const debouncedSearch = useDebounce(search, 600)
   const [giftissues, setGiftissues] = useState([])
-   const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedRow, setSelectedRow] = useState(null)
@@ -39,9 +46,9 @@ const GiftIssued = () => {
   const [vendorfilter, setVendor] = useState([]);
   const [branchfilter, setBranch] = useState([]);
   const [giftitemfilter, setGiftitem] = useState([]);
-  const [giftcount,setGiftcount]  = useState({});
+  const [giftcount, setGiftcount] = useState({});
   const [issuetype, setIssuetype] = useState([]);
-  
+
   const [filters, setFilters] = React.useState({
     from_date: '',
     to_date: '',
@@ -50,32 +57,51 @@ const GiftIssued = () => {
     id_gift: ''
   });
 
+
+    useEffect(() => {
   
+      eventEmitter.on('CONFIRMATION_SUBMIT', (data) => {
+        try {
   
-    const handleReset = (e) => {
-      setFromdate("");
-      setTodate("");
-      setFilters(prev => ({
-        ...prev, 
-        id_branch: id_branch,
-        gift_vendorid:"",
-        id_gift:""
-      }));
-      toast.success("Filter is cleared");
-      const filterTosend = {
-        page:currentPage,
-        from_date:from_date,
-        to_date:to_date,
-        limit: itemsPerPage,
-        search: search,
-        id_branch:filters.id_branch,
-        gift_vendorid:"",
-        id_gift:""
+          deleteGiftIssued(data.giftIssuedId);
+          eventEmitter.off('CONFIRMATION_SUBMIT');
+        } catch (error) {
+          eventEmitter.off('CONFIRMATION_SUBMIT');
+          console.error('Error:', error);
+        }
+      });
+  
+      return () => {
+        eventEmitter.off('CONFIRMATION_SUBMIT');
       };
-      giftaccountcountMutate(filterTosend);
-      giftissuesMutate(filterTosend)
-    }
-  
+    }, []);
+
+
+  const handleReset = (e) => {
+    setFromdate("");
+    setTodate("");
+    setFilters(prev => ({
+      ...prev,
+      id_branch: id_branch,
+      gift_vendorid: "",
+      id_gift: ""
+    }));
+    toast.success("Filter is cleared");
+    SetFiltered(false)
+    const filterTosend = {
+      page: currentPage,
+      from_date: from_date,
+      to_date: to_date,
+      limit: itemsPerPage,
+      search: search,
+      id_branch: filters.id_branch,
+      gift_vendorid: "",
+      id_gift: ""
+    };
+    giftaccountcountMutate(filterTosend);
+    giftissuesMutate(filterTosend)
+  }
+
 
   const filterInputchange = (e) => {
     const { name, value } = e.target;
@@ -105,32 +131,33 @@ const GiftIssued = () => {
     };
     setbranchId(filters.id_branch);
 
-      setIsFilterOpen(false)
-      giftissuesMutate(filterTosend);
-    
+    setIsFilterOpen(false)
+    SetFiltered(true)
+    giftissuesMutate(filterTosend);
+
     giftaccountcountMutate(filterTosend);
   };
 
   useEffect(() => {
-    getallbranchMutate();
-    getallissuetypeMutate();
+    if (isFilterOpen === true) {
+      getallbranchMutate();
+      getallissuetypeMutate()
+    }
   }, []);
 
   useEffect(() => {
-    console.log("id_branch---",id_branch)
-    if(id_branch){
-       giftaccountcountMutate({id_branch:id_branch});
+
+    if (id_branch) {
+      giftaccountcountMutate({ id_branch: id_branch });
     }
   }, [id_branch]);
 
   const { mutate: giftaccountcountMutate } = useMutation({
     mutationFn: giftaccountcount,
     onSuccess: (response) => {
-      if(response){
+      if (response) {
         setGiftcount(response?.data);
       }
-   
-      
     },
   });
 
@@ -169,7 +196,7 @@ const GiftIssued = () => {
 
   //mutation to get scheme type
   const { mutate: giftissuesMutate } = useMutation({
-    mutationFn: (payload)=>  giftissuesdatatable(payload),
+    mutationFn: (payload) => giftissuesdatatable(payload),
     onSuccess: (response) => {
 
       setGiftissues(response.data)
@@ -232,41 +259,76 @@ const GiftIssued = () => {
     }
   };
 
-  const handleDelete = async (id) => {
-    let response = await deletegiftissues(id);
-    if (response) {
-      toast.success(response.message);
 
-      giftissuesMutate({ page: currentPage, limit: itemsPerPage, search: search })
-    }
-  };
+  
+    const handleDelete = (id) => {
+      dispatch(openModal({
+        modalType: 'CONFIRMATION',
+        header: 'Delete giftIssued',
+        formData: {
+          message: 'Are you sure you want to delete this giftIssued?',
+          giftIssuedId: id
+        },
+        buttons: {
+          cancel: {
+            text: 'Cancel'
+          },
+          submit: {
+            text: 'Delete'
+          }
+        }
+      }))
+    };
 
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
+   const { mutate: deleteGiftIssued } = useMutation({
+      mutationFn: (id)=> deletegiftissues(id),
+      onSuccess: (response, deletedId) => {
+      const deletedData = giftissues.filter(e => e._id !== deletedId)
+      setGiftissues(deletedData)
+         toast.success(response.message);
+        eventEmitter.off('CONFIRMATION_SUBMIT');
+      },
+      onError: (error) => {
+        console.error("Error:", error);
+      },
+    });
 
 
   const handleItemsPerPageChange = (value) => {
     setItemsPerPage(value);
     setCurrentPage(1);
   };
-  const paginationButtons = [];
-  for (let i = 1; i <= totalPages; i++) {
-    paginationButtons.push(
-      <button
-        key={i}
-        onClick={() => handlePageChange(i)}
-        className={`p-2 w-10 h-10 rounded-md  ${currentPage === i ? ' text-white' : 'text-slate-400'}`}
-        style={{ backgroundColor: layout_color }} >
-        {i}
-      </button>
-    );
-  }
+
+  const handlePageChange = (page) => {
+
+    const pageNumber = Number(page);
+    if (!pageNumber || isNaN(pageNumber) || pageNumber < 1 || pageNumber > totalPages) {
+      return;
+    }
+
+    setCurrentPage(pageNumber);
+
+  };
 
 
+  const nextPage = () => {
+    setCurrentPage((prevPage) => (prevPage < totalPages ? prevPage + 1 : prevPage));
+  };
+
+  const prevPage = () => {
+    setCurrentPage((prevPage) => (prevPage > 1 ? prevPage - 1 : prevPage));
+  };
+
+
+  const paginationData = { totalItems: totalPages, currentPage: currentPage, itemsPerPage: itemsPerPage, handlePageChange: handlePageChange }
+  const paginationButtons = usePagination(paginationData)
 
 
   const columns = [
+    {
+      header: 'S.No',
+      cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
+    },
     {
       header: 'Actions',
       cell: (row, rowIndex) => (
@@ -338,11 +400,6 @@ const GiftIssued = () => {
       ),
 
     },
-    
-    {
-      header: 'S.No',
-      cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
-    },
     {
       header: 'Customer Name',
       cell: (row) => row?.id_customer?.firstname,
@@ -358,7 +415,7 @@ const GiftIssued = () => {
         return gift_names.join(", ");
       }
     },
-    
+
     {
       header: "No.Of Gifts",
       cell: (row) => row?.gifts?.length
@@ -375,7 +432,7 @@ const GiftIssued = () => {
       header: "Branch Name",
       cell: (row) => row?.id_branch.branch_name
     }
-  
+
   ];
 
   return (
@@ -390,7 +447,7 @@ const GiftIssued = () => {
             </div>
             <div className='flex items-center justify-center'>
               <div className='flex rounded-md p-3 items-center justify-center'
-              style={{ backgroundColor: layout_color }}>
+                style={{ backgroundColor: layout_color }}>
                 <FaGifts size={24} className="text-white" />
               </div>
             </div>
@@ -402,7 +459,7 @@ const GiftIssued = () => {
             </div>
             <div className='flex items-center justify-center'>
               <div className='flex rounded-md p-3 items-center justify-center'
-              style={{ backgroundColor: layout_color }}>
+                style={{ backgroundColor: layout_color }}>
                 <img src={chitrcvd} alt="chitrcvd" className='w-6 h-6' />
               </div>
             </div>
@@ -414,7 +471,7 @@ const GiftIssued = () => {
             </div>
             <div className='flex items-center justify-center'>
               <div className='flex rounded-md p-3 items-center justify-center'
-              style={{ backgroundColor: layout_color }}>
+                style={{ backgroundColor: layout_color }}>
                 <img src={nonchitrcvd} alt="nonchitrcvd" className='w-6 h-6' />
               </div>
             </div>
@@ -426,7 +483,7 @@ const GiftIssued = () => {
             </div>
             <div className='flex items-center justify-center'>
               <div className='flex rounded-md p-3 items-center justify-center'
-              style={{ backgroundColor: layout_color }}>
+                style={{ backgroundColor: layout_color }}>
                 <img src={balancegift} alt="balancegift" className='w-6 h-6' />
               </div>
             </div>
@@ -445,21 +502,32 @@ const GiftIssued = () => {
           />
         </div>
         <div className="flex flex-row items-center justify-end gap-2">
+          {
+            filtered ?
+              <>
                 <button
-                      id="filter"
-                      className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
-                      onClick={() => handleReset()}
-                      style={{ backgroundColor: layout_color }}>
-                      <RefreshCcw size={20} />
-                    </button>
-          
-          <button
-            id="filter"
-            className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
-            onClick={() => setIsFilterOpen(true)}
-            style={{ backgroundColor: layout_color }}>
-            <SlidersHorizontal size={20} />
-          </button>
+                  id="filter"
+                  className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
+                  onClick={() => handleReset()}
+                  style={{ backgroundColor: layout_color }}>
+                  <RefreshCcw size={20} />
+                </button>
+              </>
+              :
+              <>
+                <button
+                  id="filter"
+                  className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
+                  onClick={() => setIsFilterOpen(true)}
+                  style={{ backgroundColor: layout_color }}>
+                  <SlidersHorizontal size={20} />
+                </button>
+              </>
+
+          }
+
+
+
           <button
             className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
             onClick={handleClick}
@@ -529,7 +597,7 @@ const GiftIssued = () => {
                   Issue Type
                 </label>
                 <div className="relative">
-                  <select name="issue_type"  className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
+                  <select name="issue_type" className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
                     <option value='' selected>--Select--</option>
                     {issuetype.map((istype) => (
                       <option key={istype.id} value={istype.id}>{istype.name}</option>
@@ -544,27 +612,27 @@ const GiftIssued = () => {
                 </div>
               </div>
               {id_branch === "0" && (
-                 <div className="space-y-2">
-                 <label className="block text-sm font-medium text-gray-700">
-                   Branch
-                 </label>
-                 <div className="relative">
-                   <select name="id_branch" onChange={(e) => { filterInputchange(e); handleVendorChange(e) }} className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'>
-                     <option value='' selected >--Select--</option>
-                     {branchfilter.map((branch) => (
-                       <option key={branch._id} value={branch._id}>{branch.branch_name}</option>
-                     ))
-                     }
-                   </select>
-                   <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                     <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
-                       <path d="M19 9l-7 7-7-7"></path>
-                     </svg>
-                   </div>
-                 </div>
-               </div>
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Branch
+                  </label>
+                  <div className="relative">
+                    <select name="id_branch" onChange={(e) => { filterInputchange(e); handleVendorChange(e) }} className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'>
+                      <option value='' selected >--Select--</option>
+                      {branchfilter.map((branch) => (
+                        <option key={branch._id} value={branch._id}>{branch.branch_name}</option>
+                      ))
+                      }
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                      <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
+                        <path d="M19 9l-7 7-7-7"></path>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
               )}
-              
+
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700">
                   Gift Vendor
@@ -630,13 +698,17 @@ const GiftIssued = () => {
           isLoading={isLoading}
         />
       </div>
-      <div className="flex justify-between mt-4 p-2">
+   {
+    giftissues > 0
+ && (
+  <>
+  <div className="flex justify-between mt-4 p-2">
         <div className="flex flex-row items-center justify-center gap-2">
           <div className="flex items-center gap-4">
             <button
-              onClick={() => handlePageChange(currentPage - 1)}
+              onClick={prevPage}
               disabled={currentPage === 1}
-              className="p-2 text-gray-500 rounded-md"
+              className={`p-2 text-gray-500 rounded-md ${currentPage === 1 ? "cursor-not-allowed" : "cursor-pointer"}`}
             >
               Previous
             </button>
@@ -648,9 +720,9 @@ const GiftIssued = () => {
 
           <div className="flex items-center">
             <button
-              onClick={() => handlePageChange(currentPage + 1)}
+              onClick={nextPage}
               disabled={currentPage === totalPages}
-              className="p-2 text-gray-500 rounded-md"
+              className={`p-2 text-gray-500 rounded-md ${currentPage === totalPages ? "cursor-not-allowed" : "cursor-pointer"}`}
             >
               Next
             </button>
@@ -665,7 +737,7 @@ const GiftIssued = () => {
             onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
             className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
           >
-            <option value={10}>10</option>
+             <option value={10}>10</option>
                   <option value={25}>25</option>
                   <option value={50}>50</option>
                   <option value={100}>100</option>
@@ -675,7 +747,10 @@ const GiftIssued = () => {
           </select>
           <span className="text-gray-500">entries</span>
         </div>
+        <Modal/>
       </div>
+  </>
+ )   }
     </div>
   )
 }

@@ -459,10 +459,6 @@ const Schemeaccount = () => {
       ),
     },
     {
-      header: 'S.No',
-      cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
-    },
-    {
       header: 'Account Name',
       cell: (row) => row?.account_name,
     },
