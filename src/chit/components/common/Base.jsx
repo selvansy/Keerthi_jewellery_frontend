@@ -33,11 +33,16 @@ import { jwtDecode } from 'jwt-decode';
 import { useSelector, useDispatch } from 'react-redux';
 import { setRoleData } from '../../../redux/clientFormSlice';
 import { useMutation } from '@tanstack/react-query';
-import { getactivemenuaccess,updatelayoutcolor } from "../../api/Endpoints"
+import { getactivemenuaccess, updatelayoutcolor } from "../../api/Endpoints"
 import { GiConsoleController } from 'react-icons/gi';
 import { setLayoutColor } from "../../../redux/clientFormSlice"
 import { logout, SetMenu } from '../../../redux/authSlice';
 import * as Icons from "lucide-react";
+// import { LayoutGrid } from 'lucide-react';
+// import * as Icons  from "lucide-react/dynamic";
+// import { DynamicIcon } from "lucide-react/dynamic";
+
+
 const Base = ({ renderContent: RenderContent }) => {
 
   const [settingsOpen, setSettingsOpen] = useState(false)
@@ -70,15 +75,15 @@ const Base = ({ renderContent: RenderContent }) => {
   const headerMenuRef = useRef(null);
   const navigate = useNavigate();
   let dispatch = useDispatch();
-  
+
   const { info } = useSelector((state) => state.auth);
   const decoded = jwtDecode(info);
   let id = decoded.id_role._id;
 
   // const menus = useSelector((state) => state.auth.menu);
   // const submenu = useSelector((state) => state.auth.subMenu);
- 
- 
+
+
   const roledata = useSelector((state) => state.clientForm.roledata);
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
@@ -99,141 +104,141 @@ const Base = ({ renderContent: RenderContent }) => {
 
   const role = getRoleCharacter(roledata?.id_role?.id_role);
 
-// useEffect(() => {
-  
-//   let menuArray = [];
-//   if (menus.length > 0) {
-//     menus.forEach((menurow) => {
-//       let submenuArray = [];
-//       let menuItem = {
-//         text: menurow?.menu_name,
-//         hasSubmenu: true,
-//       };
+  // useEffect(() => {
 
-//       if (menurow?.menu_list.length > 0) {
-//         menurow?.menu_list.forEach((submenurow) => {
-//           submenuArray.push({
-//             text: submenurow?.submenu_name,
-//             action: () => handleClick(submenurow?.submenu_name),
-//           });
-//         });
+  //   let menuArray = [];
+  //   if (menus.length > 0) {
+  //     menus.forEach((menurow) => {
+  //       let submenuArray = [];
+  //       let menuItem = {
+  //         text: menurow?.menu_name,
+  //         hasSubmenu: true,
+  //       };
 
-//         // Attach the submenu array to the menu item
-//         menuItem.submenu = submenuArray;
-//       }
+  //       if (menurow?.menu_list.length > 0) {
+  //         menurow?.menu_list.forEach((submenurow) => {
+  //           submenuArray.push({
+  //             text: submenurow?.submenu_name,
+  //             action: () => handleClick(submenurow?.submenu_name),
+  //           });
+  //         });
 
-//       // Add the menu item to the main menuArray
-//       menuArray.push(menuItem);
-    
-//     });
-//   }
+  //         // Attach the submenu array to the menu item
+  //         menuItem.submenu = submenuArray;
+  //       }
 
-//   menuArray.unshift(
-//     {
-//       text: "Dashboard",
-//       hasSubmenu: false
-//     }
-//   )
-//   setMenuData(menuArray);
+  //       // Add the menu item to the main menuArray
+  //       menuArray.push(menuItem);
 
-// }, [])
+  //     });
+  //   }
+
+  //   menuArray.unshift(
+  //     {
+  //       text: "Dashboard",
+  //       hasSubmenu: false
+  //     }
+  //   )
+  //   setMenuData(menuArray);
+
+  // }, [])
 
 
 
-useEffect(() => {
-  if (decoded.id_role.id_role === 1) {
-    setIsSuperAdmin(true);
-  } else {
-    getAllMenusMutate(decoded.id_role._id);
-    setIsSuperAdmin(false);
-  }
-
-}, []);
-
-useEffect(() => {
-
-  if(laycolor!==""){
-    let id_branch = "";
-    if(decoded.branch === "0"){
-       id_branch = decoded.branch;
+  useEffect(() => {
+    if (decoded.id_role.id_role === 1) {
+      setIsSuperAdmin(true);
     } else {
-       id_branch = decoded.branch;
-    }
-  updatelayoutmutate({
-    id_branch:id_branch,
-    layout_color:laycolor
-  })
-}
-}, [laycolor]);
-
-
-useEffect(() => {
-  const route = RouteList.find(route => {
-    return route.name === selectedSection || route.name === selectedParentSection;
-  });
-
-  if (route) {
-
-    setSelectedRoute(route);
-    if (route.name === "Dashboard") {
-      handleClick("Dashboard")
+      getAllMenusMutate(decoded.id_role._id);
+      setIsSuperAdmin(false);
     }
 
-  }
-}, [selectedSection, selectedParentSection]);
+  }, []);
 
-useEffect(() => {
-  const handleClickOutside = (event) => {
-    if (
-      sidebarRef.current &&
-      !sidebarRef.current.contains(event.target) &&
-      !event.target.closest('button[aria-label="toggle-sidebar"]')
-    ) {
-      setIsSidebarOpen(false);
+  useEffect(() => {
+
+    if (laycolor !== "") {
+      let id_branch = "";
+      if (decoded.branch === "0") {
+        id_branch = decoded.branch;
+      } else {
+        id_branch = decoded.branch;
+      }
+      updatelayoutmutate({
+        id_branch: id_branch,
+        layout_color: laycolor
+      })
     }
+  }, [laycolor]);
 
-    if (
-      settingsRef.current &&
-      !settingsRef.current.contains(event.target) &&
-      !event.target.closest('button[aria-label="toggle-settings"]')
-    ) {
-      setSettingsOpen(false);
+
+  useEffect(() => {
+    const route = RouteList.find(route => {
+      return route.name === selectedSection || route.name === selectedParentSection;
+    });
+
+    if (route) {
+
+      setSelectedRoute(route);
+      if (route.name === "Dashboard") {
+        handleClick("Dashboard")
+      }
+
     }
+  }, [selectedSection, selectedParentSection]);
 
-    if (
-      headerMenuRef.current &&
-      !headerMenuRef.current.contains(event.target)
-    ) {
-      setIsHeaderMenuOpen(false);
-    }
-  };
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        sidebarRef.current &&
+        !sidebarRef.current.contains(event.target) &&
+        !event.target.closest('button[aria-label="toggle-sidebar"]')
+      ) {
+        setIsSidebarOpen(false);
+      }
 
-  const handleResize = () => {
-    if (window.innerWidth >= 1024) {
-      setIsSidebarOpen(false);
-      setSettingsOpen(false);
-      setIsHeaderMenuOpen(false);
-    }
-  };
+      if (
+        settingsRef.current &&
+        !settingsRef.current.contains(event.target) &&
+        !event.target.closest('button[aria-label="toggle-settings"]')
+      ) {
+        setSettingsOpen(false);
+      }
 
-  const handleEscape = (event) => {
-    if (event.key === 'Escape') {
-      setIsSidebarOpen(false);
-      setSettingsOpen(false);
-      setIsHeaderMenuOpen(false);
-    }
-  };
+      if (
+        headerMenuRef.current &&
+        !headerMenuRef.current.contains(event.target)
+      ) {
+        setIsHeaderMenuOpen(false);
+      }
+    };
 
-  document.addEventListener('mousedown', handleClickOutside);
-  window.addEventListener('resize', handleResize);
-  document.addEventListener('keydown', handleEscape);
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        setIsSidebarOpen(false);
+        setSettingsOpen(false);
+        setIsHeaderMenuOpen(false);
+      }
+    };
 
-  return () => {
-    document.removeEventListener('mousedown', handleClickOutside);
-    window.removeEventListener('resize', handleResize);
-    document.removeEventListener('keydown', handleEscape);
-  };
-}, []);
+    const handleEscape = (event) => {
+      if (event.key === 'Escape') {
+        setIsSidebarOpen(false);
+        setSettingsOpen(false);
+        setIsHeaderMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    window.addEventListener('resize', handleResize);
+    document.addEventListener('keydown', handleEscape);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      window.removeEventListener('resize', handleResize);
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, []);
 
 
 
@@ -246,25 +251,25 @@ useEffect(() => {
 
 
 
-        
+
   const { mutate: getAllMenusMutate } = useMutation({
     mutationFn: getactivemenuaccess,
     onSuccess: (response) => {
-       
-      dispatch(SetMenu(response.data)) 
+
+      dispatch(SetMenu(response.data))
 
       if (response) {
         let menuArray = [];
         if (response.data.length > 0) {
           response.data.forEach((menurow) => {
-             
+
             let submenuArray = [];
             let menuItem = {
               text: menurow?.menu_name,
               hasSubmenu: true,
               menuIcon: menurow.menu_icon
             };
-             
+
 
             if (menurow?.menu_list.length > 0) {
               menurow?.menu_list.forEach((submenurow) => {
@@ -276,13 +281,13 @@ useEffect(() => {
 
               // Attach the submenu array to the menu item
               menuItem.submenu = submenuArray;
-        
+
             }
 
             // Add the menu item to the main menuArray
             menuArray.push(menuItem);
-    
-          
+
+
           });
         }
 
@@ -301,10 +306,10 @@ useEffect(() => {
 
 
 
- //update category
+  //update category
   const { mutate: updatelayoutmutate } = useMutation({
     mutationFn: updatelayoutcolor,
-    onSuccess: (response) => {     
+    onSuccess: (response) => {
       toast.success(response.message);
     },
     onError: (error) => {
@@ -346,15 +351,24 @@ useEffect(() => {
     </div>
   );
 
-  const MenuItem =  ({ text, menuIcon, hasSubmenu = false, isOpen = false, onClick, children }) => {
+  const MenuItem = ({ text, menuIcon, hasSubmenu = false, isOpen = false, onClick, children }) => {
 
     const isSelected = hasSubmenu
       ? selectedParentSection === text
       : selectedSection === text && selectedParentSection === text;
 
-      const IconComponent = Icons[menuIcon] || Icons.AlertCircle;
-     
-      console.log(IconComponent);
+      const DynamicIcon = ({ name, size = 24, color = "currentColor" }) => {
+        const IconComponent = Icons[name]; // Dynamically get the icon component
+        return IconComponent ? <IconComponent size={size} color={color} /> : <Icons.AlertCircle size={size} color={color} />;
+      };
+      // console.log("Icons keys:", Object.keys(Icons)); // Shows all available icon names
+  
+      // Ensure menuIcon is a valid key
+      // const IconComponent = Icons[String(menuIcon)] ;
+      // const IconComponent = Icons[menuIcon] ;
+    // const IconComponent = Icons[menuIcon] || Icons.AlertCircle;
+
+    // console.log("IconComponent:", IconComponent);
 
     return (
       <div className="w-full px-3 py-1 relative">
@@ -376,9 +390,14 @@ useEffect(() => {
             }
           }}
         >
-        {IconComponent && React.createElement(IconComponent, { className: "w-5 h-5 mr-3" })}
+          {/* {menuIcon && React.createElement(menuIcon)} */}
+          {/* {IconComponent && React.createElement(IconComponent, { className: "w-5 h-5 mr-3" })} */}
+          {/* {IconComponent ? <IconComponent className="w-5 h-5 mr-3" /> : <Icons.AlertCircle className="w-5 h-5 mr-3" />} */}
+          {/* <DynamicIcon name={menuIcon} className="w-5 h-5 text-white" /> */}
 
-<span className="flex-1 text-left">{text}</span>
+
+
+          <span className="flex-1 text-left">{text}</span>
 
           {/* {
             text === "Dashboard" ? (
@@ -538,7 +557,7 @@ useEffect(() => {
     // { name: "Referral Incentive",link:"", icon: <Share2 className="text-teal-500" /> },
   ];
 
- 
+
 
 
   return (
@@ -560,48 +579,48 @@ useEffect(() => {
 
           {
             roledata ?
-            <div className="relative inline-block text-left">
-            {/* Dropdown Button */}
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="flex items-center gap-2 p-2 focus:outline-none"
-            >
-              {/* Profile Circle */}
-              <span
-                className="flex items-center justify-center w-9 h-9 text-lg font-semibold text-white rounded-full"
-                style={{ backgroundColor: layout_color }}
-              >
-                {role}
-              </span>
-
-              <div className="pointer-events-none absolute inset-y-0 left-[44px] top-[10px] flex items-center">
-                  <svg
-                    className="h-4 w-4 text-gray-400"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="3"
-                    viewBox="0 0 24 24"
-                    stroke="black"
-                  >
-                    <path d="M19 9l-7 7-7-7"></path>
-                  </svg>
-                </div>
-
-            </button>
-      
-            {/* Dropdown Menu */}
-            {isOpen && (
-              <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-md shadow-lg">
+              <div className="relative inline-block text-left">
+                {/* Dropdown Button */}
                 <button
-                  className="block w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
-                  onClick={handleLogout}
+                  onClick={() => setIsOpen(!isOpen)}
+                  className="flex items-center gap-2 p-2 focus:outline-none"
                 >
-                  Logout
+                  {/* Profile Circle */}
+                  <span
+                    className="flex items-center justify-center w-9 h-9 text-lg font-semibold text-white rounded-full"
+                    style={{ backgroundColor: layout_color }}
+                  >
+                    {role}
+                  </span>
+
+                  <div className="pointer-events-none absolute inset-y-0 left-[44px] top-[10px] flex items-center">
+                    <svg
+                      className="h-4 w-4 text-gray-400"
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="3"
+                      viewBox="0 0 24 24"
+                      stroke="black"
+                    >
+                      <path d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </div>
+
                 </button>
+
+                {/* Dropdown Menu */}
+                {isOpen && (
+                  <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-md shadow-lg">
+                    <button
+                      className="block w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
+                      onClick={handleLogout}
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
 
               :
               <button className="flex flex-row items-center px-4 py-2 text-gray-900 font-semibold"
@@ -708,18 +727,18 @@ useEffect(() => {
                   <div className='flex flex-col'>
                     {/* Title  */}
 
-                   
-                     <div className='flex justify-between items-center'>
-                     <div className='p-3 border-l'>
-                     <h3 className='text-xl font-semibold text-start px-3'>Template Customizer</h3>
-                     <p className='text-[#6D6B77] px-3'>Customize and preview in real time</p>
-                     </div>
-                     <div className='p-3 text-xl'>
-                    <div className='flex items-center gap-2'>
-                    <RefreshCcw size={24} onClick={()=>{dispatch(setLayoutColor("#023453"));  setLaycolor("#023453");} }/>
-                    <X size={28}  onClick={() => setSettingsOpen((prev) => !prev)} />
-                    </div>
-                    </div>
+
+                    <div className='flex justify-between items-center'>
+                      <div className='p-3 border-l'>
+                        <h3 className='text-xl font-semibold text-start px-3'>Template Customizer</h3>
+                        <p className='text-[#6D6B77] px-3'>Customize and preview in real time</p>
+                      </div>
+                      <div className='p-3 text-xl'>
+                        <div className='flex items-center gap-2'>
+                          <RefreshCcw size={24} onClick={() => { dispatch(setLayoutColor("#023453")); setLaycolor("#023453"); }} />
+                          <X size={28} onClick={() => setSettingsOpen((prev) => !prev)} />
+                        </div>
+                      </div>
 
                     </div>
 
@@ -729,49 +748,49 @@ useEffect(() => {
                         <div
                           className="w-16 h-12 m-2 p-3 border-2  rounded-md text-center flex justify-center items-center shadow-lg"
                           style={{ backgroundColor: "#023453" }}
-                          onClick={() =>{ dispatch(setLayoutColor("#023453"));  setLaycolor("#023453");}} >
+                          onClick={() => { dispatch(setLayoutColor("#023453")); setLaycolor("#023453"); }} >
 
                           <p className='text-center text-white text-[12px]'>#023453 </p>
                         </div>
                         <div
                           className="w-16 h-12 m-2 p-3 border-2 rounded-md text-center flex justify-center items-center shadow-lg"
                           style={{ backgroundColor: "#484453" }}
-                          onClick={() =>{ dispatch(setLayoutColor("#484453"));  setLaycolor("#484453");}} >
+                          onClick={() => { dispatch(setLayoutColor("#484453")); setLaycolor("#484453"); }} >
 
                           <p className='text-center text-white text-[12px]'>#484453 </p>
                         </div>
                         <div
                           className="w-16 h-12 m-2 p-3 border-2  rounded-md text-center flex justify-center items-center shadow-lg"
                           style={{ backgroundColor: "#006EBE" }}
-                          onClick={() =>{ dispatch(setLayoutColor("#006EBE"));  setLaycolor("#006EBE");}} >
+                          onClick={() => { dispatch(setLayoutColor("#006EBE")); setLaycolor("#006EBE"); }} >
 
                           <p className='text-center text-white text-[12px]'>#006EBE </p>
                         </div>
                         <div
                           className="w-16 h-12 m-2 p-3 border-2  rounded-md text-center flex justify-center items-center shadow-lg"
                           style={{ backgroundColor: "#4AA147" }}
-                          onClick={() =>{ dispatch(setLayoutColor("#4AA147"));  setLaycolor("#4AA147");}} >
+                          onClick={() => { dispatch(setLayoutColor("#4AA147")); setLaycolor("#4AA147"); }} >
 
                           <p className='text-center text-white text-[12px]'>#4AA147 </p>
                         </div>
                         <div
                           className="w-16 h-12 m-2 p-3 border-2  rounded-md text-center flex justify-center items-center shadow-lg"
                           style={{ backgroundColor: "#0094AD" }}
-                          onClick={() =>{ dispatch(setLayoutColor("#0094AD"));  setLaycolor("#0094AD");}} >
+                          onClick={() => { dispatch(setLayoutColor("#0094AD")); setLaycolor("#0094AD"); }} >
 
                           <p className='text-center text-white text-[12px]'>#0094AD </p>
                         </div>
                         <div
                           className="w-16 h-12 m-2 p-3 border-2  rounded-md text-center flex justify-center items-center shadow-lg"
                           style={{ backgroundColor: "#034200" }}
-                          onClick={() =>{ dispatch(setLayoutColor("#034200")); setLaycolor("#034200");}} >
+                          onClick={() => { dispatch(setLayoutColor("#034200")); setLaycolor("#034200"); }} >
 
                           <p className='text-center text-white text-[12px]'>#034200 </p>
                         </div>
                         <div
                           className="w-16 h-12 m-2 p-3 border-2  rounded-md text-center flex justify-center items-center shadow-lg"
                           style={{ backgroundColor: "#DD408B" }}
-                          onClick={() => {dispatch(setLayoutColor("#DD408B"));  setLaycolor("#DD408B");}}>
+                          onClick={() => { dispatch(setLayoutColor("#DD408B")); setLaycolor("#DD408B"); }}>
 
                           <p className='text-center text-white text-[12px]'>#DD408B</p>
                         </div>
