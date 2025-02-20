@@ -552,9 +552,9 @@ export const createnewarrivals= async(data)=>{
     return response.data
 }
 
-export const updatenewarrivals= async(data)=>{
-
-    const response= await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/newarrivals/${data.id}`,data.data)
+export const updatenewarrivals= async(id,data)=>{
+    console.log(data)
+    const response= await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/newarrivals/${id}`,data)
     return response.data
 }
 
@@ -1365,13 +1365,13 @@ export const allcountry = async () => {
 }
  
 export const allstate = async (data) => {
-    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/common/state/${data.id_country}`);
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/common/state/${data?.id_country || data}`);
     return response.data;
 } 
 
  
 export const allcity = async (data) => {
-    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/common/city/${data.id_state}`);
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/common/city/${data?.id_state || data}`);
     return response.data;
 }
  
@@ -1641,9 +1641,17 @@ export const todayMetalRate = async(data)=>{
 
 
 export const updatelayoutcolor = async (data) => {
-   
     const response = await Api.patch(`${import.meta.env.VITE_API_URL}/api/admin/layoutsetting/color`, data);
     return response;
 }
 
 
+export const organisation = async (data)=>{
+    const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/organisation`, data)
+    return response.data;
+}
+
+export const getOrganisation = async (data)=>{
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/organisation`, data)
+    return response.data;
+}

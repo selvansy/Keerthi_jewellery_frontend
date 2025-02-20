@@ -11,6 +11,7 @@ function MenuForm({ setIsOpen }) {
 
   const [formData, setFormData] = useState({
     menu_name: "",
+    menu_icon: "",
     id_project: "",
     display_order: "",
   });
@@ -24,6 +25,7 @@ function MenuForm({ setIsOpen }) {
 
   const MenuSchema = Yup.object().shape({
     menu_name: Yup.string().required('menu_name is required'),
+    menu_icon: Yup.string(),
     id_project: Yup.string().required('id_project is required'),
     display_order: Yup.number().required('display_order required'),
   });
@@ -44,6 +46,7 @@ function MenuForm({ setIsOpen }) {
       setFormData({
         id: id,
         menu_name: response.data.menu_name,
+        menu_icon: response.data.menu_icon,
         display_order: response.data.display_order,
         id_project: response.data.id_project,
         projects: projects,
@@ -84,6 +87,7 @@ function MenuForm({ setIsOpen }) {
     if (id) {
       const updateData ={
         menu_name: formData.menu_name,
+        menu_icon: formData.menu_icon,
         display_order: formData.display_order,
         id_project: formData.id_project,
       };
@@ -91,6 +95,7 @@ function MenuForm({ setIsOpen }) {
     } else {
       createMenuMutate({
         menu_name: formData.menu_name,
+        menu_icon: formData.menu_icon,
         display_order: formData.display_order,
         id_project: formData.id_project,
       });
@@ -132,6 +137,21 @@ function MenuForm({ setIsOpen }) {
                 className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               {errors.menu_name && <div className="text-red-500 text-sm">{errors.menu_name}</div>}
+            </div>
+            <div className="flex flex-col space-y-2">
+              <label className="font-medium text-gray-700">
+                Menu Icon
+              </label>
+              <input
+                type="text"
+                name="menu_icon"
+                value={values.menu_icon || ''}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                placeholder="Enter Menu Icon"
+                className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {errors.menu_icon && <div className="text-red-500 text-sm">{errors.menu_icon}</div>}
             </div>
             <div className="flex flex-col space-y-2">
               <label className="font-medium text-gray-700">

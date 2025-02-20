@@ -37,7 +37,7 @@ import { getactivemenuaccess,updatelayoutcolor } from "../../api/Endpoints"
 import { GiConsoleController } from 'react-icons/gi';
 import { setLayoutColor } from "../../../redux/clientFormSlice"
 import { logout, SetMenu } from '../../../redux/authSlice';
-
+import * as Icons from "lucide-react";
 const Base = ({ renderContent: RenderContent }) => {
 
   const [settingsOpen, setSettingsOpen] = useState(false)
@@ -250,17 +250,21 @@ useEffect(() => {
   const { mutate: getAllMenusMutate } = useMutation({
     mutationFn: getactivemenuaccess,
     onSuccess: (response) => {
+       
       dispatch(SetMenu(response.data)) 
 
       if (response) {
         let menuArray = [];
         if (response.data.length > 0) {
           response.data.forEach((menurow) => {
+             
             let submenuArray = [];
             let menuItem = {
               text: menurow?.menu_name,
               hasSubmenu: true,
+              menuIcon: menurow.menu_icon
             };
+             
 
             if (menurow?.menu_list.length > 0) {
               menurow?.menu_list.forEach((submenurow) => {
@@ -342,11 +346,15 @@ useEffect(() => {
     </div>
   );
 
-  const MenuItem = ({ text, hasSubmenu = false, isOpen = false, onClick, children }) => {
+  const MenuItem =  ({ text, menuIcon, hasSubmenu = false, isOpen = false, onClick, children }) => {
 
     const isSelected = hasSubmenu
       ? selectedParentSection === text
       : selectedSection === text && selectedParentSection === text;
+
+      const IconComponent = Icons[menuIcon] || Icons.AlertCircle;
+     
+      console.log(IconComponent);
 
     return (
       <div className="w-full px-3 py-1 relative">
@@ -368,8 +376,11 @@ useEffect(() => {
             }
           }}
         >
+        {IconComponent && React.createElement(IconComponent, { className: "w-5 h-5 mr-3" })}
 
-          {
+<span className="flex-1 text-left">{text}</span>
+
+          {/* {
             text === "Dashboard" ? (
               <>
                 <Home className="w-5 h-5 mr-3" />
@@ -432,7 +443,7 @@ useEffect(() => {
                   <span className="flex-1 text-left">{text}</span>
                 </>
               ) : null
-          }
+          } */}
 
 
           {hasSubmenu && (
