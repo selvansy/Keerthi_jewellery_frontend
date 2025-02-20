@@ -317,7 +317,7 @@ const GeneralDetails = ({setIsAddClient, onPageChange, isLoading = false }) => {
                       onChange={handleChange}
                       className='appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
                     >
-                      <option value='' disabled>--Select--</option>
+                      <option value='' readOnly>--Select--</option>
                       {PrinttypeData.map((printtype) => (
                         <option key={printtype.id} value={printtype.id}>
                           {printtype.name}
@@ -341,7 +341,7 @@ const GeneralDetails = ({setIsAddClient, onPageChange, isLoading = false }) => {
                       onChange={handleChange}
                       className='appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
                     >
-                      <option value="" disabled>--Select--</option>
+                      <option value="" readOnly>--Select--</option>
                       {ReceiptTypeData.map((receipt) => (
                         <option key={receipt.id} value={receipt.id}>
                           {receipt.name}
@@ -365,7 +365,7 @@ const GeneralDetails = ({setIsAddClient, onPageChange, isLoading = false }) => {
                       onChange={handleChange}
                       className='appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
                     >
-                      <option value='' disabled>--Select--</option>
+                      <option value='' readOnly>--Select--</option>
                       {ClosePrintData.map((close) => (
                         <option key={close.id} value={close.id}>
                           {close.name}
@@ -389,7 +389,7 @@ const GeneralDetails = ({setIsAddClient, onPageChange, isLoading = false }) => {
                       onChange={handleChange}
                       className='appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
                     >
-                      <option value='' disabled>--Select--</option>
+                      <option value='' readOnly>--Select--</option>
                       {AccountNoData.map((accountno) => (
                         <option key={accountno.id} value={accountno.id}>
                           {accountno.name}
@@ -414,7 +414,7 @@ const GeneralDetails = ({setIsAddClient, onPageChange, isLoading = false }) => {
                       onChange={handleChange}
                       className='appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
                     >
-                      <option value='' disabled>--Select--</option>
+                      <option value='' readOnly>--Select--</option>
                       {ReferralCalcData.map((referralcalc) => (
                         <option key={referralcalc.id} value={referralcalc.id}>
                           {referralcalc.name}
@@ -439,7 +439,7 @@ const GeneralDetails = ({setIsAddClient, onPageChange, isLoading = false }) => {
                       onChange={handleChange}
                       className='appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
                     >
-                      <option value='' disabled>--Select--</option>
+                      <option value='' readOnly>--Select--</option>
                       {DisplayTypeData.map((display) => (
                         <option key={display.id} value={display.id}>
                           {display.name}
@@ -463,7 +463,7 @@ const GeneralDetails = ({setIsAddClient, onPageChange, isLoading = false }) => {
                       onChange={handleChange}
                       className='appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
                     >
-                      <option value='' disabled>--Select--</option>
+                      <option value='' readOnly>--Select--</option>
                       {DisplayTypeData.map((display) => (
                         <option key={display.id} value={display.id}>
                           {display.name}
@@ -507,7 +507,7 @@ const GeneralDetails = ({setIsAddClient, onPageChange, isLoading = false }) => {
                   Cancel
                 </button>
                 <button
-                  disabled={currentStep === totalPages || isLoading}
+                  readOnly={currentStep === totalPages || isLoading}
                   className=" text-white rounded-md p-2 w-full lg:w-20"
                   type="submit"
                   style={{ backgroundColor: layout_color }} >

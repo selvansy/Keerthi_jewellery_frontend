@@ -199,7 +199,7 @@ const handleCancel = (type) => {
                       ononChange={handleChange}
                       className='appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
                     >
-                      <option value="" disabled>--Select--</option>
+                      <option value="" readOnly>--Select--</option>
                       {PaymentTypeData.map((payment) => (
                         <option key={payment.id} value={payment.id}>
                           {payment.name}
@@ -273,7 +273,7 @@ const handleCancel = (type) => {
                       Cancel
                     </button>
                     <button
-                      disabled={currentStep === totalPages || isLoading}
+                      readOnly={currentStep === totalPages || isLoading}
                       className=" text-white rounded-md p-2 w-full lg:w-20"
                       type="submit"
                       style={{ backgroundColor: layout_color }}  >

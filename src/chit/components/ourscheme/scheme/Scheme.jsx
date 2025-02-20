@@ -758,7 +758,7 @@ const Scheme = () => {
                     onChange={filterInputchange}
 
                   >
-                    <option value="" disabled>
+                    <option value="" readOnly>
                       --Select--
                     </option>
                     {classificationData.map((classification) => (
@@ -789,7 +789,7 @@ const Scheme = () => {
                       onChange={filterInputchange}
                       value={filters.id_metal}
                     >
-                      <option value="" disabled className="text-gray-700">
+                      <option value="" readOnly className="text-gray-700">
                         --Select--
                       </option>
                       {metalData.map((metal) => (
@@ -826,13 +826,13 @@ const Scheme = () => {
                       name="id_purity"
                       className={`appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 ${!purityData || purityData.length === 0 ? "cursor-not-allowed bg-gray-100" : ""
                         }`}
-                      disabled={!purityData || purityData.length === 0}
+                      readOnly={!purityData || purityData.length === 0}
                       defaultValue=""
                       onChange={filterInputchange}
 
                       value={filters.id_purity}
                     >
-                      <option value="" disabled className="text-gray-700">
+                      <option value="" readOnly className="text-gray-700">
                         --Select--
                       </option>
                       {purityData.map((purity) => (
@@ -873,7 +873,7 @@ const Scheme = () => {
                       onChange={filterInputchange}
                       value={filters.weekmonth}
                     >
-                      <option value="" disabled className="text-gray-700">
+                      <option value="" readOnly className="text-gray-700">
                         --Select--
                       </option>
                       {installmentTypeData.map((type) => (
@@ -913,7 +913,7 @@ const Scheme = () => {
                       onChange={filterInputchange}
                       value={filters.scheme_type}
                     >
-                      <option value="" disabled className="text-gray-700">
+                      <option value="" readOnly className="text-gray-700">
                         --Select--
                       </option>
                       {schemeTypeData.map((type) => (
@@ -953,7 +953,7 @@ const Scheme = () => {
                       onChange={filterInputchange}
                       value={filters.buytgsttype}
                     >
-                      <option value="" disabled className="text-gray-700">
+                      <option value="" readOnly className="text-gray-700">
                         --Select--
                       </option>
                       {gstTypeData.map((type) => (
@@ -994,7 +994,7 @@ const Scheme = () => {
                       onChange={filterInputchange}
                       value={filters.wastagebenefit}
                     >
-                      <option value="" disabled className="text-gray-700">
+                      <option value="" readOnly className="text-gray-700">
                         --Select--
                       </option>
                       {wastageType.map((data) => (
@@ -1032,7 +1032,7 @@ const Scheme = () => {
                       onChange={filterInputchange}
                       value={filters.saving_type}
                     >
-                      <option value="" disabled className="text-gray-700">
+                      <option value="" readOnly className="text-gray-700">
                         --Select--
                       </option>
                       {fundtype.map((type) => (
@@ -1093,7 +1093,7 @@ const Scheme = () => {
           <div className="flex items-center gap-4">
             <button
               onClick={prevPage}
-              disabled={currentPage === 1}
+              readOnly={currentPage === 1}
              
               className={`p-2 text-gray-500 rounded-md ${currentPage === 1 ? "cursor-not-allowed" : "cursor-pointer"} `}
             >
@@ -1108,7 +1108,7 @@ const Scheme = () => {
           <div className="flex items-center">
             <button
               onClick={nextPage}
-              disabled={currentPage === totalPages}
+              readOnly={currentPage === totalPages}
               
               className={`p-2 text-gray-500 rounded-md  ${currentPage === totalPages ? "cursor-not-allowed" : "cursor-pointer"}`}
             >

@@ -538,7 +538,7 @@ const DigiGoldScheme = () => {
            <div className="flex items-center gap-4">
              <button
                onClick={prevPage}
-               disabled={currentPage === 1}
+               readOnly={currentPage === 1}
               
                className={`p-2 text-gray-500 rounded-md ${currentPage === 1 ? "cursor-not-allowed" : "cursor-pointer"} `}
              >
@@ -553,7 +553,7 @@ const DigiGoldScheme = () => {
            <div className="flex items-center">
              <button
                onClick={nextPage}
-               disabled={currentPage === totalPages}
+               readOnly={currentPage === totalPages}
                
                className={`p-2 text-gray-500 rounded-md  ${currentPage === totalPages ? "cursor-not-allowed" : "cursor-pointer"}`}
              >

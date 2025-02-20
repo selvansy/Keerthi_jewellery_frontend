@@ -190,7 +190,7 @@ function PaymentmodeForm({ setIsOpen }) {
                                 </button>
                                 <button
                                     type="submit"
-                                    disabled={isLoading}
+                                    readOnly={isLoading}
                                     className=" text-white rounded-md p-2 w-full lg:w-20"
                                     style={{ backgroundColor: layout_color }} >
                                     {id ? 'Update' : 'Submit'}

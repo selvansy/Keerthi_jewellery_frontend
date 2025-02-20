@@ -317,7 +317,7 @@ const Schemetype = () => {
                                 <div className="flex items-center gap-4">
                                     <button
                                         onClick={() => handlePageChange(currentPage - 1)}
-                                        disabled={currentPage === 1}
+                                        readOnly={currentPage === 1}
                                         className="p-2 text-gray-500 rounded-md"
                                     >
                                         Previous
@@ -331,7 +331,7 @@ const Schemetype = () => {
                                 <div className="flex items-center">
                                     <button
                                         onClick={() => handlePageChange(currentPage + 1)}
-                                        disabled={currentPage === totalPages}
+                                        readOnly={currentPage === totalPages}
                                         className="p-2 text-gray-500 rounded-md"
                                     >
                                         Next
@@ -487,7 +487,7 @@ export const SchemeForm = ({ isLoading, setIsOpen }) => {
                             {!id ? (
                                 <button
                                     type="submit"
-                                    disabled={isLoading}
+                                    readOnly={isLoading}
                                     className=" text-white rounded-md p-2 w-full lg:w-20"
                                     style={{ backgroundColor: layout_color }} >
                                     Submit
@@ -495,7 +495,7 @@ export const SchemeForm = ({ isLoading, setIsOpen }) => {
                             ) : (
                                 <button
                                     type="submit"
-                                    disabled={isLoading}
+                                    readOnly={isLoading}
                                     className=" text-white rounded-md p-2 w-full lg:w-20"
                                     style={{ backgroundColor: layout_color }} >
                                     Update

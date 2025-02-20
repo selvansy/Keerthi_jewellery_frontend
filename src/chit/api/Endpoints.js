@@ -350,7 +350,7 @@ export const getgiftvendorbranchById = async (data) => {
 
 
 export const getgiftitemvendorById = async (data) => {
-    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/giftitem/vendor/${data.gift_vendorid}`);
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/giftitem/vendor/${data}`);
     return response.data;
 }
 
@@ -1261,6 +1261,7 @@ export const getcustomerschemeaccount = async (data) => {
 }
 
 export const searchbarcodenumber = async (data) => {
+
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/giftissues/branch/${data.id_branch}/barcode?search=${data.barcode}`);
     return response.data;
 }

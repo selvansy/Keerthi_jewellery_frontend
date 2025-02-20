@@ -602,7 +602,7 @@ const Pushnotification = () => {
             <div className="flex items-center gap-4">
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
+                readOnly={currentPage === 1}
                 className="p-2 text-gray-500 rounded-md"
               >
                 Previous
@@ -616,7 +616,7 @@ const Pushnotification = () => {
             <div className="flex items-center">
               <button
                 onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
+                readOnly={currentPage === totalPages}
                 className="p-2 text-gray-500 rounded-md"
               >
                 Next

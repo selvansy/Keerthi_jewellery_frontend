@@ -443,7 +443,7 @@ const ProductWhatsapp = () => {
             }}
             className={`px-4 py-2 text-white font-semibold rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-opacity-75 
             ${row?.whatsapp_sent > 0 ? "bg-gray-900 focus:ring-gray-600 cursor-not-allowed opacity-50" : "bg-[#61A375] hover:bg-[#4F8A5D] focus:ring-green-400 cursor-pointer"}`}
-            disabled={row?.whatsapp_sent > 0}
+            readOnly={row?.whatsapp_sent > 0}
           >
             {row?.whatsapp_sent > 0 ? "Sent" : "Send"}
           </button>
@@ -591,7 +591,7 @@ const ProductWhatsapp = () => {
                           onChange={filterInputchange}
                           value={filters.id_branch}
                         >
-                          <option value="" disabled className="text-gray-700">
+                          <option value="" readOnly className="text-gray-700">
                             --Select--
                           </option>
                           {branchList.map((branch) => (
@@ -659,7 +659,7 @@ const ProductWhatsapp = () => {
             <div className="flex items-center gap-4">
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
+                readOnly={currentPage === 1}
                 className="p-2 text-gray-500 rounded-md"
               >
                 Previous
@@ -673,7 +673,7 @@ const ProductWhatsapp = () => {
             <div className="flex items-center">
               <button
                 onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
+                readOnly={currentPage === totalPages}
                 className="p-2 text-gray-500 rounded-md"
               >
                 Next

@@ -280,7 +280,7 @@ function SettingNotification({ setIsSettingOpen}) {
                   </button>
                   <button
                     type="submit"
-                    disabled={isLoading}
+                    readOnly={isLoading}
                     className="bg-[#023453] text-white rounded-md p-2 w-full lg:w-20"
 
                   >

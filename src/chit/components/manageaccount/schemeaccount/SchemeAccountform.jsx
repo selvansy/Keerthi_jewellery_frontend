@@ -543,12 +543,13 @@ const AddSchemeAccount = () => {
               type='text'
               value={mobile}
               onChange={handleautocompletemobile}
-              className='border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
+              className='border-2 border-gray-300 rounded-md p-3  focus:border-transparent'
               placeholder='Enter Here'
             />
 
+            
             {/* Search Icon */}
-            <div onClick={handleSearchmobile} className="absolute flex items-center justify-center cursor-pointer right-[0%] rounded-r-lg top-[68%] -translate-y-1/2 w-10 h-[62%] sm:right-0 sm:top-[68%] sm:rounded-r-lg md:right-[20%] md:rounded-lg lg:rounded-lg lg:right-[0%]"
+            <div onClick={handleSearchmobile} className="absolute flex items-center justify-center cursor-pointer right-[0%] rounded-r-lg top-[68%] -translate-y-1/2 w-10 md:h-[50px] md:top-[54px] h-[62%] sm:right-0 sm:top-[68%] lg:right-[0%]"
               style={{ backgroundColor: layout_color }}>
               <Search size={20} className="text-white" />
             </div>
@@ -562,7 +563,7 @@ const AddSchemeAccount = () => {
            <div className='flex flex-col'>
             <label className='text-black mb-1 font-normal'>Customer Name<span className='text-red-400'>*</span></label>
             <input
-              disabled
+              readOnly
               type='text'
               name='customer_name'
               value={formData.customer_name}
@@ -575,7 +576,7 @@ const AddSchemeAccount = () => {
             <label className='text-black mb-1 font-normal'>Address</label>
           
             <input
-              disabled
+              readOnly
               type='text'
               name='address'
               value={formData.address}
@@ -642,7 +643,7 @@ const AddSchemeAccount = () => {
                 value={formData.maturity_month}
                 className='border-2 border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
                 placeholder='Enter Maturity Month'
-                disabled
+                readOnly
               />
               <p style={{ color: "red" }}>{errors?.maturity_month}</p>
             </div>
@@ -654,7 +655,7 @@ const AddSchemeAccount = () => {
                 value={formData.total_installments}
                 className='border-2 border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
                 placeholder='Enter Total Installment'
-                disabled
+                readOnly
               />
               <p style={{ color: "red" }}>{errors?.total_installments}</p>
             </div>
@@ -712,7 +713,7 @@ const AddSchemeAccount = () => {
                   value={formData.maturity_date}
                   className='border-2 border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
                   placeholder='Enter Maturity Date'
-                  disabled
+                  readOnly
                 />
               </div>
               <p style={{ color: "red" }}>{errors?.maturity_date}</p>

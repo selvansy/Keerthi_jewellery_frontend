@@ -358,7 +358,7 @@ const ClientForm = () => {
                             name={`${proj.project_name.toLowerCase()}_url`}
                             value={formData[`${proj.project_name.toLowerCase()}_url`]}
                             onChange={handleInputChange}
-                            disabled={!formData[`${proj.project_name.toLowerCase()}_active`]}
+                            readOnly={!formData[`${proj.project_name.toLowerCase()}_active`]}
                             placeholder="Enter the URL"
                             className={`border-2 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black ${formData[`${proj.project_name.toLowerCase()}_active`] ? 'border-gray-300 shadow-lg' : 'border-gray-200 bg-gray-100 shadow-md'}`}
                           />
@@ -371,7 +371,7 @@ const ClientForm = () => {
                             name={`${proj.sign_date}_url`}
                             value={formData[`${proj.sign_date}_url`]}
                             onChange={handleInputChange}
-                            disabled={!formData[`${proj.project_name.toLowerCase()}_active`]}
+                            readOnly={!formData[`${proj.project_name.toLowerCase()}_active`]}
                             placeholder="Enter the sign date"
                             className={`border-2 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black ${formData[`${proj.project_name.toLowerCase()}_active`] ? 'border-gray-300 shadow-lg' : 'border-gray-200 bg-gray-100 shadow-md'}`}
                           />
@@ -384,7 +384,7 @@ const ClientForm = () => {
                             name={`${proj.launch_date}_url`}
                             value={formData[`${proj.launch_date}_url`]}
                             onChange={handleInputChange}
-                            disabled={!formData[`${proj.project_name.toLowerCase()}_active`]}
+                            readOnly={!formData[`${proj.project_name.toLowerCase()}_active`]}
                             placeholder="Enter the launch date"
                             className={`border-2 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black ${formData[`${proj.project_name.toLowerCase()}_active`] ? 'border-gray-300 shadow-lg' : 'border-gray-200 bg-gray-100 shadow-md'}`}
                           />
