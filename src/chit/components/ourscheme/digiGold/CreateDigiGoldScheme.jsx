@@ -20,8 +20,6 @@ const CreateDigiGoldScheme = () => {
 
   const roledata = useSelector((state) => state.clientForm.roledata);
 
-  const id_role = roledata?.id_role;
-  const id_client = roledata?.id_client;
   const id_branch = roledata?.branch;
 
   const [typeOfScheme, setTypeOfScheme] = useState([]);
@@ -30,6 +28,7 @@ const CreateDigiGoldScheme = () => {
 
   const [formData, setFormData] = useState({
     classification_name: "",
+    classification_order:"2",
     description: "",
     term_desc: "",
     id_branch: id_branch,
@@ -156,7 +155,7 @@ const CreateDigiGoldScheme = () => {
       });
       handleRemoveLogo()
       handleRemoveDescriptionImage();
-      navigate('/ourscheme/classification')
+      navigate('/ourscheme/digigold')
     },
     onError: (error) => {
       toast.error(error.response.data.message)
@@ -170,9 +169,10 @@ const CreateDigiGoldScheme = () => {
       toast.error("Fill required fields")
       return;
     }
-    console.log(formData)
+
     const formDataToSend = new FormData();
 
+  
     formDataToSend.append("classification_name", formData.classification_name);
     formDataToSend.append("description", formData.description);
     formDataToSend.append("term_desc", formData.term_desc);
@@ -183,7 +183,7 @@ const CreateDigiGoldScheme = () => {
     if (logo) formDataToSend.append("logo", logo);
     if (desc_img) formDataToSend.append("desc_img", desc_img);
 
-    console.log(formDataToSend)
+ 
     createSchemeClassificationMutate(formDataToSend);
 
 
@@ -213,7 +213,7 @@ const CreateDigiGoldScheme = () => {
 
 
   const handleCancle = () => {
-    navigate("/ourscheme/classification");
+    navigate("/ourscheme/digigold");
   };
 
   //Edit form --------------------------
@@ -249,7 +249,7 @@ const CreateDigiGoldScheme = () => {
       handleRemoveLogo()
       handleRemoveDescriptionImage();
       dispatch(setid(null))
-      navigate('/ourscheme/classification')
+      navigate('/ourscheme/digigold')
     },
     onError: (error) => {
       toast.error(error.response.data.message);

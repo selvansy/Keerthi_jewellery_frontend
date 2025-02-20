@@ -4,7 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { CalendarDays, Search } from 'lucide-react'
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
-import { getallbranch, getBranchById, showtype, createnewarrivals, updatenewarrivals, newarrivalsbyid, } from "../../../api/Endpoints"
+import { getallbranch, getBranchById, showtype, createnewarrivals, updatenewarrivals, newarrivalsbyid, getproductTable, } from "../../../api/Endpoints"
 import { setid } from "../../../../redux/clientFormSlice";
 import { toast } from "react-toastify";
 import { useSelector, useDispatch } from 'react-redux'
@@ -18,7 +18,7 @@ const AddNewArrival = () => {
   const id = useSelector((state) => state.clientForm.id);
   console.log("---", id)
 
-  const [filtertype, setShowType] = useState([]);
+  const [products, setAllProducts] = useState([]);
 
   const [branchList, setBranchList] = useState([]);
   let [branch, setbranch] = useState("")
@@ -31,11 +31,13 @@ const AddNewArrival = () => {
     new_arrivals_content: "",
     id_branch: id_branch,
     price: "",
+    startDate:new Date(),
+    endDate:null
   });
   const [formErrors, setFormErrors] = useState({});
 
   useEffect(() => {
-    getallshowtype();
+    getAllProducts();
 
   }, []);
 
@@ -52,10 +54,10 @@ const AddNewArrival = () => {
 
 
   //mutation to get newarrivals type
-  const { mutate: getallshowtype } = useMutation({
-    mutationFn: showtype,
+  const { mutate: getAllProducts } = useMutation({
+    mutationFn: getproductTable,
     onSuccess: (response) => {
-      setShowType(response.data);
+      setAllProducts(response.data);
     },
     onError: (error) => {
       console.error("Error fetching countries:", error);
@@ -135,14 +137,10 @@ const AddNewArrival = () => {
   // Validation function
   const validateForm = () => {
     const errors = {};
-    if (!formData.show_rate) errors.show_rate = "Type is required";
-    if (!formData.id_branch) errors.id_branch = "Branch is required";
-    if (!formData.name) errors.name = "Title is required";
-    if (!formData.price) errors.name = "Price is required";
-    if (!formData.new_arrivals_content) errors.new_arrivals_content = "Description is required";
-    if (!formData.expiry_date) errors.expiry_date = "Expriy Date is required";
-    if (new_arrivals_img_path.length === 0) errors.new_arrivals_img_path = "Upload image is required";
-    console.log(errors);
+     if(!formData.name)errors.name='Product is required'
+    if (!formData.startDate) errors.startDate = "Start Date is required";
+    if (!formData.endDate) errors.endDate = "End Date is required";
+
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -323,25 +321,25 @@ const AddNewArrival = () => {
           <div className="grid grid-rows-2 md:grid-cols-2 gap-5 border-gray-300 mb-10">
             <div className="flex flex-col">
               <label className="text-gray-700 mb-2 mt-2 font-medium">
-                Display Type<span className="text-red-400">*</span>
+                Select Product<span className="text-red-400">*</span>
               </label>
               <div className="relative">
                 <select
                   name="show_rate"
-                  value={formData.show_rate}
+                  value={formData.product}
                   onChange={handleInputChange}
                   className="appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
 
                 >
                   <option value="">--Select---</option>
-                  {filtertype.map((type) => (
+                  {products.map((type) => (
                     <option
                       name="type"
                       className="text-gray-700"
-                      key={type.id}
-                      value={type.id}
+                      key={type._id}
+                      value={type._id}
                     >
-                      {type.name}
+                      {type.product_name}
                     </option>
                   ))}
                 </select>
@@ -366,63 +364,6 @@ const AddNewArrival = () => {
               )}
             </div>
 
-            <div className="flex flex-col mt-2">
-              <label className="text-gray-700 mb-2 font-medium">
-                Title<span className="text-red-400">*</span>
-              </label>
-              <input
-                name="name"
-                type="text"
-                value={formData.name}
-                className="border-2 border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                placeholder="Enter Here"
-                onChange={handleInputChange}
-              />
-              {formErrors.name && (
-                <span className="text-red-500 text-sm mt-1">
-                  {formErrors.name}
-                </span>
-              )}
-            </div>
-
-            <div className="flex flex-col">
-              <label className="text-gray-700 mb-2 mt-2 font-medium">
-                Price <span className="text-red-400">*</span>
-              </label>
-              <input
-                onChange={handleInputChange}
-                value={formData.price}
-                type="number"
-                name="price"
-                className="border-2 border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                placeholder="Enter Here"
-              />
-              {formErrors.price && (
-                <span className="text-red-500 text-sm mt-1">
-                  {formErrors.price}
-                </span>
-              )}
-            </div>
-
-
-            <div className="flex flex-col">
-              <label className="text-gray-700 mb-2 mt-2 font-medium">
-                Description<span className="text-red-400">*</span>
-              </label>
-              <textarea
-                name="new_arrivals_content"
-                value={formData.new_arrivals_content}
-                type="text"
-                onChange={handleInputChange}
-                className="border-2 border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                placeholder="Enter Here"
-              />
-              {formErrors.new_arrivals_content && (
-                <span className="text-red-500 text-sm mt-1">
-                  {formErrors.new_arrivals_content}
-                </span>
-              )}
-            </div>
 
 
             <div className="flex flex-col">
@@ -491,7 +432,7 @@ const AddNewArrival = () => {
               <label className='text-gray-700 mb-1 font-normal'>Start Date<span className='text-red-400'>*</span></label>
               <div className="relative">
                 <DatePicker
-                  selected={formData.expiry_date}
+                  selected={formData.startDate}
                   onChange={handleExpriyDateChange}
                   dateFormat="dd-MM-yyyy"
                   placeholderText="Select Date"
@@ -505,9 +446,34 @@ const AddNewArrival = () => {
                   <CalendarDays size={20} />
                 </span>
               </div>
-              {formErrors.expiry_date && (
+              {formErrors.startDate && (
                 <span className="text-red-500 text-sm mt-1">
-                  {formErrors.expiry_date}
+                  {formErrors.startDate}
+                </span>
+              )}
+            </div>
+
+            <div className='flex flex-col'>
+              <label className='text-gray-700 mb-1 font-normal'>End Date<span className='text-red-400'>*</span></label>
+              <div className="relative">
+                <DatePicker
+                  selected={formData.endDate}
+                  onChange={handleExpriyDateChange}
+                  dateFormat="dd-MM-yyyy"
+                  placeholderText="Select Date"
+                  className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                  showMonthDropdown
+                  showYearDropdown
+                  dropdownMode="select"
+                  wrapperClassName="w-full"
+                />
+                <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-gray-500 w-14 h-[43px] justify-center items-center flex rounded-r-md pointer-events-none">
+                  <CalendarDays size={20} />
+                </span>
+              </div>
+              {formErrors.endDate && (
+                <span className="text-red-500 text-sm mt-1">
+                  {formErrors.endDate}
                 </span>
               )}
             </div>

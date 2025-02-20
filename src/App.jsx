@@ -4,12 +4,15 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 import ErrorPage from "./chit/components/common/ErrorPage";
 import React, { lazy, Suspense } from "react";
 import Loading from "./chit/components/common/Loading";
+import { useSelector } from "react-redux";
 
  
 function App() {
 
   const auth=localStorage.getItem("token")
-
+  const { menu } = useSelector((state) => state.auth);
+  console.log(menu);
+  
   return (
     <Router>
         <Suspense fallback={<Loading />}>

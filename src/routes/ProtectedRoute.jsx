@@ -1,65 +1,72 @@
 import { jwtDecode } from 'jwt-decode';
-import { Navigate, useLocation } from 'react-router-dom';
+ 
+import { Navigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { logout } from '../redux/authSlice';
+import { logout,SetMenu,SetsubMenu } from '../redux/authSlice';
 import { useEffect } from 'react';
 import { setRoleData } from '../redux/clientFormSlice';
-
+import { getactivemenuaccess } from "../chit/api/Endpoints"
+import { useMutation } from '@tanstack/react-query';
+ 
 const ProtectedRoute = ({ children }) => {
-  const location=useLocation()  
-  const { allowedRoutes } = useSelector((state) => state.menuSlice);
+  const { info } = useSelector((state) => state.auth);
+  const { allowedRoute } = useSelector((state) => state.auth);
+   
+  
   const dispatch = useDispatch();
+  
   const storedToken = localStorage.getItem('token');
-  const token =  storedToken;
-  
-  const menuSetting=[...allowedRoutes,'dashboard','']
-  console.log(menuSetting);
-  
+  const token = info || storedToken;
+ 
+ 
+ 
+    const decoded = jwtDecode(info);
+    let id = decoded.id_role._id;
+ 
+      useEffect(() => {
+        if(token){
+              getAllMenusMutate(decoded.id_role._id);
+          dispatch(setRoleData(decoded));
+        }
+      }, [token]);
+ 
+     
+  const { mutate: getAllMenusMutate } = useMutation({
+    mutationFn: getactivemenuaccess,
+    onSuccess: (response) => {
+      dispatch(SetMenu(response.data))
+    },
+  });
+ 
+ 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    dispatch(logout());
+  };
+ 
   if (!token) {
     return <Navigate to="/" replace />;
   }
-
-  let decoded;
+ 
   try {
-    decoded = jwtDecode(token);
-    
+    const decodedToken = jwtDecode(token);
+    const currentTime = Date.now() / 1000;
+ 
+    if (decodedToken.exp < currentTime) {
+      handleLogout();
+      return <Navigate to="/" replace />;
+    }
+   
+    if (!decodedToken.id_employee) {
+      return <Navigate to="/" replace />;
+    }
+ 
+    return children;
   } catch (error) {
     console.error('Invalid token:', error);
     handleLogout();
     return <Navigate to="/" replace />;
   }
-
-  useEffect(() => {
-    if (decoded) {
-      dispatch(setRoleData(decoded));
-    }
-  }, [token]);
-
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    dispatch(logout());
-  };
-
-  const currentTime = Date.now() / 1000;
-
-  // const allowedRoute=menuSetting.includes(location.pathname.slice(1))
-
-  
-
-  // if(!allowedRoute) return "Not access"
-
-  if (decoded.exp < currentTime) {
-    handleLogout();
-    return <Navigate to="/" replace />;
-  }
-
-  if (!decoded.id_employee) {
-    return <Navigate to="/" replace />;
-  }
-
-
-
-  return children;
 };
-
+ 
 export default ProtectedRoute;

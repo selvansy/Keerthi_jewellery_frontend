@@ -35,7 +35,7 @@ import { getactivemenuaccess, updatelayoutcolor } from "../../api/Endpoints";
 import { GiConsoleController } from "react-icons/gi";
 import { setLayoutColor } from "../../../redux/clientFormSlice";
 import { setSubmenus } from "../../../store/slices/menuSlice";
-import { logout } from "../../../redux/authSlice";
+import { logout,allowedMenu } from "../../../redux/authSlice";
 
 const Base = ({ renderContent: RenderContent }) => {
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -70,12 +70,13 @@ const Base = ({ renderContent: RenderContent }) => {
   let dispatch = useDispatch();
 
   const { info } = useSelector((state) => state.auth);
-  const { submenus } = useSelector((state) => state.menuSlice);
+  // const { menu } = useSelector((state) => state.auth);
   const decoded = jwtDecode(info);
   let id = decoded.id_role._id;
 
   const roledata = useSelector((state) => state.clientForm.roledata);
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
+  const { menu } = useSelector((state) => state.auth);
 
   const getRoleCharacter = (id) => {
     switch (id) {
@@ -127,18 +128,58 @@ const Base = ({ renderContent: RenderContent }) => {
     },
   });
 
+  // useEffect(() => {
+  //   if (decoded.id_role.id_role === 1) {
+  //     setIsSuperAdmin(true);
+  //   } else {
+  //     // getAllMenusMutate(decoded.id_role._id);
+  //     setMenuList()
+  //     setIsSuperAdmin(false);
+  //   }
+
+  //   // dispatch(setRoleData(decoded));
+  // }, []);
+
   useEffect(() => {
-    if (decoded.id_role.id_role === 1) {
-      setIsSuperAdmin(true);
-    } else {
-      getAllMenusMutate(decoded.id_role._id);
-      setIsSuperAdmin(false);
+    setMenuList();
+  }, [menu]);
+
+  const setMenuList = () => {
+    let menuArray = [];
+    const accessRoute=[]
+    if (menu.length > 0) {
+      menu.forEach((menurow) => {
+        let submenuArray = [];
+        let menuItem = {
+          text: menurow?.menu_name,
+          hasSubmenu: true,
+        };
+
+        if (menurow?.menu_list.length > 0) {
+          menurow?.menu_list.forEach((submenurow) => {
+            accessRoute.push(submenurow)
+            submenuArray.push({
+              text: submenurow?.submenu_name,
+              action: () => handleClick(submenurow?.submenu_name),
+            });
+          });
+
+          // Attach the submenu array to the menu item
+          menuItem.submenu = submenuArray;
+        }
+
+        // Add the menu item to the main menuArray
+        menuArray.push(menuItem);
+      });
     }
 
-    // dispatch(setRoleData(decoded));
-  }, []);
-
- 
+    menuArray.unshift({
+      text: "Dashboard",
+      hasSubmenu: false,
+    });
+    setMenuData(menuArray);
+    dispatch(allowedMenu(accessRoute))
+  };
 
   useEffect(() => {
     const route = RouteList.find((route) => {
@@ -463,9 +504,6 @@ const Base = ({ renderContent: RenderContent }) => {
     // { name: "Agent Incentive",link:"", icon: <DollarSign className="text-orange-500" /> },
     // { name: "Referral Incentive",link:"", icon: <Share2 className="text-teal-500" /> },
   ];
-
-
-  
 
   return (
     <div className="min-h-screen flex flex-col">

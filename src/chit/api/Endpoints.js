@@ -522,13 +522,14 @@ export const offersbyid= async(id)=>{
 
 
 export const createoffers= async(data)=>{
+    console.log(data);
     const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/offer/`,data)
     return response.data
 }
 
 export const updateoffers= async(data)=>{
 
-    const response= await Api.patch(`${import.meta.env.VITE_API_URL}api/client/offer/${data.id}`,data.data)
+    const response= await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/offer/${data.id}`,data.data)
     return response.data
 }
  
@@ -580,18 +581,18 @@ export const deletenewarrivals= async(id)=>{
 
 export const updateproduct= async(data)=>{
  
-    const response= await Api.patch(`${import.meta.env.VITE_API_URL}/api/admin/product/${data.id}`,data.data)
+    const response= await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/product/${data.id}`,data.data)
     return response.data
 }
  
 
 export const deleteproduct= async(id)=>{
-    const response= await Api.delete(`${import.meta.env.VITE_API_URL}/api/admin/product/${id}`)
+    const response= await Api.delete(`${import.meta.env.VITE_API_URL}/api/client/product/${id}`)
     return response.data
 }
  
 export const activateproduct= async(id)=>{
-    const response= await Api.patch(`${import.meta.env.VITE_API_URL}/api/admin/product/${id}/active`)
+    const response= await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/product/${id}/active`)
     return response.data
 }
 
@@ -611,20 +612,20 @@ export const categorybymetalid= async(id)=>{
 
 
 export const updatecategory= async(data)=>{
-  
-    const response= await Api.patch(`${import.meta.env.VITE_API_URL}/api/admin/category/${data.id}`,data.data)
+    const {_id,category_name,id_metal,id_branch}=data    
+    const response= await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/category/${_id}`,{category_name,id_metal,id_branch})
     return response.data
 }
  
 
  
 export const deletecategory= async(id)=>{
-    const response= await Api.delete(`${import.meta.env.VITE_API_URL}/api/admin/category/${id}`)
+    const response= await Api.delete(`${import.meta.env.VITE_API_URL}/api/client/category/${id}`)
     return response.data
 }
  
 export const activatecategory= async(id)=>{
-    const response= await Api.patch(`${import.meta.env.VITE_API_URL}/api/admin/category/${id}/active`)
+    const response= await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/category/${id}/active`)
     return response.data
 }
 
@@ -1141,7 +1142,8 @@ export const addcustomer = async (data) => {
     return response.data;
 }
 export const updatecustomer = async (data) => {
-    const response = await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/customer/${data.id}`,data);
+ 
+    const response = await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/customer/${data.id}`,data.data);
     return response.data;
 }
  
@@ -1169,7 +1171,8 @@ export const getallcustomer = async (data) => {
  
 
 export const getcustomerById = async (id) => {
-    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/customer/${id}`,data);
+
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/customer/${id}`);
     return response.data;
 }
 
@@ -1443,7 +1446,7 @@ export const getproductTable= async(data)=>{
 
 
 
-export const createproduct= async(data)=>{
+export const createproduct= async(data)=>{    
     const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/product/`,data)
     return response.data
 }
@@ -1630,10 +1633,6 @@ export const searcaccountnumber = async (data) => {
 }
 
 
-
-
-// /api/client/metalrate/today/676e4a9dd3e747cfc70968a2/2025-02-06T04:16:36.625+00:00
-
 export const todayMetalRate = async(data)=>{
     
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/metalrate/today/${data.id}/${data.todayDate}`);
@@ -1646,4 +1645,5 @@ export const updatelayoutcolor = async (data) => {
     const response = await Api.patch(`${import.meta.env.VITE_API_URL}/api/admin/layoutsetting/color`, data);
     return response;
 }
+
 

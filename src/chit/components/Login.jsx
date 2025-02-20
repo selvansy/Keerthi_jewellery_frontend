@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import Loading from '../components/common/Loading';
 import { RotatingLines } from 'react-loader-spinner';
+import SpinLoading from './common/spinLoading';
 const Login = () => {
     const dispatch= useDispatch()
     const navigate = useNavigate()
@@ -97,18 +98,7 @@ const Login = () => {
             >
               {isLoading?
               <div className='flex justify-center'>
-                <RotatingLines
-              visible={true}
-              height="10"
-              width="26"
-              strokeColor="white"
-              strokeWidth="5"
-              animationDuration="0.75"
-              ariaLabel="rotating-lines-loading"
-              wrapperStyle={{}}
-              wrapperClass=""
-              
-              />
+                <SpinLoading/>
               </div>
               :"Login"}
             </button>
