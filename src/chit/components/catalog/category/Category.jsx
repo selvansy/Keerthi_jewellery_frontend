@@ -102,14 +102,17 @@ const Category = () => {
   }, []);
 
   useEffect(() => {
-    if (id_branch === "0") {
-      getallbranchMutate();
+    if (id_branch === '0') {
+      getallbranchMutate()
     }
 
     if (id_branch !== "0") {
-      setFilters({ ...filters, id_branch: id_branch });
+      setFilters({ ...filters, id_branch: id_branch })
     }
+
   }, [id_branch]);
+
+
 
   useEffect(() => {
     const filterTosend = {
@@ -240,7 +243,7 @@ const Category = () => {
     );
   };
 
-  //mutation to get purity type
+
   const { mutate: deleteCategory } = useMutation({
     mutationFn: deletecategory,
     onSuccess: (response) => {

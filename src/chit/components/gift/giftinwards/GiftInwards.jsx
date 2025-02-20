@@ -8,14 +8,20 @@ import { toast } from 'react-toastify'
 import { CalendarDays, RefreshCcw} from 'lucide-react'
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
-import { useSelector } from 'react-redux';
+import { openModal } from '../../../../redux/modalSlice';
+import Modal from '../../../components/common/Modal';
+import { useDispatch, useSelector } from 'react-redux';
+import usePagination from '../../../hooks/usePagination'
+import { useDebounce } from '../../../hooks/useDebounce';
+import { eventEmitter } from '../../../../utils/EventEmitter';
 
 const Giftinwards = () => {
 
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
-
+  const dispatch = useDispatch();
   const navigate = useNavigate()
   const [search, setSearch] = useState('')
+  const debouncedSearch = useDebounce(search, 600)
   const [isLoading,setisLoading] = useState(true)
   const [giftinward, setGiftinward] = useState([])
    const [currentPage, setCurrentPage] = useState(1);
@@ -23,17 +29,18 @@ const Giftinwards = () => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedRow, setSelectedRow] = useState(null)
   const [activeDropdown, setActiveDropdown] = useState(null)
-  const [isFilterOpen, setIsFilterOpen] = React.useState(false);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+
   const [from_date, setFromdate] = useState('');
   const [to_date, setTodate] = useState('');
   const [vendorfilter, setVendor] = useState([]);
   const [branchfilter, setBranch] = useState([]);
-  // const [id_branch, setIdrancbh] = useState('676e4a9dd3e747cfc70968a2');
+   const [filtered, SetFiltered] = useState(false)
+
   const [giftitemfilter, setGiftitem] = useState([]);
 
   const roledata = useSelector((state) => state.clientForm.roledata);
-  const id_role = roledata?.id_role?.id_role;
-  const id_client = roledata?.id_client;
+
   const id_branch = roledata?.branch;
 
   const [filters, setFilters] = React.useState({
@@ -44,6 +51,24 @@ const Giftinwards = () => {
     id_gift:''
   });
 
+    useEffect(() => {
+  
+      eventEmitter.on('CONFIRMATION_SUBMIT', (data) => {
+        try {
+  
+          deleteGiftInward(data.giftInwardId);
+          eventEmitter.off('CONFIRMATION_SUBMIT');
+        } catch (error) {
+          eventEmitter.off('CONFIRMATION_SUBMIT');
+          console.error('Error:', error);
+        }
+      });
+  
+      return () => {
+        eventEmitter.off('CONFIRMATION_SUBMIT');
+      };
+    }, []);
+
   const filterInputchange = (e) =>{
     const {name, value} = e.target;
     setFilters(prev=>({...prev,[name]:value}));
@@ -51,7 +76,7 @@ const Giftinwards = () => {
 
   
 
-  const handleReset = (e) => {
+  const handleReset = () => {
     setFromdate("");
     setTodate("");
     setFilters(prev => ({
@@ -60,13 +85,14 @@ const Giftinwards = () => {
       gift_vendorid:"",
       id_gift:""
     }));
+     SetFiltered(false)
     toast.success("Filter is cleared");
     const filterTosend = {
       page:currentPage,
       from_date:from_date,
       to_date:to_date,
       limit: itemsPerPage,
-      search: search,
+      search: debouncedSearch,
       id_branch:filters.id_branch,
       gift_vendorid:filters.gift_vendorid,
       id_gift:filters.id_gift
@@ -76,56 +102,63 @@ const Giftinwards = () => {
 
 
   const applyfilterdatatable = (e) =>{
+     e.preventDefault()
       const filterTosend = {
         page:currentPage,
         from_date:from_date,
         to_date:to_date,
         limit: itemsPerPage,
-        search: search,
+        search: debouncedSearch,
         id_branch:filters.id_branch,
         gift_vendorid:filters.gift_vendorid,
         id_gift:filters.id_gift
       };
-      
+
+
         setIsFilterOpen(false)
+        SetFiltered(true)
         getgiftinwardMutate(filterTosend);
       
     };
 
    useEffect(() => {
+    if(isFilterOpen == true){
       getallbranchMutate();
-    }, []);
+    }
+
+    if(id_branch !=="0"){
+      handleVendorChange(id_branch);
+    }
+
+    }, [isFilterOpen]);
 
     const { mutate: getallbranchMutate } = useMutation({
       mutationFn: getallbranch,
       onSuccess: (response) => {
-        console.log('jut')
         if (response) {
           setBranch(response.data);
         }
       },
     });
     
- 
-
-    const handleVendorChange = async (e) => {
-  
-      if (!e.target.value) return;
-      const response = await getgiftvendorbranchById({ "id_branch": e.target.value });
-      if (response) {
-        setVendor(response.data);
-      }
-    };
-  
-    const   handleGiftChange = async (e) => {
-  
-      if (!e.target.value) return;
-      const response = await getgiftitemvendorById({ "gift_vendorid": e.target.value });
-      if (response) {
-        setGiftitem(response.data);
-      }
-    };
-  
+    
+      const handleVendorChange = async (selectedBranchId) => {
+       
+        if (!selectedBranchId) return;
+        const response = await getgiftvendorbranchById({ "id_branch": selectedBranchId });
+        if (response) {
+          setVendor(response.data);
+        }
+      };
+    
+      const handleGiftChange = async (gift_vendorid) => {
+       console.log("GiftVendorId",gift_vendorid)
+        if (!gift_vendorid) return;
+        const response = await getgiftitemvendorById({ "gift_vendorid": gift_vendorid });
+        if (response) {
+          setGiftitem(response.data);
+        }
+      };
 
   //mutation to get scheme type
   const { mutate: getgiftinwardMutate } = useMutation({
@@ -134,27 +167,16 @@ const Giftinwards = () => {
       setGiftinward(response.data)
       setTotalPages(response.totalPages)
       setisLoading(false)
+      SetFiltered(false)
     },
     onError: (error) => {
       console.error('Error:', error);
+      SetFiltered(false)
       setisLoading(false)
     }
   });
 
-  useEffect(() => {
-    const filterTosend = {
-      page:currentPage,
-      from_date:from_date,
-      to_date:to_date,
-      limit: itemsPerPage,
-      search: search,
-      id_branch:filters.id_branch,
-      gift_vendorid:filters.gift_vendorid,
-      id_gift:filters.id_gift
-    };
-
-    getgiftinwardMutate(filterTosend)
-  }, [])
+ 
 
   useEffect(() => {
     const filterTosend = {
@@ -162,15 +184,19 @@ const Giftinwards = () => {
       from_date:from_date,
       to_date:to_date,
       limit: itemsPerPage,
-      search: search,
+      search: debouncedSearch,
       id_branch:filters.id_branch,
       gift_vendorid:filters.gift_vendorid,
       id_gift:filters.id_gift
     };
 
     getgiftinwardMutate(filterTosend)
-  }, [currentPage, itemsPerPage, search])
+  }, [currentPage, itemsPerPage, debouncedSearch])
 
+  const handleFilter = ()=>{
+    
+    setIsFilterOpen(true)
+  }
 
   const handleSearch = (e) => {
     setSearch(e.target.value)
@@ -185,46 +211,81 @@ const Giftinwards = () => {
     let response = await changegiftinwardStatus(id);
     if (response) {
       toast.success(response.message);
-      getgiftinwardMutate({ page: currentPage, limit: itemsPerPage, search: search })
+      getgiftinwardMutate({ page: currentPage, limit: itemsPerPage, search: debouncedSearch })
     }
   };
 
-  const handleDelete = async (id) => {
-    let response = await deletegiftinward(id);
-    if (response) {
-      toast.success(response.message);
-      getgiftinwardMutate({ page: currentPage, limit: itemsPerPage, search: search })
-    }
-  };
+    const handleDelete = (id) => {
+      dispatch(openModal({
+        modalType: 'CONFIRMATION',
+        header: 'Delete giftvendor',
+        formData: {
+          message: 'Are you sure you want to delete this giftvendor?',
+          giftInwardId: id
+        },
+        buttons: {
+          cancel: {
+            text: 'Cancel'
+          },
+          submit: {
+            text: 'Delete'
+          }
+        }
+      }))
+    };
+
+      const { mutate: deleteGiftInward } = useMutation({
+        mutationFn: (id)=> deletegiftinward(id),
+        onSuccess: (response, deletedId) => {
+          console.log("DeletedId",deletedId)
+        const deletedData = giftinward.filter(e => e._id !== deletedId)
+   
+        setGiftinward(deletedData)
+          toast.success(response.message);
+          eventEmitter.off('CONFIRMATION_SUBMIT');
+        },
+        onError: (error) => {
+          console.error("Error:", error);
+        },
+      });
 
   const handleEdit = (id) => {
     navigate(`/gift/addgiftinwards/${id}`);
   };
 
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
-
-
   const handleItemsPerPageChange = (value) => {
     setItemsPerPage(value);
     setCurrentPage(1);
   };
-  const paginationButtons = [];
-  for (let i = 1; i <= totalPages; i++) {
-    paginationButtons.push(
-      <button
-        key={i}
-        onClick={() => handlePageChange(i)}
-        className={`p-2 w-10 h-10 rounded-md  ${currentPage === i ? ' text-white' : 'text-slate-400'}`}
-        style={{ backgroundColor: layout_color }} >
-        {i}
-      </button>
-    );
-  }
 
+  const handlePageChange = (page) => {
+    const pageNumber = Number(page);
+      if (!pageNumber || isNaN(pageNumber) || pageNumber < 1 || pageNumber > totalPages) {
+        return;
+      }
+   
+      setCurrentPage(pageNumber);
+  };
+
+
+    const nextPage = () => {
+      setCurrentPage((prevPage) => (prevPage < totalPages ? prevPage + 1 : prevPage));
+    };
+  
+    const prevPage = () => {
+      setCurrentPage((prevPage) => (prevPage > 1 ? prevPage - 1 : prevPage));
+    };
+  
+
+  const paginationData = {totalItems:totalPages,currentPage:currentPage,itemsPerPage:itemsPerPage,handlePageChange:handlePageChange}
+  const paginationButtons = usePagination(paginationData)
+ 
 
   const columns = [
+    {
+      header: 'S.No',
+      cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
+    },
     {
       header: 'Actions',
       cell: (row, rowIndex) => (
@@ -298,10 +359,7 @@ const Giftinwards = () => {
       ),
 
     },
-    {
-      header: 'S.No',
-      cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
-    },
+  
     {
       header: 'Invoice No',
       cell: (row) => row?.invoice_no,
@@ -346,7 +404,7 @@ const Giftinwards = () => {
       header: "Create Date",
       cell: (row) => {
         const date = new Date(row?.createdAt);
-        return date.toLocaleDateString('en-GB'); // 'en-GB' gives the d-m-Y format
+        return date.toLocaleDateString('en-GB'); 
       }
     },
     {
@@ -386,22 +444,34 @@ const Giftinwards = () => {
             onChange={handleSearch}
           />
         </div>
+         
         <div className="flex flex-row items-center justify-end gap-2">
+          {
+            filtered ?
+              <>
                 <button
-                      id="filter"
-                      className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
-                      onClick={() => handleReset()}
-                      style={{ backgroundColor: layout_color }} >
-                      <RefreshCcw size={20} />
-                    </button>
-          
-          <button
-            id="filter"
-            className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
-            onClick={() => setIsFilterOpen(true)}
-            style={{ backgroundColor: layout_color }}>
-            <SlidersHorizontal size={20} />
-          </button>
+                  id="filter"
+                  className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
+                  onClick={() => handleReset()}
+                  style={{ backgroundColor: layout_color }} >
+                  <RefreshCcw size={20} />
+                </button>
+              </>
+              :
+              <>
+
+                <button
+                  id="filter"
+                  className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
+                  onClick={handleFilter}
+                  style={{ backgroundColor: layout_color }}>
+                  <SlidersHorizontal size={20} />
+                </button>
+              </>
+
+          }
+               
+       
           <button
             className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
             onClick={handleClick}
@@ -424,7 +494,7 @@ const Giftinwards = () => {
               <X size={20} />
             </button> 
           </div>
-          {/* getallbranchMutate,handleVendorChange,handleGiftChange */}
+      
           <form>
           <div className="p-3 space-y-4 flex-1 overflow-y-auto"> 
             <div className="flex flex-col border-t"></div>
@@ -471,7 +541,13 @@ const Giftinwards = () => {
                 Branch Name
               </label>
               <div className="relative">
-                <select  name="id_branch" onChange={(e)=>{filterInputchange(e); handleVendorChange(e)}} className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
+                <select  
+                name="id_branch"
+                 onChange={(e)=>{
+                 
+                  filterInputchange(e)
+                   handleVendorChange(e.target.value) }} 
+                 className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
                   <option value='' >--Select--</option>
                   {branchfilter.map((branch)=>(
                     <option key={branch._id} value={branch._id}>{branch.branch_name}</option>
@@ -490,7 +566,11 @@ const Giftinwards = () => {
                 Gift Vendor
               </label>
               <div className="relative">
-                <select  name="gift_vendorid"  onChange={(e)=>{filterInputchange(e); handleGiftChange(e)}} className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
+                <select  name="gift_vendorid"  onChange={
+                  (e)=>{
+                    e.preventDefault()
+                  filterInputchange(e)
+                  handleGiftChange(e.target.value) }} className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
                   <option value='' >--Select--</option>
                   {vendorfilter.map((vendor)=>(
                     <option key={vendor._id} value={vendor._id}>{vendor.vendor_name}</option>
@@ -509,7 +589,12 @@ const Giftinwards = () => {
                 Gift Item
               </label>
               <div className="relative">
-                <select  name="id_gift" onChange={(e)=>{filterInputchange(e);}}  className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
+                <select  name="id_gift" onChange={
+                  (e)=>{ 
+                    e.preventDefault()
+                  filterInputchange(e) }}  
+                  className={`appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent ${giftitemfilter.length === 0 ? "cursor-not-allowed" :"cursor-pointer"}`}
+                 defaultValue=''>
                   <option value='' >--Select--</option>
                   {giftitemfilter.map((giftitem)=>(
                     <option key={giftitem._id} value={giftitem._id}>{giftitem.gift_name}</option>
@@ -523,10 +608,10 @@ const Giftinwards = () => {
                 </div>
               </div>
             </div>
-            <div className="p-4 borde">
+            <div className="p-4 border">
               <div className="bg-yellow-300 flex justify-center gap-3">
                 <button
-                  onClick={applyfilterdatatable}
+                  onClick={(e)=>applyfilterdatatable(e)}
                   className="flex-1 px-4 py-2 bg-[#61A375] text-white rounded-md"
                 >
                   Apply
@@ -555,9 +640,9 @@ const Giftinwards = () => {
         <div className="flex flex-row items-center justify-center gap-2">
           <div className="flex items-center gap-4">
             <button
-              onClick={() => handlePageChange(currentPage - 1)}
+              onClick={prevPage}
               disabled={currentPage === 1}
-              className="p-2 text-gray-500 rounded-md"
+              className={`p-2 text-gray-500 rounded-md ${currentPage === 1 ? "cursor-not-allowed" : "cursor-pointer"}`}
             >
               Previous
             </button>
@@ -569,9 +654,9 @@ const Giftinwards = () => {
 
           <div className="flex items-center">
             <button
-              onClick={() => handlePageChange(currentPage + 1)}
+              onClick={nextPage}
               disabled={currentPage === totalPages}
-              className="p-2 text-gray-500 rounded-md"
+              className={`p-2 text-gray-500 rounded-md ${currentPage === totalPages ? "cursor-not-allowed" : "cursor-pointer"}`}
             >
               Next
             </button>
@@ -596,6 +681,7 @@ const Giftinwards = () => {
           </select>
           <span className="text-gray-500">entries</span>
         </div>
+        <Modal/>
       </div>
       )}
     </div>

@@ -260,6 +260,8 @@ const Metal = () => {
   ];
 
   const handleSearch = (e) => {
+    console.log(e);
+    
     setSearchInput(e.target.value)
   }
 

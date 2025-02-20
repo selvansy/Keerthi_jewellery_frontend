@@ -104,8 +104,8 @@ function Dashboard() {
       id_branch: id_branch
     }
     
-    PaymentMode(payload);
-    CardSummary(payload);
+  //   PaymentMode(payload);
+  //   CardSummary(payload);
 
     getschemePaymentMutate(payload)
  

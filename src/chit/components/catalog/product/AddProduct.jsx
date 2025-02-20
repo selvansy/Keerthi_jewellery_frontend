@@ -20,7 +20,7 @@ import {
 } from "../../../api/Endpoints";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
-import SpinLoading from "../../common/spinLoading";
+import SpinLoading from "../../common/SpinLoading";
 
 const AddProduct = () => {
   const navigate = useNavigate();

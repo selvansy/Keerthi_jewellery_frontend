@@ -6,6 +6,8 @@ const Table = ({
   data = [],
   columns = [],
   isLoading,
+  selectedRow,
+  activeDropdown
 
 }) => {
   if (!Array.isArray(data) || !Array.isArray(columns)) {
@@ -26,11 +28,15 @@ const Table = ({
               {columns.map((column, index) => (
                 <th
                   key={column.accessor || index}
-                  className="p-3 text-left text-xs font-medium text-slate-50 uppercase"
+                  className={`
+                 p-3 text-left text-xs font-medium text-slate-50 uppercase
+                    ${column.sticky === "right" ? "right-0" : ""}
+                    ${column.sticky === "left" ? "left-0" : ""}
+                  `}
                   style={{
                     backgroundColor: layout_color, 
                     position: "sticky",
-                    top: 0,
+                    top: 10,
                     zIndex: 50,
                   }}
                 >
@@ -50,11 +56,32 @@ const Table = ({
               </tr>
             ) : data.length > 0 ? (
               data.map((row, rowIndex) => (
-                <tr key={row?._id || rowIndex} className="hover:bg-gray-50">
+                <tr key={row?._id || rowIndex}
+
+                className={`
+                  ${selectedRow === row?._id ? "bg-blue-100" : ""}
+                  ${selectedRow !== row?._id ? "hover:bg-gray-50" : ""}
+                  transition-colors cursor-pointer 
+                `} >
+
                   {columns.map((column, colIndex) => (
                     <td
                       key={`${rowIndex}-${colIndex}`}
-                      className="px-6 py-4 text-sm text-gray-900 text-start"
+                  
+                      className={`
+                       px-6 py-4 text-sm text-gray-900 text-start
+                        ${column.sticky === "right" ? "right-0" : ""}
+                        ${column.sticky === "left" ? "left-0" : ""}
+                        ${selectedRow === row?._id && activeDropdown
+                                  ? "bg-slate-100"
+                                  : ""
+                                }
+                        ${selectedRow !== row?._id && rowIndex % 2 !== 0 ? "bg-[#F3F7FF]" : ""}
+                      `}
+                              style={{
+                                zIndex: column.sticky ? 10 : 0,
+                              }}
+
                     >
                       {column.cell ? column.cell(row, rowIndex) : row[column.accessor]}
                     </td>

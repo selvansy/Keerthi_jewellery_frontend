@@ -16,6 +16,7 @@ import { setid } from "../../../../redux/clientFormSlice"
 import {
   getoffersTable, getBranchById, allofferstype, activateoffers, deleteoffers, allmetal, getallbranch
 } from "../../../api/Endpoints";
+
 import { useDispatch, useSelector } from 'react-redux'
 
 const Offers = () => {
@@ -193,10 +194,7 @@ const Offers = () => {
     }
   });
 
-    useEffect(() => {
-    getofferData({ page: currentPage, limit: itemsPerPage, search: search,id_branch:id_branch })
-  }, [])
-
+  
   useEffect(() => {
     getofferData({ page: currentPage, limit: itemsPerPage, search: search,id_branch:id_branch })
   }, [currentPage, itemsPerPage, search])
@@ -257,8 +255,9 @@ const Offers = () => {
       setDeleteId(null)
       toast.success(response.message);
     },
+   
     onError: (error) => {
-      setDeleteId(null)
+      eventEmitter.off('CONFIRMATION_SUBMIT');
       console.error("Error fetching countries:", error);
     },
   });
@@ -277,7 +276,7 @@ const Offers = () => {
     return () => {
       eventEmitter.off('CONFIRMATION_SUBMIT');
     };
-  }, [eventEmitter, offerData]);
+  }, []);
 
 
 

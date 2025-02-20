@@ -72,6 +72,7 @@ import ReceiptPrint from "../chit/components/print/ReceiptPrint/printone";
 import NewArrivalsWhatsapp from "../chit/components/whatsapp/newarrivals/index";
 import ProductWhatsapp from "../chit/components/whatsapp/product/index";
 import OffersWhatsapp from  "../chit/components/whatsapp/offers/index";
+import Organisation from "../chit/components/Setup/organisation";
 
 const RouteList = [
   {
@@ -175,7 +176,7 @@ const RouteList = [
     name: "Gift Vendor",
     path:'/gift/giftvendor',
     element:<Base renderContent={GiftVendor}/>
-  },
+  }, 
   {
     name: "Gift Item",
     path:'/gift/giftitem',
@@ -511,6 +512,11 @@ const RouteList = [
       name: "Add Scheme Payment",
       path:'/payment/addschemepayment/:id',
       element:<Base renderContent={AddSchemePayment}/>
+    },
+    {
+      name: "Organisation",
+      path:'/setup/organisation',
+      element:<Base renderContent={Organisation}/>
     },
      // super admin routes
      {

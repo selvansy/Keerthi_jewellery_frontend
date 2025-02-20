@@ -298,6 +298,10 @@ const Base = ({ renderContent: RenderContent }) => {
       ? selectedParentSection === text
       : selectedSection === text && selectedParentSection === text;
 
+      // const IconComponent = Icons[menuIcon] || Icons.AlertCircle;
+     
+      // console.log(IconComponent);
+
     return (
       <div className="w-full px-3 py-1 relative">
         <div

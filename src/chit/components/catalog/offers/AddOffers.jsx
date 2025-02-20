@@ -35,11 +35,11 @@ const AddOffers = () => {
   const [branchList, setBranchList] = useState([]);
   let [branch, setbranch] = useState("");
 
+
   const [formData, setFormData] = useState({
     name: "",
     type: "",
     description: "",
-    offer_content: "",
     id_branch: id_branch,
     video: "",
   });
@@ -509,6 +509,7 @@ const handleRemoveOfferImage = (index) => {
                   Upload Image<span className="text-red-400">*</span>
                 </label>
                 <div className="flex gap-4">
+                {offer_img_path.length < MAX_IMAGES && (
                   <div className="flex-1">
                     <label
                       htmlFor="offer_img_path"
@@ -525,11 +526,11 @@ const handleRemoveOfferImage = (index) => {
                       id="offer_img_path"
                       type="file"
                       accept="image/*"
-                      multiple // Allow multiple files
+                      multiple
                     />
                   </div>
+                )}
 
-                  {/* Display the selected images */}
                   {offer_img_path.length > 0 && (
                     <div className="flex gap-4 flex-wrap">
                       {offer_img_path.map((file, index) => (
@@ -548,7 +549,7 @@ const handleRemoveOfferImage = (index) => {
                             src={
                               typeof file === "string"
                                 ? file
-                                : URL.createObjectURL(file) // Use URL.createObjectURL to preview image
+                                : URL.createObjectURL(file)
                             }
                             alt="Description image preview"
                             className="w-full h-full object-cover"
@@ -572,16 +573,16 @@ const handleRemoveOfferImage = (index) => {
                   Description<span className="text-red-400">*</span>
                 </label>
                 <textarea
-                  name="offer_content"
-                  value={formData.offer_content}
+                  name="description"
+                  value={formData.description}
                   type="text"
                   onChange={handleInputChange}
                   className="border-2 border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                   placeholder="Enter Here"
                 />
-                {formErrors.offer_content && (
+                {formErrors.description && (
                   <span className="text-red-500 text-sm mt-1">
-                    {formErrors.offer_content}
+                    {formErrors.description}
                   </span>
                 )}
               </div>
