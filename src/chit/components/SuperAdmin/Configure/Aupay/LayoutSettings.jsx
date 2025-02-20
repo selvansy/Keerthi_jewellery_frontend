@@ -525,7 +525,7 @@ const LayoutSettings = ({ onPageChange, isLoading = false, setIsAddClient }) => 
                                     Cancel
                                 </button>
                                 <button
-                                    disabled={currentStep === totalPages || isLoading}
+                                    readOnly={currentStep === totalPages || isLoading}
                                     className=" text-white rounded-md p-2 w-full lg:w-20"
                                     onClick={handleSubmit}
                                     style={{ backgroundColor: layout_color }} >

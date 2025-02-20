@@ -229,7 +229,7 @@ console.log(errors);
                       onChange={handleChange}
                       className='appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
                     >
-                      <option value='' disabled>--Select--</option>
+                      <option value='' readOnly>--Select--</option>
                       {smsaccessData.map((access) => (
                         <option key={access.name} value={access.id}>
                           {access.name}
@@ -485,7 +485,7 @@ console.log(errors);
                   Cancel
                 </button>
                 <button
-                  disabled={currentStep === totalPages || isLoading}
+                  readOnly={currentStep === totalPages || isLoading}
                   className=" text-white rounded-md p-2 w-full lg:w-20"
                   type="submit"
                   style={{ backgroundColor: layout_color }} >

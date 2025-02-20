@@ -27,6 +27,7 @@ const Giftinwards = () => {
    const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [entries,Setentries] = useState(0)
   const [selectedRow, setSelectedRow] = useState(null)
   const [activeDropdown, setActiveDropdown] = useState(null)
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -166,6 +167,8 @@ const Giftinwards = () => {
     onSuccess: (response) => {
       setGiftinward(response.data)
       setTotalPages(response.totalPages)
+      setCurrentPage(response.currentPage)
+      Setentries(response.totalDocument)
       setisLoading(false)
       SetFiltered(false)
     },
@@ -476,7 +479,7 @@ const Giftinwards = () => {
             className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
             onClick={handleClick}
             style={{ backgroundColor: layout_color }} >
-            + Add Account
+            + Add Inwards
           </button>
         </div>
       </div>
@@ -641,7 +644,7 @@ const Giftinwards = () => {
           <div className="flex items-center gap-4">
             <button
               onClick={prevPage}
-              disabled={currentPage === 1}
+              readOnly={currentPage === 1}
               className={`p-2 text-gray-500 rounded-md ${currentPage === 1 ? "cursor-not-allowed" : "cursor-pointer"}`}
             >
               Previous
@@ -655,7 +658,7 @@ const Giftinwards = () => {
           <div className="flex items-center">
             <button
               onClick={nextPage}
-              disabled={currentPage === totalPages}
+              readOnly={currentPage === totalPages}
               className={`p-2 text-gray-500 rounded-md ${currentPage === totalPages ? "cursor-not-allowed" : "cursor-pointer"}`}
             >
               Next

@@ -629,7 +629,7 @@ const AddCustomer = () => {
                     onChange={handleBranchChange}
                     value={selectedBranch}
                   >
-                    <option value='' disabled className="text-gray-700">--Select--</option>
+                    <option value='' readOnly className="text-gray-700">--Select--</option>
                     {branchData.map((branch) => (
                       <option className="text-gray-700" key={branch._id} value={branch._id}>
                         {branch.branch_name}
@@ -764,7 +764,7 @@ const AddCustomer = () => {
                     onChange={handleSetStateChange}
                     value={selectedState}
                   >
-                    <option value='' disabled className="text-gray-700">--Select--</option>
+                    <option value='' readOnly className="text-gray-700">--Select--</option>
                     {sortedStates.map((state) => (
                       <option className="text-gray-700" key={state._id} value={state._id}>
                         {state.state_name}
@@ -789,7 +789,7 @@ const AddCustomer = () => {
                     onChange={handleCityChange}
                     value={selectedCity}
                   >
-                    <option value='' disabled className="text-gray-700">--Select--</option>
+                    <option value='' readOnly className="text-gray-700">--Select--</option>
                     {sortedCities.map((city) => (
                       <option className="text-gray-700" key={city._id} value={city._id}>
                         {city.city_name}

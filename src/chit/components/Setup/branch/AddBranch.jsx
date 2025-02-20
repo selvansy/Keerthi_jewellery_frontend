@@ -308,7 +308,7 @@ const addBranch = () => {
                                         onChange={handleCommonChange}
                                         className='appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
                                     >
-                                        <option value='' disabled>--Select Client--</option>
+                                        <option value='' readOnly>--Select Client--</option>
                                         {clientData.map((client) => (
                                             <option key={client._id} value={client._id}>{client.company_name}</option>
                                         ))}
@@ -419,7 +419,7 @@ const addBranch = () => {
                                         onChange={(e) => setSelectedCountry(e.target.value)}
                                         className='appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
                                     >
-                                        <option value='' disabled>--Select--</option>
+                                        <option value='' readOnly>--Select--</option>
                                         {countryData.map((country) => (
                                             <option key={country._id} value={country._id}>
                                                 {country.country_name}
@@ -443,7 +443,7 @@ const addBranch = () => {
                                     onChange={handleCommonChange}
                                     value={selectedState}
                                   >
-                                    <option value='' disabled className="text-gray-700">--Select--</option>
+                                    <option value='' readOnly className="text-gray-700">--Select--</option>
                                     {sortedStates.map((state) => (
                                       <option className="text-gray-700" key={state._id} value={state._id}>
                                         {state.state_name}
@@ -468,7 +468,7 @@ const addBranch = () => {
                                   onChange={handleCommonChange}
                                   value={selectedCity}
                                 >
-                                  <option value='' disabled className="text-gray-700">--Select--</option>
+                                  <option value='' readOnly className="text-gray-700">--Select--</option>
                                   {sortedCities.map((city) => (
                                     <option className="text-gray-700" key={city._id} value={city._id}>
                                       {city.city_name}

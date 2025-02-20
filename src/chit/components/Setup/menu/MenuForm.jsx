@@ -181,12 +181,12 @@ function MenuForm({ setIsOpen }) {
                   Cancel
                 </button>
                 {!id ? (
-                  <button type="submit" disabled={isLoading} className=" text-white rounded-md p-2 w-full lg:w-20"
+                  <button type="submit" readOnly={isLoading} className=" text-white rounded-md p-2 w-full lg:w-20"
                   style={{ backgroundColor: layout_color }} >
                     Submit
                   </button>
                 ) : (
-                  <button disabled={isLoading} className=" text-white rounded-md p-2 w-full lg:w-20"
+                  <button readOnly={isLoading} className=" text-white rounded-md p-2 w-full lg:w-20"
                   style={{ backgroundColor: layout_color }} >
                     Update
                   </button>

@@ -67,11 +67,11 @@ const DigiGold = () => {
     added_by: '',
     scheme_status: '',
     id_branch: id_branch,
-    type: 'all',
+    type: 0,
     id_classification: '',
     collectionuserid: '',
     id_scheme: '',
-    scheme_type: 10
+    scheme_type: 2
   });
 
 
@@ -106,11 +106,11 @@ const DigiGold = () => {
       ...prev, added_by: '',
       scheme_status: '',
       id_branch: id_branch,
-      type: 'all',
+      type: 0,
       id_classification: '',
       collectionuserid: '',
       id_scheme: '',
-      scheme_type: 10
+      scheme_type:2
     }));
 
     SetFiltered(false)
@@ -122,11 +122,11 @@ const DigiGold = () => {
       search: debouncedSearch,
       scheme_status: '',
       id_branch: id_branch,
-      type: 'all',
+      type: 0,
       id_classification: '',
       collectionuserid: '',
       id_scheme: '',
-      scheme_type: 10
+      scheme_type: 2
     });
 
   }
@@ -170,7 +170,7 @@ const DigiGold = () => {
       search: debouncedSearch,
       added_by: filters.added_by,
       scheme_status: filters.scheme_status,
-      type: 'all',
+      type: 0,
       id_classification: filters.id_classification,
       collectionuserid: filters.collectionuserid,
       id_scheme: filters.id_scheme,
@@ -302,7 +302,7 @@ const DigiGold = () => {
       search: debouncedSearch,
       added_by: filters.added_by,
       scheme_status: filters.scheme_status,
-      type: 'all',
+      type: 0,
       id_classification: filters.id_classification,
       collectionuserid: filters.collectionuserid,
       id_scheme: filters.id_scheme,
@@ -816,7 +816,7 @@ const DigiGold = () => {
           <div className="flex items-center gap-4">
             <button
               onClick={prevPage}
-              disabled={currentPage === 1}
+              readOnly={currentPage === 1}
              
               className={`p-2 text-gray-500 rounded-md ${currentPage === 1 ? "cursor-not-allowed" : "cursor-pointer"} `}
             >
@@ -831,7 +831,7 @@ const DigiGold = () => {
           <div className="flex items-center">
             <button
               onClick={nextPage}
-              disabled={currentPage === totalPages}
+              readOnly={currentPage === totalPages}
               
               className={`p-2 text-gray-500 rounded-md  ${currentPage === totalPages ? "cursor-not-allowed" : "cursor-pointer"}`}
             >

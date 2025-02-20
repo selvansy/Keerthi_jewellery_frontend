@@ -64,19 +64,16 @@ const Schemeaccount = () => {
     added_by: '',
     scheme_status: '',
     id_branch: id_branch,
-    type: 'all',
+    type: 0,
     id_classification: '',
     collectionuserid: '',
     id_scheme: '',
-    scheme_type: ''
+    scheme_type: 1
   });
  
 
   
-  const handleItemsPerPageChange = (value) => {
-    setItemsPerPage(value);
-    setCurrentPage(1);
-  };
+
 
   const handleReset = (e) => {
     setFromdate("");
@@ -85,11 +82,11 @@ const Schemeaccount = () => {
       ...prev, added_by: '',
       scheme_status: '',
       id_branch: id_branch,
-      type: 'all',
+      type: 0,
       id_classification: '',
       collectionuserid: '',
       id_scheme: '',
-      scheme_type: ''
+      scheme_type: 1
     }));
     SetFiltered(false)
     toast.success("Filter is cleared");
@@ -100,11 +97,11 @@ const Schemeaccount = () => {
       search: debouncedSearch,
       scheme_status: '',
       id_branch: id_branch,
-      type: 'all',
+      type: 0,
       id_classification: '',
       collectionuserid: '',
       id_scheme: '',
-      scheme_type: ''
+      scheme_type: 1
     });
 
   }
@@ -147,7 +144,7 @@ const Schemeaccount = () => {
       search: debouncedSearch,
       added_by: filters.added_by,
       scheme_status: filters.scheme_status,
-      type: 'all',
+      type: 0,
       id_classification: filters.id_classification,
       collectionuserid: filters.collectionuserid,
       id_scheme: filters.id_scheme,
@@ -162,7 +159,7 @@ const Schemeaccount = () => {
   };
 
 
-  const handleClickfilter = (e) => {
+  const handleClickfilter = () => {
     getallbranchMutate();
     handleAddedtypeChange();
     handleSchemetypeChange();
@@ -210,7 +207,7 @@ const Schemeaccount = () => {
   };
 
 
-  const handleSchemetypeChange = async (e) => {
+  const handleSchemetypeChange = async () => {
 
     const response = await getallschemetypes();
     if (response) {
@@ -218,7 +215,7 @@ const Schemeaccount = () => {
     }
   };
 
-  const handleAddedtypeChange = async (e) => {
+  const handleAddedtypeChange = async () => {
 
     const response = await addedtype();
     if (response) {
@@ -226,7 +223,7 @@ const Schemeaccount = () => {
     }
   };
 
-  const handleSchemestatusChange = async (e) => {
+  const handleSchemestatusChange = async () => {
 
     const response = await allschemestatus();
     if (response) {
@@ -283,7 +280,7 @@ const Schemeaccount = () => {
       search: debouncedSearch,
       added_by: filters.added_by,
       scheme_status: filters.scheme_status,
-      type: 'all',
+      type: 0,
       id_classification: filters.id_classification,
       collectionuserid: filters.collectionuserid,
       id_scheme: filters.id_scheme,
@@ -371,9 +368,35 @@ const Schemeaccount = () => {
     navigate(`/manageaccount/addschemeaccount/${id}`);
   };
 
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
+  const handleItemsPerPageChange = (value) => {
+    setItemsPerPage(value);
+    setCurrentPage(1);
   };
+
+
+  const handlePageChange = (page) => {
+
+    const pageNumber = Number(page);
+    if (!pageNumber || isNaN(pageNumber) || pageNumber < 1 || pageNumber > totalPages) {
+      return;
+    }
+
+    setCurrentPage(pageNumber);
+
+  };
+
+
+  const nextPage = () => {
+    setCurrentPage((prevPage) => (prevPage < totalPages ? prevPage + 1 : prevPage));
+  };
+
+  const prevPage = () => {
+    setCurrentPage((prevPage) => (prevPage > 1 ? prevPage - 1 : prevPage));
+  };
+
+
+  const paginationData = { totalItems: totalPages, currentPage: currentPage, itemsPerPage: itemsPerPage, handlePageChange: handlePageChange }
+  const paginationButtons = usePagination(paginationData)
 
 
   const columns = [
@@ -869,7 +892,7 @@ const Schemeaccount = () => {
         <div className="flex items-center gap-4">
           <button
             onClick={prevPage}
-            disabled={currentPage === 1}
+            readOnly={currentPage === 1}
            
             className={`p-2 text-gray-500 rounded-md ${currentPage === 1 ? "cursor-not-allowed" : "cursor-pointer"} `}
           >
@@ -884,7 +907,7 @@ const Schemeaccount = () => {
         <div className="flex items-center">
           <button
             onClick={nextPage}
-            disabled={currentPage === totalPages}
+            readOnly={currentPage === totalPages}
             
             className={`p-2 text-gray-500 rounded-md  ${currentPage === totalPages ? "cursor-not-allowed" : "cursor-pointer"}`}
           >

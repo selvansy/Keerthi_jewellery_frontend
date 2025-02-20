@@ -5,11 +5,12 @@ import { eventEmitter } from '../../../utils/EventEmitter';
 import { getgiftvendorbranchById} from '../../api/Endpoints';
 import Barcode from 'react-barcode';
 import Table from "./Table";
+
 const Modal = () => {
     
     const dispatch = useDispatch();
     const { isOpen, modalType, header, formData, buttons, options: modalOptions, extraData } = useSelector((state) => state.modal);
-    console.log(modalType)
+  
     const [localFormData, setLocalFormData] = useState(formData || {});
     const [options, setOptions] = useState(modalOptions || []);
     const [activeTab, setActiveTab] = useState('userInfo');

@@ -142,7 +142,7 @@ const AddNewArrival = () => {
     if (!formData.new_arrivals_content) errors.new_arrivals_content = "Description is required";
     if (!formData.expiry_date) errors.expiry_date = "Expriy Date is required";
     if (new_arrivals_img_path.length === 0) errors.new_arrivals_img_path = "Upload image is required";
-    console.log(errors);
+   
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };

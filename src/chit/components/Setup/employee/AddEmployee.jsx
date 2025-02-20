@@ -556,7 +556,7 @@ const AddEmployee = () => {
                     onChange={handleStateChange}
                     value={selectedState}
                   >
-                    <option value='' disabled className="text-gray-700">--Select--</option>
+                    <option value='' readOnly className="text-gray-700">--Select--</option>
                     {sortedStates.map((state) => (
                       <option className="text-gray-700" key={state._id} value={state._id}>
                         {state.state_name}
@@ -581,7 +581,7 @@ const AddEmployee = () => {
                     onChange={handleCityChange}
                     value={selectedCity}
                   >
-                    <option value='' disabled className="text-gray-700">--Select--</option>
+                    <option value='' readOnly className="text-gray-700">--Select--</option>
                     {sortedCities.map((city) => (
                       <option className="text-gray-700" key={city._id} value={city._id}>
                         {city.city_name}
