@@ -18,6 +18,7 @@ const Organisation = () => {
     background: null,
     bottom_logo: null,
   });
+  
   const REQUIRED_FIELDS = ["company_name", "mobile", "pincode", "short_code", "address", "id_city", "id_state", "id_country", "email"];
   const [orgData,setOrgData] = useState({})
   const [country, setCountry] = useState([]);
@@ -292,9 +293,6 @@ const Organisation = () => {
                           .replace(/_/g, " ")
                           .replace(/\b\w/g, (char) => char.toUpperCase())}
                           {REQUIRED_FIELDS.includes(field) && <span className="text-red-400"> *</span>}
-                    {/* {formik.touched[field] && formik.errors[field] && (
-                      <span className="text-red-400">*</span>
-                    )} */}
                   </label>
                   {field === "id_country" ? (
                     <Select

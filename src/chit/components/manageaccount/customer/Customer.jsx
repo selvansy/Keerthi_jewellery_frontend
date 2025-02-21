@@ -12,7 +12,6 @@ import { openModal } from '../../../../redux/modalSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import Modal from '../../common/Modal';
 import { useDebounce } from '../../../hooks/useDebounce'
-import { setid } from '../../../../redux/clientFormSlice'
 import DatePicker from "react-datepicker";
 import { SlidersHorizontal, Search, X } from 'lucide-react'
 import { CalendarDays, RefreshCcw } from 'lucide-react'
@@ -594,7 +593,6 @@ const Customer = () => {
         <Table
           data={customerData}
           columns={columns}
-          onPageChange={handlePageChange}
           selectedRow={selectedRow}
           activeDropdown={activeDropdown}
           isLoading={isLoading}

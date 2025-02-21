@@ -86,7 +86,6 @@ function SubmenuForm({ setIsOpen, getallsubmenusMutate, menus }) {
             toast.error("Fill required fields");
             return;
         }
-
         try {
             const updateData = {
                 submenu_name: formData.submenu_name,
@@ -98,7 +97,7 @@ function SubmenuForm({ setIsOpen, getallsubmenusMutate, menus }) {
             console.log(updateData);
 
             if (id) {
-                updatesubmenumutate(id, updateData); // Update existing submenu
+                updatesubmenumutate(updateData); // Update existing submenu
             } else {
                 createsubmenuMutate(updateData); // Create new submenu
             }
@@ -124,7 +123,7 @@ function SubmenuForm({ setIsOpen, getallsubmenusMutate, menus }) {
     });
 
     const { mutate: updatesubmenumutate } = useMutation({
-        mutationFn: updatesubmenu,
+        mutationFn: (data)=>updatesubmenu(id,data),
         onSuccess: (response) => {
             console.log(response)
             toast.success(response.message);
