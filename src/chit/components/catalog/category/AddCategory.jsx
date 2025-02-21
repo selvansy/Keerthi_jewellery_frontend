@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
-import { CalendarDays, Search } from "lucide-react";
 import "react-datepicker/dist/react-datepicker.css";
-import DatePicker from "react-datepicker";
-import { setid } from "../../../../redux/clientFormSlice";
 import {
   getallbranch,
   categorybyid,
@@ -14,217 +11,160 @@ import {
   updatecategory,
 } from "../../../api/Endpoints";
 import { toast } from "react-toastify";
-import { useDispatch, useSelector } from "react-redux";
-import SpinLoading from "../../common/spinLoading";
+import { useSelector } from "react-redux";
+import SpinLoading from "../../common/SpinLoading";
+
 const AddCategory = () => {
+  const {id} = useParams();
+  
   const navigate = useNavigate();
-  let dispatch = useDispatch();
   const roledata = useSelector((state) => state.clientForm.roledata);
-  const id_branch = roledata?.branch;
-  const { id } = useParams();
+  const branchAccess = roledata?.branch;
 
-  const [filtermetaltype, setMetaltype] = useState([]);
-  const [branchList, setBranchList] = useState([]);
-  const [new_arrivals_img_path, setcategoryImgPath] = useState([]);
-  const [isLoading, setisLoading] = useState(false);
-  let [purityId, setPurityId] = useState("");
-  let [branch, setbranch] = useState("");
-  let [branchData, setBranchData] = useState([]);
-
+  const [metalType, setMetalType] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [formErrors, setFormErrors] = useState({});
+  const [branches,setBranches]=useState([])
   const [formData, setFormData] = useState({
     category_name: "",
     id_metal: "",
-    id_branch: id_branch,
+    id_branch:""
   });
-  const [formErrors, setFormErrors] = useState({});
 
   useEffect(() => {
-    if (id_branch === "0") {
-      getallbranchmuate();
-    }
-    if (id_branch !== "0") {
-      setFormData({ ...formData, id_branch: id_branch });
-    }
-  }, [id_branch]);
+    if(branchAccess==0)getallbranchmuate()
+    if(id) getcategoryById(id)
+      
+    getMetalType();
+  }, []);
 
-  //mutation to get purity type
-  const { mutate: getMetalData } = useMutation({
+
+  //mutation get all metal types
+  const { mutate: getMetalType } = useMutation({
     mutationFn: getallmetal,
     onSuccess: (response) => {
-      setMetaltype(response.data);
+      setMetalType(response.data);
     },
     onError: (error) => {
       console.error("Error fetching countries:", error);
     },
   });
 
+  //mutation to create category
+  const { mutate: createcategoryMutate } = useMutation({
+    mutationFn: createcategory,
+    onSuccess: (response) => {
+      console.log(response);
+      
+      toast.success(response.message);
+      setIsLoading(false);
+      navigate("/catalog/category");
+    },
+    onError: (error) => {
+      setIsLoading(false);
+      toast.error("Something went wrong while creating the category. Please try again later.");
+    },
+  });
+
+  //update category mutation
+  const { mutate: updatecategorymutate } = useMutation({
+    
+    mutationFn: updatecategory,
+    onSuccess: (response) => {
+      setIsLoading(false);  
+      if(response.message=="Category already Existing"){
+        toast.error(response.message);
+        return
+      }
+      toast.success(response.message);
+      console.log("hekklo");
+      navigate("/catalog/category");
+
+    },
+    onError: (error) => {
+      setIsLoading(false);
+      console.log(error);
+
+      toast.error(error.response.data.message);
+    },
+  });
+
+
+  // get all branches
   const { mutate: getallbranchmuate } = useMutation({
     mutationFn: getallbranch,
     onSuccess: (response) => {
-      setBranchList(response.data);
+      setBranches(response.data);
     },
     onError: (error) => {
       console.error("Error:", error);
     },
   });
 
-  //mutation to get purity type
-  const { mutate: getallpurity } = useMutation({
-    mutationFn: puritybymetal,
+  /// get category by id
+  const { mutate: getcategoryById } = useMutation({
+    mutationFn: categorybyid,
     onSuccess: (response) => {
-      setPuritytype(response.data);
+      setFormData(response.data);
     },
     onError: (error) => {
       console.error("Error fetching countries:", error);
     },
   });
 
-  // input change handler
+
+  // on change input fields
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    console.log(value);
-
-    setFormData((prev) => ({
-      ...prev,
+    setFormData((prevData) => ({
+      ...prevData,
       [name]: value,
     }));
-
-    if (name === "id_metal") {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: Number(value),
-      }));
-    }
-    setFormErrors((prev) => ({
-      ...prev,
-      [name]: "",
-    }));
   };
 
-  //handle description image change
-  const handleDescriptionImageChange = (e) => {
-    const files = e.target.files;
-    if (files.length > 0) {
-      // Add the new files to the state
-      setcategoryImgPath((prevState) => [...prevState, ...Array.from(files)]);
-    }
-  };
+  
 
-  // Validation function
-  const validateForm = () => {
+  const validateForm = (categoryData) => {
     const errors = {};
-    if (!formData.id_metal) errors.id_metal = "Metal is required";
-    if (!formData.id_branch) errors.id_branch = "Branch is required";
-    if (!formData.category_name)
+    if (!categoryData.id_metal) errors.id_metal = "Metal is required";
+    if (!categoryData.id_branch) errors.branch = "Branch is required";
+    if (!categoryData.category_name)
       errors.category_name = "Category Name is required";
-
-    console.log(errors);
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
 
-  //mutation to create category
-  const { mutate: createcategoryMutate } = useMutation({
-    mutationFn: createcategory,
-    onSuccess: (response) => {
-      dispatch(setid(null));
-      toast.success(response.message);
-      setisLoading(false);
-      navigate("/catalog/category");
-    },
-    onError: (error) => {
-      setisLoading(false);
-      // toast.error(error.response.data.message)
-    },
-  });
+  
 
-  //handle submit
   const handleSubmit = () => {
-    if (!validateForm(formData)) {
+    setFormErrors({});
+    
+    let updatedFormData = { ...formData }; 
+    
+    if (branchAccess && branchAccess !=0) {
+      updatedFormData.id_branch = branchAccess;
+      setFormData(updatedFormData); 
+    }
+    
+    if (!validateForm(updatedFormData)) {
       toast.error("Fill required fields");
       return;
     }
-    setisLoading(true);
-    const formDataToSend = {
-      category_name: formData.category_name,
-      id_metal: formData.id_metal,
-
-      id_branch: formData.id_branch,
-    };
-    createcategoryMutate(formDataToSend);
-  };
-
-  useEffect(() => {
-    getMetalData();
-
-    // if (id) {
-    // fetchcategoryById(id)
-    //   getPurity(purityId);
-    // }
-  }, []);
-
-  useEffect(() => {
+  
+    setIsLoading(true);
+  
     if (id) {
-      fetchcategoryById({ id: id });
+      const {  category_name, id_metal, id_branch } = formData;
+      updatecategorymutate({id,category_name,id_metal,id_branch});
+    } else {
+      createcategoryMutate(updatedFormData); 
     }
-  }, [id]);
+  };
+  
+  
 
   const handleCancle = () => {
-    dispatch(setid(null));
     navigate("/catalog/category");
-  };
-
-  //Edit form --------------------------
-
-  //get category by id
-  const { mutate: fetchcategoryById } = useMutation({
-    mutationFn: categorybyid,
-    onSuccess: (response) => {
-      setFormData(response.data);
-      // setIffersImage(`${response.data.pathUrl}/${response.data.desc_img}`);
-      handletypeChange("type", response.data.id_metal);
-    },
-    onError: (error) => {
-      console.error("Error fetching countries:", error);
-    },
-  });
-
-  //update category
-  const { mutate: updatecategorymutate } = useMutation({
-    mutationFn: updatecategory,
-    onSuccess: (response) => {
-      setisLoading(false);
-      dispatch(setid(null));
-      toast.success(response.message);
-      navigate("/catalog/category");
-    },
-    onError: (error) => {
-      setisLoading(false);
-      toast.error(error.response.data.message);
-    },
-  });
-
-  const { mutate: getPurity } = useMutation({
-    mutationFn: puritybymetal,
-    onSuccess: (response) => {
-      console.log("filterpurity", response.data);
-      setPuritytype(response.data);
-    },
-    onError: (error) => {
-      console.error("Error fetching purity types:", error);
-      setPuritytype([]);
-    },
-  });
-
-  const handleUpdate = () => {
-    setisLoading(true);
-    if (!validateForm(formData)) return;
-    const { _id, category_name, id_metal, id_branch } = formData;
-    updatecategorymutate({ _id, category_name, id_metal, id_branch });
-  };
-
-  const handleRemoveDescriptionImage = (index) => {
-    setcategoryImgPath((prevState) => prevState.filter((_, i) => i !== index));
   };
 
   return (
@@ -243,7 +183,7 @@ const AddCategory = () => {
       <div className="w-full flex flex-col bg-[#F5F5F5] border-t-2 border-[#023453] mt-3 overflow-y-auto scrollbar-hide h-[calc(100vh-200px)]">
         <div className="flex flex-col p-4 bg-white relative">
           <div className="grid grid-rows-2 md:grid-cols-2 gap-5 border-gray-300 mb-10">
-            {id_branch === "0" && (
+            {branchAccess == "0" && (
               <div className="flex flex-col lg:mt-2">
                 <label className="text-black mb-2 font-medium">
                   Branch<span className="text-red-400">*</span>
@@ -258,7 +198,7 @@ const AddCategory = () => {
                     <option value="" className="text-gray-700">
                       --Select--
                     </option>
-                    {branchList.map((branch) => (
+                    {branches.map((branch) => (
                       <option
                         className="text-gray-700"
                         key={branch._id}
@@ -302,7 +242,7 @@ const AddCategory = () => {
                   className="appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                 >
                   <option value="">--Select---</option>
-                  {filtermetaltype.map((type) => (
+                  {metalType.map((type) => (
                     <option
                       name="type"
                       className="text-gray-700"
@@ -367,9 +307,10 @@ const AddCategory = () => {
                 className="bg-[#61A375] text-white rounded-md p-2 w-full lg:w-20"
                 type="button"
                 onClick={
-                  isLoading ? undefined : id ? handleUpdate : handleSubmit
+                  isLoading ? undefined : handleSubmit
                 }
               >
+                {/* Submit */}
                 {isLoading ? <SpinLoading /> : id ? "Update" : "Submit"}
               </button>
             </div>

@@ -20,207 +20,113 @@ import DatePicker from "react-datepicker";
 import { eventEmitter } from "../../../../utils/EventEmitter";
 import { openModal } from "../../../../redux/modalSlice";
 import Modal from "../../../components/common/Modal";
-import { pre } from "framer-motion/client";
+import usePagination from "../../../hooks/usePagination";
 
 const Category = () => {
-  const navigate = useNavigate();
 
-  const [isLoading, setisLoading] = useState(true);
+
+  const navigate=useNavigate()
+  const dispatch = useDispatch();
   const roledata = useSelector((state) => state.clientForm.roledata);
-  let id_client = roledata?.id_client;
-  const id_branch = roledata?.branch;
-  const [categoryData, setcategoryData] = useState([]);
-
-  let dispatch = useDispatch();
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
-
-  const [search, setSearch] = useState("");
+  const branchAccess = roledata?.branch;
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [selectedRow, setSelectedRow] = useState(null);
+  const [totalPages,setTotalPages]=useState(0)
+  const [search,setSearch]=useState("")
   const [activeDropdown, setActiveDropdown] = useState(null);
-
-  const [filtermetaltype, setMetaltype] = useState([]);
-
+  const [isLoading,setIsLoading]=useState(true)
+  const [categoryData,setCategoryData]=useState([])
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [from_date, setFromdate] = useState("");
-  const [to_date, setTodate] = useState("");
-  const [branchList, setBranchList] = useState([]);
-  const [deletedId, setDeletedId] = useState(null);
-  let [branch, setbranch] = useState("");
-  const [filters, setFilters] = React.useState({
+  const [selectedRow, setSelectedRow] = useState(null);
+  const [deleteId,setDeleteId]=useState(null)
+  const [filters, setFilters] = useState({
+    page: currentPage,
     from_date: "",
     to_date: "",
-    id_branch: id_branch,
+    id_branch:branchAccess,
     id_metal: "",
+    search: search,
+    limit: itemsPerPage,
   });
 
-  const [formErrors, setFormErrors] = useState({});
-
-  const handleReset = (e) => {
-    setFromdate("");
-    setTodate("");
-    setFilters((prev) => ({
-      ...prev,
-      added_by: "",
-      id_branch: id_branch,
-      id_metal: "",
-    }));
-    toast.success("Filter is cleared");
-    const filterTosend = {
-      page: currentPage,
-      from_date: from_date,
-      to_date: to_date,
-      limit: itemsPerPage,
-      search: "",
-      id_metal: "",
-      id_branch: id_branch,
-    };
-
-    getcategoryData(filterTosend);
+  const handleItemsPerPageChange = (value) => {
+    setItemsPerPage(value);
+    setCurrentPage(1);
   };
 
-  const handleClickfilter = (e) => {
-    getallbranchMutate();
-    getMetalData();
-    setIsFilterOpen(true);
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
   };
+
+  const paginationData = { totalItems: totalPages, currentPage: currentPage, itemsPerPage: itemsPerPage, handlePageChange: handlePageChange }
+  const paginationButtons = usePagination(paginationData)
+
+  useEffect(()=>{
+    getCategory(filters)
+  },[search])
 
   useEffect(() => {
-    const filterTosend = {
-      page: currentPage,
-      from_date: "",
-      to_date: "",
-      limit: itemsPerPage,
-      search: search,
-      id_branch: id_branch,
-      id_metal: "",
+    eventEmitter.on("CONFIRMATION_SUBMIT", async (data) => {
+      try {
+        setDeleteId(data.CategoryId);
+        deleteCategory(data.CategoryId);
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    });
+    return () => {
+      eventEmitter.off("CONFIRMATION_SUBMIT");
     };
-
-    getcategoryData(filterTosend);
-  }, []);
-
-  useEffect(() => {
-    if (id_branch === '0') {
-      getallbranchMutate()
-    }
-
-    if (id_branch !== "0") {
-      setFilters({ ...filters, id_branch: id_branch })
-    }
-
-  }, [id_branch]);
+  }, [eventEmitter]);
 
 
-
-  useEffect(() => {
-    const filterTosend = {
-      page: currentPage,
-      from_date: "",
-      to_date: "",
-      limit: itemsPerPage,
-      search: search,
-      id_branch: id_branch,
-      id_metal: "",
-    };
-
-    getcategoryData(filterTosend);
-  }, [currentPage, itemsPerPage, search]);
-
-  const filterInputchange = (e) => {
-    const { name, value } = e.target;
-    setFilters((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const applyfilterdatatable = (e) => {
-    e.preventDefault();
-
-    const filterTosend = {
-      page: currentPage,
-      from_date: from_date,
-      to_date: to_date,
-      limit: itemsPerPage,
-      search: search,
-      id_metal: filters.id_metal,
-      id_branch: filters.id_branch,
-    };
-
-    getcategoryData(filterTosend);
-  };
-
-  const { mutate: getallbranchMutate } = useMutation({
-    mutationFn: getallbranch,
-    onSuccess: (response) => {
-      setBranchList(response.data);
-    },
-    onError: (error) => {
-      console.error("Error:", error);
-    },
-  });
-
-  const { mutate: branchbyId } = useMutation({
-    mutationFn: getBranchById,
-    onSuccess: (response) => {
-      setbranch(response.data);
-    },
-    onError: (error) => {
-      console.error("Error:", error);
-    },
-  });
 
   //mutation to get scheme type
-  const { mutate: getcategoryData } = useMutation({
+  const { mutate: getCategory } = useMutation({
     mutationFn: (payload) => getcategoryTable(payload),
     onSuccess: (response) => {
-      setcategoryData(response?.data);
+      setCategoryData(response?.data);
       setTotalPages(response?.data?.totalPages);
-      setisLoading(false);
+      setIsLoading(false);
     },
     onError: (error) => {
       console.error("Error:", error);
-      setisLoading(false);
+      setIsLoading(false);
     },
   });
 
-  //mutation to get purity type
-  const { mutate: getMetalData } = useMutation({
-    mutationFn: getallmetal,
+  // mutation for delete category
+  const { mutate: deleteCategory } = useMutation({
+    mutationFn: deletecategory,
     onSuccess: (response) => {
-      setMetaltype(response.data);
+      toast.success(response.message);
+      setCategoryData((prev) => {
+        return prev.filter((cat) => cat._id !== deleteId);
+      });
+
+      setDeleteId(null);
     },
     onError: (error) => {
+      setDeleteId(null);
       console.error("Error fetching countries:", error);
     },
   });
 
-  const handleSearch = (e) => {
-    setSearch(e.target.value);
-  };
 
-  const handleClick = (e) => {
-    navigate("/catalog/addcategory");
-  };
 
-  const handleStatusToggle = async (id) => {
-    let response = await activatecategory(id);
-    if (response) {
-      setcategoryData((prev) =>
-        prev.map((cat) =>
-          cat._id === id ? { ...cat, active: !cat.active } : cat
-        )
-      );
-      toast.success(response.message);
-      getcategoryData({
-        page: currentPage,
-        limit: itemsPerPage,
-        search: search,
-        id_metal: id_metal,
-        id_branch: id_branch,
-      });
-    }
-  };
+  const handleClickfilter =()=>{
+    setIsFilterOpen(true);
 
+  }
+
+
+  // edit handler
+  const handleEdit=(id)=>{
+    navigate(`/catalog/editcategory/${id}`);
+  }
+
+  // delete handler
   const handleDelete = (id) => {
     setActiveDropdown(null);
     dispatch(
@@ -243,44 +149,28 @@ const Category = () => {
     );
   };
 
-
-  const { mutate: deleteCategory } = useMutation({
-    mutationFn: deletecategory,
-    onSuccess: (response) => {
+  // active and block handler
+  const handleStatusToggle = async (id) => {
+    let response = await activatecategory(id);
+    if (response) {
+      setCategoryData((prev) =>
+        prev.map((cat) =>
+          cat._id === id ? { ...cat, active: !cat.active } : cat
+        )
+      );
       toast.success(response.message);
-      setcategoryData((prev) => {
-        console.log("Previous Data:", prev);
-        console.log("Deleted ID:", deletedId); 
-
-        return prev.filter((cat) => cat._id !== deletedId);
-      });
-
-      setDeletedId(null);
-    },
-    onError: (error) => {
-      setDeletedId(null);
-      console.error("Error fetching countries:", error);
-    },
-  });
-
-  useEffect(() => {
-    eventEmitter.on("CONFIRMATION_SUBMIT", async (data) => {
-      try {
-        setDeletedId(data.CategoryId);
-        deleteCategory(data.CategoryId);
-      } catch (error) {
-        console.error("Error:", error);
-      }
-    });
-    return () => {
-      eventEmitter.off("CONFIRMATION_SUBMIT");
-    };
-  }, [eventEmitter]);
-
-  const handleEdit = (id) => {
-    dispatch(setid(id));
-    navigate(`/catalog/editcategory/${id}`);
+      // setCategoryData({
+      //   page: currentPage,
+      //   limit: itemsPerPage,
+      //   search: search,
+      //   id_metal: id_metal,
+      //   id_branch: id_branch,
+      // });
+    }
   };
+
+ 
+
 
   const columns = [
     {
@@ -442,32 +332,6 @@ const Category = () => {
       ),
     },
   ];
-
-  const paginationButtons = [];
-  for (let i = 1; i <= totalPages; i++) {
-    paginationButtons.push(
-      <button
-        key={i}
-        onClick={() => handlePageChange(i)}
-        className={`p-2 w-10 h-10 rounded-md ${
-          currentPage === i ? " text-white" : " text-slate-300"
-        }`}
-        style={{ backgroundColor: layout_color }}
-      >
-        {i}
-      </button>
-    );
-  }
-
-  const handleItemsPerPageChange = (value) => {
-    setItemsPerPage(value);
-    setCurrentPage(1);
-  };
-
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
-
   return (
     <>
       <div className="flex flex-col p-4">
@@ -480,14 +344,14 @@ const Category = () => {
             <input
               placeholder="Search..."
               className="p-3 pl-10 pr-3 border-2 bg-[#F5F5F5] border-gray-500 rounded-md w-full"
-              onChange={handleSearch}
+              onChange={(e)=>setSearch(e.target.value)}
             />
           </div>
           <div className="flex flex-row items-center justify-end gap-2">
             <button
               type="button"
               className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 transition-colors"
-              onClick={handleClick}
+              onClick={()=>navigate('/catalog/addcategory')}
               style={{ backgroundColor: layout_color }}
             >
               + Create category
@@ -496,7 +360,7 @@ const Category = () => {
             <button
               id="filter"
               className="text-white w-10 h-10 flex items-center justify-center rounded-md  transition-colors flex-shrink-0"
-              onClick={() => handleReset()}
+              // onClick={() => handleReset()}
               style={{ backgroundColor: layout_color }}
             >
               <RefreshCcw size={20} />
@@ -538,8 +402,8 @@ const Category = () => {
                   </label>
                   <div className="relative">
                     <DatePicker
-                      selected={from_date}
-                      onChange={(date) => setFromdate(date)}
+                      // selected={from_date}
+                      // onChange={(date) => setFromdate(date)}
                       dateFormat="dd-MM-yyyy"
                       placeholderText="Select Date"
                       className="border border-gray-300 rounded-md p-3 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
@@ -559,8 +423,8 @@ const Category = () => {
                   </label>
                   <div className="relative">
                     <DatePicker
-                      selected={to_date}
-                      onChange={(date) => setTodate(date)}
+                      // selected={to_date}
+                      // onChange={(date) => setTodate(date)}
                       dateFormat="dd-MM-yyyy"
                       placeholderText="Select Date"
                       className="border border-gray-300 rounded-md p-3 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
@@ -576,7 +440,7 @@ const Category = () => {
                 </div>
 
                 <div className="space-y-2">
-                  {id_branch === "0" && (
+                  {branchAccess === "0" && (
                     <div className="flex flex-col lg:mt-2">
                       <label className="text-black mb-1 font-medium">
                         Branch<span className="text-red-400">*</span>
@@ -584,19 +448,19 @@ const Category = () => {
                       <div className="relative">
                         <select
                           name="id_branch"
-                          className={`appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 ${
-                            !id_branch !== "0"
-                              ? "cursor-not-allowed bg-gray-100"
-                              : ""
-                          }`}
+                          // className={`appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 ${
+                          //   !id_branch !== "0"
+                          //     ? "cursor-not-allowed bg-gray-100"
+                          //     : ""
+                          // }`}
                           defaultValue=""
-                          onChange={filterInputchange}
-                          value={filters.id_branch}
+                          // onChange={filterInputchange}
+                          // value={filters.id_branch}
                         >
                           <option value="" className="text-gray-700">
                             --Select--
                           </option>
-                          {branchList.map((branch) => (
+                          {/* {branchList.map((branch) => (
                             <option
                               className="text-gray-700"
                               key={branch._id}
@@ -604,7 +468,7 @@ const Category = () => {
                             >
                               {branch.branch_name}
                             </option>
-                          ))}
+                          ))} */}
                         </select>
                         <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
                           <svg
@@ -620,13 +484,13 @@ const Category = () => {
                           </svg>
                         </div>
                       </div>
-                      {formErrors.branch && (
+                      {/* {formErrors.branch && (
                         <span className="text-red-500 text-sm mt-1">
                           {formErrors.branch}
                         </span>
-                      )}
+                      )} */}
                     </div>
-                  )}
+                   )} 
                 </div>
 
                 <div className="space-y-2">
@@ -636,14 +500,14 @@ const Category = () => {
                   <div className="relative">
                     <select
                       name="id_metal"
-                      value={filters.id_metal}
-                      onChange={filterInputchange}
+                      // value={filters.id_metal}
+                      // onChange={filterInputchange}
                       className="appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                     >
                       <option value="" default>
                         --Select---
                       </option>
-                      {filtermetaltype.map((type) => (
+                      {/* {filtermetaltype.map((type) => (
                         <option
                           name="type"
                           className="text-gray-700"
@@ -652,7 +516,7 @@ const Category = () => {
                         >
                           {type.metal_name}
                         </option>
-                      ))}
+                      ))} */}
                     </select>
                     <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
                       <svg
@@ -668,17 +532,17 @@ const Category = () => {
                       </svg>
                     </div>
                   </div>
-                  {formErrors.id_metal && (
+                  {/* {formErrors.id_metal && (
                     <span className="text-red-500 text-sm mt-1">
                       {formErrors.id_metal}
                     </span>
-                  )}
+                  )} */}
                 </div>
 
                 <div className="p-4 borde">
                   <div className="bg-yellow-300 flex justify-center gap-3">
                     <button
-                      onClick={applyfilterdatatable}
+                      // onClick={applyfilterdatatable}
                       className="flex-1 px-4 py-2 bg-[#61A375] text-white rounded-md"
                     >
                       Apply
@@ -689,15 +553,15 @@ const Category = () => {
             </form>
           </div>
         </div>
-        {isFilterOpen && (
+        {/* {isFilterOpen && (
           <div
             className="fixed inset-0 bg-black bg-opacity-50 z-30"
             onClick={() => setIsFilterOpen(false)}
           />
-        )}
+        )} */}
 
         <div className="mt-4">
-          <Table data={categoryData} columns={columns} isLoading={isLoading} />
+          <Table data={categoryData} columns={columns} isLoading={isLoading}  />
         </div>
 
         {categoryData?.length > 0 && (

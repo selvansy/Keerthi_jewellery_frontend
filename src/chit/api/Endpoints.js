@@ -75,7 +75,9 @@ export const addmetal = async (data) => {
     return response;
 }
 export const deletemetal = async (id) => {
-    const response = await Api.delete(`${import.meta.env.VITE_API_URL}/api/client/metal/${id}`);
+    console.log(id);
+    
+    const response = await Api.delete(`${import.meta.env.VITE_API_URL}/api/client/metal/${id.MetalId}`);
     return response.data;
 }
  
@@ -84,8 +86,9 @@ export const getmetalById = async (id) => {
     return response.data;
 }
  
-export const updatemetal = async (id, data) => {
-    const response = await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/metal/${id}`, data);
+export const updatemetal = async (metalData) => { 
+    const {id,metal_name}=metalData
+    const response = await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/metal/${id}`, {metal_name});
     return response;
 }
  
@@ -475,7 +478,7 @@ export const getschemepaymentbyid = async (data) => {
     return response.data;
 }
  
-export const todaycurrentratebybranch = async (data) => {
+export const todaycurrentratebybranch = async (data) => {    
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/metalrate/today/${data.id_branch}/${data.date}`);
     return response.data;
 }
@@ -612,8 +615,8 @@ export const categorybymetalid= async(id)=>{
 
 
 export const updatecategory= async(data)=>{
-    const {_id,category_name,id_metal,id_branch}=data    
-    const response= await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/category/${_id}`,{category_name,id_metal,id_branch})
+    const {id,category_name,id_metal,id_branch}=data    
+    const response= await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/category/${id}`,{category_name,id_metal,id_branch})
     return response.data
 }
  
@@ -1429,8 +1432,8 @@ export const getcategoryTable= async(data)=>{
     return response.data
 }
 
-export const categorybyid= async(data)=>{
-    const response= await Api.get(`${import.meta.env.VITE_API_URL}/api/client/category/${data.id}`)
+export const categorybyid= async(id)=>{
+    const response= await Api.get(`${import.meta.env.VITE_API_URL}/api/client/category/${id}`)
     return response.data
 }
 

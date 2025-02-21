@@ -40,7 +40,7 @@ const Giftvendor = () => {
   const [searchInput, setSearchInput] = useState('')
   const debouncedSearch = useDebounce(searchInput, 500)
 
-  const limit = 10;
+  const limit = 1;
 
 
     const refetchTable = ()=>{

@@ -1,14 +1,14 @@
 import React from "react";
 import { RotatingLines } from "react-loader-spinner";
  
-function SpinLoading() {
+function SpinLoading({color='white'}) {
   return (
     <div className="flex justify-center">
       <RotatingLines
         visible={true}
         height="10"
         width="26"
-        strokeColor="white"
+        strokeColor={color}
         strokeWidth="5"
         animationDuration="0.75"
         ariaLabel="rotating-lines-loading"
