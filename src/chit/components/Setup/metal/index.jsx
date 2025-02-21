@@ -22,7 +22,7 @@ import { useDebounce } from "../../../hooks/useDebounce";
 import usePagination from '../../../hooks/usePagination'
 import { Formik } from "formik";
 import * as Yup from "yup";
-import SpinLoading from "../../common/SpinLoading";
+import SpinLoading from "../../common/spinLoading";
 import Loading from "../../common/Loading";
 import { metadata } from "framer-motion/client";
 

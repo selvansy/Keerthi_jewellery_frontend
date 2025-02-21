@@ -12,7 +12,7 @@ import {
 } from "../../../api/Endpoints";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
-import SpinLoading from "../../common/SpinLoading";
+import SpinLoading from "../../common/spinLoading";
 
 const AddCategory = () => {
   const {id} = useParams();
