@@ -45,7 +45,7 @@ const Giftvendor = () => {
 
 
     const refetchTable = ()=>{
-      getAllgiftvendorsMutate({ search: debouncedSearch, page: currentPage, limit });
+      getAllgiftvendorsMutate({ search: debouncedSearch, page: currentPage, limit:itemsPerPage });
     }
 
 
@@ -68,8 +68,8 @@ const Giftvendor = () => {
   }, []);
 
   useEffect(() => {
-    getAllgiftvendorsMutate({ search: debouncedSearch, page: currentPage, limit });
-  }, [currentPage, debouncedSearch]);
+    getAllgiftvendorsMutate({ search: debouncedSearch, page: currentPage, limit:itemsPerPage });
+  }, [currentPage, debouncedSearch,itemsPerPage]);
 
 
   const { mutate: getAllgiftvendorsMutate,refetch} = useMutation({
@@ -84,6 +84,7 @@ const Giftvendor = () => {
       setisLoading(false)
     },
     onError: () => {
+      setgiftvendorData([])
       setisLoading(false)
     }
   });

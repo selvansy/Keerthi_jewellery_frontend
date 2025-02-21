@@ -14,7 +14,7 @@ import chitrcvd from '../../../../assets/chitrcvd.svg';
 import nonchitrcvd from '../../../../assets/nonchitrcvd.svg';
 import balancegift from '../../../../assets/giftblnc.svg';
 import { openModal } from '../../../../redux/modalSlice';
-import Modal from '../../../components/common/Modal';
+import Modal from '../../common/Modal';
 import { useDispatch, useSelector } from 'react-redux'
 import { eventEmitter } from '../../../../utils/EventEmitter';
 import { setbranchId } from '../../../../redux/clientFormSlice';
@@ -355,7 +355,7 @@ const GiftIssued = () => {
   return (
     <div className="flex flex-col p-4">
       <div className='flex flex-col gap-3'>
-        <h2 className="text-2xl text-gray-900 font-bold">Gift Issues</h2>
+        <h2 className="text-2xl text-gray-900 font-bold">Gift HandOver</h2>
         <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4'>
           <div className='flex flex-row items-center justify-between bg-white rounded-lg p-3 h-20 shadow-md'>
             <div className='flex flex-col justify-center'>

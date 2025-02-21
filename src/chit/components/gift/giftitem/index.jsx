@@ -43,11 +43,11 @@ const Giftitem = () => {
   const limit = 10;
 
   useEffect(() => {
-    getallgiftitemtableMutate({ search: debouncedSearch, page: currentPage, limit });
-  }, [currentPage, debouncedSearch]);
+    getallgiftitemtableMutate({ search: debouncedSearch, page: currentPage, limit:itemsPerPage });
+  }, [currentPage, debouncedSearch,itemsPerPage]);
 
   const refetchTable = ()=>{
-    getallgiftitemtableMutate({ search: debouncedSearch, page: currentPage, limit });
+    getallgiftitemtableMutate({ search: debouncedSearch, page: currentPage, limit:itemsPerPage });
   }
 
   useEffect(() => {
