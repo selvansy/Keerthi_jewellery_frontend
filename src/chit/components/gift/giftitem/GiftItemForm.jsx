@@ -41,10 +41,13 @@ function GiftItemForm({ setIsOpen,isviewOpen,id,setId,refetchTable  }) {
     const { mutate: getgiftvendorbranchByIdmuate } = useMutation({
         mutationFn: getgiftvendorbranchById,
         onSuccess: (response) => {
+     
             if (response) {
                 setVendor(response.data);
             }
-        },
+        },onError:(error)=>{
+           toast.error(error)
+        }
     });
 
     const { mutate: getGiftitemId } = useMutation({
@@ -162,6 +165,7 @@ const { mutate: addgiftitemMutate } = useMutation({
         }
     },
     onError: (error) => {
+        setIsLoading(false)
         toast.error(`Error adding gift item: ${error.message}`);
     },
 });
@@ -178,6 +182,7 @@ const { mutate: updategiftitemMutate } = useMutation({
         }
     },
     onError: (error) => {
+        setIsLoading(false)
         toast.error(`Error updating gift item: ${error.message}`);
     },
 });
@@ -306,7 +311,7 @@ const { mutate: updategiftitemMutate } = useMutation({
                         <button
                             type="button"
                             onClick={(e)=>handleSubmit(e)}
-                            disabled={isLoading == true}
+                            readOnly={isLoading == true}
                             className=" text-white rounded-md p-2 w-full lg:w-20"
                             style={{ backgroundColor: layout_color }} >
                                 {isLoading ? <SpinLoading/> : id ? 'Update' : 'Submit'}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Table from '../../common/Table';
+import { format } from 'date-fns';
 import { Search } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getallgiftvendor, getallbranch, getallgiftitemtable, changegiftitemStatus, deletegiftitem, getgiftitemById, updategiftitem, addgiftitem } from '../../../api/Endpoints';
@@ -32,6 +33,7 @@ const Giftitem = () => {
   const [giftitemData, setgiftitemData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
+  const [entries,Setentries] = useState(0)
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [activeDropdown, setActiveDropdown] = useState(null);
 
@@ -86,8 +88,6 @@ const Giftitem = () => {
     return () => document.removeEventListener('click', handleClickOutside);
   }, [activeDropdown]);
   
-
-
   function closeIncommingModal() {
     setIsviewOpen(false);
   }
@@ -95,8 +95,12 @@ const Giftitem = () => {
   const { mutate: getallgiftitemtableMutate } = useMutation({
     mutationFn: (payload)=> getallgiftitemtable(payload),
     onSuccess: (response) => {
+  
       if (response) {
         setgiftitemData(response.data);
+        setTotalPages(response.totalPages)
+        setCurrentPage(response.currentPage)
+        Setentries(response.totalDocument)
         setTotalPages(Math.ceil(response.data.total / limit));
         
       }
@@ -104,6 +108,7 @@ const Giftitem = () => {
     },
     onError:()=>{
         setisLoading(false)
+        setgiftitemData([])
     }
   });
 
@@ -130,6 +135,8 @@ const Giftitem = () => {
     setIsviewOpen(true)
   };
 
+  
+  
   const handleAddgiftitem = () => {
     setIsviewOpen(true)
   };
@@ -151,8 +158,6 @@ const Giftitem = () => {
         }
       }
     }))
-
-    
 
   };
 
@@ -281,7 +286,7 @@ const Giftitem = () => {
     },
     {
       header: 'Vendor Name',
-      cell: (row) => row?.gift_vendorid?.vendor_name || 'N/A',
+      cell: (row) => row?.gift_vendor?.vendor_name || 'N/A',
     },
     {
       header: "Create Date",
@@ -362,7 +367,7 @@ const Giftitem = () => {
           <div className="flex items-center gap-4">
             <button
               onClick={prevPage}
-              disabled={currentPage === 1}
+              readOnly={currentPage === 1}
               className={`p-2 text-gray-500 rounded-md ${currentPage === 1 ? "cursor-not-allowed" : "cursor-pointer"}`}
             >
               Previous
@@ -376,7 +381,7 @@ const Giftitem = () => {
           <div className="flex items-center">
             <button
               onClick={nextPage}
-              disabled={currentPage === totalPages}
+              readOnly={currentPage === totalPages}
               className={`p-2 text-gray-500 rounded-md ${currentPage === totalPages ? "cursor-not-allowed" : "cursor-pointer"}`}
             >
               Next

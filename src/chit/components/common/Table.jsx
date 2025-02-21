@@ -18,7 +18,7 @@ const Table = ({
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
   return (
-    <div className="flex flex-col min-h- overflow-y-auto">
+    <div className="flex flex-col  overflow-y-auto">
     <div className="overflow-x-auto">
       <div className="relative">
         <table className="w-full divide-y divide-gray-200">

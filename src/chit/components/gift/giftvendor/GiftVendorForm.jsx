@@ -75,6 +75,7 @@ useEffect(()=>{
             setIsLoading(false)
         },
         onError: (error) => {
+            setIsLoading(false)
             toast.error("An error occurred: " + error.message);
         },
     });
@@ -89,6 +90,7 @@ useEffect(()=>{
           
         },
         onError: (error) => {
+            setIsLoading(false)
             toast.error("An error occurred: " + error.message);
         },
     });
@@ -259,7 +261,7 @@ useEffect(()=>{
                         <button
                             type="button"
                             onClick={(e)=>handleSubmit(e)}
-                            disabled={isLoading == true}
+                            readOnly={isLoading == true}
                             className=" text-white rounded-md p-2 w-full lg:w-20"
                             style={{ backgroundColor: layout_color }} >
                                 {isLoading ? <SpinLoading/> : id ? 'Update' : 'Submit'}

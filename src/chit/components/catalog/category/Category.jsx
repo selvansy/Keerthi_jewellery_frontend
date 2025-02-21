@@ -560,22 +560,26 @@ const Category = () => {
           />
         )} */}
 
-        <div className="mt-4">
-          <Table data={categoryData} columns={columns} isLoading={isLoading}  />
-        </div>
-
-        {categoryData?.length > 0 && (
-          <div className="flex justify-between mt-4 p-2">
-            <div className="flex flex-row items-center justify-center gap-2">
-              <div className="flex items-center gap-4">
-                <button
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={currentPage === 1}
-                  className="p-2 text-gray-500 rounded-md"
-                >
-                  Previous
-                </button>
-              </div>
+      <div className="mt-4">
+        <Table
+          data={categoryData}
+          columns={columns}
+          isLoading={isLoading}
+        />
+      </div>
+ 
+      {categoryData?.length > 0 && (
+        <div className="flex justify-between mt-4 p-2">
+          <div className="flex flex-row items-center justify-center gap-2">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="p-2 text-gray-500 rounded-md"
+              >
+                Previous
+              </button>
+            </div>
 
               <div className="flex flex-row items-center justify-center gap-2">
                 {paginationButtons}
@@ -584,7 +588,7 @@ const Category = () => {
               <div className="flex items-center">
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={currentPage === totalPages}
+                  readOnly={currentPage === totalPages}
                   className="p-2 text-gray-500 rounded-md"
                 >
                   Next

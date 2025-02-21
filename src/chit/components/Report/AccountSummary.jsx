@@ -450,7 +450,7 @@ function AccountSummaryReport() {
                                                 onChange={filterInputchange}
                                                 value={filters.id_branch}
                                             >
-                                                <option value="" disabled className="text-gray-700">
+                                                <option value="" readOnly className="text-gray-700">
                                                     --Select--
                                                 </option>
                                                 {branchList.map((branch) => (
@@ -495,7 +495,7 @@ function AccountSummaryReport() {
                                         defaultValue=""
                                         onChange={filterInputchange}
                                     >
-                                        <option value="" disabled>
+                                        <option value="" readOnly>
                                             --Select--
                                         </option>
                                         {classificationData.map((classification) => (
@@ -526,7 +526,7 @@ function AccountSummaryReport() {
                                             onChange={filterInputchange}
                                             value={filters.scheme_type}
                                         >
-                                            <option value="" disabled className="text-gray-700">
+                                            <option value="" readOnly className="text-gray-700">
                                                 --Select--
                                             </option>
                                             {schemeTypeData.map((type) => (
@@ -587,7 +587,7 @@ function AccountSummaryReport() {
                     <div className="flex items-center gap-4">
                         <button
                             onClick={() => handlePageChange(currentPage - 1)}
-                            disabled={currentPage === 1}
+                            readOnly={currentPage === 1}
                             className="p-2  text-gray-500 rounded-md"
                         >
                             Previous
@@ -600,7 +600,7 @@ function AccountSummaryReport() {
                     <div className="flex items-center">
                         <button
                             onClick={() => handlePageChange(currentPage + 1)}
-                            disabled={currentPage === totalPages}
+                            readOnly={currentPage === totalPages}
                             className="p-2 text-gray-500 rounded-md"
                         >
                             Next

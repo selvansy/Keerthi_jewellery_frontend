@@ -33,7 +33,7 @@ const ProtectedRoute = ({ children }) => {
      
   const { mutate: getAllMenusMutate } = useMutation({
     mutationFn: getactivemenuaccess,
-    onSuccess: (response) => {
+    onSuccess: (response) => {      
       dispatch(SetMenu(response.data))
     },
   });
