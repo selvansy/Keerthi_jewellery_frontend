@@ -2,57 +2,58 @@ import React, { useState, useEffect } from 'react';
 import Table from '../../common/Table';
 import { Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { getallprojects, getallmenu,getallsubmenudatatable, changesubmenuStatus, deletesubmenu, getsubmenuById, updatesubmenu, addsubmenu } from '../../../api/Endpoints';
+import { getallprojects, getallmenu, getallsubmenudatatable, changesubmenuStatus, deletesubmenu, getsubmenuById, updatesubmenu, addsubmenu } from '../../../api/Endpoints';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import { openModal } from '../../../../redux/modalSlice';
 import { eventEmitter } from '../../../../utils/EventEmitter';
-import { useSelector,useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import ModelOne from '../../common/Modelone';
 import Modal from "../../common/Modal"
 import { useDebounce } from '../../../hooks/useDebounce';
-import {setid} from "../../../../redux/clientFormSlice"
+import { setid } from "../../../../redux/clientFormSlice"
 import SubmenuForm from "./SubmenuForm"
+import { emptyToZero } from '../../../utils/commonFunction';
 
 const Submenu = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
-  
-  const [isLoading,setisLoading] = useState(true)
+
+  const [isLoading, setisLoading] = useState(true)
 
   const [isviewOpen, setIsviewOpen] = useState(false);
   const [submenuData, setsubmenuData] = useState([]);
-   const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [projects, setProjects] = useState([]);
   const [menus, setMenus] = useState([]);
-  const [searchInput,setSearchInput]=useState('')
+  const [searchInput, setSearchInput] = useState('')
   const debouncedSearch = useDebounce(searchInput, 500)
-  const limit = 10;
+  // const limit = 10;
 
   function closeIncommingModal() {
     setIsviewOpen(false);
   }
 
-    const { mutate: getallsubmenusMutate } = useMutation({
-      mutationFn: (payload)=>
-         getallsubmenudatatable(payload),
-      onSuccess: (response) => {
-        if (response) {
-          setsubmenuData(response.data);
-          setTotalPages(Math.ceil(response.data.total / limit));
-         
-        }
-        setisLoading(false)
-      },
-      onError:()=>{
-        setisLoading(false)
+  const { mutate: getallsubmenusMutate } = useMutation({
+    mutationFn: (payload) =>
+      getallsubmenudatatable(payload),
+    onSuccess: (response) => {
+      if (response) {
+        setsubmenuData(response.data);
+        setTotalPages(Math.ceil(emptyToZero(response.data.total) / emptyToZero(itemsPerPage)));
+
       }
-    });
+      setisLoading(false)
+    },
+    onError: () => {
+      setisLoading(false)
+    }
+  });
 
   const { mutate: getallmenuMutate } = useMutation({
     mutationFn: getallmenu,
@@ -84,11 +85,11 @@ const Submenu = () => {
   };
 
   useEffect(() => {
-    getallsubmenusMutate({ search:debouncedSearch,page: currentPage, limit });
-  }, [currentPage,itemsPerPage,debouncedSearch,isviewOpen]);
+    getallsubmenusMutate({ search: debouncedSearch, page: currentPage, limit: itemsPerPage });
+  }, [currentPage, itemsPerPage, debouncedSearch, isviewOpen]);
 
   useEffect(() => {
-    getallsubmenusMutate({ search:debouncedSearch,page: currentPage, limit });
+    getallsubmenusMutate({ search: debouncedSearch, page: currentPage, limit: itemsPerPage });
   }, []);
 
 
@@ -97,11 +98,11 @@ const Submenu = () => {
   };
 
   const handleEdit = async (id) => {
-      dispatch(setid(id))
-      setIsviewOpen(true)
-    };
+    dispatch(setid(id))
+    setIsviewOpen(true)
+  };
 
-  
+
   const handleAddsubmenu = () => {
     setIsviewOpen(true)
   };
@@ -129,7 +130,7 @@ const Submenu = () => {
         console.log(data);
         let response = await deletesubmenu(data.subid);
         toast.success(response.message);
-        getallsubmenusMutate({ page: currentPage, limit });
+        getallsubmenusMutate({ page: currentPage, limit: itemsPerPage });
       } catch (error) {
         console.error('Error deleting submenu:', error);
       }
@@ -141,19 +142,18 @@ const Submenu = () => {
     setItemsPerPage(value);
     setCurrentPage(1);
   };
-  const paginationButtons = [];
-  for (let i = 1; i <= totalPages; i++) {
-    paginationButtons.push(
-      <button
-        key={i}
-        onClick={() => handlePageChange(i)}
-        className={`p-2 w-10 h-10 rounded-md  ${currentPage === i ? ' text-white' : 'text-slate-400'}`}
-        style={{ backgroundColor: layout_color }} >
-        {i}
-      </button>
-    );
-  }
+  const total = Math.max(emptyToZero(totalPages), 1);
 
+  const paginationButtons = Array.from({ length: total }, (_, i) => (
+    <button
+      key={i + 1}
+      onClick={() => handlePageChange(i + 1)}
+      className={`p-2 w-10 h-10 rounded-md ${currentPage === i + 1 ? "text-white" : "text-slate-400"}`}
+      style={{ backgroundColor: layout_color }}
+    >
+      {i + 1}
+    </button>
+  ));
 
 
   useEffect(() => {
@@ -250,7 +250,7 @@ const Submenu = () => {
     },
     {
       header: 'S.No',
-      cell: (_, index) => index + 1 + (currentPage - 1) * limit,
+      cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
     },
     {
       header: 'Sub Menu Name',
@@ -281,17 +281,17 @@ const Submenu = () => {
           />
           <div
             className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-black p-[2px] after:duration-300 after:bg-black ${row.active === true
-                ? 'peer-checked:bg-[#61A375] peer-checked:ring-[#61A375]'
-                : 'peer-checked:bg-gray-400 peer-checked:ring-gray-400'
+              ? 'peer-checked:bg-[#61A375] peer-checked:ring-[#61A375]'
+              : 'peer-checked:bg-gray-400 peer-checked:ring-gray-400'
               } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-white peer-hover:after:scale-95`}
           ></div>
         </label>
       )
     }
-    
+
   ];
 
-  const handleSearch=(e)=>{
+  const handleSearch = (e) => {
     setSearchInput(e.target.value)
   }
 
@@ -306,8 +306,8 @@ const Submenu = () => {
   });
 
   useEffect(() => {
-    getallsubmenusMutate({ search:debouncedSearch,page: currentPage, limit });
-  }, [currentPage,debouncedSearch]);
+    getallsubmenusMutate({ search: debouncedSearch, page: currentPage, limit: itemsPerPage });
+  }, [currentPage, debouncedSearch]);
 
 
   useEffect(() => {
@@ -322,12 +322,12 @@ const Submenu = () => {
         console.log(data);
         let response = await deletesubmenu(data.subid);
         toast.success(response.message);
-        getallsubmenusMutate({ page: currentPage, limit });
+        getallsubmenusMutate({ page: currentPage, limit: itemsPerPage });
       } catch (error) {
         console.error('Error deleting submenu:', error);
       }
     });
-  
+
     return () => {
       eventEmitter.off('EDIT_SUBMENU_SUBMIT');
       eventEmitter.off('CONFIRMATION_SUBMIT');
@@ -345,8 +345,8 @@ const Submenu = () => {
     return () => document.removeEventListener('click', handleClickOutside);
   }, [activeDropdown]);
 
- 
- 
+
+
 
   return (
     <div className="flex flex-col p-4 relative">
@@ -361,7 +361,7 @@ const Submenu = () => {
                 <Search className="text-gray-500" />
               </div>
               <input
-              onChange={handleSearch}
+                onChange={handleSearch}
                 placeholder="Search..."
                 className="p-3 pl-10 pr-3 border-2 bg-[#F5F5F5] border-gray-500 rounded-md w-full"
               />
@@ -383,63 +383,65 @@ const Submenu = () => {
               currentPage={currentPage}
               totalPages={totalPages}
               onPageChange={handlePageChange}
-              pageSize={limit}
+              pageSize={itemsPerPage}
               isLoading={isLoading}
             />
           </div>
           {submenuData.length > 0 && (
-      <div className="flex justify-between mt-4 p-2">
-        <div className="flex flex-row items-center justify-center gap-2">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => handlePageChange(currentPage - 1)}
-              readOnly={currentPage === 1}
-              className="p-2 text-gray-500 rounded-md"
-            >
-              Previous
-            </button>
-          </div>
+            <div className="flex justify-between mt-4 p-2">
+              
 
-          <div className="flex flex-row items-center justify-center gap-2">
-            {paginationButtons}
-          </div>
+              <div className="mt-4 flex gap-2 justify-center items-center">
+                <span className="text-gray-500">Show</span>
+                <select
+                  id="itemsPerPage"
+                  value={itemsPerPage}
+                  onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
+                  className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
+                >
+                  <option value={10}>10</option>
+                  <option value={25}>25</option>
+                  <option value={50}>50</option>
+                  <option value={100}>100</option>
+                  <option value={250}>250</option>
+                  <option value={500}>500</option>
+                  <option value={1000}>1000</option>
+                </select>
+                <span className="text-gray-500">entries</span>
+              </div>
 
-          <div className="flex items-center">
-            <button
-              onClick={() => handlePageChange(currentPage + 1)}
-              readOnly={currentPage === totalPages}
-              className="p-2 text-gray-500 rounded-md"
-            >
-              Next
-            </button>
-          </div>
-        </div>
+              <div className="flex flex-row items-center justify-center gap-2">
+                <div className="flex items-center gap-4">
+                  <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    readOnly={currentPage === 1}
+                    className="p-2 text-gray-500 rounded-md"
+                  >
+                    Previous
+                  </button>
+                </div>
 
-        <div className="mt-4 flex gap-2 justify-center items-center">
-          <span className="text-gray-500">Show</span>
-          <select
-            id="itemsPerPage"
-            value={itemsPerPage}
-            onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
-            className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
-          >
-            <option value={10}>10</option>
-<option value={25}>25</option>
-<option value={50}>50</option>
-<option value={100}>100</option>
-<option value={250}>250</option>
-<option value={500}>500</option>
-<option value={1000}>1000</option>
-          </select>
-          <span className="text-gray-500">entries</span>
-        </div>
-      </div>
-      )}
+                <div className="flex flex-row items-center justify-center gap-2">
+                  {paginationButtons}
+                </div>
+
+                <div className="flex items-center">
+                  <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    readOnly={currentPage === totalPages}
+                    className="p-2 text-gray-500 rounded-md"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </>
       )}
-        {/* <Modal /> */}
+      {/* <Modal /> */}
 
-        <ModelOne
+      <ModelOne
         title={"Add SubMenu"}
         extraClassName='max-w-[75%] '
         setIsOpen={setIsviewOpen}

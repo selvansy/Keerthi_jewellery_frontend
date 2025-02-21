@@ -770,7 +770,7 @@ export const getsubmenuById = async (id) => {
  
 export const updatesubmenu = async (id, data) => {
     const response = await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/submenusetting/${id}`, data);
-    return response;
+    return response.data;
 }
  
 export const getallsubmenu = async (id, data) => {

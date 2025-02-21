@@ -98,7 +98,7 @@ function SubmenuForm({ setIsOpen, getallsubmenusMutate, menus }) {
             console.log(updateData);
 
             if (id) {
-                updatesubmenumutate(id, updateData); // Update existing submenu
+                updatesubmenumutate({id, updateData}); // Update existing submenu
             } else {
                 createsubmenuMutate(updateData); // Create new submenu
             }
@@ -124,7 +124,9 @@ function SubmenuForm({ setIsOpen, getallsubmenusMutate, menus }) {
     });
 
     const { mutate: updatesubmenumutate } = useMutation({
-        mutationFn: updatesubmenu,
+        mutationFn: ( data)=>
+            updatesubmenu(data.id, data.updateData)
+        ,
         onSuccess: (response) => {
             console.log(response)
             toast.success(response.message);
