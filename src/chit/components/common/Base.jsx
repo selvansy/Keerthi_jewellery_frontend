@@ -354,7 +354,6 @@ useEffect(() => {
 
       const IconComponent = Icons[menuIcon] || Icons.AlertCircle;
      
-      console.log(IconComponent);
 
     return (
       <div className="w-full px-3 py-1 relative">

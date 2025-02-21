@@ -234,7 +234,7 @@ useEffect(()=>{
                 {/* GST Number field */}
                 <div className="flex flex-col space-y-2">
                     <label className="font-medium text-gray-700">
-                        GST Number
+                        GST Number 
                     </label>
                     <input
                         type="text"
