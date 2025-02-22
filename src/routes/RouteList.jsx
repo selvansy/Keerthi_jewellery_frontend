@@ -198,8 +198,8 @@ const RouteList = [
     element:<Base renderContent={GiftInwardsCreation}/>
   },
   {
-    name: "Gift Issues",
-    path:'/gift/giftissues',
+    name: "Gift Handover",
+    path:'/gift/gifthandover',
     element:<Base renderContent={GiftIssued}/>
   },
   {

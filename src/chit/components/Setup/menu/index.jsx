@@ -1,37 +1,34 @@
-import React, { useState, useEffect } from 'react';
-import { Search } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { useMutation } from '@tanstack/react-query';
-import { toast } from 'react-toastify';
-import { openModal } from '../../../../redux/modalSlice';
-import { useDispatch, useSelector } from 'react-redux';
-import Table from '../../common/Table';
-import { setid } from '../../../../redux/clientFormSlice';
-import { getallprojects, getallmenudatatable, changeMenuStatus, deleteMenu, getMenuById, updateMenu, addMenu } from '../../../api/Endpoints';
-// import { setMenuId } from "../../../../redux/clientFormSlice"
-
-import { eventEmitter } from '../../../../utils/EventEmitter';
-import { useDebounce } from '../../../hooks/useDebounce';
-import ModelOne from '../../common/Modelone';
-import MenuForm from "./MenuForm"
-import { emptyToZero } from '../../../utils/commonFunction';
-
+import React, { useState, useEffect } from "react";
+import { Search } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "react-toastify";
+import { openModal } from "../../../../redux/modalSlice";
+import { useDispatch, useSelector } from "react-redux";
+import Table from "../../common/Table";
+import { setid } from "../../../../redux/clientFormSlice";
+import {
+  getallmenudatatable,
+  changeMenuStatus,
+  deleteMenu,
+} from "../../../api/Endpoints";
+import { eventEmitter } from "../../../../utils/EventEmitter";
+import { useDebounce } from "../../../hooks/useDebounce";
+import ModelOne from "../../common/Modelone";
+import MenuForm from "./MenuForm";
+import Modal from "../../../components/common/Modal";
+import usePagination from "../../../hooks/usePagination";
 
 const MenuComp = () => {
-
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
-  const [isLoading, setisLoading] = useState(false)
-  const navigate = useNavigate();
+  const [isLoading, setisLoading] = useState(false);
   const dispatch = useDispatch();
   const [MenuData, setMenuData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [activeDropdown, setActiveDropdown] = useState(null);
-  const [searchInput, setSearchInput] = useState('')
-  const debouncedSearch = useDebounce(searchInput, 500)
-  // const limit = 10;
-
+  const [searchInput, setSearchInput] = useState("");
+  const debouncedSearch = useDebounce(searchInput, 500);
   const [isviewOpen, setIsviewOpen] = useState(false);
 
   function closeIncommingModal() {
@@ -39,29 +36,23 @@ const MenuComp = () => {
   }
 
   const { mutate: getAllMenusMutate } = useMutation({
-    mutationFn: (payload) =>
-      getallmenudatatable(payload),
+    mutationFn: (payload) => getallmenudatatable(payload),
     onSuccess: (response) => {
       if (response) {
         setMenuData(response.data);
-        setTotalPages(Math.ceil(emptyToZero(response.data.total) / emptyToZero(itemsPerPage)));
-
+        setTotalPages(response.totalPages);
       }
-      setisLoading(false)
+      setisLoading(false);
     },
     onError: () => {
-      setisLoading(false)
-    }
+      setisLoading(false);
+    },
   });
-
-
-
 
   const handleStatusToggle = async (id, currentStatus) => {
     try {
       let response = await changeMenuStatus(id);
       toast.success(response.message);
-
       setMenuData((prevData) =>
         prevData.map((Menu) =>
           Menu._id === id
@@ -70,104 +61,110 @@ const MenuComp = () => {
         )
       );
     } catch (error) {
-      console.error('Error updating status:', error);
+      console.error("Error updating status:", error);
     }
   };
 
   useEffect(() => {
-    getAllMenusMutate({ search: debouncedSearch, page: currentPage, limit: itemsPerPage });
+    getAllMenusMutate({
+      search: debouncedSearch,
+      page: currentPage,
+      limit: itemsPerPage,
+    });
   }, [currentPage, itemsPerPage, debouncedSearch, isviewOpen]);
 
-
-  useEffect(() => {
-    getAllMenusMutate({ search: debouncedSearch, page: currentPage, limit: itemsPerPage });
-  }, []);
-
-
   const handleEdit = async (id) => {
-    dispatch(setid(id))
-    setIsviewOpen(true)
+    dispatch(setid(id));
+    setIsviewOpen(true);
   };
 
   const handleAddMenu = () => {
-    setIsviewOpen(true)
+    setIsviewOpen(true);
   };
 
   const handleDelete = (id) => {
-    dispatch(openModal({
-      modalType: 'CONFIRMATION',
-      header: 'Delete Menu',
-      formData: {
-        message: 'Are you sure you want to delete this Menu?',
-        id: id
-      },
-      buttons: {
-        cancel: {
-          text: 'Cancel'
+    setActiveDropdown(null);
+    dispatch(
+      openModal({
+        modalType: "CONFIRMATION",
+        header: "Delete Menu",
+        formData: {
+          message: "Are you sure you want to delete this menu?",
+          menuId: id,
         },
-        submit: {
-          text: 'Delete'
-        }
-      }
-    }));
-
-    eventEmitter.on('CONFIRMATION_SUBMIT', async (data) => {
-      try {
-        console.log(data);
-        let response = await deleteMenu(data.id);
-        toast.success(response.message);
-
-        getAllMenusMutate({ page: currentPage, limit });
-      } catch (error) {
-        console.error('Error deleting Menu:', error);
-      }
-    });
+        buttons: {
+          cancel: {
+            text: "Cancel",
+          },
+          submit: {
+            text: "Delete",
+          },
+        },
+      })
+    );
   };
+
+  const { mutate: deleteMenuMutation } = useMutation({
+    mutationFn: (id) => deleteMenu(id),
+    onSuccess: () => {
+      toast.success("Menu deleted successfully");
+      getAllMenusMutate({
+        search: debouncedSearch,
+        page: currentPage,
+        limit: itemsPerPage,
+      });
+    },
+    onError: (error) => {
+      toast.error("Failed to delete menu");
+      console.error("Delete error:", error);
+    },
+  });
 
   const handlePageChange = (page) => {
-    setCurrentPage(page);
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+      getAllMenusMutate({ search: debouncedSearch, page, limit: itemsPerPage });
+    }
   };
 
+  const nextPage = () => {
+    setCurrentPage((prevPage) =>
+      prevPage < totalPages ? prevPage + 1 : prevPage
+    );
+  };
+
+  const prevPage = () => {
+    setCurrentPage((prevPage) => (prevPage > 1 ? prevPage - 1 : prevPage));
+  };
 
   const handleItemsPerPageChange = (value) => {
     setItemsPerPage(value);
     setCurrentPage(1);
   };
 
-  const total = Math.max(emptyToZero(totalPages), 1);
-
-  const paginationButtons = Array.from({ length: total }, (_, i) => (
-    <button
-      key={i + 1}
-      onClick={() => handlePageChange(i + 1)}
-      className={`p-2 w-10 h-10 rounded-md ${currentPage === i + 1 ? "text-white" : "text-slate-400"}`}
-      style={{ backgroundColor: layout_color }}
-    >
-      {i + 1}
-    </button>
-  ));
-
+  const paginationData = {
+    totalItems: totalPages,
+    currentPage: currentPage,
+    itemsPerPage: itemsPerPage,
+    handlePageChange: handlePageChange,
+  };
+  const paginationButtons = usePagination(paginationData);
 
   useEffect(() => {
-    return () => {
-      eventEmitter.off('CONFIRMATION_SUBMIT');
-    };
-  }, []);
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (activeDropdown && !event.target.closest('.dropdown-container')) {
-        setActiveDropdown(null);
+    const handleConfirmationSubmit = async (data) => {
+      if (data && data.menuId) {
+        deleteMenuMutation(data.menuId);
       }
     };
-
-    document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
-  }, [activeDropdown]);
+    eventEmitter.on("CONFIRMATION_SUBMIT", handleConfirmationSubmit);
+    return () => {
+      eventEmitter.off("CONFIRMATION_SUBMIT", handleConfirmationSubmit);
+    };
+  }, [eventEmitter]);
 
   const columns = [
     {
-      header: 'Actions',
+      header: "Actions",
       cell: (row, rowIndex) => (
         <div className="dropdown-container relative">
           <button
@@ -177,7 +174,12 @@ const MenuComp = () => {
               setActiveDropdown(activeDropdown === row?._id ? null : row?._id);
             }}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 text-gray-600"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
               <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
             </svg>
           </button>
@@ -186,13 +188,13 @@ const MenuComp = () => {
             <div
               className="absolute"
               style={{
-                top: rowIndex >= MenuData.length - 2 ? 'auto' : '72%',
-                bottom: rowIndex >= MenuData.length - 2 ? '-74%' : 'auto',
+                top: rowIndex >= MenuData.length - 2 ? "auto" : "72%",
+                bottom: rowIndex >= MenuData.length - 2 ? "-74%" : "auto",
                 // top: 'auto',
                 // bottom: '-440%',
                 zIndex: 9999,
-                marginBottom: '8px',
-                filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.15))'
+                marginBottom: "8px",
+                filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.15))",
               }}
             >
               <div className="w-32 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
@@ -204,8 +206,19 @@ const MenuComp = () => {
                       setActiveDropdown(null);
                     }}
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                      />
                     </svg>
                     Edit
                   </button>
@@ -216,8 +229,19 @@ const MenuComp = () => {
                       setActiveDropdown(null);
                     }}
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      />
                     </svg>
                     Delete
                   </button>
@@ -225,8 +249,19 @@ const MenuComp = () => {
                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
                     onClick={() => setActiveDropdown(null)}
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
                     </svg>
                     Cancel
                   </button>
@@ -236,24 +271,24 @@ const MenuComp = () => {
           )}
         </div>
       ),
-      sticky: 'right'
+      sticky: "right",
     },
     {
-      header: 'S.No',
+      header: "S.No",
       cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
     },
     {
-      header: 'Menu Name',
-      accessor: 'menu_name',
+      header: "Menu Name",
+      accessor: "menu_name",
     },
     {
-      header: 'Display Order',
-      accessor: 'display_order',
+      header: "Display Order",
+      accessor: "display_order",
     },
 
     {
-      header: 'Status',
-      accessor: 'active',
+      header: "Status",
+      accessor: "active",
       cell: (row) => (
         <label className="relative inline-flex items-center cursor-pointer">
           <input
@@ -263,20 +298,20 @@ const MenuComp = () => {
             onChange={() => handleStatusToggle(row?._id, row?.active)}
           />
           <div
-            className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-black p-[2px] after:duration-300 after:bg-black ${row.active === true
-              ? 'peer-checked:bg-[#61A375] peer-checked:ring-[#61A375]'
-              : 'peer-checked:bg-gray-400 peer-checked:ring-gray-400'
-              } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-white peer-hover:after:scale-95`}
+            className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-black p-[2px] after:duration-300 after:bg-black ${
+              row.active === true
+                ? "peer-checked:bg-[#61A375] peer-checked:ring-[#61A375]"
+                : "peer-checked:bg-gray-400 peer-checked:ring-gray-400"
+            } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-white peer-hover:after:scale-95`}
           ></div>
         </label>
-      )
-    }
-
+      ),
+    },
   ];
 
   const handleSearch = (e) => {
-    setSearchInput(e.target.value)
-  }
+    setSearchInput(e.target.value);
+  };
 
   return (
     <div className="flex flex-col p-4 relative">
@@ -300,7 +335,8 @@ const MenuComp = () => {
               <button
                 className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
                 onClick={handleAddMenu}
-                style={{ backgroundColor: layout_color }} >
+                style={{ backgroundColor: layout_color }}
+              >
                 + Add Menu
               </button>
             </div>
@@ -319,13 +355,14 @@ const MenuComp = () => {
           </div>
           {MenuData.length > 0 && (
             <div className="flex justify-between mt-4 p-2">
-
               <div className="mt-4 flex gap-2 justify-center items-center">
                 <span className="text-gray-500">Show</span>
                 <select
                   id="itemsPerPage"
                   value={itemsPerPage}
-                  onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
+                  onChange={(e) =>
+                    handleItemsPerPageChange(Number(e.target.value))
+                  }
                   className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
                 >
                   <option value={10}>10</option>
@@ -338,13 +375,16 @@ const MenuComp = () => {
                 </select>
                 <span className="text-gray-500">entries</span>
               </div>
-
               <div className="flex flex-row items-center justify-center gap-2">
                 <div className="flex items-center gap-4">
                   <button
-                    onClick={() => handlePageChange(currentPage - 1)}
+                    onClick={prevPage}
                     disabled={currentPage === 1}
-                    className="p-2 text-gray-500 rounded-md"
+                    className={`p-2 text-gray-500 rounded-md ${
+                      currentPage === 1
+                        ? "cursor-not-allowed"
+                        : "cursor-pointer"
+                    } `}
                   >
                     Previous
                   </button>
@@ -356,32 +396,31 @@ const MenuComp = () => {
 
                 <div className="flex items-center">
                   <button
-                    onClick={() => handlePageChange(currentPage + 1)}
+                    onClick={nextPage}
                     disabled={currentPage === totalPages}
-                    className="p-2 text-gray-500 rounded-md"
+                    className={`p-2 text-gray-500 rounded-md  ${
+                      currentPage === totalPages
+                        ? "cursor-not-allowed"
+                        : "cursor-pointer"
+                    }`}
                   >
                     Next
                   </button>
                 </div>
               </div>
-
             </div>
           )}
         </>
       )}
-      {/* <Modal /> */}
-
+      <Modal />
       <ModelOne
         title={"Add Menu"}
-        extraClassName='max-w-[75%] '
+        extraClassName="max-w-[75%] "
         setIsOpen={setIsviewOpen}
         isOpen={isviewOpen}
         closeModal={closeIncommingModal}
-
       >
-        <MenuForm
-          setIsOpen={setIsviewOpen}
-        />
+        <MenuForm setIsOpen={setIsviewOpen} />
       </ModelOne>
     </div>
   );
