@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Remove number input spinners */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+
+body{
+  font-family: "Roboto", serif;
+}
+
+.color-display{
+  width: 100px;
+  height: 25px;
+  border: 5px solid hsl(0, 0%, 80%);
+  transition: 0.25s ease;
+}
+
+.color-display p{
+  color: hsl(0, 0%, 20%);
+  font-size: 14px;
+  text-align: center;
+}
+
