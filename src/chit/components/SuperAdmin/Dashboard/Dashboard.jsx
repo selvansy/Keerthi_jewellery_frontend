@@ -36,7 +36,7 @@ function Dashboard() {
   const id_role = roledata?.id_role;
   const id_client = roledata?.id_client;
   const id_branch  = roledata?.branch;
-
+  
  
 
 
@@ -93,23 +93,25 @@ function Dashboard() {
   }
 
   useEffect(() => {
-    if(id_branch === "0"){    
-      getTodaysMetalRate({ id_branch: roledata.id_branch, date: todayDate })
+    if (!roledata) return; 
+  
+    if (id_branch === "0") {    
+      getTodaysMetalRate({ id_branch: roledata.id_branch, date: todayDate });
     } else {
-      getTodaysMetalRate({ id_branch: roledata?.branch, date: todayDate })
+      console.log(roledata);
+      getTodaysMetalRate({ id_branch: roledata?.branch, date: todayDate });
     }
+  
     let payload = {
       from_date: "",
       to_date: "",
-      id_branch: id_branch
-    }
-    
-  //   PaymentMode(payload);
-  //   CardSummary(payload);
+      id_branch: id_branch,
+    };
+  
+    getschemePaymentMutate(payload);
+  }, [roledata]);
 
-    getschemePaymentMutate(payload)
- 
-  }, [])
+  
 
     const handleallbranch = async (e) => {  
   

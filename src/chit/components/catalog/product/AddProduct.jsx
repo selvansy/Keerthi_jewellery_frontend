@@ -20,7 +20,7 @@ import {
 } from "../../../api/Endpoints";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
-import SpinLoading from "../../common/SpinLoading";
+import SpinLoading from "../../common/spinLoading";
 
 const AddProduct = () => {
   const id = null;
@@ -168,6 +168,8 @@ const AddProduct = () => {
     if(name=="id_purity"){
       console.log('change')
       const branchId=branchAccess==0?formData.id_branch:branchAccess
+      console.log(branchId);
+      
       const todayDate=new Date()
       todayrateMutate({branchId,date:todayDate})
     }

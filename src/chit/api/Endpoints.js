@@ -74,9 +74,7 @@ export const addmetal = async (data) => {
     const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/metal`, data);
     return response;
 }
-export const deletemetal = async (id) => {
-    console.log(id);
-    
+export const deletemetal = async (id) => {    
     const response = await Api.delete(`${import.meta.env.VITE_API_URL}/api/client/metal/${id.MetalId}`);
     return response.data;
 }
@@ -130,7 +128,8 @@ export const addpurity = async (data) => {
     return response;
 }
 export const deletepurity = async (id) => {
-    const response = await Api.delete(`${import.meta.env.VITE_API_URL}/api/client/purity/${id}`);
+    const {purityId}=id    
+    const response = await Api.delete(`${import.meta.env.VITE_API_URL}/api/client/purity/${purityId}`);
     return response.data;
 }
  
@@ -139,8 +138,8 @@ export const getpurityById = async (id) => {
     return response.data;
 }
  
-export const updatepurity = async (id,data) => {
-
+export const updatepurity = async (purityData) => {
+    const {id,data}=purityData
     const response = await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/purity/${id}`, data);
     return response;
 }
@@ -478,14 +477,16 @@ export const getschemepaymentbyid = async (data) => {
     return response.data;
 }
  
-export const todaycurrentratebybranch = async (data) => {    
-    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/metalrate/today/${data.id_branch}/${data.date}`);
+export const todaycurrentratebybranch = async (data) => {
+    console.log();
+        
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/metalrate/today/${data.branchId}/${data.date}`);
     return response.data;
 }
  
 
  
-export const schemepaymenttodayrate = async (data) => {
+export const schemepaymenttodayrate = async (data) => {    
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/metalrate/today/${data.id_branch}/${data.date}`);
     return response.data;
 }
@@ -1595,7 +1596,7 @@ export const getmetalrateById= async(id)=>{
     return response.data
 }
 
-export const deletemetalrate= async(id)=>{
+export const deletemetalrate= async(id)=>{ 
     const response= await Api.delete(`${import.meta.env.VITE_API_URL}/api/client/metalrate/${id}`)
     return response.data
 }

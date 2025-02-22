@@ -19,12 +19,12 @@ import { setid } from "../../../../redux/clientFormSlice";
 import Modal from "../../common/Modal";
 import ModelOne from "../../common/Modelone";
 import { useDebounce } from "../../../hooks/useDebounce";
-import usePagination from '../../../hooks/usePagination'
+import usePagination from "../../../hooks/usePagination";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import SpinLoading from "../../common/spinLoading";
 import Loading from "../../common/Loading";
-import { metadata } from "framer-motion/client";
+import { metadata, tr } from "framer-motion/client";
 
 const Metal = () => {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
@@ -54,18 +54,17 @@ const Metal = () => {
     mutationFn: (payload) => getallmetaltable(payload),
     onSuccess: (response) => {
       if (response) {
-        setMetalData(response.data);             
+        setMetalData(response.data);
         setTotalPages(response.totalPages);
       }
-      setSearchLoading(false)
+      setSearchLoading(false);
       setisLoading(false);
     },
-    onError:(error)=>{
+    onError: (error) => {
       console.log(error.response.data);
-      setMetalData([])
-      setSearchLoading(false)
-      
-    }
+      setMetalData([]);
+      setSearchLoading(false);
+    },
   });
 
   const handleStatusToggle = async (id, currentStatus) => {
@@ -89,27 +88,16 @@ const Metal = () => {
     getallmetaltableMutate({
       search: debouncedSearch,
       page: currentPage,
-      limit:itemsPerPage,
-      currentPage
+      limit: itemsPerPage,
+      currentPage,
     });
   }, [currentPage, itemsPerPage, debouncedSearch, isviewOpen]);
-
-  // useEffect(() => {
-  //   getallmetaltableMutate({
-  //     search: debouncedSearch,
-  //     page: currentPage,
-  //     limit,
-  //   });
-  // }, []);
 
 
 
   const clearId = () => {
     setId("");
   };
-
- 
-
 
   const handleEdit = (id) => {
     setIsviewOpen(true);
@@ -140,36 +128,47 @@ const Metal = () => {
         },
       })
     );
-  }
+  };
 
-    const { mutate: deleteMetal } = useMutation({
-      mutationFn: deletemetal, // Pass function reference, not execution
-      onSuccess: (response, metalId) => {
-        if (response.message === "Metal deleted successfully") {
-          getallmetaltableMutate({search: debouncedSearch,
+  const { mutate: deleteMetal } = useMutation({
+    mutationFn: deletemetal,
+    onSuccess: (response) => {
+      if (response.message === "Metal deleted successfully") {
+        const isLastItemOnPage = MetalData.length === 1;
+        const isNotFirstPage = currentPage > 1;
+        if (isLastItemOnPage && isNotFirstPage) {
+          setCurrentPage(prev => prev - 1);
+        } else {
+          // Otherwise, just refresh current page
+          getallmetaltableMutate({
+            search: debouncedSearch,
             page: currentPage,
-            limit,})
-          toast.success(response.message);
-          eventEmitter.off("CONFIRMATION_SUBMIT");
-          setId("");
+            limit: itemsPerPage,
+          });
         }
-      },
-      onError: (error) => {
-        console.error("Error:", error);
-      },
-    });
-    
-    useEffect(() => {
-      const handleDelete = (metalId) => {
-        deleteMetal(metalId); // Pass ID when calling deleteMetal
-      };
-    
-      eventEmitter.on("CONFIRMATION_SUBMIT", handleDelete);
-    
-      return () => {
-        eventEmitter.off("CONFIRMATION_SUBMIT", handleDelete);
-      };
-    }, []);
+        
+        toast.success(response.message);
+        eventEmitter.off("CONFIRMATION_SUBMIT");
+        setId("");
+      }
+    },
+    onError: (error) => {
+      console.error("Error:", error);
+      toast.error("Failed to delete metal");
+    },
+  });
+
+  useEffect(() => {
+    const handleDelete = (metalId) => {
+      deleteMetal(metalId);
+    };
+
+    eventEmitter.on("CONFIRMATION_SUBMIT", handleDelete);
+
+    return () => {
+      eventEmitter.off("CONFIRMATION_SUBMIT", handleDelete);
+    };
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -326,7 +325,7 @@ const Metal = () => {
   ];
 
   const handleSearch = (e) => {
-    setSearchLoading(true)
+    setSearchLoading(true);
     setSearchInput(e.target.value);
   };
 
@@ -334,126 +333,131 @@ const Metal = () => {
     setItemsPerPage(value);
     setCurrentPage(1);
   };
- 
+
   const handlePageChange = (page) => {
     const pageNumber = Number(page);
-      if (!pageNumber || isNaN(pageNumber) || pageNumber < 1 || pageNumber > totalPages) {
-        return;
-      }
-   
-      setCurrentPage(pageNumber);
-  };
- 
- 
-    const nextPage = () => {
-      setCurrentPage((prevPage) => {
-        console.log("prevPage:", prevPage, "totalPages:", totalPages);
-        return prevPage < totalPages ? prevPage + 1 : prevPage;
-      });
-    };
- 
-    const prevPage = () => {
-      setCurrentPage((prevPage) => (prevPage > 1 ? prevPage - 1 : prevPage));
-    };
+    if (
+      !pageNumber ||
+      isNaN(pageNumber) ||
+      pageNumber < 1 ||
+      pageNumber > totalPages
+    ) {
+      return;
+    }
 
-    console.log(currentPage);
-    
- 
- 
-  const paginationData = {totalItems:totalPages,currentPage:currentPage,itemsPerPage:itemsPerPage,handlePageChange:handlePageChange}
-  const paginationButtons = usePagination(paginationData)
+    setCurrentPage(pageNumber);
+  };
+
+  const nextPage = () => {
+    setCurrentPage((prevPage) => {
+      console.log("prevPage:", prevPage, "totalPages:", totalPages);
+      return prevPage < totalPages ? prevPage + 1 : prevPage;
+    });
+  };
+
+  const prevPage = () => {
+    setCurrentPage((prevPage) => (prevPage > 1 ? prevPage - 1 : prevPage));
+  };
+
+  console.log(currentPage);
+
+  const paginationData = {
+    totalItems: totalPages,
+    currentPage: currentPage,
+    itemsPerPage: itemsPerPage,
+    handlePageChange: handlePageChange,
+  };
+  const paginationButtons = usePagination(paginationData);
 
   return (
     <div className="flex flex-col p-4 relative">
-     
-        <>
-          <h2 className="text-2xl text-gray-900 font-bold">Metal</h2>
-          <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
-            <div className="relative w-full lg:w-1/3 min-w-[200px]">
-              <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                {searchLoading ? (
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
-                ) : (
-                  <Search className="text-gray-500" />
-                )}
-              </div>
-              <input
-                onChange={handleSearch}
-                placeholder="Search..."
-                className="p-3 pl-10 pr-3 border-2 bg-[#F5F5F5] border-gray-500 rounded-md w-full"
-              />
+      <>
+        <h2 className="text-2xl text-gray-900 font-bold">Metal</h2>
+        <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
+          <div className="relative w-full lg:w-1/3 min-w-[200px]">
+            <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
+              {searchLoading ? (
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
+              ) : (
+                <Search className="text-gray-500" />
+              )}
             </div>
-            <div className="flex flex-row items-center justify-end gap-2">
+            <input
+              onChange={handleSearch}
+              placeholder="Search..."
+              className="p-3 pl-10 pr-3 border-2 bg-[#F5F5F5] border-gray-500 rounded-md w-full"
+            />
+          </div>
+          <div className="flex flex-row items-center justify-end gap-2">
+            <button
+              className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
+              onClick={handleaddmetal}
+              style={{ backgroundColor: layout_color }}
+            >
+              + Add Metal
+            </button>
+          </div>
+        </div>
+
+        <div className="mt-4">
+          <Table
+            data={MetalData}
+            columns={columns}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            pageSize={limit}
+            isLoading={isLoading}
+          />
+        </div>
+
+          <div className="flex  justify-between mt-4 p-2">
+          <div className="mt-4 flex gap-2 justify-center items-center">
+            <span className="text-gray-500">Show</span>
+            <select
+              id="itemsPerPage"
+              value={itemsPerPage}
+              onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
+              className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
+            >
+              <option value={10}>10</option>
+              <option value={25}>25</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+              <option value={250}>250</option>
+              <option value={500}>500</option>
+              <option value={1000}>1000</option>
+            </select>
+            <span className="text-gray-500">entries</span>
+          </div>
+          <div className="flex flex-row items-center justify-center gap-2">
+            <div className="flex items-center gap-4">
               <button
-                className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
-                onClick={handleaddmetal}
-                style={{ backgroundColor: layout_color }}
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}x
+                className="p-2 text-gray-500 rounded-md"
               >
-                + Add Metal
+                Previous
+              </button>
+            </div>
+
+            <div className="flex flex-row items-center justify-center gap-2">
+              {paginationButtons}
+            </div>
+
+            <div className="flex items-center">
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="p-2 text-gray-500 rounded-md"
+              >
+                Next
               </button>
             </div>
           </div>
+        </div>
+      </>
 
-          <div className="mt-4">
-            <Table
-              data={MetalData}
-              columns={columns}
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-              pageSize={limit}
-              isLoading={isLoading}
-            />
-          </div>
-
-          <div className="flex justify-between mt-4 p-2">
-                        <div className="flex flex-row items-center justify-center gap-2">
-                            <div className="flex items-center gap-4">
-                                <button
-                                    onClick={() => handlePageChange(currentPage - 1)}
-                                    disabled={currentPage === 1}
-                                    className="p-2 text-gray-500 rounded-md"
-                                >
-                                    Previous
-                                </button>
-                            </div>
-
-                            <div className="flex flex-row items-center justify-center gap-2">
-                                {paginationButtons}
-                            </div>
-
-                            <div className="flex items-center">
-                                <button
-                                    onClick={() => handlePageChange(currentPage + 1)}
-                                    disabled={currentPage === totalPages}
-                                    className="p-2 text-gray-500 rounded-md"
-                                >
-                                    Next
-                                </button>
-                            </div>
-                        </div>
-
-                        <div className="mt-4 flex gap-2 justify-center items-center">
-                            <span className="text-gray-500">Show</span>
-                            <select
-                                id="itemsPerPage"
-                                value={itemsPerPage}
-                                onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
-                                className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
-                            >
-                                 <option value={10}>10</option>
-                  <option value={25}>25</option>
-                  <option value={50}>50</option>
-                  <option value={100}>100</option>
-                  <option value={250}>250</option>
-                  <option value={500}>500</option>
-                  <option value={1000}>1000</option>
-                            </select>
-                            <span className="text-gray-500">entries</span>
-                        </div>
-                    </div>
-        </>
-    
       <ModelOne
         title={id ? "Edit Metal" : "Add Metal"}
         extraClassName="max-w-[75%] "
@@ -470,7 +474,7 @@ const Metal = () => {
 
 export default Metal;
 
-export const MetalForm = ({ isLoading, setIsOpen, id, clearId }) => {
+export const MetalForm = ({setIsOpen, id, clearId }) => {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
   const [formData, setFormData] = useState({
@@ -479,7 +483,7 @@ export const MetalForm = ({ isLoading, setIsOpen, id, clearId }) => {
 
   console.log(id);
   const [formErrors, setFormErrors] = useState({});
-
+  const [isLoading,setIsLoading]=useState(false)
   // getmetalById
   const { mutate: getmetalId } = useMutation({
     mutationFn: getmetalById,
@@ -508,6 +512,7 @@ export const MetalForm = ({ isLoading, setIsOpen, id, clearId }) => {
     if (!validateForm()) {
       return;
     }
+    setIsLoading(true)
 
     try {
       const updateData = {
@@ -530,9 +535,11 @@ export const MetalForm = ({ isLoading, setIsOpen, id, clearId }) => {
       if (response) {
         toast.success(response.data.message);
         setIsOpen(false);
+        setIsLoading(false)
       }
     },
     onError: (error) => {
+      setIsLoading(false)
       toast.error(error.response.data.message);
     },
   });
@@ -543,8 +550,10 @@ export const MetalForm = ({ isLoading, setIsOpen, id, clearId }) => {
       toast.success(response.data.message);
       clearId();
       setIsOpen(false);
+      setIsLoading(false)
     },
     onError: (error) => {
+      setIsLoading(false)
       toast.error(error.response.data.message);
     },
   });
@@ -573,15 +582,14 @@ export const MetalForm = ({ isLoading, setIsOpen, id, clearId }) => {
     const errors = {};
 
     if (!formData.metal_name) {
-        errors.metal_name = "Metal Name is required";
+      errors.metal_name = "Metal Name is required";
     } else if (formData.metal_name.length < 2) {
-        errors.metal_name = "Metal name must be at least 2 characters long.";
+      errors.metal_name = "Metal name must be at least 2 characters long.";
     }
 
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
-};
-
+  };
 
   return (
     <div className="space-y-4">
@@ -612,16 +620,17 @@ export const MetalForm = ({ isLoading, setIsOpen, id, clearId }) => {
             Cancel
           </button>
 
-                    <button
-                        type="button"
-                        onClick={handleSubmit}
-                        disabled={isLoading}
-                        className=" text-white rounded-md p-2 w-full lg:w-20"
-                        style={{ backgroundColor: layout_color }} >
-                        {id ? 'Update' : 'Submit'}
-                    </button>
-                </div>
-            </div>
+          <button
+            type="button"
+            onClick={handleSubmit}
+            disabled={isLoading}
+            className=" text-white rounded-md p-2 w-full lg:w-20"
+            style={{ backgroundColor: layout_color }}
+          >
+            {isLoading ? <SpinLoading/>: id ? "Update" : "Submit"}
+          </button>
         </div>
-    );
-}
+      </div>
+    </div>
+  );
+};
