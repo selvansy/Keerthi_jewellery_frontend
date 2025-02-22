@@ -132,7 +132,7 @@ const Category = () => {
     dispatch(
       openModal({
         modalType: "CONFIRMATION",
-        header: "Delete Scheme",
+        header: "Delete Category",
         formData: {
           message: "Are you sure you want to delete?",
           CategoryId: id,
