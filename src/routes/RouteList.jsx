@@ -219,14 +219,14 @@ const RouteList = [
   },
   {
     name: "Update Category",
-    path:'/catalog/addcategory/:id',
+    path:'/catalog/editcategory/:id',
     element:<Base renderContent={AddCategory}/>
   },
   {
     name: "Product",
     path:'/catalog/product',
     element:<Base renderContent={Product}/>
-  },
+},
   {
     name: "Add Product",
     path:'/catalog/addproduct',
@@ -234,7 +234,7 @@ const RouteList = [
   },
   {
     name: "Update Product",
-    path:'/catalog/addproduct/:id',
+    path:'/catalog/editproduct/:id',
     element:<Base renderContent={AddProduct}/>
   },
   {
@@ -249,7 +249,7 @@ const RouteList = [
   },
   {
     name: "Update Offer",
-    path:'/catalog/addoffers/:id',
+    path:'/catalog/editoffers/:id',
     element:<Base renderContent={AddOffers}/>
   },
   {

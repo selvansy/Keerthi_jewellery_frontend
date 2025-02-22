@@ -35,14 +35,14 @@ const MetalRate = () => {
   }, [id_branch])
 
   const [isLoading, setisLoading] = useState(true)
-  const [schemeType, setMetalRate] = useState([])
+  const [metalRate, setMetalRate] = useState([])
   const [search, setSearch] = useState('')
   const debouncedSearch = useDebounce(search, 600)
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(10);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [filtered, SetFiltered] = useState(false)
-  
+  const [id,setId]=useState('')
 
   const [activeDropdown, setActiveDropdown] = useState(null)
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
@@ -94,18 +94,6 @@ const MetalRate = () => {
   }, [currentPage, itemsPerPage,debouncedSearch])
 
   
-    useEffect(() => {
-      eventEmitter.on('CONFIRMATION_SUBMIT',  async(data) => {
-        try {
-          deleteMetalRate(data.metalId);
-        } catch (error) {
-          console.error('Error:', error);
-        }
-      });
-      return () => {
-        eventEmitter.off('CONFIRMATION_SUBMIT');
-      };
-    }, [eventEmitter]);
   
 
   const handleReset = () => {
@@ -170,10 +158,7 @@ const MetalRate = () => {
     }
   });
 
- 
-  const handleSearch = (e) => {
-    setSearch(e.target.value)
-  }
+
 
   const handleClick = (e) => {
     e.preventDefault();
@@ -196,11 +181,10 @@ const MetalRate = () => {
 
    const handleDelete = (id) => {
     setActiveDropdown(null);
-    console.log("DeleteId",id)
-        
+    setId(id)        
         dispatch(openModal({
           modalType: 'CONFIRMATION',
-          header: 'Delete Scheme',
+          header: 'Delete Metal Rate',
           formData: {
             message: 'Are you sure you want to delete?',
             metalId: id
@@ -215,32 +199,76 @@ const MetalRate = () => {
           }
         }))
       };
-    
-    
-      const { mutate: deleteMetalRate } = useMutation({
-        mutationFn: (payload)=> deletemetalrate(payload),
-        onSuccess: (response) => {
-         if(response){
+
       
-          const payload = {
-            search: debouncedSearch,
-             page: currentPage, 
-             limit: itemsPerPage,
-             from_date: '', 
-             to_date: '', 
-             id_branch: branchId 
-          }
-          getmetalratetablemutate(payload)
-          toast.success(response.message);
-         }
+    
+         const { mutate: deleteMetalRate } = useMutation({
+            mutationFn:({metalId})=> deletemetalrate(metalId),
+            onSuccess: (response) => {
+              console.log(response);
+              
+              if (response.message == "Metal rate deleted") {
+                const isLastItemOnPage = metalRate.length === 1;
+                const isNotFirstPage = currentPage > 1;
+                if (isLastItemOnPage && isNotFirstPage) {
+                  setCurrentPage(prev => prev - 1);
+                } else {
+                  // Otherwise, just refresh current page
+                  getmetalratetablemutate({
+                    search: debouncedSearch,
+                    page: currentPage,
+                    limit: itemsPerPage,
+                    id_branch:branchId
+                  });
+                }
+                
+                toast.success(response.message);
+                eventEmitter.off("CONFIRMATION_SUBMIT");
+                setId("");
+              }
+            },
+            onError: (error) => {
+              console.error("Error:", error);
+              toast.error("Failed to delete metal");
+            },
+          });
+        
+          useEffect(() => {
+            const handleDelete = (id) => {
+              deleteMetalRate(id);
+            };
+        
+            eventEmitter.on("CONFIRMATION_SUBMIT", handleDelete);
+        
+            return () => {
+              eventEmitter.off("CONFIRMATION_SUBMIT", handleDelete);
+            };
+          }, []);
+    
+      // const { mutate: deleteMetalRate } = useMutation({
+      //   mutationFn: (payload)=> deletemetalrate(payload),
+      //   onSuccess: (response) => {
+      //    if(response){
+      
+      //     const payload = {
+      //       search: debouncedSearch,
+      //        page: currentPage, 
+      //        limit: itemsPerPage,
+      //        from_date: '', 
+      //        to_date: '', 
+      //        id_branch: branchId 
+      //     }
+      //     getmetalratetablemutate(payload)
+      //     toast.success(response.message);
+      //    }
        
-         eventEmitter.off('CONFIRMATION_SUBMIT');
-        },
-        onError: (error) => {
-          console.error("Error:", error);
-          eventEmitter.off('CONFIRMATION_SUBMIT');
-        },
-      });
+      //    eventEmitter.off('CONFIRMATION_SUBMIT');
+      //   },
+      //   onError: (error) => {
+      //     console.error("Error:", error);
+      //     eventEmitter.off('CONFIRMATION_SUBMIT');
+      //   },
+      // });
     
      const columns = [
   
@@ -268,8 +296,8 @@ const MetalRate = () => {
             <div
               className="absolute"
               style={{
-                top: rowIndex >= schemeType.length - 2 ? 'auto' : '72%',
-                bottom: rowIndex >= schemeType.length - 2 ? '-74%' : 'auto',
+                top: rowIndex >= metalRate.length - 2 ? 'auto' : '72%',
+                bottom: rowIndex >= metalRate.length - 2 ? '-74%' : 'auto',
                 zIndex: 9999,
                 marginBottom: '8px',
                 filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.15))'
@@ -541,13 +569,13 @@ const MetalRate = () => {
       )}
       <div className="mt-4">
         <Table
-          data={schemeType}
+          data={metalRate}
           columns={columns}
           isLoading={isLoading}
         />
       </div>
       {
-        (schemeType.length) > 0 &&
+        (metalRate.length) > 0 &&
       
       <div className="flex justify-between mt-4 p-2">
         <div className={`flex flex-row items-center justify-center gap-2  `}>
@@ -598,6 +626,7 @@ const MetalRate = () => {
         </div>
       </div>
 }
+<Modal/>
     </div>
   )
 }

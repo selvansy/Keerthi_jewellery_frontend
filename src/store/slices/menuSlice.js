@@ -13,10 +13,10 @@ const menuSlice = createSlice({
     setMenus: (state, action) => {
       state.menus = action.payload;
     },
-    setSubmenus: (state, action) => {
+    setSubmenus: (state, action) => {      
       state.submenus = action.payload;
       // Create allowed routes array from submenus
-      state.allowedRoutes = action.payload.filter(submenu => submenu.active === 1);
+      state.allowedRoutes = action.payload.map(submenu => submenu.pathurl);
     }
   }
 });

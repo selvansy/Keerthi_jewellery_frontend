@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import { toast } from 'react-toastify';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
-import SpinLoading from '../../common/SpinLoading';
+import SpinLoading from '../../common/spinLoading';
 
 
 function GiftVendorForm({ setIsOpen, isviewOpen,id,refetchTable,setId}) {
