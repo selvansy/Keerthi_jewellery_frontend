@@ -166,7 +166,7 @@ const { mutate: addgiftitemMutate } = useMutation({
     },
     onError: (error) => {
         setIsLoading(false)
-        toast.error(`Error adding gift item: ${error.message}`);
+        toast.error(error.message);
     },
 });
 
@@ -183,7 +183,7 @@ const { mutate: updategiftitemMutate } = useMutation({
     },
     onError: (error) => {
         setIsLoading(false)
-        toast.error(`Error updating gift item: ${error.message}`);
+        toast.error(error.message);
     },
 });
     return (

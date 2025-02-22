@@ -12,13 +12,13 @@ import { eventEmitter } from '../../../../utils/EventEmitter';
 import ModelOne from '../../common/Modelone';
 import Modal from '../../../components/common/Modal';
 import { useDebounce } from '../../../hooks/useDebounce';
-import GiftItemForm from './GiftItemForm';
+import GiftHandOverForm from './GiftItemForm';
 import Loading from '../../common/Loading';
 import usePagination from '../../../hooks/usePagination'
 
 
 
-const Giftitem = () => {
+const GiftHandOver = () => {
 
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   
@@ -43,11 +43,11 @@ const Giftitem = () => {
   const limit = 10;
 
   useEffect(() => {
-    getallgiftitemtableMutate({ search: debouncedSearch, page: currentPage, limit });
-  }, [currentPage, debouncedSearch]);
+    getallgiftitemtableMutate({ search: debouncedSearch, page: currentPage, limit:itemsPerPage });
+  }, [currentPage, debouncedSearch,itemsPerPage]);
 
   const refetchTable = ()=>{
-    getallgiftitemtableMutate({ search: debouncedSearch, page: currentPage, limit });
+    getallgiftitemtableMutate({ search: debouncedSearch, page: currentPage, limit:itemsPerPage });
   }
 
   useEffect(() => {
@@ -102,8 +102,8 @@ const Giftitem = () => {
         setCurrentPage(response.currentPage)
         Setentries(response.totalDocument)
         setTotalPages(Math.ceil(response.data.total / limit));
-        
       }
+      toast.success(response.message)
       setisLoading(false)
     },
     onError:()=>{
@@ -166,6 +166,13 @@ const Giftitem = () => {
       onSuccess: (response,id) => {
         const deletedData = giftitemData.filter(e => e._id !== id)
        setgiftitemData(deletedData)
+       const isLastItemOnPage = giftitemData.length === 1;
+       const isNotFirstPage = currentPage > 1;
+       if (isLastItemOnPage && isNotFirstPage) {
+         setCurrentPage(prev => prev - 1);
+       } else {
+         refetchTable()
+       }
         toast.success(response.message);
         eventEmitter.off('CONFIRMATION_SUBMIT');
       },
@@ -363,6 +370,26 @@ const Giftitem = () => {
           </div>
           {giftitemData.length > 0 && (
         <div className="flex justify-between mt-4 p-2">
+
+        <div className="mt-4 flex gap-2 justify-center items-center">
+          <span className="text-gray-500">Show</span>
+          <select
+            id="itemsPerPage"
+            value={itemsPerPage}
+            onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
+            className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
+          >
+             <option value={10}>10</option>
+                  <option value={25}>25</option>
+                  <option value={50}>50</option>
+                  <option value={100}>100</option>
+                  <option value={250}>250</option>
+                  <option value={500}>500</option>
+                  <option value={1000}>1000</option>
+          </select>
+          <span className="text-gray-500">of entries {entries}</span>
+        </div>
+
         <div className="flex flex-row items-center justify-center gap-2">
           <div className="flex items-center gap-4">
             <button
@@ -388,25 +415,6 @@ const Giftitem = () => {
             </button>
           </div>
         </div>
-
-        <div className="mt-4 flex gap-2 justify-center items-center">
-          <span className="text-gray-500">Show</span>
-          <select
-            id="itemsPerPage"
-            value={itemsPerPage}
-            onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
-            className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
-          >
-             <option value={10}>10</option>
-                  <option value={25}>25</option>
-                  <option value={50}>50</option>
-                  <option value={100}>100</option>
-                  <option value={250}>250</option>
-                  <option value={500}>500</option>
-                  <option value={1000}>1000</option>
-          </select>
-          <span className="text-gray-500">entries</span>
-        </div>
         <Modal/>
       </div>
             )}
@@ -420,7 +428,7 @@ const Giftitem = () => {
         closeModal={closeIncommingModal}
 
       >
-        <GiftItemForm
+        <GiftHandOverForm
          setId={setId}
          id={id}
          refetchTable={refetchTable}
@@ -433,4 +441,4 @@ const Giftitem = () => {
   );
 };
 
-export default Giftitem;
+export default GiftHandOver;

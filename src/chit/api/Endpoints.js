@@ -74,8 +74,8 @@ export const addmetal = async (data) => {
     const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/metal`, data);
     return response;
 }
-export const deletemetal = async (id) => {
-    const response = await Api.delete(`${import.meta.env.VITE_API_URL}/api/client/metal/${id}`);
+export const deletemetal = async (id) => {    
+    const response = await Api.delete(`${import.meta.env.VITE_API_URL}/api/client/metal/${id.MetalId}`);
     return response.data;
 }
  
@@ -84,8 +84,9 @@ export const getmetalById = async (id) => {
     return response.data;
 }
  
-export const updatemetal = async (id, data) => {
-    const response = await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/metal/${id}`, data);
+export const updatemetal = async (metalData) => { 
+    const {id,metal_name}=metalData
+    const response = await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/metal/${id}`, {metal_name});
     return response;
 }
  
@@ -127,7 +128,8 @@ export const addpurity = async (data) => {
     return response;
 }
 export const deletepurity = async (id) => {
-    const response = await Api.delete(`${import.meta.env.VITE_API_URL}/api/client/purity/${id}`);
+    const {purityId}=id    
+    const response = await Api.delete(`${import.meta.env.VITE_API_URL}/api/client/purity/${purityId}`);
     return response.data;
 }
  
@@ -136,8 +138,8 @@ export const getpurityById = async (id) => {
     return response.data;
 }
  
-export const updatepurity = async (id,data) => {
-
+export const updatepurity = async (purityData) => {
+    const {id,data}=purityData
     const response = await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/purity/${id}`, data);
     return response;
 }
@@ -476,13 +478,15 @@ export const getschemepaymentbyid = async (data) => {
 }
  
 export const todaycurrentratebybranch = async (data) => {
-    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/metalrate/today/${data.id_branch}/${data.date}`);
+    console.log();
+        
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/metalrate/today/${data.branchId}/${data.date}`);
     return response.data;
 }
  
 
  
-export const schemepaymenttodayrate = async (data) => {
+export const schemepaymenttodayrate = async (data) => {    
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/metalrate/today/${data.id_branch}/${data.date}`);
     return response.data;
 }
@@ -522,13 +526,14 @@ export const offersbyid= async(id)=>{
 
 
 export const createoffers= async(data)=>{
+    console.log(data);
     const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/offer/`,data)
     return response.data
 }
 
 export const updateoffers= async(data)=>{
 
-    const response= await Api.patch(`${import.meta.env.VITE_API_URL}api/client/offer/${data.id}`,data.data)
+    const response= await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/offer/${data.id}`,data.data)
     return response.data
 }
  
@@ -580,18 +585,18 @@ export const deletenewarrivals= async(id)=>{
 
 export const updateproduct= async(data)=>{
  
-    const response= await Api.patch(`${import.meta.env.VITE_API_URL}/api/admin/product/${data.id}`,data.data)
+    const response= await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/product/${data.id}`,data.data)
     return response.data
 }
  
 
 export const deleteproduct= async(id)=>{
-    const response= await Api.delete(`${import.meta.env.VITE_API_URL}/api/admin/product/${id}`)
+    const response= await Api.delete(`${import.meta.env.VITE_API_URL}/api/client/product/${id}`)
     return response.data
 }
  
 export const activateproduct= async(id)=>{
-    const response= await Api.patch(`${import.meta.env.VITE_API_URL}/api/admin/product/${id}/active`)
+    const response= await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/product/${id}/active`)
     return response.data
 }
 
@@ -611,20 +616,20 @@ export const categorybymetalid= async(id)=>{
 
 
 export const updatecategory= async(data)=>{
-  
-    const response= await Api.patch(`${import.meta.env.VITE_API_URL}/api/admin/category/${data.id}`,data.data)
+    const {id,category_name,id_metal,id_branch}=data    
+    const response= await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/category/${id}`,{category_name,id_metal,id_branch})
     return response.data
 }
  
 
  
 export const deletecategory= async(id)=>{
-    const response= await Api.delete(`${import.meta.env.VITE_API_URL}/api/admin/category/${id}`)
+    const response= await Api.delete(`${import.meta.env.VITE_API_URL}/api/client/category/${id}`)
     return response.data
 }
  
 export const activatecategory= async(id)=>{
-    const response= await Api.patch(`${import.meta.env.VITE_API_URL}/api/admin/category/${id}/active`)
+    const response= await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/category/${id}/active`)
     return response.data
 }
 
@@ -1365,14 +1370,14 @@ export const allcountry = async () => {
     return response.data;
 }
  
-export const allstate = async (data) => {
-    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/common/state/${data?.id_country || data}`);
+export const allstate = async (country) => {
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/common/state/${country}`);
     return response.data;
 } 
 
  
 export const allcity = async (data) => {
-    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/common/city/${data?.id_state || data}`);
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/common/city/${data}`);
     return response.data;
 }
  
@@ -1430,8 +1435,8 @@ export const getcategoryTable= async(data)=>{
     return response.data
 }
 
-export const categorybyid= async(data)=>{
-    const response= await Api.get(`${import.meta.env.VITE_API_URL}/api/client/category/${data.id}`)
+export const categorybyid= async(id)=>{
+    const response= await Api.get(`${import.meta.env.VITE_API_URL}/api/client/category/${id}`)
     return response.data
 }
 
@@ -1447,7 +1452,7 @@ export const getproductTable= async(data)=>{
 
 
 
-export const createproduct= async(data)=>{
+export const createproduct= async(data)=>{    
     const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/product/`,data)
     return response.data
 }
@@ -1592,7 +1597,7 @@ export const getmetalrateById= async(id)=>{
     return response.data
 }
 
-export const deletemetalrate= async(id)=>{
+export const deletemetalrate= async(id)=>{ 
     const response= await Api.delete(`${import.meta.env.VITE_API_URL}/api/client/metalrate/${id}`)
     return response.data
 }

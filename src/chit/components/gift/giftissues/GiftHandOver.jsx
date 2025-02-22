@@ -14,7 +14,7 @@ import chitrcvd from '../../../../assets/chitrcvd.svg';
 import nonchitrcvd from '../../../../assets/nonchitrcvd.svg';
 import balancegift from '../../../../assets/giftblnc.svg';
 import { openModal } from '../../../../redux/modalSlice';
-import Modal from '../../../components/common/Modal';
+import Modal from '../../common/Modal';
 import { useDispatch, useSelector } from 'react-redux'
 import { eventEmitter } from '../../../../utils/EventEmitter';
 import { setbranchId } from '../../../../redux/clientFormSlice';
@@ -41,8 +41,7 @@ const GiftIssued = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [entries,Setentries] = useState(0)
-  const [selectedRow, setSelectedRow] = useState(null)
-  const [activeDropdown, setActiveDropdown] = useState(null)
+
   const [isFilterOpen, setIsFilterOpen] = React.useState(false);
   const [from_date, setFromdate] = useState('');
   const [to_date, setTodate] = useState('');
@@ -62,26 +61,8 @@ const GiftIssued = () => {
   });
 
 
-  useEffect(() => {
 
-    eventEmitter.on('CONFIRMATION_SUBMIT', (data) => {
-      try {
-
-        deleteGiftIssued(data.giftIssuedId);
-        eventEmitter.off('CONFIRMATION_SUBMIT');
-      } catch (error) {
-        eventEmitter.off('CONFIRMATION_SUBMIT');
-        console.error('Error:', error);
-      }
-    });
-
-    return () => {
-      eventEmitter.off('CONFIRMATION_SUBMIT');
-    };
-  }, []);
-
-
-  const handleReset = (e) => {
+  const handleReset = () => {
     setFromdate("");
     setTodate("");
     setFilters(prev => ({
@@ -212,9 +193,7 @@ const GiftIssued = () => {
     }
   });
 
-
-  useEffect(() => {
-    const filterTosend = {
+      const filterTosend = {
       page: currentPage,
       from_date: from_date,
       to_date: to_date,
@@ -224,11 +203,16 @@ const GiftIssued = () => {
       gift_vendorid: '',
       id_gift: ''
     };
+
+
+  useEffect(() => {
+
     giftissuesMutate(filterTosend)
     giftaccountcountMutate(filterTosend);
 
   }, [currentPage, itemsPerPage, debouncedSearch])
 
+ 
 
   const handleSearch = (e) => {
     setSearch(e.target.value)
@@ -247,40 +231,6 @@ const GiftIssued = () => {
       giftissuesMutate({ page: currentPage, limit: itemsPerPage, search: debouncedSearch })
     }
   };
-
-
-
-  const handleDelete = (id) => {
-    dispatch(openModal({
-      modalType: 'CONFIRMATION',
-      header: 'Delete giftIssued',
-      formData: {
-        message: 'Are you sure you want to delete this giftIssued?',
-        giftIssuedId: id
-      },
-      buttons: {
-        cancel: {
-          text: 'Cancel'
-        },
-        submit: {
-          text: 'Delete'
-        }
-      }
-    }))
-  };
-
-  const { mutate: deleteGiftIssued } = useMutation({
-    mutationFn: (id) => deletegiftissues(id),
-    onSuccess: (response, deletedId) => {
-      const deletedData = giftissues.filter(e => e._id !== deletedId)
-      setGiftissues(deletedData)
-      toast.success(response.message);
-      eventEmitter.off('CONFIRMATION_SUBMIT');
-    },
-    onError: (error) => {
-      console.error("Error:", error);
-    },
-  });
 
 
   const handleItemsPerPageChange = (value) => {
@@ -355,7 +305,7 @@ const GiftIssued = () => {
   return (
     <div className="flex flex-col p-4">
       <div className='flex flex-col gap-3'>
-        <h2 className="text-2xl text-gray-900 font-bold">Gift Issues</h2>
+        <h2 className="text-2xl text-gray-900 font-bold">Gift HandOver</h2>
         <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4'>
           <div className='flex flex-row items-center justify-between bg-white rounded-lg p-3 h-20 shadow-md'>
             <div className='flex flex-col justify-center'>
@@ -449,7 +399,7 @@ const GiftIssued = () => {
             className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
             onClick={handleClick}
             style={{ backgroundColor: layout_color }} >
-            + Add Gift Issues
+            + Add GiftHandOver
           </button>
         </div>
       </div>
@@ -621,6 +571,26 @@ const GiftIssued = () => {
         && (
           <>
              <div className="flex justify-between mt-4 p-2">
+
+             <div className="mt-4 flex gap-2 justify-center items-center">
+              <span className="text-gray-500">Show</span>
+              <select
+                id="itemsPerPage"
+                value={itemsPerPage}
+                onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
+                className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
+              >
+                 <option value={10}>10</option>
+                      <option value={25}>25</option>
+                      <option value={50}>50</option>
+                      <option value={100}>100</option>
+                      <option value={250}>250</option>
+                      <option value={500}>500</option>
+                      <option value={1000}>1000</option>
+              </select>
+              <span className="text-gray-500">of entries {entries}</span>
+            </div>
+
             <div className="flex flex-row items-center justify-center gap-2">
               <div className="flex items-center gap-4">
                 <button
@@ -645,25 +615,6 @@ const GiftIssued = () => {
                   Next
                 </button>
               </div>
-            </div>
-    
-            <div className="mt-4 flex gap-2 justify-center items-center">
-              <span className="text-gray-500">Show</span>
-              <select
-                id="itemsPerPage"
-                value={itemsPerPage}
-                onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
-                className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
-              >
-                 <option value={10}>10</option>
-                      <option value={25}>25</option>
-                      <option value={50}>50</option>
-                      <option value={100}>100</option>
-                      <option value={250}>250</option>
-                      <option value={500}>500</option>
-                      <option value={1000}>1000</option>
-              </select>
-              <span className="text-gray-500">entries</span>
             </div>
             <Modal/>
           </div>

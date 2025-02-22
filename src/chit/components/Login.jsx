@@ -7,6 +7,9 @@ import { login  } from '../../redux/authSlice';
 import { setAccessmenudata,setLayoutColor } from '../../redux/clientFormSlice';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
+import Loading from '../components/common/Loading';
+import { RotatingLines } from 'react-loader-spinner';
+import SpinLoading from './common/spinLoading';
 const Login = () => {
     const dispatch= useDispatch()
     const navigate = useNavigate()
@@ -14,10 +17,12 @@ const Login = () => {
     username: '',
     password: ''
   });
+  const [isLoading,setLoading]=useState(false)
 
   const {mutate: loginStaff } = useMutation({
     mutationFn: staffLofgin,
     onSuccess: (response) => {
+      setLoading(false)
       console.log(response)
       dispatch(login(response.token));  
       const decoded = jwtDecode(response.token);
@@ -28,13 +33,17 @@ const Login = () => {
       }
     },
     onError: (error) => {
+      setLoading(false)
       console.error('Error fetching countries:', error);
     }
   });
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if(!isLoading){
+      setLoading(true)
     loginStaff(formData)
+    }
   };
 
   const handleChange = (e) => {
@@ -84,10 +93,14 @@ const Login = () => {
           </div>
           <div className="mt-6">
             <button
-              type="submit"
+              type={!isLoading?"submit":undefined}
               className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-200"
             >
-              Login
+              {isLoading?
+              <div className='flex justify-center'>
+                <SpinLoading/>
+              </div>
+              :"Login"}
             </button>
           </div>
         </form>
