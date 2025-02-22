@@ -14,9 +14,6 @@ const AddGiftIssued = () => {
 
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const navigate = useNavigate();
-
-  const { id } = useParams()
-
   const roledata = useSelector((state) => state.clientForm.roledata);
 
   const id_branch = roledata?.branch;
@@ -73,8 +70,17 @@ const AddGiftIssued = () => {
   useEffect(() => {
     getBranchList();
     getallissuetypeMutate();
+
   }, []);
 
+  useEffect(() => {
+    if (id_branch === "0") {
+      setFormData(prev => ({
+        ...prev,
+        id_branch: id_branch
+      }));
+    }
+  }, [id_branch]);
 
   useEffect(() => {
     let totalCussellprice = 0;
@@ -104,9 +110,6 @@ const AddGiftIssued = () => {
       updatedBarcode.push(bar.barcode);
       updatedExcessamount.push(excessgiftprice);
       updatedPrice.push(bar.cus_sellprice);
-
-
-      
     });
 
     let giftIssues ={
@@ -367,7 +370,7 @@ const AddGiftIssued = () => {
   return (
     <>
       <div className='flex flex-row justify-between'>
-        <h2 className='text-2xl text-gray-900 font-bold justify-between'>Gift Issued</h2>
+        <h2 className='text-2xl text-gray-900 font-bold justify-between'>Gift HandOver</h2>
         <button
           type='button'
           className=" rounded-md px-4 py-2 cursor-pointer text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
