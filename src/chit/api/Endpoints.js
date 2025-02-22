@@ -38,12 +38,12 @@ export const changeEmployeeStatus = async (id) => {
 }
  
 export const getemployeebyid = async (data) => {
-    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/employee/${data.id}`);
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/employee/${data.id || data}`);
     return response.data;
 }
  
-export const updateemployee = async (data) => {
-    const response = await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/employee/${data.id}`,data);
+export const updateemployee = async (id,data) => {
+    const response = await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/employee/${id}`,data);
     return response.data;
 }
  
@@ -774,6 +774,7 @@ export const getsubmenuById = async (id) => {
 }
  
 export const updatesubmenu = async (id, data) => {
+    console.log(id,data)
     const response = await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/submenusetting/${id}`, data);
     return response;
 }
