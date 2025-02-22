@@ -1369,14 +1369,14 @@ export const allcountry = async () => {
     return response.data;
 }
  
-export const allstate = async (data) => {
-    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/common/state/${data?.id_country || data}`);
+export const allstate = async (country) => {
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/common/state/${country}`);
     return response.data;
 } 
 
  
 export const allcity = async (data) => {
-    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/common/city/${data?.id_state || data}`);
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/common/city/${data}`);
     return response.data;
 }
  
