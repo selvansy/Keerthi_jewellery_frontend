@@ -12,6 +12,7 @@ import profileplaceholder from '../../../../assets/profileplaceholder.png'
 import { toast } from 'react-toastify';
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { useMobileNumber } from '../../../utils/commonFunction';
 
 const AddCustomer = () => {
 
@@ -65,6 +66,8 @@ const AddCustomer = () => {
 
   const [formErrors, setFormErrors] = useState({});
   const [customerData, setcustomerData] = useState(null);
+
+  const mobileProps = useMobileNumber();
 
   
    
@@ -629,7 +632,7 @@ const AddCustomer = () => {
                     onChange={handleBranchChange}
                     value={selectedBranch}
                   >
-                    <option value='' disabled className="text-gray-700">--Select--</option>
+                    <option value='' readOnly className="text-gray-700">--Select--</option>
                     {branchData.map((branch) => (
                       <option className="text-gray-700" key={branch._id} value={branch._id}>
                         {branch.branch_name}
@@ -645,47 +648,47 @@ const AddCustomer = () => {
               </div>
               <div className='flex flex-col'>
                 <label className='text-gray-700 mb-1 font-medium'>Mobile<span className='text-red-400'>*</span></label>
-                <input
-                  type='number'
+               
+                 <input
+                  type='text'
+                  // {...mobileProps}
                   name='mobile'
                   value={formData.mobile}
                   onChange={handleInputChange}
                   onWheel={handleWheel}
-                  onKeyDown={(e) => {
-                    if (e.key === 'ArrowUp' ||
-                      e.key === 'ArrowDown' ||
-                      e.key === 'e' ||
-                      e.key === 'E' ||
-                      e.key === '-') {
-                      e.preventDefault();
-                    }
-                  }}
-                  className='border-2 border-gray-300 rounded-md p-3 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
-                  placeholder='Enter Mobile Number'
+                  onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '')}
+                  pattern="\d{10}"
                   maxLength="10"
+                  inputMode="numeric" 
+                   className='border-2 border-gray-300 rounded-md p-3 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
+                  placeholder='Enter Mobile Number'
+                 
                 />
                 {formErrors.mobile && <span className="text-red-500 text-sm mt-1">{formErrors.mobile}</span>}
               </div>
               <div className='flex flex-col'>
-                <label className='text-gray-700 mb-1 font-medium'>Whatsapp Mobile No</label>
+                <label className='text-gray-700 mb-1 font-medium'>Whatsapp Number</label>
                 <input
-                  type='number'
+                  type='text'
                   name='whatsapp'
                   value={formData.whatsapp}
                   onChange={handleInputChange}
                   onWheel={handleWheel}
-                  onKeyDown={(e) => {
-                    if (e.key === 'ArrowUp' ||
-                      e.key === 'ArrowDown' ||
-                      e.key === 'e' ||
-                      e.key === 'E' ||
-                      e.key === '-') {
-                      e.preventDefault();
-                    }
-                  }}
+                  onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '')}
+                  pattern="\d{10}"
+                  inputMode="numeric" 
+                   maxLength="10"
+                  // onKeyDown={(e) => {
+                  //   if (e.key === 'ArrowUp' ||
+                  //     e.key === 'ArrowDown' ||
+                  //     e.key === 'e' ||
+                  //     e.key === 'E' ||
+                  //     e.key === '-') {
+                  //     e.preventDefault();
+                  //   }
+                  // }}
                   className='border-2 border-gray-300 rounded-md p-3 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
-                  placeholder='Enter Mobile Number'
-                  maxLength="10"
+                  placeholder='Enter Whatsapp Number'
                 />
               </div>
               <div className='flex flex-col'>
@@ -764,7 +767,7 @@ const AddCustomer = () => {
                     onChange={handleSetStateChange}
                     value={selectedState}
                   >
-                    <option value='' disabled className="text-gray-700">--Select--</option>
+                    <option value='' readOnly className="text-gray-700">--Select--</option>
                     {sortedStates.map((state) => (
                       <option className="text-gray-700" key={state._id} value={state._id}>
                         {state.state_name}
@@ -789,7 +792,7 @@ const AddCustomer = () => {
                     onChange={handleCityChange}
                     value={selectedCity}
                   >
-                    <option value='' disabled className="text-gray-700">--Select--</option>
+                    <option value='' readOnly className="text-gray-700">--Select--</option>
                     {sortedCities.map((city) => (
                       <option className="text-gray-700" key={city._id} value={city._id}>
                         {city.city_name}

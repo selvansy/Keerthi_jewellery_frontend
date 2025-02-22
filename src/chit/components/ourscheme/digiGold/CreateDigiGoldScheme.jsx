@@ -383,7 +383,7 @@ const CreateDigiGoldScheme = () => {
                     onChange={handleBranchChange}
                     className="appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                   >
-                    <option value="" disabled>
+                    <option value="" readOnly>
                       Select a branch
                     </option>
                     {branchList.map((type) => (

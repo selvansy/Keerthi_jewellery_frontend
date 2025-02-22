@@ -14,22 +14,23 @@ import { eventEmitter } from '../../../../utils/EventEmitter';
 import { useDebounce } from '../../../hooks/useDebounce';
 import ModelOne from '../../common/Modelone';
 import MenuForm from "./MenuForm"
+import { emptyToZero } from '../../../utils/commonFunction';
 
 
 const MenuComp = () => {
 
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
-  const [isLoading,setisLoading] = useState(false)
+  const [isLoading, setisLoading] = useState(false)
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [MenuData, setMenuData] = useState([]);
-   const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [searchInput, setSearchInput] = useState('')
   const debouncedSearch = useDebounce(searchInput, 500)
-  const limit = 10;
+  // const limit = 10;
 
   const [isviewOpen, setIsviewOpen] = useState(false);
 
@@ -37,18 +38,19 @@ const MenuComp = () => {
     setIsviewOpen(false);
   }
 
-  const {  mutate: getAllMenusMutate } = useMutation({
-    mutationFn: (payload)=>
-       getallmenudatatable(payload),
+  const { mutate: getAllMenusMutate } = useMutation({
+    mutationFn: (payload) =>
+      getallmenudatatable(payload),
     onSuccess: (response) => {
       if (response) {
         setMenuData(response.data);
-        setTotalPages(Math.ceil(response.data.total / limit));
+        setTotalPages(Math.ceil(emptyToZero(response.data.total) / emptyToZero(itemsPerPage)));
+
       }
       setisLoading(false)
     },
-    onError:()=>{
-        setisLoading(false)
+    onError: () => {
+      setisLoading(false)
     }
   });
 
@@ -73,12 +75,12 @@ const MenuComp = () => {
   };
 
   useEffect(() => {
-    getAllMenusMutate({ search: debouncedSearch, page: currentPage, limit });
-  }, [currentPage,itemsPerPage, debouncedSearch,isviewOpen]);
+    getAllMenusMutate({ search: debouncedSearch, page: currentPage, limit: itemsPerPage });
+  }, [currentPage, itemsPerPage, debouncedSearch, isviewOpen]);
 
 
   useEffect(() => {
-    getAllMenusMutate({ search: debouncedSearch, page: currentPage, limit });
+    getAllMenusMutate({ search: debouncedSearch, page: currentPage, limit: itemsPerPage });
   }, []);
 
 
@@ -121,7 +123,7 @@ const MenuComp = () => {
       }
     });
   };
-  
+
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
@@ -131,19 +133,19 @@ const MenuComp = () => {
     setItemsPerPage(value);
     setCurrentPage(1);
   };
-  const paginationButtons = [];
-  for (let i = 1; i <= totalPages; i++) {
-    paginationButtons.push(
-      <button
-        key={i}
-        onClick={() => handlePageChange(i)}
-        className={`p-2 w-10 h-10 rounded-md  ${currentPage === i ? ' text-white' : 'text-slate-400'}`}
-        style={{ backgroundColor: layout_color }} >
-        {i}
-      </button>
-    );
-  }
 
+  const total = Math.max(emptyToZero(totalPages), 1);
+
+  const paginationButtons = Array.from({ length: total }, (_, i) => (
+    <button
+      key={i + 1}
+      onClick={() => handlePageChange(i + 1)}
+      className={`p-2 w-10 h-10 rounded-md ${currentPage === i + 1 ? "text-white" : "text-slate-400"}`}
+      style={{ backgroundColor: layout_color }}
+    >
+      {i + 1}
+    </button>
+  ));
 
 
   useEffect(() => {
@@ -238,7 +240,7 @@ const MenuComp = () => {
     },
     {
       header: 'S.No',
-      cell: (_, index) => index + 1 + (currentPage - 1) * limit,
+      cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
     },
     {
       header: 'Menu Name',
@@ -269,7 +271,7 @@ const MenuComp = () => {
         </label>
       )
     }
-   
+
   ];
 
   const handleSearch = (e) => {
@@ -311,58 +313,60 @@ const MenuComp = () => {
               currentPage={currentPage}
               totalPages={totalPages}
               onPageChange={handlePageChange}
-              pageSize={limit}
+              pageSize={itemsPerPage}
               isLoading={isLoading}
             />
           </div>
           {MenuData.length > 0 && (
-      <div className="flex justify-between mt-4 p-2">
-        <div className="flex flex-row items-center justify-center gap-2">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-              className="p-2 text-gray-500 rounded-md"
-            >
-              Previous
-            </button>
-          </div>
+            <div className="flex justify-between mt-4 p-2">
 
-          <div className="flex flex-row items-center justify-center gap-2">
-            {paginationButtons}
-          </div>
+              <div className="mt-4 flex gap-2 justify-center items-center">
+                <span className="text-gray-500">Show</span>
+                <select
+                  id="itemsPerPage"
+                  value={itemsPerPage}
+                  onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
+                  className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
+                >
+                  <option value={10}>10</option>
+                  <option value={25}>25</option>
+                  <option value={50}>50</option>
+                  <option value={100}>100</option>
+                  <option value={250}>250</option>
+                  <option value={500}>500</option>
+                  <option value={1000}>1000</option>
+                </select>
+                <span className="text-gray-500">entries</span>
+              </div>
 
-          <div className="flex items-center">
-            <button
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className="p-2 text-gray-500 rounded-md"
-            >
-              Next
-            </button>
-          </div>
-        </div>
+              <div className="flex flex-row items-center justify-center gap-2">
+                <div className="flex items-center gap-4">
+                  <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="p-2 text-gray-500 rounded-md"
+                  >
+                    Previous
+                  </button>
+                </div>
 
-        <div className="mt-4 flex gap-2 justify-center items-center">
-          <span className="text-gray-500">Show</span>
-          <select
-            id="itemsPerPage"
-            value={itemsPerPage}
-            onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
-            className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
-          >
-            <option value={10}>10</option>
-<option value={25}>25</option>
-<option value={50}>50</option>
-<option value={100}>100</option>
-<option value={250}>250</option>
-<option value={500}>500</option>
-<option value={1000}>1000</option>
-          </select>
-          <span className="text-gray-500">entries</span>
-        </div>
-      </div>
-      )}
+                <div className="flex flex-row items-center justify-center gap-2">
+                  {paginationButtons}
+                </div>
+
+                <div className="flex items-center">
+                  <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className="p-2 text-gray-500 rounded-md"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          )}
         </>
       )}
       {/* <Modal /> */}

@@ -527,7 +527,7 @@ const WhastappDetails = ({ setIsAddClient,onPageChange, isLoading = false }) => 
                   Cancel
                 </button>
                 <button
-                  disabled={currentStep === totalPages || isLoading}
+                  readOnly={currentStep === totalPages || isLoading}
                   className=" text-white rounded-md p-2 w-full lg:w-20"
                   type="submit"
                   style={{ backgroundColor: layout_color }} >

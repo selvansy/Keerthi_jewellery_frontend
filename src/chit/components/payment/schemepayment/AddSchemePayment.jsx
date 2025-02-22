@@ -33,18 +33,18 @@ const AddSchemePayment = () => {
   const [customerdata, setCustomerData] = useState({});
   const [selectedId, setSelectedId] = useState("");
   const [selectedScheme, setSelectedScheme] = useState(null);
-  const [ispayamtDisabled, setIspayamtDisabled] = useState(true);
+  const [ispayamtreadOnly, setIspayamtreadOnly] = useState(true);
   const [id_branch, setIdBranch] = useState(branch);
   const [paymentamount, setPaymentAmount] = useState(0);
   const [metal_rate, setMetalRate] = useState(0);
   const [fine_amount, setFineAmount] = useState(0);
   const [isseaccontno, setIsseAccontno] = useState(2);
   const [issetreceipt, setIssetReceipt] = useState(2);
-  const [accountdisabled, setAccountDisabled] = useState(false);
+  const [accountreadOnly, setAccountreadOnly] = useState(false);
   useEffect(() => {
     if (id) {
       handlepaymentbyid({ id: id });
-      setAccountDisabled(true);
+      setAccountreadOnly(true);
     }
   }, [id])
 
@@ -65,16 +65,16 @@ const AddSchemePayment = () => {
       if (response.data.id_scheme.scheme_type === 3) {
         setPaymentAmount(response.data.id_scheme.min_weight);
         payment_amount = response.data.id_scheme.min_weight;
-        setIspayamtDisabled(false)
+        setIspayamtreadOnly(false)
       } else if (response.data.id_scheme.scheme_type === 4 || response.data.id_scheme.scheme_type === 5 || response.data.id_scheme.scheme_type === 7 || response.data.id_scheme.scheme_type === 8 || response.data.id_scheme.scheme_type === 9 || response.data.id_scheme.scheme_type === 10) {
         setPaymentAmount(response.data.id_scheme.min_amount);
         payment_amount = response.data.id_scheme.min_amount;
-        setIspayamtDisabled(false)
+        setIspayamtreadOnly(false)
       } else {
 
         setPaymentAmount(response.data.id_scheme.amount);
         payment_amount = response.data.id_scheme.amount;
-        setIspayamtDisabled(true)
+        setIspayamtreadOnly(true)
       }
       setSelectedId(response.data.id_scheme_account._id);
       setFormData({
@@ -472,16 +472,16 @@ const AddSchemePayment = () => {
       if (scheme.id_scheme.scheme_type === 3) {
         setPaymentAmount(scheme.id_scheme.min_weight);
         setFormData(prev => ({ ...prev, payment_amount: scheme.id_scheme.min_weight }));
-        setIspayamtDisabled(false)
+        setIspayamtreadOnly(false)
       } else if (scheme.id_scheme.scheme_type === 4 || scheme.id_scheme.scheme_type === 5 || scheme.id_scheme.scheme_type === 7 || scheme.id_scheme.scheme_type === 8 || scheme.id_scheme.scheme_type === 9 || scheme.id_scheme.scheme_type === 10) {
         setPaymentAmount(scheme.id_scheme.min_amount);
         setFormData(prev => ({ ...prev, payment_amount: scheme.id_scheme.min_amount }));
-        setIspayamtDisabled(false)
+        setIspayamtreadOnly(false)
       } else {
 
         setPaymentAmount(scheme.id_scheme.amount);
         setFormData(prev => ({ ...prev, payment_amount: scheme.id_scheme.amount }));
-        setIspayamtDisabled(true)
+        setIspayamtreadOnly(true)
       }
 
     } else {
@@ -879,7 +879,7 @@ const AddSchemePayment = () => {
                         <select
                           name='id_scheme_account'
                           value={selectedId}
-                          disabled={accountdisabled}
+                          readOnly={accountreadOnly}
                           onChange={handleDropdownChange}
                           className='appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
                           defaultValue=''
@@ -1049,7 +1049,7 @@ const AddSchemePayment = () => {
                     <div className="relative">
                       <input
                         type='number'
-                        disabled={ispayamtDisabled}
+                        readOnly={ispayamtreadOnly}
                         name='payment_amount'
                         value={formData.payment_amount}
                         min='0'
@@ -1072,7 +1072,7 @@ const AddSchemePayment = () => {
                     <label className='text-black mb-2 font-normal'>GST<span className='text-red-400'> *</span></label>
                     <div className="relative">
                       <input
-                        disabled
+                        readOnly
                         type='number'
                         name='gst_amount'
                         value={formData.gst_amount}
@@ -1095,7 +1095,7 @@ const AddSchemePayment = () => {
                     <div className="relative">
                       <input
                         type='number'
-                        disabled
+                        readOnly
                         name='fine_amount'
                         value={formData.fine_amount}
                         onChange={(e) => { filterInputchange(e); }}
@@ -1139,7 +1139,7 @@ const AddSchemePayment = () => {
                     <div className="relative">
                       <input
                         type='number'
-                        disabled
+                        readOnly
                         name='metal_weight'
                         value={formData.metal_weight}
 

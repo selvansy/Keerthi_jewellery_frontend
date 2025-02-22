@@ -485,7 +485,7 @@ const AddRvertAccount = () => {
                 placeholder='Scheme'
                 name='scheme'
                 value={selectedScheme?.scheme_acc_number || ""}
-                disabled />
+                readOnly />
 
             </div>
             {
@@ -521,7 +521,7 @@ const AddRvertAccount = () => {
             <div className='flex flex-col'>
               <label className='text-black mb-1 font-normal'>Customer Name</label>
               <input
-                disabled
+                readOnly
                 type='text'
                 value={selectedScheme?.account_name || ""}
                 className='border-2 border-gray-300 rounded-md p-2 w-full pr-16 '
@@ -531,7 +531,7 @@ const AddRvertAccount = () => {
             <div className='flex flex-col'>
               <label className='text-black mb-1 font-normal'>Address</label>
               <input
-                disabled
+                readOnly
                 type='text'
                 value={selectedScheme?.id_customer?.address}
                 className='border-2 border-gray-300 rounded-md p-2 w-full pr-16 '
@@ -582,7 +582,7 @@ const AddRvertAccount = () => {
                 placeholder='Paid Installment'
 
                 value={selectedScheme?.total_paidinstallments}
-                disabled />
+                readOnly />
             </div>
             <div className='flex flex-col'>
               <label className='text-black mb-1 font-normal'>Paid Amount</label>
@@ -597,7 +597,7 @@ const AddRvertAccount = () => {
                   }}
                   className='border-2 border-gray-300 rounded-md p-2 w-full pr-16 '
                   placeholder='Enter Product Price'
-                  disabled
+                  readOnly
                 />
                 <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-white bg-[#023453] w-14 h-[43px] justify-center items-center flex rounded-r-md">INR</span>
               </div>
@@ -616,7 +616,7 @@ const AddRvertAccount = () => {
                     }
                   }} className='border-2 border-gray-300 rounded-md p-2 w-full pr-16 '
                   placeholder='Enter Product Price'
-                  disabled
+                  readOnly
                 />
                 <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-white bg-[#023453] w-14 h-[43px] justify-center items-center flex rounded-r-md">INR</span>
               </div>
@@ -632,7 +632,7 @@ const AddRvertAccount = () => {
                 }} className='border-2 border-gray-300 rounded-md p-2 w-full pr-16 '
                   placeholder='Enter Product Price'
                   value={selectedScheme?.total_paidamount}
-                  disabled
+                  readOnly
                 />
                 <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-white bg-[#023453] w-14 h-[43px] justify-center items-center flex rounded-r-md">INR</span>
               </div>
@@ -670,7 +670,7 @@ const AddRvertAccount = () => {
               className='bg-[#61A375] text-white rounded-md p-2 w-full lg:w-20'
               type='button'
               onClick={handleSubmit}
-            // disabled={!isOtpVerified}
+            // readOnly={!isOtpVerified}
             >
               Submit
             </button>

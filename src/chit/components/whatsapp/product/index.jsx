@@ -689,7 +689,7 @@ const handleSend = (id,id_branch) => {
                     onChange={filterInputchange}
                     value={filters.id_branch}
                   >
-                    <option value="" disabled className="text-gray-700">
+                    <option value="" readOnly className="text-gray-700">
                       --Select--
                     </option>
                     {branchList.map((branch) => (
@@ -773,7 +773,7 @@ const handleSend = (id,id_branch) => {
                   name="id_category"
                   value={filters.id_category}
                   onChange={filterInputchange}
-                  disabled={filtercategory?.length === 0}
+                  readOnly={filtercategory?.length === 0}
                   className={`appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 ${filtercategory?.length === 0 ? "cursor-not-allowed bg-gray-100" : ""
                   }`}
 
@@ -818,13 +818,13 @@ const handleSend = (id,id_branch) => {
                   name="id_purity"
                   value={filters.id_purity}
                   defaultValue=""
-                  disabled={filterpurity.length === 0}
+                  readOnly={filterpurity.length === 0}
                   onChange={filterInputchange}
                   className={`appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 ${filterpurity.length === 0 ? "cursor-not-allowed bg-gray-100" : ""
                   }`}
 
                 >
-                 <option value="" disabled className="text-gray-700">
+                 <option value="" readOnly className="text-gray-700">
                     --Select--
                   </option>
                   {filterpurity?.map((purity) => (
@@ -965,7 +965,7 @@ const handleSend = (id,id_branch) => {
             <div className="flex items-center gap-4">
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
+                readOnly={currentPage === 1}
                 className="p-2 text-gray-500 rounded-md"
               >
                 Previous
@@ -979,7 +979,7 @@ const handleSend = (id,id_branch) => {
             <div className="flex items-center">
               <button
                 onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
+                readOnly={currentPage === totalPages}
                 className="p-2 text-gray-500 rounded-md"
               >
                 Next

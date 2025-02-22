@@ -28,6 +28,7 @@ const Giftvendor = () => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedRow, setSelectedRow] = useState(null)
   const [totalPages, setTotalPages] = useState(0);
+  const [entries,Setentries] = useState(0)
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [isviewOpen, setIsviewOpen] = useState(false);
   const [isLoading, setisLoading] = useState(true)
@@ -76,8 +77,9 @@ const Giftvendor = () => {
     onSuccess: (response) => {
       if (response) {
         setgiftvendorData(response.data);
-        setTotalPages(Math.ceil(response.data.total / limit));
-
+        setTotalPages(response.totalPages)
+        setCurrentPage(response.currentPage)
+        Setentries(response.totalDocument)
       }
       setisLoading(false)
     },
@@ -355,7 +357,7 @@ const Giftvendor = () => {
               <div className="flex items-center gap-4">
                 <button
                   onClick={prevPage}
-                  disabled={currentPage === 1}
+                  readOnly={currentPage === 1}
                   className={`p-2 text-gray-500 rounded-md ${currentPage === 1 ? "cursor-not-allowed" : "cursor-pointer"}`}
                 >
                   Previous
@@ -369,7 +371,7 @@ const Giftvendor = () => {
               <div className="flex items-center">
                 <button
                   onClick={nextPage}
-                  disabled={currentPage === totalPages}
+                  readOnly={currentPage === totalPages}
                   className={`p-2 text-gray-500 rounded-md ${currentPage === totalPages ? "cursor-not-allowed" : "cursor-pointer"}`}
                 >
                   Next

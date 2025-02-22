@@ -1,0 +1,326 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { CalendarDays, Camera, X, Send } from 'lucide-react';
+import "react-datepicker/dist/react-datepicker.css";
+import DatePicker from "react-datepicker";
+import { useMutation } from '@tanstack/react-query';
+import Webcam from 'react-webcam';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
+import { toast } from 'react-toastify';
+import { useSelector } from 'react-redux';
+import { updatecustomer, getcustomerById, getallbranch, allcountry, allstate, addcustomer, allcity, getBranchById } from '../../../api/Endpoints';
+import { sendOtp, closeBill } from "../../../api/BackendUrl";
+import profileplaceholder from '../../../../assets/profileplaceholder.png';
+import { useMobileNumber } from '../../../utils/commonFunction';
+
+const AddCustomer = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const layout_color = useSelector((state) => state.clientForm.layoutColor);
+  const webcamRef = useRef(null);
+  const [showWebcam, setShowWebcam] = useState(false);
+  const [profilePreview, setProfilePreview] = useState(null);
+  const [cus_img, setcus_img] = useState(null);
+  const [id_proof, setid_proof] = useState(null);
+  const [id_proofError, setid_proofError] = useState('');
+  const [countryData, setCountryData] = useState('');
+  const [stateData, setStateData] = useState([]);
+  const [cityData, setCityData] = useState([]);
+  const [branchData, setBranchData] = useState([]);
+  const [selectedState, setSelectedState] = useState('');
+  const [selectedCity, setSelectedCity] = useState('');
+  const [selectedBranch, setSelectedBranch] = useState('');
+  const [showVerification, setShowVerification] = useState(false);
+  const [isOtpVerified, setIsOtpVerified] = useState(false);
+  const [otpNumber, setOtpNumber] = useState("");
+  const [timer, setTimer] = useState(0);
+  const [canResend, setCanResend] = useState(false);
+  const mobileProps = useMobileNumber();
+
+  const validationSchema = Yup.object({
+    firstName: Yup.string().required('First name is required'),
+    lastName: Yup.string().required('Last name is required'),
+    mobile: Yup.string().required('Mobile number is required').matches(/^\d{10}$/, 'Mobile number must be 10 digits'),
+    address: Yup.string().required('Address is required'),
+    pincode: Yup.string().required('Pincode is required').matches(/^\d{6}$/, 'Pincode must be 6 digits'),
+    gender: Yup.number().required('Gender is required'),
+    birthDate: Yup.date().required('Birth date is required'),
+    state: Yup.string().required('State is required'),
+    city: Yup.string().required('City is required'),
+  });
+
+  const initialValues = {
+    firstName: '',
+    lastName: '',
+    mobile: '',
+    whatsapp: '',
+    address: '',
+    pincode: '',
+    pan: '',
+    authorno: '',
+    gender: 3,
+    birthDate: null,
+    state: '',
+    city: '',
+    branch: '',
+  };
+
+  const { mutate: getAllCountryMutate } = useMutation({
+    mutationFn: allcountry,
+    onSuccess: (response) => {
+      if (response?.data?.[0]?._id) {
+        setCountryData(response.data[0]._id);
+        getAllStateMutate({ id_country: response.data[0]._id });
+      }
+    },
+  });
+
+  const { mutate: getAllStateMutate } = useMutation({
+    mutationFn: allstate,
+    onSuccess: (response) => {
+      if (response?.data) {
+        setStateData(response.data);
+      }
+    },
+  });
+
+  const { mutate: getallbranchMutate } = useMutation({
+    mutationFn: getallbranch,
+    onSuccess: (response) => {
+      if (response?.data) {
+        setBranchData(response.data);
+      }
+    },
+  });
+
+  const { mutate: getAllCityMutate } = useMutation({
+    mutationFn: allcity,
+    onSuccess: (response) => {
+      if (response?.data) {
+        setCityData(response.data);
+      }
+    },
+  });
+
+  const { mutate: addcustomerMutate } = useMutation({
+    mutationFn: (data) => addcustomer(data),
+    onSuccess: (response) => {
+      toast.success(response.message);
+      navigate('/manageaccount/customer');
+    },
+  });
+
+  const { mutate: updateCustomerData } = useMutation({
+    mutationFn: updatecustomer,
+    onSuccess: (response) => {
+      toast.success(response.message);
+      navigate('/manageaccount/customer');
+    },
+  });
+
+  useEffect(() => {
+    getAllCountryMutate();
+    getallbranchMutate();
+  }, []);
+
+  useEffect(() => {
+    if (id) {
+      getCustomerData(id);
+    }
+  }, [id]);
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setcus_img(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProfilePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleCapture = () => {
+    const imageSrc = webcamRef.current.getScreenshot();
+    setProfilePreview(imageSrc);
+    fetch(imageSrc)
+      .then(res => res.blob())
+      .then(blob => {
+        const file = new File([blob], "webcam-photo.jpg", { type: "image/jpeg" });
+        setcus_img(file);
+      });
+    setShowWebcam(false);
+  };
+
+  const handleClearImage = () => {
+    setcus_img(null);
+    setProfilePreview(null);
+  };
+
+  const handleid_proofUpload = (e) => {
+    const file = e.target.files[0];
+    const allowedTypes = [
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'application/vnd.ms-excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'text/plain'
+    ];
+
+    if (file) {
+      if (allowedTypes.includes(file.type)) {
+        setid_proof(file);
+        setid_proofError('');
+      } else {
+        setid_proof(null);
+        setid_proofError('Please upload a valid file format (PDF, DOC, DOCX, XLS, XLSX, or TXT)');
+        e.target.value = '';
+      }
+    }
+  };
+
+  const handleSubmit = (values) => {
+    const formDataToSend = new FormData();
+    Object.keys(values).forEach(key => {
+      formDataToSend.append(key, values[key]);
+    });
+    if (cus_img) formDataToSend.append('cus_img', cus_img);
+    if (id_proof) formDataToSend.append('id_proof', id_proof);
+
+    if (id) {
+      updateCustomerData({ id, data: formDataToSend });
+    } else {
+      addcustomerMutate(formDataToSend);
+    }
+  };
+
+  return (
+    <Formik
+      initialValues={initialValues}
+      validationSchema={validationSchema}
+      onSubmit={handleSubmit}
+    >
+      {({ setFieldValue, values }) => (
+        <Form>
+          <div className='flex flex-row justify-between'>
+            <h2 className='text-2xl text-gray-900 font-bold justify-between'>{id ? "Edit Customer" : "Add Customer"}</h2>
+            {id && (
+              <div className='flex flex-row gap-4'>
+                <button onClick={() => navigate('/manageaccount/customer')} className='bg-[#E2E8F0] text-black px-4 py-2 rounded-md'>Back</button>
+                <button type="submit" className='bg-[#61A375] text-white px-4 py-2 rounded-md'>Edit</button>
+              </div>
+            )}
+          </div>
+          <div className='w-full flex flex-col bg-white border-t-2 border-[#023453] mt-3 overflow-y-auto scrollbar-hide h-[calc(100vh-200px)]'>
+            <div className='flex flex-col pl-8 pr-8 pb-4 pt-2 relative space-y-2'>
+              <div>
+                <h2 className='text-1xl font-semibold mb-4 mt-4'>Basic Information</h2>
+                <div className='grid grid-rows-2 md:grid-cols-2 gap-5 border-gray-300'>
+                  <div className='flex flex-col mt-2 gap-3'>
+                    <label className='text-gray-700 mb-1 font-medium'>First Name<span className='text-red-400'>*</span></label>
+                    <Field name="firstName" className='border-2 border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' placeholder='Enter Here' />
+                    <ErrorMessage name="firstName" component="div" className="text-red-500 text-sm mt-1" />
+                  </div>
+                  <div className='flex flex-col mt-2 gap-3'>
+                    <label className='text-gray-700 mb-1 font-medium'>Last Name<span className='text-red-400'>*</span></label>
+                    <Field name="lastName" className='border-2 border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' placeholder='Enter Here' />
+                    <ErrorMessage name="lastName" component="div" className="text-red-500 text-sm mt-1" />
+                  </div>
+                  <div className='flex flex-col'>
+                    <label className='text-black mb-1 font-medium'>Branch<span className='text-red-400'>*</span></label>
+                    <div className="relative">
+                      <Field as="select" name="branch" className='appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700'>
+                        <option value='' disabled className="text-gray-700">--Select--</option>
+                        {branchData.map((branch) => (
+                          <option key={branch._id} value={branch._id}>{branch.branch_name}</option>
+                        ))}
+                      </Field>
+                      <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                        <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
+                          <path d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                  <div className='flex flex-col'>
+                    <label className='text-gray-700 mb-1 font-medium'>Mobile<span className='text-red-400'>*</span></label>
+                    <Field type="text" name="mobile" className='border-2 border-gray-300 rounded-md p-3 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none' placeholder='Enter Mobile Number'
+                    {...mobileProps} />
+                    <ErrorMessage name="mobile" component="div" className="text-red-500 text-sm mt-1" />
+                  </div>
+                  <div className='flex flex-col'>
+                    <label className='text-gray-700 mb-1 font-medium'>Whatsapp Mobile No</label>
+                    <Field name="whatsapp" type="number" className='border-2 border-gray-300 rounded-md p-3 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none' placeholder='Enter Mobile Number' maxLength="10" />
+                  </div>
+                  <div className='flex flex-col'>
+                    <label className='text-gray-700 mb-1 font-medium'>Address<span className='text-red-400'>*</span></label>
+                    <Field name="address" className='border-2 border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' placeholder='Enter Here' />
+                    <ErrorMessage name="address" component="div" className="text-red-500 text-sm mt-1" />
+                  </div>
+                  <div className='flex flex-col'>
+                    <label className='text-gray-700 mb-1 font-medium'>Pincode<span className='text-red-400'>*</span></label>
+                    <Field name="pincode" type="number" className='border-2 border-gray-300 rounded-md p-3 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none' placeholder='Enter Pincode' maxLength="6" />
+                    <ErrorMessage name="pincode" component="div" className="text-red-500 text-sm mt-1" />
+                  </div>
+                  <div className='flex flex-col'>
+                    <label className='text-black mb-1 font-medium'>Gender<span className='text-red-400'>*</span></label>
+                    <div className="flex flex-row gap-6 justify-start">
+                      <button type="button" onClick={() => setFieldValue('gender', 1)} className={`rounded-full w-20 h-10 flex items-center justify-center border-2 border-black transition-colors duration-200 ${values.gender === 1 ? 'text-white' : 'bg-white text-black'}`} style={values.gender === 1 ? { backgroundColor: layout_color } : {}}>Male</button>
+                      <button type="button" onClick={() => setFieldValue('gender', 2)} className={`rounded-full w-20 h-10 flex items-center justify-center border-2 border-black transition-colors duration-200 ${values.gender === 2 ? 'text-white' : 'bg-white text-black'}`} style={values.gender === 2 ? { backgroundColor: layout_color } : {}}>Female</button>
+                      <button type="button" onClick={() => setFieldValue('gender', 3)} className={`rounded-full w-20 h-10 flex items-center justify-center border-2 border-black transition-colors duration-200 ${values.gender === 3 ? 'text-white' : 'bg-white text-black'}`} style={values.gender === 3 ? { backgroundColor: layout_color } : {}}>Other</button>
+                    </div>
+                    <ErrorMessage name="gender" component="div" className="text-red-500 text-sm mt-1" />
+                  </div>
+                  <div className='flex flex-col'>
+                    <label className='text-black mb-1 font-medium'>State<span className='text-red-400'>*</span></label>
+                    <div className="relative">
+                      <Field as="select" name="state" className='appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700'>
+                        <option value='' disabled className="text-gray-700">--Select--</option>
+                        {stateData.map((state) => (
+                          <option key={state._id} value={state._id}>{state.state_name}</option>
+                        ))}
+                      </Field>
+                      <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                        <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
+                          <path d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                      </div>
+                    </div>
+                    <ErrorMessage name="state" component="div" className="text-red-500 text-sm mt-1" />
+                  </div>
+                  <div className='flex flex-col'>
+                    <label className='text-black mb-1 font-medium'>City<span className='text-red-400'>*</span></label>
+                    <div className="relative">
+                      <Field as="select" name="city" className='appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700'>
+                        <option value='' disabled className="text-gray-700">--Select--</option>
+                        {cityData.map((city) => (
+                          <option key={city._id} value={city._id}>{city.city_name}</option>
+                        ))}
+                      </Field>
+                      <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                        <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
+                          <path d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                      </div>
+                    </div>
+                    <ErrorMessage name="city" component="div" className="text-red-500 text-sm mt-1" />
+                  </div>
+                  <div className='flex flex-col'>
+                    <label className='text-black mb-1 font-medium'>Pan Number</label>
+                    <Field name="pan" className='border-2 border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' placeholder='Enter Here' onInput={(e) => e.target.value = e.target.value.toUpperCase}
+                    ></Field>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Form>
+      )}
+    </Formik>
+  )
+}
+
+export default AddCustomer;

@@ -663,7 +663,7 @@ console.log("gstTypeData",gstTypeData)
                   }}
                   value={metalid || ''}
                 >
-                  <option value="" disabled className="text-gray-700">
+                  <option value="" readOnly className="text-gray-700">
                     --Select--
                   </option>
                   {metalData.map((metal) => (
@@ -2183,7 +2183,7 @@ console.log("gstTypeData",gstTypeData)
               <button
                 className="bg-[#61A375] text-white rounded-md p-2 w-full lg:w-20"
                 type="button"
-                disabled={isSubmitted}
+                readOnly={isSubmitted}
                 onClick={id ? handleUpdate : handleSubmit}
               >
                 {id ? "Update" : "Submit"}

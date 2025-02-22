@@ -283,7 +283,7 @@ function StaffuserForm({ setIsOpen}) {
                                                         value={values.id_client || ''}
 
                                                     >
-                                                        <option value='' disabled className="text-gray-700">--Select--</option>
+                                                        <option value='' readOnly className="text-gray-700">--Select--</option>
                                                         {clientData?.map((client) => (
                                                             <option className="text-gray-700" key={client._id} value={client._id}>
                                                                 {client?.company_name}
@@ -320,7 +320,7 @@ function StaffuserForm({ setIsOpen}) {
                                                         value={values.id_branch || ''}
 
                                                     >
-                                                        <option value='' disabled className="text-gray-700">--Select--</option>
+                                                        <option value='' readOnly className="text-gray-700">--Select--</option>
                                                         {branchData?.map((branch) => (
                                                             <option className="text-gray-700" key={branch._id} value={branch._id}>
                                                                 {branch?.branch_name}
@@ -356,7 +356,7 @@ function StaffuserForm({ setIsOpen}) {
                                                         value={values.id_project || ''}
 
                                                     >
-                                                        <option value='' disabled className="text-gray-700">--Select--</option>
+                                                        <option value='' readOnly className="text-gray-700">--Select--</option>
                                                         {project?.map((proj) => (
                                                             <option className="text-gray-700" key={proj._id} value={proj._id}>
                                                                 {proj?.project_name}
@@ -387,7 +387,7 @@ function StaffuserForm({ setIsOpen}) {
                                                     value={values.id_employee || ''}
 
                                                 >
-                                                    <option value='' disabled className="text-gray-700">--Select--</option>
+                                                    <option value='' readOnly className="text-gray-700">--Select--</option>
                                                     {employeeData?.map((employee) => (
                                                         <option className="text-gray-700" key={employee._id} value={employee._id}>
                                                             {`${employee?.firstname} ${employee?.lastname}`}
@@ -523,7 +523,7 @@ function StaffuserForm({ setIsOpen}) {
                                                             Next
                                                         </button> :
                                                         <button
-                                                            disabled={isLoading}
+                                                            readOnly={isLoading}
                                                             className=" text-white rounded-md p-2 w-full lg:w-20"
                                                             style={{ backgroundColor: layout_color }} 
                                                         >
@@ -535,7 +535,7 @@ function StaffuserForm({ setIsOpen}) {
                                                 <>
                                                     <button
                                                         type="submit"
-                                                        disabled={isLoading}
+                                                        readOnly={isLoading}
                                                         onClick={handleSubmit}
                                                         className=" text-white rounded-md p-2 w-full lg:w-20"
                                                         style={{ backgroundColor: layout_color }} 

@@ -139,7 +139,7 @@ function Addadmin({ isLoading = false, setisAdmin }) {
                                             Cancel
                                         </button>
                                         <button
-                                            disabled={isLoading}
+                                            readOnly={isLoading}
                                             className=" text-white rounded-md p-2 w-full lg:w-20"
                                             onClick={(values) => handleSubmit(values)}
                                             style={{ backgroundColor: layout_color }}  >

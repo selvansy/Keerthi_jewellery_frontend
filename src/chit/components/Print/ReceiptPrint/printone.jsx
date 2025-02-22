@@ -267,7 +267,7 @@ console.log(paymentData)
               onClick={handleSearchSubmit}
               className="px-6 py-2 text-white rounded-r-md hover:bg-blue-600"
               style={{ backgroundColor: layout_color }}
-              disabled={isLoading}
+              readOnly={isLoading}
             >
               {isLoading ? 'Loading...' : 'Search'}
             </button>

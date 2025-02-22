@@ -270,7 +270,7 @@ function SubmenuForm({ setIsOpen, getallsubmenusMutate, menus }) {
                     <button
                         type="button"
                         onClick={handleSubmit}
-                        disabled={isLoading}
+                        readOnly={isLoading}
                         className=" text-white rounded-md p-2 w-full lg:w-20 flex justify-center items-center"
                         style={{ backgroundColor: layout_color }}  >
                         {isLoading ? (
