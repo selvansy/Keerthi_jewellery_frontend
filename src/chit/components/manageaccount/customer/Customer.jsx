@@ -234,19 +234,25 @@ const Customer = () => {
        if(response){
         toast.success(response.message);
         const payload = {
-
             page: currentPage,
             limit: itemsPerPage,
             search: debouncedSearch,
             from_date: from_date,
             to_date: to_date,
             id_branch: filters.id_branch
-          
         }
+
+        const isLastItemOnPage = customerData.length === 1;
+        const isNotFirstPage = currentPage > 1;
+        if (isLastItemOnPage && isNotFirstPage) {
+          setCurrentPage(prev => prev - 1);
+        } else {
         getcustomertableMutate(payload);
-       }
         eventEmitter.off('CONFIRMATION_SUBMIT');
-      },
+       }
+        
+      }
+    },
       onError: (error) => {
         console.error("Error:", error);
         eventEmitter.off('CONFIRMATION_SUBMIT');

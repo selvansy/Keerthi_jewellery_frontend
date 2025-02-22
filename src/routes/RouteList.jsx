@@ -10,7 +10,7 @@ import CreateDigiGoldScheme from "../chit/components/ourscheme/digiGold/CreateDi
 import GiftVendor from "../chit/components/gift/giftvendor/index";
 import GiftItem from "../chit/components/gift/giftitem/index";
 import GiftInwards from "../chit/components/gift/giftinwards/giftInwards";
-import GiftInwardsCreation from "../chit/components/gift/giftinwards/giftInwardsCreation";
+import GiftInwardsCreation from "../chit/components/gift/giftinwards/GiftInwardsCreation";
 import Category from "../chit/components/catalog/category/Category";
 import AddCategory from "../chit/components/catalog/category/AddCategory";
 import Product from "../chit/components/catalog/product/Product";
@@ -21,7 +21,7 @@ import AddNewArrival from "../chit/components/catalog/newarrivals/AddNewArrival"
 import Pushnotification from "../chit/components/notification/pushnotification/index";
 import AddOffers from "../chit/components/catalog/offers/AddOffers";
 import Customer from "../chit/components/manageaccount/customer/Customer";
-import AddCustomer from "../chit/components/manageaccount/customer/AddCustomer";
+import AddCustomer from "../chit/components/manageaccount/customer/AddCustomers";
 import OutStandingWeight from "../chit/components/Report/OutStandingWeight";
 import ModeWisePayment from "../chit/components/Report/PaymentModeLedger";
 import GiftStock from "../chit/components/Report/GiftStock";
@@ -34,8 +34,8 @@ import StaffUser from "../chit/components/Setup/staffuser/index";
 import UserAccess from "../chit/components/Setup/useraccess/index";
 import Wallet from "../chit/components/payment/wallet/Wallet";
 import Redeem from "../chit/components/payment/redeem/Redeem";
-import GiftIssued from "../chit/components/gift/giftissues/GiftIssued";
-import AddGiftIssued from "../chit/components/gift/giftissues/AddGiftIssued";
+import GiftHandOver from "../chit/components/gift/giftissues/GiftHandOver";
+import AddGiftHandOver from "../chit/components/gift/giftissues/AddGiftHandOver";
 import SchemePayment from "../chit/components/payment/schemepayment/SchemePayment";
 import Schemeaccount from "../chit/components/manageaccount/schemeaccount/index";
 import AddSchemeAccount from "../chit/components/manageaccount/schemeaccount/SchemeAccountform";
@@ -178,9 +178,9 @@ const RouteList = [
     element:<Base renderContent={GiftVendor}/>
   }, 
   {
-    name: "Gift Item",
-    path:'/gift/giftitem',
-    element:<Base renderContent={GiftItem}/>
+    name: "Gift Handover",
+    path:'/gift/gifthandover',
+    element:<Base renderContent={GiftHandOver}/>
   },
   {
     name: "Gift Inwards",
@@ -200,12 +200,12 @@ const RouteList = [
   {
     name: "Gift Issues",
     path:'/gift/giftissues',
-    element:<Base renderContent={GiftIssued}/>
+    element:<Base renderContent={GiftHandOver}/>
   },
   {
     name: "Gift Issued Creation",
     path:'/gift/giftissues/creategiftissue',
-    element:<Base renderContent={AddGiftIssued}/>
+    element:<Base renderContent={AddGiftHandOver}/>
   },
   {
     name: "Category",

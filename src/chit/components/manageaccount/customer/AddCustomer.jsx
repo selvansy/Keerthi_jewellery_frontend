@@ -67,10 +67,7 @@ const AddCustomer = () => {
   const [formErrors, setFormErrors] = useState({});
   const [customerData, setcustomerData] = useState(null);
 
-  const mobileProps = useMobileNumber();
 
-  
-   
   useEffect(() => {
     let countdown;
     
@@ -203,10 +200,6 @@ const AddCustomer = () => {
     })
   }
 
-  // const handleSetCityChange = (e) => {
-  //   const cityId = e.target.value;
-  //   setSelectedCity(cityId);
-  // }
 
   const { mutate: getCustomerData } = useMutation({
     mutationFn: (id)=>getcustomerById(id),
@@ -228,7 +221,7 @@ const AddCustomer = () => {
         setProfilePreview(response.data.image);
         setDate_of_wed(adjustDate(response.data.date_of_wed));
         setBirthDate(adjustDate(response.data.date_of_birth));
-        // handleSetStateChange(response.data.id_state);
+      
         setSelectedState(response.data.stateDetails._id);
         setSelectedCity(response.data.cityDetails._id);
         setSelectedBranch(response.data.branchDetails._id);
@@ -253,61 +246,6 @@ const AddCustomer = () => {
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
   };
-
-  // const handleEditSubmit = () => {
-  //   let formDataToSend = new FormData();
-
-  //   const id = formData.id;  // Ensure the 'id' is correctly coming from formData or another source
-
-  //   if (!id) {
-  //     console.error('Customer ID is missing!');
-  //     return;  // Exit early if ID is not available
-  //   }
-
-
-  //   formDataToSend.append('id', id);
-  //   formDataToSend.append('firstname', formData.firstName);
-  //   formDataToSend.append('lastname', formData.lastName);
-  //   formDataToSend.append('mobile', formData.mobile);
-  //   formDataToSend.append('address', formData.address);
-  //   formDataToSend.append('pincode', formData.pincode);
-  //   formDataToSend.append('id_country', countryData);
-  //   formDataToSend.append('id_state', selectedState);
-  //   formDataToSend.append('id_city', selectedCity);
-  //   formDataToSend.append('id_branch', selectedBranch);
-
-  //   // Add date of birth and wedding date with conditional handling
-  //   formDataToSend.append('date_of_birth', birthDate ? birthDate.toISOString() : '');
-  //   formDataToSend.append('date_of_wed', date_of_wed ? date_of_wed.toISOString() : '');
-
-  //   formDataToSend.append('gender', selectedGender);
-  //   formDataToSend.append('phone', '');  // empty value if not used
-  //   formDataToSend.append('nominee_name', '');  // empty value if not used
-  //   formDataToSend.append('nominee_relationship', '');  // empty value if not used
-  //   formDataToSend.append('nominee_mobile', '');  // empty value if not used
-  //   formDataToSend.append('digital_sign', '');  // empty value if not used
-  //   formDataToSend.append('pan', '');  // empty value if not used
-  //   formDataToSend.append('authorno', '');  // empty value if not used
-  //   formDataToSend.append('username', '');  // empty value if not used
-  //   formDataToSend.append('passwd', '');  // empty value if not used
-  //   formDataToSend.append('mpin', '');  // empty value if not used
-  //   formDataToSend.append('profile_complete', '');  // empty value if not used
-  //   formDataToSend.append('notification', 1);  // Assuming 1 is the default notification setting
-  //   formDataToSend.append('bank_accountname', '');  // empty value if not used
-  //   formDataToSend.append('bank_accno', '');  // empty value if not used
-  //   formDataToSend.append('bank_ifsccode', '');  // empty value if not used
-
-  //   // Conditionally append fields if they exist
-  //   if (formData.whatsapp) formDataToSend.append('whatsapp', formData.whatsapp);
-  //   if (formData.pan) formDataToSend.append('pan', formData.pan);
-  //   if (formData.authorno) formDataToSend.append('authorno', formData.authorno);
-  //   if (cus_img) formDataToSend.append('cus_img', cus_img);  // Assuming cus_img is a file or blob
-  //   if (id_proof) formDataToSend.append('id_proof', id_proof);  // Assuming id_proof is a file or blob
-
-  //   // Assuming `updatecustomerMutate` is the function you're calling to send this data
-  //   updatecustomerMutate(id, formDataToSend);
-  // }
-
 
   const { mutate: getAllStateMutate } = useMutation({
     mutationFn: allstate,
@@ -378,11 +316,11 @@ const AddCustomer = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
-    // Special handling for authorno to ensure it's a single string
+
     if (name === 'authorno') {
       setFormData(prev => ({
         ...prev,
-        [name]: value.toString() // Convert to string explicitly
+        authorno: value.toString()
       }));
     } else {
       setFormData(prev => ({
@@ -403,15 +341,19 @@ const AddCustomer = () => {
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
+    if (file && file.size <= (500*1024)) {
       setcus_img(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setProfilePreview(reader.result);
-      };
+      }
       reader.readAsDataURL(file);
+    }else{
+      toast.error("File size exceeded or no file found")
     }
   };
+  
+   
 
   const handleCapture = () => {
     const imageSrc = webcamRef.current.getScreenshot();
@@ -463,71 +405,39 @@ const AddCustomer = () => {
     return Object.keys(errors).length === 0;
   };
 
-  // const handleUpdate = (formData) => {
-  //   if (!validateForm()) {
-  //     toast.error("Required fields missing")
-  //     return;
-  //   }
-  //   updateCustomerData(formData)
-  // }
-
-
   const handleSubmit = () => {
     if (!validateForm()) {
       toast.error('Please fill in all required fields');
       return;
     }
-
+  
     let formDataToSend = new FormData();
-
-    // Basic fields
-    formDataToSend.append('firstname', formData.firstName);
-    formDataToSend.append('lastname', formData.lastName);
-    formDataToSend.append('mobile', formData.mobile);
-    formDataToSend.append('address', formData.address);
-    formDataToSend.append('pincode', formData.pincode);
+  
+ 
+    Object.entries(formData).forEach(([key, value]) => {
+      if (value) formDataToSend.append(key, value);
+    });
+  
+  
     formDataToSend.append('id_country', countryData);
     formDataToSend.append('id_state', selectedState);
     formDataToSend.append('id_city', selectedCity);
     formDataToSend.append('id_branch', selectedBranch);
-
-    // Date fields with null checks
-    formDataToSend.append('date_of_birth', birthDate ? birthDate.toISOString() : '');
-    formDataToSend.append('date_of_wed', date_of_wed ? date_of_wed.toISOString() : '');
-
-    // Other fields
     formDataToSend.append('gender', selectedGender || '');
-    formDataToSend.append('phone', '');
-    formDataToSend.append('nominee_name', '');
-    formDataToSend.append('nominee_relationship', '');
-    formDataToSend.append('nominee_mobile', '');
-    formDataToSend.append('digital_sign', '');
-    formDataToSend.append('pan', formData.pan || '');
-
-    // Fix for authorno - ensure it's a string
     formDataToSend.append('authorno', String(formData.authorno || ''));
-
-    formDataToSend.append('username', '');
-    formDataToSend.append('passwd', '');
-    formDataToSend.append('mpin', '');
-    formDataToSend.append('profile_complete', '');
     formDataToSend.append('notification', 1);
-    formDataToSend.append('bank_accountname', '');
-    formDataToSend.append('bank_accno', '');
-    formDataToSend.append('bank_ifsccode', '');
-
-    // Optional fields
+  
+    if (birthDate) formDataToSend.append('date_of_birth', birthDate.toISOString());
+    if (date_of_wed) formDataToSend.append('date_of_wed', date_of_wed.toISOString());
+  
     if (formData.whatsapp) formDataToSend.append('whatsapp', formData.whatsapp);
     if (cus_img) formDataToSend.append('cus_img', cus_img);
     if (id_proof) formDataToSend.append('id_proof', id_proof);
-
-    
-    if(id){
-      updateCustomerData({id:id,data:formDataToSend});
-    }else{
-      addcustomerMutate(formDataToSend);
-    }
+  
+  
+    id ? updateCustomerData({ id, data: formDataToSend }) : addcustomerMutate(formDataToSend);
   };
+  
 
   const handleCityChange = (e) => {
     const cityId = e.target.value;
@@ -677,16 +587,8 @@ const AddCustomer = () => {
                   onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '')}
                   pattern="\d{10}"
                   inputMode="numeric" 
-                   maxLength="10"
-                  // onKeyDown={(e) => {
-                  //   if (e.key === 'ArrowUp' ||
-                  //     e.key === 'ArrowDown' ||
-                  //     e.key === 'e' ||
-                  //     e.key === 'E' ||
-                  //     e.key === '-') {
-                  //     e.preventDefault();
-                  //   }
-                  // }}
+                   maxLength={"10"}
+                
                   className='border-2 border-gray-300 rounded-md p-3 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
                   placeholder='Enter Whatsapp Number'
                 />

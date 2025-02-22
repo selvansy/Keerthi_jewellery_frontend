@@ -43,12 +43,6 @@ const Giftvendor = () => {
 
   const limit = 10;
 
-
-    const refetchTable = ()=>{
-      getAllgiftvendorsMutate({ search: debouncedSearch, page: currentPage, limit });
-    }
-
-
   useEffect(() => {
 
     eventEmitter.on('CONFIRMATION_SUBMIT', (data) => {
@@ -68,11 +62,16 @@ const Giftvendor = () => {
   }, []);
 
   useEffect(() => {
-    getAllgiftvendorsMutate({ search: debouncedSearch, page: currentPage, limit });
-  }, [currentPage, debouncedSearch]);
+    getAllgiftvendorsMutate({ search: debouncedSearch, page: currentPage, limit:itemsPerPage });
+  }, [currentPage, debouncedSearch,itemsPerPage]);
+
+  const refetchTable = ()=>{
+    getAllgiftvendorsMutate({ search: debouncedSearch, page: currentPage, limit:itemsPerPage });
+  }
 
 
-  const { mutate: getAllgiftvendorsMutate,refetch} = useMutation({
+
+  const { mutate: getAllgiftvendorsMutate} = useMutation({
     mutationFn: (payload) => getAllgiftvendors(payload),
     onSuccess: (response) => {
       if (response) {
@@ -82,8 +81,10 @@ const Giftvendor = () => {
         Setentries(response.totalDocument)
       }
       setisLoading(false)
+  
     },
     onError: () => {
+      setgiftvendorData([])
       setisLoading(false)
     }
   });
@@ -139,10 +140,18 @@ const Giftvendor = () => {
     onSuccess: (response, deletedId) => {
     const deletedData = giftvendorData.filter(e => e._id !== deletedId)
     setgiftvendorData(deletedData)
-      toast.success(response.message);
-      eventEmitter.off('CONFIRMATION_SUBMIT');
+    const isLastItemOnPage = giftvendorData.length === 1;
+        const isNotFirstPage = currentPage > 1;
+        if (isLastItemOnPage && isNotFirstPage) {
+          setCurrentPage(prev => prev - 1);
+        } else {
+          refetchTable()
+    }
+    toast.success(response.message);
+    eventEmitter.off('CONFIRMATION_SUBMIT');
     },
     onError: (error) => {
+      eventEmitter.off('CONFIRMATION_SUBMIT');
       console.error("Error:", error);
     },
   });
@@ -353,6 +362,24 @@ const Giftvendor = () => {
 
           {giftvendorData.length > 0 && (
             <div className="flex justify-between mt-4 p-2">
+              <div className="mt-4 flex gap-2 justify-center items-center">
+              <span className="text-gray-500">Show</span>
+              <select
+                id="itemsPerPage"
+                value={itemsPerPage}
+                onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
+                className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
+              >
+                      <option value={10}>10</option>
+                      <option value={25}>25</option>
+                      <option value={50}>50</option>
+                      <option value={100}>100</option>
+                      <option value={250}>250</option>
+                      <option value={500}>500</option>
+                      <option value={1000}>1000</option>
+              </select>
+              <span className="text-gray-500">of entries {entries}</span>
+            </div>
             <div className="flex flex-row items-center justify-center gap-2">
               <div className="flex items-center gap-4">
                 <button
@@ -377,25 +404,6 @@ const Giftvendor = () => {
                   Next
                 </button>
               </div>
-            </div>
-    
-            <div className="mt-4 flex gap-2 justify-center items-center">
-              <span className="text-gray-500">Show</span>
-              <select
-                id="itemsPerPage"
-                value={itemsPerPage}
-                onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
-                className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
-              >
-                 <option value={10}>10</option>
-                      <option value={25}>25</option>
-                      <option value={50}>50</option>
-                      <option value={100}>100</option>
-                      <option value={250}>250</option>
-                      <option value={500}>500</option>
-                      <option value={1000}>1000</option>
-              </select>
-              <span className="text-gray-500">entries</span>
             </div>
             <Modal/>
           </div>
