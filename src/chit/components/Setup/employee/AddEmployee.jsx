@@ -259,20 +259,6 @@ const AddEmployee = () => {
     },
   });
 
-  // const handleFileChange = (event) => {
-  //   const file = event.target.files[0];
-  //   const name = event.target.name;
-
-  //   if (file) {
-  //     const previewUrl = URL.createObjectURL(file);
-  //     setImagePreviews((prev) => ({
-  //       ...prev,
-  //       [name]: previewUrl,
-  //     }));
-  //     formik.setFieldValue(name, file);
-  //   }
-  // };
-
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     const name = event.target.name;
@@ -303,20 +289,6 @@ const AddEmployee = () => {
       });
     setShowWebcam(false);
   };
-
-  // Helper Functions
-  // const handleClearImage = (e, field) => {
-  //   e.preventDefault();
-  //   e.stopPropagation();
-
-  //   setImagePreviews((prev) => ({
-  //     ...prev,
-  //     [field]: null,
-  //   }));
-
-  //   // Clear the formik value
-  //   formik.setFieldValue(field, null);
-  // };
 
   const handleClearImage = (e, field) => {
     e.preventDefault();
