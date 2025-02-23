@@ -8,16 +8,15 @@ import { updatecustomer, getcustomerById, getBranchById, getallbranch, allstate,
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { sendOtp, closeBill } from "../../../api/BackendUrl"
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import Webcam from 'react-webcam';
 import { toast } from 'react-toastify';
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import SpinLoading from '../../common/SpinLoading';
+import SpinLoading from '../../common/spinLoading';
 import Select from "react-select";
 import profileplaceholder from '../../../../assets/profileplaceholder.png'
-
-import { useQuery } from '@tanstack/react-query';
+import { customSelectStyles } from "../../Setup/purity/index"
 
 function AddCustomers() {
 
@@ -62,7 +61,7 @@ function AddCustomers() {
         pincode: '',
         authorno: "",
     })
-    console.log(cus_img)
+
 
     const validationSchema = Yup.object({
         firstname: Yup.string().required('First name is required'),
@@ -79,13 +78,13 @@ function AddCustomers() {
 
 
     useEffect(() => {
-        getAllCountryMutate();
+        // getAllCountryMutate();
         getallbranchMutate();
 
-        if(id_branch !== "0"){
-            setFormData(prev=>({
+        if (id_branch !== "0") {
+            setFormData(prev => ({
                 ...prev,
-                id_branch:id_branch
+                id_branch: id_branch
             }))
         }
     }, []);
@@ -94,10 +93,6 @@ function AddCustomers() {
         if (id) {
             getCustomerData(id);
         }
-
-        if (country) {
-            getAllCountryMutate(country)
-        }
         return () => {
             setcus_img("")
             setPathurl("")
@@ -105,8 +100,6 @@ function AddCustomers() {
         }
 
     }, [id]);
-
-
 
 
     const { mutate: getCustomerData } = useMutation({
@@ -132,7 +125,8 @@ function AddCustomers() {
                 }
                 setFormData(formValues)
                 setcus_img(response.data.cus_img)
-                setPathurl(response.data.pathurl);
+                const img = `${response.data.pathurl}${response.data.cus_img}`
+                setPathurl(img);
                 setid_proof(res.id_proof)
 
                 setCountry(res.countryDetails?._id)
@@ -144,27 +138,19 @@ function AddCustomers() {
     });
 
 
-
-
-    const { mutate: getAllCountryMutate } = useMutation({
-        mutationFn: allcountry,
-        onSuccess: (response) => {
-            setCountryData(response.data)
-        },
-        onError: (error) => {
-            console.error('Error:', error);
-        }
+    const { data: countryresponse, isLoading: loadingCountries } = useQuery({
+        queryKey: ["country", country],
+        queryFn: allcountry,
     });
 
 
-
-    const { data: stateresponse } = useQuery({
+    const { data: stateresponse, isFetching: loadingStates } = useQuery({
         queryKey: ["states", country],
         queryFn: () => allstate(country),
         enabled: !!country,
     });
 
-    const { data: cityresponse } = useQuery({
+    const { data: cityresponse, isFetching: loadingCities } = useQuery({
         queryKey: ["city", state],
         queryFn: () => allcity(state),
         enabled: !!state,
@@ -174,15 +160,36 @@ function AddCustomers() {
 
     useEffect(() => {
 
-        if (cityresponse) {
-            setCityData(cityresponse.data)
+
+        if (countryresponse) {
+            const data = countryresponse.data
+            const country = data.map((country) => ({
+                value: country._id,
+                label: country.country_name,
+            }));
+            setCountryData(country)
         }
 
         if (stateresponse) {
-            setStateData(stateresponse.data)
+            const data = stateresponse.data
+            const state = data.map((state) => ({
+                value: state._id,
+                label: state.state_name,
+            }));
+            setStateData(state)
         }
 
-    }, [cityresponse, stateresponse])
+        if (cityresponse) {
+            const data = cityresponse.data
+            const city = data.map((city) => ({
+                value: city._id,
+                label: city.city_name,
+            }));
+            setCityData(city)
+        }
+
+    }, [cityresponse, stateresponse, countryresponse])
+
 
     const { mutate: getallbranchMutate } = useMutation({
         mutationFn: getallbranch,
@@ -264,26 +271,30 @@ function AddCustomers() {
             }
         }
     };
-
     const handleFileChange = (e) => {
         e.preventDefault();
         const file = e.target.files[0];
-
+    
         if (file && file.size <= 500 * 1024) {
-            setcus_img(file)
-
-            const objectURL = URL.createObjectURL(file);
-            setPathurl(objectURL);
-
-            if (pathurl) {
-                URL.revokeObjectURL(pathurl);
-            }
-
+            setcus_img(file);
+    
+            const reader = new FileReader();
+    
+            reader.onloadend = () => {
+                if (reader.result) {
+                    setPathurl(reader.result);
+                } else {
+                    toast.error("Failed to load image preview.");
+                }
+            };
+    
+            reader.readAsDataURL(file);
         } else {
             toast.error("File size exceeded or no file found");
         }
     };
-
+    
+  
 
     const handleCapture = () => {
         const imageSrc = webcamRef.current.getScreenshot();
@@ -381,8 +392,12 @@ function AddCustomers() {
                         enableReinitialize={true}
                         validateOnChange={false}
                         onSubmit={(values) => {
-                            console.log("values", values)
+
                             setFormData(values)
+                            setFormData(prev => ({
+                                ...prev,
+                                id_branch: id_branch
+                            }))
                             handleSubmit()
                         }}
                     >
@@ -390,7 +405,7 @@ function AddCustomers() {
 
                             <>
                                 <Form onSubmit={handleSubmit}>
-                                    <div>{console.log("errors", errors)}</div>
+                                 
                                     <div className='grid grid-rows-2 md:grid-cols-2 gap-5 border-gray-300'>
 
                                         <div className='flex flex-col'>
@@ -400,7 +415,7 @@ function AddCustomers() {
                                                 name='firstname'
                                                 value={values.firstname}
                                                 onChange={handleChange}
-                                                className='border-2 border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
+                                                className='border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:[#D1D5DB] focus:border-transparent'
                                                 placeholder='Enter Here'
                                             />
                                             {errors.firstname ? <div style={{ color: "red" }}>{errors.firstname}</div> : null}
@@ -414,7 +429,7 @@ function AddCustomers() {
                                                 name='lastname'
                                                 value={values.lastname}
                                                 onChange={handleChange}
-                                                className='border-2 border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
+                                                className='border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:[#D1D5DB] focus:border-transparent'
                                                 placeholder='Enter Here'
                                             />
                                             {errors.lastname ? <div style={{ color: "red" }}>{errors.lastname}</div> : null}
@@ -438,7 +453,7 @@ function AddCustomers() {
                                                         }}
                                                         value={values.id_branch}
 
-                                                        className='border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700'>
+                                                        className='border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:[#D1D5DB] focus:border-transparent text-gray-700'>
                                                         <option value='' disabled>--Select--</option>
                                                         {branchData.map((branch) => (
                                                             <option key={branch._id} value={branch._id}>{branch.branch_name}</option>
@@ -461,7 +476,7 @@ function AddCustomers() {
                                                 value={values.mobile}
                                                 pattern="\d{10}"
                                                 maxLength={"10"}
-                                                className='border-2 border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
+                                                className='border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:[#D1D5DB] focus:border-transparent'
                                                 placeholder='Enter Mobile Number'
                                             />
                                             {errors.mobile ? <div style={{ color: "red" }}>{errors.mobile}</div> : null}
@@ -478,7 +493,7 @@ function AddCustomers() {
                                                 onChange={handleChange}
                                                 pattern="\d{10}"
                                                 maxLength={"10"}
-                                                className='border-2 border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
+                                                className='border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:[#D1D5DB] focus:border-transparent'
                                                 placeholder='Enter Whatsapp Number'
                                             />
                                             {errors.whatsapp ? <div style={{ color: "red" }}>{errors.whatsapp}</div> : null}
@@ -492,7 +507,7 @@ function AddCustomers() {
                                                 name='address'
                                                 value={values.address}
                                                 onChange={handleChange}
-                                                className='border-2 border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
+                                                className='border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:[#D1D5DB] focus:border-transparent'
                                                 placeholder='Enter Here'
                                             />
                                             {errors.address ? <div style={{ color: "red" }}>{errors.address}</div> : null}
@@ -509,7 +524,7 @@ function AddCustomers() {
                                                 onChange={handleChange}
                                                 pattern="\d{6}"
                                                 maxLength={"6"}
-                                                className='border-2 border-gray-300 rounded-md p-3 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
+                                                className='border-2 border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:[#D1D5DB] focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
                                                 placeholder='Enter Pincode'
                                             />
                                             {errors.pincode ? <div style={{ color: "red" }}>{errors.pincode}</div> : null}
@@ -545,21 +560,18 @@ function AddCustomers() {
 
                                         <div className='flex flex-col'>
                                             <label className='text-black mb-1 font-medium'>Country<span className='text-red-400'>*</span></label>
-                                            <Field as='select'
-                                                name='id_country'
-                                                onChange={(e) => {
-                                                    const value = e.target.value;
-                                                    setFieldValue("id_country", value)
-                                                    setCountry(value)
-                                                }}
-                                                value={values.id_country}
 
-                                                className='border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700'>
-                                                <option value='' disabled>--Select--</option>
-                                                {countryData.map((country) => (
-                                                    <option key={country._id} value={country._id}>{country.country_name}</option>
-                                                ))}
-                                            </Field>
+                                            <Select
+                                                options={countryData}
+                                                value={countryData.find(ctry => ctry.value === values.id_country) || country}
+                                                onChange={(ctry) => {
+                                                    setFieldValue("id_country", ctry.value)
+                                                    setCountry(ctry.value)
+                                                }}
+                                                customSelectStyles={customSelectStyles}
+                                                isLoading={loadingCountries}
+                                                placeholder="Select Country"
+                                            />
                                             {errors.id_country ? <div style={{ color: "red" }}>{errors.id_country}</div> : null}
 
                                         </div>
@@ -567,40 +579,37 @@ function AddCustomers() {
                                         <div className='flex flex-col'>
                                             <label className='text-black mb-1 font-medium'>State<span className='text-red-400'>*</span></label>
 
-                                            <Field as='select'
-                                                name='id_state'
+                                            <Select
+                                                options={stateData}
                                                 onChange={(e) => {
-                                                    const value = e.target.value;
-                                                    setFieldValue("id_state", value)
-                                                    setState(value)
+                                                    setFieldValue("id_state", e.value)
+                                                    setState(e.value)
                                                 }}
-                                                value={values.id_state}
-                                                className='border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700'>
-                                                <option value='' disabled>--Select--</option>
-                                                {stateData.map((state) => (
-                                                    <option key={state._id} value={state._id}>{state.state_name}</option>
-                                                ))}
-                                            </Field>
+                                                customSelectStyles={customSelectStyles}
+                                                isLoading={loadingStates}
+                                                value={stateData.find(ctry => ctry.value === values.id_state) || state}
+                                                placeholder="Select state"
+                                            />
+
                                             {errors.id_state ? <div style={{ color: "red" }}>{errors.id_state}</div> : null}
 
                                         </div>
 
                                         <div className='flex flex-col'>
                                             <label className='text-black mb-1 font-medium'>City<span className='text-red-400'>*</span></label>
-                                            <Field as='select'
-                                                name='id_city'
+
+                                            <Select
+                                                options={cityData}
                                                 onChange={(e) => {
-                                                    const value = e.target.value;
-                                                    setFieldValue("id_city", value)
-                                                    setCity(value)
+                                                    setFieldValue("id_city", e.value)
+                                                    setCity(e.value)
                                                 }}
-                                                value={values.id_city}
-                                                className='border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700'>
-                                                <option value='' disabled>--Select--</option>
-                                                {cityData.map((city) => (
-                                                    <option key={city._id} value={city._id}>{city.city_name}</option>
-                                                ))}
-                                            </Field>
+                                                customSelectStyles={customSelectStyles}
+                                                isLoading={loadingCities}
+                                                value={cityData.find(ctry => ctry.value === values.id_city) || city}
+                                                placeholder="Select city"
+                                            />
+
                                             {errors.id_city ? <div style={{ color: "red" }}>{errors.id_city}</div> : null}
 
                                         </div>
@@ -612,7 +621,7 @@ function AddCustomers() {
                                                 name='pan'
                                                 value={values.pan}
                                                 onChange={handleChange}
-                                                className='border-2 w-full border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
+                                                className='border-2 w-full border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:[#D1D5DB] focus:border-transparent'
                                                 placeholder='Enter Here'
                                                 maxLength='10'
                                                 style={{ textTransform: 'uppercase' }}
@@ -632,7 +641,7 @@ function AddCustomers() {
                                                 maxLength="12"
                                                 inputMode="numeric"
                                                 onChange={handleChange}
-                                                className="border-2 border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                                                className="border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:[#D1D5DB] focus:border-transparent"
                                                 placeholder="Enter Here"
                                             />
 
@@ -646,17 +655,14 @@ function AddCustomers() {
 
                                             <div className="relative w-full">
                                                 <DatePicker
-
                                                     selected={values.date_of_wed}
-
                                                     onChange={(date) => {
-
                                                         const value = formatDate(date)
                                                         setFieldValue("date_of_wed", value)
                                                         setTouched("date_of_wed", true)
                                                     }}
                                                     dateFormat="yyyy-MM-dd"
-                                                    className="w-full border-2 border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black h-[50px]"
+                                                    className="w-full border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:[#D1D5DB] h-[50px]"
                                                     placeholderText="Select Date"
                                                     wrapperClassName="w-full"
                                                     showMonthDropdown
@@ -686,7 +692,7 @@ function AddCustomers() {
                                                         setTouched("date_of_wed", true)
                                                     }}
                                                     dateFormat="yyyy-MM-dd"
-                                                    className="w-full border-2 border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black h-[50px]"
+                                                    className="w-full border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:[#D1D5DB] h-[50px]"
                                                     placeholderText="Select Date"
                                                     wrapperClassName="w-full"
                                                     showMonthDropdown
@@ -754,14 +760,15 @@ function AddCustomers() {
                                                         htmlFor="profile-image"
                                                         className="flex justify-center items-center w-full h-12 border-2 border-dashed border-gray-300 text-black cursor-pointer px-4"
                                                     >
-                                                        <p className="text-gray-900 truncate">
-                                                            {cus_img
+                                                        <p className="text-gray-900 text-center text-[12px]">
+                                                            {cus_img ? (cus_img.name) : cus_img}
+                                                            <p> {cus_img
                                                                 ? cus_img.size
                                                                     ? `${(cus_img.size / 1024).toFixed()} KB`
                                                                     : cus_img.name
                                                                         ? cus_img.name
                                                                         : "Browse"
-                                                                : "Browse"}
+                                                                : "Browse"}</p>
                                                         </p>
 
                                                     </label>
@@ -788,18 +795,18 @@ function AddCustomers() {
                                                 <div className='flex items-start justify-center'>
 
                                                     <div className='relative w-20 h-20 bg-gray-200 rounded-md overflow-hidden'>
+                                        
                                                         <img
                                                             src={
-                                                                cus_img && typeof cus_img === 'string'
-                                                                    ? `${pathurl}${cus_img}`
-                                                                    :
-                                                                    profileplaceholder
+                                                                pathurl
+                                                                    ? pathurl
+                                                                    : profileplaceholder
                                                             }
                                                             alt="Profile Preview"
-                                                            className={`w-full h-full ${cus_img ? 'object-cover' : 'object-contain'}`}
+                                                            className={`w-full h-full ${cus_img ? "object-cover" : "object-contain"}`}
                                                         />
 
-
+                                                      
                                                         {pathurl && (
                                                             <button
                                                                 onClick={handleClearImage}
@@ -864,7 +871,7 @@ function AddCustomers() {
                                                         type="text"
                                                         name="mobile"
                                                         value={values.mobile}
-                                                        className="border-2 w-full border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black"
+                                                        className="border-2 w-full border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:[#D1D5DB]"
                                                         placeholder="Enter Here"
                                                         onChange={handleChange}
                                                         defaultValue={""}
@@ -886,7 +893,7 @@ function AddCustomers() {
                                                     <input
                                                         type="text"
                                                         name="otp"
-                                                        className="border-2 w-full border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black"
+                                                        className="border-2 w-full border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:[#D1D5DB]"
                                                         placeholder="Enter OTP"
                                                         onChange={(e) => setOtpNumber(e.target.value)}
                                                     />
@@ -920,7 +927,7 @@ function AddCustomers() {
                                         <div className='bg-white mt-6'>
                                             <div className='flex justify-end gap-2 mt-3'>
                                                 <button
-                                                    className='bg-[#E2E8F0] text-black rounded-md p-3 w-full lg:w-20'
+                                                    className='bg-[#E2E8F0] text-black rounded-md p-2 w-full lg:w-20'
                                                     type='button'
                                                     onClick={() => navigate('/customer')}
                                                 >
@@ -929,6 +936,7 @@ function AddCustomers() {
                                                 <button
                                                     className="bg-[#61A375] text-white rounded-md p-2 w-full lg:w-20"
                                                     type='submit'
+                                                    disabled={isLoading}
                                                 >
                                                     {isLoading ? <SpinLoading /> : id ? 'Update' : 'Submit'}
                                                 </button>

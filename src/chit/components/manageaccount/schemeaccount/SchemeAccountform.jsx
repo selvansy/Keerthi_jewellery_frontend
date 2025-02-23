@@ -567,7 +567,7 @@ const AddSchemeAccount = () => {
               type='text'
               name='customer_name'
               value={formData.customer_name}
-              className='border-2 w-full order-gray-300 rounded-md p-2 pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
+              className='border-2 w-full order-gray-300 cursor-not-allowed rounded-md p-2 pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
               placeholder='Enter name'
             />
             <p style={{ color: "red" }}>{errors?.customer_name}</p>
@@ -580,7 +580,7 @@ const AddSchemeAccount = () => {
               type='text'
               name='address'
               value={formData.address}
-              className='border-2 border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
+              className='border-2 border-gray-300 cursor-not-allowed rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
               placeholder='Enter address'
             />
           </div>
@@ -641,7 +641,7 @@ const AddSchemeAccount = () => {
                 type='text'
                 name='maturity_month'
                 value={formData.maturity_month}
-                className='border-2 border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
+                className='border-2 cursor-not-allowed border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
                 placeholder='Enter Maturity Month'
                 readOnly
               />
@@ -653,7 +653,7 @@ const AddSchemeAccount = () => {
                 type='text'
                 name='total_installments'
                 value={formData.total_installments}
-                className='border-2 border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
+                className='border-2 cursor-not-allowed border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
                 placeholder='Enter Total Installment'
                 readOnly
               />
@@ -711,7 +711,7 @@ const AddSchemeAccount = () => {
                   type='text'
                   name="maturity_date"
                   value={formData.maturity_date}
-                  className='border-2 border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
+                  className='border-2 cursor-not-allowed border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
                   placeholder='Enter Maturity Date'
                   readOnly
                 />
