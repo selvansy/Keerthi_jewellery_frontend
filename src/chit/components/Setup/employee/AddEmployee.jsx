@@ -109,16 +109,18 @@ const AddEmployee = () => {
         .matches(/^[0-9]{10}$/, "Phone number must be 10 digits")
         .nullable(),
       address: Yup.string().required("Address is required"),
-      pincode: Yup.string().required("Pincode is required"),
+      pincode: Yup.string()
+      .matches(/^[0-9]{6}$/, "Pincode  must be 6 digits")
+      .required("Pincode is required"),
       id_state: Yup.string().required("State is required"),
       id_city: Yup.string().required("City is required"),
       id_country: Yup.string().required("Country is required"),
       gender: Yup.number().required("Gender is required"),
       date_of_join: Yup.date().required("Joining date is required"),
       date_of_birth: Yup.date().required("Birth date is required"),
-      aadharNumber: Yup.string()
+      aadhar_number: Yup.string()
         .matches(/^\d{12}$/, "Aadhar number must be 12 digits")
-        .nullable(),
+         .nullable(),
       id_branch: Yup.string().when("$branch", {
         is: (branchValue) => branchValue === "0",
         then: () => Yup.string().required("Branch is required"),
