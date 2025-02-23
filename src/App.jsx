@@ -11,7 +11,6 @@ function App() {
 
   const auth=localStorage.getItem("token")
   const { menu } = useSelector((state) => state.auth);
-  console.log(menu);
   
   return (
     <Router>
@@ -23,11 +22,11 @@ function App() {
           path={route.path}
           element={
             route.path === "/" && !auth ? (
-              route.element // If not authenticated, show the root route
+              route.element
             ) : route.path === "/" && auth ? (
-              <Navigate to="/dashboard" /> // Redirect authenticated users to /dashboard
+              <Navigate to="/dashboard" />
             ) : (
-              <ProtectedRoute>{route.element}</ProtectedRoute> // Wrap other routes in ProtectedRoute
+              <ProtectedRoute>{route.element}</ProtectedRoute>
             )
           }
         />
