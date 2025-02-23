@@ -3,11 +3,12 @@ import Table from '../../common/Table'
 import { Search } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { openModal,closeModal} from '../../../../redux/modalSlice';
+import { openModal, closeModal } from '../../../../redux/modalSlice';
 import Modal from '../../common/Modal'
 import { useMutation } from '@tanstack/react-query'
-import {getAllClients,employeeByBranchgetbranchbyclient,getAllUserRoles,addStaffUserData,staffUserDataTable,
-  getProjectByClient,changeStaffUserStatus,deleteStaffUser
+import {
+  getAllClients, employeeByBranchgetbranchbyclient, getAllUserRoles, addStaffUserData, staffUserDataTable,
+  getProjectByClient, changeStaffUserStatus, deleteStaffUser
 } from '../../../api/Endpoints'
 import { eventEmitter } from '../../../../utils/EventEmitter'
 import { toast } from 'react-toastify'
@@ -16,22 +17,22 @@ import { useDebounce } from '../../../hooks/useDebounce';
 const UserAccess = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate()
-   const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [clientData,setClientData]=useState([])
-  const [projectData,setProjecData]=useState([])
-  const [roleData,setRoleData]=useState([])
-  const [staffData,setStaffData]=useState([]);
+  const [clientData, setClientData] = useState([])
+  const [projectData, setProjecData] = useState([])
+  const [roleData, setRoleData] = useState([])
+  const [staffData, setStaffData] = useState([]);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [selectedRow, setSelectedRow] = useState(null);
   const modal = useSelector((state) => state.modal);
   const [searchInput, setSearchInput] = useState('')
   const debouncedSearch = useDebounce(searchInput, 500)
-  const [isLoading,setisLoading] = useState(true)
+  const [isLoading, setisLoading] = useState(true)
 
-  
- // get all clients
+
+  // get all clients
   const { mutate: getAllClientsMutate } = useMutation({
     mutationFn: getAllClients,
     onSuccess: (response) => {
@@ -46,18 +47,18 @@ const UserAccess = () => {
 
   //get projects by client
   const { mutate: getAllProjects } = useMutation({
-    mutationFn: (clientid)=> getProjectByClient({id_client:clientid}),
+    mutationFn: (clientid) => getProjectByClient({ id_client: clientid }),
     onSuccess: (response) => {
       if (response) {
         setProjecData(response.data)
         dispatch(openModal({
-            ...modal,
-            extraData: {
-                ...modal.extraData,
-                projectData: response.data
-            }
+          ...modal,
+          extraData: {
+            ...modal.extraData,
+            projectData: response.data
+          }
         }));
-    }
+      }
     },
     onError: (error) => {
       console.error('Error fetching states:', error);
@@ -65,8 +66,8 @@ const UserAccess = () => {
   })
 
   //get branch by client
-   const { mutate: getBrancheByClient } = useMutation({
-    mutationFn: (clientId) => getBranchByClient({id_client:clientId}),
+  const { mutate: getBrancheByClient } = useMutation({
+    mutationFn: (clientId) => getBranchByClient({ id_client: clientId }),
     onSuccess: (response) => {
       if (response?.data) {
         dispatch(openModal({
@@ -85,20 +86,20 @@ const UserAccess = () => {
 
   //get employee by branch
   const { mutate: getEmployeeByBranch } = useMutation({
-    mutationFn: (branch_id) => employeeByBranch({id_branch:branch_id}),
+    mutationFn: (branch_id) => employeeByBranch({ id_branch: branch_id }),
     onSuccess: (response) => {
-        if (response?.data) {
-            dispatch(openModal({
-                ...modal,
-                extraData: {
-                    ...modal.extraData,
-                    employeeData: response.data
-                }
-            }));
-        }
+      if (response?.data) {
+        dispatch(openModal({
+          ...modal,
+          extraData: {
+            ...modal.extraData,
+            employeeData: response.data
+          }
+        }));
+      }
     },
     onError: (error) => {
-        console.error('Error fetching employees:', error);
+      console.error('Error fetching employees:', error);
     }
   });
 
@@ -109,23 +110,23 @@ const UserAccess = () => {
       if (response) {
         setRoleData(response.data)
         dispatch(openModal({
-            ...modal,
-            extraData: {
-                ...modal.extraData,
-                roles: response.data
-            }
+          ...modal,
+          extraData: {
+            ...modal.extraData,
+            roles: response.data
+          }
         }));
-    }
+      }
     },
     onError: (error) => {
-        console.error('Error fetching roles:', error);
+      console.error('Error fetching roles:', error);
     }
   });
 
-  
+
   //get staff user data with pagination 
-  const { mutate: getAllStaffUserTable} = useMutation({
-    mutationFn: (formdata) => 
+  const { mutate: getAllStaffUserTable } = useMutation({
+    mutationFn: (formdata) =>
       staffUserDataTable(formdata),
     onSuccess: (response) => {
       if (response) {
@@ -142,51 +143,51 @@ const UserAccess = () => {
 
   //submit staff user data 
   const { mutate: addStaffUser } = useMutation({
-    mutationFn:(formdata)=> addStaffUserData(formdata),
+    mutationFn: (formdata) => addStaffUserData(formdata),
     onSuccess: (response) => {
       if (response) {
         dispatch(closeModal());
         toast.success(response.message)
         getAllStaffUserTable()
-    }
+      }
     },
     onError: (error) => {
-        console.error('Error fetching roles:', error);
+      console.error('Error fetching roles:', error);
     }
   });
 
   //mutation to change staff active or decative status
   const { mutate: changeStaffStatus } = useMutation({
-    mutationFn:(id)=> changeStaffUserStatus(id),
+    mutationFn: (id) => changeStaffUserStatus(id),
     onSuccess: (response) => {
       if (response) {
         toast.success(response.message)
         getAllStaffUserTable()
-    }
+      }
     },
     onError: (error) => {
-        console.error('Error fetching roles:', error);
+      console.error('Error fetching roles:', error);
     }
   });
 
   //mutation to change staff active or decative status
   const { mutate: deleteStaff } = useMutation({
-    mutationFn:(id)=> deleteStaffUser(id),
+    mutationFn: (id) => deleteStaffUser(id),
     onSuccess: (response) => {
       if (response) {
         toast.success(response.message)
         getAllStaffUserTable()
-    }
+      }
     },
     onError: (error) => {
-        console.error('Error fetching roles:', error);
+      console.error('Error fetching roles:', error);
     }
   });
 
   // Separate useEffect for initial data loading
   useEffect(() => {
     getAllClientsMutate();
-  }, []); 
+  }, []);
 
   // Separate useEffect for staff data with search/pagination
   useEffect(() => {
@@ -252,11 +253,11 @@ const UserAccess = () => {
           id_employee: '',
           id_client: '',
           id_project: '',
-          access_branch:0,
+          access_branch: 0,
           username: '',
           password: '',
           id_role: '',
-          id_branch:''
+          id_branch: ''
         },
         buttons: {
           cancel: {
@@ -267,9 +268,9 @@ const UserAccess = () => {
           }
         },
         extraData: {
-          roles:roleData,
+          roles: roleData,
           clientData: clientData,
-          projectData:projectData
+          projectData: projectData
         }
       }));
     } catch (error) {
@@ -287,11 +288,11 @@ const UserAccess = () => {
   };
 
   // handler to active or deactive staff user
-  const handleStatusToggle=(id)=>{
+  const handleStatusToggle = (id) => {
     changeStaffStatus(id)
   }
 
-  const handleDelete=(id)=>{
+  const handleDelete = (id) => {
     deleteStaff(id)
   }
 
@@ -327,11 +328,11 @@ const UserAccess = () => {
       cell: (row) => row?.username,
     },
     {
-      header: "Roles", 
-      cell:(row)=>{
-        if(row?.id_role){
+      header: "Roles",
+      cell: (row) => {
+        if (row?.id_role) {
           return `${row?.id_role.role_name || ''}`
-        }else{
+        } else {
           return '-'
         }
       }
@@ -345,36 +346,35 @@ const UserAccess = () => {
             type="checkbox"
             className="sr-only peer"
             checked={row?.active === true}
-            onChange={() => handleStatusToggle(row?._id)} 
+            onChange={() => handleStatusToggle(row?._id)}
           />
           <div
-            className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-black p-[2px] after:duration-300 after:bg-black ${
-              row.active === true
-                ? 'peer-checked:bg-[#61A375] peer-checked:ring-[#61A375]'   
+            className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-black p-[2px] after:duration-300 after:bg-black ${row.active === true
+                ? 'peer-checked:bg-[#61A375] peer-checked:ring-[#61A375]'
                 : 'peer-checked:bg-gray-400 peer-checked:ring-gray-400'
-            } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-white peer-hover:after:scale-95`}
+              } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-white peer-hover:after:scale-95`}
           ></div>
         </label>
       )
-    },{
-      header:'Branch',
-      cell:(row)=>{
-        if(row?.id_branch){
+    }, {
+      header: 'Branch',
+      cell: (row) => {
+        if (row?.id_branch) {
           return `${row?.id_branch.branch_name || ''}`
-        }else{
+        } else {
           return '-'
         }
       }
     },
     {
-      header:'Access Branch',
+      header: 'Access Branch',
       cell: (row) => {
         if (typeof row?.access_branch === 'string') {
           return 'All branch';
         }
         if (typeof row?.access_branch === 'object' && row?.access_branch !== null) {
           console.log(row);
-          return row?.access_branch.branch_name || '-'; 
+          return row?.access_branch.branch_name || '-';
         }
         return '-';
       }
@@ -383,7 +383,7 @@ const UserAccess = () => {
       header: 'Actions',
       cell: (row, rowIndex) => (
         <div className="dropdown-container relative">
-          <button 
+          <button
             className="p-1 hover:bg-gray-100 rounded-full"
             onClick={(e) => {
               e.stopPropagation();
@@ -395,13 +395,13 @@ const UserAccess = () => {
               <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
             </svg>
           </button>
-          
+
           {activeDropdown === row?._id && (
-            <div 
-              className="absolute right-[47px] lg:right-[163px] md:right-[150px] sm:right-[100px] transform -translate-x-8" 
+            <div
+              className="absolute right-[47px] lg:right-[163px] md:right-[150px] sm:right-[100px] transform -translate-x-8"
               style={{
                 top: rowIndex >= staffData.length - 2 ? 'auto' : '72%',
-                 bottom: rowIndex >= staffData.length - 2 ? '-74%' : 'auto',
+                bottom: rowIndex >= staffData.length - 2 ? '-74%' : 'auto',
                 // top: 'auto',
                 // bottom: '-440%',
                 zIndex: 9999,
@@ -461,7 +461,7 @@ const UserAccess = () => {
 
   return (
     <div className="flex flex-col p-4">
-      <h2 className="text-2xl text-gray-900 font-bold">User Access</h2> 
+      <h2 className="text-2xl text-gray-900 font-bold">User Access</h2>
       <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
         <div className="relative w-full lg:w-1/3 min-w-[200px]">
           <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
@@ -471,7 +471,7 @@ const UserAccess = () => {
               <Search className="text-gray-500" />
             )}
           </div>
-          <input 
+          <input
             placeholder="Search..."
             className="p-3 pl-10 pr-3 border-2 bg-[#F5F5F5] border-gray-500 rounded-md w-full"
             value={searchInput}
@@ -530,20 +530,20 @@ const UserAccess = () => {
                 onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
                 className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
               >
-              <option value={10}>10</option>
-<option value={25}>25</option>
-<option value={50}>50</option>
-<option value={100}>100</option>
-<option value={250}>250</option>
-<option value={500}>500</option>
-<option value={1000}>1000</option>
+                <option value={10}>10</option>
+                <option value={25}>25</option>
+                <option value={50}>50</option>
+                <option value={100}>100</option>
+                <option value={250}>250</option>
+                <option value={500}>500</option>
+                <option value={1000}>1000</option>
               </select>
               <span className="text-gray-500">entries</span>
             </div>
           </div>
         )}
       </div>
-      <Modal/>
+      <Modal />
     </div>
   )
 }

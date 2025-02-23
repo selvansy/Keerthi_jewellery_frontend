@@ -19,6 +19,7 @@ const GiftInwardsCreation = () => {
 
   const id_branch = roledata?.branch; 
 
+    const [isLoading,setisLoading] = useState(false)
   const [vendorfilter, setVendor] = useState([]);
   const [branchfilter, setBranch] = useState([]);
   const [giftitemfilter, setGiftitem] = useState([]);
@@ -110,8 +111,7 @@ const GiftInwardsCreation = () => {
         total:resdata.total
       };
       setFormData(formDataToSend);
-     
-
+    
     },
     onError: (error) => {
       console.error('Error fetching gift inward data:', error);
@@ -250,10 +250,6 @@ const GiftInwardsCreation = () => {
       gst_percenty: formData.gst_percenty,
       cus_sellprice: formData.cus_sellprice,
     };
-
-
-
-    // Call your mutation function to update the gift inward data
     updategiftinwardMutate({ id: id, data: formDataToSend });
   };
 
@@ -275,35 +271,26 @@ const GiftInwardsCreation = () => {
 
  
 
-  useEffect(() => {
-    const calculateGst = () => {
+  const calculateGst = useMemo(() => {
+    return () => {
       const quan = Number(formData.qty);
       const prc = Number(formData.price);
       const gst = Number(formData.gst_percenty);
-
+  
       if (quan < 1 || prc < 0 || gst < 0) {
-
-        setFormData(prev => ({
-          ...prev,
-          total: 0
-        }));
-
-        return;
+        return 0;
       }
-
+  
       const totalWithoutGST = prc * quan;
       const gstAmount = (gst * totalWithoutGST) / 100;
-      const totalWithGST = Math.round(totalWithoutGST + gstAmount);
-
-      setFormData(prev => ({
-        ...prev,
-        total: totalWithGST
-      }));
-
+      return Math.round(totalWithoutGST + gstAmount);
     };
-
-    calculateGst();
   }, [formData.qty, formData.price, formData.gst_percenty]);
+  
+  useEffect(() => {
+    setFormData(prev => ({ ...prev, total: calculateGst() }));
+  }, [calculateGst]);
+  
 
 
   return (

@@ -76,7 +76,7 @@ useEffect(()=>{
         },
         onError: (error) => {
             setIsLoading(false)
-            toast.error("An error occurred: " + error.message);
+            toast.error(error.message);
         },
     });
     
@@ -91,7 +91,7 @@ useEffect(()=>{
         },
         onError: (error) => {
             setIsLoading(false)
-            toast.error("An error occurred: " + error.message);
+            toast.error(error.message);
         },
     });
     

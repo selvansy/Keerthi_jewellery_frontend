@@ -234,19 +234,25 @@ const Customer = () => {
        if(response){
         toast.success(response.message);
         const payload = {
-
             page: currentPage,
             limit: itemsPerPage,
             search: debouncedSearch,
             from_date: from_date,
             to_date: to_date,
             id_branch: filters.id_branch
-          
         }
+
+        const isLastItemOnPage = customerData.length === 1;
+        const isNotFirstPage = currentPage > 1;
+        if (isLastItemOnPage && isNotFirstPage) {
+          setCurrentPage(prev => prev - 1);
+        } else {
         getcustomertableMutate(payload);
-       }
         eventEmitter.off('CONFIRMATION_SUBMIT');
-      },
+       }
+        
+      }
+    },
       onError: (error) => {
         console.error("Error:", error);
         eventEmitter.off('CONFIRMATION_SUBMIT');
@@ -403,7 +409,7 @@ const Customer = () => {
 
   return (
     <div className="flex flex-col p-4">
-      <h2 className="text-2xl text-gray-900 font-bold">Customer</h2>
+      <h2 className="text-2xl text-gray-900 font-bold">Existing Customers</h2>
       <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
         <div className="relative w-full lg:w-1/3 min-w-[200px]">
           <div className="absolute left-3 top-1/2 transform -translate-y-1/2">

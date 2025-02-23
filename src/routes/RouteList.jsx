@@ -10,7 +10,7 @@ import CreateDigiGoldScheme from "../chit/components/ourscheme/digiGold/CreateDi
 import GiftVendor from "../chit/components/gift/giftvendor/index";
 import GiftItem from "../chit/components/gift/giftitem/index";
 import GiftInwards from "../chit/components/gift/giftinwards/giftInwards";
-import GiftInwardsCreation from "../chit/components/gift/giftinwards/giftInwardsCreation";
+import GiftInwardsCreation from "../chit/components/gift/giftinwards/GiftInwardsCreation";
 import Category from "../chit/components/catalog/category/Category";
 import AddCategory from "../chit/components/catalog/category/AddCategory";
 import Product from "../chit/components/catalog/product/Product";
@@ -183,6 +183,11 @@ const RouteList = [
     element:<Base renderContent={GiftItem}/>
   },
   {
+    name: "Gift Handover",
+    path:'/gift/gifthandover',
+    element:<Base renderContent={GiftHandOver}/>
+  },
+  {
     name: "Gift Inwards",
     path:'/gift/giftinwards',
     element:<Base renderContent={GiftInwards}/>
@@ -293,7 +298,7 @@ const RouteList = [
     element:<Base renderContent={Pushnotification}/>
   },
   {
-    name: "Customer",
+    name: "Existing customer",
     path:'/manageaccount/customer',
     element:<Base renderContent={Customer}/>
   },
