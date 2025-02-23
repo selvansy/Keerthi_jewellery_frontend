@@ -90,10 +90,6 @@ const Submenu = () => {
     getallsubmenusMutate({ search: debouncedSearch, page: currentPage, limit:itemsPerPage });
   }, [currentPage, itemsPerPage, debouncedSearch, isviewOpen]);
 
-  // useEffect(() => {
-  //   getallsubmenusMutate({ search: debouncedSearch, page: currentPage, limit });
-  // }, []);
-
   const handleEdit = async (id) => {
     dispatch(setid(id));
     setIsviewOpen(true);
