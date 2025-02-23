@@ -267,11 +267,9 @@ const CompleteAccount = () => {
 
   //mutation to get scheme type
   const { mutate: getschemeaccountMutate } = useMutation({
-    mutationFn: () =>
+    mutationFn: (payload) =>
       schemeaccounttable(payload),
     onSuccess: (response) => {
-
-
       setschemeaccount(response.data)
       setTotalPages(response.totalPages);
 
@@ -629,8 +627,6 @@ const CompleteAccount = () => {
             <ExportToExcel apiData={schemeaccount} fileName="SchemeAccount Report" />
             <ExportToPDF apiData={schaccExp} fileName="scheme account" />
           </div>
-
-
 
           {
             filtered ?

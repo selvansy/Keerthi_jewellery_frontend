@@ -15,9 +15,7 @@ Api.interceptors.request.use(
     const token = localStorage.getItem("token");
 
     if (token) {
-
       config.headers.Authorization = `Bearer ${token}`;
-
     }
 
     return config;
@@ -36,9 +34,9 @@ Api.interceptors.response.use(
 
     if (error.response) {
 
-      const { data } = error.response;
+      // const { data } = error.response;
 
-      toast.error(data.message);
+      // toast.error(data.message);
 
     } else {
 

@@ -73,6 +73,8 @@ import NewArrivalsWhatsapp from "../chit/components/whatsapp/newarrivals/index";
 import ProductWhatsapp from "../chit/components/whatsapp/product/index";
 import OffersWhatsapp from  "../chit/components/whatsapp/offers/index";
 import Organisation from "../chit/components/Setup/organisation";
+import Department from "../chit/components/Setup/dept/Department";
+import Topup from "../chit/components/Setup/topup";
 
 const RouteList = [
   {
@@ -224,14 +226,14 @@ const RouteList = [
   },
   {
     name: "Update Category",
-    path:'/catalog/addcategory/:id',
+    path:'/catalog/editcategory/:id',
     element:<Base renderContent={AddCategory}/>
   },
   {
     name: "Product",
     path:'/catalog/product',
     element:<Base renderContent={Product}/>
-  },
+},
   {
     name: "Add Product",
     path:'/catalog/addproduct',
@@ -239,7 +241,7 @@ const RouteList = [
   },
   {
     name: "Update Product",
-    path:'/catalog/addproduct/:id',
+    path:'/catalog/editproduct/:id',
     element:<Base renderContent={AddProduct}/>
   },
   {
@@ -254,7 +256,7 @@ const RouteList = [
   },
   {
     name: "Update Offer",
-    path:'/catalog/addoffers/:id',
+    path:'/catalog/editoffers/:id',
     element:<Base renderContent={AddOffers}/>
   },
   {
@@ -487,6 +489,16 @@ const RouteList = [
     name: "Metal",
     path:'/setup/metal',
     element:<Base renderContent={Metal}/>
+  },
+  {
+    name: "Department",
+    path:'/setup/dept',
+    element:<Base renderContent={Department}/>
+  },
+  {
+    name: "Top-Up",
+    path:'/setup/topup',
+    element:<Base renderContent={Topup}/>
   },
   {
     name: "Purity",

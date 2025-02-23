@@ -9,7 +9,7 @@ import * as Yup from 'yup';
 
 
 function SubmenuForm({ setIsOpen, getallsubmenusMutate, menus }) {
-     const [currentPage, setCurrentPage] = useState(1);
+    const [currentPage, setCurrentPage] = useState(1);
     const totalPages = 2;
     const [projects, setProjects] = useState([]);
     const roledata = useSelector((state) => state.clientForm.roledata);
@@ -32,14 +32,17 @@ function SubmenuForm({ setIsOpen, getallsubmenusMutate, menus }) {
 
     const [formErrors, setFormErrors] = useState({});
 
+    // ✅ Improved Validation Function
     const validateForm = () => {
-        const errors = {};
+        let errors = {};
 
-        if (!formData.submenu_name) formErrors.submenu_name = 'submenu_name is required';
-        if (!formData.id_project) formErrors.id_project = 'Project is required';
-        if (!formData.id_menu) formErrors.id_menu = 'Menu is required';
-        if (!formData.display_order) formErrors.display_order = 'Display Order is required';
-        if (!formData.pathurl) formErrors.pathurl = 'Path Url is required';
+        if (!formData.submenu_name.trim()) errors.submenu_name = 'Submenu name is required';
+        if (!formData.id_project) errors.id_project = 'Project selection is required';
+        if (!formData.id_menu) errors.id_menu = 'Menu selection is required';
+        if (!formData.display_order || isNaN(formData.display_order) || Number(formData.display_order) <= 0) {
+            errors.display_order = 'Valid display order is required';
+        }
+        if (!formData.pathurl.trim()) errors.pathurl = 'Path URL is required';
 
         setFormErrors(errors);
         return Object.keys(errors).length === 0;
@@ -83,24 +86,24 @@ function SubmenuForm({ setIsOpen, getallsubmenusMutate, menus }) {
 
     const handleSubmit = () => {
         if (!validateForm()) {
-            toast.error("Fill required fields");
+            toast.error("Please fill in all required fields correctly.");
             return;
         }
-
         try {
             const updateData = {
-                submenu_name: formData.submenu_name,
+                submenu_name: formData.submenu_name.trim(),
                 display_order: formData.display_order,
                 id_menu: formData.id_menu,
                 id_project: formData.id_project,
-                pathurl: formData.pathurl
+                pathurl: formData.pathurl.trim()
             };
+
             console.log(updateData);
 
             if (id) {
-                updatesubmenumutate({id, updateData}); // Update existing submenu
+                updatesubmenumutate(updateData);
             } else {
-                createsubmenuMutate(updateData); // Create new submenu
+                createsubmenuMutate(updateData);
             }
         } catch (error) {
             console.error('Error submitting form:', error);
@@ -110,32 +113,30 @@ function SubmenuForm({ setIsOpen, getallsubmenusMutate, menus }) {
     const { mutate: createsubmenuMutate } = useMutation({
         mutationFn: addsubmenu,
         onSuccess: (response) => {
-            console.log(response)
+            console.log(response);
             toast.success(response.message);
             dispatch(setid(null));
             setIsOpen(false);
             navigate("/setup/submenu");
         },
         onError: (error) => {
-            toast.error(error.response.message);
+            toast.error(error.response?.data?.message || "Error occurred while adding submenu.");
         },
         onMutate: () => setisLoading(true),
         onSettled: () => setisLoading(false),
     });
 
     const { mutate: updatesubmenumutate } = useMutation({
-        mutationFn: ( data)=>
-            updatesubmenu(data.id, data.updateData)
-        ,
+        mutationFn: (data) => updatesubmenu(id, data),
         onSuccess: (response) => {
-            console.log(response)
+            console.log(response);
             toast.success(response.message);
             dispatch(setid(null));
             setIsOpen(false);
             navigate("/setup/submenu");
         },
         onError: (error) => {
-            toast.error(error.response.message);
+            toast.error(error.response?.data?.message || "Error occurred while updating submenu.");
         },
         onMutate: () => setisLoading(true),
         onSettled: () => setisLoading(false),
@@ -147,7 +148,6 @@ function SubmenuForm({ setIsOpen, getallsubmenusMutate, menus }) {
             getallsubid(id);
         }
     }, [id]);
-
 
     return (
         <div className="space-y-4">
@@ -162,131 +162,54 @@ function SubmenuForm({ setIsOpen, getallsubmenusMutate, menus }) {
                     onChange={handleChange}
                     placeholder="Enter Sub Menu Name"
                     className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    aria-describedby="submenuNameError"
                 />
-                {formErrors.submenu_name && (
-                    <div id="submenuNameError" className="text-red-500 text-sm" aria-live="assertive">
-                        {formErrors.submenu_name}
-                    </div>
-                )}
+                {formErrors.submenu_name && <div className="text-red-500 text-sm">{formErrors.submenu_name}</div>}
             </div>
-    
+
             <div className="flex flex-col space-y-2">
                 <label className="font-medium text-gray-700">
                     Menu<span className="text-red-400">*</span>
                 </label>
-                <select
-                    name="id_menu"
-                    value={formData.id_menu}
-                    onChange={handleChange}
-                    className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    aria-describedby="menuError"
-                >
+                <select name="id_menu" value={formData.id_menu} onChange={handleChange} className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <option value="">Select Menu</option>
                     {menus.map((menu) => (
-                        <option key={menu._id} value={menu._id}>
-                            {menu.menu_name}
-                        </option>
+                        <option key={menu._id} value={menu._id}>{menu.menu_name}</option>
                     ))}
                 </select>
-                {formErrors.id_menu && (
-                    <div id="menuError" className="text-red-500 text-sm" aria-live="assertive">
-                        {formErrors.id_menu}
-                    </div>
-                )}
+                {formErrors.id_menu && <div className="text-red-500 text-sm">{formErrors.id_menu}</div>}
             </div>
-    
+
             <div className="flex flex-col space-y-2">
                 <label className="font-medium text-gray-700">
                     Project<span className="text-red-400">*</span>
                 </label>
-                <select
-                    name="id_project"
-                    value={formData.id_project}
-                    onChange={handleChange}
-                    className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    aria-describedby="projectError"
-                >
+                <select name="id_project" value={formData.id_project} onChange={handleChange} className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <option value="">Select Project</option>
                     {projects.map((project) => (
-                        <option key={project._id} value={project._id}>
-                            {project.project_name}
-                        </option>
+                        <option key={project._id} value={project._id}>{project.project_name}</option>
                     ))}
                 </select>
-                {formErrors.id_project && (
-                    <div id="projectError" className="text-red-500 text-sm" aria-live="assertive">
-                        {formErrors.id_project}
-                    </div>
-                )}
+                {formErrors.id_project && <div className="text-red-500 text-sm">{formErrors.id_project}</div>}
             </div>
-    
+
             <div className="flex flex-col space-y-2">
                 <label className="font-medium text-gray-700">
                     Display Order<span className="text-red-400">*</span>
                 </label>
-                <input
-                    type="number"
-                    name="display_order"
-                    value={formData.display_order}
-                    onChange={handleChange}
-                    placeholder="Enter Display Order"
-                    className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    aria-describedby="displayOrderError"
-                />
-                {formErrors.display_order && (
-                    <div id="displayOrderError" className="text-red-500 text-sm" aria-live="assertive">
-                        {formErrors.display_order}
-                    </div>
-                )}
+                <input type="number" name="display_order" value={formData.display_order} onChange={handleChange} placeholder="Enter Display Order" className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                {formErrors.display_order && <div className="text-red-500 text-sm">{formErrors.display_order}</div>}
             </div>
-    
+
             <div className="flex flex-col space-y-2">
                 <label className="font-medium text-gray-700">
                     Path Url<span className="text-red-400">*</span>
                 </label>
-                <input
-                    type="text"
-                    name="pathurl"
-                    value={formData.pathurl}
-                    onChange={handleChange}
-                    placeholder="Enter Path Url"
-                    className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    aria-describedby="pathUrlError"
-                />
-                {formErrors.pathurl && (
-                    <div id="pathUrlError" className="text-red-500 text-sm" aria-live="assertive">
-                        {formErrors.pathurl}
-                    </div>
-                )}
+                <input type="text" name="pathurl" value={formData.pathurl} onChange={handleChange} placeholder="Enter Path Url" className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                {formErrors.pathurl && <div className="text-red-500 text-sm">{formErrors.pathurl}</div>}
             </div>
-    
-            <div className="bg-white p-2 border-t-2 border-gray-300 mt-4">
-                <div className="flex justify-end gap-2 mt-3">
-                    <button
-                        type="button"
-                        className="bg-[#E2E8F0] text-black rounded-md p-2 w-full lg:w-20"
-                        onClick={handleCancel}
-                    >
-                        Cancel
-                    </button>
-                    <button
-                        type="button"
-                        onClick={handleSubmit}
-                        readOnly={isLoading}
-                        className=" text-white rounded-md p-2 w-full lg:w-20 flex justify-center items-center"
-                        style={{ backgroundColor: layout_color }}  >
-                        {isLoading ? (
-                            <div className="w-4 h-4 border-2 border-t-2 border-white rounded-full animate-spin"></div>
-                        ) : (
-                            id ? 'Update' : 'Submit'
-                        )}
-                    </button>
-                </div>
-            </div>
+
+            <button onClick={handleSubmit} className="bg-blue-500 text-white p-3 rounded-md">Submit</button>
         </div>
     );
-    
-};
-
+}
 export default SubmenuForm;

@@ -38,7 +38,7 @@ const Offers = () => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedRow, setSelectedRow] = useState(null)
   const [activeDropdown, setActiveDropdown] = useState(null)
-
+  const [deleteId,setDeleteId]=useState(null)
   const [branchList, setBranchList] = useState([]);
   let [branch, setbranch] = useState("")
 
@@ -210,9 +210,15 @@ const Offers = () => {
 
   const handleStatusToggle = async (id) => {
     let response = await activateoffers(id);
-    if (response) {
+    if (response.message){
+      setofferData((prev) =>
+        prev.map((off) =>
+          off._id === id ? { ...off, active: !off.active } : off
+        )
+      );
       toast.success(response.message);
-      getofferData({ page: currentPage, limit: itemsPerPage, search: search,id_branch:id_branch })
+    }else{
+      toast.success(response.message);
     }
   };
 
@@ -220,6 +226,7 @@ const Offers = () => {
 
   const handleDelete = (id) => {
     setActiveDropdown(null);
+    setDeleteId(id)
     dispatch(openModal({
       modalType: 'CONFIRMATION',
       header: 'Delete Scheme',
@@ -244,10 +251,11 @@ const Offers = () => {
   const { mutate: deleteOffer } = useMutation({
     mutationFn: deleteoffers,
     onSuccess: (response) => {
+      setofferData((prev)=>prev.filter((off)=>off._id!==deleteId))
+      setDeleteId(null)
       toast.success(response.message);
-      getofferData({ page: currentPage, limit: itemsPerPage, search: search,id_branch:id_branch })
-      eventEmitter.off('CONFIRMATION_SUBMIT');
     },
+   
     onError: (error) => {
       eventEmitter.off('CONFIRMATION_SUBMIT');
       console.error("Error fetching countries:", error);
@@ -274,8 +282,7 @@ const Offers = () => {
 
 
   const handleEdit = (id) => {
-    dispatch(setid(id));
-    navigate("/catalog/addoffers");
+    navigate(`/catalog/editoffers/${id}`);
   };
 
   const columns = [
