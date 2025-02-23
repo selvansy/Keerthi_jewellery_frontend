@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import Select from 'react-select';
 import { ChevronDown, ChevronUp, Calendar } from 'lucide-react';
+import { getSchemeClassifications } from '../../../api/Endpoints';
+import { useQuery,useMutation } from '@tanstack/react-query';
 import {
   Accordion,
   AccordionContent,
@@ -16,7 +18,7 @@ const SchemeForm = () => {
       schemeName: '',
       schemeCode: '',
       metalType: null,
-      classification: null,
+      id_classification: '',
       purity: null,
       instalmentType: null,
       maturityMonth: '',
@@ -41,10 +43,27 @@ const SchemeForm = () => {
     },
   });
 
+  const [classifications,setClassifications] = useState([])
+
   const metalOptions = [
     { value: 'gold', label: 'Gold' },
     { value: 'silver', label: 'Silver' }
   ];
+
+  const { data: classificationData } = useQuery({
+    queryKey: ["projects"],
+    queryFn: getSchemeClassifications,
+  });
+
+  useEffect(()=>{
+    if(classificationData){
+      const data = classificationData.data.map((item)=>({
+        value:item._id,
+        label:item.name
+      }))
+      setClassifications(data)
+    }
+  },[classificationData])
 
   const customStyles = {
     control: (base) => ({
@@ -58,7 +77,7 @@ const SchemeForm = () => {
   return (
     <form onSubmit={formik.handleSubmit} className="w-full mx-auto p-6 space-y-6">
       <div className="bg-white rounded-lg p-6 shadow-sm">
-        <h2 className="text-xl font-semibold mb-6">Add Scheme</h2>
+        <h2 className="text-xl font-semibold mb-6 border-b-2 pb-2">Add Scheme</h2>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
@@ -102,6 +121,22 @@ const SchemeForm = () => {
               value={formik.values.metalType}
               onChange={(option) => formik.setFieldValue('metalType', option)}
               onBlur={() => formik.setFieldTouched('metalType', true)}
+            />
+            {formik.touched.metalType && formik.errors.metalType && (
+              <div className="text-red-500 text-sm mt-1">{formik.errors.metalType}</div>
+            )}
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              Classification <span className="text-red-500">*</span>
+            </label>
+            <Select
+              styles={customStyles}
+              options={classificationData}
+              placeholder="Select Classification"
+              value={formik.values.id_classification}
+              onChange={(option) => formik.setFieldValue('classification', option)}
+              onBlur={() => formik.setFieldTouched('classification', true)}
             />
             {formik.touched.metalType && formik.errors.metalType && (
               <div className="text-red-500 text-sm mt-1">{formik.errors.metalType}</div>

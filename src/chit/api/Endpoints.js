@@ -1661,3 +1661,10 @@ export const getOrganisation = async (data)=>{
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/organisation`, data)
     return response.data;
 }
+
+//new scheme api
+
+export const getSchemeClassifications = async ()=>{
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/classification/scheme`)
+    return response.data;
+}
