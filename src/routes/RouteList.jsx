@@ -178,6 +178,11 @@ const RouteList = [
     element:<Base renderContent={GiftVendor}/>
   }, 
   {
+    name: "Gift Item",
+    path:'/gift/giftitem',
+    element:<Base renderContent={GiftItem}/>
+  },
+  {
     name: "Gift Handover",
     path:'/gift/gifthandover',
     element:<Base renderContent={GiftHandOver}/>
@@ -293,7 +298,7 @@ const RouteList = [
     element:<Base renderContent={Pushnotification}/>
   },
   {
-    name: "Customer",
+    name: "Existing customer",
     path:'/manageaccount/customer',
     element:<Base renderContent={Customer}/>
   },

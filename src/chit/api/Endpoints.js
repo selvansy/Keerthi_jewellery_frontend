@@ -1371,6 +1371,7 @@ export const allstate = async (country) => {
 
  
 export const allcity = async (data) => {
+  
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/common/city/${data}`);
     return response.data;
 }
