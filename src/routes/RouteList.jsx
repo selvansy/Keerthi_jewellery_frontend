@@ -73,6 +73,8 @@ import NewArrivalsWhatsapp from "../chit/components/whatsapp/newarrivals/index";
 import ProductWhatsapp from "../chit/components/whatsapp/product/index";
 import OffersWhatsapp from  "../chit/components/whatsapp/offers/index";
 import Organisation from "../chit/components/Setup/organisation";
+import Department from "../chit/components/Setup/dept/Department";
+import Topup from "../chit/components/Setup/topup";
 
 const RouteList = [
   {
@@ -177,6 +179,11 @@ const RouteList = [
     path:'/gift/giftvendor',
     element:<Base renderContent={GiftVendor}/>
   }, 
+  {
+    name: "Gift Item",
+    path:'/gift/giftitem',
+    element:<Base renderContent={GiftItem}/>
+  },
   {
     name: "Gift Handover",
     path:'/gift/gifthandover',
@@ -293,7 +300,7 @@ const RouteList = [
     element:<Base renderContent={Pushnotification}/>
   },
   {
-    name: "Customer",
+    name: "Existing customer",
     path:'/manageaccount/customer',
     element:<Base renderContent={Customer}/>
   },
@@ -482,6 +489,16 @@ const RouteList = [
     name: "Metal",
     path:'/setup/metal',
     element:<Base renderContent={Metal}/>
+  },
+  {
+    name: "Department",
+    path:'/setup/dept',
+    element:<Base renderContent={Department}/>
+  },
+  {
+    name: "Top-Up",
+    path:'/setup/topup',
+    element:<Base renderContent={Topup}/>
   },
   {
     name: "Purity",
