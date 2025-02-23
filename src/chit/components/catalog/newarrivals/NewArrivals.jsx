@@ -4,7 +4,7 @@ import { SlidersHorizontal, Search, X } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'react-toastify'
-import { getnewarrivalsTable, getallbranch, getBranchById, getallmetal, deletenewarrivals, activatecategory,allofferstype,} from "../../../api/Endpoints"
+import { getnewarrivalsTable, getallbranch, getBranchById, getallmetal, deletenewarrivals, activatecategory,allofferstype, activatenewarrivals,} from "../../../api/Endpoints"
 import { CalendarDays, RefreshCcw} from 'lucide-react'
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
@@ -31,7 +31,7 @@ const NewArrivals = () => {
   const [search, setSearch] = useState('')
    const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(1);
   const [selectedRow, setSelectedRow] = useState(null)
   const [activeDropdown, setActiveDropdown] = useState(null)
 
@@ -201,10 +201,14 @@ const NewArrivals = () => {
 
   const handleStatusToggle = async (id) => {
     let response = await activatenewarrivals(id);
-    if (response) {
+    if (response.message) {
       toast.success(response.message);
-      getnewarrivalsData({ page: currentPage, limit: itemsPerPage, search: search,id_branch:id_branch })
-    }
+      setnewarrivalsData((prev) =>
+        prev.map((item) =>
+          item._id === id ? { ...item, active: !item.active } : item
+        )
+      );
+          }
   };
  
             

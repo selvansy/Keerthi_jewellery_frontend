@@ -25,7 +25,7 @@ const Product = () => {
 
   const [isLoading,setisLoading] = useState(true)
 
-  const layout_color = useSelector((state) => state.clientForm.layoutColor);
+    const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const roledata = useSelector((state) => state.clientForm.roledata);
   const id_branch = roledata?.branch;
 
@@ -356,8 +356,12 @@ const Product = () => {
   const handleStatusToggle = async (id) => {
     let response = await activateproduct(id);
     if (response) {
+      setproductData((prev) =>
+        prev.map((cat) =>
+          cat._id === id ? { ...cat, active: !cat.active } : cat
+        )
+      );
       toast.success(response.message);
-      getproductData({ page: currentPage, limit: itemsPerPage, search: search,id_branch:id_branch })
     }
   };
 
@@ -366,7 +370,7 @@ const Product = () => {
     dispatch(openModal({
       modalType: 'CONFIRMATION',
       header: 'Delete Scheme',
-      filters: {
+      formData: {
         message: 'Are you sure you want to delete?',
         productId: id
       },
@@ -386,25 +390,34 @@ const Product = () => {
   useEffect(() => {
     eventEmitter.on('CONFIRMATION_SUBMIT', async (data) => {
       try {
-
-        let response = await deleteproduct(data.productId);
-        toast.success(response.message);
-        await getproductData({ page: currentPage, limit: itemsPerPage, search: search,id_branch:id_branch })
+        let response = await deleteproduct(data.productId);        
+        console.log(response)
+        if(response.message=='Product deleted successfully'){
+          toast.success(response.message);
+          setproductData((prev)=>prev.filter((pro)=>pro._id!==data.productId))
+        }else{
+          toast.error("Something went wrong while deleting the product. Please try again later.");
+        }
       } catch (error) {
+        toast.error("Something went wrong while deleting the product. Please try again later.");
+
         console.error('Error:', error);
       }
     });
     return () => {
       eventEmitter.off('CONFIRMATION_SUBMIT');
     };
-  }, [eventEmitter, productData]);
+  }, [eventEmitter]);
 
   const handleEdit = (id) => {
-    dispatch(setid(id))
-    navigate(`/catalog/addproduct`);
+    navigate(`/catalog/editproduct/${id}`);
   };
 
   const columns = [
+    {
+      header: 'S.No',
+      cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
+    },
     {
       header: 'Actions',
       cell: (row, rowIndex) => (
@@ -478,17 +491,10 @@ const Product = () => {
       ),
 
     },
-    {
-      header: 'S.No',
-      cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
-    },
+   
     {
       header: 'Product Name',
       cell: (row) => row?.product_name,
-    },
-    {
-      header: 'Catgeory Name',
-      cell: (row) => row?.categoryname,
     },
     {
       header: 'Metal Name',
@@ -527,10 +533,10 @@ const Product = () => {
       header: "metalcost",
       cell: (row) => row?.metalcost
     },
-    {
-      header: "Gst %",
-      cell: (row) => row?.gst
-    },
+    // {
+    //   header: "Gst %",
+    //   cell: (row) => row?.gst
+    // },
     {
       header: "Price",
       cell: (row) => row?.totalprice
