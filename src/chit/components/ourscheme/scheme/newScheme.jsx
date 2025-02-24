@@ -3,7 +3,9 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import Select from "react-select";
 import { CalendarDays, Plus, Minus, SquarePen } from "lucide-react";
-import { getSchemeClassifications } from "../../../api/Endpoints";
+import { getSchemeClassifications,allinstallmenttype,getallbranch,getallmetal,getallschemetypes,getschemeById
+    ,allFundtype,addscheme,updateScheme,puritybymetal,buygsttype,wastagetype,getBranchById
+} from "../../../api/Endpoints";
 import { useQuery } from "@tanstack/react-query";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -19,8 +21,19 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "../../../../../components/ui/accordion";
+import { useAsyncError, useNavigate ,useParams} from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const SchemeForm = () => {
+   const navigate = useNavigate();
+
+   let {id} = useParams();
+
+   //reduux
+   const roleData = useSelector((state) => state.clientForm.roledata);
+   const id_branch = roleData?.id_branch;
+   const accessBranch = roleData?.branch;
+
   const formik = useFormik({
     initialValues: {
       // SchemeForm fields
@@ -136,14 +149,14 @@ const SchemeForm = () => {
   const [mainImage, setMainImage] = useState(null);
   const [descriptionImage, setDescriptionImage] = useState(null);
   const [scheme_type, setSchemeType] = useState(0);
+  const [branch, setBranch] = useState(() => accessBranch === '0' ? [] : {});
   const [layout_color, setLayoutColor] = useState("#015173");
   const [classType, setClass] = useState(false);
   const [amounts, setAmounts] = useState([]);
   const [newAmount, setNewAmount] = useState("");
-  const [editableAmounts, setEditableAmounts] = useState({});
   const [isEditMode, setIsEditMode] = useState(false);
   const [selectedAmount, setSelectedAmount] = useState(null);
-
+  const [editAmount, setEditAmount] = useState("");
   // sample data
   const metalOptions = [
     { value: "gold", label: "Gold" },
@@ -154,6 +167,18 @@ const SchemeForm = () => {
   const { data: classificationData } = useQuery({
     queryKey: ["projects"],
     queryFn: getSchemeClassifications,
+  });
+
+  const { data: clientBranches } = useQuery({
+    queryKey: ["branches"],
+    queryFn: getallbranch,
+    enabled: accessBranch === "0",
+  });
+
+  const { data: employeeBranches } = useQuery({
+    queryKey: ["branches",id_branch],
+    queryFn:()=> getBranchById(id_branch),
+    enabled: accessBranch !== "0",
   });
 
   //useEffects
@@ -180,6 +205,19 @@ const SchemeForm = () => {
     formik.values.totalCount,
   ]);
 
+  useEffect(()=>{
+    if(clientBranches){
+        const data = clientBranches.data.map((item)=>({
+            value:item._id,
+            label:item.branch_name
+        }))
+        setBranch(data)
+    }
+    if(employeeBranches){
+        setBranch(employeeBranches?.data)
+        formik.setFieldValue("id_branch",employeeBranches?.data?._id)
+    }
+  },[clientBranches,employeeBranches])
   //handler functions
   const handleFileUpload = (e) => {};
 
@@ -206,46 +244,33 @@ const SchemeForm = () => {
 
   const handleEnableEdit = () => {
     setIsEditMode(true);
-    const initialEditableAmounts = amounts.reduce((acc, amount, index) => {
-      acc[index] = amount;
-      return acc;
-    }, {});
-    setEditableAmounts(initialEditableAmounts);
   };
-
-  // Handler for editing an amount
-  const handleEditAmount = (index) => {
-    if (isEditMode) {
-      setEditableAmounts({
-        ...editableAmounts,
-        [index]: amounts[index],
-      });
-    }
-  };
-
-  const handleInputChange = (index, newValue) => {
-    setEditableAmounts({
-      ...editableAmounts,
-      [index]: Number(newValue) || 0,
-    });
-  };
+  
 
   const handleAmountSelect = (index) => {
     setSelectedAmount(index);
+    setEditAmount(amounts[index]);
+  };
+
+  const handleAmountChange = (e) => {
+    setEditAmount(e.target.value);
   };
 
   // Handler for saving the edited amount
   const handleSaveAmount = (index) => {
-    const updatedAmounts = [...amounts];
-    updatedAmounts[index] = editableAmounts[index];
-    setAmounts(updatedAmounts);
-    setEditableAmounts({});
-  };
-
-  const handleBlur = (index) => {
-    handleSaveAmount(index);
+    if (editAmount !== "" && !isNaN(editAmount)) {
+      const updatedAmounts = [...amounts];
+      updatedAmounts[index] = Number(editAmount);
+      setAmounts(updatedAmounts);
+    }
     setIsEditMode(false);
     setSelectedAmount(null);
+  };
+
+  const handleKeyDown = (e, index) => {
+    if (e.key === "Enter") {
+      handleSaveAmount(index);
+    }
   };
 
   //helper function
@@ -305,6 +330,46 @@ const SchemeForm = () => {
               </div>
             )}
           </div>
+          {accessBranch === "0" ? (
+            <div>
+            <label className="block text-sm font-medium mb-1">
+              Branches <span className="text-red-500">*</span>
+            </label>
+            <Select
+              styles={customStyles}
+              options={branch}
+              placeholder="Select Branch"
+              value={branch.find(
+                (option) => option.value === formik.values.id_branch
+              )}
+              onChange={(option) => formik.setFieldValue("id_branch", option)}
+            />
+            {formik.errors.id_branch && (
+              <div className="text-red-500 text-sm mt-1">
+                {formik.errors.id_branch}
+              </div>
+            )}
+          </div>
+          ):(
+            <div>
+            <label className="block text-sm font-medium mb-1">
+              Branch <span className="text-red-500">*</span>
+            </label>
+            <div>{console.log(branch)}</div>
+            <input
+              type="text"
+              readOnly
+              value={branch?.branch_name || ""}
+              className="w-full border rounded-md px-3 py-2"
+            //   {...formik.getFieldProps("id_banch")}
+            />
+            {formik.errors.id_banch && (
+              <div className="text-red-500 text-sm mt-1">
+                {formik.errors.id_banch}
+              </div>
+            )}
+          </div>
+          )}
           <div>
             <label className="block text-sm font-medium mb-1">
               Metal Type <span className="text-red-500">*</span>
@@ -445,7 +510,7 @@ const SchemeForm = () => {
           </div>
         )}
         {classType && (
-          <div className="mt-6 bg-[#A0AEC0] p-4 rounded-md">
+          <div className="mt-6 bg-[#f5f5f5] p-4 rounded-md">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-medium">Amount List</h3>
               <button
@@ -471,7 +536,7 @@ const SchemeForm = () => {
                 />
                 <button
                   type="button"
-                  className="p-2 bg-gray-100 rounded-md hover:bg-gray-200"
+                  className="p-2 bg-[#d8d8d8] rounded-md hover:bg-gray-200"
                   onClick={handleAddAmount}
                 >
                   <Plus size={20} />
@@ -482,16 +547,15 @@ const SchemeForm = () => {
               {amounts
                 .sort((a, b) => a - b)
                 .map((amount, index) => (
-                  <div key={`${amount}-${index}`} className="mb-2">
+                  <div key={index} className="mb-2">
                     {isEditMode && selectedAmount === index ? (
                       <input
                         type="number"
-                        className="px-4 py-2 border rounded-md"
-                        value={editableAmounts[index] ?? amount}
-                        onChange={(e) =>
-                          handleInputChange(index, e.target.value)
-                        }
-                        onBlur={() => handleBlur(index)}
+                        className="px-4 py-2 border rounded-md w-20"
+                        value={editAmount}
+                        onChange={handleAmountChange}
+                        onKeyDown={(e) => handleKeyDown(e, index)}
+                        onBlur={() => handleSaveAmount(index)}
                         autoFocus
                       />
                     ) : (
@@ -502,14 +566,7 @@ const SchemeForm = () => {
                             ? "bg-blue-900 text-white"
                             : "bg-white border hover:bg-gray-50"
                         }`}
-                        onClick={() => {
-                          if (isEditMode) {
-                            handleEditAmount(index);
-                            setSelectedAmount(index);
-                          } else {
-                            handleAmountSelect(index);
-                          }
-                        }}
+                        onClick={() => handleAmountSelect(index)}
                       >
                         {amount.toLocaleString()}
                       </button>
