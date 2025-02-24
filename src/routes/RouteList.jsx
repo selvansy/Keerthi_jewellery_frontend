@@ -75,6 +75,7 @@ import OffersWhatsapp from  "../chit/components/whatsapp/offers/index";
 import Organisation from "../chit/components/Setup/organisation";
 import Department from "../chit/components/Setup/dept/Department";
 import Topup from "../chit/components/Setup/topup";
+import SchemeForm from "../chit/components/ourscheme/scheme/newScheme";
 import Campaign from "../chit/components/Setup/campaign";
 
 const RouteList = [
@@ -629,7 +630,11 @@ const RouteList = [
       path:'/superadmin/admin',
       element:<Base renderContent={AdminMaster}/>
     },
-    
+    {
+      name:'test',
+      path:'/test',
+      element:<Base  renderContent={SchemeForm}/>
+    }
 
 ];
 
