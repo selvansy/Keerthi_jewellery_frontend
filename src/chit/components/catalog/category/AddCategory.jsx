@@ -54,15 +54,14 @@ const AddCategory = () => {
   const { mutate: createcategoryMutate } = useMutation({
     mutationFn: createcategory,
     onSuccess: (response) => {
-      console.log(response);
-      
       toast.success(response.message);
       setIsLoading(false);
       navigate("/catalog/category");
     },
     onError: (error) => {
       setIsLoading(false);
-      toast.error("Something went wrong while creating the category. Please try again later.");
+      console.log(error)
+      toast.error(error.response.data.message);
     },
   });
 

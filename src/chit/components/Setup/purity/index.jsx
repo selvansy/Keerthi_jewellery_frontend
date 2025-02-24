@@ -162,8 +162,8 @@ const Purity = () => {
     getallpuritytableMutate({
       search: debouncedSearch,
       page: currentPage,
-      limit,
-    });
+      limit:itemsPerPage,
+      });
   }, [currentPage, itemsPerPage, debouncedSearch, isviewOpen]);
 
   useEffect(() => {

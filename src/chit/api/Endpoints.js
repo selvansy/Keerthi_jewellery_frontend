@@ -1497,6 +1497,7 @@ export const createcategory= async(data)=>{
 }
 
 export const getcategoryTable= async(data)=>{
+    console.log(data)
     const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/category/table`,data)
     return response.data
 }

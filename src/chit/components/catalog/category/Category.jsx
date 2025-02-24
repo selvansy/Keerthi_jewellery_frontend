@@ -24,6 +24,7 @@ import usePagination from "../../../hooks/usePagination";
 import { useDebounce } from "../../../hooks/useDebounce";
 
 const Category = () => {
+  const limit = 10;
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const roledata = useSelector((state) => state.clientForm.roledata);
@@ -42,7 +43,10 @@ const Category = () => {
   const [selectedRow, setSelectedRow] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
   const [searchLoading, setSearchLoading] = useState(false);
-  const limit = 10;
+  const [from_date,setFromdate]=useState('')
+  const [to_date,setTodate]=useState('')
+  const [totalDocuments,setTotalDocuments]=useState(0)
+
 
   const handleItemsPerPageChange = (value) => {
     setItemsPerPage(value);
@@ -50,7 +54,17 @@ const Category = () => {
   };
 
   const handlePageChange = (page) => {
-    setCurrentPage(page);
+    const pageNumber = Number(page);
+    if (
+      !pageNumber ||
+      isNaN(pageNumber) ||
+      pageNumber < 1 ||
+      pageNumber > totalPages
+    ) {
+      return;
+    }
+
+    setCurrentPage(pageNumber);
   };
 
   const paginationData = {
@@ -66,6 +80,8 @@ const Category = () => {
       search: debouncedSearch,
       page: currentPage,
       limit,
+      from_date,
+      to_date
     });
   }, [currentPage, itemsPerPage, debouncedSearch]);
 
@@ -87,10 +103,12 @@ const Category = () => {
   const { mutate: getCategory } = useMutation({
     mutationFn: (payload) => getcategoryTable(payload),
     onSuccess: (response) => {
+      console.log(response)
       setCategoryData(response?.data);
-      setTotalPages(response?.data?.totalPages);
+      setTotalPages(response.totalPages);
       setIsLoading(false);
       setSearchLoading(false)
+      setTotalDocuments(response.totalDocuments)
     },
     onError: (error) => {
       console.error("Error:", error);
@@ -162,15 +180,29 @@ const Category = () => {
           cat._id === id ? { ...cat, active: !cat.active } : cat
         )
       );
+      getCategory({
+        search: debouncedSearch,
+        page: currentPage,
+        limit: itemsPerPage,
+      });
       toast.success(response.message);
-      // setCategoryData({
-      //   page: currentPage,
-      //   limit: itemsPerPage,
-      //   search: search,
-      //   id_metal: id_metal,
-      //   id_branch: id_branch,
-      // });
     }
+  };
+
+  const applyfilterdatatable = (e) => {
+    e.preventDefault();
+
+    const filterTosend = {
+      page: currentPage,
+      from_date: from_date,
+      to_date: to_date,
+      limit: itemsPerPage,
+      search: debouncedSearch,
+      // id_metal: filters.id_metal,
+      // id_branch: filters.id_branch,
+    };
+
+    getCategory(filterTosend);
   };
 
   const columns = [
@@ -410,8 +442,8 @@ const Category = () => {
                   </label>
                   <div className="relative">
                     <DatePicker
-                      // selected={from_date}
-                      // onChange={(date) => setFromdate(date)}
+                      selected={from_date}
+                      onChange={(date) => setFromdate(date)}
                       dateFormat="dd-MM-yyyy"
                       placeholderText="Select Date"
                       className="border border-gray-300 rounded-md p-3 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
@@ -431,8 +463,8 @@ const Category = () => {
                   </label>
                   <div className="relative">
                     <DatePicker
-                      // selected={to_date}
-                      // onChange={(date) => setTodate(date)}
+                      selected={to_date}
+                      onChange={(date) => setTodate(date)}
                       dateFormat="dd-MM-yyyy"
                       placeholderText="Select Date"
                       className="border border-gray-300 rounded-md p-3 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
@@ -550,7 +582,7 @@ const Category = () => {
                 <div className="p-4 borde">
                   <div className="bg-yellow-300 flex justify-center gap-3">
                     <button
-                      // onClick={applyfilterdatatable}
+                      onClick={applyfilterdatatable}
                       className="flex-1 px-4 py-2 bg-[#61A375] text-white rounded-md"
                     >
                       Apply
@@ -596,7 +628,7 @@ const Category = () => {
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}x
-                className="p-2 text-gray-500 rounded-md"
+                className={`p-2 text-gray-500 rounded-md ${currentPage==1?'cursor-not-allowed':'cursor-pointer'}`}
               >
                 Previous
               </button>
@@ -610,7 +642,7 @@ const Category = () => {
               <button
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
-                className="p-2 text-gray-500 rounded-md"
+                className={`p-2 text-gray-500 rounded-md ${currentPage === totalPages?'cursor-not-allowed':'cursor-pointer'}`}
               >
                 Next
               </button>
