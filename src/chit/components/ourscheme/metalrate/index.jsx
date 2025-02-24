@@ -162,7 +162,7 @@ const MetalRate = () => {
 
   const handleClick = (e) => {
     e.preventDefault();
-    navigate('/ourscheme/createmetalrate');
+    navigate('/masters/metalrate/add');
   }
 
 
@@ -175,7 +175,7 @@ const MetalRate = () => {
   }
 
   const handleEdit = (id) => {
-    navigate(`/ourscheme/createmetalrate/${id}`)
+    navigate(`/masters/metalrate/edit/${id}`)
   };
 
 

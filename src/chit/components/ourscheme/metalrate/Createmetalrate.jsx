@@ -190,7 +190,7 @@ const CreateMetalRate = () => {
         diamond_1gm: 0,
         id_branch: branchId,
       });
-      navigate("/ourscheme/metalrate");
+       navigate("/masters/metalrate");
     },
     onError: (error) => {
       toast.error(error.response.data.message);
@@ -212,7 +212,7 @@ const CreateMetalRate = () => {
   };
 
   const handleCancle = () => {
-    navigate("/ourscheme/metalrate");
+    navigate("/masters/metalrate");
   };
 
   //Edit form --------------------------
@@ -246,7 +246,7 @@ const CreateMetalRate = () => {
       handleRemoveLogo();
       handleRemovegoldrate_22ctImage();
       dispatch(setid(null));
-      navigate("/ourscheme/metalrate");
+       navigate("/masters/metalrate");
     },
     onError: (error) => {
       toast.error(error.response.data.message);

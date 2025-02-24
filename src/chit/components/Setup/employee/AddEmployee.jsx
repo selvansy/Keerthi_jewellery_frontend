@@ -254,7 +254,7 @@ const AddEmployee = () => {
     onSuccess: (response) => {
       setIsLoading(false)
       toast.success(response.message);
-      navigate("/setup/employee");
+      navigate("/employee/details/");
     },
      onError: (error) => {
     
@@ -268,7 +268,7 @@ const AddEmployee = () => {
     onSuccess: (response) => {
       setIsLoading(false)
       toast.success(response.message);
-      navigate("/setup/employee");
+      navigate("/employee/details/");
 
     },
      onError: (error) => {
@@ -697,7 +697,7 @@ const AddEmployee = () => {
           <div className="flex justify-end gap-4 mt-6">
             <button
               type="button"
-              onClick={() => navigate("/setup/employee")}
+              onClick={() => navigate("/employee/details/")}
               className="bg-gray-200 text-black px-6 py-2 rounded-md"
             >
               Cancel
