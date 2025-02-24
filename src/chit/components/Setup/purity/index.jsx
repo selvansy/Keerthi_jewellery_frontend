@@ -678,7 +678,7 @@ export const PurityForm = ({ setIsOpen, metals, clearId, id }) => {
       id_metal: "",
       metals: metals,
     });
-    dispatch(setid(null));
+   clearId()
     setIsOpen(false);
   };
 
@@ -743,7 +743,7 @@ export const PurityForm = ({ setIsOpen, metals, clearId, id }) => {
           options={metals}
           value={metals.find((option) => option.value === formData.id_metal)}
           onChange={handleSelect}
-          placeholder="Select State"
+          placeholder="Select Metal"
           styles={customSelectStyles}
           className="react-select-container"
           classNamePrefix="react-select"

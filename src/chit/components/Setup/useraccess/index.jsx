@@ -1,156 +1,156 @@
-import React, { useState, useEffect } from 'react';
-import { getalluserrole,getuserpermission,updatemenupermission } from '../../../api/Endpoints';
-import { useMutation } from '@tanstack/react-query';
-import { toast } from 'react-toastify';
+import React, { useState, useEffect } from "react";
+import {
+  getalluserrole,
+  getuserpermission,
+  updatemenupermission,
+} from "../../../api/Endpoints";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "react-toastify";
+import Select from "react-select";
+import { customSelectStyles } from "../purity";
+import Loading from "../../common/Loading";
+import { useDispatch } from "react-redux";
+import { openModal } from "../../../../redux/modalSlice";
+import { eventEmitter } from "../../../../utils/EventEmitter";
+import Modal from "../../common/Modal";
 const UserAccessForm = () => {
   const [activeProfile, setActiveProfile] = useState(1);
-  const [id_submenu, setid_submenu] = useState("1,2,3,5,6,7,8,9,11,12,14,20,21,22,23,27,29,31,32,33,34,37,38,41,42,44,45,46,47,57,59,60,61,62,63,64,66,68,69,70,71,72,73");
   const [userRolesList, setUserRoleList] = useState([]);
+  const [selectRoleData, setSelectRoleData] = useState([]);
   const [menuPermissionList, setMenuPermissionList] = useState([]);
   const [id_role, setidrole] = useState(0);
-  const showAccess = (profileId,id_role) => {
-    setActiveProfile(profileId);
-    setidrole(id_role);
-    getuserpermissionmutate({id_role:id_role});
+  const [isLoading, setIsLoading] = useState(true);
+  const [updateData, setUpdateData] = useState(null);
+  const dispatch = useDispatch();
+
+  const showAccess = (selectedRole) => {
+    setIsLoading(true);
+    setActiveProfile(selectedRole.value);
+    setidrole(selectedRole.value);
+    getuserpermissionmutate({ id_role: selectedRole.value });
   };
 
-  const showAllow = (allowId) => {
-    console.log(`Toggle allow: ${allowId}`);
-  };
-
-  
-
-
- const { mutate: getUserRoleData } = useMutation({
-        mutationFn: getalluserrole,
-        onSuccess: (response) => {
-            if (response) {
-              setUserRoleList(response.data);
-              console.log(response.data[0]._id);
-              setActiveProfile(response.data[0].id_role);
-              setidrole(response.data[0]._id);
-              getuserpermissionmutate({id_role:response.data[0]._id});
-            }
-        },
-    });
-
-
-    const { mutate: getuserpermissionmutate } = useMutation({
-      mutationFn: getuserpermission,
-      onSuccess: (response) => {
-          if (response) {
-            console.log(response)
-            setMenuPermissionList(response.data);
-          }
-      },
+  const { mutate: getUserRoleData } = useMutation({
+    mutationFn: getalluserrole,
+    onSuccess: (response) => {
+      if (response) {
+        setUserRoleList(response.data);
+        setActiveProfile(response.data[0].id_role);
+        setidrole(response.data[0]._id);
+        getuserpermissionmutate({ id_role: response.data[0]._id });
+        setSelectRoleData(
+          response.data.map((item) => ({
+            value: item._id,
+            label: item.role_name,
+          }))
+        );
+      }
+    },
   });
 
+  const { mutate: getuserpermissionmutate } = useMutation({
+    mutationFn: getuserpermission,
+    onSuccess: (response) => {
+      if (response) {
+        setMenuPermissionList(response.data);
+      }
+      setIsLoading(false);
+    },
+    onError: () => {
+      setIsLoading(false);
+    },
+  });
 
-  
-  const updateMenuPermission = async (value, action, id_submenu) => {
-
-
-    if (action === "all") {
-      let body = {
-        "id_submenu": id_submenu,
-        "id_role": id_role,
-        "view_permit": value,
-        "add_permit": value,
-        "edit_permit": value,
-        "delete_permit": value,
-      };
-
-      updatePermission(body);
-    } else if (action === "view") {
-      let body = {
-        id_subid_submenu: id_submenu,
-        id_role: id_role,
-        view_permit: value,
-      };
-
-      updatePermission(body);
-    } else if (action === "add") {
-      let body = {
-        id_submenu: id_submenu,
-        id_role: id_role,
-        add_permit: value,
-      };
-
-      updatePermission(body);
-    } else if (action === "edit") {
-      let body = {
-        id_submenu: id_submenu,
-        id_role: id_role,
-        edit_permit: value,
-      };
-
-      updatePermission(body);
-    } else if (action === "delete") {
-      let body = {
-        id_submenu: id_submenu,
-        id_role: id_role,
-        delete_permit: value,
-      };
-
-      updatePermission(body);
+  const confirmUpdatePermission = (value, action, id_submenu) => {
+    if (!id_role) {
+      toast.error("Please select a role before updating permissions.");
+      return;
     }
+
+    const body = {
+      id_submenu: id_submenu,
+      id_role: id_role,
+      view_permit: action === "all" ? value : undefined,
+      add_permit: action === "all" ? value : undefined,
+      edit_permit: action === "all" ? value : undefined,
+      delete_permit: action === "all" ? value : undefined,
+    };
+
+    if (action !== "all") {
+      body[`${action}_permit`] = value;
+    }
+
+    setUpdateData(body);
+    dispatch(
+      openModal({
+        modalType: "CONFIRMATION",
+        header: "Confirm Permission Update",
+        formData: {
+          message: "Are you sure you want to update this permission?",
+        },
+        buttons: {
+          cancel: {
+            text: "Cancel",
+          },
+          submit: {
+            text: "Update",
+          },
+        },
+      })
+    );
   };
-
-
 
   const { mutate: updatePermission } = useMutation({
-      mutationFn: updatemenupermission,
-      onSuccess: (response) => {
-        if (response !== null) {
-
-          getuserpermissionmutate({id_role:id_role});
-          toast.success(response.message);
-        }
-      },
+    mutationFn: updatemenupermission,
+    onSuccess: (response) => {
+      if (response !== null) {
+        getuserpermissionmutate({ id_role: id_role });
+        toast.success(response.message);
+      }
+    },
   });
-  
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      if (updateData) {
+        updatePermission(updateData);
+      }
+    };
+
+    eventEmitter.on("CONFIRMATION_SUBMIT", handleUpdate);
+
+    return () => {
+      eventEmitter.off("CONFIRMATION_SUBMIT", handleUpdate);
+    };
+  }, [updateData]);
+
   useEffect(() => {
     getUserRoleData();
   }, []);
 
   return (
     <div className="w-full p-4">
+      <div className="flex justify-end py-5">
+        <div className="w-1/4">
+          <Select
+            name="id_role"
+            options={selectRoleData}
+            value={selectRoleData.find((option) => option.value === id_role)}
+            onChange={showAccess}
+            placeholder="Select Role"
+            styles={customSelectStyles}
+            classNamePrefix="react-select"
+          />
+        </div>
+      </div>
       <div className="bg-white shadow rounded-md">
         <div className="flex flex-wrap">
-          <div className="w-full md:w-1/3 p-4">
-            <div className="space-y-2" id="list-tab">
-            {userRolesList.map((item, index) => (
-          
-              <button
-                className={`w-full text-left py-2 px-4 rounded ${activeProfile === item.id_role ? "bg-[#034571] text-white" : "bg-gray-100"}`}
-                onClick={() => showAccess(item.id_role,item._id)}
-              >
-                {item.role_name}
-              </button>
-           ))}
-             
-            </div>
-          </div>
-
-          <div className="w-full md:w-2/3 p-4">
+          <div className="w-full p-4">
             <div className="bg-gray-50 rounded-md p-4">
-              <input
-                type="hidden"
-                id="set_id_profile"
-                name="set_id_profile"
-                value={activeProfile}
-              />
-              <input
-                type="hidden"
-                id="id_submenu"
-                name="id_submenu"
-                value={id_submenu}
-              />
-
               <table className="w-full table-auto border-collapse">
                 <thead>
-
                   <tr>
+                    <th className="border px-4 py-2 text-left">No</th>
                     <th className="border px-4 py-2 text-left">Menu</th>
                     <th className="border px-4 py-2 text-left">All</th>
                     <th className="border px-4 py-2">View</th>
@@ -160,89 +160,97 @@ const UserAccessForm = () => {
                   </tr>
                 </thead>
                 <tbody>
-                {menuPermissionList.map((menu) =>
-                  <tr  key={menu.id}>
-                    <td className="border px-4 py-2">{menu.menu_name}</td>
-                    <td className="border px-2 py-2 text-center">
-                      <input
-                        type="checkbox"
-                        checked={
-                          menu.view_permit &&
-                          menu.add_permit &&
-                          menu.edit_permit &&
-                          menu.delete_permit
-                            ? true
-                            : false
-                        }
-                        onChange={(e) =>
-                          updateMenuPermission(
-                            e.target.checked,
-                            "all",
-                            menu.menu_id
-                          )
-                        }
-                      />
-                    </td>
-                    <td className="border px-4 py-2 text-center">
-                      <input
-                        type="checkbox"
-                        checked={menu.view_permit}
-                        onChange={(e) =>
-                          updateMenuPermission(
-                            e.target.checked,
-                            "view",
-                            menu.menu_id
-                          )
-                        }
-                      />
-                    </td>
-                    <td className="border px-4 py-2 text-center">
-                      <input
-                        type="checkbox"
-                        checked={menu.add_permit}
-                        onChange={(e) =>
-                          updateMenuPermission(
-                            e.target.checked,
-                            "Add",
-                            menu.menu_id
-                          )
-                        }
-                      />
-                    </td>
-                    <td className="border px-4 py-2 text-center">
-                      <input
-                        type="checkbox"
-                        checked={menu.edit_permit}
-                        onChange={(e) =>
-                          updateMenuPermission(
-                            e.target.checked,
-                            "Edit",
-                            menu.menu_id
-                          )
-                        }
-                      />
-                    </td>
-                    <td className="border px-4 py-2 text-center">
-                      <input
-                        type="checkbox"
-                        checked={menu.delete_permit}
-                        onChange={(e) =>
-                          updateMenuPermission(
-                            e.target.checked,
-                            "Delete",
-                            menu.menu_id
-                          )
-                        }
-                      />
-                    </td>
-                  </tr>
-                )}
+                  {!isLoading ? (
+                    menuPermissionList.map((menu,index) => (
+                      <tr key={menu.menu_id}>
+                        <td className="border px-4 py-2">{index+1}</td>
+                        <td className="border px-4 py-2">{menu.menu_name}</td>
+                        <td className="border px-2 py-2 text-center">
+                          <input
+                            type="checkbox"
+                            checked={
+                              menu.view_permit &&
+                              menu.add_permit &&
+                              menu.edit_permit &&
+                              menu.delete_permit
+                            }
+                            onChange={(e) =>
+                              confirmUpdatePermission(
+                                e.target.checked,
+                                "all",
+                                menu.menu_id
+                              )
+                            }
+                          />
+                        </td>
+                        <td className="border px-4 py-2 text-center">
+                          <input
+                            type="checkbox"
+                            checked={menu.view_permit}
+                            onChange={(e) =>
+                              confirmUpdatePermission(
+                                e.target.checked,
+                                "view",
+                                menu.menu_id
+                              )
+                            }
+                          />
+                        </td>
+                        <td className="border px-4 py-2 text-center">
+                          <input
+                            type="checkbox"
+                            checked={menu.add_permit}
+                            onChange={(e) =>
+                              confirmUpdatePermission(
+                                e.target.checked,
+                                "add",
+                                menu.menu_id
+                              )
+                            }
+                          />
+                        </td>
+                        <td className="border px-4 py-2 text-center">
+                          <input
+                            type="checkbox"
+                            checked={menu.edit_permit}
+                            onChange={(e) =>
+                              confirmUpdatePermission(
+                                e.target.checked,
+                                "edit",
+                                menu.menu_id
+                              )
+                            }
+                          />
+                        </td>
+                        <td className="border px-4 py-2 text-center">
+                          <input
+                            type="checkbox"
+                            checked={menu.delete_permit}
+                            onChange={(e) =>
+                              confirmUpdatePermission(
+                                e.target.checked,
+                                "delete",
+                                menu.menu_id
+                              )
+                            }
+                          />
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="6" className="text-center py-4">
+                        <Loading />
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
           </div>
         </div>
       </div>
+      <Modal/>
     </div>
   );
 };
