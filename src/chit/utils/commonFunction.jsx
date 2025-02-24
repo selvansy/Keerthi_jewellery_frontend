@@ -9,7 +9,7 @@ export const useMobileNumber = (maxLength = 10) => {
   const handleChange = (e) => {
     let newValue = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
     console.log(newValue);
-    
+
     if (newValue.length > maxLength) {
       newValue = newValue.slice(0, maxLength);
     }
@@ -44,7 +44,7 @@ export const emptyToZero = (value) => {
   if (value === undefined || value === null || value === "" || typeof value === "string") {
     return 0.00;
   }
-  
+
   if (typeof value === "number") {
     return value;
   }
@@ -54,4 +54,34 @@ export const emptyToZero = (value) => {
   }
 
   return isNaN(value) ? 0.00 : parseFloat(value);
+};
+
+
+// { value: 1234567.89, locale: "en-IN", currency: "INR" }
+export const formatNumber = ({
+  value,
+  decimalPlaces = 2,
+  locale = "en-IN",
+  // locale = "en-US",
+  currency = null,
+} = {}) => {
+  
+  value = emptyToZero(value);
+
+  const options = {
+    minimumFractionDigits: decimalPlaces,
+    maximumFractionDigits: decimalPlaces,
+  };
+
+  if (currency) {
+    options.style = "currency";
+    options.currency = currency;
+  }
+
+  return new Intl.NumberFormat(locale, options).format(value);
+};
+
+export const formatDecimal = (value, decimalPlaces = 2) => {
+  value = emptyToZero(value);
+  return parseFloat(value).toFixed(decimalPlaces);
 };

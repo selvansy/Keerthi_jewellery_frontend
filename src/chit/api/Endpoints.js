@@ -836,7 +836,7 @@ export const getsubmenuById = async (id) => {
 export const updatesubmenu = async (id, data) => {
     console.log(id,data)
     const response = await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/submenusetting/${id}`, data);
-    return response;
+    return response.data;
 }
  
 export const getallsubmenu = async (id, data) => {
@@ -1069,8 +1069,8 @@ export const getprojectbyid = async (id) => {
 }
  
 
-export const getallprojects = async (data) => {
-    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/admin/projects`,data);
+export const getallprojects = async () => {
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/admin/projects`);
     return response.data;
 }
 //get all projects
@@ -1720,5 +1720,12 @@ export const organisation = async (data)=>{
 
 export const getOrganisation = async (data)=>{
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/organisation`, data)
+    return response.data;
+}
+
+//new scheme api
+
+export const getSchemeClassifications = async ()=>{
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/classification/scheme`)
     return response.data;
 }
