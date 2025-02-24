@@ -929,7 +929,7 @@ function AddCustomers() {
                                                 <button
                                                     className='bg-[#E2E8F0] text-black rounded-md p-2 w-full lg:w-20'
                                                     type='button'
-                                                    onClick={() => navigate('/customer')}
+                                                    onClick={() => navigate('/manageaccount/customer/')}
                                                 >
                                                     Cancel
                                                 </button>

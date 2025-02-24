@@ -108,7 +108,7 @@ const OurEmployee = () => {
   };
 
   const handleAddEmployeeClick = () => {
-    navigate("/setup/employee/add");
+    navigate("/employee/creation/");
   };
 
   const { mutate: getallemployeetableMutate } = useMutation({

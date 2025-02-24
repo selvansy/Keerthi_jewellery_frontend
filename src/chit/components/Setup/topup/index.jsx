@@ -24,6 +24,7 @@ function Topup() {
     const [isLoading, setIsLoading] = useState(false)
 
     const handleCancel = () => {
+ 
         setIsOpen(false);
         clearId();
     };

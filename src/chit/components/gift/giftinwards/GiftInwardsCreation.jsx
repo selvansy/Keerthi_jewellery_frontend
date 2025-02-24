@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { openModal } from '../../../../redux/modalSlice'
@@ -8,7 +8,7 @@ import { useMutation } from '@tanstack/react-query'
 import Modal from '../../common/Modal'
 import { CalendarDays, CornerDownLeft } from 'lucide-react'
 import { getgiftvendorbranchById, getgiftitemvendorById, addgiftinward, getgiftinwardById, updategiftinward, getallbranch } from '../../../api/Endpoints';
-import SpinLoading from '../../common/SpinLoading';
+import SpinLoading from '../../common/spinLoading';
 
 const GiftInwardsCreation = () => {
 
@@ -47,15 +47,22 @@ const GiftInwardsCreation = () => {
     if (id_branch !== "0") {
       handleVendorChange(id_branch);
     }
-  }, []);
+  }, [id_branch]);
 
-  const handleVendorChange = async (selectedBranchId) => {
-    if (!selectedBranchId) return;
-    const response = await getgiftvendorbranchById({ "id_branch": selectedBranchId });
-    if (response) {
-      setVendor(response.data);
-    }
-  };
+
+
+  const { mutate: handleVendorChange } = useMutation({
+
+    mutationFn:(payload)=> getgiftvendorbranchById({ "id_branch": payload }),
+    onSuccess: (response) => {
+      if (response) {
+        setVendor(response.data)
+      }
+    },
+    onError:(error)=>{
+      console.log(error)
+    },
+  });
 
 
   const { mutate: GiftItems } = useMutation({
@@ -146,7 +153,7 @@ const GiftInwardsCreation = () => {
 
     if(name === "price"){
       if (name === "price" && value < 0) {toast.error( "Enter valid price")}
-      setPrice(value)
+
       
       setFormData(prev => ({
         ...prev,
@@ -175,7 +182,7 @@ const GiftInwardsCreation = () => {
 
   // Handler fn to navigate
   const handleCancel = () => {
-    navigate('/gift/giftinwards')
+    navigate('/gift/giftpurchase/')
   }
 
 
@@ -222,7 +229,7 @@ const GiftInwardsCreation = () => {
       
       if (response.status == 201) {
         toast.success(response.data.message)
-        navigate('/gift/giftinwards')
+        navigate('/gift/giftpurchase/')
       }
       setisLoading(false)
     },
@@ -260,7 +267,7 @@ const GiftInwardsCreation = () => {
     onSuccess: (response) => {
       setisLoading(false)
       toast.success(response.message);
-      navigate('/gift/giftinwards');
+      navigate('/gift/giftpurchase/');
       
     },
     onError: (error) => {
@@ -296,7 +303,7 @@ const GiftInwardsCreation = () => {
   return (
     <>
       <div className='flex flex-row justify-between'>
-        <h2 className='text-2xl text-[#023453] font-bold justify-between'>Gift Inwards Creations</h2>
+        <h2 className='text-2xl text-[#023453] font-bold justify-between'>AddGift Purchase</h2>
       </div>
       <div className='w-full flex flex-col bg-white border-t-2 border-[#023453] mt-3 p-4'>
         <div className='mb-4'>
