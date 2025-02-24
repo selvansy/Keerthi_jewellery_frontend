@@ -2,13 +2,10 @@ import React, { useState } from 'react';
 import { Lock, User } from 'lucide-react';
 import { useMutation } from '@tanstack/react-query';
 import { staffLofgin } from '../api/Endpoints';
-import { useDispatch,useSelector } from 'react-redux';
+import { useDispatch} from 'react-redux';
 import { login  } from '../../redux/authSlice';
-import { setAccessmenudata,setLayoutColor } from '../../redux/clientFormSlice';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
-import Loading from '../components/common/Loading';
-import { RotatingLines } from 'react-loader-spinner';
 import SpinLoading from './common/spinLoading';
 const Login = () => {
     const dispatch= useDispatch()
@@ -23,8 +20,8 @@ const Login = () => {
     mutationFn: staffLofgin,
     onSuccess: (response) => {
       setLoading(false)
-      console.log(response)
-      dispatch(login(response.token));  
+      dispatch(login(response.token));
+      dispatch(SetMenu(response.menuData))
       const decoded = jwtDecode(response.token);
       if (decoded.id_role.id_role === 1) {
         navigate("/superadmin/clientmaster")

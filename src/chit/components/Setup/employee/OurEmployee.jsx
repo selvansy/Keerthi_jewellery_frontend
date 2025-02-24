@@ -20,7 +20,7 @@ const OurEmployee = () => {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
   const roledata = useSelector((state) => state.clientForm.roledata);
- 
+
   const id_branch = roledata?.branch;
 
   const navigate = useNavigate();
@@ -51,22 +51,22 @@ const OurEmployee = () => {
 
   const handlePageChange = (page) => {
     const pageNumber = Number(page);
-      if (!pageNumber || isNaN(pageNumber) || pageNumber < 1 || pageNumber > totalPages) {
-        return;
-      }
-      setCurrentPage(pageNumber);
+    if (!pageNumber || isNaN(pageNumber) || pageNumber < 1 || pageNumber > totalPages) {
+      return;
+    }
+    setCurrentPage(pageNumber);
   };
 
-    const nextPage = () => {
-      setCurrentPage((prevPage) => (prevPage < totalPages ? prevPage + 1 : prevPage));
-    };
-  
-    const prevPage = () => {
-      setCurrentPage((prevPage) => (prevPage > 1 ? prevPage - 1 : prevPage));
-    };
-  
+  const nextPage = () => {
+    setCurrentPage((prevPage) => (prevPage < totalPages ? prevPage + 1 : prevPage));
+  };
 
-  const paginationData = {totalItems:totalPages,currentPage:currentPage,itemsPerPage:itemsPerPage,handlePageChange:handlePageChange}
+  const prevPage = () => {
+    setCurrentPage((prevPage) => (prevPage > 1 ? prevPage - 1 : prevPage));
+  };
+
+
+  const paginationData = { totalItems: totalPages, currentPage: currentPage, itemsPerPage: itemsPerPage, handlePageChange: handlePageChange }
   const paginationButtons = usePagination(paginationData)
 
   const { mutate: getAllEmployees } = useMutation({
@@ -129,7 +129,15 @@ const OurEmployee = () => {
     mutationFn: deleteemployee,
     onSuccess: (response) => {
       toast.success(response.message);
-      getallemployeetableMutate({ page: currentPage, limit: itemsPerPage });
+      const isLastItemOnPage = employeeData.length === 1;
+      const isNotFirstPage = currentPage > 1;
+      if (isLastItemOnPage && isNotFirstPage) {
+        setCurrentPage(prev => prev - 1);
+      } else {
+
+        getallemployeetableMutate({ page: currentPage, limit: itemsPerPage });
+
+      }
     },
   });
 
@@ -149,15 +157,7 @@ const OurEmployee = () => {
     });
   }, [currentPage, itemsPerPage]);
 
-  useEffect(() => {
-    getallemployeetableMutate({
-      page: currentPage,
-      limit: itemsPerPage,
-      from_date: "",
-      to_date: "",
-      search: debouncedSearch,
-    });
-  }, []);
+
 
   const handleEdit = (id) => {
     navigate(`/setup/employee/edit/${id}`);
@@ -183,20 +183,17 @@ const OurEmployee = () => {
       })
     );
 
-    eventEmitter.on("CONFIRMATION_SUBMIT", async (data) => {
-      try {
-        let response = deleteEmployeeMutate(data.employeeId);
-        toast.success(response.message);
-        getallemployeetableMutate({ page: currentPage, limit });
-      } catch (error) {
-        console.error("Error deleting employee:", error);
-      }
-    });
   };
 
   useEffect(() => {
+    const handleDelete = (data) => {
+      deleteEmployeeMutate(data.employeeId);
+    };
+
+    eventEmitter.on("CONFIRMATION_SUBMIT", handleDelete);
+
     return () => {
-      eventEmitter.off("CONFIRMATION_SUBMIT");
+      eventEmitter.off("CONFIRMATION_SUBMIT", handleDelete);
     };
   }, []);
 
@@ -251,17 +248,17 @@ const OurEmployee = () => {
 
           {activeDropdown === row?._id && (
             <div
-            className="absolute"
-            style={{
-              top: rowIndex >= employeeData.length - 2 ? 'auto' : '72%',
-              bottom: rowIndex >= employeeData.length - 2 ? '-74%' : 'auto',
-              // top: 'auto',
-              // bottom: '-440%',
-              zIndex: 9999,
-              marginBottom: '8px',
-              filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.15))'
-            }}
-          >
+              className="absolute"
+              style={{
+                top: rowIndex >= employeeData.length - 2 ? 'auto' : '72%',
+                bottom: rowIndex >= employeeData.length - 2 ? '-74%' : 'auto',
+                // top: 'auto',
+                // bottom: '-440%',
+                zIndex: 9999,
+                marginBottom: '8px',
+                filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.15))'
+              }}
+            >
               <div className="w-32 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
                 <div className="py-1">
                   <button
@@ -358,11 +355,10 @@ const OurEmployee = () => {
             onChange={() => handleStatusToggle(row?._id)}
           />
           <div
-            className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-black p-[2px] after:duration-300 after:bg-black ${
-              row.active === true
+            className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-black p-[2px] after:duration-300 after:bg-black ${row.active === true
                 ? "peer-checked:bg-[#61A375] peer-checked:ring-[#61A375]"
                 : "peer-checked:bg-gray-400 peer-checked:ring-gray-400"
-            } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-white peer-hover:after:scale-95`}
+              } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-white peer-hover:after:scale-95`}
           ></div>
         </label>
       ),
@@ -410,52 +406,52 @@ const OurEmployee = () => {
       </div>
       {employeeData.length > 0 && (
         <div className="flex justify-between mt-4 p-2">
-        <div className="mt-4 flex gap-2 justify-center items-center">
-          <span className="text-gray-500">Show</span>
-          <select
-            id="itemsPerPage"
-            value={itemsPerPage}
-            onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
-            className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
-          >
-            <option value={10}>10</option>
-            <option value={25}>25</option>
-            <option value={50}>50</option>
-            <option value={100}>100</option>
-            <option value={250}>250</option>
-            <option value={500}>500</option>
-            <option value={1000}>1000</option>
-          </select>
-          <span className="text-gray-500">entries</span>
-        </div>
-        <div className="flex flex-row items-center justify-center gap-2">
-          <div className="flex items-center gap-4">
-          <button
-            onClick={prevPage}
-            disabled={currentPage === 1}
-           
-            className={`p-2 text-gray-500 rounded-md ${currentPage === 1 ? "cursor-not-allowed" : "cursor-pointer"} `}
-          >
-            Previous
-          </button>
+          <div className="mt-4 flex gap-2 justify-center items-center">
+            <span className="text-gray-500">Show</span>
+            <select
+              id="itemsPerPage"
+              value={itemsPerPage}
+              onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
+              className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
+            >
+              <option value={10}>10</option>
+              <option value={25}>25</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+              <option value={250}>250</option>
+              <option value={500}>500</option>
+              <option value={1000}>1000</option>
+            </select>
+            <span className="text-gray-500">entries</span>
           </div>
-
           <div className="flex flex-row items-center justify-center gap-2">
-            {paginationButtons}
-          </div>
+            <div className="flex items-center gap-4">
+              <button
+                onClick={prevPage}
+                disabled={currentPage === 1}
 
-          <div className="flex items-center">
-          <button
-            onClick={nextPage}
-            disabled={currentPage === totalPages}
-            
-            className={`p-2 text-gray-500 rounded-md  ${currentPage === totalPages ? "cursor-not-allowed" : "cursor-pointer"}`}
-          >
-            Next
-          </button>
+                className={`p-2 text-gray-500 rounded-md ${currentPage === 1 ? "cursor-not-allowed" : "cursor-pointer"} `}
+              >
+                Previous
+              </button>
+            </div>
+
+            <div className="flex flex-row items-center justify-center gap-2">
+              {paginationButtons}
+            </div>
+
+            <div className="flex items-center">
+              <button
+                onClick={nextPage}
+                disabled={currentPage === totalPages}
+
+                className={`p-2 text-gray-500 rounded-md  ${currentPage === totalPages ? "cursor-not-allowed" : "cursor-pointer"}`}
+              >
+                Next
+              </button>
+            </div>
           </div>
         </div>
-      </div>
       )}
       <Modal />
     </div>

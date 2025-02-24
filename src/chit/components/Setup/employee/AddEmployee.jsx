@@ -20,6 +20,7 @@ import {
   updateemployee,
 } from "../../../api/Endpoints";
 import Select from "react-select";
+import SpinLoading from "../../common/spinLoading";
 
 const AddEmployee = () => {
   const navigate = useNavigate();
@@ -72,6 +73,7 @@ const AddEmployee = () => {
 
   // State Management
   const [showWebcam, setShowWebcam] = useState(false);
+  const [isLoading, setIsLoading] = useState(false)
   const [country, setSelectedCountry] = useState("");
   const [states, setStates] = useState([]);
   const [city, setCity] = useState([]);
@@ -109,16 +111,18 @@ const AddEmployee = () => {
         .matches(/^[0-9]{10}$/, "Phone number must be 10 digits")
         .nullable(),
       address: Yup.string().required("Address is required"),
-      pincode: Yup.string().required("Pincode is required"),
+      pincode: Yup.string()
+      .matches(/^[0-9]{6}$/, "Pincode  must be 6 digits")
+      .required("Pincode is required"),
       id_state: Yup.string().required("State is required"),
       id_city: Yup.string().required("City is required"),
       id_country: Yup.string().required("Country is required"),
       gender: Yup.number().required("Gender is required"),
       date_of_join: Yup.date().required("Joining date is required"),
       date_of_birth: Yup.date().required("Birth date is required"),
-      aadharNumber: Yup.string()
+      aadhar_number: Yup.string()
         .matches(/^\d{12}$/, "Aadhar number must be 12 digits")
-        .nullable(),
+         .nullable(),
       id_branch: Yup.string().when("$branch", {
         is: (branchValue) => branchValue === "0",
         then: () => Yup.string().required("Branch is required"),
@@ -126,7 +130,9 @@ const AddEmployee = () => {
       }),
     }),
     onSubmit: (values) => {
+      setIsLoading(true)
       const formData = new FormData();
+
 
       if (branch === "0") {
         formData.append("id_branch", values.id_branch);
@@ -246,44 +252,45 @@ const AddEmployee = () => {
   const { mutate: addEmployeeMutate } = useMutation({
     mutationFn: addemployee,
     onSuccess: (response) => {
+      setIsLoading(false)
       toast.success(response.message);
       navigate("/setup/employee");
     },
+     onError: (error) => {
+    
+                setIsLoading(false)
+                toast.error(error.response.message);
+            }
   });
 
   const { mutate: updateEmployeeMutate } = useMutation({
     mutationFn: (data) => updateemployee(id, data),
     onSuccess: (response) => {
+      setIsLoading(false)
       toast.success(response.message);
       navigate("/setup/employee");
+
     },
+     onError: (error) => {
+    
+                setIsLoading(false)
+                toast.error(error.response.message);
+            }
   });
-
-  // const handleFileChange = (event) => {
-  //   const file = event.target.files[0];
-  //   const name = event.target.name;
-
-  //   if (file) {
-  //     const previewUrl = URL.createObjectURL(file);
-  //     setImagePreviews((prev) => ({
-  //       ...prev,
-  //       [name]: previewUrl,
-  //     }));
-  //     formik.setFieldValue(name, file);
-  //   }
-  // };
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     const name = event.target.name;
 
-    if (file) {
+    if (file && file.size <= (500*1024)) {
       const previewUrl = URL.createObjectURL(file);
       setImagePreviews((prev) => ({
         ...prev,
         [name]: { file, previewUrl },
       }));
       formik.setFieldValue(name, file);
+    }else{
+      toast.error("File size exceeded or file not found")
     }
   };
 
@@ -303,20 +310,6 @@ const AddEmployee = () => {
       });
     setShowWebcam(false);
   };
-
-  // Helper Functions
-  // const handleClearImage = (e, field) => {
-  //   e.preventDefault();
-  //   e.stopPropagation();
-
-  //   setImagePreviews((prev) => ({
-  //     ...prev,
-  //     [field]: null,
-  //   }));
-
-  //   // Clear the formik value
-  //   formik.setFieldValue(field, null);
-  // };
 
   const handleClearImage = (e, field) => {
     e.preventDefault();
@@ -363,7 +356,7 @@ const AddEmployee = () => {
   }, [statesResponse, citiesResponse]);
 
   const handleStateChange = (selectedOption) => {
-    console.log(selectedOption);
+    
     formik.setFieldValue(
       "id_state",
       selectedOption ? selectedOption.value : ""
@@ -711,9 +704,11 @@ const AddEmployee = () => {
             </button>
             <button
               type="submit"
+              disabled={isLoading}
               className="bg-[#61A375] text-white px-6 py-2 rounded-md"
             >
-              {id ? "Update" : "Submit"}
+              {isLoading ? <SpinLoading /> : id ? "Update" : "Submit"}
+              
             </button>
           </div>
         </form>
