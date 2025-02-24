@@ -669,11 +669,13 @@ export const createweddingbirth= async(data)=>{
 
 
 export const getuserpermission= async(data)=>{
+    console.log(data)
     const response= await Api.get(`${import.meta.env.VITE_API_URL}/api/client/useraccess/permissions/${data.id_role}`)
     return response.data
 }
 
 export const updatemenupermission= async(data)=>{
+    console.log(data)
     const response= await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/useraccess/${data.id_role}`,data)
     return response.data
 }
@@ -876,7 +878,7 @@ export const adduserrole = async (data) => {
     const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/userrole`, data);
     return response;
 }
-export const deleteuserrole = async (id) => {
+export const deleteuserrole = async (id) => {    
     const response = await Api.delete(`${import.meta.env.VITE_API_URL}/api/client/userrole/${id}`);
     return response.data;
 }
@@ -887,6 +889,8 @@ export const getuserroleById = async (id) => {
 }
  
 export const updateuserrole = async (id, data) => {
+    console.log(id,data);
+    
     const response = await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/userrole/${id}`, data);
     return response;
 }
