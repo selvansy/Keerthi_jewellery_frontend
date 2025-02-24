@@ -252,8 +252,8 @@ const GiftStock = () => {
 
   const handleClick = (e) => {
     e.preventDefault();
-    console.log();
-    navigate('creategiftissue');
+
+    navigate('/gift/giftissues/creategiftissue');
   }
 
   const handleStatusToggle = async (id) => {

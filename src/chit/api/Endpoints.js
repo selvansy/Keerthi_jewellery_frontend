@@ -1168,7 +1168,7 @@ export const getbranchbyid = async (data) => {
 }
 
 export const getBranchById  = async (data) => {
-    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/branch//${data.id}`);
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/branch/${data.id || data}`);
     return response.data;
 }
 

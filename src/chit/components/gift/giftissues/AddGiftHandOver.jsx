@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Trash2 } from 'lucide-react';
 
 import { addgiftissues, searchbarcodenumber, giftissuetype, getcustomerschemeaccount, searchmobileschemeaccount, getallbranch, getschemeaccountbyid } from '../../../api/Endpoints'
-import SpinLoading from '../../common/SpinLoading';
+import SpinLoading from '../../common/spinLoading';
 const AddGiftIssued = () => {
 
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
@@ -308,7 +308,7 @@ const AddGiftIssued = () => {
 
 
   const handleCancle = () => {
-    navigate('/gift/giftissues')
+    navigate('/gift/gifthandover')
   }
 
   const handleAddCustomer = () => {
@@ -359,7 +359,7 @@ const AddGiftIssued = () => {
     onSuccess: (response) => {
       setisLoading(false)
       toast.success(response.message)
-      navigate('/gift/giftissues')
+      navigate('/gift/gifthandover')
     },
     onError: (error) => {
       setisLoading(false)
