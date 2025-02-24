@@ -1,28 +1,14 @@
 const customSelectStyles = {
-  control: (provided, state) => ({
-      ...provided,
-      minHeight: "41px",
-      height: "50px",
-      borderWidth: "3px",
-      borderColor: state.isFocused ? "#023453" : "#D1D5DB",
+    control: (base, state) => ({
+      ...base,
+      minHeight: "42px",
+      border: state.isFocused ? "2px solid black" : "1px solid #e2e8f0",
+      boxShadow: state.isFocused ? "0 0 0 2px black" : "none",
+      borderRadius: "0.375rem",
       "&:hover": {
-          borderColor: "#023453", 
+        border: "2px solid black",
       },
-  }),
-  valueContainer: (provided) => ({
-      ...provided,
-      height: "50px",
-      padding: "10px 15px", 
-  }),
-  input: (provided) => ({
-      ...provided,
-      margin: "0px",
-      padding: "5px 10px", 
-  }),
-  indicatorsContainer: (provided) => ({
-      ...provided,
-      height: "50px",
-  }),
-};
+    }),
+  };
 
 export default customSelectStyles;

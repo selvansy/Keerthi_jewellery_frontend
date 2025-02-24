@@ -123,7 +123,7 @@ const Submenu = () => {
       try {
         let response = await deletesubmenu(data.subid);
         toast.success(response.message);
-        getallsubmenusMutate({ page: currentPage, limit });
+        getallsubmenusMutate({ page: currentPage, limit: itemsPerPage });
       } catch (error) {
         console.error("Error deleting submenu:", error);
       }
@@ -361,7 +361,7 @@ const Submenu = () => {
         console.log(data);
         let response = await deletesubmenu(data.subid);
         toast.success(response.message);
-        getallsubmenusMutate({ page: currentPage, limit });
+        getallsubmenusMutate({ page: currentPage, limit: itemsPerPage });
       } catch (error) {
         console.error("Error deleting submenu:", error);
       }
@@ -420,7 +420,7 @@ const Submenu = () => {
               currentPage={currentPage}
               totalPages={totalPages}
               onPageChange={handlePageChange}
-              pageSize={limit}
+              pageSize={itemsPerPage}
               isLoading={isLoading}
             />
           </div>

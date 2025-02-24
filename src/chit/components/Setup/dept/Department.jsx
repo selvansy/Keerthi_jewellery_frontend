@@ -3,12 +3,12 @@ import Table from "../../common/Table";
 import { Search } from "lucide-react";
 import { data, useNavigate } from "react-router-dom";
 import {
-  getallmetaltable,
-  changemetalstatus,
-  deletemetal,
-  getmetalById,
-  updatemetal,
-  addmetal,
+  getalldepttable,
+  changedeptstatus,
+  deleteDept,
+  getDepartmentById,
+  updateDepartment,
+  addDepartment,
 } from "../../../api/Endpoints";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
@@ -47,6 +47,7 @@ const Department = () => {
       setId("");
     }
 
+
     const clearId = () => {
         setId("");
       };
@@ -61,22 +62,22 @@ const Department = () => {
       };
 
   
-    // const { mutate: getalldepttableMutate } = useMutation({
-    //   mutationFn: (payload) => getalldepttable(payload),
-    //   onSuccess: (response) => {
-    //     if (response) {
-    //       setdeptData(response.data);
-    //       setTotalPages(response.totalPages);
-    //     }
-    //     setSearchLoading(false);
-    //     setisLoading(false);
-    //   },
-    //   onError: (error) => {
-    //     console.log(error.response.data);
-    //     setdeptData([]);
-    //     setSearchLoading(false);
-    //   },
-    // });
+    const { mutate: getalldepttableMutate } = useMutation({
+      mutationFn: (payload) => getalldepttable(payload),
+      onSuccess: (response) => {
+        if (response) {
+          setdeptData(response.data);
+          setTotalPages(response.totalPages);
+        }
+        setSearchLoading(false);
+        setisLoading(false);
+      },
+      onError: (error) => {
+        console.log(error.response.data);
+        setdeptData([]);
+        setSearchLoading(false);
+      },
+    });
   
     const handleStatusToggle = async (id, currentStatus) => {
       try {
@@ -95,14 +96,14 @@ const Department = () => {
       }
     };
   
-    // useEffect(() => {
-    //   getalldepttableMutate({
-    //     search: debouncedSearch,
-    //     page: currentPage,
-    //     limit: itemsPerPage,
-    //     currentPage,
-    //   });
-    // }, [currentPage, itemsPerPage, debouncedSearch, isviewOpen]);
+    useEffect(() => {
+      getalldepttableMutate({
+        search: debouncedSearch,
+        page: currentPage,
+        limit: itemsPerPage,
+        currentPage,
+      });
+    }, [currentPage, itemsPerPage, debouncedSearch, isviewOpen]);
   
   
     const handleDelete = (id) => {
@@ -127,37 +128,36 @@ const Department = () => {
       );
     };
   
-    // const { mutate: deletedept } = useMutation({
-    //   mutationFn: deleteDept,
-    //   onSuccess: (response) => {
-    //     if (response.message === "dept deleted successfully") {
-    //       const isLastItemOnPage = deptData.length === 1;
-    //       const isNotFirstPage = currentPage > 1;
-    //       if (isLastItemOnPage && isNotFirstPage) {
-    //         setCurrentPage(prev => prev - 1);
-    //       } else {
-    //         // Otherwise, just refresh current page
-    //         getalldepttableMutate({
-    //           search: debouncedSearch,
-    //           page: currentPage,
-    //           limit: itemsPerPage,
-    //         });
-    //       }
+    const { mutate: deleteDepartment } = useMutation({
+      mutationFn: (id)=> deleteDept(id),
+      onSuccess: (response) => {
+        
+          const isLastItemOnPage = deptData.length === 1;
+          const isNotFirstPage = currentPage > 1;
+          if (isLastItemOnPage && isNotFirstPage) {
+            setCurrentPage(prev => prev - 1);
+          } else {
+           
+            getalldepttableMutate({
+              search: debouncedSearch,
+              page: currentPage,
+              limit: itemsPerPage,
+            });
           
-    //       toast.success(response.message);
-    //       eventEmitter.off("CONFIRMATION_SUBMIT");
-    //       setId("");
-    //     }
-    //   },
-    //   onError: (error) => {
-    //     console.error("Error:", error);
-    //     toast.error("Failed to delete dept");
-    //   },
-    // });
+          toast.success(response.message);
+          eventEmitter.off("CONFIRMATION_SUBMIT");
+          setId("");
+        }
+      },
+      onError: (error) => {
+        console.error("Error:", error);
+        toast.error("Failed to delete dept");
+      },
+    });
   
     useEffect(() => {
       const handleDelete = (deptId) => {
-        deletedept(deptId);
+        deleteDepartment(deptId.deptId);
       };
   
       eventEmitter.on("CONFIRMATION_SUBMIT", handleDelete);
@@ -295,7 +295,7 @@ const Department = () => {
       },
       {
         header: "dept Name",
-        accessor: "dept_name",
+        accessor: "name",
       },
   
       {
@@ -467,7 +467,7 @@ const Department = () => {
           isOpen={isviewOpen}
           closeModal={closeIncommingModal}
         >
-          <DeptForm setIsOpen={setIsviewOpen} id={id} clearId={clearId} />
+          <DeptForm closeIncommingModal={closeIncommingModal} id={id} clearId={clearId} />
         </ModelOne>
         <Modal />
       </div>
@@ -477,25 +477,25 @@ const Department = () => {
   export default Department;
 
 
-  export const DeptForm = ({setIsOpen, id, clearId }) => {
+  export const DeptForm = ({closeIncommingModal, id, clearId }) => {
 
     const layout_color = useSelector((state) => state.clientForm.layoutColor);
   
     const [formData, setFormData] = useState({
-      dept_name: "",
+      name: "",
     });
   
     const [formErrors, setFormErrors] = useState({});
     const [isLoading,setIsLoading]=useState(false)
 
-    // const { mutate: getdeptId } = useMutation({
-    //   mutationFn: getdeptById,
-    //   onSuccess: (response) => {
-    //     if (response) {
-    //       setFormData({ dept_name: response.data.dept_name });
-    //     }
-    //   },
-    // });
+    const { mutate: getdeptId } = useMutation({
+      mutationFn: getDepartmentById,
+      onSuccess: (response) => {
+        if (response) {
+          setFormData({ name: response.data.name });
+        }
+      },
+    });
   
     useEffect(() => {
       if (id) {
@@ -517,11 +517,10 @@ const Department = () => {
   
       try {
         const updateData = {
-          dept_name: formData.dept_name,
+          name: formData.name,
         };
         if (id) {
-          updateData.id = id;
-          updatedeptMutate(updateData);
+          updatedeptMutate({id:id,data:updateData});
         } else {
           adddeptMutate(updateData);
         }
@@ -530,40 +529,35 @@ const Department = () => {
       }
     };
   
-    // const { mutate: adddeptMutate } = useMutation({
-    //   mutationFn: (data) => adddept(data),
-    //   onSuccess: (response) => {
-    //     if (response) {
-    //       toast.success(response.data.message);
-    //       setIsOpen(false);
-    //       setIsLoading(false)
-    //     }
-    //   },
-    //   onError: (error) => {
-    //     setIsLoading(false)
-    //     toast.error(error.response.data.message);
-    //   },
-    // });
+    const { mutate: adddeptMutate } = useMutation({
+      mutationFn: (data) => addDepartment(data),
+      onSuccess: (response) => {
+          toast.success(response.message);
+        closeIncommingModal();
+        setIsLoading(false)
+      },
+      onError: (error) => {
+
+        setIsLoading(false)
+        toast.error(error.response.message);
+      },
+    });
   
-    // const { mutate: updatedeptMutate } = useMutation({
-    //   mutationFn: (data) => updatedept(data),
-    //   onSuccess: (response) => {
-    //     toast.success(response.data.message);
-    //     clearId();
-    //     setIsOpen(false);
-    //     setIsLoading(false)
-    //   },
-    //   onError: (error) => {
-    //     setIsLoading(false)
-    //     toast.error(error.response.data.message);
-    //   },
-    // });
-  
-    const handleCancel = () => {
+    const { mutate: updatedeptMutate } = useMutation({
+      mutationFn: (data) => updateDepartment(data),
+      onSuccess: (response) => {
+        toast.success(response.message);
+        clearId();
+        closeIncommingModal();
+        setIsLoading(false)
+      },
       
-      setIsOpen(false);
-      clearId();
-    };
+      onError: (error) => {
+        setIsLoading(false)
+        toast.error(error.response.data.message);
+      },
+    });
+  
   
     const handleChange = (e) => {
       const { name, value } = e.target;
@@ -580,8 +574,8 @@ const Department = () => {
     const validateForm = () => {
       const errors = {};
   
-      if (!formData.dept_name) {
-        errors.dept_name = "Department Name is required";
+      if (!formData.name) {
+        errors.name = "Department Name is required";
       }
   
       setFormErrors(errors);
@@ -596,15 +590,15 @@ const Department = () => {
           </label>
           <input
             type="text"
-            name="dept_name"
-            value={formData.dept_name}
+            name="name"
+            value={formData.name}
             onChange={handleChange}
             minLength={"2"}
             placeholder="Enter Department Name"
             className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          {formErrors.dept_name && (
-            <div className="text-red-500 text-sm">{formErrors.dept_name}</div>
+          {formErrors.name && (
+            <div className="text-red-500 text-sm">{formErrors.name}</div>
           )}
         </div>
   
@@ -613,7 +607,7 @@ const Department = () => {
             <button
               type="button"
               className="bg-[#E2E8F0] text-black rounded-md p-2 w-full lg:w-20"
-              onClick={handleCancel}
+              onClick={closeIncommingModal}
             >
               Clear
             </button>

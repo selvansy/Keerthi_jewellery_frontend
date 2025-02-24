@@ -76,6 +76,7 @@ import Organisation from "../chit/components/Setup/organisation";
 import Department from "../chit/components/Setup/dept/Department";
 import Topup from "../chit/components/Setup/topup";
 import SchemeForm from "../chit/components/ourscheme/scheme/newScheme";
+import Campaign from "../chit/components/Setup/campaign";
 
 const RouteList = [
   {
@@ -437,17 +438,17 @@ const RouteList = [
     element:<Base renderContent={AddBranch}/>
   },
   {
-    name: "Employee",
+    name: "Employee Details",
     path:'/setup/employee',
     element:<Base renderContent={OurEmployee}/>
   },
   {
-    name: "Add Employee",
+    name: "Employee Creation",
     path:'/setup/employee/add',
     element:<Base renderContent={AddEmployee}/>
   },
   {
-    name: "Edit Employee",
+    name: "Employee Creation",
     path:'/setup/employee/edit/:id',
     element:<Base renderContent={AddEmployee}/>
   },
@@ -497,9 +498,14 @@ const RouteList = [
     element:<Base renderContent={Department}/>
   },
   {
-    name: "Top-Up",
-    path:'/setup/topup',
+    name: "Topup",
+    path:'/masters/topup',
     element:<Base renderContent={Topup}/>
+  },
+  {
+    name: "Campaign Type",
+    path:'/masters/campaign',
+    element:<Base renderContent={Campaign}/>
   },
   {
     name: "Purity",

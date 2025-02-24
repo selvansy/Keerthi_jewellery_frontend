@@ -478,7 +478,6 @@ export const getschemepaymentbyid = async (data) => {
 }
  
 export const todaycurrentratebybranch = async (data) => {
-    console.log();
         
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/metalrate/today/${data.branchId}/${data.date}`);
     return response.data;
@@ -497,10 +496,69 @@ export const schemepaymentdatatable = async (data) => {
 }
 
  
+//Department
 
- 
+export const getalldepttable = async (data) => {
+    const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/department/table`,data);
+    return response.data;
+}
 
+export const addDepartment= async(data)=>{
+    const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/department`,data)
+    return response.data
+}
+
+export const getDepartmentById= async(data)=>{
+    const response= await Api.get(`${import.meta.env.VITE_API_URL}/api/client/department/${data}`)
+    return response.data
+}
  
+export const updateDepartment= async(data)=>{
+    const response= await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/department/${data.id}`,data.data)
+    return response.data
+}
+
+export const changedeptstatus = async(id)=>{
+    const response= await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/department/${id}/active`)
+    return response.data
+}
+
+export const deleteDept = async(id)=>{
+    const response= await Api.delete(`${import.meta.env.VITE_API_URL}/api/client/department/${id}`)
+    return response.data
+}
+
+//Campaign
+
+export const getallCampaigntable = async (data) => {
+    const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/campaigntype/allcampaigntype`,data);
+    return response.data;
+}
+
+export const addCampaign = async(data)=>{
+    const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/campaigntype`,data)
+    return response.data
+}
+
+export const getCampaignById= async(data)=>{
+    const response= await Api.get(`${import.meta.env.VITE_API_URL}/api/client/campaigntype/${data}`)
+    return response.data
+}
+ 
+export const updateCampaign = async(data)=>{
+    const response= await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/campaigntype/${data.id}`,data.data)
+    return response.data
+}
+
+// export const changedeptstatus = async(id)=>{
+//     const response= await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/department/${id}/active`)
+//     return response.data
+// }
+
+export const deleteCampaign = async(id)=>{
+    const response= await Api.delete(`${import.meta.env.VITE_API_URL}/api/client/campaigntype/${id}`)
+    return response.data
+}
 
 
 //Offers
@@ -668,12 +726,16 @@ export const createweddingbirth= async(data)=>{
 }
 
 
+
+
 export const getuserpermission= async(data)=>{
+    console.log(data)
     const response= await Api.get(`${import.meta.env.VITE_API_URL}/api/client/useraccess/permissions/${data.id_role}`)
     return response.data
 }
 
 export const updatemenupermission= async(data)=>{
+    console.log(data)
     const response= await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/useraccess/${data.id_role}`,data)
     return response.data
 }
@@ -776,7 +838,7 @@ export const getsubmenuById = async (id) => {
 export const updatesubmenu = async (id, data) => {
     console.log(id,data)
     const response = await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/submenusetting/${id}`, data);
-    return response;
+    return response.data;
 }
  
 export const getallsubmenu = async (id, data) => {
@@ -876,7 +938,7 @@ export const adduserrole = async (data) => {
     const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/userrole`, data);
     return response;
 }
-export const deleteuserrole = async (id) => {
+export const deleteuserrole = async (id) => {    
     const response = await Api.delete(`${import.meta.env.VITE_API_URL}/api/client/userrole/${id}`);
     return response.data;
 }
@@ -887,6 +949,8 @@ export const getuserroleById = async (id) => {
 }
  
 export const updateuserrole = async (id, data) => {
+    console.log(id,data);
+    
     const response = await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/userrole/${id}`, data);
     return response;
 }

@@ -103,7 +103,6 @@ const GiftHandOver = () => {
         Setentries(response.totalDocument)
         setTotalPages(Math.ceil(response.data.total / limit));
       }
-      toast.success(response.message)
       setisLoading(false)
     },
     onError:()=>{
