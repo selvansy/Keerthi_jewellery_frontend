@@ -14,7 +14,7 @@ function Topup() {
     const {id} = useParams()
 
     const [formData, setFormData] = useState({
-        notify_type: "",
+        notify_type: 1,
         purchase_limit: "",
         avl_limit: "",
         limit_rate: ""
@@ -85,8 +85,8 @@ function Topup() {
             <div className="flex flex-col p-4 relative">
                 <>
                     <h2 className="text-2xl text-gray-900 font-bold">Add Top-Up</h2>
-                    <div className="w-full flex flex-col bg-[#F5F5F5] border-t-2 border-[#023453] mt-3 overflow-y-auto scrollbar-hide h-[calc(100vh-200px)]">
-                    <div className="flex flex-col p-4 bg-white relative my-3">
+                    <div className="w-full flex flex-col bg-[#F5F5F5] border-t-2 border-[#023453]  overflow-y-auto scrollbar-hide h-[calc(100vh-200px)]">
+                    <div className="flex flex-col p-4 bg-white relative mb-3">
                     <div className="flex flex-col space-y-2 my-2">
                             <label className="font-medium text-gray-700">
                                 Notifications Type<span className="text-red-400">*</span>
@@ -105,17 +105,23 @@ function Topup() {
                                             type="radio"
                                             name="notify_type"
                                             value={notify_type.value}
-                                            checked={formData.notify_type === notify_type.value}
-                                            onChange={() => setFieldValue("notify_type", notify_type.value)}
+                                            checked={formData.notify_type == notify_type.value}
+                                            onChange={ (e)=>{
+                                                const value = e.target.value;
+                                                setFormData((prev) => ({
+                                                    ...prev,
+                                                    notify_type: value,
+                                                }))
+                                            }}
                                             className="hidden"
                                         />
                                         <div
-                                            className={`w-5 h-5 border-2 rounded-full flex items-center justify-center transition-colors duration-200 ${formData.notify_type === notify_type.value
-                                                    ? 'bg-blue-500 border-blue-500'
+                                            className={`w-5 h-5 border-2 rounded-full flex items-center justify-center transition-colors duration-200 ${formData.notify_type == notify_type.value
+                                                    ? 'bg-[#023453] border-[#023453]'
                                                     : 'border-gray-400'
                                                 }`}
                                         >
-                                            {formData.notify_type === notify_type.value && (
+                                            {formData.notify_type == notify_type.value && (
                                                 <div className="w-2.5 h-2.5 bg-white rounded-full"></div>
                                             )}
                                         </div>
@@ -136,7 +142,7 @@ function Topup() {
                                 value={formData.notify_limit}
                                 onChange={handleChange}
                                 minLength="2"
-                                placeholder="Enter"
+                                placeholder="Enter notification limit"
                                 className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                             {formErrors.notify_limit && (
@@ -155,7 +161,7 @@ function Topup() {
                                 value={formData.purchase_limit}
                                 onChange={handleChange}
                                 minLength={"2"}
-                                placeholder="Enter Department Name"
+                                placeholder="Enter purchase limit"
                                 className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                             {formErrors.purchase_limit && (
@@ -173,7 +179,7 @@ function Topup() {
                                 value={formData.avl_limit}
                                 onChange={handleChange}
                                 minLength={"2"}
-                                placeholder="Enter Department Name"
+                                placeholder="Enter available limit"
                                 className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                             {formErrors.avl_limit && (
@@ -191,16 +197,16 @@ function Topup() {
                                 value={formData.limit_rate}
                                 onChange={handleChange}
                                 minLength={"2"}
-                                placeholder="Enter Department Name"
+                                placeholder="Enter limit rate"
                                 className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                             {formErrors.limit_rate && (
                                 <div className="text-red-500 text-sm">{formErrors.limit_rate}</div>
                             )}
                         </div>
-
-                        <div className="bg-white">
-                        <div className="flex items-center justify-start gap-4">
+                    </div>
+                    <div className="bg-white">
+                        <div className="flex items-center justify-end gap-4">
                                 <button
                                     type="button"
                                     className="bg-[#E2E8F0] text-black rounded-md p-2 w-full lg:w-20"
@@ -220,8 +226,6 @@ function Topup() {
                                 </button>
                             </div>
                         </div>
-                    </div>
-
                     </div>
                     </div>
 
