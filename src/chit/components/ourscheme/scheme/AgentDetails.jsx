@@ -1,0 +1,150 @@
+import React, { useState } from "react";
+import Select from "react-select";
+import ToggleSwitch from "../../common/ToggleSwitch";
+
+const AgentDetails = ({ formik, scheme_type, layout_color, gstTypeData, wastageType }) => {
+ const [restriction,setRestriction]= useState(true)
+
+ const handleToggle =()=>{
+    setRestriction(!restriction)
+ }
+
+  return (
+    <div className="grid grid-rows-2 md:grid-cols-2 gap-5 border-t-2 border-gray-300">
+        <div className="flex flex-col mt-2">
+          <label className="text-black mb-2 font-normal">
+            Agent Referral <span className="text-red-400"> *</span>
+          </label>
+          <div className="relative">
+            <input
+              type="number"
+              name="agent_referral"
+              value={formik.values.agent_referral}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+              placeholder="Enter Agent Referral"
+            />
+            <span
+              className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+              style={{ backgroundColor: layout_color }}
+            >
+              %
+            </span>
+          </div>
+          {formik.touched.referral_rate && formik.errors.referral_rate && (
+            <span className="text-red-500 text-sm mt-1">{formik.errors.referral_rate}</span>
+          )}
+        </div>
+        <div className="flex flex-col lg:mt-2">
+          <label className="text-black mb-2 font-normal">
+            Agent Incentive <span className="text-red-400"> *</span>
+          </label>
+          <div className="relative">
+            <input
+              type="number"
+              name="agent_incentive"
+              value={formik.values.agent_incentive}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+              placeholder="Enter Incentive Rate"
+            />
+            <span
+              className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+              style={{ backgroundColor: layout_color }}
+            >
+              INR
+            </span>
+          </div>
+          {formik.touched.agent_incentive && formik.errors.agent_incentive && (
+            <span className="text-red-500 text-sm mt-1">{formik.errors.agent_incentive}</span>
+          )}
+        </div>
+        <div className="flex flex-col lg:mt-2">
+          <label className="text-black mb-2 font-normal">
+            Agent Restriction <span className="text-red-400"> *</span>
+          </label>
+          <ToggleSwitch
+          layout_color={layout_color}
+          toggle_status={handleToggle}
+          />
+        </div>
+        <div className="flex flex-col lg:mt-2">
+          <label className="text-black mb-2 font-normal">
+            Remarks <span className="text-red-400"> *</span>
+          </label>
+          <div className="relative">
+            <input
+              type="text"
+              name="cus_remarks"
+              value={formik.values.cus_remarks}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+              placeholder="Enter Remark"
+            />
+          </div>
+          {formik.touched.cus_remarks && formik.errors.cus_remarks && (
+            <span className="text-red-500 text-sm mt-1">{formik.errors.cus_remarks}</span>
+          )}
+        </div>
+        {restriction && (
+            <>
+            <div className="flex flex-col lg:mt-2">
+          <label className="text-black mb-2 font-normal">
+            Agent Target <span className="text-red-400"> *</span>
+          </label>
+          <div className="relative">
+            <input
+              type="number"
+              name="agent_target"
+              value={formik.values.agent_target}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+              placeholder="Enter Agent Target"
+            />
+            <span
+              className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+              style={{ backgroundColor: layout_color }}
+            >
+              %
+            </span>
+          </div>
+          {formik.touched.agent_target && formik.errors.agent_target && (
+            <span className="text-red-500 text-sm mt-1">{formik.errors.agent_target}</span>
+          )}
+        </div>
+        <div className="flex flex-col lg:mt-2">
+          <label className="text-black mb-2 font-normal">
+            Partial Commission <span className="text-red-400"> *</span>
+          </label>
+          <div className="relative">
+            <input
+              type="number"
+              name="partial_commission"
+              value={formik.values.partial_commission}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+              placeholder="Enter Partial commission"
+            />
+            <span
+              className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+              style={{ backgroundColor: layout_color }}
+            >
+              %
+            </span>
+          </div>
+          {formik.touched.partial_commission && formik.errors.partial_commission && (
+            <span className="text-red-500 text-sm mt-1">{formik.errors.partial_commission}</span>
+          )}
+        </div>
+            </>
+        )}
+    </div>
+  );
+};
+
+export default AgentDetails;

@@ -337,7 +337,6 @@ const AddEmployee = () => {
   }, [statesResponse, citiesResponse]);
 
   const handleStateChange = (selectedOption) => {
-    console.log(selectedOption);
     formik.setFieldValue(
       "id_state",
       selectedOption ? selectedOption.value : ""
