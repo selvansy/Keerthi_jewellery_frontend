@@ -164,7 +164,7 @@ const Purity = () => {
       page: currentPage,
       limit,
     });
-  }, [currentPage, itemsPerPage, debouncedSearch, , isviewOpen]);
+  }, [currentPage, itemsPerPage, debouncedSearch, isviewOpen]);
 
   useEffect(() => {
     getallmetalMutate();
@@ -227,6 +227,7 @@ const Purity = () => {
       onError: (error) => {
         console.error("Error:", error);
         toast.error("Failed to delete metal");
+        eventEmitter.off("CONFIRMATION_SUBMIT");
       },
     });
   
@@ -455,15 +456,7 @@ const Purity = () => {
     setCurrentPage(pageNumber);
   };
 
-  const nextPage = () => {
-    setCurrentPage((prevPage) => {
-      return prevPage < totalPages ? prevPage + 1 : prevPage;
-    });
-  };
 
-  const prevPage = () => {
-    setCurrentPage((prevPage) => (prevPage > 1 ? prevPage - 1 : prevPage));
-  };
 
   console.log(currentPage);
 
@@ -541,7 +534,7 @@ const Purity = () => {
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}x
-                className="p-2 text-gray-500 rounded-md"
+                className={`p-2 text-gray-500 rounded-md ${currentPage==1?'cursor-not-allowed':'cursor-pointer'}`}
               >
                 Previous
               </button>
@@ -555,7 +548,7 @@ const Purity = () => {
               <button
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
-                className="p-2 text-gray-500 rounded-md"
+                className={`p-2 text-gray-500 rounded-md ${currentPage === totalPages?'cursor-not-allowed':'cursor-pointer'}`}
               >
                 Next
               </button>
