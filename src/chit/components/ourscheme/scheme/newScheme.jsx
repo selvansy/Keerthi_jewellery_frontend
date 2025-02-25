@@ -557,30 +557,6 @@ const SchemeForm = () => {
               </div>
             )}
           </div>
-          {/* <div className="relative w-full">
-            <label className="block text-sm font-medium mb-1">
-              Maturity Month <span className="text-red-500">*</span>
-            </label>
-            <DatePicker
-              selected={formik.values.maturity_period}
-              onChange={(date) => formik.setFieldValue("maturity_period", date)}
-              onBlur={formik.handleBlur}
-            //   dateFormat="yyyy-MM-dd"
-               dateFormat="dd/MM/yyy"
-              className="w-full border rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black h-11"
-              placeholderText="Select maturity month"
-              wrapperClassName="w-full"
-            />
-            <CalendarDays
-              className="absolute right-3 top-12 transform -translate-y-1/2 text-gray-500 pointer-events-none"
-              size={20}
-            />
-            {formik.touched.maturity_period && formik.errors.maturity_period && (
-              <div className="text-red-500 text-sm mt-1">
-                {formik.errors.maturity_period}
-              </div>
-            )}
-          </div> */}
           <div>
             <label className="block text-sm font-medium mb-1">
               Installment Type <span className="text-red-500">*</span>
