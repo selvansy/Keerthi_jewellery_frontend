@@ -1,23 +1,23 @@
-"use client"
-import * as React from "react"
-import * as AccordionPrimitive from "@radix-ui/react-accordion"
-import { Plus, Minus,  } from "lucide-react"
+"use client";
+import * as React from "react";
+import * as AccordionPrimitive from "@radix-ui/react-accordion";
+import { Plus, Minus } from "lucide-react";
 
-import { cn } from "../../lib/utils"
+import { cn } from "../../lib/utils";
 
-const Accordion = AccordionPrimitive.Root
+const Accordion = AccordionPrimitive.Root;
 
 const AccordionItem = React.forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Item>,
   React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Item>
->(({ className, ...props }, ref) => (
+>(({ className, ...props}, ref) => (
   <AccordionPrimitive.Item
     ref={ref}
     className={cn("border-b", className)}
     {...props}
   />
-))
-AccordionItem.displayName = "AccordionItem"
+));
+AccordionItem.displayName = "AccordionItem";
 
 const AccordionTrigger = React.forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Trigger>,
@@ -38,9 +38,9 @@ const AccordionTrigger = React.forwardRef<
       >
         {children}
         {isOpen ? (
-          <Minus className="h-4 w-4 transition-transform duration-200" />
+          <Minus className="h-4 w-4 transition-transform duration-200 pointer-events-none" />
         ) : (
-          <Plus className="h-4 w-4 transition-transform duration-200" />
+          <Plus className="h-4 w-4 transition-transform duration-200 pointer-events-none" />
         )}
       </AccordionPrimitive.Trigger>
     </AccordionPrimitive.Header>
@@ -62,7 +62,7 @@ const AccordionContent = React.forwardRef<
   >
     <div className="pb-4 pt-0">{children}</div>
   </AccordionPrimitive.Content>
-))
-AccordionContent.displayName = AccordionPrimitive.Content.displayName
+));
+AccordionContent.displayName = AccordionPrimitive.Content.displayName;
 
-export { Accordion, AccordionItem, AccordionTrigger, AccordionContent }
+export { Accordion, AccordionItem, AccordionTrigger, AccordionContent };

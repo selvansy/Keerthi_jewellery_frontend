@@ -6,7 +6,7 @@ import { CalendarDays, Plus, Minus, SquarePen } from "lucide-react";
 import { getSchemeClassifications,allinstallmenttype,getallbranch,getallmetal,getallschemetypes,getschemeById
     ,allFundtype,addscheme,updateScheme,puritybymetal,buygsttype,wastagetype,getBranchById
 } from "../../../api/Endpoints";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery,useQueries} from "@tanstack/react-query";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import PayableDetails from "./PayableDetails";
@@ -41,8 +41,9 @@ const SchemeForm = () => {
       schemeCode: "",
       metalType: null,
       id_classification: "",
-      purity: null,
-      instalmentType: null,
+      id_metal:'',
+      id_purity:"",
+      installment_type: null,
       maturityMonth: "",
       schemeType: null,
       totalCount: null,
@@ -58,10 +59,14 @@ const SchemeForm = () => {
       buy_gst: "",
       buytgsttype: "",
       wastagebenefit: "",
+      wastagetype:'', // no need to pass
+      min_installments:'',
+      installments:'',
 
       // FundDetails fields
       min_fund: "",
       max_fund: "",
+      saving_type:'',
 
       // PaymentDetails fields
       first_paid_percentage: "",
@@ -150,6 +155,8 @@ const SchemeForm = () => {
   const [descriptionImage, setDescriptionImage] = useState(null);
   const [scheme_type, setSchemeType] = useState(0);
   const [branch, setBranch] = useState(() => accessBranch === '0' ? [] : {});
+  const [metal,setMetal] =useState([])
+  const [purity,setPurity]= useState([])
   const [layout_color, setLayoutColor] = useState("#015173");
   const [classType, setClass] = useState(false);
   const [amounts, setAmounts] = useState([]);
@@ -157,11 +164,10 @@ const SchemeForm = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [selectedAmount, setSelectedAmount] = useState(null);
   const [editAmount, setEditAmount] = useState("");
-  // sample data
-  const metalOptions = [
-    { value: "gold", label: "Gold" },
-    { value: "silver", label: "Silver" },
-  ];
+  const [installment_data,setInstallment] = useState([])
+  const [funddata,setFundType]= useState([])
+  const [bygstdata,setBuyGst]= useState([])
+  const [wastagedata,setWastageType]= useState([]);
 
   //query and mutations
   const { data: classificationData } = useQuery({
@@ -169,19 +175,76 @@ const SchemeForm = () => {
     queryFn: getSchemeClassifications,
   });
 
-  const { data: clientBranches } = useQuery({
+  const { data: branchData } = useQuery({
+    queryKey: ["branches", accessBranch, id_branch],
+    queryFn: async () => {
+      if (accessBranch === "0") {
+        return getallbranch();
+      }
+      return getBranchById(id_branch);
+    },
+    enabled: Boolean(accessBranch), 
+    staleTime: 5 * 60 * 1000,
+    cacheTime: 10 * 60 * 1000,
+  });
+
+  const { data: metalResponse } = useQuery({
     queryKey: ["branches"],
-    queryFn: getallbranch,
-    enabled: accessBranch === "0",
+    queryFn: getallmetal,
   });
 
-  const { data: employeeBranches } = useQuery({
-    queryKey: ["branches",id_branch],
-    queryFn:()=> getBranchById(id_branch),
-    enabled: accessBranch !== "0",
+  const { data: purityResponse } = useQuery({
+    queryKey: ["purity", formik.values.id_metal],
+    queryFn: () => puritybymetal(formik.values.id_metal),
+    enabled: !!formik.values.id_metal,
   });
+  
+  const results = useQueries({
+    queries: [
+      { queryKey: ["installment_type"], queryFn: allinstallmenttype },
+      { queryKey: ["fund_type"], queryFn: allFundtype },
+      { queryKey: ["buygsttype"], queryFn: buygsttype },
+      { queryKey: ["wastagetype"], queryFn: wastagetype },
+    ],
+  });
+  
+  const [installment_type, fund_type, buy_gst,wastage_type] = results.map((result) => result.data);
 
-  //useEffects
+  useEffect(() => {
+    if (installment_type?.data) {
+      const installment_data = installment_type.data.map((item) => ({
+        value: item.installment_type,
+        label: item.installment_name,
+      }));
+      setInstallment(installment_data);
+    }
+  
+    if (fund_type?.data) {
+      const fund_data = fund_type.data.map((item) => ({
+        value: item.id,
+        label: item.name,
+      }));
+      setFundType(fund_data);
+    }
+  
+    if (buy_gst?.data) {
+      const buy_gst_data = buy_gst.data.map((item) => ({
+        value: item.id,
+        label: item.name,
+      }));
+      setBuyGst(buy_gst_data);
+    }
+  
+    if (wastage_type?.data) {
+      const wastage_data = wastage_type.data.map((item) => ({
+        value: item.id,
+        label: item.name,
+      }));
+      setWastageType(wastage_data);
+    }
+  }, [installment_type, fund_type, buy_gst, wastage_type]);
+  
+  //useEffect
   useEffect(() => {
     if (classificationData) {
       const data = classificationData.data.map((item) => ({
@@ -205,19 +268,45 @@ const SchemeForm = () => {
     formik.values.totalCount,
   ]);
 
-  useEffect(()=>{
-    if(clientBranches){
-        const data = clientBranches.data.map((item)=>({
-            value:item._id,
-            label:item.branch_name
-        }))
-        setBranch(data)
+   // useEffect for branches
+   useEffect(() => {
+    if (!branchData) return;
+
+    if (accessBranch === "0" && branchData.data) {
+      const formattedBranches = branchData.data.map((item) => ({
+        value: item._id,
+        label: item.branch_name,
+      }));
+      setBranch(formattedBranches);
+    } else if (branchData.data) {
+      setBranch(branchData.data);
+      formik.setFieldValue("id_branch", branchData.data._id);
     }
-    if(employeeBranches){
-        setBranch(employeeBranches?.data)
-        formik.setFieldValue("id_branch",employeeBranches?.data?._id)
+  }, [branchData, accessBranch]);
+
+  // useEffect for metals
+  useEffect(() => {
+    if (metalResponse) {
+      const data = metalResponse.data.map((item) => ({
+        value: item._id,
+        label: item.metal_name,
+      }));
+      setMetal(data);
     }
-  },[clientBranches,employeeBranches])
+  }, [metalResponse]);
+
+  // useEffect for purity
+  useEffect(() => {
+    if (purityResponse) {
+        console.log(purityResponse)
+      const data = purityResponse.data.map((item) => ({
+        value: item._id,
+        label: item.purity_name,
+      }));
+      setPurity(data);
+    }
+  }, [purityResponse]);
+
   //handler functions
   const handleFileUpload = (e) => {};
 
@@ -355,13 +444,11 @@ const SchemeForm = () => {
             <label className="block text-sm font-medium mb-1">
               Branch <span className="text-red-500">*</span>
             </label>
-            <div>{console.log(branch)}</div>
             <input
               type="text"
               readOnly
               value={branch?.branch_name || ""}
               className="w-full border rounded-md px-3 py-2"
-            //   {...formik.getFieldProps("id_banch")}
             />
             {formik.errors.id_banch && (
               <div className="text-red-500 text-sm mt-1">
@@ -370,25 +457,6 @@ const SchemeForm = () => {
             )}
           </div>
           )}
-          <div>
-            <label className="block text-sm font-medium mb-1">
-              Metal Type <span className="text-red-500">*</span>
-            </label>
-            <Select
-              styles={customStyles}
-              options={metalOptions}
-              placeholder="Select metal type"
-              value={formik.values.metalType}
-              onChange={(option) => formik.setFieldValue("metalType", option)}
-              onBlur={() => formik.setFieldTouched("metalType", true)}
-            />
-            {formik.touched.metalType && formik.errors.metalType && (
-              <div className="text-red-500 text-sm mt-1">
-                {formik.errors.metalType}
-              </div>
-            )}
-          </div>
-
           <div>
             <label className="block text-sm font-medium mb-1">
               Classification <span className="text-red-500">*</span>
@@ -410,7 +478,44 @@ const SchemeForm = () => {
                 </div>
               )}
           </div>
-
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              Metal Type <span className="text-red-500">*</span>
+            </label>
+            <Select
+              styles={customStyles}
+              options={metal}
+              placeholder="Select metal"
+              value={metal.find(
+                (option) => option.value === formik.values.id_metal
+              )}
+              onChange={(option) => formik.setFieldValue("id_metal", option.value)}
+              onBlur={() => formik.setFieldTouched("id_metal", true)}
+            />
+            {formik.touched.id_metal && formik.errors.id_metal && (
+              <div className="text-red-500 text-sm mt-1">
+                {formik.errors.id_metal}
+              </div>
+            )}
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              Purity <span className="text-red-500">*</span>
+            </label>
+            <Select
+              styles={customStyles}
+              options={purity || []}
+              placeholder="Select metal type"
+              value={formik.values.id_purity}
+              onChange={(option) => formik.setFieldValue("id_purity", option)}
+              onBlur={() => formik.setFieldTouched("id_purity", true)}
+            />
+            {formik.touched.id_purity && formik.errors.id_purity && (
+              <div className="text-red-500 text-sm mt-1">
+                {formik.errors.id_purity}
+              </div>
+            )}
+          </div>
           <div className="relative w-full">
             <label className="block text-sm font-medium mb-1">
               Maturity Month <span className="text-red-500">*</span>
@@ -441,17 +546,19 @@ const SchemeForm = () => {
             </label>
             <Select
               styles={customStyles}
-              options={classifications}
+              options={installment_data}
               placeholder="Select Classification"
-              value={formik.values.instalmentType}
+              value={installment_data.find(
+                (option) => option.value === formik.values.installment_data
+              )}
               onChange={(option) =>
-                formik.setFieldValue("instalmentType", option)
+                formik.setFieldValue("installment_data", option)
               }
-              onBlur={() => formik.setFieldTouched("instalmentType", true)}
+              onBlur={() => formik.setFieldTouched("installment_data", true)}
             />
-            {formik.touched.instalmentType && formik.errors.instalmentType && (
+            {formik.touched.installment_data && formik.errors.installment_data && (
               <div className="text-red-500 text-sm mt-1">
-                {formik.errors.instalmentType}
+                {formik.errors.installment_data}
               </div>
             )}
           </div>
@@ -591,8 +698,10 @@ const SchemeForm = () => {
               formik={formik}
               scheme_type={scheme_type}
               layout_color={layout_color}
-              gstTypeData={[]}
-              wastageType={[]}
+              gstTypeData={bygstdata || []}
+              wastagedata={wastagedata || []}
+              install_type={formik.values.installment_type}
+              classType={classType}
             />
           </AccordionContent>
         </AccordionItem>
@@ -602,16 +711,9 @@ const SchemeForm = () => {
             Fund Details
           </AccordionTrigger>
           <AccordionContent className="px-6 py-4">
-            <FundDetails formik={formik} layout_color={layout_color} />
-          </AccordionContent>
-        </AccordionItem>
-
-        <AccordionItem value="payment" className="border rounded-lg bg-white">
-          <AccordionTrigger className="px-6 py-4">
-            Payment Details
-          </AccordionTrigger>
-          <AccordionContent className="px-6 py-4">
-            <PaymentDetails formik={formik} layout_color={layout_color} />
+            <FundDetails formik={formik} layout_color={layout_color} 
+            fundtype={funddata}
+            />
           </AccordionContent>
         </AccordionItem>
 
@@ -624,7 +726,7 @@ const SchemeForm = () => {
           </AccordionContent>
         </AccordionItem>
 
-        <AccordionItem value="customer" className="border rounded-lg bg-white">
+        <AccordionItem value="agent" className="border rounded-lg bg-white">
           <AccordionTrigger className="px-6 py-4">
             Agent Details
           </AccordionTrigger>
@@ -642,6 +744,15 @@ const SchemeForm = () => {
           </AccordionContent>
         </AccordionItem>
       </Accordion>
+
+      {/* <AccordionItem value="payment" className="border rounded-lg bg-white">
+          <AccordionTrigger className="px-6 py-4">
+            Payment Details
+          </AccordionTrigger>
+          <AccordionContent className="px-6 py-4">
+            <PaymentDetails formik={formik} layout_color={layout_color} />
+          </AccordionContent>
+        </AccordionItem> */}
 
       <div className="flex justify-end space-x-4">
         <button

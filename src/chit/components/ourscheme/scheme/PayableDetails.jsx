@@ -1,163 +1,164 @@
 import React from "react";
 import Select from "react-select";
 
-const PayableDetails = ({ formik, scheme_type, layout_color, gstTypeData, wastageType }) => {
-  // Options for react-select dropdowns
-  const gstTypeOptions = gstTypeData.map((type) => ({
-    value: type.id,
-    label: type.name,
-  }));
+const PayableDetails = ({
+  formik,
+  scheme_type,
+  layout_color,
+  gstTypeData,
+  wastagedata,
+  install_type,
+  classType,
+}) => {
+  // Customisations for react-select
+  const customStyles = {
+    control: (base, state) => ({
+      ...base,
+      minHeight: "42px",
+      border: state.isFocused ? "1px solid black" : "1px solid #e2e8f0",
+      boxShadow: state.isFocused ? "0 0 0 1px black" : "none",
+      borderRadius: "0.375rem",
+    }),
+  };
 
-  const wastageOptions = wastageType.map((data) => ({
-    value: data.id,
-    label: data.name,
-  }));
+  // Common height for all input fields
+  const inputHeight = "42px";
 
   return (
     <div className="grid grid-rows-2 md:grid-cols-2 gap-5 border-t-2 border-gray-300">
-      {(scheme_type < 3) && (
-        <div className="flex flex-col mt-2">
-          <label className="text-black mb-2 font-normal">
-            Amounts <span className="text-red-400"> *</span>
-          </label>
-          <div className="relative">
-            <input
-              type="number"
-              name="amount"
-              value={formik.values.amount}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-              placeholder="Enter Amount"
-            />
-            <span
-              className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
-              style={{ backgroundColor: layout_color }}
-            >
-              INR
-            </span>
+      {!classType && (
+        <>
+          <div className="flex flex-col mt-2">
+            <label className="text-black mb-2 font-normal">
+              Amounts <span className="text-red-400"> *</span>
+            </label>
+            <div className="relative">
+              <input
+                type="number"
+                name="amount"
+                value={formik.values.amount}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                placeholder="Enter Amount"
+                style={{ height: inputHeight }}
+              />
+              <span
+                className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                style={{ backgroundColor: layout_color }}
+              >
+                INR
+              </span>
+            </div>
+            {formik.touched.amount && formik.errors.amount && (
+              <span className="text-red-500 text-sm mt-1">
+                {formik.errors.amount}
+              </span>
+            )}
           </div>
-          {formik.touched.amount && formik.errors.amount && (
-            <span className="text-red-500 text-sm mt-1">{formik.errors.amount}</span>
-          )}
-        </div>
-      )}
-
-      {(scheme_type >= 4 || scheme_type <= 10) && (
-        <div className="flex flex-col lg:mt-2">
-          <label className="text-black mb-2 font-normal">
-            Min Amount <span className="text-red-400"> *</span>
-          </label>
-          <div className="relative">
-            <input
-              type="number"
-              name="min_amount"
-              value={formik.values.min_amount}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-              placeholder="Enter Min Amount"
-            />
-            <span
-              className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
-              style={{ backgroundColor: layout_color }}
-            >
-              INR
-            </span>
+          <div className="flex flex-col lg:mt-2">
+            <label className="text-black mb-2 font-normal">
+              Min Amount <span className="text-red-400"> *</span>
+            </label>
+            <div className="relative">
+              <input
+                type="number"
+                name="min_amount"
+                value={formik.values.min_amount}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                placeholder="Enter Min Amount"
+                style={{ height: inputHeight }}
+              />
+              <span
+                className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                style={{ backgroundColor: layout_color }}
+              >
+                INR
+              </span>
+            </div>
+            {formik.touched.min_amount && formik.errors.min_amount && (
+              <span className="text-red-500 text-sm mt-1">
+                {formik.errors.min_amount}
+              </span>
+            )}
           </div>
-          {formik.touched.min_amount && formik.errors.min_amount && (
-            <span className="text-red-500 text-sm mt-1">{formik.errors.min_amount}</span>
-          )}
-        </div>
-      )}
-
-      {(scheme_type >= 4 || scheme_type <= 10) && (
-        <div className="flex flex-col lg:mt-2">
-          <label className="text-black mb-2 font-normal">
-            Max Amount <span className="text-red-400"> *</span>
-          </label>
-          <div className="relative">
-            <input
-              type="number"
-              name="max_amount"
-              value={formik.values.max_amount}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-              placeholder="Enter Max Amount"
-            />
-            <span
-              className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
-              style={{ backgroundColor: layout_color }}
-            >
-              INR
-            </span>
+          <div className="flex flex-col lg:mt-2">
+            <label className="text-black mb-2 font-normal">
+              Max Amount <span className="text-red-400"> *</span>
+            </label>
+            <div className="relative">
+              <input
+                type="number"
+                name="max_amount"
+                value={formik.values.max_amount}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                placeholder="Enter Max Amount"
+                style={{ height: inputHeight }}
+              />
+              <span
+                className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                style={{ backgroundColor: layout_color }}
+              >
+                INR
+              </span>
+            </div>
+            {formik.touched.max_amount && formik.errors.max_amount && (
+              <span className="text-red-500 text-sm mt-1">
+                {formik.errors.max_amount}
+              </span>
+            )}
           </div>
-          {formik.touched.max_amount && formik.errors.max_amount && (
-            <span className="text-red-500 text-sm mt-1">{formik.errors.max_amount}</span>
-          )}
-        </div>
+        </>
       )}
-
-      {(scheme_type === 3) && (
-        <div className="flex flex-col lg:mt-2">
-          <label className="text-black mb-2 font-normal">
-            Min Weight <span className="text-red-400"> *</span>
-          </label>
-          <div className="relative">
-            <input
-              type="number"
-              name="min_weight"
-              value={formik.values.min_weight}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-              placeholder="Enter Min Weight"
-            />
-            <span
-              className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
-              style={{ backgroundColor: layout_color }}
-            >
-              GRM
-            </span>
-          </div>
-          {formik.touched.min_weight && formik.errors.min_weight && (
-            <span className="text-red-500 text-sm mt-1">{formik.errors.min_weight}</span>
-          )}
-        </div>
-      )}
-
-      {(scheme_type === 3) && (
-        <div className="flex flex-col lg:mt-2">
-          <label className="text-black mb-2 font-normal">
-            Max Weight <span className="text-red-400"> *</span>
-          </label>
-          <div className="relative">
-            <input
-              type="number"
-              name="max_weight"
-              value={formik.values.max_weight}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-              placeholder="Enter Max Weight"
-            />
-            <span
-              className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
-              style={{ backgroundColor: layout_color }}
-            >
-              GRM
-            </span>
-          </div>
-          {formik.touched.max_weight && formik.errors.max_weight && (
-            <span className="text-red-500 text-sm mt-1">{formik.errors.max_weight}</span>
-          )}
-        </div>
-      )}
-
       <div className="flex flex-col lg:mt-2">
-        <label className="text-black mb-2 font-normal">
-          Buy GST
+        <label className="block text-sm font-medium mb-1">
+          Installments <span className="text-red-500">*</span>
+        </label>
+        <input
+          type="number"
+          name="min_installments"
+          value={formik.values.installments}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          className="w-full border rounded-md px-3 py-2"
+          placeholder="Installments"
+          style={{ height: inputHeight }}
+        />
+        {formik.touched.Installments && formik.errors.Installments && (
+          <span className="text-red-500 text-sm mt-1">
+            {formik.errors.Installments}
+          </span>
+        )}
+      </div>
+      <div>
+        <label className="block text-sm font-medium mb-1 mt-2">
+          Buy GST Type<span className="text-red-500">*</span>
+        </label>
+        <Select
+          styles={customStyles}
+          options={gstTypeData || []}
+          placeholder="Select gst type"
+          value={gstTypeData.find(
+            (option) => option.value === formik.values.buytgsttype
+          )}
+          onChange={(option) =>
+            formik.setFieldValue("buytgsttype", option.value)
+          }
+          onBlur={() => formik.setFieldTouched("buytgsttype", true)}
+        />
+        {formik.touched.buytgsttype && formik.errors.buytgsttype && (
+          <div className="text-red-500 text-sm mt-1">
+            {formik.errors.buytgsttype}
+          </div>
+        )}
+      </div>
+      <div className="flex flex-col lg:mt-2">
+        <label className="block text-sm font-medium mb-1">
+          Buy GST <span className="text-red-500">*</span>
         </label>
         <div className="relative">
           <input
@@ -166,8 +167,9 @@ const PayableDetails = ({ formik, scheme_type, layout_color, gstTypeData, wastag
             value={formik.values.buy_gst}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+            className="w-full border rounded-md px-3 py-2"
             placeholder="Enter Buy GST"
+            style={{ height: inputHeight }}
           />
           <span
             className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
@@ -177,50 +179,11 @@ const PayableDetails = ({ formik, scheme_type, layout_color, gstTypeData, wastag
           </span>
         </div>
         {formik.touched.buy_gst && formik.errors.buy_gst && (
-          <span className="text-red-500 text-sm mt-1">{formik.errors.buy_gst}</span>
+          <span className="text-red-500 text-sm mt-1">
+            {formik.errors.buy_gst}
+          </span>
         )}
       </div>
-
-      <div className="flex flex-col lg:mt-2">
-        <label className="text-black mb-1 font-medium">
-          Buy GST Type
-        </label>
-        <div className="relative">
-          <select
-            name="buytgsttype"
-            value={formik.values.buytgsttype}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            className="cursor-pointer appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700"
-          >
-            <option value="" className="text-gray-700">
-              --Select--
-            </option>
-            {gstTypeData.map((type) => (
-              <option key={type._id} value={type.id}>
-                {type.name}
-              </option>
-            ))}
-          </select>
-          <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-            <svg
-              className="h-4 w-4 text-gray-400"
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="3"
-              viewBox="0 0 24 24"
-              stroke="black"
-            >
-              <path d="M19 9l-7 7-7-7"></path>
-            </svg>
-          </div>
-        </div>
-        {formik.touched.buytgsttype && formik.errors.buytgsttype && (
-          <span className="text-red-500 text-sm mt-1">{formik.errors.buytgsttype}</span>
-        )}
-      </div>
-
       <div className="flex flex-col lg:mt-2">
         <label className="text-black mb-2 font-normal">
           Benefit Minimum Installment
@@ -233,49 +196,41 @@ const PayableDetails = ({ formik, scheme_type, layout_color, gstTypeData, wastag
           onBlur={formik.handleBlur}
           className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
           placeholder="Enter Min Installments"
+          style={{ height: inputHeight }}
         />
         {formik.touched.min_installments && formik.errors.min_installments && (
-          <span className="text-red-500 text-sm mt-1">{formik.errors.min_installments}</span>
+          <span className="text-red-500 text-sm mt-1">
+            {formik.errors.min_installments}
+          </span>
         )}
       </div>
 
-      <div className="flex flex-col lg:mt-2">
-        <label className="text-black mb-1 font-medium">
-          Benefit Wastage
+      <div>
+        <label className="block text-sm font-medium mb-1 mt-2">
+          Benefit Wastage<span className="text-red-500">*</span>
         </label>
-        <div className="relative">
-          <select
-            name="wastagebenefit"
-            value={formik.values.wastagebenefit}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            className="cursor-pointer appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700"
-          >
-            <option value="" className="text-gray-700">
-              --Select--
-            </option>
-            {wastageType.map((data) => (
-              <option key={data._id} value={data.id}>
-                {data.name}
-              </option>
-            ))}
-          </select>
-          <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-            <svg
-              className="h-4 w-4 text-gray-400"
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="3"
-              viewBox="0 0 24 24"
-              stroke="black"
-            >
-              <path d="M19 9l-7 7-7-7"></path>
-            </svg>
+        <Select
+          styles={{
+            ...customStyles,
+            menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+          }}
+          options={wastagedata || []}
+          placeholder="Select wastage type"
+          value={wastagedata.find(
+            (option) => option.value === formik.values.wastagetype
+          )}
+          onChange={(option) =>
+            formik.setFieldValue("wastageType", option.value)
+          }
+          onBlur={() => formik.setFieldTouched("wastageType", true)}
+          menuPortalTarget={document.body} 
+          menuPosition="fixed"
+        />
+
+        {formik.touched.wastageType && formik.errors.wastageType && (
+          <div className="text-red-500 text-sm mt-1">
+            {formik.errors.wastageType}
           </div>
-        </div>
-        {formik.touched.wastagebenefit && formik.errors.wastagebenefit && (
-          <span className="text-red-500 text-sm mt-1">{formik.errors.wastagebenefit}</span>
         )}
       </div>
     </div>

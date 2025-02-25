@@ -2,45 +2,29 @@ import React from "react";
 import Select from "react-select";
 
 const FundDetails = ({ formik, layout_color, fundtype }) => {
+  console.log(fundtype)
   return (
     <div className="grid grid-rows-2 md:grid-cols-2 gap-5 border-t-2 border-gray-300">
-      <div className="flex flex-col mt-2">
-        <label className="text-black mb-1 font-medium">
-          Saving Type<span className="text-red-400">*</span>
+      <div>
+        <label className="block text-sm font-medium mb-1 mt-2">
+          Saving Type<span className="text-red-500">*</span>
         </label>
-        <div className="relative">
-          <select
-            name="saving_type"
-            value={formik.values.saving_type}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            className="cursor-pointer appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700"
-          >
-            <option value="" className="text-gray-700">
-              --Select--
-            </option>
-            {(fundtype || []).map((type) => (
-              <option key={type._id} value={type.id}>
-                {type.name}
-              </option>
-            ))}
-          </select>
-          <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-            <svg
-              className="h-4 w-4 text-gray-400"
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="3"
-              viewBox="0 0 24 24"
-              stroke="black"
-            >
-              <path d="M19 9l-7 7-7-7"></path>
-            </svg>
-          </div>
-        </div>
+        <Select
+          styles={fundtype}
+          options={fundtype || []}
+          placeholder="Select saving type"
+          value={fundtype.find(
+            (option) => option.value === formik.values.saving_type
+          )}
+          onChange={(option) =>
+            formik.setFieldValue("saving_type", option.value)
+          }
+          onBlur={() => formik.setFieldTouched("saving_type", true)}
+        />
         {formik.touched.saving_type && formik.errors.saving_type && (
-          <span className="text-red-500 text-sm mt-1">{formik.errors.saving_type}</span>
+          <div className="text-red-500 text-sm mt-1">
+            {formik.errors.saving_type}
+          </div>
         )}
       </div>
 
