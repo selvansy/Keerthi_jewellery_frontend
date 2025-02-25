@@ -66,6 +66,7 @@ const AgentDetails = ({ formik, scheme_type, layout_color, gstTypeData, wastageT
             Agent Restriction <span className="text-red-400"> *</span>
           </label>
           <ToggleSwitch
+          status={restriction}
           layout_color={layout_color}
           toggle_status={handleToggle}
           />
