@@ -48,6 +48,13 @@ const SchemeForm = () => {
   const id_branch = roleData?.id_branch;
   const accessBranch = roleData?.branch;
 
+  const maxMaturityPeriods = {
+    1: 12,    // Maximum 12 months for "Month" (installment_type: 1)
+    2: 52,    // Maximum 52 weeks for "Week" (installment_type: 2)
+    3: 336,   // Maximum 336 days for "Daily" (installment_type: 3)
+    4: 1,     // Maximum 1 year for "Year" (installment_type: 4)
+  };
+
   const formik = useFormik({
     initialValues: {
       // SchemeForm fields
@@ -541,7 +548,7 @@ const SchemeForm = () => {
               options={purity || []}
               placeholder="Select metal type"
               value={formik.values.id_purity}
-              onChange={(option) => formik.setFieldValue("id_purity", option)}
+              onChange={(option) => formik.setFieldValue("id_purity", option.value)}
               onBlur={() => formik.setFieldTouched("id_purity", true)}
             />
             {formik.touched.id_purity && formik.errors.id_purity && (
