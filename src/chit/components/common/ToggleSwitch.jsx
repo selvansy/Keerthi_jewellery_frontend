@@ -1,28 +1,24 @@
-import React, { useState } from "react";
+import React from "react";
 
-const ToggleSwitch = ({status, layout_color,toggle_status}) => {
-
-  const handleToggle = () => {
-    toggle_status()
-    setIsYes(!status);
-  };
-
+const ToggleSwitch = ({ status, layout_color, toggle_status }) => {
   return (
     <div className="flex items-center space-x-2">
-      <span className="text-sm font-medium text-gray-700">
-        {status ? "Yes" : "No"}
-      </span>
       <button
         type="button"
-        onClick={handleToggle}
-        className="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none bg-gray-300"
-        style={{ backgroundColor: status ? layout_color : "gray" }}
+        role="switch"
+        aria-checked={status}
+        onClick={toggle_status}
+        className={`relative flex items-center w-14 h-8 transition-colors duration-300 focus:outline-none ${
+          status ? 'bg-[#015173]' : "bg-gray-400"
+        }`}
       >
         <span
-          className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+          className={`absolute flex items-center justify-center w-6 h-6 bg-white shadow-md transform transition-transform duration-300 p-2 ${
             status ? "translate-x-6" : "translate-x-1"
           }`}
-        />
+        >
+          {status ? "Yes" : "No"}
+        </span>
       </button>
     </div>
   );

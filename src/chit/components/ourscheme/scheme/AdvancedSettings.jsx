@@ -13,6 +13,7 @@ const AdvancedSettings = ({ formik, layout_color }) => {
           <input
             type="number"
             name="limit_installment"
+            onWheel={(e) => e.target.blur()}
             value={formik.values.limit_installment}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
@@ -34,6 +35,7 @@ const AdvancedSettings = ({ formik, layout_color }) => {
           <input
             type="number"
             name="pending_due_installment"
+            onWheel={(e) => e.target.blur()}
             value={formik.values.pending_due_installment}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
@@ -56,6 +58,7 @@ const AdvancedSettings = ({ formik, layout_color }) => {
           <input
             type="number"
             name="paid_installment"
+            onWheel={(e) => e.target.blur()}
             value={formik.values.paid_installment}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
@@ -77,6 +80,7 @@ const AdvancedSettings = ({ formik, layout_color }) => {
           <input
             type="number"
             name="scheme_customer_limit"
+            onWheel={(e) => e.target.blur()}
             value={formik.values.scheme_customer_limit}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
@@ -98,6 +102,7 @@ const AdvancedSettings = ({ formik, layout_color }) => {
           <input
             type="number"
             name="number_of_gifts"
+            onWheel={(e) => e.target.blur()}
             value={formik.values.number_of_gifts}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
@@ -119,6 +124,7 @@ const AdvancedSettings = ({ formik, layout_color }) => {
           <input
             type="number"
             name="reward_amount"
+            onWheel={(e) => e.target.blur()}
             value={formik.values.reward_amount}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
@@ -146,6 +152,7 @@ const AdvancedSettings = ({ formik, layout_color }) => {
           <input
             type="number"
             name="not_paid_installment"
+            onWheel={(e) => e.target.blur()}
             value={formik.values.not_paid_installment}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
@@ -167,6 +174,7 @@ const AdvancedSettings = ({ formik, layout_color }) => {
           <input
             type="number"
             name="convenience_fee"
+            onWheel={(e) => e.target.blur()}
             value={formik.values.convenience_fee}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
@@ -194,6 +202,7 @@ const AdvancedSettings = ({ formik, layout_color }) => {
           <input
             type="number"
             name="fine_amount"
+            onWheel={(e) => e.target.blur()}
             value={formik.values.fine_amount}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
@@ -221,6 +230,7 @@ const AdvancedSettings = ({ formik, layout_color }) => {
           <input
             type="number"
             name="cumulative_fine_amount"
+            onWheel={(e) => e.target.blur()}
             value={formik.values.cumulative_fine_amount}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}

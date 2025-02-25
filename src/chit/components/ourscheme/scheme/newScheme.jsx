@@ -48,13 +48,6 @@ const SchemeForm = () => {
   const id_branch = roleData?.id_branch;
   const accessBranch = roleData?.branch;
 
-  const maxMaturityPeriods = {
-    1: 12,    // Maximum 12 months for "Month" (installment_type: 1)
-    2: 52,    // Maximum 52 weeks for "Week" (installment_type: 2)
-    3: 336,   // Maximum 336 days for "Daily" (installment_type: 3)
-    4: 1,     // Maximum 1 year for "Year" (installment_type: 4)
-  };
-
   const formik = useFormik({
     initialValues: {
       // SchemeForm fields
@@ -65,7 +58,7 @@ const SchemeForm = () => {
       id_metal: "",
       id_purity: "",
       installment_type: null,
-      maturity_period: '', // maturityMonth
+      maturity_period: "", // maturityMonth
       schemeType: null,
       totalCount: null,
       incrementRate: null,
@@ -87,26 +80,39 @@ const SchemeForm = () => {
       //grce
       graceType: "",
       grace_period: "",
-      grace_fine:"",
+      grace_fine: "",
 
       // FundDetails fields
       min_fund: "",
       max_fund: "",
       saving_type: "",
 
-      // PaymentDetails fields
-      first_paid_percentage: "",
-      second_paid_percentage: "",
+      //agent referral
+      agent_referral: "",
+      agent_incentive: "",
+      cus_remark: "",
+      agent_target: "",
+      partial_commission: "",
 
       // AdvancedSettings fields
       limit_installment: "",
       pending_due_installment: "",
+      paid_installment: "",
+      scheme_customer_limit: "",
+      number_of_gifts: "",
+      reward_amount: "",
+      not_paid_installment: "",
+      convenience_fee: "",
+      fine_amount: "",
+      cumulative_fine_amount: "",
+      display_referral: false,
+      display_weight_in_ledger: false,
     },
     validationSchema: Yup.object({
       // SchemeForm validation
       schemeName: Yup.string().required("Scheme name is required"),
       schemeCode: Yup.string().required("Scheme code is required"),
-      installment_type:Yup.string().required("Installment type is required"),
+      installment_type: Yup.string().required("Installment type is required"),
       metalType: Yup.object().required("Metal type is required"),
       id_classification: Yup.string().required("Classification is required"),
       id_purity: Yup.string().required("Purity is required"),
@@ -165,16 +171,65 @@ const SchemeForm = () => {
         "Second Payment Percentage is required"
       ),
 
+      agent_referral: Yup.number()
+        .typeError("Must be a number")
+        .positive("Must be a positive number"),
+      agent_incentive: Yup.number()
+        .typeError("Must be a number")
+        .positive("Must be a positive number"),
+      cus_remark: Yup.number()
+        .typeError("Must be a number")
+        .positive("Must be a positive number"),
+      agent_target: Yup.number()
+        .typeError("Must be a number")
+        .positive("Must be a positive number"),
+      partial_commission: Yup.number()
+        .typeError("Must be a number")
+        .positive("Must be a positive number")
+        .when("agent_target", {
+          is: (value) => value && value > 0,
+          then: Yup.number().required(
+            "Partial commission is required when agent target is set"
+          ),
+        }),
+
       // AdvancedSettings validation
-      limit_installment: Yup.number().required("Limit Installment is required"),
-      pending_due_installment: Yup.number().required(
-        "Pending Due Installment is required"
-      ),
+      limit_installment: Yup.number()
+        .typeError("Must be a number")
+        .positive("Must be a positive number"),
+      pending_due_installment: Yup.number()
+        .typeError("Must be a number")
+        .positive("Must be a positive number"),
+      paid_installment: Yup.number()
+        .typeError("Must be a number")
+        .positive("Must be a positive number"),
+      scheme_customer_limit: Yup.number()
+        .typeError("Must be a number")
+        .positive("Must be a positive number"),
+      number_of_gifts: Yup.number()
+        .typeError("Must be a number")
+        .positive("Must be a positive number"),
+      reward_amount: Yup.number()
+        .typeError("Must be a number")
+        .positive("Must be a positive number"),
+      not_paid_installment: Yup.number()
+        .typeError("Must be a number")
+        .positive("Must be a positive number"),
+      convenience_fee: Yup.number()
+        .typeError("Must be a number")
+        .positive("Must be a positive number"),
+      fine_amount: Yup.number()
+        .typeError("Must be a number")
+        .positive("Must be a positive number"),
+      cumulative_fine_amount: Yup.number()
+        .typeError("Must be a number")
+        .positive("Must be a positive number"),
     }),
     onSubmit: (values) => {
       console.log("Form submitted:", values);
     },
   });
+  console.log(formik.values);
 
   // Customisations for react-select
   const customStyles = {
@@ -548,7 +603,9 @@ const SchemeForm = () => {
               options={purity || []}
               placeholder="Select metal type"
               value={formik.values.id_purity}
-              onChange={(option) => formik.setFieldValue("id_purity", option.value)}
+              onChange={(option) =>
+                formik.setFieldValue("id_purity", option.value)
+              }
               onBlur={() => formik.setFieldTouched("id_purity", true)}
             />
             {formik.touched.id_purity && formik.errors.id_purity && (
@@ -722,10 +779,7 @@ const SchemeForm = () => {
       </div>
 
       <Accordion type="multiple" collapsible className="space-y-4">
-        <AccordionItem
-          value="grace"
-          className="border rounded-lg bg-white"
-        >
+        <AccordionItem value="grace" className="border rounded-lg bg-white">
           <AccordionTrigger className="px-6 py-4">
             Grace Period
           </AccordionTrigger>
