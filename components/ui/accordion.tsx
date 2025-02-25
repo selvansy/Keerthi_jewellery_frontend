@@ -24,7 +24,7 @@ const AccordionTrigger = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Trigger>
 >(({ className, children, ...props }, ref) => {
   const [isOpen, setIsOpen] = React.useState(false);
-
+  
   return (
     <AccordionPrimitive.Header className="flex">
       <AccordionPrimitive.Trigger
@@ -37,7 +37,7 @@ const AccordionTrigger = React.forwardRef<
         {...props}
       >
         {children}
-        {isOpen ? (
+        {(isOpen ) ? (
           <Minus className="h-4 w-4 transition-transform duration-200 pointer-events-none" />
         ) : (
           <Plus className="h-4 w-4 transition-transform duration-200 pointer-events-none" />
