@@ -1,53 +1,72 @@
 import React, { useState, useEffect } from 'react';
 import { getgiftvendorById, getallbranch, addgiftvendor, updategiftvendor } from '../../../api/Endpoints';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { toast } from 'react-toastify';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import SpinLoading from '../../common/spinLoading';
+import Select from "react-select";
+import  customSelectStyles  from "../../common/customSelectStyles"
 
 
-function GiftVendorForm({ setIsOpen, isviewOpen,id,refetchTable,setId}) {
+
+function GiftVendorForm({ setIsOpen, isviewOpen, id, refetchTable, setId }) {
+
 
     const layout_color = useSelector((state) => state.clientForm.layoutColor);
     let navigate = useNavigate();
 
-    const [branch, setBranch] = useState([]);
+     const roledata = useSelector((state) => state.clientForm.roledata);
+    
+      const id_branch = roledata?.branch;
+
+    const [branchData, setBranch] = useState([]);
+    const [branch,setbranch] = useState("")
     const [isLoading, setIsLoading] = useState(false);
     const [formData, setFormData] = useState({
         vendor_name: '',
         mobile: '',
         gst: '',
         address: '',
-        id_branch: '',
+        id_branch: "",
     });
     const [errors, setErrors] = useState({});
 
-   useEffect(() => {
+    useEffect(() => {
 
-    if (id && (isviewOpen === true)) {
-        getgiftvendorId(id)
-    }
+        if (id && (isviewOpen === true)) {
+            getgiftvendorId(id)
+        }else{
+            setId("")
+        }
 
-}, [id,isviewOpen]);
+    }, [id, isviewOpen]);
 
-useEffect(()=>{
-    getallbranchMutate()
-  return ()=>{
-    setId("")
-  }
-},[])
+    useEffect(() => { 
+        return () => {
+            setId("")
+        }
+    }, [])
 
-    // Fetch all branches
-    const { mutate: getallbranchMutate } = useMutation({
-        mutationFn: getallbranch,
-        onSuccess: (response) => {
-            if (response) {
-                setBranch(response.data);
-            }
-        },
+    const { data: branchresponse, isLoading: loadingbranch } = useQuery({
+        queryKey: ["branch",branch],
+        queryFn: getallbranch,
     });
+
+    useEffect(()=>{
+        if (branchresponse) {
+            const data = branchresponse.data
+            const branch = data.map((branch) => ({
+                value: branch._id,
+                label: branch.branch_name,
+            }));
+            setBranch(branch);
+        }
+
+    },[branchresponse])
+
+
 
     // Fetch gift vendor details by ID if editing
     const { mutate: getgiftvendorId } = useMutation({
@@ -61,76 +80,93 @@ useEffect(()=>{
                     address: response.data.address,
                     id_branch: response.data.id_branch._id,
                 });
+
+                setbranch(response.data.id_branch._id)
             }
         },
     });
 
-  
+
     const { mutate: createGiftVendorMutate } = useMutation({
         mutationFn: (formData) => addgiftvendor(formData),
         onSuccess: (response) => {
             refetchTable()
             toast.success(response.message);
             setIsOpen(false);
-            setIsLoading(false)
+            setIsLoading(false)   
+         
         },
         onError: (error) => {
-            setIsLoading(false)
-            toast.error(error.message);
+            setIsLoading(false)       
+            toast.error(error.response.data.message);
         },
     });
-    
+
     const { mutate: updateGiftVendorMutate } = useMutation({
         mutationFn: (formData) => updategiftvendor(id, formData),
         onSuccess: (response) => {
+            toast.success(response.data.message);
             refetchTable()
-            toast.success(response.message);
+            
+            setId("")
             setIsOpen(false);
             setIsLoading(false)
-          
+
         },
         onError: (error) => {
+            toast.error(error.response.data.message);
             setIsLoading(false)
-            toast.error(error.message);
+            setIsOpen(false);
+        
         },
     });
-    
 
- 
+
+
 
     // Handle input change
     const handleChange = (e) => {
         const { name, value } = e.target;
-    
-        // Prevent unnecessary re-renders
+
         if (formData[name] === value) return;
-    
+
         setFormData((prev) => ({
             ...prev,
             [name]: name === "mobile" ? value.replace(/\D/g, "").slice(0, 10) : value,
         }));
     };
-    
+
 
     // Handle validation
     const validateForm = () => {
         const newErrors = {};
         if (!formData.vendor_name) newErrors.vendor_name = 'Vendor name is required';
         if (!formData.id_branch) newErrors.id_branch = 'Branch is required';
-   
+        if (!formData.mobile) {
+            newErrors.mobile = "Mobile number is required";
+        } else if (!/^\d{10}$/.test(formData.mobile)) {
+            newErrors.mobile = "Mobile number should be exactly 10 digits";
+        }
+
+        if (!formData.gst) {
+            newErrors.gst = "GST number is required";
+        } else if (!/^[0-9A-Z]{15}$/.test(formData.gst)) {
+            newErrors.gst = "GST number should be exactly 15 alphanumeric characters";
+        }
+
         return newErrors;
     };
 
     // Handle form submit
     const handleSubmit = (e) => {
-        
+
         e.preventDefault();
-        
+
         const validationErrors = validateForm();
         setErrors(validationErrors);
-    
+
         if (Object.keys(validationErrors).length > 0) return;
-    
+
         try {
             setIsLoading(true);
             if (id) {
@@ -138,14 +174,15 @@ useEffect(()=>{
             } else {
                 createGiftVendorMutate(formData);
             }
-            
+
         } catch (error) {
             console.error("Error submitting form:", error);
-        } 
-     
+        }
+
     };
 
     const handleCancel = () => {
+        setId("")
         setFormData({
             vendor_name: '',
             mobile: '',
@@ -158,30 +195,38 @@ useEffect(()=>{
 
     return (
         <div>
-            <form  className="space-y-4">
+            <form className="space-y-4">
                 {/* Branch field */}
-                <div className="flex flex-col space-y-2">
-                    <label className="font-medium text-gray-700">
-                        Branch<span className="text-red-400">*</span>
-                    </label>
-                    <select
-                        name="id_branch"
-                        value={formData.id_branch}
-                        onChange={handleChange}
-                        className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600"
-                    >
-                        <option value="">Select Branch</option>
-                        {branch.map((branch) => (
-                            <option key={branch._id} value={branch._id}>
-                                {branch.branch_name}
-                            </option>
-                        ))}
-                    </select>
-                    {errors.id_branch && <div className="text-red-500 text-sm">{errors.id_branch}</div>}
-                </div>
+
+              
+                        <div className='flex flex-col'>
+
+                            <label className='text-black mb-1 font-medium'>Branch<span className='text-red-400'>*</span></label>
+
+                            <Select
+                                options={branchData}
+                                value={branchData.find(branch => branch.value === formData.id_branch) || branch}
+                                onChange={(branch) => {
+                                    setFormData((prev) => ({
+                                        ...prev,
+                                        id_branch:branch.value,
+                                    }));
+                                    
+                                    setbranch(branch.value)
+                                }}
+                                customSelectStyles={customSelectStyles}
+                                isLoading={loadingbranch}
+                                placeholder="Select Branch"
+                            />
+
+                            {errors.id_branch ? <div style={{ color: "red" }}>{errors.id_branch}</div> : null}
+
+                        </div>
+
+                
 
                 {/* Gift Vendor Name field */}
-                <div className="flex flex-col space-y-2">
+                <div className="flex flex-col ">
                     <label className="font-medium text-gray-700">
                         Gift Vendor Name<span className="text-red-400">*</span>
                     </label>
@@ -196,8 +241,26 @@ useEffect(()=>{
                     {errors.vendor_name && <div className="text-red-500 text-sm">{errors.vendor_name}</div>}
                 </div>
 
+
+                <div className="flex flex-col">
+                    <label className="font-medium text-gray-700">
+                        Mobile<span className='text-red-400'>*</span></label>
+                    <input
+                        type='tel'
+                        name='mobile'
+                        value={formData.mobile}
+                        onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '')}
+                        onChange={handleChange}
+                        pattern="\d{10}"
+                        placeholder="Enter Mobile"
+                        className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600"
+                        maxLength="10"
+                    />
+                    {errors.mobile && <span className="text-red-500 text-sm mt-1">{errors.mobile}</span>}
+                </div>
+
                 {/* Address field */}
-                <div className="flex flex-col space-y-2">
+                <div className="flex flex-col">
                     <label className="font-medium text-gray-700">
                         Address
                     </label>
@@ -208,43 +271,26 @@ useEffect(()=>{
                         placeholder="Enter Address"
                         className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600"
                     />
-                    
+
                 </div>
-
-
-                <div className="flex flex-col space-y-2">
-                    <label className="font-medium text-gray-700">
-                        Mobile<span className='text-red-400'>*</span></label>
-                    <input
-                       type='tel'
-                        name='mobile'
-                        value={formData.mobile}
-                        onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '')} 
-                        onChange={handleChange}
-                        pattern="\d{10}"
-                        placeholder="Enter Mobile"
-                        className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600"
-                        maxLength="10"
-                    />
-                    {errors.mobile && <span className="text-red-500 text-sm mt-1">{errors.mobile}</span>}
-                </div>
-
-
 
                 {/* GST Number field */}
-                <div className="flex flex-col space-y-2">
+                <div className="flex flex-col ">
                     <label className="font-medium text-gray-700">
-                        GST Number 
+                        GST Number
                     </label>
                     <input
                         type="text"
                         name="gst"
                         value={formData.gst}
+                        onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '')}
                         onChange={handleChange}
+                        pattern="\d{15}"
                         placeholder="Enter GST Number"
                         className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600"
                         maxLength={"15"}
                     />
+                    {errors.gst && <span className="text-red-500 text-sm mt-1">{errors.gst}</span>}
 
                 </div>
 
@@ -260,11 +306,11 @@ useEffect(()=>{
                         </button>
                         <button
                             type="button"
-                            onClick={(e)=>handleSubmit(e)}
+                            onClick={(e) => handleSubmit(e)}
                             readOnly={isLoading == true}
                             className=" text-white rounded-md p-2 w-full lg:w-20"
                             style={{ backgroundColor: layout_color }} >
-                                {isLoading ? <SpinLoading/> : id ? 'Update' : 'Submit'}
+                            {isLoading ? <SpinLoading /> : id ? 'Update' : 'Submit'}
                         </button>
                     </div>
                 </div>

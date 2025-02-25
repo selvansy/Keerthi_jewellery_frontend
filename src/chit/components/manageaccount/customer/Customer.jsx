@@ -143,7 +143,7 @@ const Customer = () => {
   };
 
   const handleAddcustomerClick = () => {
-    navigate('/manageaccount/addcustomer')
+    navigate('/managecustomers/customer/')
   }
 
   const { mutate: getcustomertableMutate } = useMutation({
@@ -199,7 +199,7 @@ const Customer = () => {
 
   const handleEdit = (id) => {
   
-    navigate(`/manageaccount/addcustomer/${id}`);
+    navigate(`/managecustomers/customer/${id}`);
   }
 
 

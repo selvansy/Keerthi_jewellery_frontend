@@ -34,6 +34,7 @@ const Giftvendor = () => {
   const [isLoading, setisLoading] = useState(true)
   const [id,setId] = useState("")
 
+
   function closeIncommingModal() {
     setIsviewOpen(false);
   }
@@ -42,24 +43,6 @@ const Giftvendor = () => {
   const debouncedSearch = useDebounce(searchInput, 500)
 
   const limit = 1;
-
-  useEffect(() => {
-
-    eventEmitter.on('CONFIRMATION_SUBMIT', (data) => {
-      try {
-
-        deleteGiftVendor(data.giftvendorId);
-        eventEmitter.off('CONFIRMATION_SUBMIT');
-      } catch (error) {
-        eventEmitter.off('CONFIRMATION_SUBMIT');
-        console.error('Error:', error);
-      }
-    });
-
-    return () => {
-      eventEmitter.off('CONFIRMATION_SUBMIT');
-    };
-  }, []);
 
   useEffect(() => {
     getAllgiftvendorsMutate({ search: debouncedSearch, page: currentPage, limit:itemsPerPage });
@@ -117,44 +100,58 @@ const Giftvendor = () => {
   };
 
   const handleDelete = (id) => {
-    dispatch(openModal({
-      modalType: 'CONFIRMATION',
-      header: 'Delete giftvendor',
-      formData: {
-        message: 'Are you sure you want to delete this giftvendor?',
-        giftvendorId: id
-      },
-      buttons: {
-        cancel: {
-          text: 'Cancel'
+      setId(id)
+      dispatch(openModal({
+        modalType: 'CONFIRMATION',
+        header: 'Delete giftvendor',
+        formData: {
+          message: 'Are you sure you want to delete this giftvendor?',
+          giftvendorId: id
         },
-        submit: {
-          text: 'Delete'
+        buttons: {
+          cancel: {
+            text: 'Cancel'
+          },
+          submit: {
+            text: 'Delete'
+          }
         }
-      }
-    }))
-  };
-
-  const { mutate: deleteGiftVendor } = useMutation({
-    mutationFn: (id)=> deletegiftvendor(id),
-    onSuccess: (response, deletedId) => {
-    const deletedData = giftvendorData.filter(e => e._id !== deletedId)
-    setgiftvendorData(deletedData)
-    const isLastItemOnPage = giftvendorData.length === 1;
-        const isNotFirstPage = currentPage > 1;
-        if (isLastItemOnPage && isNotFirstPage) {
-          setCurrentPage(prev => prev - 1);
-        } else {
-          refetchTable()
+      }))
+  
     }
-    toast.success(response.message);
-    eventEmitter.off('CONFIRMATION_SUBMIT');
-    },
-    onError: (error) => {
-      eventEmitter.off('CONFIRMATION_SUBMIT');
-      console.error("Error:", error);
-    },
-  });
+     const { mutate: deleteGiftVendor } = useMutation({
+        mutationFn:(id)=> deletegiftvendor(id),
+        onSuccess: (response) => {
+          if (response.message === "Vendor deleted successfully") {
+            const isLastItemOnPage = giftvendorData.length === 1;
+            const isNotFirstPage = currentPage > 1;
+            if (isLastItemOnPage && isNotFirstPage) {
+              setCurrentPage(prev => prev - 1);
+            } else {
+              getAllgiftvendorsMutate({ search: debouncedSearch, page: currentPage, limit:itemsPerPage });
+            }
+          }
+            toast.success(response.message);
+            eventEmitter.off("CONFIRMATION_SUBMIT");
+            setId("");
+          },
+        onError: (error) => {
+          console.error("Error:", error);
+          toast.error("Failed to delete");
+        },
+      });
+    
+      useEffect(() => {
+        const handleDelete = (data) => {
+          deleteGiftVendor(data.giftvendorId);
+        };
+    
+        eventEmitter.on("CONFIRMATION_SUBMIT", handleDelete);
+    
+        return () => {
+          eventEmitter.off("CONFIRMATION_SUBMIT", handleDelete);
+        };
+      }, []);
 
 
   const handleItemsPerPageChange = (value) => {
@@ -202,7 +199,7 @@ const Giftvendor = () => {
 
     {
       header: 'S.No',
-      cell: (_, index) => index + 1 + (currentPage - 1) * limit,
+      cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
     },
     {
       header: 'Actions',
@@ -283,7 +280,7 @@ const Giftvendor = () => {
     },
     {
       header: 'Mobile',
-      cell: (row) => row?.id_branch?.mobile || 'N/A',
+      cell: (row) => row?.mobile || 'N/A',
     },
     {
       header: 'Address',
