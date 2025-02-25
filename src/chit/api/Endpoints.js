@@ -1,4 +1,5 @@
 
+import { data } from "react-router-dom";
 import Api from "./Api";
 import axios from "axios";
 
@@ -1496,6 +1497,7 @@ export const createcategory= async(data)=>{
 }
 
 export const getcategoryTable= async(data)=>{
+    console.log(data)
     const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/category/table`,data)
     return response.data
 }
