@@ -28,7 +28,7 @@ const Submenu = () => {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
   const [isLoading, setisLoading] = useState(true);
-
+  const [totalDocuments,setTotalDocuments]=useState()
   const [isviewOpen, setIsviewOpen] = useState(false);
   const [submenuData, setsubmenuData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -39,6 +39,7 @@ const Submenu = () => {
   const [menus, setMenus] = useState([]);
   const [searchInput, setSearchInput] = useState("");
   const debouncedSearch = useDebounce(searchInput, 500);
+  const [id,setId]=useState('')
   const limit = 10;
 
   function closeIncommingModal() {
@@ -49,8 +50,10 @@ const Submenu = () => {
     mutationFn: (payload) => getallsubmenudatatable(payload),
     onSuccess: (response) => {
       if (response) {
+        console.log(response)
         setsubmenuData(response.data);
         setTotalPages(response.totalPages);
+        setTotalDocuments(response.totalDocument)
       }
       setisLoading(false);
     },
@@ -91,9 +94,13 @@ const Submenu = () => {
   }, [currentPage, itemsPerPage, debouncedSearch, isviewOpen]);
 
   const handleEdit = async (id) => {
-    dispatch(setid(id));
+    setId(id)
     setIsviewOpen(true);
   };
+
+  const clearId =()=>{
+    setId('')
+  }
 
   const handleAddsubmenu = () => {
     setIsviewOpen(true);
@@ -470,7 +477,7 @@ const Submenu = () => {
                   <option value={500}>500</option>
                   <option value={1000}>1000</option>
                 </select>
-                <span className="text-gray-500">entries</span>
+                <span className="text-gray-500">entries of {totalDocuments}</span>
               </div>
             </div>
           )}
@@ -479,7 +486,7 @@ const Submenu = () => {
       {/* <Modal /> */}
 
       <ModelOne
-        title={"Add SubMenu"}
+        title={id?"Edit Sub Menu":"Add Sub Menu"}
         extraClassName="max-w-[75%] "
         setIsOpen={setIsviewOpen}
         isOpen={isviewOpen}
@@ -489,6 +496,8 @@ const Submenu = () => {
           menus={menus}
           setIsOpen={setIsviewOpen}
           getallsubmenusMutate={getallsubmenusMutate}
+          id={id}
+          clearId={clearId}
         />
       </ModelOne>
       <Modal />
