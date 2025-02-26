@@ -111,8 +111,8 @@ const Base = ({ renderContent: RenderContent }) => {
                 key={submenu.id_submenu}
                 text={submenu.submenu_name}
                 onClick={() => {
-                  handleClick(submenu.submenu_name);
-                  navigate(submenu.pathurl.startsWith("/")?submenu.pathurl:`/${submenu.pathurl}`);
+                  // handleClick(submenu.submenu_name);
+                  navigate(submenu.pathurl);
                 }}
                 isLast={index === menu.menu_list.length - 1}
                 parentSection={menu.menu_name}

@@ -7,8 +7,9 @@ import { toast } from 'react-toastify';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import Select from "react-select";
+import { useNavigate } from 'react-router-dom';
 
-function SubmenuForm({ setIsOpen, getallsubmenusMutate, menus }) {
+function SubmenuForm({ setIsOpen, getallsubmenusMutate, menus,id,clearId }) {
     const [projects, setProjects] = useState([]);
     const [menuData,setMenuData]= useState([])
     // const roledata = useSelector((state) => state.clientForm.roledata);
@@ -18,16 +19,25 @@ function SubmenuForm({ setIsOpen, getallsubmenusMutate, menus }) {
     // // const id_project = roledata?.id_project;
     const [isLoading, setisLoading] = useState(false);
     const layout_color = useSelector((state) => state.clientForm.layoutColor);
-    let dispatch = useDispatch();
-    const id = useSelector((state) => state.clientForm.id);
+    const navigate=useNavigate()
 
     const validationSchema = Yup.object({
         submenu_name: Yup.string().required('Submenu name is required'),
         id_project: Yup.string().required('Project is required'),
         id_menu: Yup.string().required('Menu is required'),
         display_order: Yup.number().required('Display Order is required'),
-        pathurl: Yup.string().required('Path URL is required')
+        pathurl: Yup.string()
+        .required('Path URL is required')
+        .test('starts-with-slash', 'Path URL must start with /', 
+            value => value && value.startsWith('/'))
+
     });
+
+    useEffect(()=>{
+        return ()=>{
+            clearId()
+        }
+    },[])
 
     const customSelectStyles = {
         control: (provided) => ({
@@ -61,7 +71,7 @@ function SubmenuForm({ setIsOpen, getallsubmenusMutate, menus }) {
             id_menu: '',
             display_order: '',
             id_project: '',
-            pathurl: ''
+            pathurl: '/'
         },
         validationSchema,
         onSubmit: (values) => {
@@ -71,7 +81,7 @@ function SubmenuForm({ setIsOpen, getallsubmenusMutate, menus }) {
                     display_order: values.display_order,
                     id_menu: values.id_menu,
                     id_project: values.id_project,
-                    pathurl: values.pathurl
+                    pathurl: values.pathurl.startsWith('/') ? values.pathurl : `/${values.pathurl}`
                 };
 
                 if (id) {
@@ -84,6 +94,16 @@ function SubmenuForm({ setIsOpen, getallsubmenusMutate, menus }) {
             }
         }
     });
+
+    const handlePathChange = (e) => {
+        let value = e.target.value;
+                if (!value.startsWith('/')) {
+            value = '/' + value;
+        }
+        
+        formik.setFieldValue('pathurl', value);
+    };
+
 
     const { data: projectResponse } = useQuery({
         queryKey: ["projects"],
@@ -118,20 +138,20 @@ function SubmenuForm({ setIsOpen, getallsubmenusMutate, menus }) {
 
     const handleCancel = (e) => {
         e.preventDefault();
-        dispatch(setid(null));
+        clearId('')
         setIsOpen(false);
     };
 
     const { mutate: createsubmenuMutate } = useMutation({
         mutationFn: addsubmenu,
         onSuccess: (response) => {
-            toast.success(response.message);
-            dispatch(setid(null));
+            console.log(response)
+            toast.success(response.data.message);
             setIsOpen(false);
             navigate("/setup/submenu");
         },
         onError: (error) => {
-            toast.error(error.response.message);
+            toast.error(error.response.data.message);
         },
         onMutate: () => setisLoading(true),
         onSettled: () => setisLoading(false),
@@ -140,14 +160,19 @@ function SubmenuForm({ setIsOpen, getallsubmenusMutate, menus }) {
     const { mutate: updatesubmenumutate } = useMutation({
         mutationFn: (data) => updatesubmenu(id, data),
         onSuccess: (response) => {
-            console.log(response)
+          try {
             toast.success(response.message);
-            dispatch(setid(null));
             setIsOpen(false);
+            clearId('')
             navigate("/setup/submenu");
+            
+          } catch (error) {
+            console.log(error)
+          }
         },
         onError: (error) => {
-            toast.error(error.response.message);
+            
+            toast.error(error.response.data.message);
         },
         onMutate: () => setisLoading(true),
         onSettled: () => setisLoading(false),
@@ -266,12 +291,15 @@ function SubmenuForm({ setIsOpen, getallsubmenusMutate, menus }) {
                 <input
                     type="text"
                     id="pathurl"
-                    {...formik.getFieldProps('pathurl')}
-                    placeholder="Enter Path Url"
+                      value={formik.values.pathurl}
+                        onChange={handlePathChange}
+                        onBlur={formik.handleBlur}
+                        placeholder="Enter Path Url (starts with /)"
                     className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     aria-describedby="pathUrlError"
                 />
-                {formik.touched.pathurl && formik.errors.pathurl && (
+                 <span className="text-xs text-gray-500 mt-1 block">Path must start with a forward slash (/)</span>
+               {formik.touched.pathurl && formik.errors.pathurl && (
                     <div id="pathUrlError" className="text-red-500 text-sm" aria-live="assertive">
                         {formik.errors.pathurl}
                     </div>

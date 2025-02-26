@@ -77,6 +77,7 @@ import Department from "../chit/components/Setup/dept/Department";
 import Topup from "../chit/components/Setup/topup";
 import SchemeForm from "../chit/components/ourscheme/scheme/newScheme";
 import Campaign from "../chit/components/Setup/campaign";
+import configNotification from "../chit/components/notification/notification-configurations/configNotification";
 
 const RouteList = [
 
@@ -96,7 +97,7 @@ const RouteList = [
   //Scheme
   {
     name: "Scheme",
-    path: "/ourscheme/scheme",
+    path: "/scheme/scheme",
     element: <Base renderContent={Scheme}/>,
   },
   {
@@ -162,12 +163,12 @@ const RouteList = [
   },
   {
     name: "User Role",
-    path:'setup/userrole',
+    path:'masters/userrole',
     element:<Base renderContent={UserRole}/>
   },
   {
     name: "User Access",
-    path:'setup/useraccess',
+    path:'masters/useraccess',
     element:<Base renderContent={UserAccess}/>
   },
   {
@@ -194,7 +195,7 @@ const RouteList = [
   //Payment
   {
     name: "Scheme Payment",
-    path:'schemepayment/payment/',
+    path:'/payment/customerpayment',
     element:<Base renderContent={SchemePayment}/>
   },
     {
@@ -274,17 +275,17 @@ const RouteList = [
 
     {
       name: "Existing customer",
-      path:'/manageaccount/customer',
+      path:'/managecustomers/customer',
       element:<Base renderContent={Customer}/>
     },
     {
       name: "Add Customer",
-      path:'/manageaccount/addcustomer',
+      path:'/managecustomers/addcustomer',
       element:<Base renderContent={AddCustomer}/>
     },
     {
       name: "Add Customer",
-      path:'/manageaccount/addcustomer/:id',
+      path:'/managecustomers/editcustomer/:id',
       element:<Base renderContent={AddCustomer}/>
     },
      
@@ -364,6 +365,11 @@ const RouteList = [
   name: "Birthday",
   path:'/notification/birthday',
   element:<Base renderContent={Birthdaynotification}/>
+},
+{
+  name: "configurations",
+  path:'/notification/configurations',
+  element:<Base renderContent={configNotification}/>
 },
 
 //Scheme Reports

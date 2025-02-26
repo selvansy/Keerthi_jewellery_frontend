@@ -13,7 +13,6 @@ import {
   getallbranch,
   createproduct,
   updateproduct,
-  displayselltype,
   categorybymetalid,
   showtype,
   todaycurrentratebybranch,
@@ -37,7 +36,6 @@ const AddProduct = () => {
   const [filtercategory, setCategory] = useState([]);
   const [filterpurity, setPuritytype] = useState([]);
   const [filterdisptype, setDisptype] = useState([]);
-  const [filterselltype, setSelltype] = useState([]);
   const [selectedmetal, setSelectedmetal] = useState(null);
   const [selectedpurity, setSelectedpurity] = useState(null);
   let [purityId, setPurityId] = useState("");
@@ -61,7 +59,6 @@ const AddProduct = () => {
     id_purity: "",
     gst: "",
     metalcost: "",
-    sell: "",
     id_branch: "",
     description: "",
     product_image: "",
@@ -261,16 +258,6 @@ const AddProduct = () => {
     },
   });
 
-  //mutation to get sell type
-  const { mutate: getdisplayselltype } = useMutation({
-    mutationFn: displayselltype,
-    onSuccess: (response) => {
-      setSelltype(response.data);
-    },
-    onError: (error) => {
-      console.error("Error fetching countries:", error);
-    },
-  });
   //mutation to get display type
   const { mutate: getallshowtype } = useMutation({
     mutationFn: showtype,
@@ -352,7 +339,6 @@ const AddProduct = () => {
     if (formData.gst<=1) errors.gst = "Gst must be at least 1.";
     if (!formData.metalcost) errors.metalcost = "Metal Cost is required";
     if (formData.metalcost<=1) errors.metalcost = "Metal cost must be at least 1.";
-    if (formData.sell === "") errors.sell = "Sell is required";
     if (!formData.totalprice) errors.totalprice = "Total Price is required";
     if (!formData.description) errors.description = "Description is required";
     if (!formData.showprice) errors.showprice = "Display Price is required";
@@ -398,7 +384,6 @@ const AddProduct = () => {
     formDataToSend.append("id_purity", formData.id_purity);
     formDataToSend.append("gst", formData.gst);
     formDataToSend.append("metalcost", formData.metalcost);
-    formDataToSend.append("sell", formData.sell);
     formDataToSend.append("description", formData.description);
     formDataToSend.append("showprice", formData.showprice);
     if (product_image && product_image.length > 0) {
@@ -416,7 +401,6 @@ const AddProduct = () => {
 
   useEffect(() => {
     getMetalData();
-    getdisplayselltype();
     getallshowtype();
 
     if (id) {
@@ -730,49 +714,6 @@ const AddProduct = () => {
               )}
             </div>
 
-            <div className="flex flex-col">
-              <label className="text-gray-700 mb-2 mt-2 font-medium">
-                Sell Type<span className="text-red-400">*</span>
-              </label>
-              <div className="relative">
-                <select
-                  name="sell"
-                  value={formData.sell}
-                  onChange={handleInputChange}
-                  className="appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                >
-                  <option value="">--Select---</option>
-                  {filterselltype.map((type) => (
-                    <option
-                      name="sell"
-                      className="text-gray-700"
-                      key={type.id}
-                      value={type.id}
-                    >
-                      {type.name}
-                    </option>
-                  ))}
-                </select>
-                <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                  <svg
-                    className="h-4 w-4 text-gray-400"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="3"
-                    viewBox="0 0 24 24"
-                    stroke="black"
-                  >
-                    <path d="M19 9l-7 7-7-7"></path>
-                  </svg>
-                </div>
-              </div>
-              {formErrors.sell && (
-                <span className="text-red-500 text-sm mt-1">
-                  {formErrors.sell}
-                </span>
-              )}
-            </div>
             <div className="flex flex-col">
               <label className="text-gray-700 mb-2 mt-2 font-medium">
                 Display Price<span className="text-red-400">*</span>
