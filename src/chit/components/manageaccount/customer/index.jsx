@@ -19,7 +19,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import usePagination from '../../../hooks/usePagination'
 
 
-const Customer = () => {
+const ExistingCusTable = () => {
 
  
   const [isLoading, setisLoading] = useState(true)
@@ -143,7 +143,7 @@ const Customer = () => {
   };
 
   const handleAddcustomerClick = () => {
-    navigate('/managecustomers/customer/')
+    navigate('/managecustomers/addcustomer')
   }
 
   const { mutate: getcustomertableMutate } = useMutation({
@@ -199,7 +199,7 @@ const Customer = () => {
 
   const handleEdit = (id) => {
   
-    navigate(`/managecustomers/customer/${id}`);
+    navigate(`/managecustomers/addcustomer/${id}`);
   }
 
 
@@ -660,4 +660,4 @@ const Customer = () => {
   )
 }
 
-export default Customer
+export default ExistingCusTable

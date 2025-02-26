@@ -134,7 +134,6 @@ const AddSchemeAccount = () => {
   });
 
   const handleSearchmobile = () => {
-
     setSearchError('');
     if (mobile === "") { toast.error('Mobile Number is required!'); }
     handlesearchcustomer({ id_branch: formData.id_branch, search_mobile: mobile });
@@ -216,8 +215,6 @@ const AddSchemeAccount = () => {
     },
   });
 
-
-  
 
   const filterInputchange = (e) => {
 
