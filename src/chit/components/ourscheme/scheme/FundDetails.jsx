@@ -2,7 +2,7 @@ import React from "react";
 import Select from "react-select";
 
 const FundDetails = ({ formik, layout_color, fundtype }) => {
-  console.log(fundtype)
+
   return (
     <div className="grid grid-rows-2 md:grid-cols-2 gap-5 border-t-2 border-gray-300">
       <div>
@@ -11,13 +11,14 @@ const FundDetails = ({ formik, layout_color, fundtype }) => {
         </label>
         <Select
           styles={fundtype}
+          isClearable={true}
           options={fundtype || []}
           placeholder="Select saving type"
           value={fundtype.find(
             (option) => option.value === formik.values.saving_type
           )}
           onChange={(option) =>
-            formik.setFieldValue("saving_type", option.value)
+            formik.setFieldValue("saving_type", option ? option.value : "")
           }
           onBlur={() => formik.setFieldTouched("saving_type", true)}
         />
@@ -38,6 +39,7 @@ const FundDetails = ({ formik, layout_color, fundtype }) => {
             name="min_fund"
             value={formik.values.min_fund}
             onChange={formik.handleChange}
+            onWheel={(e) => e.target.blur()}
             onBlur={formik.handleBlur}
             className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
             placeholder="Enter Min Fund"
@@ -63,6 +65,7 @@ const FundDetails = ({ formik, layout_color, fundtype }) => {
             type="number"
             name="max_fund"
             value={formik.values.max_fund}
+            onWheel={(e) => e.target.blur()}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"

@@ -52,13 +52,15 @@ const Grace = ({ formik, layout_color, maturity_period }) => {
         </label>
         <Select
           options={graceData}
+          isClearable={true}
           placeholder="Select grace type"
-          value={graceData.find(
-            (option) => option.value === formik.values.grace_type
-          )}
+          value={
+            graceData.find(
+              (option) => option.value === formik.values.grace_type
+            ) || null
+          }
           onChange={(option) => {
-            formik.setFieldValue("grace_type", option.value);
-            // Re-validate grace period when grace type changes
+            formik.setFieldValue("grace_type", option ? option.value : "");
             setTimeout(() => {
               const error = validateGracePeriod();
               formik.setFieldError("grace_period", error);

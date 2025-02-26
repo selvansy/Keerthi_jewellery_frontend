@@ -71,7 +71,7 @@ const SchemeForm = () => {
       min_weight: "",
       max_weight: "",
       buy_gst: "",
-      buytgsttype: "",
+      buygsttype: "",
       wastagebenefit: "",
       wastagetype: "", // no need to pass
       min_installments: "",
@@ -87,10 +87,16 @@ const SchemeForm = () => {
       max_fund: "",
       saving_type: "",
 
+      //customer referral
+      referral_rate:"",
+      incentive_rate:"",
+      cus_remarks:"",
+
+
       //agent referral
       agent_referral: "",
       agent_incentive: "",
-      cus_remark: "",
+      agent_remark: "",
       agent_target: "",
       partial_commission: "",
 
@@ -110,7 +116,9 @@ const SchemeForm = () => {
     },
     validationSchema: Yup.object({
       // SchemeForm validation
-      schemeName: Yup.string().required("Scheme name is required"),
+      schemeName: Yup.string()
+  .required("Scheme name is required")
+  .max(15, "Scheme name cannot exceed 15 characters"),
       schemeCode: Yup.string().required("Scheme code is required"),
       installment_type: Yup.string().required("Installment type is required"),
       metalType: Yup.object().required("Metal type is required"),
@@ -141,27 +149,30 @@ const SchemeForm = () => {
       }),
       min_amount: Yup.number().when("schemeType", {
         is: (val) => val && val.value >= 4,
-        then: Yup.number().required("Minimum Amount is required"),
+        then: Yup.number().optional("Minimum Amount is required"),
       }),
       max_amount: Yup.number().when("schemeType", {
         is: (val) => val && val.value >= 4,
-        then: Yup.number().required("Maximum Amount is required"),
+        then: Yup.number().optional("Maximum Amount is required"),
       }),
       min_weight: Yup.number().when("schemeType", {
         is: (val) => val && val.value === 3,
-        then: Yup.number().required("Minimum Weight is required"),
+        then: Yup.number().optional("Minimum Weight is required"),
       }),
       max_weight: Yup.number().when("schemeType", {
         is: (val) => val && val.value === 3,
-        then: Yup.number().required("Maximum Weight is required"),
+        then: Yup.number().optional("Maximum Weight is required"),
       }),
-      buy_gst: Yup.number().required("Buy GST is required"),
-      buytgsttype: Yup.string().required("Buy GST Type is required"),
-      wastagebenefit: Yup.string().required("Wastage Benefit is required"),
+      buy_gst: Yup.number().optional("Buy GST is required"),
+      buytgsttype: Yup.string().optional("Buy GST Type is required"),
+      wastagebenefit: Yup.string().optional("Wastage Benefit is required"),
 
       // FundDetails validation
-      min_fund: Yup.number().required("Min Fund is required"),
-      max_fund: Yup.number().required("Max Fund is required"),
+      min_fund: Yup.number().optional("Min Fund is required")
+      .positive("Min fund must be positive"),
+      max_fund: Yup.number().optional("Max Fund is required")
+      .positive("Max fund must be positive"),
+      saving_type: Yup.number().optional("Saving type is required"),
 
       // PaymentDetails validation
       first_paid_percentage: Yup.number().required(
@@ -171,15 +182,23 @@ const SchemeForm = () => {
         "Second Payment Percentage is required"
       ),
 
+      referral_rate:Yup.number()
+      .typeError("Must be a number")
+      .positive("Must be a positive number"),
+      incentive_rate:Yup.number()
+      .typeError("Must be a number")
+      .positive("Must be a positive number"),
+      cus_remarks:Yup.string()
+      .typeError("Must be a alphabet"),
+
       agent_referral: Yup.number()
         .typeError("Must be a number")
         .positive("Must be a positive number"),
       agent_incentive: Yup.number()
         .typeError("Must be a number")
         .positive("Must be a positive number"),
-      cus_remark: Yup.number()
-        .typeError("Must be a number")
-        .positive("Must be a positive number"),
+        agent_remark: Yup.string()
+        .typeError("Must be a alphabet"),
       agent_target: Yup.number()
         .typeError("Must be a number")
         .positive("Must be a positive number"),
@@ -486,10 +505,15 @@ const SchemeForm = () => {
             </label>
             <input
               type="text"
+              maxLength={15}
               className="w-full border rounded-md px-3 py-2"
               placeholder="Enter scheme name"
               {...formik.getFieldProps("schemeName")}
             />
+            
+      {formik.values.schemeName.length === 15 && (
+           <div className="text-red-500 text-sm mt-1">Max 15 character allowed</div>
+      )}
             {formik.touched.schemeName && formik.errors.schemeName && (
               <div className="text-red-500 text-sm mt-1">
                 {formik.errors.schemeName}
@@ -784,7 +808,6 @@ const SchemeForm = () => {
             Grace Period
           </AccordionTrigger>
           <AccordionContent value="classification" className="px-6 py-4">
-            <div>{console.log(formik.values.graceType)}</div>
             <Grace
               formik={formik}
               layout_color={layout_color}
@@ -813,9 +836,6 @@ const SchemeForm = () => {
         <AccordionItem value="payable" className="border rounded-lg bg-white">
           <AccordionTrigger className="px-6 py-4">
             Payable Details
-            {({ isOpen }) =>
-              isOpen ? <Minus size={20} /> : <Plus size={20} />
-            }
           </AccordionTrigger>
           <AccordionContent className="px-6 py-4">
             <PayableDetails
@@ -826,6 +846,7 @@ const SchemeForm = () => {
               wastagedata={wastagedata || []}
               install_type={formik.values.installment_type}
               classType={classType}
+              maturity_period={formik.values.maturity_period}
             />
           </AccordionContent>
         </AccordionItem>
