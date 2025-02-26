@@ -1,83 +1,104 @@
 import React from "react";
 import Select from "react-select";
 
-const Classification = ({ formik, layout_color, fundtype }) => {
-
+const Classification = ({ formik, layout_color }) => {
   return (
-    <div className="grid grid-rows-2 md:grid-cols-2 gap-5 border-t-2 border-gray-300">
-      <div>
-        <label className="block text-sm font-medium mb-1 mt-2">
-          Saving Type<span className="text-red-500">*</span>
-        </label>
-        <Select
-          styles={fundtype}
-          options={fundtype || []}
-          placeholder="Select saving type"
-          value={fundtype.find(
-            (option) => option.value === formik.values.saving_type
-          )}
-          onChange={(option) =>
-            formik.setFieldValue("saving_type", option.value)
-          }
-          onBlur={() => formik.setFieldTouched("saving_type", true)}
-        />
-        {formik.touched.saving_type && formik.errors.saving_type && (
-          <div className="text-red-500 text-sm mt-1">
-            {formik.errors.saving_type}
+    <div className="p-6 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
+        <div className="mb-4">
+          <label className="block mb-2">
+            Upload Main Image <span className="text-red-500">*</span>
+          </label>
+          <div className="flex">
+            <input
+              type="text"
+              readOnly
+              value="goldbanner56565dsvd65fd56.jpg"
+              className="border rounded-l-md p-2 w-full bg-gray-50"
+            />
+            <button className="bg-gray-200 rounded-r-md px-4 py-2 text-sm">
+              Choose File
+            </button>
           </div>
-        )}
+          <div className="mt-2">
+            <img 
+              src="/api/placeholder/400/150" 
+              alt="Gold plan banner" 
+              className="w-full h-auto rounded"
+            />
+          </div>
+        </div>
+
+        <div className="mb-4">
+          <label className="block mb-2">
+            Upload Description Image <span className="text-red-500">*</span>
+          </label>
+          <div className="flex">
+            <input
+              type="text"
+              readOnly
+              value="goldbanner56565dsvd65fd56.jpg"
+              className="border rounded-l-md p-2 w-full bg-gray-50"
+            />
+            <button className="bg-gray-200 rounded-r-md px-4 py-2 text-sm">
+              Choose File
+            </button>
+          </div>
+          <div className="mt-2">
+            <img 
+              src="/api/placeholder/400/150" 
+              alt="Gold plan banner" 
+              className="w-full h-auto rounded"
+            />
+          </div>
+        </div>
       </div>
 
-      <div className="flex flex-col mt-2">
-        <label className="text-black mb-2 font-normal">
-          Min Fund <span className="text-red-400"> *</span>
-        </label>
-        <div className="relative">
-          <input
-            type="number"
-            name="min_fund"
-            value={formik.values.min_fund}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-            placeholder="Enter Min Fund"
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 mt-4">
+        <div className="mb-4">
+          <label className="block mb-2">
+            Description <span className="text-red-500">*</span>
+          </label>
+          <textarea
+            name="description"
+            value={formik?.values?.description || ""}
+            onChange={formik?.handleChange}
+            onBlur={formik?.handleBlur}
+            className="border resize-none rounded-md p-2 w-full h-32 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
           />
-          <span
-            className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
-            style={{ backgroundColor: layout_color }}
-          >
-            INR
-          </span>
         </div>
-        {formik.touched.min_fund && formik.errors.min_fund && (
-          <span className="text-red-500 text-sm mt-1">{formik.errors.min_fund}</span>
-        )}
+
+        <div className="mb-4">
+          <label className="block mb-2">
+            Terms & Conditions <span className="text-red-500">*</span>
+          </label>
+          <textarea
+            name="terms"
+            value={formik?.values?.terms || ""}
+            onChange={formik?.handleChange}
+            onBlur={formik?.handleBlur}
+            className="border rounded-md resize-none p-2 w-full h-32 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+          />
+        </div>
       </div>
 
-      <div className="flex flex-col mt-2">
-        <label className="text-black mb-2 font-normal">
-          Max Fund <span className="text-red-400"> *</span>
+      <div className="mt-4">
+        <label className="block mb-2">
+          Classification Order <span className="text-red-500">*</span>
         </label>
-        <div className="relative">
+        <div className="relative w-full md:w-1/4">
           <input
             type="number"
-            name="max_fund"
-            value={formik.values.max_fund}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-            placeholder="Enter Max Fund"
+            name="classification_order"
+            value="0"
+            className="border rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
           />
-          <span
-            className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
-            style={{ backgroundColor: layout_color }}
-          >
-            INR
-          </span>
+          <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M18 15l-6-6-6 6"/>
+            </svg>
+          </div>
         </div>
-        {formik.touched.max_fund && formik.errors.max_fund && (
-          <span className="text-red-500 text-sm mt-1">{formik.errors.max_fund}</span>
-        )}
       </div>
     </div>
   );
