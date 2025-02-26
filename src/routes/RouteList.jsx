@@ -20,8 +20,8 @@ import NewArrivals from "../chit/components/catalog/newarrivals/NewArrivals";
 import AddNewArrival from "../chit/components/catalog/newarrivals/AddNewArrival";
 import Pushnotification from "../chit/components/notification/pushnotification/index";
 import AddOffers from "../chit/components/catalog/offers/AddOffers";
-import Customer from "../chit/components/manageaccount/customer/Customer";
-import AddCustomer from "../chit/components/manageaccount/customer/AddCustomers";
+import ExistingCusTable from "../chit/components/manageaccount/customer/index";
+import Customers from "../chit/components/manageaccount/customer/Customers";
 import OutStandingWeight from "../chit/components/Report/OutStandingWeight";
 import ModeWisePayment from "../chit/components/Report/PaymentModeLedger";
 import GiftStock from "../chit/components/Report/GiftStock";
@@ -274,18 +274,18 @@ const RouteList = [
 
     {
       name: "Existing customer",
-      path:'/manageaccount/customer',
-      element:<Base renderContent={Customer}/>
+      path:'/managecustomers/customer/',
+      element:<Base renderContent={ExistingCusTable}/>
     },
     {
       name: "Add Customer",
-      path:'managecustomers/customer/',
-      element:<Base renderContent={AddCustomer}/>
+      path:'/managecustomers/addcustomer',
+      element:<Base renderContent={Customers}/>
     },
     {
       name: "Add Customer",
-      path:'managecustomers/customer/:id',
-      element:<Base renderContent={AddCustomer}/>
+      path:'/managecustomers/addcustomer/:id',
+      element:<Base renderContent={Customers}/>
     },
      
   {
