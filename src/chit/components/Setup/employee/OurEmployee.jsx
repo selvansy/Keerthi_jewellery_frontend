@@ -1,111 +1,151 @@
-import React, { useState, useEffect } from 'react'
-import Table from '../../common/Table'
-import { Search } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
-import { useMutation} from '@tanstack/react-query'
-import { getallemployeetable,changeEmployeeStatus, deleteemployee } from '../../../api/Endpoints'
-import { toast } from 'react-toastify';
-import { openModal } from '../../../../redux/modalSlice';
-import { eventEmitter } from '../../../../utils/EventEmitter';
-import { useDispatch, useSelector } from 'react-redux';
-import Modal from '../../common/Modal';
-import { useDebounce } from '../../../hooks/useDebounce';
-import { useQuery } from '@tanstack/react-query'
-
+import React, { useState, useEffect } from "react";
+import Table from "../../common/Table";
+import { Search } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import {
+  getallemployeetable,
+  changeEmployeeStatus,
+  deleteemployee,
+} from "../../../api/Endpoints";
+import { toast } from "react-toastify";
+import { openModal } from "../../../../redux/modalSlice";
+import { eventEmitter } from "../../../../utils/EventEmitter";
+import { useDispatch, useSelector } from "react-redux";
+import Modal from "../../common/Modal";
+import { useDebounce } from "../../../hooks/useDebounce";
+import usePagination from "../../../hooks/usePagination";
 
 const OurEmployee = () => {
-
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
-  const navigate = useNavigate()
+  const roledata = useSelector((state) => state.clientForm.roledata);
+
+  const id_branch = roledata?.branch;
+
+  const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [currentPage, setCurrentPage] = useState(1);
-  const [isLoading,setisLoading] = useState(true)
   const [totalPages, setTotalPages] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+
+  const [filtered, SetFiltered] = useState(false)
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+  const [isLoading, setisLoading] = useState(true);
   const [employeeData, setEmployeeData] = useState([]);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [selectedRow, setSelectedRow] = useState(null);
-  const [search, setSearch] = useState('');
-  const [searchInput, setSearchInput] = useState('')
-  const debouncedSearch = useDebounce(searchInput, 500)
-  
 
-  useEffect(() => {
-    getallemployeetableMutate({
-      
-        page: currentPage,
-        limit: itemsPerPage,
-        search: debouncedSearch
-      
-    });
-  }, [currentPage, itemsPerPage, debouncedSearch]);
+  const [searchInput, setSearchInput] = useState("");
+  const debouncedSearch = useDebounce(searchInput, 500);
+
+  const [filters, setFilters] = React.useState({
+    from_date: "",
+    to_date: "",
+    search: debouncedSearch,
+    limit: itemsPerPage,
+    id_branch: id_branch,
+    type: "",
+  });
 
   const handlePageChange = (page) => {
-    setCurrentPage(page);
+    const pageNumber = Number(page);
+    if (!pageNumber || isNaN(pageNumber) || pageNumber < 1 || pageNumber > totalPages) {
+      return;
+    }
+    setCurrentPage(pageNumber);
   };
+
+  const nextPage = () => {
+    setCurrentPage((prevPage) => (prevPage < totalPages ? prevPage + 1 : prevPage));
+  };
+
+  const prevPage = () => {
+    setCurrentPage((prevPage) => (prevPage > 1 ? prevPage - 1 : prevPage));
+  };
+
+
+  const paginationData = { totalItems: totalPages, currentPage: currentPage, itemsPerPage: itemsPerPage, handlePageChange: handlePageChange }
+  const paginationButtons = usePagination(paginationData)
+
+  const { mutate: getAllEmployees } = useMutation({
+    mutationFn: getallemployeetable,
+    onSuccess: (response) => {
+      if (response.data) {
+        setEmployeeData(response.data);
+        setTotalPages(response.totalPages)
+      }
+      setisLoading(false);
+    },
+    onError: () => {
+      setEmployeeData([])
+      setisLoading(false)
+    }
+  });
+
+  useEffect(() => {
+    setisLoading(true);
+    getAllEmployees({
+      page: currentPage,
+      limit: itemsPerPage,
+      search: debouncedSearch,
+    });
+  }, [currentPage, itemsPerPage, debouncedSearch]);
 
   const handleSearch = (e) => {
     setSearchInput(e.target.value);
     setCurrentPage(1);
   };
 
-  const paginationButtons = [];
-  for (let i = 1; i <= totalPages; i++) {
-    paginationButtons.push(
-      <button
-        key={i}
-        onClick={() => handlePageChange(i)}
-        className={`p-2 w-10 h-10 rounded-md  ${currentPage === i ? ' text-white' : 'text-slate-400'}`}
-        style={{ backgroundColor: layout_color }} >
-        {i}
-      </button>
-    );
-  }
-
   const formatDate = (dateString) => {
-    if (!dateString) return '';
+    if (!dateString) return "";
     const date = new Date(dateString);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
   };
 
   const handleAddEmployeeClick = () => {
-    navigate('/setup/employee/add')
-  }
+    navigate("/employee/creation/");
+  };
 
   const { mutate: getallemployeetableMutate } = useMutation({
-    mutationFn: ()=>
-       getallemployeetable(payload),
+    mutationFn: () => getallemployeetable(payload),
     onSuccess: (response) => {
-    
       if (response?.data) {
         setEmployeeData(response.data);
         setTotalPages(response.totalPages);
       }
-      setisLoading(false)
+      setisLoading(false);
     },
-    onError:()=>{
-        setisLoading(false)
-    }
+    onError: () => {
+      setisLoading(false);
+    },
   });
-  
 
   const { mutate: deleteEmployeeMutate } = useMutation({
     mutationFn: deleteemployee,
     onSuccess: (response) => {
       toast.success(response.message);
-      getallemployeetableMutate({ page: currentPage, limit: itemsPerPage });  
-    }
+      const isLastItemOnPage = employeeData.length === 1;
+      const isNotFirstPage = currentPage > 1;
+      if (isLastItemOnPage && isNotFirstPage) {
+        setCurrentPage(prev => prev - 1);
+      } else {
+
+        getallemployeetableMutate({ page: currentPage, limit: itemsPerPage });
+
+      }
+    },
   });
 
-  useEffect(()=>{
+  useEffect(() => {
     getallemployeetableMutate({
-      search: debouncedSearch
+      search: debouncedSearch,
     });
-  },[debouncedSearch])
+  }, [debouncedSearch]);
 
   useEffect(() => {
     getallemployeetableMutate({
@@ -113,74 +153,62 @@ const OurEmployee = () => {
       limit: itemsPerPage,
       from_date: "",
       to_date: "",
-      search: debouncedSearch
+      search: debouncedSearch,
     });
   }, [currentPage, itemsPerPage]);
-
-  
-  useEffect(() => {
-    getallemployeetableMutate({
-      page: currentPage,
-      limit: itemsPerPage,
-      from_date: "",
-      to_date: "",
-      search: debouncedSearch
-    });
-  }, []);
 
 
 
   const handleEdit = (id) => {
-    navigate(`/setup/employee/edit/${id}`)
-  }
+    navigate(`/setup/employee/edit/${id}`);
+  };
 
   const handleDelete = (id) => {
-    dispatch(openModal({
-      modalType: 'CONFIRMATION',
-      header: 'Delete Employee',
-      formData: {
-        message: 'Are you sure you want to delete this employee?',
-        employeeId: id
-      },
-      buttons: {
-        cancel: {
-          text: 'Cancel'
+    dispatch(
+      openModal({
+        modalType: "CONFIRMATION",
+        header: "Delete Employee",
+        formData: {
+          message: "Are you sure you want to delete this employee?",
+          employeeId: id,
         },
-        submit: {
-          text: 'Delete'
-        }
-      }
-      }));
+        buttons: {
+          cancel: {
+            text: "Cancel",
+          },
+          submit: {
+            text: "Delete",
+          },
+        },
+      })
+    );
 
-    eventEmitter.on('CONFIRMATION_SUBMIT', async (data) => {
-      try {
-        let response = deleteEmployeeMutate(data.employeeId);
-        toast.success(response.message);
-        getallemployeetableMutate({ page: currentPage, limit });
-      } catch (error) {
-        console.error('Error deleting employee:', error);
-      }
-    });
-  }
+  };
 
   useEffect(() => {
+    const handleDelete = (data) => {
+      deleteEmployeeMutate(data.employeeId);
+    };
+
+    eventEmitter.on("CONFIRMATION_SUBMIT", handleDelete);
+
     return () => {
-      eventEmitter.off('CONFIRMATION_SUBMIT');
+      eventEmitter.off("CONFIRMATION_SUBMIT", handleDelete);
     };
   }, []);
 
   const handleStatusToggle = async (id) => {
     let response = await changeEmployeeStatus(id);
-    if(response){
+    if (response) {
       toast.success(response.message);
       setEmployeeData((prevData) =>
         prevData.map((employee) =>
-          employee._id === id 
+          employee._id === id
             ? { ...employee, active: employee.active === true ? false : true }
             : employee
         )
       );
-      getallemployeetableMutate({ page: currentPage, limit: itemsPerPage });  
+      getallemployeetableMutate({ page: currentPage, limit: itemsPerPage });
     }
   };
 
@@ -191,119 +219,155 @@ const OurEmployee = () => {
 
   const columns = [
     {
-      header: 'Actions',
-      cell: (row, rowIndex) => (
-          <div className="dropdown-container relative"
-          style={{
-              top: rowIndex >= employeeData.length - 2 ? "auto" : "72%",
-              bottom: rowIndex >= employeeData.length - 2 ? "-74%" : "auto", 
-              // top: 'auto',
-              // bottom: '-440%',
-     
-              marginBottom: "-15px",
-              filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.15))",
-            }}
-          >
-              <button
-                  className="p-1 hover:bg-gray-100 rounded-full"
-                  onClick={(e) => {
-                      e.stopPropagation();
-                      setActiveDropdown(activeDropdown === row?._id ? null : row?._id);
-                  }}
-              >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
-                      <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
-                  </svg>
-              </button>
-
-              {activeDropdown === row?._id && (
-                  <div
-                      className="relative"
-                    
-                  >
-                      <div className="w-32 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
-                          <div className="py-1">
-                              <button
-                                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                                  onClick={() => {
-                                      handleEdit(row?._id);
-                                      setActiveDropdown(null);
-                                  }}
-                              >
-                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                  </svg>
-                                  Edit
-                              </button>
-                              <button
-                                  className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
-                                  onClick={() => {
-                                      handleDelete(row?._id);
-                                      setActiveDropdown(null);
-                                  }}
-                              >
-                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                  </svg>
-                                  Delete
-                              </button>
-                              <button
-                                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                                  onClick={() => setActiveDropdown(null)}
-                              >
-                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                  </svg>
-                                  Cancel
-                              </button>
-                          </div>
-                      </div>
-                  </div>
-              )}
-          </div>
-      ),
-      sticky: 'right'
-  },
-    {
-      header: 'S.No',
+      header: "S.No",
       cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
     },
     {
-      header: 'Employee Name',
+      header: "Actions",
+      cell: (row, rowIndex) => (
+        <div
+          className="dropdown-container relative"
+        >
+          <button
+            className="p-1 hover:bg-gray-100 rounded-full"
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedRow(row?._id);
+              setActiveDropdown(activeDropdown === row?._id ? null : row?._id);
+            }}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 text-gray-600"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
+            </svg>
+          </button>
+
+          {activeDropdown === row?._id && (
+            <div
+              className="absolute"
+              style={{
+                top: rowIndex >= employeeData.length - 2 ? 'auto' : '72%',
+                bottom: rowIndex >= employeeData.length - 2 ? '-74%' : 'auto',
+                // top: 'auto',
+                // bottom: '-440%',
+                zIndex: 9999,
+                marginBottom: '8px',
+                filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.15))'
+              }}
+            >
+              <div className="w-32 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+                <div className="py-1">
+                  <button
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                    onClick={() => {
+                      handleEdit(row?._id);
+                      setActiveDropdown(null);
+                    }}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                      />
+                    </svg>
+                    Edit
+                  </button>
+                  <button
+                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
+                    onClick={() => {
+                      handleDelete(row?._id);
+                      setActiveDropdown(null);
+                    }}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      />
+                    </svg>
+                    Delete
+                  </button>
+                  <button
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                    onClick={() => setActiveDropdown(null)}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      ),
+      sticky: "right",
+    },
+    {
+      header: "Employee Name",
       cell: (row) => `${row?.firstname} ${row?.lastname}`,
     },
     {
-      header: "Date of Joining", 
-      cell: (row) => formatDate(row?.date_of_join)
+      header: "Date of Joining",
+      cell: (row) => formatDate(row?.date_of_join),
     },
     {
-      header: 'Active',
-      accessor: 'active',
+      header: "Active",
+      accessor: "active",
       cell: (row) => (
         <label className="relative inline-flex items-center cursor-pointer">
           <input
             type="checkbox"
             className="sr-only peer"
             checked={row?.active === true}
-            onChange={() => handleStatusToggle(row?._id)} 
+            onChange={() => handleStatusToggle(row?._id)}
           />
           <div
-            className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-black p-[2px] after:duration-300 after:bg-black ${
-              row.active === true
-                ? 'peer-checked:bg-[#61A375] peer-checked:ring-[#61A375]'   
-                : 'peer-checked:bg-gray-400 peer-checked:ring-gray-400'
-            } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-white peer-hover:after:scale-95`}
+            className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-black p-[2px] after:duration-300 after:bg-black ${row.active === true
+                ? "peer-checked:bg-[#61A375] peer-checked:ring-[#61A375]"
+                : "peer-checked:bg-gray-400 peer-checked:ring-gray-400"
+              } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-white peer-hover:after:scale-95`}
           ></div>
         </label>
-      )
-    }
-   
+      ),
+    },
   ];
-
 
   return (
     <div className="flex flex-col p-4">
-      <h2 className="text-2xl text-gray-900 font-bold">Our Employee</h2> 
+      <h2 className="text-2xl text-gray-900 font-bold">Our Employee</h2>
       <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
         <div className="relative w-full lg:w-1/3 min-w-[200px]">
           <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
@@ -313,7 +377,7 @@ const OurEmployee = () => {
               <Search className="text-gray-500" />
             )}
           </div>
-          <input 
+          <input
             placeholder="Search..."
             className="p-3 pl-10 pr-3 border-2 bg-[#F5F5F5] border-gray-500 rounded-md w-full"
             value={searchInput}
@@ -324,64 +388,74 @@ const OurEmployee = () => {
           <button
             className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
             onClick={handleAddEmployeeClick}
-            style={{ backgroundColor: layout_color }} >
+            style={{ backgroundColor: layout_color }}
+          >
             + Add Employee
           </button>
         </div>
       </div>
 
       <div className="mt-4">
-      <Table data={employeeData || [] } columns={columns} selectedRow={selectedRow} activeDropdown={activeDropdown} isLoading={isLoading}/>
+        <Table
+          data={employeeData}
+          columns={columns}
+          selectedRow={selectedRow}
+          activeDropdown={activeDropdown}
+          isLoading={isLoading}
+        />
       </div>
-      <div className="flex justify-between mt-4 p-2">
-        <div className="flex flex-row items-center justify-center gap-2">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => handlePageChange(currentPage - 1)}
-              readOnly={currentPage === 1}
-              className="p-2 text-gray-500 rounded-md"
+      {employeeData.length > 0 && (
+        <div className="flex justify-between mt-4 p-2">
+          <div className="mt-4 flex gap-2 justify-center items-center">
+            <span className="text-gray-500">Show</span>
+            <select
+              id="itemsPerPage"
+              value={itemsPerPage}
+              onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
+              className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
             >
-              Previous
-            </button>
+              <option value={10}>10</option>
+              <option value={25}>25</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+              <option value={250}>250</option>
+              <option value={500}>500</option>
+              <option value={1000}>1000</option>
+            </select>
+            <span className="text-gray-500">entries</span>
           </div>
-
           <div className="flex flex-row items-center justify-center gap-2">
-            {paginationButtons}
-          </div>
+            <div className="flex items-center gap-4">
+              <button
+                onClick={prevPage}
+                disabled={currentPage === 1}
 
-          <div className="flex items-center">
-            <button
-              onClick={() => handlePageChange(currentPage + 1)}
-              readOnly={currentPage === totalPages}
-              className="p-2 text-gray-500 rounded-md"
-            >
-              Next
-            </button>
+                className={`p-2 text-gray-500 rounded-md ${currentPage === 1 ? "cursor-not-allowed" : "cursor-pointer"} `}
+              >
+                Previous
+              </button>
+            </div>
+
+            <div className="flex flex-row items-center justify-center gap-2">
+              {paginationButtons}
+            </div>
+
+            <div className="flex items-center">
+              <button
+                onClick={nextPage}
+                disabled={currentPage === totalPages}
+
+                className={`p-2 text-gray-500 rounded-md  ${currentPage === totalPages ? "cursor-not-allowed" : "cursor-pointer"}`}
+              >
+                Next
+              </button>
+            </div>
           </div>
         </div>
-
-        <div className="mt-4 flex gap-2 justify-center items-center">
-          <span className="text-gray-500">Show</span>
-          <select
-            id="itemsPerPage"
-            value={itemsPerPage}
-            onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
-            className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
-          >
-            <option value={10}>10</option>
-<option value={25}>25</option>
-<option value={50}>50</option>
-<option value={100}>100</option>
-<option value={250}>250</option>
-<option value={500}>500</option>
-<option value={1000}>1000</option>
-          </select>
-          <span className="text-gray-500">entries</span>
-        </div>
-      </div>
+      )}
       <Modal />
     </div>
-  )
-}
+  );
+};
 
-export default OurEmployee
+export default OurEmployee;

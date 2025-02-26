@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { getallgiftvendor, getallbranch, getgiftvendorbranchById, getgiftitemById,addgiftitem,updategiftitem } from '../../../api/Endpoints';
 import { useMutation } from '@tanstack/react-query';
 import { useSelector, useDispatch } from 'react-redux';
-import { setid } from "../../../../redux/clientFormSlice";
+
 import { toast } from 'react-toastify';
 import { useNavigate, useParams } from 'react-router-dom';
-import SpinLoading from '../../common/SpinLoading';
+import SpinLoading from '../../common/spinLoading';
 
 function GiftItemForm({ setIsOpen,isviewOpen,id,setId,refetchTable  }) {
 
@@ -25,6 +25,8 @@ function GiftItemForm({ setIsOpen,isviewOpen,id,setId,refetchTable  }) {
     });
     const [errors, setErrors] = useState({});
     const [isLoading, setIsLoading] = useState(false);
+
+
     
     let dispatch = useDispatch();
 
@@ -66,7 +68,7 @@ function GiftItemForm({ setIsOpen,isviewOpen,id,setId,refetchTable  }) {
         },
     });
 
-
+    
 
     useEffect(() => {
         
@@ -186,6 +188,7 @@ const { mutate: updategiftitemMutate } = useMutation({
         toast.error(error.message);
     },
 });
+
     return (
         <div>
             <form  className="space-y-4">
@@ -252,20 +255,26 @@ const { mutate: updategiftitemMutate } = useMutation({
                 </div>
 
                 <div className="flex flex-col space-y-2">
-                    <label className="text-gray-700 mb-2 mt-2 font-medium">Upload Gift Image<span className='text-red-400'>*</span></label>
+                <div className="flex flex-row " >
+                <label className="text-gray-700 font-medium">Upload Gift Image<span className='text-red-400'>*</span></label>
+                                                <p className='text-gray-900 text-[12px] truncate text-start mt-1 mx-2'>
+                                                    (Maximum file size(500KB))
+                                                </p>
+                                            </div>
+                   
                     <div className="flex gap-4">
                         <div className="flex-1">
                             <label
                                 htmlFor="gift_image"
                                 className="flex flex-col justify-center items-center w-full h-20 border-2 border-dashed border-gray-300 text-gray-700 cursor-pointer p-5 text-center"
                             >
-                                {
-                                    (gift_image && typeof gift_image === 'string')
-                                        ? gift_image.split('/')[4]
-                                        : (gift_image && typeof gift_image === 'object' && gift_image.name)
-                                            ? gift_image.name
-                                            : 'Browse to find or drag image here'
-                                }
+                                <p> {
+                                     (gift_image && typeof gift_image === 'string')
+                                     ? gift_image
+                                     : (gift_image && typeof gift_image === 'object' && gift_image)
+                                         ? gift_image.name
+                                         : 'Browse to find or drag image here'
+                                }</p> 
                             </label>
                             <input
                                 onChange={handlegiftImageChange}

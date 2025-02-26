@@ -9,8 +9,8 @@ import DigiGoldScheme from "../chit/components/ourscheme/digiGold/DigiGoldScheme
 import CreateDigiGoldScheme from "../chit/components/ourscheme/digiGold/CreateDigiGoldScheme";
 import GiftVendor from "../chit/components/gift/giftvendor/index";
 import GiftItem from "../chit/components/gift/giftitem/index";
-import GiftInwards from "../chit/components/gift/giftinwards/giftInwards";
-import GiftInwardsCreation from "../chit/components/gift/giftinwards/GiftInwardsCreation";
+import GiftInwards from "../chit/components/gift/giftPurchase/GiftPurchase";
+import AddGiftPurchase from "../chit/components/gift/giftPurchase/AddGiftPurchase";
 import Category from "../chit/components/catalog/category/Category";
 import AddCategory from "../chit/components/catalog/category/AddCategory";
 import Product from "../chit/components/catalog/product/Product";
@@ -20,8 +20,8 @@ import NewArrivals from "../chit/components/catalog/newarrivals/NewArrivals";
 import AddNewArrival from "../chit/components/catalog/newarrivals/AddNewArrival";
 import Pushnotification from "../chit/components/notification/pushnotification/index";
 import AddOffers from "../chit/components/catalog/offers/AddOffers";
-import Customer from "../chit/components/manageaccount/customer/Customer";
-import AddCustomer from "../chit/components/manageaccount/customer/AddCustomers";
+import ExistingCusTable from "../chit/components/manageaccount/customer/index";
+import Customers from "../chit/components/manageaccount/customer/Customers";
 import OutStandingWeight from "../chit/components/Report/OutStandingWeight";
 import ModeWisePayment from "../chit/components/Report/PaymentModeLedger";
 import GiftStock from "../chit/components/Report/GiftStock";
@@ -73,8 +73,406 @@ import NewArrivalsWhatsapp from "../chit/components/whatsapp/newarrivals/index";
 import ProductWhatsapp from "../chit/components/whatsapp/product/index";
 import OffersWhatsapp from  "../chit/components/whatsapp/offers/index";
 import Organisation from "../chit/components/Setup/organisation";
+import Department from "../chit/components/Setup/dept/Department";
+import Topup from "../chit/components/Setup/topup";
+import SchemeForm from "../chit/components/ourscheme/scheme/newScheme";
+import Campaign from "../chit/components/Setup/campaign";
+import configNotification from "../chit/components/notification/notification-configurations/configNotification";
 
 const RouteList = [
+
+
+  {
+    name:'Login',
+    path:'/', 
+    element: <Login/>
+  },
+ 
+  {
+    name: "Dashboard",
+    path:'/dashboard',
+    element:<Base renderContent={Dashboard}/>
+  },
+
+  //Scheme
+  {
+    name: "Scheme",
+    path: "/scheme/scheme",
+    element: <Base renderContent={Scheme}/>,
+  },
+  {
+    name: "Add Scheme",
+    path: "/scheme/addscheme",
+    element: <Base renderContent={AddScheme}/>,
+  },
+  {
+    name: "Add Scheme",
+    path: "/scheme/addscheme/:id",
+    element: <Base renderContent={AddScheme}/>,
+  },
+
+  //ManageAccount
+   
+  {
+    name: "Scheme Account",
+    path:'manageaccount/schemeaccount/',
+    element:<Base renderContent={Schemeaccount}/>
+  },
+  {
+    name: "Add Scheme Account",
+    path:'/manageaccount/addschemeaccount',
+    element:<Base renderContent={AddSchemeAccount}/>
+  },
+
+  {
+    name: "Update Scheme Account",
+    path:'/manageaccount/addschemeaccount/:id',
+    element:<Base renderContent={AddSchemeAccount}/>
+  },
+  {
+    name: "Digi Gold Account",
+    path:'/manageaccount/digigoldaccount',
+    element:<Base renderContent={DigiGold}/>
+  },
+  
+   //Masters
+   {
+    name: "Purity",
+    path:'masters/purity/',
+    element:<Base renderContent={Purity}/>
+  },
+  {
+    name: "Metal",
+    path:'masters/metal/',
+    element:<Base renderContent={Metal}/>
+  },
+  {
+    name: "Metal Rate",
+    path:'masters/metalrate',
+    element:<Base renderContent={MetalRate}/>
+  },
+  {
+    name: "Create Metal Rate",
+    path:'/masters/metalrate/edit/:id',
+    element:<Base renderContent={CreateMetalRate}/>
+  },
+  {
+    name: "Create Metal Rate",
+    path:'/masters/metalrate/add',
+    element:<Base renderContent={CreateMetalRate}/>
+  },
+  {
+    name: "User Role",
+    path:'masters/userrole',
+    element:<Base renderContent={UserRole}/>
+  },
+  {
+    name: "User Access",
+    path:'masters/useraccess',
+    element:<Base renderContent={UserAccess}/>
+  },
+  {
+    name: "Mode of Payment",
+    path:'/masters/paymentmode/',
+    element:<Base renderContent={Paymentmode}/>
+  },
+  {
+    name: "Department",
+    path:'/masters/department',
+    element:<Base renderContent={Department}/>
+  },
+  {
+    name: "Topup",
+    path:'masters/topup',
+    element:<Base renderContent={Topup}/>
+  },
+  {
+    name: "Campaign Type",
+    path:'/masters/campaign',
+    element:<Base renderContent={Campaign}/>
+  },
+
+  //Payment
+  {
+    name: "Scheme Payment",
+    path:'/payment/customerpayment',
+    element:<Base renderContent={SchemePayment}/>
+  },
+    {
+      name: "Add Scheme Payment",
+      path:'/payment/addschemepayment',
+      element:<Base renderContent={AddSchemePayment}/>
+    },
+     {
+      name: "Add Scheme Payment",
+      path:'/payment/addschemepayment/:id',
+      element:<Base renderContent={AddSchemePayment}/>
+    },
+
+    //Catalog
+    {
+      name: "Category",
+      path:'/catalog/category',
+      element:<Base renderContent={Category}/>
+    },
+    {
+      name: "Add Category",
+      path:'/catalog/addcategory',
+      element:<Base renderContent={AddCategory}/>
+    },
+    {
+      name: "Update Category",
+      path:'/catalog/editcategory/:id',
+      element:<Base renderContent={AddCategory}/>
+    },
+    {
+      name: "Product",
+      path:'/catalog/product',
+      element:<Base renderContent={Product}/>
+  },
+    {
+      name: "Add Product",
+      path:'/catalog/addproduct',
+      element:<Base renderContent={AddProduct}/>
+    },
+    {
+      name: "Update Product",
+      path:'/catalog/editproduct/:id',
+      element:<Base renderContent={AddProduct}/>
+    },
+    {
+      name: "Offers",
+      path:'/catalog/offers',
+      element:<Base renderContent={Offers}/>
+    },
+    {
+      name: "Add Offer",
+      path:'/catalog/addoffers',
+      element:<Base renderContent={AddOffers}/>
+    },
+    {
+      name: "Update Offer",
+      path:'/catalog/editoffers/:id',
+      element:<Base renderContent={AddOffers}/>
+    },
+    {
+      name: "New Arrivals",
+      path:'/catalog/newarrivals',
+      element:<Base renderContent={NewArrivals}/>
+    },
+    {
+      name: "Add New Arrivals",
+      path:'/catalog/addnewarrivals',
+      element:<Base renderContent={AddNewArrival}/>
+    },
+    {
+      name: "Update New Arrivals",
+      path:'/catalog/addnewarrivals/:id',
+      element:<Base renderContent={AddNewArrival}/>
+    },
+
+    //Manage Customers
+
+    {
+      name: "Existing customer",
+      path:'/managecustomers/customer',
+      element:<Base renderContent={ExistingCusTable}/>
+    },
+    {
+      name: "Add Customer",
+      path:'/managecustomers/addcustomer',
+      element:<Base renderContent={Customers}/>
+    },
+    {
+      name: "Add Customer",
+      path:'/managecustomers/editcustomer/:id',
+      element:<Base renderContent={Customers}/>
+    },
+     
+  {
+    name: "Completed Account",
+    path:'/managecustomers/completedaccount',
+    element:<Base renderContent={CompleteAccount}/>
+  },
+
+
+//Gifts
+
+{
+  name: "Gift Vendor",
+  path:'/gift/giftvendor',
+  element:<Base renderContent={GiftVendor}/>
+}, 
+{
+  name: "Gift Item",
+  path:'/gift/giftitem',
+  element:<Base renderContent={GiftItem}/>
+},
+{
+  name: "Gift Handover",
+  path:'/gift/gifthandover',
+  element:<Base renderContent={GiftHandOver}/>
+},
+{
+  name: "Gift Purchase",
+  path:'gift/giftpurchase/',
+  element:<Base renderContent={GiftInwards}/>
+},
+{
+  name: "Gift Purchase",
+  path:'/gift/addgiftinwards',
+  element:<Base renderContent={AddGiftPurchase}/>
+},
+{
+  name: "Edit Gift Purchase",
+  path:'/gift/addgiftinwards/:id',
+  element:<Base renderContent={AddGiftPurchase}/>
+},
+{
+  name: "Gift HandOver",
+  path:'/gift/gifthandover',
+  element:<Base renderContent={GiftHandOver}/>
+},
+{
+  name: "Gift Issued Creation",
+  path:'/gift/giftissues/creategiftissue',
+  element:<Base renderContent={AddGiftHandOver}/>
+},
+{
+  name: "Gift Stock Report",
+  path:'/gift/stockreport/',
+  element:<Base renderContent={GiftStock}/>
+},
+
+//Notifications
+
+{
+  name: "Push Notification",
+  path:'/notification/pushnotification',
+  element:<Base renderContent={Pushnotification}/>
+},
+{
+  name: "Create Notification",
+  path:'/notification/addnotification',
+  element:<Base renderContent={AddNotfication}/>
+},
+{
+  name: "Wedding Anniversary",
+  path:'/notification/weddingnotification',
+  element:<Base renderContent={Weddingnotification}/>
+},
+{
+  name: "Birthday",
+  path:'/notification/birthday',
+  element:<Base renderContent={Birthdaynotification}/>
+},
+{
+  name: "configurations",
+  path:'/notification/configurations',
+  element:<Base renderContent={configNotification}/>
+},
+
+//Scheme Reports
+{
+  name: "Outstanding Summary",
+  path:'/reports/outstandingsummary',
+  element:<Base renderContent={OutStandingReport}/>
+},
+{
+  name: "Account Summary Report",
+  path:'/reports/accountsummaryreport',
+  element:<Base renderContent={AccountSummaryReport}/>
+},
+{
+  name: "Scheme Payment Report",
+  path:'/reports/schemepayment',
+  element:<Base renderContent={SchemePaymentReport}/>
+},
+{
+  name: "Scheme Account Report",
+  path:'reports/schemeaccount',
+  element:<Base renderContent={SchemeAccountReport}/>
+},
+{
+  name: "Outstanding Amount",
+  path:'/reports/outstanding',
+  element:<Base renderContent={OutStandingAmount}/>
+},
+{
+  name: "Outstanding Weight",
+  path:'/reports/outstandingweight',
+  element:<Base renderContent={OutStandingWeight}/>
+},
+
+//Employee
+{
+  name: "Employee Details",
+  path:'/employee/details/',
+  element:<Base renderContent={OurEmployee}/>
+},
+{
+  name: "Employee Creation",
+  path:'/employee/creation/',
+  element:<Base renderContent={AddEmployee}/>
+},
+{
+  name: "Employee Creation",
+  path:'/employee/creation/:id',
+  element:<Base renderContent={AddEmployee}/>
+},
+
+//Settings
+{
+  name: "Menu",
+  path:'/setup/menu',
+  element:<Base renderContent={MenuComp}/>
+},
+{
+  name: "Sub Menu",
+  path:'/setup/submenu',
+  element:<Base renderContent={Submenu}/>
+},
+{
+  name: "Branch",
+  path:'/setup/branch',
+  element:<Base renderContent={Branch}/>
+},
+{
+  name: "Add Branch",
+  path:'/setup/branch/add',
+  element:<Base renderContent={AddBranch}/>
+},
+{
+  name: "Edit Branch",
+  path:'/setup/branch/edit/:id',
+  element:<Base renderContent={AddBranch}/>
+},
+{
+  name: "Staff User",
+  path:'/setup/staffuser',
+  element:<Base renderContent={StaffUser}/>
+},
+{
+  name: "Organisation",
+  path:'/setup/organisation',
+  element:<Base renderContent={Organisation}/>
+},
+
+//Wallet
+{
+  name: "Wallet",
+  path:'/payment/wallet',
+  element:<Base renderContent={Wallet}/>
+},
+
+//Accounts Report
+{
+  name: "Payment Mode Ledger",
+  path:'/reports/paymentmodeledger',
+  element:<Base renderContent={ModeWisePayment}/>
+},
+
+//Whatsapp 
   {
     name: "Whastapp Offers",
     path:'/whatsapp/offers',
@@ -90,6 +488,8 @@ const RouteList = [
     path:'/whatsapp/newarrivals',
     element:<Base renderContent={NewArrivalsWhatsapp}/>
   },
+
+
   {
     name: "Card Print",
     path:'/cardprint/printone',
@@ -100,52 +500,15 @@ const RouteList = [
     path:'/receiptprint/printone',
     element:<Base renderContent={ReceiptPrint}/>
   },
-  {
-    name: "Metal Rate",
-    path:'/ourscheme/metalrate',
-    element:<Base renderContent={MetalRate}/>
-  },
-  {
-    name: "Crate Metal Rate",
-    path:'/ourscheme/createmetalrate/:id',
-    element:<Base renderContent={CreateMetalRate}/>
-  },
-  {
-    name: "Crate Metal Rate",
-    path:'/ourscheme/createmetalrate',
-    element:<Base renderContent={CreateMetalRate}/>
-  },
+ 
   {
     name: "Card Print",
     path:'/cardprint/printone',
     element:<Base renderContent={CardPrint}/>
   },
-  {
-    name:'Login',
-    path:'/', 
-    element: <Login/>
-  },
- 
-  {
-    name: "Dashboard",
-    path:'/dashboard',
-    element:<Base renderContent={Dashboard}/>
-  },
-  {
-    name: "Scheme",
-    path: "/ourscheme/scheme",
-    element: <Base renderContent={Scheme}/>,
-  },
-  {
-    name: "Add Scheme",
-    path: "/scheme/addscheme",
-    element: <Base renderContent={AddScheme}/>,
-  },
-  {
-    name: "Add Scheme",
-    path: "/scheme/addscheme/:id",
-    element: <Base renderContent={AddScheme}/>,
-  },
+  
+
+
   {
     name: "Classification",
     path:'/ourscheme/classification',
@@ -153,7 +516,7 @@ const RouteList = [
   },
   {
     name: "Digi Gold",
-    path:'/ourscheme/digigold',
+    path:'scheme/digigold',
     element:<Base renderContent={DigiGoldScheme}/>
   },
   {
@@ -172,158 +535,8 @@ const RouteList = [
     path:'/classification/addclassification/:id',
     element:<Base renderContent={CreateSchemeClassificaton}/>
   },
-  {
-    name: "Gift Vendor",
-    path:'/gift/giftvendor',
-    element:<Base renderContent={GiftVendor}/>
-  }, 
-  {
-    name: "Gift Handover",
-    path:'/gift/gifthandover',
-    element:<Base renderContent={GiftHandOver}/>
-  },
-  {
-    name: "Gift Inwards",
-    path:'/gift/giftinwards',
-    element:<Base renderContent={GiftInwards}/>
-  },
-  {
-    name: "Gift Inwards Creation",
-    path:'/gift/addgiftinwards',
-    element:<Base renderContent={GiftInwardsCreation}/>
-  },
-  {
-    name: "Edit Gift Inwards",
-    path:'/gift/addgiftinwards/:id',
-    element:<Base renderContent={GiftInwardsCreation}/>
-  },
-  {
-    name: "Gift Issues",
-    path:'/gift/giftissues',
-    element:<Base renderContent={GiftHandOver}/>
-  },
-  {
-    name: "Gift Issued Creation",
-    path:'/gift/giftissues/creategiftissue',
-    element:<Base renderContent={AddGiftHandOver}/>
-  },
-  {
-    name: "Category",
-    path:'/catalog/category',
-    element:<Base renderContent={Category}/>
-  },
-  {
-    name: "Add Category",
-    path:'/catalog/addcategory',
-    element:<Base renderContent={AddCategory}/>
-  },
-  {
-    name: "Update Category",
-    path:'/catalog/addcategory/:id',
-    element:<Base renderContent={AddCategory}/>
-  },
-  {
-    name: "Product",
-    path:'/catalog/product',
-    element:<Base renderContent={Product}/>
-  },
-  {
-    name: "Add Product",
-    path:'/catalog/addproduct',
-    element:<Base renderContent={AddProduct}/>
-  },
-  {
-    name: "Update Product",
-    path:'/catalog/addproduct/:id',
-    element:<Base renderContent={AddProduct}/>
-  },
-  {
-    name: "Offers",
-    path:'/catalog/offers',
-    element:<Base renderContent={Offers}/>
-  },
-  {
-    name: "Add Offer",
-    path:'/catalog/addoffers',
-    element:<Base renderContent={AddOffers}/>
-  },
-  {
-    name: "Update Offer",
-    path:'/catalog/addoffers/:id',
-    element:<Base renderContent={AddOffers}/>
-  },
-  {
-    name: "New Arrivals",
-    path:'/catalog/newarrivals',
-    element:<Base renderContent={NewArrivals}/>
-  },
-  {
-    name: "Add New Arrivals",
-    path:'/catalog/addnewarrivals',
-    element:<Base renderContent={AddNewArrival}/>
-  },
-  {
-    name: "Update New Arrivals",
-    path:'/catalog/addnewarrivals/:id',
-    element:<Base renderContent={AddNewArrival}/>
-  },
-  {
-    name: "Push Notification",
-    path:'/notification/pushnotification',
-    element:<Base renderContent={Pushnotification}/>
-  },
-  {
-    name: "Create Notification",
-    path:'/notification/addnotification',
-    element:<Base renderContent={AddNotfication}/>
-  },
-  {
-    name: "Wedding Anniversary",
-    path:'/notification/weddingnotification',
-    element:<Base renderContent={Weddingnotification}/>
-  },
-  {
-    name: "Birthday",
-    path:'/notification/birthday',
-    element:<Base renderContent={Birthdaynotification}/>
-  },
-  {
-    name: "Push Notification",
-    path:'/notification/pushnotification',
-    element:<Base renderContent={Pushnotification}/>
-  },
-  {
-    name: "Customer",
-    path:'/manageaccount/customer',
-    element:<Base renderContent={Customer}/>
-  },
-  {
-    name: "Add Customer",
-    path:'/manageaccount/addcustomer',
-    element:<Base renderContent={AddCustomer}/>
-  },
-  {
-    name: "Add Customer",
-    path:'/manageaccount/addcustomer/:id',
-    element:<Base renderContent={AddCustomer}/>
-  },
  
-  {
-    name: "Scheme Account",
-    path:'/manageaccount/schemeaccount/',
-    element:<Base renderContent={Schemeaccount}/>
-  },
-  {
-    name: "Add Scheme Account",
-    path:'/manageaccount/addschemeaccount',
-    element:<Base renderContent={AddSchemeAccount}/>
-  },
 
-  {
-    name: "Update Scheme Account",
-    path:'/manageaccount/addschemeaccount/:id',
-    element:<Base renderContent={AddSchemeAccount}/>
-  },
   {
     name: "Closed Account",
     path:'/manageaccount/closedaccount',
@@ -339,49 +552,11 @@ const RouteList = [
     path:'/manageaccount/addrevertaccount',
     element:<Base renderContent={AddRvertAccount}/>
   },
-  {
-    name: "Digi Gold Account",
-    path:'/manageaccount/digigold',
-    element:<Base renderContent={DigiGold}/>
-  },
   
-  {
-    name: "Completed Account",
-    path:'/manageaccount/completeaccount',
-    element:<Base renderContent={CompleteAccount}/>
-  },
+ 
 
   // Outstanding Report 
-  {
-    name: "Outstanding Summary",
-    path:'/reports/outstandingsummary',
-    element:<Base renderContent={OutStandingReport}/>
-  },
-  {
-    name: "Account Summary Report",
-    path:'/reports/accounts',
-    element:<Base renderContent={AccountSummaryReport}/>
-  },
-  {
-    name: "Scheme Payment Report",
-    path:'/reports/schemepayment',
-    element:<Base renderContent={SchemePaymentReport}/>
-  },
-  {
-    name: "Scheme Account Report",
-    path:'/reports/schemeaccount',
-    element:<Base renderContent={SchemeAccountReport}/>
-  },
-  {
-    name: "Outstanding Amount",
-    path:'/reports/outstanding',
-    element:<Base renderContent={OutStandingAmount}/>
-  },
-  {
-    name: "Outstanding Weight",
-    path:'/reports/outstandingweight',
-    element:<Base renderContent={OutStandingWeight}/>
-  },
+ 
  
   // {
   //   name: "Out Standing Digi Gold",
@@ -403,121 +578,21 @@ const RouteList = [
   //   path:'/reports/agentcollection',
   //   element:<Base renderContent={AgentCollectionReport}/>
   // },
-  {
-    name: "Payment Mode Ledger",
-    path:'/reports/paymentmodeledger',
-    element:<Base renderContent={ModeWisePayment}/>
-  },
-  {
-    name: "Gift Stock Report",
-    path:'/reports/giftstock',
-    element:<Base renderContent={GiftStock}/>
-  },
-  {
-    name: "Branch",
-    path:'/setup/branch',
-    element:<Base renderContent={Branch}/>
-  },
-  {
-    name: "Add Branch",
-    path:'/setup/branch/add',
-    element:<Base renderContent={AddBranch}/>
-  },
-  {
-    name: "Edit Branch",
-    path:'/setup/branch/edit/:id',
-    element:<Base renderContent={AddBranch}/>
-  },
-  {
-    name: "Employee",
-    path:'/setup/employee',
-    element:<Base renderContent={OurEmployee}/>
-  },
-  {
-    name: "Add Employee",
-    path:'/setup/employee/add',
-    element:<Base renderContent={AddEmployee}/>
-  },
-  {
-    name: "Edit Employee",
-    path:'/setup/employee/edit/:id',
-    element:<Base renderContent={AddEmployee}/>
-  },
-  {
-    name: "User Role",
-    path:'/setup/userrole',
-    element:<Base renderContent={UserRole}/>
-  },
-  {
-    name: "Staff User",
-    path:'/setup/staffuser',
-    element:<Base renderContent={StaffUser}/>
-  },
-  {
-    name: "User Access",
-    path:'/setup/useraccess',
-    element:<Base renderContent={UserAccess}/>
-  },
-  {
-    name: "Menu",
-    path:'/setup/menu',
-    element:<Base renderContent={MenuComp}/>
-  },
-  {
-    name: "Sub Menu",
-    path:'/setup/submenu',
-    element:<Base renderContent={Submenu}/>
-  },
-  {
-    name: "Payment Mode",
-    path:'/setup/paymentmode',
-    element:<Base renderContent={Paymentmode}/>
-  },
+  
   {
     name: "Scheme Type",
     path:'/setup/schemetype',
     element:<Base renderContent={Schemetype}/>
   },
-  {
-    name: "Metal",
-    path:'/setup/metal',
-    element:<Base renderContent={Metal}/>
-  },
-  {
-    name: "Purity",
-    path:'/setup/purity',
-    element:<Base renderContent={Purity}/>
-  },
-  {
-    name: "Wallet",
-    path:'/payment/wallet',
-    element:<Base renderContent={Wallet}/>
-  },
+ 
+
   {
     name: "Redeem",
     path:'/payment/redeem',
     element:<Base renderContent={Redeem}/>
   },
-  {
-    name: "Scheme Payment",
-    path:'/payment/schemepayment',
-    element:<Base renderContent={SchemePayment}/>
-  },
-    {
-      name: "Add Scheme Payment",
-      path:'/payment/addschemepayment',
-      element:<Base renderContent={AddSchemePayment}/>
-    },
-     {
-      name: "Add Scheme Payment",
-      path:'/payment/addschemepayment/:id',
-      element:<Base renderContent={AddSchemePayment}/>
-    },
-    {
-      name: "Organisation",
-      path:'/setup/organisation',
-      element:<Base renderContent={Organisation}/>
-    },
+
+    
      // super admin routes
      {
       name: "Client Master",
@@ -561,7 +636,11 @@ const RouteList = [
       path:'/superadmin/admin',
       element:<Base renderContent={AdminMaster}/>
     },
-    
+    {
+      name:'test',
+      path:'/test',
+      element:<Base  renderContent={SchemeForm}/>
+    }
 
 ];
 

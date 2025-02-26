@@ -21,19 +21,19 @@ import usePagination from '../../../hooks/usePagination'
 const GiftHandOver = () => {
 
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
-  
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  
+
   const [isviewOpen, setIsviewOpen] = useState(false);
   const [isLoading, setisLoading] = useState(true)
-   const [id,setId] = useState("")
+  const [id, setId] = useState("")
 
 
   const [giftitemData, setgiftitemData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  const [entries,Setentries] = useState(0)
+  const [entries, Setentries] = useState(0)
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [activeDropdown, setActiveDropdown] = useState(null);
 
@@ -43,38 +43,13 @@ const GiftHandOver = () => {
   const limit = 10;
 
   useEffect(() => {
-    getallgiftitemtableMutate({ search: debouncedSearch, page: currentPage, limit:itemsPerPage });
-  }, [currentPage, debouncedSearch,itemsPerPage]);
+    getallgiftitemtableMutate({ search: debouncedSearch, page: currentPage, limit: itemsPerPage });
+  }, [currentPage, debouncedSearch, itemsPerPage]);
 
-  const refetchTable = ()=>{
-    getallgiftitemtableMutate({ search: debouncedSearch, page: currentPage, limit:itemsPerPage });
+  const refetchTable = () => {
+    getallgiftitemtableMutate({ search: debouncedSearch, page: currentPage, limit: itemsPerPage });
   }
 
-  useEffect(() => {
-
-    eventEmitter.on('CONFIRMATION_SUBMIT', (data) => {
-      try {
-       
-        deleteGiftItem(data.giftitemId);
-  
-      } catch (error) {
-        console.error('Error deleting giftitem:', error);
-      }
-    });
-
-    return () => {
-      eventEmitter.off('CONFIRMATION_SUBMIT');
-    };
-  }, []);
-
- 
-
-  useEffect(() => {
-    if(id){
-     setIsviewOpen(true)
-    }
-   
-  }, [])
 
 
   useEffect(() => {
@@ -87,15 +62,15 @@ const GiftHandOver = () => {
     document.addEventListener('click', handleClickOutside);
     return () => document.removeEventListener('click', handleClickOutside);
   }, [activeDropdown]);
-  
+
   function closeIncommingModal() {
     setIsviewOpen(false);
   }
 
   const { mutate: getallgiftitemtableMutate } = useMutation({
-    mutationFn: (payload)=> getallgiftitemtable(payload),
+    mutationFn: (payload) => getallgiftitemtable(payload),
     onSuccess: (response) => {
-  
+
       if (response) {
         setgiftitemData(response.data);
         setTotalPages(response.totalPages)
@@ -103,12 +78,11 @@ const GiftHandOver = () => {
         Setentries(response.totalDocument)
         setTotalPages(Math.ceil(response.data.total / limit));
       }
-      toast.success(response.message)
       setisLoading(false)
     },
-    onError:()=>{
-        setisLoading(false)
-        setgiftitemData([])
+    onError: () => {
+      setisLoading(false)
+      setgiftitemData([])
     }
   });
 
@@ -135,13 +109,15 @@ const GiftHandOver = () => {
     setIsviewOpen(true)
   };
 
-  
-  
+
+
   const handleAddgiftitem = () => {
     setIsviewOpen(true)
   };
 
+
   const handleDelete = (id) => {
+    setId(id)
     dispatch(openModal({
       modalType: 'CONFIRMATION',
       header: 'Delete giftitem',
@@ -159,30 +135,44 @@ const GiftHandOver = () => {
       }
     }))
 
-  };
-
-    const { mutate: deleteGiftItem } = useMutation({
-      mutationFn: (id)=> deletegiftitem(id),
-      onSuccess: (response,id) => {
+  }
+  const { mutate: deleteGiftItem } = useMutation({
+    mutationFn: (id) => deletegiftitem(id),
+    onSuccess: (response) => {
+      if (response.message === "Gift deleted successfully") {
         const deletedData = giftitemData.filter(e => e._id !== id)
-       setgiftitemData(deletedData)
-       const isLastItemOnPage = giftitemData.length === 1;
-       const isNotFirstPage = currentPage > 1;
-       if (isLastItemOnPage && isNotFirstPage) {
-         setCurrentPage(prev => prev - 1);
-       } else {
-         refetchTable()
-       }
-        toast.success(response.message);
-        eventEmitter.off('CONFIRMATION_SUBMIT');
-      },
-      onError: (error) => {
-        eventEmitter.off('CONFIRMATION_SUBMIT');
-        console.error("Error:", error);
-      },
-    });
+        setgiftitemData(deletedData)
+        const isLastItemOnPage = giftitemData.length === 1;
+        const isNotFirstPage = currentPage > 1;
+        if (isLastItemOnPage && isNotFirstPage) {
+          setCurrentPage(prev => prev - 1);
+        } else {
+          refetchTable()
+        }
+      }
+      toast.success(response.message);
+      eventEmitter.off("CONFIRMATION_SUBMIT");
+      setId("");
+    },
+    onError: (error) => {
+      console.error("Error:", error);
+      toast.error("Failed to delete");
+    },
+  });
 
-    
+  useEffect(() => {
+    const handleDelete = (data) => {
+      deleteGiftItem(data.giftitemId);
+    };
+
+    eventEmitter.on("CONFIRMATION_SUBMIT", handleDelete);
+
+    return () => {
+      eventEmitter.off("CONFIRMATION_SUBMIT", handleDelete);
+    };
+  }, []);
+
+
   const handleItemsPerPageChange = (value) => {
     setItemsPerPage(value);
     setCurrentPage(1);
@@ -191,31 +181,31 @@ const GiftHandOver = () => {
   const handlePageChange = (page) => {
 
     const pageNumber = Number(page);
-      if (!pageNumber || isNaN(pageNumber) || pageNumber < 1 || pageNumber > totalPages) {
-        return;
-      }
-   
-      setCurrentPage(pageNumber);
-    
+    if (!pageNumber || isNaN(pageNumber) || pageNumber < 1 || pageNumber > totalPages) {
+      return;
+    }
+
+    setCurrentPage(pageNumber);
+
   };
 
 
-    const nextPage = () => {
-      setCurrentPage((prevPage) => (prevPage < totalPages ? prevPage + 1 : prevPage));
-    };
-  
-    const prevPage = () => {
-      setCurrentPage((prevPage) => (prevPage > 1 ? prevPage - 1 : prevPage));
-    };
-  
+  const nextPage = () => {
+    setCurrentPage((prevPage) => (prevPage < totalPages ? prevPage + 1 : prevPage));
+  };
 
-  const paginationData = {totalItems:totalPages,currentPage:currentPage,itemsPerPage:itemsPerPage,handlePageChange:handlePageChange}
+  const prevPage = () => {
+    setCurrentPage((prevPage) => (prevPage > 1 ? prevPage - 1 : prevPage));
+  };
+
+
+  const paginationData = { totalItems: totalPages, currentPage: currentPage, itemsPerPage: itemsPerPage, handlePageChange: handlePageChange }
   const paginationButtons = usePagination(paginationData)
 
   const columns = [
     {
       header: 'S.No',
-      cell: (_, index) => index + 1 + (currentPage - 1) * limit,
+      cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
     },
     {
       header: 'Actions',
@@ -299,7 +289,7 @@ const GiftHandOver = () => {
       header: "Create Date",
       cell: (row) => {
         const date = new Date(row?.createdAt);
-        return date.toLocaleDateString('en-GB'); 
+        return date.toLocaleDateString('en-GB');
       }
     },
     {
@@ -322,7 +312,7 @@ const GiftHandOver = () => {
         </label>
       )
     }
-  
+
   ];
 
   const handleSearch = (e) => {
@@ -366,62 +356,62 @@ const GiftHandOver = () => {
               onPageChange={handlePageChange}
               pageSize={limit}
               isLoading={isLoading}
-            /> 
+            />
           </div>
           {giftitemData.length > 0 && (
-        <div className="flex justify-between mt-4 p-2">
+            <div className="flex justify-between mt-4 p-2">
 
-        <div className="mt-4 flex gap-2 justify-center items-center">
-          <span className="text-gray-500">Show</span>
-          <select
-            id="itemsPerPage"
-            value={itemsPerPage}
-            onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
-            className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
-          >
-             <option value={10}>10</option>
+              <div className="mt-4 flex gap-2 justify-center items-center">
+                <span className="text-gray-500">Show</span>
+                <select
+                  id="itemsPerPage"
+                  value={itemsPerPage}
+                  onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
+                  className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
+                >
+                  <option value={10}>10</option>
                   <option value={25}>25</option>
                   <option value={50}>50</option>
                   <option value={100}>100</option>
                   <option value={250}>250</option>
                   <option value={500}>500</option>
                   <option value={1000}>1000</option>
-          </select>
-          <span className="text-gray-500">of entries {entries}</span>
-        </div>
+                </select>
+                <span className="text-gray-500">of entries {entries}</span>
+              </div>
 
-        <div className="flex flex-row items-center justify-center gap-2">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={prevPage}
-              readOnly={currentPage === 1}
-              className={`p-2 text-gray-500 rounded-md ${currentPage === 1 ? "cursor-not-allowed" : "cursor-pointer"}`}
-            >
-              Previous
-            </button>
-          </div>
+              <div className="flex flex-row items-center justify-center gap-2">
+                <div className="flex items-center gap-4">
+                  <button
+                    onClick={prevPage}
+                    readOnly={currentPage === 1}
+                    className={`p-2 text-gray-500 rounded-md ${currentPage === 1 ? "cursor-not-allowed" : "cursor-pointer"}`}
+                  >
+                    Previous
+                  </button>
+                </div>
 
-          <div className="flex flex-row items-center justify-center gap-2">
-            {paginationButtons}
-          </div>
+                <div className="flex flex-row items-center justify-center gap-2">
+                  {paginationButtons}
+                </div>
 
-          <div className="flex items-center">
-            <button
-              onClick={nextPage}
-              readOnly={currentPage === totalPages}
-              className={`p-2 text-gray-500 rounded-md ${currentPage === totalPages ? "cursor-not-allowed" : "cursor-pointer"}`}
-            >
-              Next
-            </button>
-          </div>
-        </div>
-        <Modal/>
-      </div>
-            )}
+                <div className="flex items-center">
+                  <button
+                    onClick={nextPage}
+                    readOnly={currentPage === totalPages}
+                    className={`p-2 text-gray-500 rounded-md ${currentPage === totalPages ? "cursor-not-allowed" : "cursor-pointer"}`}
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+              <Modal />
+            </div>
+          )}
         </>
       )}
       <ModelOne
-        title={id ? "Edit GiftItem" :"Add GiftItem"}
+        title={id ? "Edit GiftItem" : "Add GiftItem"}
         extraClassName='max-w-[75%] '
         setIsOpen={setIsviewOpen}
         isOpen={isviewOpen}
@@ -429,10 +419,10 @@ const GiftHandOver = () => {
 
       >
         <GiftHandOverForm
-         setId={setId}
-         id={id}
-         refetchTable={refetchTable}
-        isviewOpen ={isviewOpen }
+          setId={setId}
+          id={id}
+          refetchTable={refetchTable}
+          isviewOpen={isviewOpen}
           setIsOpen={setIsviewOpen}
         />
       </ModelOne>

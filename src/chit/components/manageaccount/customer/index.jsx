@@ -12,7 +12,6 @@ import { openModal } from '../../../../redux/modalSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import Modal from '../../common/Modal';
 import { useDebounce } from '../../../hooks/useDebounce'
-import { setid } from '../../../../redux/clientFormSlice'
 import DatePicker from "react-datepicker";
 import { SlidersHorizontal, Search, X } from 'lucide-react'
 import { CalendarDays, RefreshCcw } from 'lucide-react'
@@ -20,7 +19,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import usePagination from '../../../hooks/usePagination'
 
 
-const Customer = () => {
+const ExistingCusTable = () => {
 
  
   const [isLoading, setisLoading] = useState(true)
@@ -144,7 +143,7 @@ const Customer = () => {
   };
 
   const handleAddcustomerClick = () => {
-    navigate('/manageaccount/addcustomer')
+    navigate('/managecustomers/addcustomer')
   }
 
   const { mutate: getcustomertableMutate } = useMutation({
@@ -200,7 +199,7 @@ const Customer = () => {
 
   const handleEdit = (id) => {
   
-    navigate(`/manageaccount/addcustomer/${id}`);
+    navigate(`/managecustomers/addcustomer/${id}`);
   }
 
 
@@ -409,7 +408,7 @@ const Customer = () => {
 
   return (
     <div className="flex flex-col p-4">
-      <h2 className="text-2xl text-gray-900 font-bold">Customer</h2>
+      <h2 className="text-2xl text-gray-900 font-bold">Existing Customers</h2>
       <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
         <div className="relative w-full lg:w-1/3 min-w-[200px]">
           <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
@@ -600,7 +599,6 @@ const Customer = () => {
         <Table
           data={customerData}
           columns={columns}
-          onPageChange={handlePageChange}
           selectedRow={selectedRow}
           activeDropdown={activeDropdown}
           isLoading={isLoading}
@@ -662,4 +660,4 @@ const Customer = () => {
   )
 }
 
-export default Customer
+export default ExistingCusTable

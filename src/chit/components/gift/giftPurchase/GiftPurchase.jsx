@@ -9,13 +9,15 @@ import { CalendarDays, RefreshCcw } from 'lucide-react'
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import { openModal } from '../../../../redux/modalSlice';
-import Modal from '../../../components/common/Modal';
+import Modal from '../../common/Modal';
 import { useDispatch, useSelector } from 'react-redux';
 import usePagination from '../../../hooks/usePagination'
 import { useDebounce } from '../../../hooks/useDebounce';
 import { eventEmitter } from '../../../../utils/EventEmitter';
 
-const Giftinwards = () => {
+
+
+const GiftPurchase = () => {
 
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const dispatch = useDispatch();
@@ -61,7 +63,7 @@ const Giftinwards = () => {
         eventEmitter.off('CONFIRMATION_SUBMIT');
       } catch (error) {
         eventEmitter.off('CONFIRMATION_SUBMIT');
-        console.error('Error:', error);
+
       }
     });
 
@@ -195,7 +197,7 @@ const Giftinwards = () => {
     getgiftinwardMutate(filterTosend)
   }, [currentPage, itemsPerPage, debouncedSearch])
 
-  const refetchTable = ()=>{
+  const refetchTable = () => {
     getgiftinwardMutate(filterTosend)
   }
 
@@ -247,10 +249,10 @@ const Giftinwards = () => {
       const deletedData = giftinward.filter(e => e._id !== deletedId)
 
       setGiftinward(deletedData)
-     
+
       const isLastItemOnPage = giftinward.length === 1;
       const isNotFirstPage = currentPage > 1;
-      
+
       if (isLastItemOnPage && isNotFirstPage) {
         setCurrentPage(prev => prev - 1);
       } else {
@@ -419,8 +421,10 @@ const Giftinwards = () => {
     {
       header: "Create Date",
       cell: (row) => {
+        if (!row?.createdAt) return "-";
         const date = new Date(row?.createdAt);
-        return date.toLocaleDateString('en-GB');
+        const formattedDate = date.toISOString().split("T")[0];
+        return formattedDate;
       }
     },
     {
@@ -448,7 +452,7 @@ const Giftinwards = () => {
 
   return (
     <div className="flex flex-col p-4">
-      <h2 className="text-2xl text-gray-900 font-bold">Gift Inwards</h2>
+      <h2 className="text-2xl text-gray-900 font-bold">Gift Purchase</h2>
       <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
         <div className="relative w-full lg:w-1/3 min-w-[200px]">
           <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
@@ -492,7 +496,7 @@ const Giftinwards = () => {
             className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
             onClick={handleClick}
             style={{ backgroundColor: layout_color }} >
-            + Add Inwards
+            + Add Purchase
           </button>
         </div>
       </div>
@@ -707,4 +711,4 @@ const Giftinwards = () => {
   )
 }
 
-export default Giftinwards
+export default GiftPurchase

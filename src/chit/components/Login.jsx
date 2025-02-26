@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { Lock, User } from 'lucide-react';
 import { useMutation } from '@tanstack/react-query';
 import { staffLofgin } from '../api/Endpoints';
-import { useDispatch,useSelector } from 'react-redux';
+import { useDispatch} from 'react-redux';
 import { login  } from '../../redux/authSlice';
-import { setAccessmenudata,setLayoutColor } from '../../redux/clientFormSlice';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
+import SpinLoading from './common/spinLoading';
 const Login = () => {
     const dispatch= useDispatch()
     const navigate = useNavigate()
@@ -14,12 +14,14 @@ const Login = () => {
     username: '',
     password: ''
   });
+  const [isLoading,setLoading]=useState(false)
 
   const {mutate: loginStaff } = useMutation({
     mutationFn: staffLofgin,
     onSuccess: (response) => {
-      console.log(response)
-      dispatch(login(response.token));  
+      setLoading(false)
+      dispatch(login(response.token));
+      dispatch(SetMenu(response.menuData))
       const decoded = jwtDecode(response.token);
       if (decoded.id_role.id_role === 1) {
         navigate("/superadmin/clientmaster")
@@ -28,13 +30,17 @@ const Login = () => {
       }
     },
     onError: (error) => {
+      setLoading(false)
       console.error('Error fetching countries:', error);
     }
   });
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if(!isLoading){
+      setLoading(true)
     loginStaff(formData)
+    }
   };
 
   const handleChange = (e) => {
@@ -84,10 +90,14 @@ const Login = () => {
           </div>
           <div className="mt-6">
             <button
-              type="submit"
+              type={!isLoading?"submit":undefined}
               className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-200"
             >
-              Login
+              {isLoading?
+              <div className='flex justify-center'>
+                <SpinLoading/>
+              </div>
+              :"Login"}
             </button>
           </div>
         </form>

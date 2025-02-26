@@ -18,12 +18,13 @@ import DatePicker from "react-datepicker";
 import { useSelector } from 'react-redux';
 
 function AccountSummaryReport() {
-
+    
     const roledata = localStorage.getItem('decoded');
- 
+    
     const id_role = roledata?.id_role?.id_role;
     const id_client = roledata?.id_client;
     const id_branch = roledata?.branch;
+    const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
     const [isLoading,setisLoading] = useState(true)
     const [accsumm, setaccsumm] = useState([])
@@ -79,7 +80,7 @@ function AccountSummaryReport() {
             scheme_type: filters.scheme_type
         };
 
-        getaccountSummarymuate(filterTosend)
+        // getaccountSummarymuate(filterTosend)
     }, [currentPage, itemsPerPage, search])
 
    
