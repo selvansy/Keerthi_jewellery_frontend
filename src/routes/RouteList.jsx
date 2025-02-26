@@ -276,17 +276,17 @@ const RouteList = [
     {
       name: "Existing customer",
       path:'/managecustomers/customer',
-      element:<Base renderContent={Customer}/>
+      element:<Base renderContent={ExistingCusTable}/>
     },
     {
       name: "Add Customer",
       path:'/managecustomers/addcustomer',
-      element:<Base renderContent={AddCustomer}/>
+      element:<Base renderContent={Customers}/>
     },
     {
       name: "Add Customer",
       path:'/managecustomers/editcustomer/:id',
-      element:<Base renderContent={AddCustomer}/>
+      element:<Base renderContent={Customers}/>
     },
      
   {
