@@ -116,7 +116,7 @@ function GiftVendorForm({ setIsOpen, isviewOpen, id, refetchTable, setId }) {
         onError: (error) => {
             toast.error(error.response.data.message);
             setIsLoading(false)
-            setIsOpen(false);
+            // setIsOpen(false);
         
         },
     });
