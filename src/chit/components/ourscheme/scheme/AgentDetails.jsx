@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Select from "react-select";
 import ToggleSwitch from "../../common/ToggleSwitch";
 
-const AgentDetails = ({ formik, scheme_type, layout_color, gstTypeData, wastageType }) => {
+const AgentDetails = ({ formik,layout_color}) => {
  const [restriction,setRestriction]= useState(true)
 
  const handleToggle =()=>{
@@ -20,6 +20,7 @@ const AgentDetails = ({ formik, scheme_type, layout_color, gstTypeData, wastageT
               type="number"
               name="agent_referral"
               value={formik.values.agent_referral}
+              onWheel={(e) => e.target.blur()}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
@@ -32,8 +33,8 @@ const AgentDetails = ({ formik, scheme_type, layout_color, gstTypeData, wastageT
               %
             </span>
           </div>
-          {formik.touched.referral_rate && formik.errors.referral_rate && (
-            <span className="text-red-500 text-sm mt-1">{formik.errors.referral_rate}</span>
+          {formik.touched.agent_referral && formik.errors.agent_referral && (
+            <span className="text-red-500 text-sm mt-1">{formik.errors.agent_referral}</span>
           )}
         </div>
         <div className="flex flex-col lg:mt-2">
@@ -46,6 +47,7 @@ const AgentDetails = ({ formik, scheme_type, layout_color, gstTypeData, wastageT
               name="agent_incentive"
               value={formik.values.agent_incentive}
               onChange={formik.handleChange}
+              onWheel={(e) => e.target.blur()}
               onBlur={formik.handleBlur}
               className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
               placeholder="Enter Incentive Rate"
@@ -66,6 +68,7 @@ const AgentDetails = ({ formik, scheme_type, layout_color, gstTypeData, wastageT
             Agent Restriction <span className="text-red-400"> *</span>
           </label>
           <ToggleSwitch
+          status={restriction}
           layout_color={layout_color}
           toggle_status={handleToggle}
           />
@@ -80,6 +83,7 @@ const AgentDetails = ({ formik, scheme_type, layout_color, gstTypeData, wastageT
               name="cus_remarks"
               value={formik.values.cus_remarks}
               onChange={formik.handleChange}
+              onWheel={(e) => e.target.blur()}
               onBlur={formik.handleBlur}
               className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
               placeholder="Enter Remark"
@@ -101,6 +105,7 @@ const AgentDetails = ({ formik, scheme_type, layout_color, gstTypeData, wastageT
               name="agent_target"
               value={formik.values.agent_target}
               onChange={formik.handleChange}
+              onWheel={(e) => e.target.blur()}
               onBlur={formik.handleBlur}
               className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
               placeholder="Enter Agent Target"
@@ -127,6 +132,7 @@ const AgentDetails = ({ formik, scheme_type, layout_color, gstTypeData, wastageT
               value={formik.values.partial_commission}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
+              onWheel={(e) => e.target.blur()}
               className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
               placeholder="Enter Partial commission"
             />

@@ -1,8 +1,8 @@
 import React from "react";
 import Select from "react-select";
 
-const FundDetails = ({ formik, layout_color, fundtype }) => {
-  console.log(fundtype)
+const Classification = ({ formik, layout_color, fundtype }) => {
+
   return (
     <div className="grid grid-rows-2 md:grid-cols-2 gap-5 border-t-2 border-gray-300">
       <div>
@@ -83,4 +83,4 @@ const FundDetails = ({ formik, layout_color, fundtype }) => {
   );
 };
 
-export default FundDetails;
+export default Classification;

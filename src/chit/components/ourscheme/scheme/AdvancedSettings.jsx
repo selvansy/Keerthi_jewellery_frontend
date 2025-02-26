@@ -13,6 +13,7 @@ const AdvancedSettings = ({ formik, layout_color }) => {
           <input
             type="number"
             name="limit_installment"
+            onWheel={(e) => e.target.blur()}
             value={formik.values.limit_installment}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
@@ -34,6 +35,7 @@ const AdvancedSettings = ({ formik, layout_color }) => {
           <input
             type="number"
             name="pending_due_installment"
+            onWheel={(e) => e.target.blur()}
             value={formik.values.pending_due_installment}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
@@ -49,13 +51,14 @@ const AdvancedSettings = ({ formik, layout_color }) => {
       {/* Paid Installment (greater or equal to) */}
       <div className="flex flex-col mt-2">
         <label className="text-black mb-2 font-normal">
-          Paid Installment <span>(greater or equal to)</span>
+         Minimum Paid Installment (for gift)
           <span className="text-red-400"> *</span>
         </label>
         <div className="relative">
           <input
             type="number"
             name="paid_installment"
+            onWheel={(e) => e.target.blur()}
             value={formik.values.paid_installment}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
@@ -77,6 +80,7 @@ const AdvancedSettings = ({ formik, layout_color }) => {
           <input
             type="number"
             name="scheme_customer_limit"
+            onWheel={(e) => e.target.blur()}
             value={formik.values.scheme_customer_limit}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
@@ -89,48 +93,6 @@ const AdvancedSettings = ({ formik, layout_color }) => {
         )}
       </div>
 
-      {/* Gift Type */}
-      <div className="flex flex-col mt-2">
-        <label className="text-black mb-1 font-medium">
-          Gift Type<span className="text-red-400">*</span>
-        </label>
-        <div className="relative">
-          <select
-            name="gift_type"
-            value={formik.values.gift_type}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            className="cursor-pointer appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700"
-          >
-            <option value="" className="text-gray-700">
-              --Select--
-            </option>
-            <option value="1" className="text-gray-700">
-              Gift Percentage
-            </option>
-            <option value="2" className="text-gray-700">
-              Number of Gift
-            </option>
-          </select>
-          <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-            <svg
-              className="h-4 w-4 text-gray-400"
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="3"
-              viewBox="0 0 24 24"
-              stroke="black"
-            >
-              <path d="M19 9l-7 7-7-7"></path>
-            </svg>
-          </div>
-        </div>
-        {formik.touched.gift_type && formik.errors.gift_type && (
-          <span className="text-red-500 text-sm mt-1">{formik.errors.gift_type}</span>
-        )}
-      </div>
-
       {/* Number of Gifts */}
       <div className="flex flex-col mt-2">
         <label className="text-black mb-2 font-normal">
@@ -140,6 +102,7 @@ const AdvancedSettings = ({ formik, layout_color }) => {
           <input
             type="number"
             name="number_of_gifts"
+            onWheel={(e) => e.target.blur()}
             value={formik.values.number_of_gifts}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
@@ -152,60 +115,6 @@ const AdvancedSettings = ({ formik, layout_color }) => {
         )}
       </div>
 
-      {/* Gift Percentage */}
-      <div className="flex flex-col mt-2">
-        <label className="text-black mb-2 font-normal">
-          Gift Percentage<span className="text-red-400"> *</span>
-        </label>
-        <div className="relative">
-          <input
-            type="number"
-            name="gift_percentage"
-            value={formik.values.gift_percentage}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-            placeholder="Enter Gift Percentage"
-          />
-          <span
-            className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
-            style={{ backgroundColor: layout_color }}
-          >
-            %
-          </span>
-        </div>
-        {formik.touched.gift_percentage && formik.errors.gift_percentage && (
-          <span className="text-red-500 text-sm mt-1">{formik.errors.gift_percentage}</span>
-        )}
-      </div>
-
-      {/* Referral Amount */}
-      <div className="flex flex-col mt-2">
-        <label className="text-black mb-2 font-normal">
-          Referral Amount<span className="text-red-400"> *</span>
-        </label>
-        <div className="relative">
-          <input
-            type="number"
-            name="referral_amount"
-            value={formik.values.referral_amount}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-            placeholder="Enter Referral Amount"
-          />
-          <span
-            className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
-            style={{ backgroundColor: layout_color }}
-          >
-            INR
-          </span>
-        </div>
-        {formik.touched.referral_amount && formik.errors.referral_amount && (
-          <span className="text-red-500 text-sm mt-1">{formik.errors.referral_amount}</span>
-        )}
-      </div>
-
       {/* Reward Amount */}
       <div className="flex flex-col mt-2">
         <label className="text-black mb-2 font-normal">
@@ -215,6 +124,7 @@ const AdvancedSettings = ({ formik, layout_color }) => {
           <input
             type="number"
             name="reward_amount"
+            onWheel={(e) => e.target.blur()}
             value={formik.values.reward_amount}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
@@ -242,6 +152,7 @@ const AdvancedSettings = ({ formik, layout_color }) => {
           <input
             type="number"
             name="not_paid_installment"
+            onWheel={(e) => e.target.blur()}
             value={formik.values.not_paid_installment}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
@@ -263,6 +174,7 @@ const AdvancedSettings = ({ formik, layout_color }) => {
           <input
             type="number"
             name="convenience_fee"
+            onWheel={(e) => e.target.blur()}
             value={formik.values.convenience_fee}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
@@ -290,6 +202,7 @@ const AdvancedSettings = ({ formik, layout_color }) => {
           <input
             type="number"
             name="fine_amount"
+            onWheel={(e) => e.target.blur()}
             value={formik.values.fine_amount}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
@@ -317,6 +230,7 @@ const AdvancedSettings = ({ formik, layout_color }) => {
           <input
             type="number"
             name="cumulative_fine_amount"
+            onWheel={(e) => e.target.blur()}
             value={formik.values.cumulative_fine_amount}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}

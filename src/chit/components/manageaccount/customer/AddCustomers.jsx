@@ -78,9 +78,7 @@ function AddCustomers() {
 
 
     useEffect(() => {
-        // getAllCountryMutate();
-        getallbranchMutate();
-
+      
         if (id_branch !== "0") {
             setFormData(prev => ({
                 ...prev,
@@ -157,8 +155,22 @@ function AddCustomers() {
     });
 
 
+    const { data: branchresponse, isLoading: loadingbranch } = useQuery({
+        queryKey: ["branch", branch],
+        queryFn: getallbranch,
+    });
+
 
     useEffect(() => {
+
+        if (branchresponse) {
+            const data = branchresponse.data
+            const branch = data.map((branch) => ({
+                value: branch._id,
+                label: branch.branch_name,
+            }));
+            setBranchData(branch);
+        }
 
 
         if (countryresponse) {
@@ -188,18 +200,10 @@ function AddCustomers() {
             setCityData(city)
         }
 
-    }, [cityresponse, stateresponse, countryresponse])
+    }, [cityresponse, stateresponse, countryresponse, branchresponse])
 
 
-    const { mutate: getallbranchMutate } = useMutation({
-        mutationFn: getallbranch,
-        onSuccess: (response) => {
-            if (response?.data) {
-                setBranchData(response.data);
-
-            }
-        },
-    });
+    console.log(country)
 
     const handleSubmit = () => {
         setisLoading(true)
@@ -222,7 +226,7 @@ function AddCustomers() {
 
             if (response) {
                 toast.success(response.message);
-                navigate('/manageaccount/customer');
+                navigate('/manageaccount/customer/');
                 setFormData({})
             }
             setisLoading(false)
@@ -274,12 +278,12 @@ function AddCustomers() {
     const handleFileChange = (e) => {
         e.preventDefault();
         const file = e.target.files[0];
-    
+
         if (file && file.size <= 500 * 1024) {
             setcus_img(file);
-    
+
             const reader = new FileReader();
-    
+
             reader.onloadend = () => {
                 if (reader.result) {
                     setPathurl(reader.result);
@@ -287,14 +291,14 @@ function AddCustomers() {
                     toast.error("Failed to load image preview.");
                 }
             };
-    
+
             reader.readAsDataURL(file);
         } else {
             toast.error("File size exceeded or no file found");
         }
     };
-    
-  
+
+
 
     const handleCapture = () => {
         const imageSrc = webcamRef.current.getScreenshot();
@@ -383,7 +387,7 @@ function AddCustomers() {
                 <h2 className='text-2xl text-gray-900 font-bold justify-between'>{id ? "Edit Customer" : "Add Customer"}</h2>
             </div>
 
-            <div className='w-full flex flex-col  bg-white border-t-2 border-[#023453] mt-3 overflow-y-auto scrollbar-hide h-[calc(100vh-200px)] '>
+            <div className='w-full flex flex-col  bg-white  mt-3 overflow-y-auto scrollbar-hide h-[calc(100vh-200px)] '>
                 <div className='flex flex-col pl-8 pr-8 pb-4 pt-2 relative space-y-2'>
                     <h2 className='text-1xl font-semibold mb-4 mt-4'>Basic Information</h2>
                     <Formik
@@ -405,7 +409,7 @@ function AddCustomers() {
 
                             <>
                                 <Form onSubmit={handleSubmit}>
-                                 
+
                                     <div className='grid grid-rows-2 md:grid-cols-2 gap-5 border-gray-300'>
 
                                         <div className='flex flex-col'>
@@ -436,35 +440,29 @@ function AddCustomers() {
 
                                         </div>
 
-                                        {
-                                            id_branch === "0" && (
+                                        
+                                            
                                                 <div className='flex flex-col'>
 
                                                     <label className='text-black mb-1 font-medium'>Branch<span className='text-red-400'>*</span></label>
 
-
-                                                    <Field as='select'
-                                                        name='id_branch'
-                                                        onChange={(e) => {
-                                                            e.preventDefault();
-                                                            const value = e.target.value;
-                                                            setFieldValue("id_branch", value)
-                                                            setBranch(value)
+                                                    <Select
+                                                        options={branchData}
+                                                        value={branchData.find(branch => branch.value === values.id_branch) || branch}
+                                                        onChange={(branch) => {
+                                                            setFieldValue("id_branch", branch.value)
+                                                            setBranch(branch.value)
                                                         }}
-                                                        value={values.id_branch}
-
-                                                        className='border-2 border-gray-300 rounded-md p-2 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:[#D1D5DB] focus:border-transparent text-gray-700'>
-                                                        <option value='' disabled>--Select--</option>
-                                                        {branchData.map((branch) => (
-                                                            <option key={branch._id} value={branch._id}>{branch.branch_name}</option>
-                                                        ))}
-                                                    </Field>
+                                                        customSelectStyles={customSelectStyles}
+                                                        isLoading={loadingbranch}
+                                                        placeholder="Select Branch"
+                                                    />
 
                                                     {errors.id_branch ? <div style={{ color: "red" }}>{errors.id_branch}</div> : null}
 
                                                 </div>
 
-                                            )}
+                                            
 
                                         <div className='flex flex-col'>
                                             <label className='text-gray-700 mb-1 font-medium'>Mobile<span className='text-red-400'>*</span></label>
@@ -795,7 +793,7 @@ function AddCustomers() {
                                                 <div className='flex items-start justify-center'>
 
                                                     <div className='relative w-20 h-20 bg-gray-200 rounded-md overflow-hidden'>
-                                        
+
                                                         <img
                                                             src={
                                                                 pathurl
@@ -806,7 +804,7 @@ function AddCustomers() {
                                                             className={`w-full h-full ${cus_img ? "object-cover" : "object-contain"}`}
                                                         />
 
-                                                      
+
                                                         {pathurl && (
                                                             <button
                                                                 onClick={handleClearImage}

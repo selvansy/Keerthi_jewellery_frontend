@@ -147,7 +147,7 @@ const Organisation = () => {
   }, [countryData, statesData, cityData]);
 
   useEffect(() => {
-    if (fetchedData) {
+    if (fetchedData && fetchedData.data.length > 0) {
       const newData = fetchedData.data;
       setOrgData(newData);
   
