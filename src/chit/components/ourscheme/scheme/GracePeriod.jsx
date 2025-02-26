@@ -20,23 +20,21 @@ const Grace = ({ formik, layout_color, maturity_period }) => {
     const gracePeriod = Number(formik.values.grace_period);
 
     if (gracePeriod > maturity_period) {
-      return `Grace period cannot be more than ${maturity_period} ${
+      return `Grace period must be less than or equal to ${maturity_period} ${
         isMonthWise ? "months" : "days"
       }.`;
     }
     return "";
   };
 
-  // Validate when maturity_period or grace_type changes
   useEffect(() => {
     if (formik.values.grace_period) {
       const error = validateGracePeriod();
       formik.setFieldError("grace_period", error);
       formik.setFieldTouched("grace_period", Boolean(error));
     }
-  }, [maturity_period, formik.values.grace_type]);
+  }, [maturity_period, formik.values.grace_type, formik.values.grace_period]);
 
-  // Validate on component mount
   useEffect(() => {
     if (formik.values.grace_period) {
       const error = validateGracePeriod();

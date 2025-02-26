@@ -73,7 +73,7 @@ const AddEmployee = () => {
 
   // State Management
   const [showWebcam, setShowWebcam] = useState(false);
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
   const [country, setSelectedCountry] = useState("");
   const [states, setStates] = useState([]);
   const [city, setCity] = useState([]);
@@ -112,8 +112,8 @@ const AddEmployee = () => {
         .nullable(),
       address: Yup.string().required("Address is required"),
       pincode: Yup.string()
-      .matches(/^[0-9]{6}$/, "Pincode  must be 6 digits")
-      .required("Pincode is required"),
+        .matches(/^[0-9]{6}$/, "Pincode  must be 6 digits")
+        .required("Pincode is required"),
       id_state: Yup.string().required("State is required"),
       id_city: Yup.string().required("City is required"),
       id_country: Yup.string().required("Country is required"),
@@ -122,7 +122,7 @@ const AddEmployee = () => {
       date_of_birth: Yup.date().required("Birth date is required"),
       aadhar_number: Yup.string()
         .matches(/^\d{12}$/, "Aadhar number must be 12 digits")
-         .nullable(),
+        .nullable(),
       id_branch: Yup.string().when("$branch", {
         is: (branchValue) => branchValue === "0",
         then: () => Yup.string().required("Branch is required"),
@@ -130,9 +130,8 @@ const AddEmployee = () => {
       }),
     }),
     onSubmit: (values) => {
-      setIsLoading(true)
+      setIsLoading(true);
       const formData = new FormData();
-
 
       if (branch === "0") {
         formData.append("id_branch", values.id_branch);
@@ -252,45 +251,42 @@ const AddEmployee = () => {
   const { mutate: addEmployeeMutate } = useMutation({
     mutationFn: addemployee,
     onSuccess: (response) => {
-      setIsLoading(false)
+      setIsLoading(false);
       toast.success(response.message);
       navigate("/employee/details/");
     },
-     onError: (error) => {
-    
-                setIsLoading(false)
-                toast.error(error.response.message);
-            }
+    onError: (error) => {
+      setIsLoading(false);
+      toast.error(error.response.message);
+    },
   });
 
   const { mutate: updateEmployeeMutate } = useMutation({
     mutationFn: (data) => updateemployee(id, data),
     onSuccess: (response) => {
-      setIsLoading(false)
+      setIsLoading(false);
       toast.success(response.message);
       navigate("/employee/details/");
-
     },
-     onError: (error) => {
-    
-                setIsLoading(false)
-                toast.error(error.response.message);
-            }
+    onError: (error) => {
+      setIsLoading(false);
+      toast.error(error.response.message);
+    },
   });
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     const name = event.target.name;
 
-    if (file && file.size <= (500*1024)) {
+    if (file && file.size <= 500 * 1024) {
       const previewUrl = URL.createObjectURL(file);
       setImagePreviews((prev) => ({
         ...prev,
         [name]: { file, previewUrl },
       }));
       formik.setFieldValue(name, file);
-    }else{
-      toast.error("File size exceeded or file not found")
+    } else {
+      toast.error("File size exceeded or file not found");
     }
   };
 
@@ -636,7 +632,7 @@ const AddEmployee = () => {
                             src={
                               imagePreviews.image?.previewUrl
                                 ? imagePreviews.image.previewUrl
-                                : imagePreviews.image 
+                                : imagePreviews.image
                                 ? `${employeeData?.data?.pathurl}${imagePreviews.image}`
                                 : profileplaceholder
                             }
@@ -707,7 +703,6 @@ const AddEmployee = () => {
               className="bg-[#61A375] text-white px-6 py-2 rounded-md"
             >
               {isLoading ? <SpinLoading /> : id ? "Update" : "Submit"}
-              
             </button>
           </div>
         </form>
