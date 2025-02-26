@@ -18,7 +18,7 @@ import {
   wastagetype,
   getBranchById,
 } from "../../../api/Endpoints";
-import { useQuery, useQueries } from "@tanstack/react-query";
+import { useQuery, useQueries, useMutation } from "@tanstack/react-query";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import PayableDetails from "./PayableDetails";
@@ -53,19 +53,17 @@ const SchemeForm = () => {
       // SchemeForm fields
       schemeName: "",
       schemeCode: "",
-      metalType: null,
       id_classification: "",
       id_metal: "",
       id_purity: "",
-      installment_type: null,
+      installment_type: "",
       maturity_period: "", // maturityMonth
-      schemeType: null,
+      // schemeType: null,
       totalCount: null,
       incrementRate: null,
       start: null,
 
       //classification
-
 
       // PayableDetails fields
       amount: "",
@@ -81,7 +79,7 @@ const SchemeForm = () => {
       installments: "",
 
       //grce
-      graceType: "",
+      grace_type: "",
       grace_period: "",
       grace_fine: "",
 
@@ -91,10 +89,9 @@ const SchemeForm = () => {
       saving_type: "",
 
       //customer referral
-      referral_rate:"",
-      incentive_rate:"",
-      cus_remarks:"",
-
+      referral_rate: "",
+      incentive_rate: "",
+      cus_remarks: "",
 
       //agent referral
       agent_referral: "",
@@ -120,15 +117,13 @@ const SchemeForm = () => {
     validationSchema: Yup.object({
       // SchemeForm validation
       schemeName: Yup.string()
-  .required("Scheme name is required")
-  .max(15, "Scheme name cannot exceed 15 characters"),
+        .required("Scheme name is required")
+        .max(15, "Scheme name cannot exceed 15 characters"),
       schemeCode: Yup.string().required("Scheme code is required"),
       installment_type: Yup.string().required("Installment type is required"),
-      metalType: Yup.object().required("Metal type is required"),
       id_classification: Yup.string().required("Classification is required"),
       id_purity: Yup.string().required("Purity is required"),
       id_metal: Yup.string().required("Metal is required"),
-      instalmentType: Yup.object().required("Instalment type is required"),
       maturity_period: Yup.number()
         .typeError("Maturity Period must be a number")
         .required("Maturity Period is required")
@@ -140,11 +135,40 @@ const SchemeForm = () => {
           "Maturity month cannot be more than 3 digits",
           (value) => String(value).length <= 3
         ),
-      schemeType: Yup.object().required("Scheme type is required"),
-      totalCount: Yup.number().required("Total count is required"),
-      incrementRate: Yup.number().required("Increment rate is required"),
-      start: Yup.number().required("Start amount is required"),
+      // schemeType: Yup.object().required("Scheme type is required"),
+      totalCount: Yup.number()
+    .when("classType", {
+      is: true,
+      then: (schema) => schema.required("Total count is required"),
+    }),
 
+  incrementRate: Yup.number()
+    .when("classType", {
+      is: true,
+      then: (schema) => schema.required("Increment rate is required"),
+    }),
+
+  start: Yup.number()
+    .when("classType", {
+      is: true,
+      then: (schema) => schema.required("Start amount is required"),
+    }),
+      grace_period: Yup.number()
+    .typeError("Grace period must be a number")
+    .positive("Grace period must be a positive number")
+    .when("grace_type", {
+      is: (grace_type) => !!grace_type,
+      then: Yup.number()
+        .required("Grace period is required")
+        .test(
+          "grace_period_validation",
+          "Grace period cannot be greater than maturity period",
+          function (grace_period) {
+            const { maturity_period } = this.parent;
+            return !maturity_period || grace_period <= maturity_period;
+          }
+        ),
+    }),
       // PayableDetails validation
       amount: Yup.number().when("schemeType", {
         is: (val) => val && val.value < 3,
@@ -171,28 +195,21 @@ const SchemeForm = () => {
       wastagebenefit: Yup.string().optional("Wastage Benefit is required"),
 
       // FundDetails validation
-      min_fund: Yup.number().optional("Min Fund is required")
-      .positive("Min fund must be positive"),
-      max_fund: Yup.number().optional("Max Fund is required")
-      .positive("Max fund must be positive"),
+      min_fund: Yup.number()
+        .optional("Min Fund is required")
+        .positive("Min fund must be positive"),
+      max_fund: Yup.number()
+        .optional("Max Fund is required")
+        .positive("Max fund must be positive"),
       saving_type: Yup.number().optional("Saving type is required"),
 
-      // PaymentDetails validation
-      first_paid_percentage: Yup.number().required(
-        "First Payment Percentage is required"
-      ),
-      second_paid_percentage: Yup.number().required(
-        "Second Payment Percentage is required"
-      ),
-
-      referral_rate:Yup.number()
-      .typeError("Must be a number")
-      .positive("Must be a positive number"),
-      incentive_rate:Yup.number()
-      .typeError("Must be a number")
-      .positive("Must be a positive number"),
-      cus_remarks:Yup.string()
-      .typeError("Must be a alphabet"),
+      referral_rate: Yup.number()
+        .typeError("Must be a number")
+        .positive("Must be a positive number"),
+      incentive_rate: Yup.number()
+        .typeError("Must be a number")
+        .positive("Must be a positive number"),
+      cus_remarks: Yup.string().typeError("Must be a alphabet"),
 
       agent_referral: Yup.number()
         .typeError("Must be a number")
@@ -200,8 +217,7 @@ const SchemeForm = () => {
       agent_incentive: Yup.number()
         .typeError("Must be a number")
         .positive("Must be a positive number"),
-        agent_remark: Yup.string()
-        .typeError("Must be a alphabet"),
+      agent_remark: Yup.string().typeError("Must be a alphabet"),
       agent_target: Yup.number()
         .typeError("Must be a number")
         .positive("Must be a positive number"),
@@ -248,10 +264,31 @@ const SchemeForm = () => {
         .positive("Must be a positive number"),
     }),
     onSubmit: (values) => {
-      console.log("Form submitted:", values);
+
+      const formData = new FormData();
+
+      if(classType){
+        formData.append('amount',amounts)
+      }
+      Object.keys(values).forEach((key) => {
+        formData.append(key, values[key]);
+      });
+
+      if (mainImage) {
+        formData.append("main_image", mainImage);
+      }
+      if (descriptionImage) {
+        formData.append("desc_image", descriptionImage);
+      }
+
+      console.log(formData)
+      if (id) {
+        updateEmployeeMutate(formData);
+      } else {
+        addNewScheme(formData);
+      }
     },
   });
-  console.log(formik.values);
 
   // Customisations for react-select
   const customStyles = {
@@ -283,7 +320,7 @@ const SchemeForm = () => {
   const [funddata, setFundType] = useState([]);
   const [bygstdata, setBuyGst] = useState([]);
   const [wastagedata, setWastageType] = useState([]);
-console.log(mainImage,descriptionImage)
+
   //query and mutations
   const { data: classificationData } = useQuery({
     queryKey: ["projects"],
@@ -327,6 +364,20 @@ console.log(mainImage,descriptionImage)
     (result) => result.data
   );
 
+  const { mutate: addNewScheme } = useMutation({
+    mutationFn: addscheme,
+    onSuccess: (response) => {
+      // setIsLoading(false);
+      toast.success(response.message);
+      navigate("");
+    },
+    onError: (error) => {
+      // setIsLoading(false);
+      toast.error(error.response.message);
+    },
+  });
+
+  //useEffect
   useEffect(() => {
     if (installment_type?.data) {
       const installment_data = installment_type.data.map((item) => ({
@@ -361,7 +412,6 @@ console.log(mainImage,descriptionImage)
     }
   }, [installment_type, fund_type, buy_gst, wastage_type]);
 
-  //useEffect
   useEffect(() => {
     if (classificationData) {
       const data = classificationData.data.map((item) => ({
@@ -513,10 +563,12 @@ console.log(mainImage,descriptionImage)
               placeholder="Enter scheme name"
               {...formik.getFieldProps("schemeName")}
             />
-            
-      {formik.values.schemeName.length === 15 && (
-           <div className="text-red-500 text-sm mt-1">Max 15 character allowed</div>
-      )}
+
+            {formik.values.schemeName.length === 15 && (
+              <div className="text-red-500 text-sm mt-1">
+                Max 15 character allowed
+              </div>
+            )}
             {formik.touched.schemeName && formik.errors.schemeName && (
               <div className="text-red-500 text-sm mt-1">
                 {formik.errors.schemeName}
@@ -628,8 +680,10 @@ console.log(mainImage,descriptionImage)
             <Select
               styles={customStyles}
               options={purity || []}
-              placeholder="Select metal type"
-              value={formik.values.id_purity}
+              placeholder="Select purtiy type"
+              value={purity.find(
+                (option) => option.value === formik.values.id_purity
+              )}
               onChange={(option) =>
                 formik.setFieldValue("id_purity", option.value)
               }
@@ -648,14 +702,14 @@ console.log(mainImage,descriptionImage)
             <Select
               styles={customStyles}
               options={installment_data}
-              placeholder="Select Classification"
+              placeholder="Select installment type"
               value={installment_data.find(
                 (option) => option.value === formik.values.installment_type
               )}
               onChange={(option) =>
-                formik.setFieldValue("installment_data", option)
+                formik.setFieldValue("installment_type", option.value)
               }
-              onBlur={() => formik.setFieldTouched("installment_data", true)}
+              onBlur={() => formik.setFieldTouched("installment_type", true)}
             />
             {formik.touched.installment_type &&
               formik.errors.installment_type && (
@@ -814,7 +868,7 @@ console.log(mainImage,descriptionImage)
             <Grace
               formik={formik}
               layout_color={layout_color}
-              grace_type={formik.values.graceType}
+              grace_type={formik.values.grace_type}
               maturity_period={formik.values.maturity_period}
             />
           </AccordionContent>

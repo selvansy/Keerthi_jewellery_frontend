@@ -33,7 +33,6 @@ const Classification = ({ formik, layout_color, setMainImg, setDescImg }) => {
       setMainImagePreview(null);
       setMainImageName("");
       setMainImg(null);
-      // Reset the file input value
       if (mainImageInputRef.current) {
         mainImageInputRef.current.value = "";
       }
@@ -41,7 +40,6 @@ const Classification = ({ formik, layout_color, setMainImg, setDescImg }) => {
       setDescImagePreview(null);
       setDescImageName("");
       setDescImg(null);
-      // Reset the file input value
       if (descImageInputRef.current) {
         descImageInputRef.current.value = "";
       }
@@ -62,7 +60,7 @@ const Classification = ({ formik, layout_color, setMainImg, setDescImg }) => {
             />
             <button
               type="button"
-              className="bg-gray-200 rounded-r-md px-4 py-2 text-sm"
+              className="bg-gray-200 rounded-r-md px-4 py-2 text-sm whitespace-nowrap"
               onClick={() => mainImageInputRef.current.click()}
             >
               Choose File
@@ -120,7 +118,7 @@ const Classification = ({ formik, layout_color, setMainImg, setDescImg }) => {
             />
             <button
               type="button"
-              className="bg-gray-200 rounded-r-md px-4 py-2 text-sm"
+              className="bg-gray-200 rounded-r-md px-4 py-2 text-sm whitespace-nowrap"
               onClick={() => descImageInputRef.current.click()}
             >
               Choose File
