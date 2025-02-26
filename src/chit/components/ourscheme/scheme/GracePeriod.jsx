@@ -45,20 +45,22 @@ const Grace = ({ formik, layout_color, maturity_period }) => {
   }, []);
 
   return (
-    <div className="grid grid-rows-2 md:grid-cols-2 gap-5 border-t-2 border-gray-300">
+    <div className="grid grid-rows-2 md:grid-cols-2 gap-5">
       <div className="flex flex-col mt-2">
         <label className="block text-sm font-medium mb-1 mt-2">
           Grace Type<span className="text-red-500">*</span>
         </label>
         <Select
           options={graceData}
+          isClearable={true}
           placeholder="Select grace type"
-          value={graceData.find(
-            (option) => option.value === formik.values.grace_type
-          )}
+          value={
+            graceData.find(
+              (option) => option.value === formik.values.grace_type
+            ) || null
+          }
           onChange={(option) => {
-            formik.setFieldValue("grace_type", option.value);
-            // Re-validate grace period when grace type changes
+            formik.setFieldValue("grace_type", option ? option.value : "");
             setTimeout(() => {
               const error = validateGracePeriod();
               formik.setFieldError("grace_period", error);

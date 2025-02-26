@@ -8,3 +8,14 @@ export const graceType = [
         name:'Date Wise'
     }
 ]
+
+export const benefiMakingCharge = [
+    {
+        id:1,
+        name:'Zero making charge'
+    },
+    {
+        id:2,
+        name:'Non zero making charge'
+    }
+]
