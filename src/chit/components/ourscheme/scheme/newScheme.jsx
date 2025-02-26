@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import Select from "react-select";
-import { CalendarDays, Plus, Minus, SquarePen } from "lucide-react";
+import { Plus, Minus, SquarePen } from "lucide-react";
 import {
   getSchemeClassifications,
   allinstallmenttype,
@@ -63,6 +63,9 @@ const SchemeForm = () => {
       totalCount: null,
       incrementRate: null,
       start: null,
+
+      //classification
+
 
       // PayableDetails fields
       amount: "",
@@ -280,7 +283,7 @@ const SchemeForm = () => {
   const [funddata, setFundType] = useState([]);
   const [bygstdata, setBuyGst] = useState([]);
   const [wastagedata, setWastageType] = useState([]);
-
+console.log(mainImage,descriptionImage)
   //query and mutations
   const { data: classificationData } = useQuery({
     queryKey: ["projects"],
@@ -828,7 +831,8 @@ const SchemeForm = () => {
             <Classification
               formik={formik}
               layout_color={layout_color}
-              fundtype={funddata}
+              setMainImg={setMainImage}
+              setDescImg={setDescriptionImage}
             />
           </AccordionContent>
         </AccordionItem>

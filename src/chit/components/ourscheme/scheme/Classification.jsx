@@ -1,59 +1,173 @@
-import React from "react";
-import Select from "react-select";
+import React, { useRef, useState } from "react";
+import { X } from "lucide-react";
+import { toast } from "react-toastify";
+import banner_placeholder from '../../../../assets/banner_placeholder.webp'
 
-const Classification = ({ formik, layout_color }) => {
+const Classification = ({ formik, layout_color, setMainImg, setDescImg }) => {
+  const mainImageInputRef = useRef(null);
+  const descImageInputRef = useRef(null);
+
+  const [mainImageName, setMainImageName] = useState("");
+  const [descImageName, setDescImageName] = useState("");
+
+  const [mainImagePreview, setMainImagePreview] = useState(null);
+  const [descImagePreview, setDescImagePreview] = useState(null);
+
+  const handleFileChange = (event, setFileName, setImage, setPreview) => {
+    if (event.target.files.length > 0) {
+      const file = event.target.files[0];
+
+      if (file.size > 1024 * 1024) {
+        toast.error("File size should not exceed 1 MB.");
+        return;
+      }
+
+      setFileName(file.name);
+      setImage(file);
+      setPreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handleFileRemove = (id) => {
+    if (id === 1) {
+      setMainImagePreview(null);
+      setMainImageName("");
+      setMainImg(null);
+      // Reset the file input value
+      if (mainImageInputRef.current) {
+        mainImageInputRef.current.value = "";
+      }
+    } else if (id === 2) {
+      setDescImagePreview(null);
+      setDescImageName("");
+      setDescImg(null);
+      // Reset the file input value
+      if (descImageInputRef.current) {
+        descImageInputRef.current.value = "";
+      }
+    }
+  };
+
   return (
     <div className="p-6 mb-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
         <div className="mb-4">
-          <label className="block mb-2">
-            Upload Main Image <span className="text-red-500">*</span>
-          </label>
+          <label className="block mb-2">Upload Main Image</label>
           <div className="flex">
             <input
               type="text"
               readOnly
-              value="goldbanner56565dsvd65fd56.jpg"
+              value={mainImageName}
               className="border rounded-l-md p-2 w-full bg-gray-50"
             />
-            <button className="bg-gray-200 rounded-r-md px-4 py-2 text-sm">
+            <button
+              type="button"
+              className="bg-gray-200 rounded-r-md px-4 py-2 text-sm"
+              onClick={() => mainImageInputRef.current.click()}
+            >
               Choose File
             </button>
-          </div>
-          <div className="mt-2">
-            <img 
-              src="/api/placeholder/400/150" 
-              alt="Gold plan banner" 
-              className="w-full h-auto rounded"
+            <input
+              type="file"
+              ref={mainImageInputRef}
+              className="hidden"
+              accept="image/*"
+              onChange={(e) =>
+                handleFileChange(
+                  e,
+                  setMainImageName,
+                  setMainImg,
+                  setMainImagePreview
+                )
+              }
             />
+          </div>
+          <div className="mt-2 relative">
+            {mainImagePreview ? (
+              <img
+                src={mainImagePreview}
+                alt="Main Image Preview"
+                className="w-full h-52 rounded object-cover"
+              />
+            ) : (
+              <img
+                src={banner_placeholder}
+                alt="Placeholder"
+                className="w-full h-52 rounded object-cover"
+              />
+            )}
+            {mainImagePreview && (
+              <button
+                type="button"
+                onClick={() => handleFileRemove(1)}
+                className="absolute top-1 right-1 bg-white rounded-full p-1 shadow-md hover:bg-gray-100"
+              >
+                <X size={14} />
+              </button>
+            )}
           </div>
         </div>
 
+        {/* Upload Description Image */}
         <div className="mb-4">
-          <label className="block mb-2">
-            Upload Description Image <span className="text-red-500">*</span>
-          </label>
+          <label className="block mb-2">Upload Description Image</label>
           <div className="flex">
             <input
               type="text"
               readOnly
-              value="goldbanner56565dsvd65fd56.jpg"
+              value={descImageName}
               className="border rounded-l-md p-2 w-full bg-gray-50"
             />
-            <button className="bg-gray-200 rounded-r-md px-4 py-2 text-sm">
+            <button
+              type="button"
+              className="bg-gray-200 rounded-r-md px-4 py-2 text-sm"
+              onClick={() => descImageInputRef.current.click()}
+            >
               Choose File
             </button>
-          </div>
-          <div className="mt-2">
-            <img 
-              src="/api/placeholder/400/150" 
-              alt="Gold plan banner" 
-              className="w-full h-auto rounded"
+            <input
+              type="file"
+              ref={descImageInputRef}
+              className="hidden"
+              accept="image/*"
+              onChange={(e) =>
+                handleFileChange(
+                  e,
+                  setDescImageName,
+                  setDescImg,
+                  setDescImagePreview
+                )
+              }
             />
+          </div>
+          <div className="mt-2 relative">
+            {descImagePreview ? (
+              <img
+                src={descImagePreview}
+                alt="Description Image Preview"
+                className="w-full h-52 rounded object-cover"
+              />
+            ) : (
+              <img
+                src={banner_placeholder}
+                alt="Placeholder"
+                className="w-full h-52 rounded object-cover"
+              />
+            )}
+            {descImagePreview && (
+              <button
+                type="button"
+                onClick={() => handleFileRemove(2)}
+                className="absolute top-1 right-1 bg-white rounded-full p-1 shadow-md hover:bg-gray-100"
+              >
+                <X size={14} />
+              </button>
+            )}
           </div>
         </div>
       </div>
 
+      {/* Description & Terms */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 mt-4">
         <div className="mb-4">
           <label className="block mb-2">
@@ -66,6 +180,9 @@ const Classification = ({ formik, layout_color }) => {
             onBlur={formik?.handleBlur}
             className="border resize-none rounded-md p-2 w-full h-32 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
           />
+          {formik?.touched?.description && formik?.errors?.description && (
+            <div className="text-red-500 text-sm mt-1">{formik.errors.description}</div>
+          )}
         </div>
 
         <div className="mb-4">
@@ -79,23 +196,37 @@ const Classification = ({ formik, layout_color }) => {
             onBlur={formik?.handleBlur}
             className="border rounded-md resize-none p-2 w-full h-32 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
           />
+          {formik?.touched?.terms && formik?.errors?.terms && (
+            <div className="text-red-500 text-sm mt-1">{formik.errors.terms}</div>
+          )}
         </div>
       </div>
 
+      {/* Classification Order */}
       <div className="mt-4">
-        <label className="block mb-2">
-          Classification Order <span className="text-red-500">*</span>
-        </label>
+        <label className="block mb-2">Classification Order</label>
         <div className="relative w-full md:w-1/4">
           <input
             type="number"
             name="classification_order"
-            value="0"
+            value={formik?.values?.classification_order || "0"}
+            onChange={formik?.handleChange}
+            onBlur={formik?.handleBlur}
             className="border rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
           />
           <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M18 15l-6-6-6 6"/>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M18 15l-6-6-6 6" />
             </svg>
           </div>
         </div>

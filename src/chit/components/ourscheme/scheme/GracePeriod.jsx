@@ -45,7 +45,7 @@ const Grace = ({ formik, layout_color, maturity_period }) => {
   }, []);
 
   return (
-    <div className="grid grid-rows-2 md:grid-cols-2 gap-5 border-t-2 border-gray-300">
+    <div className="grid grid-rows-2 md:grid-cols-2 gap-5">
       <div className="flex flex-col mt-2">
         <label className="block text-sm font-medium mb-1 mt-2">
           Grace Type<span className="text-red-500">*</span>
