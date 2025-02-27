@@ -5,29 +5,7 @@ const FundDetails = ({ formik, layout_color, fundtype }) => {
 
   return (
     <div className="grid grid-rows-2 md:grid-cols-2 gap-5 border-t-2 border-gray-300">
-      <div>
-        <label className="block text-sm font-medium mb-1 mt-2">
-          Saving Type<span className="text-red-500">*</span>
-        </label>
-        <Select
-          styles={fundtype}
-          isClearable={true}
-          options={fundtype || []}
-          placeholder="Select saving type"
-          value={fundtype.find(
-            (option) => option.value === formik.values.saving_type
-          )}
-          onChange={(option) =>
-            formik.setFieldValue("saving_type", option ? option.value : "")
-          }
-          onBlur={() => formik.setFieldTouched("saving_type", true)}
-        />
-        {formik.touched.saving_type && formik.errors.saving_type && (
-          <div className="text-red-500 text-sm mt-1">
-            {formik.errors.saving_type}
-          </div>
-        )}
-      </div>
+      
 
       <div className="flex flex-col mt-2">
         <label className="text-black mb-2 font-normal">

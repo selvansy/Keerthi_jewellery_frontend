@@ -50,7 +50,7 @@ const Classification = ({ formik, layout_color, setMainImg, setDescImg }) => {
     <div className="p-6 mb-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
         <div className="mb-4">
-          <label className="block mb-2">Upload Main Image</label>
+          <label className="block mb-2">Upload Main Image <span className="text-red-500">*</span></label>
           <div className="flex">
             <input
               type="text"
@@ -103,6 +103,11 @@ const Classification = ({ formik, layout_color, setMainImg, setDescImg }) => {
                 <X size={14} />
               </button>
             )}
+          </div>
+          <div className="mt-2 mb-2">
+          {formik?.errors?.main_image && (
+            <div className="text-red-500 text-sm mt-1">{formik.errors.main_image}</div>
+          )}
           </div>
         </div>
 
@@ -188,14 +193,14 @@ const Classification = ({ formik, layout_color, setMainImg, setDescImg }) => {
             Terms & Conditions <span className="text-red-500">*</span>
           </label>
           <textarea
-            name="terms"
-            value={formik?.values?.terms || ""}
+            name="term_desc"
+            value={formik?.values?.term_desc || ""}
             onChange={formik?.handleChange}
             onBlur={formik?.handleBlur}
             className="border rounded-md resize-none p-2 w-full h-32 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
           />
-          {formik?.touched?.terms && formik?.errors?.terms && (
-            <div className="text-red-500 text-sm mt-1">{formik.errors.terms}</div>
+          {formik?.touched?.term_desc && formik?.errors?.term_desc && (
+            <div className="text-red-500 text-sm mt-1">{formik.errors.term_desc}</div>
           )}
         </div>
       </div>

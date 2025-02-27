@@ -3,7 +3,7 @@ import Select from "react-select";
 import { graceType } from "../../../../utils/Constants";
 import ToggleSwitch from "../../common/ToggleSwitch";
 
-const Grace = ({ formik, layout_color, maturity_period }) => {
+const Grace = ({ formik, layout_color, maturity_period, maturtiy_type }) => {
   const [fine, setFine] = useState(false);
 
   const graceData = graceType.map((item) => ({
@@ -15,32 +15,34 @@ const Grace = ({ formik, layout_color, maturity_period }) => {
     setFine(!fine);
   };
 
-  const validateGracePeriod = () => {
-    const isMonthWise = formik.values.grace_type === "month";
-    const gracePeriod = Number(formik.values.grace_period);
-
+  const validateGracePeriod = (value) => {
+    if (!value) return "";
+    
+    const gracePeriod = Number(value);
     if (gracePeriod > maturity_period) {
-      return `Grace period must be less than or equal to ${maturity_period} ${
-        isMonthWise ? "months" : "days"
-      }.`;
+      return `Grace period must be less than or equal to maturity date`;
     }
     return "";
   };
 
-  useEffect(() => {
-    if (formik.values.grace_period) {
-      const error = validateGracePeriod();
-      formik.setFieldError("grace_period", error);
-      formik.setFieldTouched("grace_period", Boolean(error));
-    }
-  }, [maturity_period, formik.values.grace_type, formik.values.grace_period]);
+  // Update validation whenever relevant values change
+  // useEffect(() => {
+  //   if (formik.values.grace_period) {
+  //     const error = validateGracePeriod(formik.values.grace_period);
+  //     formik.setFieldError("grace_period", error);
+  //   }
+  // }, [maturity_period, formik.values.grace_type, formik.values.grace_period]);
 
-  useEffect(() => {
-    if (formik.values.grace_period) {
-      const error = validateGracePeriod();
-      formik.setFieldError("grace_period", error);
-    }
-  }, []);
+  const customStyles = {
+    control: (base, state) => ({
+      ...base,
+      minHeight: "42px",
+      border: state.isFocused ? "1px solid black" : "1px solid #e2e8f0",
+      boxShadow: state.isFocused ? "0 0 0 1px black" : "none",
+      borderRadius: "0.375rem",
+    }),
+    menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+  };
 
   return (
     <div className="grid grid-rows-2 md:grid-cols-2 gap-5">
@@ -49,23 +51,20 @@ const Grace = ({ formik, layout_color, maturity_period }) => {
           Grace Type<span className="text-red-500">*</span>
         </label>
         <Select
+          styles={customStyles}
           options={graceData}
           isClearable={true}
+          menuPortalTarget={document.body}
           placeholder="Select grace type"
           value={
             graceData.find(
               (option) => option.value === formik.values.grace_type
-            ) || null
+            )
           }
-          onChange={(option) => {
-            formik.setFieldValue("grace_type", option ? option.value : "");
-            setTimeout(() => {
-              const error = validateGracePeriod();
-              formik.setFieldError("grace_period", error);
-              formik.setFieldTouched("grace_period", true);
-            }, 0);
-          }}
-          onBlur={() => formik.setFieldTouched("grace_type", true)}
+          onChange={(option) =>
+            formik.setFieldValue("grace_type", option ? option.value : "")
+          }
+          // onBlur={() => formik.setFieldTouched("grace_type", true)}
         />
         {formik.touched.grace_type && formik.errors.grace_type && (
           <div className="text-red-500 text-sm mt-1">
@@ -78,22 +77,30 @@ const Grace = ({ formik, layout_color, maturity_period }) => {
         <label className="block text-sm font-medium mb-1 mt-2">
           Grace Period <span className="text-red-400"> *</span>
         </label>
-        <div className="relative">
-          <input
-            type="number"
-            name="grace_period"
-            value={formik.values.grace_period}
-            onChange={(e) => {
-              formik.handleChange(e);
-              const error = validateGracePeriod();
-              formik.setFieldError("grace_period", error);
-              formik.setFieldTouched("grace_period", true);
-            }}
-            onBlur={formik.handleBlur}
-            className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-            placeholder="Enter Grace Period"
-          />
-        </div>
+        <input
+          type="number"
+          name="grace_period"
+          max={336}
+          value={formik.values.grace_period}
+          onChange={(e) => {
+            let value = e.target.value;
+            if (value.length > 3) {
+              value = value.slice(0, 3);
+            }
+            if (Number(value) > 336) {
+              value = "336"; // Cap at 336
+            }
+            formik.setFieldValue("grace_period", value);
+          }}
+          onBlur={(e) => {
+            formik.handleBlur(e);
+            const error = validateGracePeriod(e.target.value);
+            formik.setFieldError("grace_period", error);
+          }}
+          className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+          placeholder="Enter Grace Period"
+        />
+
         {formik.touched.grace_period && formik.errors.grace_period && (
           <span className="text-red-500 text-sm mt-1">
             {formik.errors.grace_period}
