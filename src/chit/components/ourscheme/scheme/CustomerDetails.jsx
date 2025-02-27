@@ -47,7 +47,7 @@ const CustomerDetails = ({ formik, layout_color}) => {
               className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
               style={{ backgroundColor: layout_color }}
             >
-              INR
+               %
             </span>
           </div>
           {formik.touched.incentive_rate && formik.errors.incentive_rate && (

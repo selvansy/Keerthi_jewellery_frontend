@@ -1,5 +1,6 @@
-import React from "react";
+import React,{useState,useEffect} from "react";
 import Select from "react-select";
+import { rewardType } from "../../../../utils/Constants";
 
 // Customisations for react-select
 const customStyles = {
@@ -12,15 +13,25 @@ const customStyles = {
   }),
 };
 
-const AdvancedSettings = ({ formik, layout_color,giftData,installment_type}) => {
-  const header = ["0","Monthly","Weekly","Daily","Yearly"]
+const AdvancedSettings = ({ formik, layout_color, installment_type}) => {
+  const header = ["0", "Monthly", "Weekly", "Daily", "Yearly"];
+  const [reward,setReward]= useState([])
+
+  useEffect(() => {
+    const data = rewardType.map((item) => ({
+      value: item.id,
+      label: item.name,
+    }));
+    setReward(data);
+  }, [rewardType]);
 
   return (
     <div className="grid grid-rows-2 md:grid-cols-2 gap-5 border-t-2 border-gray-300">
       {/* Monthly Limit Installment */}
       <div className="flex flex-col mt-2">
         <label className="text-black mb-2 font-normal">
-          {`${header[installment_type]} Limit Installment`} <span className="text-red-400"> *</span>
+          {!installment_type ? 'Monthly Installment Limit' : `${header[installment_type]} Limit Installment`}
+          <span className="text-red-400"> *</span>
         </label>
         <div className="relative">
           <input
@@ -34,9 +45,12 @@ const AdvancedSettings = ({ formik, layout_color,giftData,installment_type}) => 
             placeholder="Enter Limit Installment"
           />
         </div>
-        {formik.touched.limit_installment && formik.errors.limit_installment && (
-          <span className="text-red-500 text-sm mt-1">{formik.errors.limit_installment}</span>
-        )}
+        {formik.touched.limit_installment &&
+          formik.errors.limit_installment && (
+            <span className="text-red-500 text-sm mt-1">
+              {formik.errors.limit_installment}
+            </span>
+          )}
       </div>
 
       {/* Pending Due Limit Installment */}
@@ -56,15 +70,18 @@ const AdvancedSettings = ({ formik, layout_color,giftData,installment_type}) => 
             placeholder="Enter Pending Due Installment"
           />
         </div>
-        {formik.touched.pending_due_installment && formik.errors.pending_due_installment && (
-          <span className="text-red-500 text-sm mt-1">{formik.errors.pending_due_installment}</span>
-        )}
+        {formik.touched.pending_due_installment &&
+          formik.errors.pending_due_installment && (
+            <span className="text-red-500 text-sm mt-1">
+              {formik.errors.pending_due_installment}
+            </span>
+          )}
       </div>
 
       {/* Paid Installment (greater or equal to) */}
       <div className="flex flex-col mt-2">
         <label className="text-black mb-2 font-normal">
-         Minimum Paid Installment (for gift)
+          Minimum Paid Installment (for gift)
           <span className="text-red-400"> *</span>
         </label>
         <div className="relative">
@@ -80,7 +97,9 @@ const AdvancedSettings = ({ formik, layout_color,giftData,installment_type}) => 
           />
         </div>
         {formik.touched.paid_installment && formik.errors.paid_installment && (
-          <span className="text-red-500 text-sm mt-1">{formik.errors.paid_installment}</span>
+          <span className="text-red-500 text-sm mt-1">
+            {formik.errors.paid_installment}
+          </span>
         )}
       </div>
 
@@ -101,35 +120,15 @@ const AdvancedSettings = ({ formik, layout_color,giftData,installment_type}) => 
             placeholder="Enter Scheme Customer Limit"
           />
         </div>
-        {formik.touched.scheme_customer_limit && formik.errors.scheme_customer_limit && (
-          <span className="text-red-500 text-sm mt-1">{formik.errors.scheme_customer_limit}</span>
-        )}
+        {formik.touched.scheme_customer_limit &&
+          formik.errors.scheme_customer_limit && (
+            <span className="text-red-500 text-sm mt-1">
+              {formik.errors.scheme_customer_limit}
+            </span>
+          )}
       </div>
 
       {/* Number of Gifts */}
-      <div>
-            <label className="block text-sm font-medium mb-1">
-              Gift Type <span className="text-red-500">*</span>
-            </label>
-            <Select
-              styles={customStyles}
-              isClearable={true}
-              options={giftData || []}
-              placeholder="Select gift type"
-              value={giftData.find(
-                (option) => option.value === formik.values.gift_type
-              )}
-              onChange={(option) =>
-                formik.setFieldValue("gift_type", option ? option.value : null)
-              }
-              onBlur={() => formik.setFieldTouched("gift_type", true)}
-            />
-            {formik.touched.gift_type && formik.errors.gift_type && (
-              <div className="text-red-500 text-sm mt-1">
-                {formik.errors.gift_type}
-              </div>
-            )}
-          </div>
       <div className="flex flex-col mt-2">
         <label className="text-black mb-2 font-normal">
           Number of Gifts<span className="text-red-400"> *</span>
@@ -147,21 +146,46 @@ const AdvancedSettings = ({ formik, layout_color,giftData,installment_type}) => 
           />
         </div>
         {formik.touched.number_of_gifts && formik.errors.number_of_gifts && (
-          <span className="text-red-500 text-sm mt-1">{formik.errors.number_of_gifts}</span>
+          <span className="text-red-500 text-sm mt-1">
+            {formik.errors.number_of_gifts}
+          </span>
         )}
       </div>
 
       {/* Reward Amount */}
+      <div>
+        <label className="block text-sm font-normal mb-1 mt-2">
+          Bonus Type <span className="text-red-500">*</span>
+        </label>
+        <Select
+          styles={customStyles}
+          isClearable={true}
+          options={reward || []}
+          placeholder="Select bonus type"
+          value={reward.find(
+            (option) => option.value === formik.values.bonus_type
+          )}
+          onChange={(option) =>
+            formik.setFieldValue("bonus_type", option ? option.value : null)
+          }
+          onBlur={() => formik.setFieldTouched("bonus_type", true)}
+        />
+        {formik.touched.bonus_type && formik.errors.bonus_type && (
+          <div className="text-red-500 text-sm mt-1">
+            {formik.errors.bonus_type}
+          </div>
+        )}
+      </div>
       <div className="flex flex-col mt-2">
         <label className="text-black mb-2 font-normal">
-         Boonus <span className="text-red-400"> *</span>
+          Bonus <span className="text-red-400"> *</span>
         </label>
         <div className="relative">
           <input
             type="number"
-            name="reward_amount"
+            name="bonus_amount"
             onWheel={(e) => e.target.blur()}
-            value={formik.values.reward_amount}
+            value={formik.values.bonus_amount}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
@@ -174,8 +198,10 @@ const AdvancedSettings = ({ formik, layout_color,giftData,installment_type}) => 
             INR
           </span>
         </div>
-        {formik.touched.reward_amount && formik.errors.reward_amount && (
-          <span className="text-red-500 text-sm mt-1">{formik.errors.reward_amount}</span>
+        {formik.touched.bonus_amount && formik.errors.bonus_amount && (
+          <span className="text-red-500 text-sm mt-1">
+            {formik.errors.bonus_amount}
+          </span>
         )}
       </div>
 
@@ -196,9 +222,12 @@ const AdvancedSettings = ({ formik, layout_color,giftData,installment_type}) => 
             placeholder="Enter Not Paid Installment"
           />
         </div>
-        {formik.touched.not_paid_installment && formik.errors.not_paid_installment && (
-          <span className="text-red-500 text-sm mt-1">{formik.errors.not_paid_installment}</span>
-        )}
+        {formik.touched.not_paid_installment &&
+          formik.errors.not_paid_installment && (
+            <span className="text-red-500 text-sm mt-1">
+              {formik.errors.not_paid_installment}
+            </span>
+          )}
       </div>
 
       {/* Convenience Fee */}
@@ -225,7 +254,9 @@ const AdvancedSettings = ({ formik, layout_color,giftData,installment_type}) => 
           </span>
         </div>
         {formik.touched.convenience_fee && formik.errors.convenience_fee && (
-          <span className="text-red-500 text-sm mt-1">{formik.errors.convenience_fee}</span>
+          <span className="text-red-500 text-sm mt-1">
+            {formik.errors.convenience_fee}
+          </span>
         )}
       </div>
 
@@ -253,7 +284,9 @@ const AdvancedSettings = ({ formik, layout_color,giftData,installment_type}) => 
           </span>
         </div>
         {formik.touched.fine_amount && formik.errors.fine_amount && (
-          <span className="text-red-500 text-sm mt-1">{formik.errors.fine_amount}</span>
+          <span className="text-red-500 text-sm mt-1">
+            {formik.errors.fine_amount}
+          </span>
         )}
       </div>
 
@@ -280,9 +313,12 @@ const AdvancedSettings = ({ formik, layout_color,giftData,installment_type}) => 
             INR
           </span>
         </div>
-        {formik.touched.cumulative_fine_amount && formik.errors.cumulative_fine_amount && (
-          <span className="text-red-500 text-sm mt-1">{formik.errors.cumulative_fine_amount}</span>
-        )}
+        {formik.touched.cumulative_fine_amount &&
+          formik.errors.cumulative_fine_amount && (
+            <span className="text-red-500 text-sm mt-1">
+              {formik.errors.cumulative_fine_amount}
+            </span>
+          )}
       </div>
 
       {/* Display Referral */}
@@ -316,7 +352,9 @@ const AdvancedSettings = ({ formik, layout_color,giftData,installment_type}) => 
           </div>
         </div>
         {formik.touched.display_referral && formik.errors.display_referral && (
-          <span className="text-red-500 text-sm mt-1">{formik.errors.display_referral}</span>
+          <span className="text-red-500 text-sm mt-1">
+            {formik.errors.display_referral}
+          </span>
         )}
       </div>
 
@@ -327,7 +365,9 @@ const AdvancedSettings = ({ formik, layout_color,giftData,installment_type}) => 
         </label>
         <div className="flex flex-row border border-gray-300 rounded-lg overflow-hidden w-32 h-10 items-center">
           <div
-            onClick={() => formik.setFieldValue("display_weight_in_ledger", true)}
+            onClick={() =>
+              formik.setFieldValue("display_weight_in_ledger", true)
+            }
             className={`${
               formik.values.display_weight_in_ledger
                 ? "text-white"
@@ -339,7 +379,9 @@ const AdvancedSettings = ({ formik, layout_color,giftData,installment_type}) => 
           </div>
           <div className="w-px bg-gray-300" />
           <div
-            onClick={() => formik.setFieldValue("display_weight_in_ledger", false)}
+            onClick={() =>
+              formik.setFieldValue("display_weight_in_ledger", false)
+            }
             className={`${
               !formik.values.display_weight_in_ledger
                 ? "text-white"
@@ -350,9 +392,12 @@ const AdvancedSettings = ({ formik, layout_color,giftData,installment_type}) => 
             No
           </div>
         </div>
-        {formik.touched.display_weight_in_ledger && formik.errors.display_weight_in_ledger && (
-          <span className="text-red-500 text-sm mt-1">{formik.errors.display_weight_in_ledger}</span>
-        )}
+        {formik.touched.display_weight_in_ledger &&
+          formik.errors.display_weight_in_ledger && (
+            <span className="text-red-500 text-sm mt-1">
+              {formik.errors.display_weight_in_ledger}
+            </span>
+          )}
       </div>
     </div>
   );

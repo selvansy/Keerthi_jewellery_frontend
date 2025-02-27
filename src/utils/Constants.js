@@ -5,7 +5,15 @@ export const graceType = [
     },
     {
         id:2,
-        name:'Date Wise'
+        name:'Week Wise'
+    },
+    {
+        id:3,
+        name:'Daily Wise'
+    },
+    {
+        id:4,
+        name:'Yearly'
     }
 ]
 
@@ -17,5 +25,16 @@ export const benefiMakingCharge = [
     {
         id:2,
         name:'Non zero making charge'
+    }
+]
+
+export const rewardType = [
+    {
+        id:1,
+        name:'Amount'
+    },
+    {
+        id:2,
+        name:'Percentage'
     }
 ]
