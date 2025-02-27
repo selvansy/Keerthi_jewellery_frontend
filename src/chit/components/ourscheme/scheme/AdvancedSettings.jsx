@@ -26,7 +26,7 @@ const AdvancedSettings = ({ formik, layout_color, installment_type}) => {
   }, [rewardType]);
 
   return (
-    <div className="grid grid-rows-2 md:grid-cols-2 gap-5 border-t-2 border-gray-300">
+    <div className="grid grid-rows-2 md:grid-cols-2 gap-5">
       {/* Monthly Limit Installment */}
       <div className="flex flex-col mt-2">
         <label className="text-black mb-2 font-normal">

@@ -35,37 +35,9 @@ const PayableDetails = ({
   const inputHeight = "42px";
 
   return (
-    <div className="grid grid-rows-2 md:grid-cols-2 gap-5 border-t-2 border-gray-300">
+    <div className="grid grid-rows-2 md:grid-cols-2 gap-5">
       {!classType && (
         <>
-          {/* <div className="flex flex-col mt-2">
-            <label className="text-black mb-2 font-normal">
-              Amounts <span className="text-red-400"> *</span>
-            </label>
-            <div className="relative">
-              <input
-                type="number"
-                name="amount"
-                value={formik.values.amount}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                placeholder="Enter Amount"
-                style={{ height: inputHeight }}
-              />
-              <span
-                className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
-                style={{ backgroundColor: layout_color }}
-              >
-                INR
-              </span>
-            </div>
-            {formik.touched.amount && formik.errors.amount && (
-              <span className="text-red-500 text-sm mt-1">
-                {formik.errors.amount}
-              </span>
-            )}
-          </div> */}
           <div className="flex flex-col lg:mt-2">
             <label className="text-black mb-2 font-normal">
               Min Amount <span className="text-red-400"> *</span>
@@ -130,13 +102,13 @@ const PayableDetails = ({
         </label>
         <input
           type="number"
-          name="total_installments"
+          name="Total installments"
           value={formik.values.total_installments}
           onChange={(e) => {
             let value = parseInt(e.target.value, 10);
             if (value > maturity_period) {
               formik.setFieldError(
-                "total_installments",
+                "Total installments",
                 `Installment cannot exceed maturity period`
               );
             } else {

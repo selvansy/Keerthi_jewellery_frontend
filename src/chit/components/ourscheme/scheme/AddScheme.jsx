@@ -203,17 +203,11 @@ const SchemeForm = () => {
             ),
         }),
       // PayableDetails validation
-      amount: Yup.number().when("schemeType", {
-        is: (val) => val && val.value < 3,
-        then: Yup.number().required("Amount is required"),
-      }),
-      min_amount: Yup.number().when("schemeType", {
-        is: (val) => val && val.value >= 4,
-        then: Yup.number().optional("Minimum Amount is required"),
-      }),
+      // amount: Yup.number().required("Amount is required"),
+      min_amount: Yup.number().required("Minimum Amount is required"),
       max_amount: Yup.number().when("schemeType", {
         is: (val) => val && val.value >= 4,
-        then: Yup.number().optional("Maximum Amount is required"),
+        then: Yup.number().required("Maximum Amount is required"),
       }),
       min_weight: Yup.number().when("schemeType", {
         is: (val) => val && val.value === 3,
