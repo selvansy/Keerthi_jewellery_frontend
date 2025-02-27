@@ -1,13 +1,26 @@
 import React from "react";
 import Select from "react-select";
 
-const AdvancedSettings = ({ formik, layout_color }) => {
+// Customisations for react-select
+const customStyles = {
+  control: (base, state) => ({
+    ...base,
+    minHeight: "42px",
+    border: state.isFocused ? "1px solid black" : "1px solid #e2e8f0",
+    boxShadow: state.isFocused ? "0 0 0 1px black" : "none",
+    borderRadius: "0.375rem",
+  }),
+};
+
+const AdvancedSettings = ({ formik, layout_color,giftData,installment_type}) => {
+  const header = ["0","Monthly","Weekly","Daily","Yearly"]
+
   return (
     <div className="grid grid-rows-2 md:grid-cols-2 gap-5 border-t-2 border-gray-300">
       {/* Monthly Limit Installment */}
       <div className="flex flex-col mt-2">
         <label className="text-black mb-2 font-normal">
-          Monthly Limit Installment <span className="text-red-400"> *</span>
+          {`${header[installment_type]} Limit Installment`} <span className="text-red-400"> *</span>
         </label>
         <div className="relative">
           <input
@@ -94,6 +107,29 @@ const AdvancedSettings = ({ formik, layout_color }) => {
       </div>
 
       {/* Number of Gifts */}
+      <div>
+            <label className="block text-sm font-medium mb-1">
+              Gift Type <span className="text-red-500">*</span>
+            </label>
+            <Select
+              styles={customStyles}
+              isClearable={true}
+              options={giftData || []}
+              placeholder="Select gift type"
+              value={giftData.find(
+                (option) => option.value === formik.values.gift_type
+              )}
+              onChange={(option) =>
+                formik.setFieldValue("gift_type", option ? option.value : null)
+              }
+              onBlur={() => formik.setFieldTouched("gift_type", true)}
+            />
+            {formik.touched.gift_type && formik.errors.gift_type && (
+              <div className="text-red-500 text-sm mt-1">
+                {formik.errors.gift_type}
+              </div>
+            )}
+          </div>
       <div className="flex flex-col mt-2">
         <label className="text-black mb-2 font-normal">
           Number of Gifts<span className="text-red-400"> *</span>
@@ -118,7 +154,7 @@ const AdvancedSettings = ({ formik, layout_color }) => {
       {/* Reward Amount */}
       <div className="flex flex-col mt-2">
         <label className="text-black mb-2 font-normal">
-          Reward Amount<span className="text-red-400"> *</span>
+         Boonus <span className="text-red-400"> *</span>
         </label>
         <div className="relative">
           <input

@@ -38,7 +38,7 @@ const PayableDetails = ({
     <div className="grid grid-rows-2 md:grid-cols-2 gap-5 border-t-2 border-gray-300">
       {!classType && (
         <>
-          <div className="flex flex-col mt-2">
+          {/* <div className="flex flex-col mt-2">
             <label className="text-black mb-2 font-normal">
               Amounts <span className="text-red-400"> *</span>
             </label>
@@ -65,7 +65,7 @@ const PayableDetails = ({
                 {formik.errors.amount}
               </span>
             )}
-          </div>
+          </div> */}
           <div className="flex flex-col lg:mt-2">
             <label className="text-black mb-2 font-normal">
               Min Amount <span className="text-red-400"> *</span>
