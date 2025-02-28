@@ -54,7 +54,20 @@ export const deleteemployee = async (id) => {
 }
  
 
- 
+//Wallet
+
+export const getallwallet = async (data) => {
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/wallet/get-rate`,data);
+    return response.data;
+}
+
+// 
+
+export const addwalletData = async (data) => {
+    const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/wallet/rate`,data);
+    return response.data;
+}
+
  
  
  

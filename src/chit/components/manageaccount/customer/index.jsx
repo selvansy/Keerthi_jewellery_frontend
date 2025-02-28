@@ -199,7 +199,7 @@ const ExistingCusTable = () => {
 
   const handleEdit = (id) => {
   
-    navigate(`/managecustomers/addcustomer/${id}`);
+    navigate(`/managecustomers/editcustomer/${id}`);
   }
 
 

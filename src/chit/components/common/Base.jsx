@@ -111,8 +111,9 @@ const Base = ({ renderContent: RenderContent }) => {
                 key={submenu.id_submenu}
                 text={submenu.submenu_name}
                 onClick={() => {
-                  console.log("Submenu",submenu.submenu_name)
+               
                   handleClick(submenu.submenu_name);
+                  
                   navigate(submenu.pathurl.startsWith("/")?submenu.pathurl:`/${submenu.pathurl}`);
                   // handleClick(submenu.submenu_name);
                   navigate(submenu.pathurl);

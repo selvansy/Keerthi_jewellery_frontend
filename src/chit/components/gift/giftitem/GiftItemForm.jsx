@@ -117,13 +117,20 @@ function GiftItemForm({ setIsOpen,isviewOpen,id,setId,refetchTable  }) {
 
     const handlegiftImageChange = (e) => {
         const file = e.target.files[0];
-
-        if (file && file.size <= (500*1024)) {
-            setGiftImage(file);
-        }else{
-            toast.error("File size exceeded or no file found")
+    
+        if (file) {
+            const validImageTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+    
+            if (validImageTypes.includes(file.type) && file.size <= (500 * 1024)) {
+                setGiftImage(file);
+            } else {
+                toast.error("Invalid file type or file size exceeded (Max 500KB)");
+            }
+        } else {
+            toast.error("No file selected");
         }
     };
+    
 
     const handleRemovegiftImage = () => {
         setGiftImage(null);
@@ -168,7 +175,7 @@ const { mutate: addgiftitemMutate } = useMutation({
     },
     onError: (error) => {
         setIsLoading(false)
-        toast.error(error.message);
+        toast.error(error.response.data.message);
     },
 });
 
@@ -185,7 +192,7 @@ const { mutate: updategiftitemMutate } = useMutation({
     },
     onError: (error) => {
         setIsLoading(false)
-        toast.error(error.message);
+        toast.error(error.response.data.message);
     },
 });
 
