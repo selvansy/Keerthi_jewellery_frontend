@@ -1,12 +1,12 @@
 import React from "react";
-import Select from "react-select";
+
 const CustomerDetails = ({ formik, layout_color}) => {
  
   return (
     <div className="grid grid-rows-2 md:grid-cols-2 gap-5">
         <div className="flex flex-col mt-2">
           <label className="text-black mb-2 font-normal">
-            Referral Rate <span className="text-red-400"> *</span>
+            Referral Rate 
           </label>
           <div className="relative">
             <input
@@ -15,6 +15,7 @@ const CustomerDetails = ({ formik, layout_color}) => {
               value={formik.values.referral_rate}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
+              onWheel={(e) => e.target.blur()}
               className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
               placeholder="Enter Referral rate"
             />
@@ -31,7 +32,7 @@ const CustomerDetails = ({ formik, layout_color}) => {
         </div>
         <div className="flex flex-col lg:mt-2">
           <label className="text-black mb-2 font-normal">
-            Incentive Rate <span className="text-red-400"> *</span>
+            Incentive Rate 
           </label>
           <div className="relative">
             <input
@@ -40,6 +41,7 @@ const CustomerDetails = ({ formik, layout_color}) => {
               value={formik.values.incentive_rate}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
+              onWheel={(e) => e.target.blur()}
               className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
               placeholder="Enter Incentive rate"
             />
@@ -56,7 +58,7 @@ const CustomerDetails = ({ formik, layout_color}) => {
         </div>
         <div className="flex flex-col lg:mt-2">
           <label className="text-black mb-2 font-normal">
-            Remarks <span className="text-red-400"> *</span>
+            Remarks 
           </label>
           <div className="relative">
             <input
@@ -65,6 +67,7 @@ const CustomerDetails = ({ formik, layout_color}) => {
               value={formik.values.cus_remarks}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
+              onWheel={(e) => e.target.blur()}
               className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
               placeholder="Enter Remark"
             />

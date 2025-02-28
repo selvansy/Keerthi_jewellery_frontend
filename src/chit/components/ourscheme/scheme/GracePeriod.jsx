@@ -51,7 +51,7 @@ const Grace = ({ formik, layout_color, maturity_period, maturtiy_type }) => {
     <div className="grid grid-rows-2 md:grid-cols-2 gap-5">
       <div className="flex flex-col mt-2">
         <label className="block text-sm font-medium mb-1 mt-2">
-          Grace Type<span className="text-red-500">*</span>
+          Grace Type
         </label>
         <Select
           styles={customStyles}
@@ -78,7 +78,7 @@ const Grace = ({ formik, layout_color, maturity_period, maturtiy_type }) => {
 
       <div className="flex flex-col mt-2">
         <label className="block text-sm font-medium mb-1 mt-2">
-          Grace Period <span className="text-red-400"> *</span>
+          Grace Period 
         </label>
         <input
           type="number"
@@ -111,9 +111,9 @@ const Grace = ({ formik, layout_color, maturity_period, maturtiy_type }) => {
         )}
       </div>
 
-      <div className="flex flex-col lg:mt-2">
-        <label className="text-black mb-2 font-normal">
-          Fine amount <span className="text-red-400"> *</span>
+      <div className="flex flex-col lg:mt-2 mt-2">
+        <label className="text-black mb-2 font-medium">
+          Fine amount
         </label>
         <ToggleSwitch
           status={formik.values.fine_amount}

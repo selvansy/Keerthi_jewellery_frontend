@@ -84,7 +84,7 @@ const AgentDetails = ({ formik,layout_color}) => {
             <input
               type="text"
               name="cus_remarks"
-              value={formik.values.cus_remarks}
+              value={formik.values.agent_remark}
               onChange={formik.handleChange}
               onWheel={(e) => e.target.blur()}
               onBlur={formik.handleBlur}
@@ -92,8 +92,8 @@ const AgentDetails = ({ formik,layout_color}) => {
               placeholder="Enter Remark"
             />
           </div>
-          {formik.touched.cus_remarks && formik.errors.cus_remarks && (
-            <span className="text-red-500 text-sm mt-1">{formik.errors.cus_remarks}</span>
+          {formik.touched.agent_remark && formik.errors.agent_remark && (
+            <span className="text-red-500 text-sm mt-1">{formik.errors.agent_remark}</span>
           )}
         </div>
         {formik.values.agent_restriction && (

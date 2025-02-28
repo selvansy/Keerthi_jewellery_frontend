@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import Select from "react-select";
-import { Plus, Minus, SquarePen } from "lucide-react";
+import { Plus, Minus,Trash2 , SquarePen } from "lucide-react";
 import {
   getSchemeClassifications,
   allinstallmenttype,
@@ -34,6 +34,7 @@ import {
 } from "../../../../../components/ui/accordion";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 const SchemeForm = () => {
   const navigate = useNavigate();
@@ -44,31 +45,31 @@ const SchemeForm = () => {
   const id_branch = roleData?.id_branch;
   const accessBranch = roleData?.branch;
 
-   // State management
-   const [classifications, setClassifications] = useState([]);
-   const [mainImage, setMainImage] = useState(null);
-   const [descriptionImage, setDescriptionImage] = useState(null);
-   const [branch, setBranch] = useState(() => (accessBranch === "0" ? [] : {}));
-   const [metal, setMetal] = useState([]);
-   const [purity, setPurity] = useState([]);
-   const [layout_color, setLayoutColor] = useState("#015173");
+  // State management
+  const [classifications, setClassifications] = useState([]);
+  const [mainImage, setMainImage] = useState(null);
+  const [descriptionImage, setDescriptionImage] = useState(null);
+  const [branch, setBranch] = useState(() => (accessBranch === "0" ? [] : {}));
+  const [metal, setMetal] = useState([]);
+  const [purity, setPurity] = useState([]);
+  const [layout_color, setLayoutColor] = useState("#015173");
   //  const [classType, setClass] = useState(false);
-   const [selectedClass, setSelectedClass] = useState(null);
-   const [amounts, setAmounts] = useState([]);
-   const [newAmount, setNewAmount] = useState("");
-   const [isEditMode, setIsEditMode] = useState(false);
-   const [selectedAmount, setSelectedAmount] = useState(null);
-   const [editAmount, setEditAmount] = useState("");
-   const [installment_data, setInstallment] = useState([]);
-   const [funddata, setFundType] = useState([]);
-   const [bygstdata, setBuyGst] = useState([]);
-   const [wastagedata, setWastageType] = useState([]);
-   const [schemeTypeData, setSchemeTypeData] = useState([]);
-   const [giftType, setGiftType] = useState([]);
+  const [selectedClass, setSelectedClass] = useState(null);
+  const [amounts, setAmounts] = useState([]);
+  const [newAmount, setNewAmount] = useState("");
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [selectedAmount, setSelectedAmount] = useState(null);
+  const [editAmount, setEditAmount] = useState("");
+  const [installment_data, setInstallment] = useState([]);
+  const [funddata, setFundType] = useState([]);
+  const [bygstdata, setBuyGst] = useState([]);
+  const [wastagedata, setWastageType] = useState([]);
+  const [schemeTypeData, setSchemeTypeData] = useState([]);
+  const [giftType, setGiftType] = useState([]);
 
   const formik = useFormik({
     initialValues: {
-      classType:false,
+      classType: false,
       // SchemeForm fields
       scheme_name: "",
       code: "",
@@ -77,60 +78,58 @@ const SchemeForm = () => {
       id_purity: "",
       installment_type: "",
       maturity_period: "", // maturityMonth
-      scheme_type: '',
-      totalCount: '',
-      incrementRate: '',
-      start: '',
-      fixed_amounts: '',
+      scheme_type: null,
+      totalCount: "",
+      incrementRate: "",
+      start: "",
+      fixed_amounts: "",
+      saving_type: "",
 
       // PayableDetails fields
       amount: "", // no need to pass
       min_amount: "",
       max_amount: "",
+      min_weight: "",
+      max_weight: "",
       total_installments: "",
       buygsttype: "",
       buy_gst: "",
       benefit_min_installment_wst_mkg: "",
       wastagebenefit: "",
-      benefit_making:"",
-      
+      benefit_making: "",
+
       //grce
       grace_type: "",
       grace_period: "",
-      fine_amount:false,
+      fine_amount: false,
       grace_fine: "",
 
       //classification
-      description:'',
-      terms_condition:'',
-      classification_order:'',
-      
+      description: "",
+      term_desc: "",
+      classification_order: "",
+
       //customer referral
       referral_rate: "",
       incentive_rate: "",
       cus_remarks: "",
-      min_weight: "",
-      max_weight: "",
-      wastagetype: "", // no need to pass
-      saving_type: "",
-
-
-
 
       //agent referral
       agent_referral: "",
-      agent_restriction:true,
       agent_incentive: "",
+      agent_restriction: true,
       agent_remark: "",
       agent_target: "",
       partial_commission: "",
+
+      wastagetype: "", // no need to pass
 
       // AdvancedSettings fields
       limit_installment: "",
       pending_due_installment: "",
       paid_installment: "",
       scheme_customer_limit: "",
-      gift_minimum_paid_installment:"",
+      gift_minimum_paid_installment: "",
 
       //gift
       gift_type: 1,
@@ -145,14 +144,14 @@ const SchemeForm = () => {
       cumulative_fine_amount: "",
       display_referral: false,
       display_weight_in_ledger: false,
-      wallet_redemption_onpayment: false
+      wallet_redemption_onpayment: false,
     },
     validationSchema: Yup.object({
       // SchemeForm validation
       scheme_name: Yup.string()
         .required("Scheme name is required")
         .max(30, "Scheme name cannot exceed 30 characters"),
-        code: Yup.string()
+      code: Yup.string()
         .required("Scheme code is required")
         .max(15, "Scheme code cannot exceed 15 characters"),
       installment_type: Yup.string().required("Installment type is required"),
@@ -171,27 +170,59 @@ const SchemeForm = () => {
           (value) => String(value).length <= 3
         ),
       // schemeType: Yup.object().required("Scheme type is required"),
-      saving_type: Yup.number().optional("Saving type is required")
-      .required("Scheme type is required"),
-      totalCount: Yup.number().when("classType", {
-        is: true,
-        then: (schema) => schema.required("Total count is required"),
-      }),
-
-      incrementRate: Yup.number().when("classType", {
-        is: true,
-        then: (schema) => schema.required("Increment rate is required"),
-      }),
-
-      start: Yup.number().when("classType", {
-        is: true,
-        then: (schema) => schema.required("Start amount is required"),
-      }),
+      saving_type: Yup.number()
+        .optional("Saving type is required")
+        .required("Scheme type is required"),
+          totalCount: Yup.number().when("classType", {
+            is: true,
+            then: (schema) =>
+              schema
+                .required("Total count is required")
+                .min(0, "Minimum value allowed is 0")
+                .max(50, "Maximum value allowed is 50")
+                .test(
+                  "maxDigits",
+                  "Maximum 11 digits are allowed",
+                  (value) => value && value.toString().length <= 11
+                ),
+          }),
+          incrementRate: Yup.number().when("classType", {
+            is: true,
+            then: (schema) =>
+              schema
+                .required("Increment rate is required")
+                .min(0, "Minimum value allowed is 0")
+                .test(
+                  "maxDigits",
+                  "Maximum 11 digits are allowed",
+                  (value) => value && value.toString().length <= 11
+                ),
+          }),
+          start: Yup.number().when(["classType", "scheme_type"], {
+            is: (classType, scheme_type) => classType && [12, 3, 4].includes(scheme_type),
+            then: (schema) =>
+              schema
+                .required("Starting weight is required")
+                .min(0, "Minimum value allowed is 0")
+                .test(
+                  "maxDigits",
+                  "Maximum 11 digits are allowed",
+                  (value) => value && value.toString().length <= 11
+                ),
+            otherwise: (schema) =>
+              schema
+                .required("Starting amount is required")
+                .min(0, "Minimum value allowed is 0")
+                .test(
+                  "maxDigits",
+                  "Maximum 11 digits are allowed",
+                  (value) => value && value.toString().length <= 11
+                ),
+          }),       
       //classification
       description: Yup.string().required("Description is required"),
       term_desc: Yup.string().required("Terms and conditions is required"),
       classification_order: Yup.number(),
-      
 
       grace_period: Yup.number()
         .typeError("Grace period must be a number")
@@ -209,24 +240,61 @@ const SchemeForm = () => {
               }
             ),
         }),
-        grace_period: Yup.number()
-        .typeError("Grace period must be a number")
+      grace_fine: Yup.number()
+        .typeError("Grace fine must be a number")
         .min(0, "Must be 0 or a positive number")
         .when("fine_amount", {
-          then: Yup.number()
-            .required("Grace Fine is required")
+          is: true,
+          then: Yup.number().required("Grace fine is required"),
         }),
       // PayableDetails validation
       // amount: Yup.number().required("Amount is required"),
-      min_amount: Yup.number().required("Minimum Amount is required"),
-      max_amount: Yup.number().required("Maximum Amount is required"),
-      min_weight: Yup.number().required("Minimum Weight is required"),
-      max_weight: Yup.number().required("Maximum Weight is required"),
-      total_installments:Yup.number().required("Total Installments is required"),
+      min_amount: Yup.number().when(["classType", "scheme_type"], {
+        is: (classType, scheme_type) =>
+          !classType && ![12, 3, 4].includes(scheme_type),
+        then: (schema) =>
+          schema
+            .required("Minimum Amount is required")
+            .min(0, "Must be 0 or a positive number"),
+        otherwise: (schema) => schema.notRequired(),
+      }),
+      max_amount: Yup.number().when(["classType", "scheme_type"], {
+        is: (classType, scheme_type) =>
+          !classType && ![12, 3, 4].includes(scheme_type),
+        then: (schema) =>
+          schema
+            .required("Maximum Amount is required")
+            .min(0, "Must be 0 or a positive number"),
+        otherwise: (schema) => schema.notRequired(),
+      }),
+      min_weight: Yup.number().when(["classType", "scheme_type"], {
+        is: (classType, scheme_type) =>
+          !classType && [12, 3, 4].includes(scheme_type),
+        then: (schema) =>
+          schema
+            .required("Minimum Weight is required")
+            .min(0, "Must be 0 or a positive number"),
+        otherwise: (schema) => schema.notRequired(),
+      }),
+      max_weight: Yup.number().when(["classType", "scheme_type"], {
+        is: (classType, scheme_type) =>
+          (classType && [12, 3, 4].includes(scheme_type)) ||
+          (!classType && [12, 3, 4].includes(scheme_type)),
+        then: (schema) =>
+          schema
+            .required("Maximum Weight is required")
+            .min(0, "Must be 0 or a positive number"),
+        otherwise: (schema) => schema.notRequired(),
+      }),
+      total_installments: Yup.number().required(
+        "Total Installments is required"
+      ),
       buy_gst: Yup.number().optional("Buy GST is required"),
       buytgsttype: Yup.string().optional("Buy GST Type is required"),
       wastagebenefit: Yup.string().required("Wastage Benefit is required"),
-      benefit_making:Yup.string().required("Benefit making charge is required"),
+      benefit_making: Yup.string().required(
+        "Benefit making charge is required"
+      ),
 
       referral_rate: Yup.number()
         .typeError("Must be a number")
@@ -302,11 +370,23 @@ const SchemeForm = () => {
       const formData = new FormData();
 
       if (formik.values.classType) {
-        formData.append("fixed_amounts", amounts);
+        amounts.forEach((amount) => {
+          if (amount !== "") {
+            formData.append("fixed_amounts[]", amount);
+          }
+        });
       }
+
+      // Object.keys(values).forEach((key) => {
+      //   formData.append(key, values[key]);
+      // });
       Object.keys(values).forEach((key) => {
+        if (!formik.values.classType && ["start", "totalCount", "incrementRate"].includes(key)) {
+          return;
+        }
         formData.append(key, values[key]);
       });
+      
 
       if (mainImage) {
         formData.append("logo", mainImage);
@@ -318,8 +398,7 @@ const SchemeForm = () => {
 
       if (id) {
         updateEmployeeMutate(formData);
-      } 
-      else {
+      } else {
         addNewScheme(formData);
       }
     },
@@ -356,14 +435,12 @@ const SchemeForm = () => {
   });
 
   const { data: schemeData } = useQuery({
-  queryKey: ["scheme", id],
-  queryFn: async () => await getschemeById(id), 
-  enabled: Boolean(id), 
-  staleTime: 5 * 60 * 1000,
-  cacheTime: 10 * 60 * 1000,
-});
-
-  console.log(schemeData)
+    queryKey: ["scheme", id],
+    queryFn: async () => await getschemeById(id),
+    enabled: Boolean(id),
+    staleTime: 5 * 60 * 1000,
+    cacheTime: 10 * 60 * 1000,
+  });
 
   const { data: metalResponse } = useQuery({
     queryKey: ["branches"],
@@ -410,12 +487,15 @@ const SchemeForm = () => {
 
   //useEffect
   useEffect(() => {
-    if (id && schemeData ) {
+    if (id && schemeData) {
       // Determine if it's a fixed classification scheme
-      const isFixedScheme = schemeData.id_classification === "67bacffd970bf1c652590b1f";
-      
+      const isFixedScheme =
+        schemeData.id_classification === "67bacffd970bf1c652590b1f";
+
       // Set the classification type first
-      const classItem = classifications.find(c => c.value === schemeData.id_classification);
+      const classItem = classifications.find(
+        (c) => c.value === schemeData.id_classification
+      );
       if (classItem) {
         handleClassChange({ value: classItem.value, id: classItem.id });
       }
@@ -424,7 +504,7 @@ const SchemeForm = () => {
       if (schemeData.fixedAmounts && schemeData.fixedAmounts.length > 0) {
         setAmounts(schemeData.fixedAmounts);
       }
-      
+
       // Set field values
       formik.setValues({
         ...formik.values,
@@ -438,12 +518,12 @@ const SchemeForm = () => {
         maturity_period: schemeData.data.maturity_month || "",
         scheme_type: schemeData.data.scheme_type || "",
         saving_type: schemeData.data.saving_type || "",
-        
+
         // Fixed scheme specific fields
         totalCount: schemeData.data.totalCountAmount || "",
         incrementRate: schemeData.data.incrementRate || "",
         start: schemeData.data.startingAmount || "",
-        
+
         // PayableDetails fields
         min_amount: schemeData.data.min_amount || "",
         max_amount: schemeData.data.max_amount || "",
@@ -454,28 +534,28 @@ const SchemeForm = () => {
         wastagebenefit: schemeData.data.wastagebenefit || "",
         total_installments: schemeData.data.total_installments || "",
         benefit_making: schemeData.data.makingcharge || "",
-        
+
         // Grace period
         grace_type: schemeData.data.grace_type || "", // Defaulting to same as installment type
         grace_period: schemeData.data.gracePeriod || "",
         grace_fine: schemeData.data.graceFineAmount || "",
-        
+
         // Classification
         description: schemeData.data.description || "",
         term_desc: schemeData.data.term_desc || "",
-        
+
         // Customer referral
         referral_rate: schemeData.data.customer_referral_per || "",
         incentive_rate: schemeData.data.customer_incentive_per || "",
-        cus_remarks:schemeData.data.cus_remark || "",
+        cus_remarks: schemeData.data.cus_remark || "",
 
         // Agent referral
         agent_referral: schemeData.data.agent_referral_percentage || "",
         agent_incentive: schemeData.data.agent_percentage || "",
         agent_target: schemeData.data.agent_target_per || "",
         partial_commission: schemeData.data.agent_partial_per || "",
-        agent_remark:schemeData.data.agent_remark || false,
-        
+        agent_remark: schemeData.data.agent_remark || false,
+
         // AdvancedSettings
         limit_installment: schemeData.data.limit_installment || "",
         pending_due_installment: schemeData.data.pending_installment || "",
@@ -487,14 +567,15 @@ const SchemeForm = () => {
         fine_amount: schemeData.data.fine_amount || "",
         cumulative_fine_amount: schemeData.data.cumulative_fine_amount || "",
         display_referral: schemeData.data.display_referral || false,
-        display_weight_in_ledger: schemeData.data.display_Weight_in_ledger || false,
-        wallet_redemption_onpayment:schemeData.data.wallet_redemption || false,
-        gift_minimum_paid_installment:schemeData.data.gift_minimum_paid_installment || '',
+        display_weight_in_ledger:
+          schemeData.data.display_Weight_in_ledger || false,
+        wallet_redemption_onpayment: schemeData.data.wallet_redemption || false,
+        gift_minimum_paid_installment:
+          schemeData.data.gift_minimum_paid_installment || "",
       });
-      setAmounts(schemeData.data.fixedAmounts)
+      setAmounts(schemeData.data.fixedAmounts);
     }
   }, [id, schemeData, classifications]);
-  console.log(amounts)
 
   useEffect(() => {
     if (installment_type?.data) {
@@ -562,7 +643,11 @@ const SchemeForm = () => {
       const incrementRate = formik.values.incrementRate;
       const start = formik.values.start;
       const totalCount = formik.values.totalCount;
-      generateAmounts(totalCount, start, incrementRate);
+      if(incrementRate === "" ||start === '' || totalCount === ''){
+        setAmounts([])
+      }else{
+        generateAmounts(totalCount, start, incrementRate);
+      }
     }
   }, [
     formik.values.incrementRate,
@@ -608,19 +693,25 @@ const SchemeForm = () => {
     }
   }, [purityResponse]);
 
-
   // Handler for adding new amount
   const handleAddAmount = () => {
-    if (newAmount && !amounts.includes(Number(newAmount))) {
-      setAmounts([...amounts, Number(newAmount)]);
-      setNewAmount("");
+    if(formik.values.totalCount && formik.values.start && formik.values.incrementRate){
+      if (newAmount && !amounts.includes(Number(newAmount))) {
+        setAmounts([...amounts, Number(newAmount)]);
+        setNewAmount("");
+      }
+    }else{
+      toast.error("Fill the requried fields")
     }
   };
 
   //handler to choose the
   const handleClassChange = (selectedOption) => {
-    formik.setFieldValue("id_classification", selectedOption ? selectedOption.value : "");
-  
+    formik.setFieldValue(
+      "id_classification",
+      selectedOption ? selectedOption.value : ""
+    );
+
     if (selectedOption?.id === 2) {
       setSelectedClass(null);
       formik.setFieldValue("classType", true);
@@ -629,12 +720,18 @@ const SchemeForm = () => {
       setSelectedClass(1);
       formik.setFieldValue("classType", false);
       formik.setFieldValue("scheme_type", null);
-      setAmounts([])
+      formik.setFieldValue('totalCount',"")
+      formik.setFieldValue('incrementRate',"")
+      formik.setFieldValue('start',"")
+      setAmounts([]);
     } else {
       setSelectedClass(3);
       formik.setFieldValue("classType", false);
       formik.setFieldValue("scheme_type", null);
-      setAmounts([])
+      formik.setFieldValue('totalCount',"")
+      formik.setFieldValue('incrementRate',"")
+      formik.setFieldValue('start',"")
+      setAmounts([]);
     }
   };
 
@@ -662,9 +759,10 @@ const SchemeForm = () => {
     setSelectedAmount(null);
   };
 
-  const handleKeyDown = (e, index) => {
+  const handleKeyDown = (e) => {
     if (e.key === "Enter") {
-      handleSaveAmount(index);
+      e.preventDefault(); 
+      handleAddAmount();
     }
   };
 
@@ -683,19 +781,45 @@ const SchemeForm = () => {
 
   const filteredSchemeTypeData = React.useMemo(() => {
     if (!schemeTypeData) return [];
-  
+
     if (formik.values.classType) {
       // Fixed scheme types
-      return schemeTypeData.filter((option) => [0, 1, 2, 3].includes(option.value));
+      return schemeTypeData.filter((option) =>
+        [0, 1, 2, 3].includes(option.value)
+      );
     } else if (selectedClass === 1) {
       // Flexi scheme types
-      return schemeTypeData.filter((option) => [5].includes(option.value));
+      return schemeTypeData.filter((option) =>
+        [5, 11, 12, 13].includes(option.value)
+      );
     } else if (selectedClass === 3) {
       // Flexi-Fixed scheme types
-      return schemeTypeData.filter((option) => [7, 6, 8, 4].includes(option.value));
+      return schemeTypeData.filter((option) =>
+        [7, 6, 8, 4].includes(option.value)
+      );
     }
     return schemeTypeData;
   }, [schemeTypeData, formik.values.classType, selectedClass]);
+
+  const handleReset = () => {
+    setAmounts([]);
+    
+    formik.setFieldValue("totalCount", "");
+    formik.setFieldValue("incrementRate", "");
+    formik.setFieldValue("start", "");
+  
+    formik.setFieldTouched("totalCount", false);
+    formik.setFieldTouched("incrementRate", false);
+    formik.setFieldTouched("start", false);
+  
+    formik.setErrors((prevErrors) => ({
+      ...prevErrors,
+      totalCount: undefined,
+      incrementRate: undefined,
+      start: undefined,
+    }));
+  };
+  
 
   return (
     <form
@@ -824,14 +948,12 @@ const SchemeForm = () => {
               options={filteredSchemeTypeData}
               isClearable={true}
               placeholder="Select scheme type"
-              value={
-                filteredSchemeTypeData?.find(
-                  (option) => option.value === formik.values.scheme_type
-                ) || null
-              }
-              onChange={(option) =>
-                formik.setFieldValue("scheme_type", option?.value || "")
-              }
+              value={filteredSchemeTypeData?.find(
+                (option) => option.value === formik.values.scheme_type
+              )}
+              onChange={(option) => {
+                formik.setFieldValue("scheme_type", option?.value);
+              }}
               onBlur={() => formik.setFieldTouched("scheme_type", true)}
             />
             {formik.touched.scheme_type && formik.errors.scheme_type && (
@@ -960,48 +1082,108 @@ const SchemeForm = () => {
           <div className="grid grid-cols-3 gap-4 w-full mt-3">
             <div>
               <label className="block text-sm font-medium mb-1">
-                Total count of amount <span className="text-red-500">*</span>
+              {formik.values.classType &&
+                [12, 3, 4].includes(formik.values.scheme_type)
+                  ? "Total count of weights"
+                  : "Total count of amount"}
+                 <span className="text-red-500">*</span>
               </label>
               <input
                 type="number"
+                min={0}
+                max={50}
                 className="w-full border rounded-md px-3 py-2"
                 placeholder="Enter total count"
                 {...formik.getFieldProps("totalCount")}
+                onBlur={formik.handleBlur}
+                onInput={(e) => {
+                  let value = e.target.value;
+                  if(value > '50'){
+                    formik.setFieldError("totalCount", "Max allowed is 50");
+                  }
+
+                  if (value.length > 2) {
+                    value = value.slice(0, 2);
+                  }
+                  if (parseInt(value, 10) > 50) {
+                    value = "50";
+                  }
+
+                  e.target.value = value;
+                  formik.setFieldValue("totalCount", value);
+                }}
+                onKeyDown={(e) => {
+                  if (e.target.value.length >= 2 && e.key !== "Backspace") {
+                    e.preventDefault();
+                  }
+                }}
               />
-              {formik.touched.totalCount && formik.errors.totalCount && (
+              {formik.errors.totalCount && (
                 <div className="text-red-500 text-sm mt-1">
                   {formik.errors.totalCount}
                 </div>
               )}
             </div>
+
             <div>
               <label className="block text-sm font-medium lg:mb-1 md:mb-1 sm:mb-1 mb-6">
-                Start <span className="text-red-500">*</span>
+                {formik.values.classType &&
+                [12, 3, 4].includes(formik.values.scheme_type)
+                  ? "Starting Weight"
+                  : "Starting Amount"} <span className="text-red-500">*</span>
               </label>
               <input
                 type="number"
+                min={1}
+                max={99999999999}
                 className="w-full border rounded-md px-3 py-2"
                 placeholder="Enter start amount"
                 {...formik.getFieldProps("start")}
+                onBlur={formik.handleBlur}
+                onInput={(e) => {
+                  let value = e.target.value;
+                  if (value.length > 11) {
+                    e.target.value = value.slice(0, 11);
+                  }
+                }}
+                onKeyDown={(e) => {
+                  if (e.target.value.length >= 11 && e.key !== "Backspace") {
+                    e.preventDefault();
+                  }
+                }}
               />
-              {formik.touched.start && formik.errors.start && (
+              {formik.errors.start && (
                 <div className="text-red-500 text-sm mt-1">
                   {formik.errors.start}
                 </div>
               )}
             </div>
+
             <div>
               <label className="block text-sm font-medium mb-1">
                 Increment Rate <span className="text-red-500">*</span>
               </label>
               <input
                 type="number"
+                min={1}
+                max={99999999999}
                 className="w-full border rounded-md px-3 py-2"
                 placeholder="Enter increment rate"
                 onChange={generateAmounts}
                 {...formik.getFieldProps("incrementRate")}
+                onInput={(e) => {
+                  let value = e.target.value;
+                  if (value.length > 11) {
+                    e.target.value = value.slice(0, 11);
+                  }
+                }}
+                onKeyDown={(e) => {
+                  if (e.target.value.length >= 11 && e.key !== "Backspace") {
+                    e.preventDefault();
+                  }
+                }}
               />
-              {formik.touched.incrementRate && formik.errors.incrementRate && (
+              {formik.errors.incrementRate && (
                 <div className="text-red-500 text-sm mt-1">
                   {formik.errors.incrementRate}
                 </div>
@@ -1009,10 +1191,17 @@ const SchemeForm = () => {
             </div>
           </div>
         )}
+    
         {formik.values.classType && (
           <div className="mt-6 bg-[#f5f5f5] p-4 rounded-md">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-medium">Amount List</h3>
+              <h3 className="text-lg font-medium">
+                {formik.values.classType &&
+                [12, 3, 4].includes(formik.values.scheme_type)
+                  ? "Weight List"
+                  : "Amount List"}
+              </h3>
+              <div className="flex flex-row gap-3">
               <button
                 type="button"
                 className="p-2 hover:bg-gray-100 rounded-md"
@@ -1024,15 +1213,33 @@ const SchemeForm = () => {
                   className={isEditMode ? "text-gray-400" : ""}
                 />
               </button>
+              <button
+                type="button"
+                className="p-2 hover:bg-gray-100 rounded-md"
+                onClick={handleReset}
+                disabled={isEditMode}
+              >
+                <Trash2
+                  size={20}
+                  className={isEditMode ? "text-gray-400" : ""}
+                />
+              </button>
+              </div>
             </div>
             <div className="flex flex-row justify-start">
               <div className="flex gap-3 mb-4">
                 <input
                   type="number"
-                  placeholder="Add Amount"
+                  placeholder={
+                    formik.values.scheme_type &&
+                    [12, 3, 4].includes(formik.values.scheme_type)
+                      ? "Add weight"
+                      : "Add amount"
+                  }
                   className="flex-1 border rounded-md px-3 py-2"
                   value={newAmount}
                   onChange={(e) => setNewAmount(e.target.value)}
+                  onKeyDown={handleKeyDown}
                 />
                 <button
                   type="button"
@@ -1123,6 +1330,7 @@ const SchemeForm = () => {
               install_type={formik.values.installment_type}
               classType={formik.values.classType}
               maturity_period={formik.values.maturity_period}
+              scheme_type={formik.values.scheme_type}
             />
           </AccordionContent>
         </AccordionItem>

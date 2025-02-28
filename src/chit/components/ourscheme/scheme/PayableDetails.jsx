@@ -9,6 +9,7 @@ const PayableDetails = ({
   wastagedata,
   classType,
   maturity_period,
+  scheme_type
 }) => {
   const [benefitMaking, setMaking] = useState([]);
 
@@ -33,10 +34,77 @@ const PayableDetails = ({
 
   // Common height for all input fields
   const inputHeight = "42px";
+  
+  // Check if scheme_type is one of 12, 3, 4
+  const isSpecialSchemeType = [12, 3, 4].includes(scheme_type);
+  
+  // Determine which fields to show based on the conditions
+  //(classType && isSpecialSchemeType) ||
+  const showWeightFields =  (!classType && isSpecialSchemeType);
+  const showAmountFields = (!classType && !isSpecialSchemeType);
 
   return (
     <div className="grid grid-rows-2 md:grid-cols-2 gap-5">
-      {!classType && (
+      {showWeightFields ? (
+        <>
+          <div className="flex flex-col lg:mt-2">
+            <label className="text-black mb-2 font-normal">
+              Min Weight <span className="text-red-400"> *</span>
+            </label>
+            <div className="relative">
+              <input
+                type="number"
+                name="min_weight"
+                value={formik.values.min_weight}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                placeholder="Enter Min Weight"
+                style={{ height: inputHeight }}
+              />
+              <span
+                className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                style={{ backgroundColor: layout_color }}
+              >
+                GRM
+              </span>
+            </div>
+            {formik.touched.min_weight && formik.errors.min_weight && (
+              <span className="text-red-500 text-sm mt-1">
+                {formik.errors.min_weight}
+              </span>
+            )}
+          </div>
+          <div className="flex flex-col lg:mt-2">
+            <label className="text-black mb-2 font-normal">
+              Max Weight <span className="text-red-400"> *</span>
+            </label>
+            <div className="relative">
+              <input
+                type="number"
+                name="max_weight"
+                value={formik.values.max_weight}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                placeholder="Enter Max Weight"
+                style={{ height: inputHeight }}
+              />
+              <span
+                className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                style={{ backgroundColor: layout_color }}
+              >
+                GRM
+              </span>
+            </div>
+            {formik.touched.max_weight && formik.errors.max_weight && (
+              <span className="text-red-500 text-sm mt-1">
+                {formik.errors.max_weight}
+              </span>
+            )}
+          </div>
+        </>
+      ) : showAmountFields ? (
         <>
           <div className="flex flex-col lg:mt-2">
             <label className="text-black mb-2 font-normal">
@@ -94,6 +162,12 @@ const PayableDetails = ({
               </span>
             )}
           </div>
+        </>
+      ) : (
+        // Empty placeholders to maintain grid layout when neither weight nor amount fields are shown
+        <>
+        {/* <div></div>
+        <div></div> */}
         </>
       )}
       <div className="flex flex-col lg:mt-2">
@@ -204,37 +278,37 @@ const PayableDetails = ({
       </div>
 
       <div>
-  <label className="block text-sm font-medium mb-1 mt-2">
-    Benefit Wastage<span className="text-red-500">*</span>
-  </label>
-  <Select
-    styles={{
-      ...customStyles,
-      menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-    }}
-    options={wastagedata || []}
-    placeholder="Select wastage type"
-    isClearable={true}
-    value={
-      wastagedata.find(
-        (option) => option.value === formik.values.wastagebenefit
-      ) || null
-    }
-    onChange={(option) => {
-      formik.setFieldValue("wastagebenefit", option ? option.value : null);
-      formik.setFieldTouched("wastagebenefit", true, false); // Ensure Formik marks it as touched
-    }}
-    onBlur={() => formik.setFieldTouched("wastagebenefit", true)}
-    onMenuClose={() => formik.setFieldTouched("wastagebenefit", true)} // Ensure touch on menu close
-    menuPortalTarget={document.body}
-    menuPosition="fixed"
-  />
-  {formik.touched.wastagebenefit && formik.errors.wastagebenefit && (
-    <div className="text-red-500 text-sm mt-1">
-      {formik.errors.wastagebenefit}
-    </div>
-  )}
-</div>
+        <label className="block text-sm font-medium mb-1 mt-2">
+          Benefit Wastage<span className="text-red-500">*</span>
+        </label>
+        <Select
+          styles={{
+            ...customStyles,
+            menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+          }}
+          options={wastagedata || []}
+          placeholder="Select wastage type"
+          isClearable={true}
+          value={
+            wastagedata.find(
+              (option) => option.value === formik.values.wastagebenefit
+            ) || null
+          }
+          onChange={(option) => {
+            formik.setFieldValue("wastagebenefit", option ? option.value : null);
+            formik.setFieldTouched("wastagebenefit", true, false); // Ensure Formik marks it as touched
+          }}
+          onBlur={() => formik.setFieldTouched("wastagebenefit", true)}
+          onMenuClose={() => formik.setFieldTouched("wastagebenefit", true)} // Ensure touch on menu close
+          menuPortalTarget={document.body}
+          menuPosition="fixed"
+        />
+        {formik.touched.wastagebenefit && formik.errors.wastagebenefit && (
+          <div className="text-red-500 text-sm mt-1">
+            {formik.errors.wastagebenefit}
+          </div>
+        )}
+      </div>
       <div>
         <label className="block text-sm font-medium mb-1 mt-2">
           Benefit Making Charge<span className="text-red-500">*</span>
