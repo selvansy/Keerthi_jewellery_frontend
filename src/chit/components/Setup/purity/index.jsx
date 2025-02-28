@@ -53,7 +53,6 @@ export const customSelectStyles = {
   }),
 };
 
-
 const Purity = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -68,10 +67,10 @@ const Purity = () => {
   const [id, setId] = useState("");
   const limit = 10;
   const [isviewOpen, setIsviewOpen] = useState(false);
-  const [selectMetal,setSelectMetal]=useState([])
+  const [selectMetal, setSelectMetal] = useState([]);
   const [isLoading, setisLoading] = useState(true);
   const [searchLoading, setSearchLoading] = useState(true);
-  const [totalDocuments,setTotalDocuments]=useState(0)
+  const [totalDocuments, setTotalDocuments] = useState(0);
 
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
@@ -89,7 +88,7 @@ const Purity = () => {
       if (response) {
         setpurityData(response.data);
         setTotalPages(response.totalPages);
-        setTotalDocuments(response.totalDocument)
+        setTotalDocuments(response.totalDocument);
       }
       setisLoading(false);
       setSearchLoading(false);
@@ -104,14 +103,13 @@ const Purity = () => {
     mutationFn: getallmetal,
     onSuccess: (response) => {
       if (response) {
-        setMetals(response.data); 
-
+        setMetals(response.data);
         setSelectMetal(
-          response.data.map(metal => ({
-            value: metal.id_metal, 
-            label: metal.metal_name
+          response.data.map((metal) => ({
+            value: metal._id,
+            label: metal.metal_name,
           }))
-        );        
+        );
       }
     },
   });
@@ -123,7 +121,7 @@ const Purity = () => {
       setpurityData((prevData) =>
         prevData.map((purity) =>
           purity._id === id
-            ? { ...purity, display_app: !currentStatus } 
+            ? { ...purity, display_app: !currentStatus }
             : purity
         )
       );
@@ -143,9 +141,7 @@ const Purity = () => {
       toast.success(response.message);
       setpurityData((prevData) =>
         prevData.map((purity) =>
-          purity._id === id
-            ? { ...purity, active: !currentStatus } 
-            : purity
+          purity._id === id ? { ...purity, active: !currentStatus } : purity
         )
       );
       getallpuritytableMutate({
@@ -162,14 +158,13 @@ const Purity = () => {
     getallpuritytableMutate({
       search: debouncedSearch,
       page: currentPage,
-      limit:itemsPerPage,
-      });
+      limit: itemsPerPage,
+    });
   }, [currentPage, itemsPerPage, debouncedSearch, isviewOpen]);
 
   useEffect(() => {
     getallmetalMutate();
   }, []);
-
 
   const handleEdit = (id) => {
     setIsviewOpen(true);
@@ -181,7 +176,7 @@ const Purity = () => {
   };
 
   const handleDelete = (id) => {
-    setId(id)
+    setId(id);
     dispatch(
       openModal({
         modalType: "CONFIRMATION",
@@ -200,48 +195,47 @@ const Purity = () => {
         },
       })
     );
-
-  }
-   const { mutate: deletePurity } = useMutation({
-      mutationFn:(id)=> deletepurity(id),
-      onSuccess: (response) => {
-        if (response.message === "Purity deleted successfully") {
-          const isLastItemOnPage = purityData.length === 1;
-          const isNotFirstPage = currentPage > 1;
-          if (isLastItemOnPage && isNotFirstPage) {
-            setCurrentPage(prev => prev - 1);
-          } else {
-            // Otherwise, just refresh current page
-            getallpuritytableMutate({
-              search: debouncedSearch,
-              page: currentPage,
-              limit: itemsPerPage,
-            });
-          }
-          
-          toast.success(response.message);
-          eventEmitter.off("CONFIRMATION_SUBMIT");
-          setId("");
+  };
+  const { mutate: deletePurity } = useMutation({
+    mutationFn: (id) => deletepurity(id),
+    onSuccess: (response) => {
+      if (response.message === "Purity deleted successfully") {
+        const isLastItemOnPage = purityData.length === 1;
+        const isNotFirstPage = currentPage > 1;
+        if (isLastItemOnPage && isNotFirstPage) {
+          setCurrentPage((prev) => prev - 1);
+        } else {
+          // Otherwise, just refresh current page
+          getallpuritytableMutate({
+            search: debouncedSearch,
+            page: currentPage,
+            limit: itemsPerPage,
+          });
         }
-      },
-      onError: (error) => {
-        console.error("Error:", error);
-        toast.error("Failed to delete metal");
+
+        toast.success(response.message);
         eventEmitter.off("CONFIRMATION_SUBMIT");
-      },
-    });
-  
-    useEffect(() => {
-      const handleDelete = (id) => {
-        deletePurity(id);
-      };
-  
-      eventEmitter.on("CONFIRMATION_SUBMIT", handleDelete);
-  
-      return () => {
-        eventEmitter.off("CONFIRMATION_SUBMIT", handleDelete);
-      };
-    }, []);
+        setId("");
+      }
+    },
+    onError: (error) => {
+      console.error("Error:", error);
+      toast.error("Failed to delete metal");
+      eventEmitter.off("CONFIRMATION_SUBMIT");
+    },
+  });
+
+  useEffect(() => {
+    const handleDelete = (id) => {
+      deletePurity(id);
+    };
+
+    eventEmitter.on("CONFIRMATION_SUBMIT", handleDelete);
+
+    return () => {
+      eventEmitter.off("CONFIRMATION_SUBMIT", handleDelete);
+    };
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -456,8 +450,6 @@ const Purity = () => {
     setCurrentPage(pageNumber);
   };
 
-
-
   console.log(currentPage);
 
   const paginationData = {
@@ -533,8 +525,11 @@ const Purity = () => {
             <div className="flex items-center gap-4">
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}x
-                className={`p-2 text-gray-500 rounded-md ${currentPage==1?'cursor-not-allowed':'cursor-pointer'}`}
+                disabled={currentPage === 1}
+                x
+                className={`p-2 text-gray-500 rounded-md ${
+                  currentPage == 1 ? "cursor-not-allowed" : "cursor-pointer"
+                }`}
               >
                 Previous
               </button>
@@ -548,15 +543,17 @@ const Purity = () => {
               <button
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
-                className={`p-2 text-gray-500 rounded-md ${currentPage === totalPages?'cursor-not-allowed':'cursor-pointer'}`}
+                className={`p-2 text-gray-500 rounded-md ${
+                  currentPage === totalPages
+                    ? "cursor-not-allowed"
+                    : "cursor-pointer"
+                }`}
               >
                 Next
               </button>
             </div>
           </div>
         </div>
-
-
       </>
       <ModelOne
         title={id ? "Edit Purity" : "Add Purity"}
@@ -586,8 +583,8 @@ export const PurityForm = ({ setIsOpen, metals, clearId, id }) => {
   const [formData, setFormData] = useState({
     purity_name: "",
     id_metal: "",
-  });  
-  const [isLoading,setIsLoading]=useState(false)
+  });
+  const [isLoading, setIsLoading] = useState(false);
   const [formErrors, setFormErrors] = useState({});
 
   // getmetalById
@@ -619,7 +616,7 @@ export const PurityForm = ({ setIsOpen, metals, clearId, id }) => {
     if (!validateForm()) {
       return;
     }
-    setIsLoading(true)
+    setIsLoading(true);
 
     try {
       const updateData = {
@@ -628,7 +625,7 @@ export const PurityForm = ({ setIsOpen, metals, clearId, id }) => {
       };
 
       if (id) {
-        updatepurityMutate({id,data:updateData});
+        updatepurityMutate({ id, data: updateData });
       } else {
         addpurityMutate(updateData);
       }
@@ -644,24 +641,24 @@ export const PurityForm = ({ setIsOpen, metals, clearId, id }) => {
         toast.success(response.data.message);
         setIsOpen(false);
       }
-      setIsLoading(false)
+      setIsLoading(false);
     },
     onError: (error) => {
-      setIsLoading(false)
-      toast.error(error.response.data.message)
+      setIsLoading(false);
+      toast.error(error.response.data.message);
     },
   });
   const { mutate: updatepurityMutate } = useMutation({
     mutationFn: (data) => updatepurity(data),
     onSuccess: (response) => {
-      setIsLoading(false)
+      setIsLoading(false);
       toast.success(response.data.message);
       clearId();
       setIsOpen(false);
     },
     onError: (error) => {
-      setIsLoading(false)
-      console.error("Error updating purity:", error); 
+      setIsLoading(false);
+      console.error("Error updating purity:", error);
     },
   });
 
@@ -671,11 +668,11 @@ export const PurityForm = ({ setIsOpen, metals, clearId, id }) => {
       id_metal: "",
       metals: metals,
     });
-   clearId()
+    clearId();
     setIsOpen(false);
   };
 
-  const handleChange = (e) => {    
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -684,20 +681,20 @@ export const PurityForm = ({ setIsOpen, metals, clearId, id }) => {
     setFormErrors((prev) => ({
       ...prev,
       [name]: "",
-    }));    
+    }));
   };
 
-  const handleSelect=(selectedOption)=>{
+  const handleSelect = (selectedOption) => {
     setFormData((prev) => ({
       ...prev,
       id_metal: selectedOption ? selectedOption.value : "",
     }));
-  
+
     setFormErrors((prev) => ({
       ...prev,
       id_metal: "",
-    }));  
-  }
+    }));
+  };
 
   const validateForm = () => {
     const errors = {};
@@ -763,7 +760,7 @@ export const PurityForm = ({ setIsOpen, metals, clearId, id }) => {
             className=" text-white rounded-md p-2 w-full lg:w-20"
             style={{ backgroundColor: layout_color }}
           >
-            {isLoading?<SpinLoading/>:id ? "Update" : "Submit"}
+            {isLoading ? <SpinLoading /> : id ? "Update" : "Submit"}
           </button>
         </div>
       </div>
