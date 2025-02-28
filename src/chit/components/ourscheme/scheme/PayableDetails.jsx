@@ -35,37 +35,9 @@ const PayableDetails = ({
   const inputHeight = "42px";
 
   return (
-    <div className="grid grid-rows-2 md:grid-cols-2 gap-5 border-t-2 border-gray-300">
+    <div className="grid grid-rows-2 md:grid-cols-2 gap-5">
       {!classType && (
         <>
-          {/* <div className="flex flex-col mt-2">
-            <label className="text-black mb-2 font-normal">
-              Amounts <span className="text-red-400"> *</span>
-            </label>
-            <div className="relative">
-              <input
-                type="number"
-                name="amount"
-                value={formik.values.amount}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                placeholder="Enter Amount"
-                style={{ height: inputHeight }}
-              />
-              <span
-                className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
-                style={{ backgroundColor: layout_color }}
-              >
-                INR
-              </span>
-            </div>
-            {formik.touched.amount && formik.errors.amount && (
-              <span className="text-red-500 text-sm mt-1">
-                {formik.errors.amount}
-              </span>
-            )}
-          </div> */}
           <div className="flex flex-col lg:mt-2">
             <label className="text-black mb-2 font-normal">
               Min Amount <span className="text-red-400"> *</span>
@@ -146,7 +118,7 @@ const PayableDetails = ({
           }}
           onBlur={formik.handleBlur}
           className="w-full border rounded-md px-3 py-2"
-          placeholder="total_installments"
+          placeholder="Total installments"
           style={{ height: inputHeight }}
         />
         {formik.touched.total_installments && formik.errors.total_installments && (
@@ -163,7 +135,7 @@ const PayableDetails = ({
         <Select
           styles={customStyles}
           options={gstTypeData || []}
-          isClearable={true} // Allows clearing
+          isClearable={true} 
           placeholder="Select gst type"
           value={
             gstTypeData.find(
@@ -216,51 +188,53 @@ const PayableDetails = ({
         </label>
         <input
           type="number"
-          name="min_installments"
-          value={formik.values.min_installments}
+          name="benefit_min_installment_wst_mkg"
+          value={formik.values.benefit_min_installment_wst_mkg}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
           placeholder="Enter Min Installments"
           style={{ height: inputHeight }}
         />
-        {formik.touched.min_installments && formik.errors.min_installments && (
+        {formik.touched.benefit_min_installment_wst_mkg && formik.errors.benefit_min_installment_wst_mkg && (
           <span className="text-red-500 text-sm mt-1">
-            {formik.errors.min_installments}
+            {formik.errors.benefit_min_installment_wst_mkg}
           </span>
         )}
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-1 mt-2">
-          Benefit Wastage<span className="text-red-500">*</span>
-        </label>
-        <Select
-          styles={{
-            ...customStyles,
-            menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-          }}
-          options={wastagedata || []}
-          placeholder="Select wastage type"
-          isClearable={true}
-          value={
-            wastagedata.find(
-              (option) => option.value === formik.values.wastagebenefit
-            ) || null
-          } // Ensure null when cleared
-          onChange={(option) =>
-            formik.setFieldValue("wastagebenefit", option ? option.value : null)
-          }
-          onBlur={() => formik.setFieldTouched("wastagebenefit", true)}
-          menuPortalTarget={document.body}
-          menuPosition="fixed"
-        />
-        {formik.touched.wastagebenefit && formik.errors.wastagebenefit && (
-          <div className="text-red-500 text-sm mt-1">
-            {formik.errors.wastagebenefit}
-          </div>
-        )}
-      </div>
+  <label className="block text-sm font-medium mb-1 mt-2">
+    Benefit Wastage<span className="text-red-500">*</span>
+  </label>
+  <Select
+    styles={{
+      ...customStyles,
+      menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+    }}
+    options={wastagedata || []}
+    placeholder="Select wastage type"
+    isClearable={true}
+    value={
+      wastagedata.find(
+        (option) => option.value === formik.values.wastagebenefit
+      ) || null
+    }
+    onChange={(option) => {
+      formik.setFieldValue("wastagebenefit", option ? option.value : null);
+      formik.setFieldTouched("wastagebenefit", true, false); // Ensure Formik marks it as touched
+    }}
+    onBlur={() => formik.setFieldTouched("wastagebenefit", true)}
+    onMenuClose={() => formik.setFieldTouched("wastagebenefit", true)} // Ensure touch on menu close
+    menuPortalTarget={document.body}
+    menuPosition="fixed"
+  />
+  {formik.touched.wastagebenefit && formik.errors.wastagebenefit && (
+    <div className="text-red-500 text-sm mt-1">
+      {formik.errors.wastagebenefit}
+    </div>
+  )}
+</div>
       <div>
         <label className="block text-sm font-medium mb-1 mt-2">
           Benefit Making Charge<span className="text-red-500">*</span>

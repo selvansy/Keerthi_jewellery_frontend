@@ -1,19 +1,22 @@
 import React, { useState } from "react";
-import Select from "react-select";
 import ToggleSwitch from "../../common/ToggleSwitch";
 
 const AgentDetails = ({ formik,layout_color}) => {
- const [restriction,setRestriction]= useState(true)
 
  const handleToggle =()=>{
-    setRestriction(!restriction)
+    if(formik.values.agent_restriction){
+      formik.setFieldValue('agent_restriction',false)
+    }else{
+      formik.setFieldValue('agent_restriction',true)
+    }
  }
+ 
 
   return (
-    <div className="grid grid-rows-2 md:grid-cols-2 gap-5 border-t-2 border-gray-300">
+    <div className="grid grid-rows-2 md:grid-cols-2 gap-5">
         <div className="flex flex-col mt-2">
           <label className="text-black mb-2 font-normal">
-            Agent Referral <span className="text-red-400"> *</span>
+            Agent Referral 
           </label>
           <div className="relative">
             <input
@@ -39,7 +42,7 @@ const AgentDetails = ({ formik,layout_color}) => {
         </div>
         <div className="flex flex-col lg:mt-2">
           <label className="text-black mb-2 font-normal">
-            Agent Incentive <span className="text-red-400"> *</span>
+            Agent Incentive 
           </label>
           <div className="relative">
             <input
@@ -56,7 +59,7 @@ const AgentDetails = ({ formik,layout_color}) => {
               className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
               style={{ backgroundColor: layout_color }}
             >
-              INR
+              %
             </span>
           </div>
           {formik.touched.agent_incentive && formik.errors.agent_incentive && (
@@ -65,17 +68,17 @@ const AgentDetails = ({ formik,layout_color}) => {
         </div>
         <div className="flex flex-col lg:mt-2">
           <label className="text-black mb-2 font-normal">
-            Agent Restriction <span className="text-red-400"> *</span>
+            Agent Restriction 
           </label>
           <ToggleSwitch
-          status={restriction}
+          status={formik.values.agent_restriction}
           layout_color={layout_color}
           toggle_status={handleToggle}
           />
         </div>
         <div className="flex flex-col lg:mt-2">
           <label className="text-black mb-2 font-normal">
-            Remarks <span className="text-red-400"> *</span>
+            Remarks 
           </label>
           <div className="relative">
             <input
@@ -93,11 +96,11 @@ const AgentDetails = ({ formik,layout_color}) => {
             <span className="text-red-500 text-sm mt-1">{formik.errors.cus_remarks}</span>
           )}
         </div>
-        {restriction && (
+        {formik.values.agent_restriction && (
             <>
             <div className="flex flex-col lg:mt-2">
           <label className="text-black mb-2 font-normal">
-            Agent Target <span className="text-red-400"> *</span>
+            Agent Target 
           </label>
           <div className="relative">
             <input
@@ -123,7 +126,7 @@ const AgentDetails = ({ formik,layout_color}) => {
         </div>
         <div className="flex flex-col lg:mt-2">
           <label className="text-black mb-2 font-normal">
-            Partial Commission <span className="text-red-400"> *</span>
+            Partial Commission 
           </label>
           <div className="relative">
             <input
