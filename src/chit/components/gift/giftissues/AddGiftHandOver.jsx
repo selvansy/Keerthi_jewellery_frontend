@@ -152,7 +152,6 @@ const AddGiftIssued = () => {
     if (mobile === "") {
       toast.error('Mobile Number is required!');
     }
-
     handlesearchcustomer({ search_mobile: mobile, id_branch: branchId });
    
   };
@@ -179,10 +178,12 @@ const AddGiftIssued = () => {
           mobile: response.data[0].id_customer?.mobile }));
           
         handleschemeaccountbyBranch(response.data);
-        toast.success(response.message)
-      }
-
-    },
+        toast.success(response.data.message)
+      }},
+    onError:(error)=>{
+      toast.error(error.response.data.message)
+    }
+ 
   });
 
   const handleschemeaccountbyBranch = async (data) => {

@@ -38,7 +38,7 @@ const AddGiftPurchase = () => {
     total: "",
     cus_sellprice: "",
     id_branch: "",
-   
+
   })
 
 
@@ -46,9 +46,9 @@ const AddGiftPurchase = () => {
 
     getallbranchMutate();
     if (id_branch !== "0") {
-      setFormData(prev=>({
+      setFormData(prev => ({
         ...prev,
-        id_branch:id_branch
+        id_branch: id_branch
       }))
       handleVendorChange(id_branch);
     }
@@ -127,7 +127,7 @@ const AddGiftPurchase = () => {
     },
     onError: (error) => {
       console.error('Error fetching gift inward data:', error);
-      toast.error("Failed to fetch gift inward data. Please try again.");
+      toast.error("Failed to fetch");
 
     }
   });
@@ -147,37 +147,39 @@ const AddGiftPurchase = () => {
     }
 
     if (name === "gst_percenty") {
-      if (name === "gst_percenty" && value < 0) { toast.error("Enter valid gst_percentage") }
-      if (!formData.gst) {
+      const gstPercentRegex = /^\d{1,2}(\.\d)?$/;
 
+      if ((value < 0) || (!gstPercentRegex.test(value)) ){
         setFormErrors(prev => ({
           ...prev,
-          gst_percenty: "GST number is required"
-        }));
-
-      } else if (!/^[0-9A-Z]{15}$/.test(formData.gst)) {
-      
-        setFormErrors(prev => ({
-          ...prev,
-          gst_percenty: "GST number should be exactly 15 alphanumeric characters"
+          gst_percenty: "Gst percent not valid"
         }));
       }
+       
 
-      setFormData(prev => ({
+      setFormData(prev => ({ ...prev, gst_percenty: value }));
+
+      // GST Number Validation
+      const gstRegex = /^(?=.*[0-9])(?=.*[A-Z])[0-9A-Z]{15}$/;
+      setFormErrors(prev => ({
         ...prev,
-        gst_percenty: value
+        gst: !formData.gst
+          ? "GST number is required"
+          : !gstRegex.test(formData.gst)
+            ? "GST number must be exactly 15 alphanumeric characters (A-Z, 0-9)"
+            : ""
       }));
-
     }
 
+
     if (name === "cus_sellprice") {
-      if (name === "cus_sellprice" && value < 0) { 
+      if (name === "cus_sellprice" && value < 0) {
         setFormErrors(prev => ({
           ...prev,
           cus_sellprice: "customer price is required"
         }));
-       }
-    
+      }
+
       setFormData(prev => ({
         ...prev,
         cus_sellprice: value
@@ -186,13 +188,13 @@ const AddGiftPurchase = () => {
     }
 
     if (name === "price") {
-      if (name === "price" && value < 0) { 
+      if (name === "price" && value < 0) {
         setFormErrors(prev => ({
           ...prev,
           price: "price is required"
         }));
-       }
-    
+      }
+
       setFormData(prev => ({
         ...prev,
         price: value
@@ -215,7 +217,7 @@ const AddGiftPurchase = () => {
 
     }
 
-    
+
     setFormData(prev => ({
       ...prev,
       [name]: value
@@ -335,7 +337,7 @@ const AddGiftPurchase = () => {
       const totalWithoutGST = prc * quan;
       const gstAmount = (gst * totalWithoutGST) / 100;
       const totalAmt = Math.round(totalWithoutGST + gstAmount)
-  
+
       setTotal(totalAmt)
       setFormData(prev => ({
         ...prev,
@@ -356,9 +358,10 @@ const AddGiftPurchase = () => {
       <div className='flex flex-row justify-between'>
         <h2 className='text-2xl text-[#023453] font-bold justify-between'>{id ? "Edit GiftPurchase" : "AddGift Purchase"}</h2>
       </div>
-      <div className='w-full flex flex-col bg-white border-t-2 border-[#023453] mt-3 p-4'>
-        <div className='mb-4'>
+      <div className="w-full flex flex-col bg-white border-t-2 border-[#023453] mt-3 p-4">
+        <div className="mb-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Left Section */}
             <div className="flex flex-col gap-6">
               {id_branch === "0" && (
                 <div className="flex flex-col gap-2 mt-2">
@@ -385,6 +388,7 @@ const AddGiftPurchase = () => {
                 </div>
               )}
 
+              {/* Invoice Number */}
               <div className="flex flex-col gap-2 mt-2">
                 <label className="text-gray-700 font-medium">
                   Invoice Bill No<span className="text-red-400">*</span>
@@ -403,6 +407,7 @@ const AddGiftPurchase = () => {
                 )}
               </div>
 
+              {/* Choose Gift */}
               <div className="flex flex-col gap-2 mt-2">
                 <label className="text-gray-700 font-medium">
                   Choose Gift Name<span className="text-red-400">*</span>
@@ -426,6 +431,7 @@ const AddGiftPurchase = () => {
                 )}
               </div>
 
+              {/* GST Percentage */}
               <div className="flex flex-col mt-2 relative">
                 <label className="text-gray-700 font-medium">
                   GST %<span className="text-red-400">*</span>
@@ -434,8 +440,13 @@ const AddGiftPurchase = () => {
                   type="text"
                   name="gst_percenty"
                   min="0"
-                  maxLength={"12"}
-                  onInput={(e) => (e.target.value = e.target.value.replace(/\D/g, ""))}
+                  maxLength="3"
+                  onInput={(e) => {
+                    e.target.value = e.target.value.replace(/[^0-9.]/g, "");
+                    if ((e.target.value.match(/\./g) || []).length > 1) {
+                      e.target.value = e.target.value.slice(0, -1);
+                    }
+                  }}
                   value={formData.gst_percenty}
                   onChange={handleInputChange}
                   className="border-2 mt-2 border-gray-300 rounded-md p-3 w-full focus:border-transparent"
@@ -447,6 +458,7 @@ const AddGiftPurchase = () => {
                 )}
               </div>
 
+              {/* Total Price */}
               <div className="flex flex-col gap-2 mt-2">
                 <label className="text-gray-700 font-medium">
                   Total Price <span className="text-red-400">*</span>
@@ -459,11 +471,11 @@ const AddGiftPurchase = () => {
                   className="border-2 mt-2 border-gray-300 rounded-md p-3 bg-gray-200 cursor-not-allowed w-full"
                 />
               </div>
-
-              
             </div>
 
+            {/* Right Section */}
             <div className="flex flex-col gap-6">
+              {/* Choose Gift Vendor */}
               <div className="flex flex-col gap-2 mt-2">
                 <label className="text-gray-700 font-medium">
                   Choose Gift Vendor<span className="text-red-400">*</span>
@@ -487,23 +499,32 @@ const AddGiftPurchase = () => {
                 )}
               </div>
 
+              {/* Quantity */}
               <div className="flex flex-col gap-2 mt-2">
                 <label className="text-gray-700 font-medium">
-                  Qty<span className="text-red-400">*</span>
+                  Quantity<span className="text-red-400">*</span>
                 </label>
                 <input
-                  type="number"
+                  type="text"
                   name="qty"
                   min="1"
+                  maxLength={"5"}
+                  pattern="\d{5}"
                   value={formData.qty}
+                  onInput={(e) => {
+                    e.target.value = e.target.value.replace(/[^0-9]/g, "");
+                  }}
                   onChange={handleInputChange}
                   className="border-2 border-gray-300 rounded-md p-3 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                   placeholder="Enter Here"
                   required
                 />
-                {formErrors.qty && <span className="text-red-500 text-sm">{formErrors.qty}</span>}
+               {
+                formErrors.qty && <span className="text-red-500 text-sm">{formErrors.qty}</span> 
+               }
               </div>
 
+              {/* Price */}
               <div className="flex flex-col gap-2 mt-2">
                 <label className="text-gray-700 font-medium">
                   Price<span className="text-red-400">*</span>
@@ -521,9 +542,9 @@ const AddGiftPurchase = () => {
                 {formErrors.price && <span className="text-red-500 text-sm">{formErrors.price}</span>}
               </div>
 
-
-              <div className="flex flex-col mt-2">
-                <label className="text-gray-700 font-medium mt-2">
+              {/* Customer Sell Price */}
+              <div className="flex flex-col gap-2 mt-3">
+                <label className="text-gray-700 font-medium ">
                   Customer Sell Price<span className="text-red-400">*</span>
                 </label>
                 <input
@@ -531,7 +552,7 @@ const AddGiftPurchase = () => {
                   name="cus_sellprice"
                   value={formData.cus_sellprice}
                   onChange={handleInputChange}
-                  className="border-2 border-gray-300 mt-2 rounded-md p-3 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                  className="border-2 border-gray-300 rounded-md p-3 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                   placeholder="Enter Here"
                   required
                 />
@@ -539,12 +560,11 @@ const AddGiftPurchase = () => {
                   <span className="text-red-500 text-sm">{formErrors.cus_sellprice}</span>
                 )}
               </div>
-             
             </div>
           </div>
-
         </div>
-        <div className='flex flex-row justify-end border-t-2 p-3 mt-8'>
+      </div>
+      <div className='flex flex-row bg-white justify-end border-t-2 p-3'>
           <div className='flex flex-row gap-6 justify-center'>
             <button
               type='button'
@@ -563,7 +583,6 @@ const AddGiftPurchase = () => {
             </button>
           </div>
         </div>
-      </div>
       <Modal />
     </>
   )

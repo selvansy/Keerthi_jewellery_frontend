@@ -54,23 +54,6 @@ const GiftPurchase = () => {
     id_gift: ''
   });
 
-  useEffect(() => {
-
-    eventEmitter.on('CONFIRMATION_SUBMIT', (data) => {
-      try {
-
-        deleteGiftInward(data.giftInwardId);
-        eventEmitter.off('CONFIRMATION_SUBMIT');
-      } catch (error) {
-        eventEmitter.off('CONFIRMATION_SUBMIT');
-
-      }
-    });
-
-    return () => {
-      eventEmitter.off('CONFIRMATION_SUBMIT');
-    };
-  }, []);
 
   const filterInputchange = (e) => {
     const { name, value } = e.target;
@@ -224,11 +207,12 @@ const GiftPurchase = () => {
   };
 
   const handleDelete = (id) => {
+
     dispatch(openModal({
       modalType: 'CONFIRMATION',
-      header: 'Delete giftvendor',
+      header: 'Delete GiftPurchase',
       formData: {
-        message: 'Are you sure you want to delete this giftvendor?',
+        message: 'Are you sure you want to delete this Giftpurchase?',
         giftInwardId: id
       },
       buttons: {
@@ -241,6 +225,21 @@ const GiftPurchase = () => {
       }
     }))
   };
+
+
+
+  useEffect(() => {
+    const handleDelete = (data) => {
+      deleteGiftInward(data.giftInwardId);
+    };
+
+    eventEmitter.on("CONFIRMATION_SUBMIT", handleDelete);
+
+    return () => {
+      eventEmitter.off("CONFIRMATION_SUBMIT", handleDelete);
+    };
+  }, []);
+
 
   const { mutate: deleteGiftInward } = useMutation({
     mutationFn: (id) => deletegiftinward(id),
