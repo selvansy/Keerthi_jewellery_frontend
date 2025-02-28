@@ -39,7 +39,6 @@ const SchemeForm = () => {
   const navigate = useNavigate();
 
   let { id } = useParams();
-
   //reduux
   const roleData = useSelector((state) => state.clientForm.roledata);
   const id_branch = roleData?.id_branch;
@@ -97,6 +96,7 @@ const SchemeForm = () => {
       min_installments: "",
       total_installments: "",
       saving_type: "",
+      benefit_making:"",
 
       //grce
       grace_type: "",
@@ -205,21 +205,14 @@ const SchemeForm = () => {
       // PayableDetails validation
       // amount: Yup.number().required("Amount is required"),
       min_amount: Yup.number().required("Minimum Amount is required"),
-      max_amount: Yup.number().when("schemeType", {
-        is: (val) => val && val.value >= 4,
-        then: Yup.number().required("Maximum Amount is required"),
-      }),
-      min_weight: Yup.number().when("schemeType", {
-        is: (val) => val && val.value === 3,
-        then: Yup.number().optional("Minimum Weight is required"),
-      }),
-      max_weight: Yup.number().when("schemeType", {
-        is: (val) => val && val.value === 3,
-        then: Yup.number().optional("Maximum Weight is required"),
-      }),
+      max_amount: Yup.number().required("Maximum Amount is required"),
+      min_weight: Yup.number().required("Minimum Weight is required"),
+      max_weight: Yup.number().required("Maximum Weight is required"),
+      total_installments:Yup.number().required("Total Installments is required"),
       buy_gst: Yup.number().optional("Buy GST is required"),
       buytgsttype: Yup.string().optional("Buy GST Type is required"),
-      wastagebenefit: Yup.string().optional("Wastage Benefit is required"),
+      wastagebenefit: Yup.string().required("Wastage Benefit is required"),
+      benefit_making:Yup.string().required("Benefit making charge is required"),
 
       referral_rate: Yup.number()
         .typeError("Must be a number")
@@ -317,7 +310,7 @@ const SchemeForm = () => {
       }
     },
   });
-console.log(formik.errors)
+
   // Customisations for react-select
   const customStyles = {
     control: (base, state) => ({
@@ -347,6 +340,16 @@ console.log(formik.errors)
     staleTime: 5 * 60 * 1000,
     cacheTime: 10 * 60 * 1000,
   });
+
+  const { data: schemeData } = useQuery({
+  queryKey: ["scheme", id],
+  queryFn: async () => await getschemeById(id), 
+  enabled: Boolean(id), 
+  staleTime: 5 * 60 * 1000,
+  cacheTime: 10 * 60 * 1000,
+});
+
+  console.log(schemeData)
 
   const { data: metalResponse } = useQuery({
     queryKey: ["branches"],
@@ -392,6 +395,88 @@ console.log(formik.errors)
   });
 
   //useEffect
+  useEffect(() => {
+    if (id && schemeData ) {
+      // Determine if it's a fixed classification scheme
+      const isFixedScheme = schemeData.id_classification === "67bacffd970bf1c652590b1f";
+      
+      // Set the classification type first
+      const classItem = classifications.find(c => c.value === schemeData.id_classification);
+      if (classItem) {
+        handleClassChange({ value: classItem.value, id: classItem.id });
+      }
+
+      // Set fixed amounts if available
+      if (schemeData.fixedAmounts && schemeData.fixedAmounts.length > 0) {
+        setAmounts(schemeData.fixedAmounts);
+      }
+      
+      // Set field values
+      formik.setValues({
+        ...formik.values,
+        classType: isFixedScheme,
+        scheme_name: schemeData.data.scheme_name || "",
+        code: schemeData.data.code || "",
+        id_classification: schemeData.data.id_classification._id || "",
+        id_metal: schemeData.data.id_metal._id || "",
+        id_purity: schemeData.data.id_purity._id || "",
+        installment_type: schemeData.data.installmentType || "",
+        maturity_period: schemeData.data.maturity_month || "",
+        scheme_type: schemeData.data.scheme_type || "",
+        saving_type: schemeData.data.saving_type || "",
+        
+        // Fixed scheme specific fields
+        totalCount: schemeData.totalCountAmount || "",
+        incrementRate: schemeData.incrementRate || "",
+        start: schemeData.startingAmount || "",
+        
+        // PayableDetails fields
+        min_amount: schemeData.min_amount || "",
+        max_amount: schemeData.max_amount || "",
+        min_weight: schemeData.min_weight || "",
+        max_weight: schemeData.max_weight || "",
+        buy_gst: schemeData.buy_gst || "",
+        buygsttype: schemeData.buytgsttype || "",
+        wastagebenefit: schemeData.wastagebenefit || "",
+        total_installments: schemeData.total_installments || "",
+        benefit_making: schemeData.makingcharge || "",
+        
+        // Grace period
+        grace_type: schemeData.installmentType || "", // Defaulting to same as installment type
+        grace_period: schemeData.gracePeriod || "",
+        grace_fine: schemeData.graceFineAmount || "",
+        
+        // Classification
+        description: schemeData.data.description || "",
+        terms_condition: schemeData.data.term_desc || "",
+        
+        // Customer referral
+        referral_rate: schemeData.customer_referral_per || "",
+        incentive_rate: schemeData.customer_incentive_per || "",
+        
+        // Agent referral
+        agent_referral: schemeData.agent_referral_percentage || "",
+        agent_incentive: schemeData.agent_percentage || "",
+        agent_target: schemeData.agent_target_per || "",
+        partial_commission: schemeData.agent_partial_per || "",
+        
+        // AdvancedSettings
+        limit_installment: schemeData.limit_installment || "",
+        pending_due_installment: schemeData.pending_installment || "",
+        paid_installment: schemeData.allowed_minpaid || "",
+        scheme_customer_limit: schemeData.limit_customer || "",
+        gift_type: schemeData.gift_type || 1,
+        number_of_gifts: schemeData.number_of_gifts || 0,
+        convenience_fee: schemeData.convenience_fees || "",
+        fine_amount: schemeData.fine_amount || "",
+        cumulative_fine_amount: schemeData.cumulative_fine_amount || "",
+        display_referral: schemeData.display_referral || false,
+        display_weight_in_ledger: schemeData.display_Weight_in_ledger || false,
+      });
+      
+    }
+  }, [id, schemeData, classifications]);
+
   useEffect(() => {
     if (installment_type?.data) {
       const installment_data = installment_type.data.map((item) => ({
@@ -444,7 +529,6 @@ console.log(formik.errors)
 
   useEffect(() => {
     if (classificationData) {
-      console.log(classificationData);
       const data = classificationData.data.map((item) => ({
         value: item._id,
         label: item.name,

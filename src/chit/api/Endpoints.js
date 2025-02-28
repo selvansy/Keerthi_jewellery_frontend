@@ -1535,7 +1535,6 @@ export const getSchemeTable= async(data)=>{
 }
 
 export const getschemeById= async(id)=>{
-  
     const response= await Api.get(`${import.meta.env.VITE_API_URL}/api/client/scheme/${id}`)
     return response.data
 }

@@ -8,12 +8,12 @@ const ToggleSwitch = ({ status, toggle_status }) => {
         role="switch"
         aria-checked={status}
         onClick={toggle_status}
-        className={`relative flex items-center w-14 h-8 transition-colors duration-300 border border-black ${
+        className={`relative flex items-center rounded-md w-14 h-8 transition-colors duration-300 border border-gray-400 ${
           status ? 'bg-[#015173]' : "bg-gray-400"
         }`}
       >
         <span
-          className={`absolute flex items-center justify-center w-6 h-6 text-xs font-medium  bg-white transform transition-transform duration-300 ${
+          className={`absolute flex items-center rounded-md justify-center w-6 h-6 text-xs font-medium  bg-white transform transition-transform duration-300 ${
             status ? "translate-x-7" : "translate-x-1"
           }`}
         >

@@ -1,4 +1,4 @@
-import React,{useState,useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import Select from "react-select";
 import { rewardType } from "../../../../utils/Constants";
 
@@ -13,9 +13,9 @@ const customStyles = {
   }),
 };
 
-const AdvancedSettings = ({ formik, layout_color, installment_type}) => {
+const AdvancedSettings = ({ formik, layout_color, installment_type }) => {
   const header = ["0", "Monthly", "Weekly", "Daily", "Yearly"];
-  const [reward,setReward]= useState([])
+  const [reward, setReward] = useState([]);
 
   useEffect(() => {
     const data = rewardType.map((item) => ({
@@ -31,7 +31,6 @@ const AdvancedSettings = ({ formik, layout_color, installment_type}) => {
       <div className="flex flex-col mt-2">
         <label className="text-black mb-2 font-normal">
           {!installment_type ? 'Monthly Installment Limit' : `${header[installment_type]} Limit Installment`}
-          <span className="text-red-400"> *</span>
         </label>
         <div className="relative">
           <input
@@ -56,7 +55,7 @@ const AdvancedSettings = ({ formik, layout_color, installment_type}) => {
       {/* Pending Due Limit Installment */}
       <div className="flex flex-col mt-2">
         <label className="text-black mb-2 font-normal">
-          Pending Due Limit Installment <span className="text-red-400"> *</span>
+          Pending Due Limit Installment
         </label>
         <div className="relative">
           <input
@@ -82,7 +81,6 @@ const AdvancedSettings = ({ formik, layout_color, installment_type}) => {
       <div className="flex flex-col mt-2">
         <label className="text-black mb-2 font-normal">
           Minimum Paid Installment (for gift)
-          <span className="text-red-400"> *</span>
         </label>
         <div className="relative">
           <input
@@ -106,7 +104,7 @@ const AdvancedSettings = ({ formik, layout_color, installment_type}) => {
       {/* Scheme Customer Limit */}
       <div className="flex flex-col mt-2">
         <label className="text-black mb-2 font-normal">
-          Scheme Customer Limit<span className="text-red-400"> *</span>
+          Scheme Customer Limit
         </label>
         <div className="relative">
           <input
@@ -131,7 +129,7 @@ const AdvancedSettings = ({ formik, layout_color, installment_type}) => {
       {/* Number of Gifts */}
       <div className="flex flex-col mt-2">
         <label className="text-black mb-2 font-normal">
-          Number of Gifts<span className="text-red-400"> *</span>
+          Number of Gifts
         </label>
         <div className="relative">
           <input
@@ -155,7 +153,7 @@ const AdvancedSettings = ({ formik, layout_color, installment_type}) => {
       {/* Reward Amount */}
       <div>
         <label className="block text-sm font-normal mb-1 mt-2">
-          Bonus Type <span className="text-red-500">*</span>
+          Bonus Type
         </label>
         <Select
           styles={customStyles}
@@ -178,7 +176,7 @@ const AdvancedSettings = ({ formik, layout_color, installment_type}) => {
       </div>
       <div className="flex flex-col mt-2">
         <label className="text-black mb-2 font-normal">
-          Bonus <span className="text-red-400"> *</span>
+          Bonus
         </label>
         <div className="relative">
           <input
@@ -208,7 +206,7 @@ const AdvancedSettings = ({ formik, layout_color, installment_type}) => {
       {/* Not Paid Limit Installment */}
       <div className="flex flex-col mt-2">
         <label className="text-black mb-2 font-normal">
-          Not Paid Limit Installment<span className="text-red-400"> *</span>
+          Not Paid Limit Installment
         </label>
         <div className="relative">
           <input
@@ -233,7 +231,7 @@ const AdvancedSettings = ({ formik, layout_color, installment_type}) => {
       {/* Convenience Fee */}
       <div className="flex flex-col mt-2">
         <label className="text-black mb-2 font-normal">
-          Convenience Fee<span className="text-red-400"> *</span>
+          Convenience Fee
         </label>
         <div className="relative">
           <input
@@ -263,7 +261,7 @@ const AdvancedSettings = ({ formik, layout_color, installment_type}) => {
       {/* Fine Amount */}
       <div className="flex flex-col mt-2">
         <label className="text-black mb-2 font-normal">
-          Fine Amount<span className="text-red-400"> *</span>
+          Fine Amount
         </label>
         <div className="relative">
           <input
@@ -293,7 +291,7 @@ const AdvancedSettings = ({ formik, layout_color, installment_type}) => {
       {/* Cumulative Fine Amount */}
       <div className="flex flex-col mt-2">
         <label className="text-black mb-2 font-normal">
-          Cumulative Fine Amount<span className="text-red-400"> *</span>
+          Cumulative Fine Amount
         </label>
         <div className="relative">
           <input
@@ -324,7 +322,7 @@ const AdvancedSettings = ({ formik, layout_color, installment_type}) => {
       {/* Display Referral */}
       <div className="flex flex-col mt-2">
         <label className="text-black mb-2 font-normal">
-          Display Referral<span className="text-red-400"> *</span>
+          Display Referral
         </label>
         <div className="flex flex-row border border-gray-300 rounded-lg overflow-hidden w-32 h-10 items-center">
           <div
@@ -361,7 +359,7 @@ const AdvancedSettings = ({ formik, layout_color, installment_type}) => {
       {/* Display Weight In Ledger */}
       <div className="flex flex-col mt-2">
         <label className="text-black mb-2 font-normal">
-          Display Weight In Ledger<span className="text-red-400"> *</span>
+          Display Weight In Ledger
         </label>
         <div className="flex flex-row border border-gray-300 rounded-lg overflow-hidden w-32 h-10 items-center">
           <div
