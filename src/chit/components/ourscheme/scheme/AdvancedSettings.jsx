@@ -331,7 +331,7 @@ const AdvancedSettings = ({ formik, layout_color, installment_type }) => {
               formik.values.display_referral
                 ? "text-white"
                 : "bg-white text-[#888888]"
-            } p-3 w-full cursor-pointer transition-colors duration-200 text-center`}
+            } p-3 w-full cursor-pointer transition-colors duration-200 text-center font-medium`}
             style={{ backgroundColor: layout_color }}
           >
             Yes
@@ -343,7 +343,7 @@ const AdvancedSettings = ({ formik, layout_color, installment_type }) => {
               !formik.values.display_referral
                 ? "text-white"
                 : "bg-white text-[#888888]"
-            } p-3 w-full cursor-pointer transition-colors duration-200 text-center`}
+            } p-3 w-full cursor-pointer transition-colors duration-200 text-center font-medium`}
             style={{ backgroundColor: layout_color }}
           >
             No
@@ -370,7 +370,7 @@ const AdvancedSettings = ({ formik, layout_color, installment_type }) => {
               formik.values.display_weight_in_ledger
                 ? "text-white"
                 : "bg-white text-[#888888]"
-            } p-3 w-full cursor-pointer transition-colors duration-200 text-center`}
+            } p-3 w-full cursor-pointer transition-colors duration-200 text-center font-medium`}
             style={{ backgroundColor: layout_color }}
           >
             Yes
@@ -384,7 +384,7 @@ const AdvancedSettings = ({ formik, layout_color, installment_type }) => {
               !formik.values.display_weight_in_ledger
                 ? "text-white"
                 : "bg-white text-[#888888]"
-            } p-3 w-full cursor-pointer transition-colors duration-200 text-center`}
+            } p-3 w-full cursor-pointer transition-colors duration-200 text-center font-medium`}
             style={{ backgroundColor: layout_color }}
           >
             No
@@ -396,6 +396,41 @@ const AdvancedSettings = ({ formik, layout_color, installment_type }) => {
               {formik.errors.display_weight_in_ledger}
             </span>
           )}
+      </div>
+      <div className="flex flex-col mt-2">
+        <label className="text-black mb-2 font-normal">
+         Wallet redemption on payment
+        </label>
+        <div className="flex flex-row border border-gray-300 rounded-lg overflow-hidden w-32 h-10 items-center">
+          <div
+            onClick={() => formik.setFieldValue("wallet_redemption_onpayment", true)}
+            className={`${
+              formik.values.wallet_redemption_onpayment
+                ? "text-white"
+                : "bg-white text-[#888888]"
+            } p-3 w-full cursor-pointer transition-colors duration-200 text-center font-medium`}
+            style={{ backgroundColor: layout_color }}
+          >
+            Yes
+          </div>
+          <div className="w-px bg-gray-300" />
+          <div
+            onClick={() => formik.setFieldValue("wallet_redemption_onpayment", false)}
+            className={`${
+              !formik.values.wallet_redemption_onpayment
+                ? "text-white"
+                : "bg-white text-[#888888]"
+            } p-3 w-full cursor-pointer transition-colors duration-200 text-center font-medium`}
+            style={{ backgroundColor: layout_color }}
+          >
+            No
+          </div>
+        </div>
+        {formik.touched.wallet_redemption_onpayment && formik.errors.wallet_redemption_onpayment && (
+          <span className="text-red-500 text-sm mt-1">
+            {formik.errors.wallet_redemption_onpayment}
+          </span>
+        )}
       </div>
     </div>
   );

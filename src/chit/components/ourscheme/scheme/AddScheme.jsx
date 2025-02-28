@@ -97,6 +97,7 @@ const SchemeForm = () => {
       //grce
       grace_type: "",
       grace_period: "",
+      fine_amount:false,
       grace_fine: "",
 
       //classification
@@ -207,6 +208,13 @@ const SchemeForm = () => {
                 return !maturity_period || grace_period <= maturity_period;
               }
             ),
+        }),
+        grace_period: Yup.number()
+        .typeError("Grace period must be a number")
+        .min(0, "Must be 0 or a positive number")
+        .when("fine_amount", {
+          then: Yup.number()
+            .required("Grace Fine is required")
         }),
       // PayableDetails validation
       // amount: Yup.number().required("Amount is required"),
