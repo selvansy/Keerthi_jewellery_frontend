@@ -1,13 +1,16 @@
 import React, { useState } from "react";
-import Select from "react-select";
 import ToggleSwitch from "../../common/ToggleSwitch";
 
 const AgentDetails = ({ formik,layout_color}) => {
- const [restriction,setRestriction]= useState(true)
 
  const handleToggle =()=>{
-    setRestriction(!restriction)
+    if(formik.values.agent_restriction){
+      formik.setFieldValue('agent_restriction',false)
+    }else{
+      formik.setFieldValue('agent_restriction',true)
+    }
  }
+ 
 
   return (
     <div className="grid grid-rows-2 md:grid-cols-2 gap-5">
@@ -68,7 +71,7 @@ const AgentDetails = ({ formik,layout_color}) => {
             Agent Restriction 
           </label>
           <ToggleSwitch
-          status={restriction}
+          status={formik.values.agent_restriction}
           layout_color={layout_color}
           toggle_status={handleToggle}
           />
@@ -93,7 +96,7 @@ const AgentDetails = ({ formik,layout_color}) => {
             <span className="text-red-500 text-sm mt-1">{formik.errors.cus_remarks}</span>
           )}
         </div>
-        {restriction && (
+        {formik.values.agent_restriction && (
             <>
             <div className="flex flex-col lg:mt-2">
           <label className="text-black mb-2 font-normal">

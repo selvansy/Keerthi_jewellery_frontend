@@ -3,7 +3,7 @@ import Select from "react-select";
 const CustomerDetails = ({ formik, layout_color}) => {
  
   return (
-    <div className="grid grid-rows-2 md:grid-cols-2 gap-5 border-t-2 border-gray-300">
+    <div className="grid grid-rows-2 md:grid-cols-2 gap-5">
         <div className="flex flex-col mt-2">
           <label className="text-black mb-2 font-normal">
             Referral Rate <span className="text-red-400"> *</span>

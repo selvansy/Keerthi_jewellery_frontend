@@ -85,18 +85,18 @@ const AdvancedSettings = ({ formik, layout_color, installment_type }) => {
         <div className="relative">
           <input
             type="number"
-            name="paid_installment"
+            name="gift_minimum_paid_installment"
             onWheel={(e) => e.target.blur()}
-            value={formik.values.paid_installment}
+            value={formik.values.gift_minimum_paid_installment}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
             placeholder="Enter Paid Installment"
           />
         </div>
-        {formik.touched.paid_installment && formik.errors.paid_installment && (
+        {formik.touched.gift_minimum_paid_installment && formik.errors.gift_minimum_paid_installment && (
           <span className="text-red-500 text-sm mt-1">
-            {formik.errors.paid_installment}
+            {formik.errors.gift_minimum_paid_installment}
           </span>
         )}
       </div>

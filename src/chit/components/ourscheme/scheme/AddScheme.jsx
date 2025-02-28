@@ -84,20 +84,16 @@ const SchemeForm = () => {
       fixed_amounts: '',
 
       // PayableDetails fields
-      amount: "",
+      amount: "", // no need to pass
       min_amount: "",
       max_amount: "",
-      min_weight: "",
-      max_weight: "",
-      buy_gst: "",
-      buygsttype: "",
-      wastagebenefit: "",
-      wastagetype: "", // no need to pass
-      min_installments: "",
       total_installments: "",
-      saving_type: "",
+      buygsttype: "",
+      buy_gst: "",
+      benefit_min_installment_wst_mkg: "",
+      wastagebenefit: "",
       benefit_making:"",
-
+      
       //grce
       grace_type: "",
       grace_period: "",
@@ -107,14 +103,22 @@ const SchemeForm = () => {
       description:'',
       terms_condition:'',
       classification_order:'',
-
+      
       //customer referral
       referral_rate: "",
       incentive_rate: "",
       cus_remarks: "",
+      min_weight: "",
+      max_weight: "",
+      wastagetype: "", // no need to pass
+      saving_type: "",
+
+
+
 
       //agent referral
       agent_referral: "",
+      agent_restriction:true,
       agent_incentive: "",
       agent_remark: "",
       agent_target: "",
@@ -125,6 +129,7 @@ const SchemeForm = () => {
       pending_due_installment: "",
       paid_installment: "",
       scheme_customer_limit: "",
+      gift_minimum_paid_installment:"",
 
       //gift
       gift_type: 1,
@@ -139,6 +144,7 @@ const SchemeForm = () => {
       cumulative_fine_amount: "",
       display_referral: false,
       display_weight_in_ledger: false,
+      wallet_redemption_onpayment: false
     },
     validationSchema: Yup.object({
       // SchemeForm validation
@@ -420,62 +426,67 @@ const SchemeForm = () => {
         id_classification: schemeData.data.id_classification._id || "",
         id_metal: schemeData.data.id_metal._id || "",
         id_purity: schemeData.data.id_purity._id || "",
-        installment_type: schemeData.data.installmentType || "",
+        installment_type: schemeData.data.installment_type || "",
         maturity_period: schemeData.data.maturity_month || "",
         scheme_type: schemeData.data.scheme_type || "",
         saving_type: schemeData.data.saving_type || "",
         
         // Fixed scheme specific fields
-        totalCount: schemeData.totalCountAmount || "",
-        incrementRate: schemeData.incrementRate || "",
-        start: schemeData.startingAmount || "",
+        totalCount: schemeData.data.totalCountAmount || "",
+        incrementRate: schemeData.data.incrementRate || "",
+        start: schemeData.data.startingAmount || "",
         
         // PayableDetails fields
-        min_amount: schemeData.min_amount || "",
-        max_amount: schemeData.max_amount || "",
-        min_weight: schemeData.min_weight || "",
-        max_weight: schemeData.max_weight || "",
-        buy_gst: schemeData.buy_gst || "",
-        buygsttype: schemeData.buytgsttype || "",
-        wastagebenefit: schemeData.wastagebenefit || "",
-        total_installments: schemeData.total_installments || "",
-        benefit_making: schemeData.makingcharge || "",
+        min_amount: schemeData.data.min_amount || "",
+        max_amount: schemeData.data.max_amount || "",
+        min_weight: schemeData.data.min_weight || "",
+        max_weight: schemeData.data.max_weight || "",
+        buy_gst: schemeData.data.buy_gst || "",
+        buygsttype: schemeData.data.buytgsttype || "",
+        wastagebenefit: schemeData.data.wastagebenefit || "",
+        total_installments: schemeData.data.total_installments || "",
+        benefit_making: schemeData.data.makingcharge || "",
         
         // Grace period
-        grace_type: schemeData.installmentType || "", // Defaulting to same as installment type
-        grace_period: schemeData.gracePeriod || "",
-        grace_fine: schemeData.graceFineAmount || "",
+        grace_type: schemeData.data.grace_type || "", // Defaulting to same as installment type
+        grace_period: schemeData.data.gracePeriod || "",
+        grace_fine: schemeData.data.graceFineAmount || "",
         
         // Classification
         description: schemeData.data.description || "",
-        terms_condition: schemeData.data.term_desc || "",
+        term_desc: schemeData.data.term_desc || "",
         
         // Customer referral
-        referral_rate: schemeData.customer_referral_per || "",
-        incentive_rate: schemeData.customer_incentive_per || "",
-        
+        referral_rate: schemeData.data.customer_referral_per || "",
+        incentive_rate: schemeData.data.customer_incentive_per || "",
+        cus_remarks:schemeData.data.cus_remark || "",
+
         // Agent referral
-        agent_referral: schemeData.agent_referral_percentage || "",
-        agent_incentive: schemeData.agent_percentage || "",
-        agent_target: schemeData.agent_target_per || "",
-        partial_commission: schemeData.agent_partial_per || "",
+        agent_referral: schemeData.data.agent_referral_percentage || "",
+        agent_incentive: schemeData.data.agent_percentage || "",
+        agent_target: schemeData.data.agent_target_per || "",
+        partial_commission: schemeData.data.agent_partial_per || "",
+        agent_remark:schemeData.data.agent_remark || false,
         
         // AdvancedSettings
-        limit_installment: schemeData.limit_installment || "",
-        pending_due_installment: schemeData.pending_installment || "",
-        paid_installment: schemeData.allowed_minpaid || "",
-        scheme_customer_limit: schemeData.limit_customer || "",
-        gift_type: schemeData.gift_type || 1,
-        number_of_gifts: schemeData.number_of_gifts || 0,
-        convenience_fee: schemeData.convenience_fees || "",
-        fine_amount: schemeData.fine_amount || "",
-        cumulative_fine_amount: schemeData.cumulative_fine_amount || "",
-        display_referral: schemeData.display_referral || false,
-        display_weight_in_ledger: schemeData.display_Weight_in_ledger || false,
+        limit_installment: schemeData.data.limit_installment || "",
+        pending_due_installment: schemeData.data.pending_installment || "",
+        paid_installment: schemeData.data.allowed_minpaid || "",
+        scheme_customer_limit: schemeData.data.limit_customer || "",
+        gift_type: schemeData.data.gift_type || 1,
+        number_of_gifts: schemeData.data.number_of_gifts || 0,
+        convenience_fee: schemeData.data.convenience_fees || "",
+        fine_amount: schemeData.data.fine_amount || "",
+        cumulative_fine_amount: schemeData.data.cumulative_fine_amount || "",
+        display_referral: schemeData.data.display_referral || false,
+        display_weight_in_ledger: schemeData.data.display_Weight_in_ledger || false,
+        wallet_redemption_onpayment:schemeData.data.wallet_redemption || false,
+        gift_minimum_paid_installment:schemeData.data.gift_minimum_paid_installment || '',
       });
-      
+      setAmounts(schemeData.data.fixedAmounts)
     }
   }, [id, schemeData, classifications]);
+  console.log(amounts)
 
   useEffect(() => {
     if (installment_type?.data) {
@@ -589,13 +600,6 @@ const SchemeForm = () => {
     }
   }, [purityResponse]);
 
-  // useEffect(() => {
-  //  const data =  formik.values.installment_type
-  //   if(data){
-  //     formik.setFieldValue("grace_type",data);
-  //   }
-  // }, [formik.values.installment_type]);
-  
 
   // Handler for adding new amount
   const handleAddAmount = () => {
@@ -617,10 +621,12 @@ const SchemeForm = () => {
       setSelectedClass(1);
       formik.setFieldValue("classType", false);
       formik.setFieldValue("scheme_type", null);
+      setAmounts([])
     } else {
       setSelectedClass(3);
       formik.setFieldValue("classType", false);
       formik.setFieldValue("scheme_type", null);
+      setAmounts([])
     }
   };
 

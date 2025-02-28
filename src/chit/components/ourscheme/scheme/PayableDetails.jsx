@@ -188,17 +188,17 @@ const PayableDetails = ({
         </label>
         <input
           type="number"
-          name="min_installments"
-          value={formik.values.min_installments}
+          name="benefit_min_installment_wst_mkg"
+          value={formik.values.benefit_min_installment_wst_mkg}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
           placeholder="Enter Min Installments"
           style={{ height: inputHeight }}
         />
-        {formik.touched.min_installments && formik.errors.min_installments && (
+        {formik.touched.benefit_min_installment_wst_mkg && formik.errors.benefit_min_installment_wst_mkg && (
           <span className="text-red-500 text-sm mt-1">
-            {formik.errors.min_installments}
+            {formik.errors.benefit_min_installment_wst_mkg}
           </span>
         )}
       </div>
