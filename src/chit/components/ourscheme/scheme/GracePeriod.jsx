@@ -11,10 +11,10 @@ const Grace = ({ formik, layout_color, maturity_period, maturtiy_type }) => {
   }));
 
   const handleToggle =()=>{
-    if(formik.values.fine_amount){
-      formik.setFieldValue('fine_amount',false)
+    if(formik.values.grace_fine_amount){
+      formik.setFieldValue('grace_fine_amount',false)
     }else{
-      formik.setFieldValue('fine_amount',true)
+      formik.setFieldValue('grace_fine_amount',true)
     }
  }
 
@@ -116,13 +116,13 @@ const Grace = ({ formik, layout_color, maturity_period, maturtiy_type }) => {
           Fine amount
         </label>
         <ToggleSwitch
-          status={formik.values.fine_amount}
+          status={formik.values.grace_fine_amount}
           layout_color={layout_color}
           toggle_status={handleToggle}
         />
       </div>
 
-      {formik.values.fine_amount && (
+      {formik.values.grace_fine_amount && (
         <div className="flex flex-col mt-2">
           <label className="block text-sm font-medium mb-1 mt-2">
             Fine Amount 

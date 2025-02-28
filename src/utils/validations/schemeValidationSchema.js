@@ -50,7 +50,7 @@ export const schemeValidationSchema = Yup.object({
           (value) => value && value.toString().length <= 11
         ),
   }),
-  start: Yup.number().when(["classType", "scheme_type"], {
+  startingAmount: Yup.number().when(["classType", "scheme_type"], {
     is: (classType, scheme_type) => classType && [12, 3, 4].includes(scheme_type),
     then: (schema) =>
       schema
