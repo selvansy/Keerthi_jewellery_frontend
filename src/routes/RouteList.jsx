@@ -78,6 +78,7 @@ import Campaign from "../chit/components/Setup/campaign";
 import configNotification from "../chit/components/notification/notification-configurations/configNotification";
 import WalletRedemption from "../chit/components/wallet/WalletRedemption";
 import Addwallet from "../chit/components/wallet/Addwallet";
+import SchemeForm from "../chit/components/ourscheme/scheme/AddScheme";
 
 const RouteList = [
 
