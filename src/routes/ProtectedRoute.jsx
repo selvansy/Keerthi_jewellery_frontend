@@ -18,9 +18,12 @@ const ProtectedRoute = ({ children }) => {
   const storedToken = localStorage.getItem('token');
   const token = info || storedToken;
  
+  if (!storedToken) {
+    return <Navigate to="/" replace />;
+  }
  
- 
-    const decoded = jwtDecode(info);
+    const decoded = jwtDecode(storedToken);
+
     let id = decoded.id_role._id;
  
       useEffect(() => {

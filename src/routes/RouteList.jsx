@@ -32,8 +32,7 @@ import AddEmployee from "../chit/components/Setup/employee/AddEmployee";
 import UserRole from "../chit/components/Setup/userrole/index";
 import StaffUser from "../chit/components/Setup/staffuser/index";
 import UserAccess from "../chit/components/Setup/useraccess/index";
-import Wallet from "../chit/components/payment/wallet/Wallet";
-import Redeem from "../chit/components/payment/redeem/Redeem";
+
 import GiftHandOver from "../chit/components/gift/giftissues/GiftHandOver";
 import AddGiftHandOver from "../chit/components/gift/giftissues/AddGiftHandOver";
 import SchemePayment from "../chit/components/payment/schemepayment/SchemePayment";
@@ -78,6 +77,7 @@ import Topup from "../chit/components/Setup/topup";
 import SchemeForm from "../chit/components/ourscheme/scheme/newScheme";
 import Campaign from "../chit/components/Setup/campaign";
 import configNotification from "../chit/components/notification/notification-configurations/configNotification";
+import WalletRedemption from "../chit/components/wallet/WalletRedemption";
 
 const RouteList = [
 
@@ -295,6 +295,13 @@ const RouteList = [
     element:<Base renderContent={CompleteAccount}/>
   },
 
+  //Wallet
+{
+  name: "Wallet",
+  path:'/wallet/redeemption/',
+  element:<Base renderContent={WalletRedemption}/>
+},
+
 
 //Gifts
 
@@ -458,12 +465,7 @@ const RouteList = [
   element:<Base renderContent={Organisation}/>
 },
 
-//Wallet
-{
-  name: "Wallet",
-  path:'/payment/wallet',
-  element:<Base renderContent={Wallet}/>
-},
+
 
 //Accounts Report
 {
@@ -584,15 +586,6 @@ const RouteList = [
     path:'/setup/schemetype',
     element:<Base renderContent={Schemetype}/>
   },
- 
-
-  {
-    name: "Redeem",
-    path:'/payment/redeem',
-    element:<Base renderContent={Redeem}/>
-  },
-
-    
      // super admin routes
      {
       name: "Client Master",
