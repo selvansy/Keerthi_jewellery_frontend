@@ -1,33 +1,55 @@
 import React, { useState } from 'react';
 
-const configNotification = () => {
+const ConfigNotification = () => {
   const [activeTab, setActiveTab] = useState('Push Notification');
-  const [selectedOptions, setSelectedOptions] = useState({
-    schemeWise: ['Payment Proceed', 'Scheme Joining', 'Scheme Completion', 'Scheme Close', 'Scheme Referral', 'Wallet Amount Redeem', 'Alert Notification'],
-    wishes: ['Birthday', 'Wedding Anniversary'],
-    product: ['New Arrival']
+  
+  // Maintain separate state for each tab type
+  const [tabSelections, setTabSelections] = useState({
+    'Push Notification': {
+      schemeWise: [],
+      wishes: [],
+      product: []
+    },
+    'Sms': {
+      schemeWise: [],
+      wishes: [],
+      product: []
+    },
+    'WhatsApp': {
+      schemeWise: [],
+      wishes: [],
+      product: []
+    },
+    'Email': {
+      schemeWise: [],
+      wishes: [],
+      product: []
+    }
   });
 
+  // Get the current active tab's selections
+  const selectedOptions = tabSelections[activeTab];
+
   const handleOptionToggle = (category, option) => {
-    setSelectedOptions(prev => {
-      const updatedCategory = [...prev[category]];
+    setTabSelections(prev => {
+      const currentTabSelections = {...prev[activeTab]};
+      const updatedCategory = [...currentTabSelections[category]];
       
       if (updatedCategory.includes(option)) {
-        return {
-          ...prev,
-          [category]: updatedCategory.filter(item => item !== option)
-        };
+        currentTabSelections[category] = updatedCategory.filter(item => item !== option);
       } else {
-        return {
-          ...prev,
-          [category]: [...updatedCategory, option]
-        };
+        currentTabSelections[category] = [...updatedCategory, option];
       }
+      
+      return {
+        ...prev,
+        [activeTab]: currentTabSelections
+      };
     });
   };
 
   return (
-    <div className=" bg-white rounded-lg shadow p-6">
+    <div className="bg-white rounded-lg shadow p-6">
       <h1 className="text-xl font-bold mb-4">Add Configuration</h1>
       
       {/* Notification Tabs */}
@@ -43,12 +65,14 @@ const configNotification = () => {
         ))}
       </div>
       
+    
+      
       {/* Scheme Wise Section */}
       <div className="mb-6">
         <h2 className="text-sm font-medium mb-2">
           Scheme Wise<span className="text-red-500">*</span>
         </h2>
-        <div className="grid grid-cols-5  mt-5">
+        <div className="grid grid-cols-5 mt-5">
           {[
             'Payment Proceed',
             'Scheme Joining',
@@ -61,12 +85,12 @@ const configNotification = () => {
             <div key={option} className="flex items-center my-5">
               <input
                 type="checkbox"
-                id={option.replace(/\s+/g, '')}
+                id={`${activeTab}-${option.replace(/\s+/g, '')}`}
                 checked={selectedOptions.schemeWise.includes(option)}
                 onChange={() => handleOptionToggle('schemeWise', option)}
                 className="w-4 h-4 text-blue-900 rounded border-gray-300 focus:ring-blue-900"
               />
-              <label htmlFor={option.replace(/\s+/g, '')} className="ml-2 text-sm text-gray-700">
+              <label htmlFor={`${activeTab}-${option.replace(/\s+/g, '')}`} className="ml-2 text-sm text-gray-700">
                 {option}
               </label>
             </div>
@@ -84,12 +108,12 @@ const configNotification = () => {
             <div key={option} className="flex items-center">
               <input
                 type="checkbox"
-                id={option.replace(/\s+/g, '')}
+                id={`${activeTab}-${option.replace(/\s+/g, '')}`}
                 checked={selectedOptions.wishes.includes(option)}
                 onChange={() => handleOptionToggle('wishes', option)}
                 className="w-4 h-4 text-blue-900 rounded border-gray-300 focus:ring-blue-900"
               />
-              <label htmlFor={option.replace(/\s+/g, '')} className="ml-2 text-sm text-gray-700">
+              <label htmlFor={`${activeTab}-${option.replace(/\s+/g, '')}`} className="ml-2 text-sm text-gray-700">
                 {option}
               </label>
             </div>
@@ -106,12 +130,12 @@ const configNotification = () => {
           <div className="flex items-center">
             <input
               type="checkbox"
-              id="NewArrival"
+              id={`${activeTab}-NewArrival`}
               checked={selectedOptions.product.includes('New Arrival')}
               onChange={() => handleOptionToggle('product', 'New Arrival')}
               className="w-4 h-4 text-blue-900 rounded border-gray-300 focus:ring-blue-900"
             />
-            <label htmlFor="NewArrival" className="ml-2 text-sm text-gray-700">
+            <label htmlFor={`${activeTab}-NewArrival`} className="ml-2 text-sm text-gray-700">
               New Arrival
             </label>
           </div>
@@ -131,7 +155,7 @@ const configNotification = () => {
               type='submit'
               className='text-white bg-[#61A375] w-16 h-10 text-center p-2 rounded-md'
             >
-                Submit
+              Submit
             </button>
           </div>
         </div>
@@ -139,4 +163,4 @@ const configNotification = () => {
   );
 };
 
-export default configNotification;
+export default ConfigNotification;

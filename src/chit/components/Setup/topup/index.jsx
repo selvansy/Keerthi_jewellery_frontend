@@ -88,6 +88,10 @@ function Topup() {
                     <h2 className="text-2xl text-gray-900 font-bold">Add Top-Up</h2>
                     <div className="w-full flex flex-col bg-[#F5F5F5] border-t-2 border-[#023453]  overflow-y-auto scrollbar-hide h-[calc(100vh-200px)]">
                     <div className="flex flex-col p-4 bg-white relative mb-3">
+     
+
+
+                    <div className="grid grid-rows-2 md:grid-cols-2 gap-5 border-gray-300 mb-10 mt-10"> 
                     <div className="flex flex-col space-y-2 my-2">
                             <label className="font-medium text-gray-700">
                                 Notifications Type<span className="text-red-400">*</span>
@@ -132,26 +136,6 @@ function Topup() {
                             </div>
                         </div>
 
-
-                    <div className="grid grid-rows-2 md:grid-cols-2 gap-5 border-gray-300 mb-10"> 
-
-                        <div className="flex flex-col space-y-2">
-                        <label className="font-medium text-gray-700 mt-2">Notify Limit</label>
-                            <input
-                                type="text"
-                                name="notify_limit"
-                                value={formData.notify_limit}
-                                onChange={handleChange}
-                                minLength="2"
-                                placeholder="Enter notification limit"
-                                className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-                            {formErrors.notify_limit && (
-                                <div className="text-red-500 text-sm">{formErrors.notify_limit}</div>
-                            )}
-                        </div>
-
-
                         <div className="flex flex-col space-y-2">
                             <label className="font-medium text-gray-700">
                                 Purchase limit<span className="text-red-400">*</span>
@@ -180,6 +164,7 @@ function Topup() {
                                 value={formData.avl_limit}
                                 onChange={handleChange}
                                 minLength={"2"}
+                                readOnly
                                 placeholder="Enter available limit"
                                 className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
@@ -198,6 +183,7 @@ function Topup() {
                                 value={formData.limit_rate}
                                 onChange={handleChange}
                                 minLength={"2"}
+                                readOnly
                                 placeholder="Enter limit rate"
                                 className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />

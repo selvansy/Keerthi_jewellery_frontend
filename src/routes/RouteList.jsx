@@ -267,7 +267,7 @@ const RouteList = [
     },
     {
       name: "Update New Arrivals",
-      path:'/catalog/addnewarrivals/:id',
+      path:'/catalog/editnewarrivals/:id',
       element:<Base renderContent={AddNewArrival}/>
     },
 
@@ -449,12 +449,12 @@ const RouteList = [
 },
 {
   name: "Staff User",
-  path:'/setup/staffuser',
+  path:'/settings/staffuser',
   element:<Base renderContent={StaffUser}/>
 },
 {
   name: "Organisation",
-  path:'/setup/organisation',
+  path:'/settings/organisation',
   element:<Base renderContent={Organisation}/>
 },
 
