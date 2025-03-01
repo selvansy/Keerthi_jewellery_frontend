@@ -67,8 +67,9 @@ const SchemeForm = () => {
   const [wastagedata, setWastageType] = useState([]);
   const [schemeTypeData, setSchemeTypeData] = useState([]);
   const [giftType, setGiftType] = useState([]);
-  const [isLoading,setIsLoading]= useState(false)
-  const [spanText,setSpanText] = useState('')
+  const [isLoading, setIsLoading] = useState(false);
+  const [spanText, setSpanText] = useState("");
+  const [validation,setValidation]= useState({})
 
   const formik = useFormik({
     initialValues: {
@@ -85,7 +86,7 @@ const SchemeForm = () => {
       totalCount: "",
       incrementRate: "",
       // start: "",
-      startingAmount:"",
+      startingAmount: "",
       // fixed_amounts: "",
       saving_type: "",
 
@@ -173,7 +174,7 @@ const SchemeForm = () => {
 
         formData.append(key, values[key]);
       });
-    
+
       // Ensure that min/max weight or min/max amount are only appended once
       if (
         formik.values.classType &&
@@ -183,8 +184,8 @@ const SchemeForm = () => {
         formData.delete("max_weight");
         formData.append("min_weight", amounts[0]);
         formData.append("max_weight", amounts[amounts.length - 1]);
-      } else if(formik.values.classType) {
-      formData.delete("min_amount");
+      } else if (formik.values.classType) {
+        formData.delete("min_amount");
         formData.delete("max_amount");
         formData.append("min_amount", amounts[0]);
         formData.append("max_amount", amounts[amounts.length - 1]);
@@ -199,15 +200,15 @@ const SchemeForm = () => {
       }
 
       if (id) {
-        setIsLoading(true)
-        updateSchemeData({ id, data: formData })
+        setIsLoading(true);
+        updateSchemeData({ id, data: formData });
       } else {
-        setIsLoading(true)
+        setIsLoading(true);
         addNewScheme(formData);
       }
     },
   });
-  console.log(formik.values)
+  console.log(formik.values);
 
   // Customisations for react-select
   const customStyles = {
@@ -293,18 +294,17 @@ const SchemeForm = () => {
   const { mutate: updateSchemeData } = useMutation({
     mutationFn: ({ id, data }) => updateScheme(id, data),
     onSuccess: (response) => {
-        if(response.status === 200){
-          setIsLoading(false)
-          toast.success(response.message);
-          navigate("/scheme/scheme/");
-        }
+      if (response.status === 200) {
+        setIsLoading(false);
+        toast.success(response.message);
+        navigate("/scheme/scheme/");
+      }
     },
     onError: () => {
-      setIsLoading(false)
+      setIsLoading(false);
       toast.error(response.message);
     },
-});
-
+  });
 
   //useEffect
   useEffect(() => {
@@ -328,7 +328,7 @@ const SchemeForm = () => {
         scheme_name: schemeData.data.scheme_name || "",
         code: schemeData.data.code || "",
         id_classification: schemeData.data.id_classification._id || "",
-        id_branch:schemeData?.data?.id_banch || "",
+        id_branch: schemeData?.data?.id_banch || "",
         id_metal: schemeData.data.id_metal._id || "",
         id_purity: schemeData.data.id_purity._id || "",
         installment_type: schemeData.data.installment_type || "",
@@ -389,13 +389,13 @@ const SchemeForm = () => {
         gift_minimum_paid_installment:
           schemeData.data.gift_minimum_paid_installment || "",
       });
-      if(schemeData?.data?.fixed_amounts.length > 0){
-        formik.setFieldValue('classType',true)
+      if (schemeData?.data?.fixed_amounts.length > 0) {
+        formik.setFieldValue("classType", true);
       }
-      if(schemeData?.data){
-        formik.setFieldValue('scheme_type',schemeData.data.scheme_type)
+      if (schemeData?.data) {
+        formik.setFieldValue("scheme_type", schemeData.data.scheme_type);
       }
-      
+
       setAmounts(schemeData.data.fixed_amounts);
     }
   }, [id, schemeData]);
@@ -646,6 +646,7 @@ const SchemeForm = () => {
       startingAmount: undefined,
     }));
   };
+
 console.log(formik.errors)
   return (
     <form
@@ -664,17 +665,20 @@ console.log(formik.errors)
             </label>
             <input
               type="text"
-              maxLength={31}
+              maxLength={30}
               className="w-full border rounded-md px-3 py-2"
               placeholder="Enter scheme name"
               {...formik.getFieldProps("scheme_name")}
             />
 
-            {/* {formik.values.scheme_name.length === 30 && (
+            {/* Show error if user reaches max length */}
+            {formik.values.scheme_name.length >= 30 && (
               <div className="text-red-500 text-sm mt-1">
-                Max 30 character allowed
+                Max 30 characters allowed
               </div>
-            )} */}
+            )}
+
+            {/* Show validation errors from Formik */}
             {formik.touched.scheme_name && formik.errors.scheme_name && (
               <div className="text-red-500 text-sm mt-1">
                 {formik.errors.scheme_name}
@@ -688,7 +692,7 @@ console.log(formik.errors)
             </label>
             <input
               type="text"
-              maxLength={16}
+              maxLength={15}
               className="w-full border rounded-md px-3 py-2"
               placeholder="Enter scheme code"
               {...formik.getFieldProps("code")}
@@ -773,7 +777,11 @@ console.log(formik.errors)
               styles={customStyles}
               options={filteredSchemeTypeData}
               isDisabled={!formik.values.id_classification}
-              placeholder={!formik.values.id_classification ? "Choose a classification first" : "Select scheme type"}
+              placeholder={
+                !formik.values.id_classification
+                  ? "Choose a classification first"
+                  : "Select scheme type"
+              }
               value={filteredSchemeTypeData?.find(
                 (option) => option.value === formik.values.scheme_type
               )}
@@ -820,7 +828,11 @@ console.log(formik.errors)
               options={purity || []}
               isClearable={true}
               isDisabled={!formik.values.id_metal}
-              placeholder={!formik.values.id_metal ? "Choose a metal first" : "Select purtiy type"}
+              placeholder={
+                !formik.values.id_metal
+                  ? "Choose a metal first"
+                  : "Select purtiy type"
+              }
               value={purity.find(
                 (option) => option.value === formik.values.id_purity
               )}
@@ -848,8 +860,20 @@ console.log(formik.errors)
                 (option) => option.value === formik.values.installment_type
               )}
               onChange={(option) => {
-                formik.setFieldValue("installment_type", option ? option.value : null);
-                setSpanText(option.label); 
+                formik.setFieldValue(
+                  "installment_type",
+                  option ? option.value : null
+                );
+                setSpanText(option.label);
+                if(option.value === 1){
+                  setValidation({max: 12, maxLength: 2})
+                }else if(option.value ==2){
+                  setValidation({max: 52, maxLength: 2})
+                }else if(option.value === 3){
+                  setValidation({max: 336, maxLength: 3})
+                }else{
+                  setValidation({max: 9, maxLength: 1})
+                }
               }}
               onBlur={() => formik.setFieldTouched("installment_type", true)}
             />
@@ -865,23 +889,21 @@ console.log(formik.errors)
               Maturity Period <span className="text-red-500">*</span>
             </label>
             <div className="relative">
-            <input
-              type="number"
-              max={336}
-              onChange={formik.onChange}
-              onWheel={(e)=>e.target.blur()}
-              className="w-full border rounded-md px-3 py-2"
-              placeholder="Enter Maturity Period"
-              {...formik.getFieldProps("maturity_period")}
-            />
-            {spanText && (
-              <span
-              className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-sm text-white rounded-r-md"
-              style={{ backgroundColor: layout_color }}
-            >
-             {spanText}
-            </span>
-            )}
+              <input
+                type="number"
+                onWheel={(e) => e.target.blur()}
+                className="w-full border rounded-md px-3 py-2"
+                placeholder="Enter Maturity Period"
+                {...formik.getFieldProps("maturity_period")}
+              />
+              {spanText && (
+                <span
+                  className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-sm text-white rounded-r-md"
+                  style={{ backgroundColor: layout_color }}
+                >
+                  {spanText}
+                </span>
+              )}
             </div>
             {formik.touched.maturity_period &&
               formik.errors.maturity_period && (
@@ -1218,7 +1240,7 @@ console.log(formik.errors)
           disabled={isLoading}
           className="px-4 py-2 bg-blue-900 text-white rounded-md hover:bg-blue-800"
         >
-          {isLoading ? <SpinLoading/> : "submit"}
+          {isLoading ? <SpinLoading /> : "submit"}
         </button>
       </div>
     </form>
