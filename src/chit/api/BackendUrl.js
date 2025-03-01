@@ -412,7 +412,6 @@ export const postOutstandingSummaryReport = async (data) => {
 
 
 export const sendOtp = async(data)=>{
-    
     const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/schemeaccount/close/${data.mobile}/branch/${data.branchId}`)
     return response.data
 }
@@ -432,7 +431,7 @@ export const closeBill = async(data)=>{
 //  
 
 export const revertBill = async(data)=>{
-     console.log("data----",data)
+    
     const response= await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/schemeaccount/${data.id_scheme_account}/revert`)
     return response.data
 }
