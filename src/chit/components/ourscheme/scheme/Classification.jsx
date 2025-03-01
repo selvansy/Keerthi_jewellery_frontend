@@ -213,6 +213,7 @@ const Classification = ({ formik, layout_color, setMainImg, setDescImg }) => {
             type="number"
             name="classification_order"
             value={formik?.values?.classification_order || "0"}
+            onWheel={(e)=>e.target.blur()}
             onChange={formik?.handleChange}
             onBlur={formik?.handleBlur}
             className="border rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"

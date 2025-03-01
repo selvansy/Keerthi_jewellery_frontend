@@ -6,10 +6,9 @@ import { useNavigate } from 'react-router-dom'
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify"
 import {
-  getSchemeTable, getallbranch, changeschemestatus, allbranchclassification, getallmetal, getallschemetypes, getschemeById, allinstallmenttype, allFundtype, addscheme,
-  updateScheme, puritybymetal, buygsttype, wastagetype, deleteScheme
+  getSchemeTable, getallbranch, changeschemestatus, allbranchclassification, getallmetal, getallschemetypes, allinstallmenttype, allFundtype,
+ puritybymetal, buygsttype, wastagetype, deleteScheme
 } from "../../../api/Endpoints"
-import { setid } from "../../../../redux/clientFormSlice"
 import { useDispatch, useSelector } from 'react-redux';
 import { CalendarDays, RefreshCcw } from 'lucide-react'
 import "react-datepicker/dist/react-datepicker.css";

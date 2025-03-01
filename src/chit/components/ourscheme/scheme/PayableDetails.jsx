@@ -57,6 +57,7 @@ const PayableDetails = ({
                 name="min_weight"
                 value={formik.values.min_weight}
                 onChange={formik.handleChange}
+                onWheel={(e)=>e.target.blur()}
                 onBlur={formik.handleBlur}
                 className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                 placeholder="Enter Min Weight"
@@ -84,6 +85,7 @@ const PayableDetails = ({
                 type="number"
                 name="max_weight"
                 value={formik.values.max_weight}
+                onWheel={(e)=>e.target.blur()}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
@@ -116,6 +118,7 @@ const PayableDetails = ({
                 name="min_amount"
                 value={formik.values.min_amount}
                 onChange={formik.handleChange}
+                onWheel={(e)=>e.target.blur()}
                 onBlur={formik.handleBlur}
                 className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                 placeholder="Enter Min Amount"
@@ -143,6 +146,7 @@ const PayableDetails = ({
                 type="number"
                 name="max_amount"
                 value={formik.values.max_amount}
+                onWheel={(e)=>e.target.blur()}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
@@ -178,6 +182,7 @@ const PayableDetails = ({
           type="number"
           name="total_installments"
           value={formik.values.total_installments}
+          onWheel={(e)=>e.target.blur()}
           onChange={(e) => {
             let value = parseInt(e.target.value, 10);
             if (value > maturity_period) {
@@ -238,6 +243,7 @@ const PayableDetails = ({
             name="buy_gst"
             value={formik.values.buy_gst}
             onChange={formik.handleChange}
+            onWheel={(e)=>e.target.blur()}
             onBlur={formik.handleBlur}
             className="w-full border rounded-md px-3 py-2"
             placeholder="Enter Buy GST"
@@ -264,6 +270,7 @@ const PayableDetails = ({
           type="number"
           name="benefit_min_installment_wst_mkg"
           value={formik.values.benefit_min_installment_wst_mkg}
+          onWheel={(e)=>e.target.blur()}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"

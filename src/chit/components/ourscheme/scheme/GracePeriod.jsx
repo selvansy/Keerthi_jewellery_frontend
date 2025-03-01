@@ -95,6 +95,7 @@ const Grace = ({ formik, layout_color, maturity_period, maturtiy_type }) => {
             }
             formik.setFieldValue("grace_period", value);
           }}
+          onWheel={(e)=>e.target.blur()}
           onBlur={(e) => {
             formik.handleBlur(e);
             const error = validateGracePeriod(e.target.value);
@@ -132,6 +133,7 @@ const Grace = ({ formik, layout_color, maturity_period, maturtiy_type }) => {
               type="number"
               name="grace_fine"
               value={formik.values.grace_fine}
+              onWheel={(e)=>e.target.blur()}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
