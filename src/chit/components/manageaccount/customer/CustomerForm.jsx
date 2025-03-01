@@ -327,8 +327,6 @@ const CustomerForm = () => {
     };
 
 
-
-
     const handleCapture = (e) => {
         e.preventDefault()
         const imageSrc = webcamRef.current.getScreenshot();

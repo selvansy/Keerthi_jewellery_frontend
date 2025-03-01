@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 
 const configNotification = () => {
+  
+  const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const [activeTab, setActiveTab] = useState('Push Notification');
   const [selectedOptions, setSelectedOptions] = useState({
     schemeWise: ['Payment Proceed', 'Scheme Joining', 'Scheme Completion', 'Scheme Close', 'Scheme Referral', 'Wallet Amount Redeem', 'Alert Notification'],
@@ -25,6 +28,10 @@ const configNotification = () => {
       }
     });
   };
+
+  const handleSubmit = ()=>{
+    console.log("fgh",updatedCategory)
+  }
 
   return (
     <div className=" bg-white rounded-lg shadow p-6">
@@ -64,7 +71,7 @@ const configNotification = () => {
                 id={option.replace(/\s+/g, '')}
                 checked={selectedOptions.schemeWise.includes(option)}
                 onChange={() => handleOptionToggle('schemeWise', option)}
-                className="w-4 h-4 text-blue-900 rounded border-gray-300 focus:ring-blue-900"
+                className={`w-4 h-4 peer-checked:bg-[${layout_color}] text-blue-900 rounded border-gray-300 focus:ring-blue-900`}
               />
               <label htmlFor={option.replace(/\s+/g, '')} className="ml-2 text-sm text-gray-700">
                 {option}
@@ -128,8 +135,10 @@ const configNotification = () => {
               Cancel
             </button>
             <button
-              type='submit'
-              className='text-white bg-[#61A375] w-16 h-10 text-center p-2 rounded-md'
+              type='button'
+              className='text-white  w-16 h-10 text-center p-2 rounded-md'
+              style={{ backgroundColor: layout_color }}
+              onClick={handleSubmit}
             >
                 Submit
             </button>
