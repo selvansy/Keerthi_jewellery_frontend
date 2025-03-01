@@ -106,7 +106,7 @@ const SchemeForm = () => {
       grace_type: "",
       grace_period: "",
       grace_fine_amount: false,
-      grace_fine: "",
+      grace_fine: 0,
 
       //classification
       description: "",
