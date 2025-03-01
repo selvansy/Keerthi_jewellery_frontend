@@ -1,17 +1,167 @@
 import React, { useState, useEffect } from 'react'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useNavigate, useLocation, useParams } from 'react-router-dom'
 import { CalendarDays, Search } from 'lucide-react'
+import { SetaccExp } from "../../../../redux/clientFormSlice"
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import { toast } from 'react-toastify';
+import Select from "react-select";
 import { addschemeaccount, searchcustomermobile, geallschemebyclassification, getschemeaccountbyid, getschemeById, updateschemeaccount, extendinstallment, addcloseSchemeAccount, revertschemeAccount, schemeaccountbyid, getallbranchscheme, getallbranchclassification, getemployeebybranch, getallbranch } from '../../../api/Endpoints'
 import { useSelector, useDispatch } from 'react-redux';
+import { customSelectStyles } from "../../Setup/purity/index"
 
-const AddSchemeAccount = () => {
-  let dispatch = useDispatch();
+export function ExistingCustomer() {
+
+  const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const roledata = useSelector((state) => state.clientForm.roledata);
   const id_branch = roledata?.branch;
+
+  const dispatch = useDispatch()
+
+  const [isLoading, setLoading] = useState(false)
+  const [formData, setFormData] = useState({})
+  const [branch, setBranch] = useState(id_branch)
+  const [branchData, setBranchData] = useState([])
+
+  const { data: branchresponse, isLoading: loadingbranch } = useQuery({
+    queryKey: ["branch", branch],
+    queryFn: getallbranch,
+  });
+
+
+  useEffect(() => {
+
+    if (branchresponse) {
+      const data = branchresponse.data
+      const branch = data.map((branch) => ({
+        value: branch._id,
+        label: branch.branch_name,
+      }));
+      setBranchData(branch);
+    }
+
+  }, [branchresponse])
+
+
+
+
+  const handleSearchmobile = () => {
+    setLoading(true)
+    handlesearchcustomer({ id_branch: formData.id_branch, search_mobile: formData.mobile });
+
+  };
+
+
+  const { mutate: handlesearchcustomer } = useMutation({
+    mutationFn: searchcustomermobile,
+    onSuccess: (response) => {
+      if (response) {
+        dispatch(SetaccExp({
+          customer_name: response.data.firstname + ' ' + response.data.lastname,
+          address: response.data.address,
+          id_branch: response.data.id_branch,
+          mobile:response.data.mobile
+        }))
+        setFormData(prev => ({
+          ...prev,
+          customer_name: response.data.firstname + ' ' + response.data.lastname
+        }));
+      }
+
+      setLoading(false)
+    },
+    onError: (error) => {
+
+      toast.error(error?.response?.data?.message)
+      setLoading(false)
+    }
+  });
+
+
+  return (
+
+    <div className='grid grid-rows-2 md:grid-cols-2 gap-2'>
+      <div className='flex flex-col'>
+        <label className='text-black mb-1 font-normal'>Branch<span className='text-red-400'>*</span></label>
+        <Select
+          name='id_branch'
+          options={branchData}
+          value={branchData.find(branch => branch.value === formData.id_branch) || ""}
+          onChange={(branch) => {
+
+            setFormData(prev => ({
+              ...prev,
+              id_branch: branch.value
+            }))
+            setBranch(branch.value)
+          }}
+          customSelectStyles={customSelectStyles}
+          isLoading={loadingbranch}
+          placeholder="Select Branch"
+        />
+
+      </div>
+
+      <div className='flex flex-col relative'>
+        <label className='text-black mb-1 font-normal'>Search Mobile Number<span className='text-red-400'>*</span></label>
+        <input
+          type='text'
+          value={formData.mobile}
+          onChange={(e) => {
+            const value = e.target.value;
+            setFormData(prev => ({
+              ...prev,
+              mobile: value
+            }))
+          }}
+          name='mobile'
+          onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '')}
+          pattern="\d{10}"
+          maxLength={"10"}
+          className='border-2 border-gray-300 rounded-md p-2  focus:border-transparent'
+          placeholder='Enter Here'
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+                e.preventDefault(); 
+                handlesearchcustomer({ id_branch: formData.id_branch, search_mobile: formData.mobile })
+            }
+        }}
+        />
+
+        {/* Search Icon */}
+        <div onClick={handleSearchmobile} className="absolute flex items-center justify-center cursor-pointer right-[0%] rounded-r-lg top-[70%] -translate-y-1/2 w-10 md:h-[42px] md:top-[50px] h-[20%] sm:right-0 sm:top-[68%] lg:right-[0%]"
+          style={{ backgroundColor: layout_color }}>
+          {isLoading ? (
+            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
+          ) : (
+            <Search size={15} className="text-white" />
+          )}
+        </div>
+      </div>
+
+      <div className='flex flex-col'>
+        <label className='text-black mb-1 font-normal'>Customer Name<span className='text-red-400'>*</span></label>
+        <input
+          readOnly
+          type='text'
+          name='customer_name'
+          value={formData.customer_name}
+          className='border-2 w-full bg-[#e8f0fe] border-gray-300 cursor-not-allowed rounded-md p-2 pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
+          placeholder='Enter name'
+        />
+      </div>
+    </div>
+  )
+}
+
+const AddSchemeAccount = () => {
+
+  let dispatch = useDispatch();
+
+  const cusData = useSelector((state) => state.clientForm.accExp);
+  const id_branch = cusData?.id_branch;
+
 
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const navigate = useNavigate();
@@ -22,28 +172,51 @@ const AddSchemeAccount = () => {
   const [maturity_date, setMaturityDate] = useState('');
   const [maturity_month, setMaturityMonth] = useState(0);
   const [total_installments, setTotalinstallments] = useState(0);
+  const [fixedamt,setFixedAmt] = useState([])
   const [searchmobile, setSearchMobile] = useState('');
   const [mobile, setMobile] = useState('');
   const [searcherror, setSearchError] = useState('');
   const [suggestions, setSuggestions] = useState([]);
-  const [branchfilter, setBranch] = useState([]);
+
+  const [branch, setBranch] = useState(id_branch)
+  const [branchData, setBranchData] = useState([])
+
   const [header, setHeader] = useState('')
   const [returnRoute, setReturnRoute] = useState('')
-  const [isSubmit, setIsSubmit] = useState(false)
+
 
   const [classifyfilter, setClassify] = useState([]);
   const [employeefilter, setEmployee] = useState([]);
   const [schemefilter, setScheme] = useState([]);
   const [errors, setErrors] = useState(null);
   const [ispayable, setIspayable] = useState(false);
-  const [validamount, setValidAmount] = useState(0);
+
   const [isaccountno, setIsAccountNo] = useState(0);
+
+
+  const { data: branchresponse, isLoading: loadingbranch } = useQuery({
+    queryKey: ["branch", branch],
+    queryFn: getallbranch,
+  });
+
+
+  useEffect(() => {
+
+    return () => {
+      dispatch(SetaccExp({}))
+    }
+  }, [])
 
 
 
   useEffect(() => {
-    getallbranchMutate();
-  }, []);
+
+    if (branchresponse) {
+      setBranchData(branchresponse.data);
+    }
+
+  }, [branchresponse])
+
 
 
   useEffect(() => {
@@ -108,19 +281,19 @@ const AddSchemeAccount = () => {
     }
   };
 
-
   const [formData, setFormData] = React.useState({
     id_customer: '',
-    mobile: '',
+    mobile: cusData.mobile,
     start_date: start_date,
     id_classification: '',
     collectionuserid: '',
     scheme_acc_number: '',
     id_scheme: '',
-    id_branch: id_branch,
+    id_branch: cusData.id_branch,
     account_name: '',
-    address: '',
-    customer_name: '',
+    address: cusData.address,
+    customer_name: cusData.customer_name,
+    fixedamount:"",
     amount: 0,
     scheme_type: 0,
     min_amount: 0,
@@ -133,11 +306,20 @@ const AddSchemeAccount = () => {
     referral_id: '',
   });
 
-  const handleSearchmobile = () => {
-    setSearchError('');
-    if (mobile === "") { toast.error('Mobile Number is required!'); }
-    handlesearchcustomer({ id_branch: formData.id_branch, search_mobile: mobile });
-  };
+useEffect(() => {
+  if(cusData){
+    handlesearchcustomer({ id_branch: cusData.id_branch, search_mobile: cusData.mobile });
+  }
+
+  handleClassifyChange()
+}, [cusData])
+
+const handleSearchmobile = () => {
+  setSearchError('');
+  if (mobile === "") { toast.error('Mobile Number is required!'); }
+  handlesearchcustomer({ id_branch: cusData.id_branch, search_mobile: cusData.mobile });
+};
+
 
 
   const { mutate: handlesearchcustomer } = useMutation({
@@ -168,8 +350,6 @@ const AddSchemeAccount = () => {
           maturity_date: maturity_date,
           referral_id: ''
         });
-
-        toast.success(response.message)
       }
 
     },
@@ -178,41 +358,7 @@ const AddSchemeAccount = () => {
   const handleautocompletemobile = (e) => {
     const value = e.target.value;
     setMobile(value);
-    // setSearchMobile(value);
-    // if (value.length > 0) {
-    //   handleautosearchmobile({searchTerm:value});
-    // }  else {
-    //   setSuggestions([]);
-    // }
   };
-
-
-  // const { mutate: handleautosearchmobile } = useMutation({
-  //   mutationFn: searchmobilenoincustomer,
-  //   onSuccess: (response) => {
-
-  //   if (response.data > 0) {
-
-  //     const filteredSuggestions = response.data.filter((number) =>
-  //       number.includes(searchmobile)
-  //     );
-  //     setSuggestions(filteredSuggestions);
-  //   }
-
-
-  //   },
-  // });
-
-  const { mutate: getallbranchMutate } = useMutation({
-    mutationFn: getallbranch,
-    onSuccess: (response) => {
-
-      if (response) {
-        setBranch(response.data);
-      }
-    },
-  });
-
 
   const filterInputchange = (e) => {
 
@@ -224,7 +370,7 @@ const AddSchemeAccount = () => {
     }
 
     if (name === "id_branch") {
-      console.log("IdBranch", value)
+
       if (value !== "") {
         handleClassifyChange(value);
         handleemployeebyBranch(value);
@@ -283,7 +429,7 @@ const AddSchemeAccount = () => {
     if (!data) return;
     const response = await getschemeById(data);
     if (response) {
-      console.log(response.data.scheme_type);
+
       if (response.data.scheme_type === 6) {
         setIspayable(true);
       } else {
@@ -319,28 +465,36 @@ const AddSchemeAccount = () => {
     }
   };
 
-  const handleschemebyclassification = async (id_classification) => {
-    console.log("----", id_classification)
-    if (!id_classification) return;
-    const response = await geallschemebyclassification({ "id_classification": id_classification });
-    if (response) {
-      setScheme(response.data);
+  
+  const { mutate: handleschemebyclassification } = useMutation({
+    mutationFn:()=> geallschemebyclassification({ "id_classification": id_classification }),
+    onSuccess: (response) => {
+      if (response) {
+        setScheme(response.data);
+        setFixedAmt(response.data[0].fixed_amounts)
+      }
+    },
+    onError:(error)=>{
+      console.log(error)
+  }
+  });
+
+  
+
+  const { mutate: handleClassifyChange } = useMutation({
+    mutationFn: getallbranchclassification,
+    onSuccess: (response) => {
+      if (response) {
+        setClassify(response.data);
+      }
+    },
+  });
 
 
-    }
-  };
-
-  const handleClassifyChange = async (id_branch) => {
-    if (!id_branch) return;
-    const response = await getallbranchclassification({ "id_branch": id_branch });
-    if (response) {
-      setClassify(response.data);
-    }
-  };
 
   const handleSelectNumber = (number) => {
     setMobile(number);
-    setSuggestions([]); // 
+    setSuggestions([]); 
   };
 
 
@@ -446,6 +600,7 @@ const AddSchemeAccount = () => {
 
     return !hasErrors;
   };
+
   const onSubmit = (e) => {
     e.preventDefault();
 
@@ -461,7 +616,7 @@ const AddSchemeAccount = () => {
       }
 
     } else {
-      console.log("Form has validation errors. Please correct them.");
+      console.log("Form has validation errors");
     }
   };
   const { mutate: createSchemeaccount } = useMutation({
@@ -487,6 +642,7 @@ const AddSchemeAccount = () => {
   });
 
 
+
   return (
     <>
       <div className='flex flex-row justify-between'>
@@ -494,17 +650,26 @@ const AddSchemeAccount = () => {
       </div>
       <div className='w-full flex flex-col bg-white pl-8 pr-8 pb-4 mt-3 overflow-y-auto scrollbar-hide h-[calc(100vh-200px)]'>
 
-        <div className='grid md:grid-cols-2'>
+        <div className='grid md:grid-cols-2 gap-3'>
 
-          <div className='flex flex-col'>
+         <div className='flex flex-col'>
             <label className='text-black mb-1 font-normal'>Branch<span className='text-red-400'>*</span></label>
             <div className="relative">
-              <select name="id_branch" value={formData.id_branch} onChange={(e) => { filterInputchange(e) }} className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
-                <option value='' >--Select--</option>
-                {branchfilter.map((branch) => (
-                  <option key={branch._id} value={branch._id}>{branch.branch_name}</option>
-                ))
-                }
+              <select name="id_branch" 
+              value={cusData.id_branch} 
+              onChange={(e) => { filterInputchange(e)}} 
+              disabled
+              className='appearance-none border bg-[#e5e7eb] border-gray-300 cursor-not-allowed rounded-md p-2 w-full pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'>
+              <option value="">-- Select --</option>
+                {branchData.map((branch) => (
+                  <>
+                  <option key={branch._id} value={branch._id}>
+                    {branch.branch_name}
+                  </option>
+                  </>
+                  
+                ))}
+
               </select>
               <p style={{ color: "red" }}>{errors?.id_branch}</p>
               <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
@@ -514,8 +679,21 @@ const AddSchemeAccount = () => {
               </div>
             </div>
           </div>
+
+          <div className='flex flex-col relative'>
+              <label className='text-black mb-1 font-normal'>Mobile Number<span className='text-red-400'>*</span></label>
+              <input
+                type='text'
+                value={cusData.mobile}
+                name='mobile'
+                className='border-2 bg-[#e5e7eb] cursor-not-allowed border-gray-300 rounded-md p-2  focus:border-transparent'
+                placeholder='Enter Here'
+                readOnly
+              />
+            </div>
+
         </div>
-      
+
         <form onSubmit={onSubmit} className='mt-5'>
 
           <div className='grid grid-rows md:grid-cols-2 gap-3'>
@@ -525,12 +703,13 @@ const AddSchemeAccount = () => {
                 readOnly
                 type='text'
                 name='customer_name'
-                value={formData.customer_name}
-                className='border-2 w-full order-gray-300 cursor-not-allowed rounded-md p-2 pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
+                value={cusData.customer_name}
+                className='border-2 bg-[#e5e7eb] w-full order-gray-300 cursor-not-allowed rounded-md p-2 pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
                 placeholder='Enter name'
               />
               <p style={{ color: "red" }}>{errors?.customer_name}</p>
             </div>
+
             <div className='flex flex-col'>
               <label className='text-black mb-1 font-normal'>Address</label>
 
@@ -538,8 +717,8 @@ const AddSchemeAccount = () => {
                 readOnly
                 type='text'
                 name='address'
-                value={formData.address}
-                className='border-2 border-gray-300 cursor-not-allowed rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
+                value={cusData.address}
+                className='border-2 bg-[#e5e7eb] border-gray-300 cursor-not-allowed rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
                 placeholder='Enter address'
               />
             </div>
@@ -552,10 +731,10 @@ const AddSchemeAccount = () => {
               <div className='flex flex-col'>
                 <label className='text-black mb-1 font-normal'>Scheme Classification<span className='text-red-400'>*</span></label>
                 <div className="relative">
-                  <select name="id_classification" value={formData.id_classification} onChange={(e) => { filterInputchange(e); }} className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
+                  <select name="id_classification" value={formData.id_classification} onChange={(e) => { filterInputchange(e) }} className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
                     <option value='' >--Select--</option>
                     {classifyfilter.map((classify) => (
-                      <option key={classify._id} value={classify._id}>{classify.classification_name}</option>
+                      <option key={classify._id} value={classify._id}>{classify.name}</option>
                     ))
                     }
                   </select>
@@ -569,6 +748,31 @@ const AddSchemeAccount = () => {
                 </div>
                 <p style={{ color: "red" }}>{errors?.id_classification}</p>
               </div>
+              {
+                formData.id_classification === "67bad07b970bf1c652590b21" && (
+                  <div className='flex flex-col'>
+                  <label className='text-black mb-1 font-normal'>Fixed Amount Scheme<span className='text-red-400'>*</span></label>
+                  <div className="relative">
+                    <select name="id_classification" value={formData.fixedamount} onChange={(e) => { filterInputchange(e) }} className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
+                      <option value='' >--Select--</option>
+                      {fixedamt?.map((amount) => (
+                        <option key={amount} value={amount}>{amount}</option>
+                      ))
+                      }
+                    </select>
+  
+                    <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                      <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
+                        <path d="M19 9l-7 7-7-7"></path>
+                      </svg>
+                    </div>
+  
+                  </div>
+                  <p style={{ color: "red" }}>{errors?.id_classification}</p>
+                </div>
+                )
+              }
+          
               <div className='flex flex-col'>
                 <label className='text-black mb-1 font-normal'>Scheme<span className='text-red-400'>*</span></label>
                 <div className="relative">
@@ -594,30 +798,8 @@ const AddSchemeAccount = () => {
                 </div>
                 <p style={{ color: "red" }}>{errors?.id_scheme}</p>
               </div>
-              <div className='flex flex-col'>
-                <label className='text-black mb-1 font-normal'>Maturity Month<span className='text-red-400'>*</span></label>
-                <input
-                  type='text'
-                  name='maturity_month'
-                  value={formData.maturity_month}
-                  className='border-2 cursor-not-allowed border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
-                  placeholder='Enter Maturity Month'
-                  readOnly
-                />
-                <p style={{ color: "red" }}>{errors?.maturity_month}</p>
-              </div>
-              <div className='flex flex-col'>
-                <label className='text-black mb-1 font-normal'>Total Installment<span className='text-red-400'>*</span></label>
-                <input
-                  type='text'
-                  name='total_installments'
-                  value={formData.total_installments}
-                  className='border-2 cursor-not-allowed border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
-                  placeholder='Enter Total Installment'
-                  readOnly
-                />
-                <p style={{ color: "red" }}>{errors?.total_installments}</p>
-              </div>
+
+              
               <div className='flex flex-col'>
                 <label className='text-black mb-1 font-normal'>Account Name<span className='text-red-400'>*</span></label>
                 <input
@@ -643,6 +825,33 @@ const AddSchemeAccount = () => {
 
                 </div>
               )}
+             
+              <div className='flex flex-col'>
+                <label className='text-black mb-1 font-normal'>Total Installment<span className='text-red-400'>*</span></label>
+                <input
+                  type='text'
+                  name='total_installments'
+                  value={formData.total_installments}
+                  className='border-2 cursor-not-allowed border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
+                  placeholder='Enter Total Installment'
+                  readOnly
+                />
+                <p style={{ color: "red" }}>{errors?.total_installments}</p>
+              </div>
+
+              <div className='flex flex-col'>
+                <label className='text-black mb-1 font-normal'>Maturity Month<span className='text-red-400'>*</span></label>
+                <input
+                  type='text'
+                  name='maturity_month'
+                  value={formData.maturity_month}
+                  className='border-2 cursor-not-allowed border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
+                  placeholder='Enter Maturity Month'
+                  readOnly
+                />
+                <p style={{ color: "red" }}>{errors?.maturity_month}</p>
+              </div>
+
               <div className='flex flex-col'>
                 <label className='text-gray-700 mb-1 font-normal'>Start Date<span className='text-red-400'>*</span></label>
                 <div className="relative">

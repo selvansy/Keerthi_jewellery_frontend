@@ -1,45 +1,162 @@
-import { useMutation } from '@tanstack/react-query';
-import React, { useState } from 'react'
+import { useMutation, useQuery } from '@tanstack/react-query';
+import React, { useEffect, useState } from 'react'
 import { Search } from 'lucide-react'
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import { searchcustomermobile, getallbranch } from '../../../chit/api/Endpoints'
+import { mobilesearch, redeemType, getallwallet, walletRedeem } from '../../../chit/api/Endpoints'
+import { formatNumber } from "../../utils/commonFunction"
+import SpinLoading from '../common/spinLoading';
 
 function WalletRedemption() {
 
-    const [formData, setFormData] = useState({});
     const [formErrors, setFormErrors] = useState({})
     const [isLoading, setLoading] = useState(false)
-    const [walletData, setWalletData] = useState([])
-    const [visibleaccount, setVisibleaccount] = useState(false);
+    const [mobile,setMobile] = useState("")
+    const [walletData, setWalletData] = useState({})
+    const [walletPoints, setWalletPoints] = useState({})
+    const [redeem_type, setRedeemType] = useState([])
+    const [formData, setFormData] = useState({
+        billno: "",
+        redeem_amt: "",
+        redeem_point: walletData.available_point || "",
+        redeem_type: ""
+    });
+
     const layout_color = useSelector((state) => state.clientForm.layoutColor);
+
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setFormData((prevData) => ({
-            ...prevData,
-            [name]: value,
-        }));
+        const numericValue = value.trim() === "" ? 0 : Number(value); 
+    
+        setFormData((prevData) => {
+            let updatedData = { ...prevData };
+            let errors = { ...formErrors };
+    
+            const conversionRate = walletPoints.points && Number(walletPoints.points); 
+    
+            const validateAndSet = (field, limit, relatedField, conversion) => {
+             
+                if (isNaN(numericValue) || numericValue < 0) {
+                    errors[field] = "Invalid value";
+                    return prevData;
+                }
+    
+                const isExceeding = numericValue > limit;
+                errors[field] = isExceeding ? `Value shouldn't exceed ${limit}` : "";
+    
+                if (!isExceeding) {
+                    updatedData[field] = numericValue;
+                    updatedData[relatedField] = conversion(numericValue);
+                }
+            };
+    
+            if (name === "redeem_point") {
+                validateAndSet(
+                    "redeem_point",
+                    walletData.available_point,
+                    "redeem_amt",
+                    (val) => Number((val / conversionRate).toFixed(2)) 
+                );
+            } else if (name === "redeem_amt") {
+                const maxRedeemableAmt = walletData.available_point / conversionRate;
+                console.log("amt",maxRedeemableAmt)
+                validateAndSet(
+                    "redeem_amt",
+                    maxRedeemableAmt,
+                    "redeem_point",
+                    (val) => Number(Math.floor(val * conversionRate)) 
+                );
+            } else {
+                updatedData[name] = name === "billno" ? value : numericValue;
+            }
+    
+            setFormErrors(errors);
+            return updatedData;
+        });
     };
+    
+
+    const validateForm = () => {
+        let errors = {}
+        if (!formData.redeem_point) errors.redeem_point = "RedeemPoint is required"
+        if (!formData.redeem_amt) errors.redeem_amt = "RedeemAmount is required"
+        if (!formData.redeem_type) errors.redeem_type = "ReedType is required"
+        if(formData.redeem_type == 1){
+            if (!formData.billno) errors.billno = "Billno is required"
+        }
+        
+        setFormErrors(errors)
+        return Object.keys(errors).length === 0;
+    }
+
+  
+
+    const handleClear = () => {
+        setFormData({
+            billno: "",
+            redeem_amt: "",
+            redeem_point: "",
+            redeem_type: ""
+        })
+        setWalletData({})
+        setMobile("")
+
+    }
+
+    const handleSave = () => {
+        if (!validateForm()) {
+            return
+        }
+
+        setLoading(true)
+        handleRedeemPoints(formData)
+    }
 
 
     const handleSearchmobile = () => {
         setLoading(true)
-        handlesearchcustomer({ id_branch: formData.id_branch, search_mobile: formData.mobile });
+        handlesearchcustomer(mobile);
 
     };
 
 
-    const { mutate: handlesearchcustomer } = useMutation({
-        mutationFn: searchcustomermobile,
+    const { mutate: handleRedeemPoints } = useMutation({
+        mutationFn: (payload) => walletRedeem(payload),
         onSuccess: (response) => {
             if (response) {
-                setFormData(prev => ({
-                    ...prev,
-                    customer_name: response.data.firstname + ' ' + response.data.lastname
+                handleClear()
+            }
+
+            setLoading(false)
+            toast.success(response.message)
+        },
+        onError: (error) => {
+            toast.error(error?.response?.data?.message)
+            setLoading(false)
+        }
+    });
+
+
+
+    const { mutate: handlesearchcustomer } = useMutation({
+        mutationFn: mobilesearch,
+        onSuccess: (response) => {
+            if (response) {
+                const res = response.data.walletData;
+                setWalletData({
+                    customer_name: res?.id_customer?.firstname + ' ' + res?.id_customer?.lastname,
+                    phone: res?.id_customer?.mobile,
+                    redeemed_point: res?.redeemed_point,
+                    available_point: res?.balance_point,
+                    active_scheme: response.data?.activeScheme,
+                })
+
+                setFormData((prevData) => ({
+                    ...prevData,
+                    id_customer: res?.id_customer._id,
                 }));
             }
-            toast.success(response.message)
             setLoading(false)
         },
         onError: (error) => {
@@ -48,20 +165,51 @@ function WalletRedemption() {
         }
     });
 
+    const { data: walletPointsRate } = useQuery({
+        queryKey: ["walletpoints"],
+        queryFn: getallwallet,
+    });
+
+
+
+    const { data: redeemTypeData } = useQuery({
+        queryKey: ["redeem"],
+        queryFn: redeemType,
+    });
+
+    useEffect(() => {
+        if (redeemTypeData) {
+            setRedeemType(redeemTypeData.data)
+        }
+
+        if (walletPointsRate) {
+            const data = walletPointsRate.data
+            setWalletPoints(prev=>({
+                ...prev,
+               points:data.points,
+               rupee:data.rupee_per_points
+            }))
+            
+        }
+
+    }, [redeemTypeData, walletPointsRate])
+
+
+
     return (
         <>
             <div className='w-full flex flex-col bg-white mt-10 p-3 overflow-y-auto scrollbar-hide h-[calc(100vh-200px)]'>
-              <div className="flex justify-between items-center">
-              <h2 className='text-[18px] text-gray-900 font-bold mt-3 px-8'>
-                    Add Wallet Redemption
-                </h2>
-                <div className="flex flex-col">
-                <h2 className='text-[18px] text-gray-900 font-bold mt-3 px-8'>
-                    Wallet Rate
-                </h2>
-                <p className='text-center'>2000</p>
+                <div className="flex justify-between items-center">
+                    <h2 className='text-[18px] text-gray-900 font-bold mt-3 px-8'>
+                        Add Wallet Redemption
+                    </h2>
+                    <div className="flex flex-col">
+                        <h2 className='text-[18px] text-gray-900 font-bold mt-3 px-8'>
+                            Wallet Rate
+                        </h2>
+                        <p className='text-center'>{walletPoints.points} Points = {formatNumber({ value: walletPoints.rupee, decimalPlaces: 0 })}</p>
+                    </div>
                 </div>
-              </div>
                 <div className='flex flex-col bg-white px-8 pb-4 pt-2 relative'>
 
                     <div className='grid grid-rows-1 md:grid-cols-2 gap-5'>
@@ -71,24 +219,27 @@ function WalletRedemption() {
                                     <label className='text-black mb-1 font-normal'>Phone Number<span className='text-red-400'>*</span></label>
                                     <input
                                         type='text'
-                                        value={formData.mobile}
+                                        value={mobile}
                                         onChange={(e) => {
                                             const value = e.target.value;
-                                            setFormData(prev => ({
-                                                ...prev,
-                                                mobile: value
-                                            }))
+                                            setMobile(value)
                                         }}
                                         name='mobile'
                                         onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '')}
                                         pattern="\d{10}"
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Enter") {
+                                                e.preventDefault();
+                                                handlesearchcustomer(mobile)
+                                            }
+                                        }}
                                         maxLength={"10"}
                                         className='border-2 border-gray-300 rounded-md p-2  focus:border-transparent'
                                         placeholder='Enter Here'
                                     />
 
                                     {/* Search Icon */}
-                                    <div onClick={handleSearchmobile} className="absolute flex items-center justify-center cursor-pointer right-[0%] rounded-r-lg top-[60%] -translate-y-1/2 w-10 md:h-[40px] md:top-[58px] h-[20%] sm:right-0 sm:top-[68%] lg:right-[0%]"
+                                    <div onClick={handleSearchmobile} className="absolute flex items-center justify-center cursor-pointer right-[0%] rounded-r-lg top-[60%] -translate-y-1/2 w-10 md:h-[40px] md:top-[58px] h-[50%] sm:right-0 sm:top-[73%] lg:right-[0%]"
                                         style={{ backgroundColor: layout_color }}>
                                         {isLoading ? (
                                             <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
@@ -115,26 +266,13 @@ function WalletRedemption() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {walletData.length > 0 ? (
-                                        walletData.map((e, index) => (
-                                            <tr key={index}>
-                                                <td className="text-center px-2 py-2">{quantity || "-"}</td>
-                                                <td className="px-2 py-2 text-center">{e.ecode || "-"}</td>
-                                                <td className="px-2 py-2 text-center">{e.id_gift ? e.id_gift.gift_name : "-"}</td>
-                                                <td className="px-2 py-2 text-center">{e.cus_sellprice > 0 ? e.cus_sellprice : "-"}</td>
-                                               
-                                            </tr>
-                                        ))
-                                    ) : (
-                                        <tr>
-                                            <td className="px-2 py-2 text-center">-</td>
-                                            <td className="px-2 py-2 text-center">-</td>
-                                            <td className="px-2 py-2 text-center">-</td>
-                                            <td className="px-2 py-2 text-center">-</td>
-                                            <td className="px-2 py-2 text-center">-</td>
-                                           
-                                        </tr>
-                                    )}
+                                    <tr>
+                                        <td className="text-center px-2 py-2">{walletData.customer_name || "-"}</td>
+                                        <td className="px-2 py-2 text-center">{walletData.phone || "-"}</td>
+                                        <td className="px-2 py-2 text-center">{walletData.active_scheme ?? "-" }</td>
+                                        <td className="px-2 py-2 text-center">{walletData.available_point ?? "-"}</td>
+                                        <td className="px-2 py-2 text-center">{walletData.redeemed_point ?? "-"}</td>
+                                    </tr>
                                 </tbody>
 
 
@@ -147,10 +285,14 @@ function WalletRedemption() {
                         <div className='flex flex-col gap-2'>
                             <label className='text-gray-700 font-medium'>Redeem Point<span className='text-red-400'>*</span></label>
                             <input
-                                type='number'
+                                type='text'
                                 name='redeem_point'
                                 value={formData.redeem_point}
                                 onChange={handleInputChange}
+                                onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '')}
+                                pattern="\d{5}"
+                                max={"5"}
+                                maxLength={"5"}
                                 className='border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
                                 placeholder='Enter redeem_point'
                             />
@@ -160,33 +302,51 @@ function WalletRedemption() {
                         <div className='flex flex-col gap-2'>
                             <label className='text-gray-700 font-medium'>Amount Value<span className='text-red-400'>*</span></label>
                             <input
-                                type='number'
-                                name='amount_value'
-                                value={formData.amount_value}
+                                type='text'
+                                name='redeem_amt'
+                                maxLength={"5"}
+                                value={formData.redeem_amt}
+                                readOnly
+                                // onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '')}
+                                pattern="\d{5}"
                                 onChange={handleInputChange}
                                 className='border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
                                 placeholder='Enter amount value'
                             />
-                            {formErrors.amount_value && <span className="text-red-500 text-sm mt-1">{formErrors.amount_value}</span>}
+                            {formErrors.redeem_amt && <span className="text-red-500 text-sm mt-1">{formErrors.redeem_amt}</span>}
                         </div>
 
                         <div className='flex flex-col gap-2'>
-                            <label className='text-gray-700 font-medium'>Purpose of Redeem<span className='text-red-400'>*</span></label>
-                            <input
-                                type='text'
-                                name='purpose_redeem'
-                                value={formData.purpose_redeem}
+                            <label className='text-gray-700 font-medium'>
+                                Purpose of Redeem<span className='text-red-400'>*</span>
+                            </label>
+                            <select
+                                name='redeem_type'
+                                value={formData.redeem_type}
                                 onChange={handleInputChange}
                                 className='border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
-                                placeholder='Enter purpose_redeem'
-                            />
-                            {formErrors.purpose_redeem && <span className="text-red-500 text-sm mt-1">{formErrors.purpose_redeem}</span>}
+                            >
+
+                                <option value="">-- Select --</option>
+                                {redeem_type.map((e) => (
+                                    <>
+                                        <option key={e.id} value={e.id}>
+                                            {e.name}
+                                        </option>
+                                    </>
+
+                                ))}
+
+                            </select>
+                            {formErrors.redeem_type && (
+                                <span className="text-red-500 text-sm mt-1">{formErrors.redeem_type}</span>
+                            )}
                         </div>
 
                         <div className='flex flex-col gap-2'>
-                            <label className='text-gray-700 font-medium'>Bill no<span className='text-red-400'>*</span></label>
+                            <label className='text-gray-700 font-medium'>Bill no<span className='text-red-400'></span></label>
                             <input
-                                type='number'
+                                type='text'
                                 name='billno'
                                 value={formData.billno}
                                 onChange={handleInputChange}
@@ -208,7 +368,7 @@ function WalletRedemption() {
                             <button
                                 className='bg-[#E2E8F0] text-black rounded-md p-3 w-1/2  lg:w-20'
                                 type='button'
-                            //   onClick={handleClear}
+                                onClick={handleClear}
                             >
                                 Clear
                             </button>
@@ -216,9 +376,10 @@ function WalletRedemption() {
                                 className=' text-white rounded-md p-3 w-1/2 lg:w-20'
                                 type='button'
                                 style={{ backgroundColor: layout_color }}
-                            //   onClick={handleSave}
+                                onClick={handleSave}
+                                disabled={isLoading}
                             >
-                                Save
+                                {isLoading ? <SpinLoading /> : "Save"}
                             </button>
                         </div>
                     </div>
