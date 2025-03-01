@@ -62,14 +62,18 @@ export const schemeValidationSchema = Yup.object({
           (value) => value && value.toString().length <= 11
         ),
     otherwise: (schema) =>
-      schema
-        .required("Starting amount is required")
-        .min(0, "Minimum value allowed is 0")
-        .test(
-          "maxDigits",
-          "Maximum 11 digits are allowed",
-          (value) => value && value.toString().length <= 11
-        ),
+      schema.when("classType", {
+        is: true,
+        then: (schema) =>
+          schema
+            .required("Starting amount is required")
+            .min(0, "Minimum value allowed is 0")
+            .test(
+              "maxDigits",
+              "Maximum 11 digits are allowed",
+              (value) => value && value.toString().length <= 11
+            ),
+      }),
   }),
   description: Yup.string().required("Description is required"),
   term_desc: Yup.string().required("Terms and conditions is required"),

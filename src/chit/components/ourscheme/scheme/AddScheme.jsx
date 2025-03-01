@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useFormik } from "formik";
-import * as Yup from "yup";
 import Select from "react-select";
-import { Plus, Minus, Trash2, SquarePen } from "lucide-react";
+import { Plus, Trash2, SquarePen } from "lucide-react";
 import {
   getSchemeClassifications,
   allinstallmenttype,
@@ -36,6 +35,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { schemeValidationSchema } from "../../../../utils/validations/schemeValidationSchema";
+import SpinLoading from "../../common/spinLoading";
 
 const SchemeForm = () => {
   const navigate = useNavigate();
@@ -67,6 +67,8 @@ const SchemeForm = () => {
   const [wastagedata, setWastageType] = useState([]);
   const [schemeTypeData, setSchemeTypeData] = useState([]);
   const [giftType, setGiftType] = useState([]);
+  const [isLoading,setIsLoading]= useState(false)
+  const [spanText,setSpanText] = useState('')
 
   const formik = useFormik({
     initialValues: {
@@ -181,7 +183,7 @@ const SchemeForm = () => {
         formData.delete("max_weight");
         formData.append("min_weight", amounts[0]);
         formData.append("max_weight", amounts[amounts.length - 1]);
-      } else {
+      } else if(formik.values.classType) {
       formData.delete("min_amount");
         formData.delete("max_amount");
         formData.append("min_amount", amounts[0]);
@@ -197,12 +199,15 @@ const SchemeForm = () => {
       }
 
       if (id) {
+        setIsLoading(true)
         updateSchemeData({ id, data: formData })
       } else {
+        setIsLoading(true)
         addNewScheme(formData);
       }
     },
   });
+  console.log(formik.values)
 
   // Customisations for react-select
   const customStyles = {
@@ -275,12 +280,12 @@ const SchemeForm = () => {
   const { mutate: addNewScheme } = useMutation({
     mutationFn: addscheme,
     onSuccess: (response) => {
-      // setIsLoading(false);
+      setIsLoading(false);
       toast.success(response.message);
-      navigate("");
+      navigate("/scheme/scheme/");
     },
     onError: (error) => {
-      // setIsLoading(false);
+      setIsLoading(false);
       toast.error(error.response.message);
     },
   });
@@ -289,12 +294,14 @@ const SchemeForm = () => {
     mutationFn: ({ id, data }) => updateScheme(id, data),
     onSuccess: (response) => {
         if(response.status === 200){
+          setIsLoading(false)
           toast.success(response.message);
           navigate("/scheme/scheme/");
         }
     },
     onError: () => {
-       
+      setIsLoading(false)
+      toast.error(response.message);
     },
 });
 
@@ -639,7 +646,7 @@ const SchemeForm = () => {
       startingAmount: undefined,
     }));
   };
-
+console.log(formik.errors)
   return (
     <form
       onSubmit={formik.handleSubmit}
@@ -663,11 +670,11 @@ const SchemeForm = () => {
               {...formik.getFieldProps("scheme_name")}
             />
 
-            {formik.values.scheme_name.length === 30 && (
+            {/* {formik.values.scheme_name.length === 30 && (
               <div className="text-red-500 text-sm mt-1">
                 Max 30 character allowed
               </div>
-            )}
+            )} */}
             {formik.touched.scheme_name && formik.errors.scheme_name && (
               <div className="text-red-500 text-sm mt-1">
                 {formik.errors.scheme_name}
@@ -765,8 +772,8 @@ const SchemeForm = () => {
             <Select
               styles={customStyles}
               options={filteredSchemeTypeData}
-              isClearable={true}
-              placeholder="Select scheme type"
+              isDisabled={!formik.values.id_classification}
+              placeholder={!formik.values.id_classification ? "Choose a classification first" : "Select scheme type"}
               value={filteredSchemeTypeData?.find(
                 (option) => option.value === formik.values.scheme_type
               )}
@@ -812,7 +819,8 @@ const SchemeForm = () => {
               styles={customStyles}
               options={purity || []}
               isClearable={true}
-              placeholder="Select purtiy type"
+              isDisabled={!formik.values.id_metal}
+              placeholder={!formik.values.id_metal ? "Choose a metal first" : "Select purtiy type"}
               value={purity.find(
                 (option) => option.value === formik.values.id_purity
               )}
@@ -839,12 +847,10 @@ const SchemeForm = () => {
               value={installment_data.find(
                 (option) => option.value === formik.values.installment_type
               )}
-              onChange={(option) =>
-                formik.setFieldValue(
-                  "installment_type",
-                  option ? option.value : null
-                )
-              }
+              onChange={(option) => {
+                formik.setFieldValue("installment_type", option ? option.value : null);
+                setSpanText(option.label); 
+              }}
               onBlur={() => formik.setFieldTouched("installment_type", true)}
             />
             {formik.touched.installment_type &&
@@ -858,14 +864,25 @@ const SchemeForm = () => {
             <label className="block text-sm font-medium mb-1">
               Maturity Period <span className="text-red-500">*</span>
             </label>
+            <div className="relative">
             <input
               type="number"
               max={336}
               onChange={formik.onChange}
+              onWheel={(e)=>e.target.blur()}
               className="w-full border rounded-md px-3 py-2"
               placeholder="Enter Maturity Period"
               {...formik.getFieldProps("maturity_period")}
             />
+            {spanText && (
+              <span
+              className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-sm text-white rounded-r-md"
+              style={{ backgroundColor: layout_color }}
+            >
+             {spanText}
+            </span>
+            )}
+            </div>
             {formik.touched.maturity_period &&
               formik.errors.maturity_period && (
                 <div className="text-red-500 text-sm mt-1">
@@ -1198,9 +1215,10 @@ const SchemeForm = () => {
         </button>
         <button
           type="submit"
+          disabled={isLoading}
           className="px-4 py-2 bg-blue-900 text-white rounded-md hover:bg-blue-800"
         >
-          Submit
+          {isLoading ? <SpinLoading/> : "submit"}
         </button>
       </div>
     </form>
