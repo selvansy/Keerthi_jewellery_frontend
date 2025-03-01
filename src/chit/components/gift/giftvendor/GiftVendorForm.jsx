@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import SpinLoading from '../../common/spinLoading';
 import Select from "react-select";
-import  customSelectStyles  from "../../common/customSelectStyles"
+import customSelectStyles from "../../common/customSelectStyles"
 
 
 
@@ -17,12 +17,12 @@ function GiftVendorForm({ setIsOpen, isviewOpen, id, refetchTable, setId }) {
     const layout_color = useSelector((state) => state.clientForm.layoutColor);
     let navigate = useNavigate();
 
-     const roledata = useSelector((state) => state.clientForm.roledata);
-    
-      const id_branch = roledata?.branch;
+    const roledata = useSelector((state) => state.clientForm.roledata);
+
+    const id_branch = roledata?.branch;
 
     const [branchData, setBranch] = useState([]);
-    const [branch,setbranch] = useState("")
+    const [branch, setbranch] = useState("")
     const [isLoading, setIsLoading] = useState(false);
     const [formData, setFormData] = useState({
         vendor_name: '',
@@ -37,24 +37,24 @@ function GiftVendorForm({ setIsOpen, isviewOpen, id, refetchTable, setId }) {
 
         if (id && (isviewOpen === true)) {
             getgiftvendorId(id)
-        }else{
+        } else {
             setId("")
         }
 
     }, [id, isviewOpen]);
 
-    useEffect(() => { 
+    useEffect(() => {
         return () => {
             setId("")
         }
     }, [])
 
     const { data: branchresponse, isLoading: loadingbranch } = useQuery({
-        queryKey: ["branch",branch],
+        queryKey: ["branch", branch],
         queryFn: getallbranch,
     });
 
-    useEffect(()=>{
+    useEffect(() => {
         if (branchresponse) {
             const data = branchresponse.data
             const branch = data.map((branch) => ({
@@ -64,7 +64,7 @@ function GiftVendorForm({ setIsOpen, isviewOpen, id, refetchTable, setId }) {
             setBranch(branch);
         }
 
-    },[branchresponse])
+    }, [branchresponse])
 
 
 
@@ -91,13 +91,13 @@ function GiftVendorForm({ setIsOpen, isviewOpen, id, refetchTable, setId }) {
         mutationFn: (formData) => addgiftvendor(formData),
         onSuccess: (response) => {
             refetchTable()
-            toast.success(response.message);
+            toast.success(response.data.message);
             setIsOpen(false);
-            setIsLoading(false)   
-         
+            setIsLoading(false)
+
         },
         onError: (error) => {
-            setIsLoading(false)       
+            setIsLoading(false)
             toast.error(error.response.data.message);
         },
     });
@@ -107,7 +107,7 @@ function GiftVendorForm({ setIsOpen, isviewOpen, id, refetchTable, setId }) {
         onSuccess: (response) => {
             toast.success(response.data.message);
             refetchTable()
-            
+
             setId("")
             setIsOpen(false);
             setIsLoading(false)
@@ -117,14 +117,11 @@ function GiftVendorForm({ setIsOpen, isviewOpen, id, refetchTable, setId }) {
             toast.error(error.response.data.message);
             setIsLoading(false)
             // setIsOpen(false);
-        
+
         },
     });
 
 
-
-
-    // Handle input change
     const handleChange = (e) => {
         const { name, value } = e.target;
 
@@ -134,6 +131,25 @@ function GiftVendorForm({ setIsOpen, isviewOpen, id, refetchTable, setId }) {
             ...prev,
             [name]: name === "mobile" ? value.replace(/\D/g, "").slice(0, 10) : value,
         }));
+
+        if (name === "gst") {
+            const formattedValue = value.toUpperCase().slice(0, 15);
+
+            const gstRegex = /^(?=.*[0-9])(?=.*[A-Z])[0-9A-Z]{15}$/;
+            const gstError = 
+                !formattedValue ? "GST number is required" :
+                formattedValue.length < 15 ? "GST number must be exactly 15 characters" :
+                !gstRegex.test(formattedValue) ? "GST number must contain both numbers and uppercase letters" : "";
+        
+            setErrors(prev => ({ ...prev, gst: gstError }));
+            
+            if (!/^[0-9A-Z]*$/.test(formattedValue)) return; 
+            console.log("form",formattedValue)
+            setFormData(prev => ({ ...prev, gst: formattedValue }));
+
+            console.log('valueafterfor',formData)
+        } 
+
     };
 
 
@@ -148,11 +164,30 @@ function GiftVendorForm({ setIsOpen, isviewOpen, id, refetchTable, setId }) {
             newErrors.mobile = "Mobile number should be exactly 10 digits";
         }
 
-        if (!formData.gst) {
-            newErrors.gst = "GST number is required";
-        } else if (!/^[0-9A-Z]{15}$/.test(formData.gst)) {
-            newErrors.gst = "GST number should be exactly 15 alphanumeric characters";
+        if (name === "gst") {
+            if (name === "gst" && value < 0) { toast.error("Enter valid gst") }
+            if (!formData.gst) {
+
+                setErrors(prev => ({
+                    ...prev,
+                    gst: "GST number is required"
+                }));
+
+            } else if (!/^[0-9A-Z]{15}$/.test(formData.gst)) {
+
+                setErrors(prev => ({
+                    ...prev,
+                    gst: "GST number should be exactly 15 alphanumeric characters"
+                }));
+            }
+
+            setFormData(prev => ({
+                ...prev,
+                gst: value
+            }));
+
         }
+
 
         return newErrors;
     };
@@ -198,32 +233,32 @@ function GiftVendorForm({ setIsOpen, isviewOpen, id, refetchTable, setId }) {
             <form className="space-y-4">
                 {/* Branch field */}
 
-              
-                        <div className='flex flex-col'>
 
-                            <label className='text-black mb-1 font-medium'>Branch<span className='text-red-400'>*</span></label>
+                <div className='flex flex-col'>
 
-                            <Select
-                                options={branchData}
-                                value={branchData.find(branch => branch.value === formData.id_branch) || branch}
-                                onChange={(branch) => {
-                                    setFormData((prev) => ({
-                                        ...prev,
-                                        id_branch:branch.value,
-                                    }));
-                                    
-                                    setbranch(branch.value)
-                                }}
-                                customSelectStyles={customSelectStyles}
-                                isLoading={loadingbranch}
-                                placeholder="Select Branch"
-                            />
+                    <label className='text-black mb-1 font-medium'>Branch<span className='text-red-400'>*</span></label>
 
-                            {errors.id_branch ? <div style={{ color: "red" }}>{errors.id_branch}</div> : null}
+                    <Select
+                        options={branchData}
+                        value={branchData.find(branch => branch.value === formData.id_branch) || branch}
+                        onChange={(branch) => {
+                            setFormData((prev) => ({
+                                ...prev,
+                                id_branch: branch.value,
+                            }));
 
-                        </div>
+                            setbranch(branch.value)
+                        }}
+                        customSelectStyles={customSelectStyles}
+                        isLoading={loadingbranch}
+                        placeholder="Select Branch"
+                    />
 
-                
+                    {errors.id_branch ? <div style={{ color: "red" }}>{errors.id_branch}</div> : null}
+
+                </div>
+
+
 
                 {/* Gift Vendor Name field */}
                 <div className="flex flex-col ">
@@ -275,24 +310,21 @@ function GiftVendorForm({ setIsOpen, isviewOpen, id, refetchTable, setId }) {
                 </div>
 
                 {/* GST Number field */}
-                <div className="flex flex-col ">
-                    <label className="font-medium text-gray-700">
-                        GST Number
-                    </label>
+                <div className="flex flex-col">
+                    <label className="font-medium text-gray-700">GST Number</label>
                     <input
                         type="text"
                         name="gst"
                         value={formData.gst}
-                        onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '')}
+                        pattern="[0-9A-Z]*"
                         onChange={handleChange}
-                        pattern="\d{15}"
                         placeholder="Enter GST Number"
-                        className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600"
-                        maxLength={"15"}
+                        className="p-3 border uppercase border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600"
+                        maxLength="15"
                     />
                     {errors.gst && <span className="text-red-500 text-sm mt-1">{errors.gst}</span>}
-
                 </div>
+
 
                 {/* Submit/Cancel buttons */}
                 <div className="bg-white p-2 border-t-2 border-gray-300 mt-4">

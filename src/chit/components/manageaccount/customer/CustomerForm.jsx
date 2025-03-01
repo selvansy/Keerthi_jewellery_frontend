@@ -1,11 +1,11 @@
 
 import React, { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { CalendarDays, Camera, X, Send, Plus, Minus, } from 'lucide-react'
+import { CalendarDays, Camera, X, Send, Plus, Minus } from 'lucide-react'
 
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
-import { updatecustomer, getcustomerById, getBranchById, getallbranch, allstate, addcustomer, allcountry, allcity, } from '../../../api/Endpoints';
+import { updatecustomer, getcustomerById, getallbranch, allstate, addcustomer, allcountry, allcity, } from '../../../api/Endpoints';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { sendOtp, closeBill } from "../../../api/BackendUrl"
@@ -19,7 +19,7 @@ import Select from "react-select";
 import profileplaceholder from '../../../../assets/profileplaceholder.png'
 import { customSelectStyles } from "../../Setup/purity/index"
 
-
+ 
 const CustomerForm = () => {
 
     const { id } = useParams();
@@ -227,14 +227,13 @@ const CustomerForm = () => {
 
             if (response) {
                 toast.success(response.message);
-                navigate('/manageaccount/customer/');
                 setFormData({})
             }
             setisLoading(false)
         },
         onError: (error) => {
             setisLoading(false)
-            console.error('Error adding customer:', error);
+            console.error('Erro:', error);
         }
     });
 
@@ -242,14 +241,13 @@ const CustomerForm = () => {
         mutationFn: updatecustomer,
         onSuccess: (response) => {
             toast.success(response.message)
-            navigate('/manageaccount/customer');
             setFormData({})
             setisLoading(false)
         },
 
         onError: (error) => {
             setisLoading(false)
-            console.error("Error fetching scheme types:", error);
+            console.error("Erro:", error);
         },
     });
 
@@ -279,25 +277,37 @@ const CustomerForm = () => {
     const handleFileChange = (e) => {
         e.preventDefault();
         const file = e.target.files[0];
-
-        if (file && file.size <= 500 * 1024) {
-            setcus_img(file);
-
-            const reader = new FileReader();
-
-            reader.onloadend = () => {
-                if (reader.result) {
-                    setPathurl(reader.result);
-                } else {
-                    toast.error("Failed to load image preview.");
-                }
-            };
-
-            reader.readAsDataURL(file);
-        } else {
-            toast.error("File size exceeded or no file found");
+        console.log("Filte",file)
+    
+        if (!file) {
+            toast.error("No file selected");
+            return;
         }
+    
+        const validImageTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+        const maxSize = 500 * 1024; 
+    
+        if (!validImageTypes.includes(file.type)) {
+            toast.error("Invalid file type. Allowed: JPG, PNG, GIF, WEBP");
+            return;
+        }
+    
+        if (file.size > maxSize) {
+            toast.error("File size exceeded (Max 500KB)");
+            return;
+        }
+    
+        setcus_img(file);
+    
+
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setPathurl(reader.result || "");
+        };
+    
+        reader.readAsDataURL(file);
     };
+    
 
 
 
@@ -754,7 +764,7 @@ const CustomerForm = () => {
                                                     <div className="text-gray-900 text-center text-[12px]">
                                                         {cus_img ? cus_img.name : "Browse"}
                                                         <span>
-                                                            {cus_img?.size ? ` (${(cus_img.size / 1024).toFixed()} KB)` : ""}
+                                                            {cus_img?.size ? ` (${(cus_img.size / 1024).toFixed()} KB)` : profileplaceholder}
                                                         </span>
                                                     </div>
                                                 </label>

@@ -4,16 +4,19 @@ import { graceType } from "../../../../utils/Constants";
 import ToggleSwitch from "../../common/ToggleSwitch";
 
 const Grace = ({ formik, layout_color, maturity_period, maturtiy_type }) => {
-  const [fine, setFine] = useState(false);
 
   const graceData = graceType.map((item) => ({
     value: item.id,
     label: item.name,
   }));
 
-  const handleToggle = () => {
-    setFine(!fine);
-  };
+  const handleToggle =()=>{
+    if(formik.values.grace_fine_amount){
+      formik.setFieldValue('grace_fine_amount',false)
+    }else{
+      formik.setFieldValue('grace_fine_amount',true)
+    }
+ }
 
   const validateGracePeriod = (value) => {
     if (!value) return "";
@@ -48,7 +51,7 @@ const Grace = ({ formik, layout_color, maturity_period, maturtiy_type }) => {
     <div className="grid grid-rows-2 md:grid-cols-2 gap-5">
       <div className="flex flex-col mt-2">
         <label className="block text-sm font-medium mb-1 mt-2">
-          Grace Type<span className="text-red-500">*</span>
+          Grace Type
         </label>
         <Select
           styles={customStyles}
@@ -75,7 +78,7 @@ const Grace = ({ formik, layout_color, maturity_period, maturtiy_type }) => {
 
       <div className="flex flex-col mt-2">
         <label className="block text-sm font-medium mb-1 mt-2">
-          Grace Period <span className="text-red-400"> *</span>
+          Grace Period 
         </label>
         <input
           type="number"
@@ -92,6 +95,7 @@ const Grace = ({ formik, layout_color, maturity_period, maturtiy_type }) => {
             }
             formik.setFieldValue("grace_period", value);
           }}
+          onWheel={(e)=>e.target.blur()}
           onBlur={(e) => {
             formik.handleBlur(e);
             const error = validateGracePeriod(e.target.value);
@@ -108,27 +112,28 @@ const Grace = ({ formik, layout_color, maturity_period, maturtiy_type }) => {
         )}
       </div>
 
-      <div className="flex flex-col lg:mt-2">
-        <label className="text-black mb-2 font-normal">
-          Fine amount <span className="text-red-400"> *</span>
+      <div className="flex flex-col lg:mt-2 mt-2">
+        <label className="text-black mb-2 font-medium">
+          Fine amount
         </label>
         <ToggleSwitch
-          status={fine}
+          status={formik.values.grace_fine_amount}
           layout_color={layout_color}
           toggle_status={handleToggle}
         />
       </div>
 
-      {fine && (
+      {formik.values.grace_fine_amount && (
         <div className="flex flex-col mt-2">
           <label className="block text-sm font-medium mb-1 mt-2">
-            Fine Amount <span className="text-red-400"> *</span>
+            Fine Amount 
           </label>
           <div className="relative">
             <input
               type="number"
               name="grace_fine"
               value={formik.values.grace_fine}
+              onWheel={(e)=>e.target.blur()}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"

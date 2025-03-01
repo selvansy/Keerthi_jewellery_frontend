@@ -55,7 +55,7 @@ const AddSchemeAccount = () => {
 
 
   const handleschemeaccountbyid = async (data) => {
-  
+
     if (!data) return;
     const response = await getschemeaccountbyid(data);
     if (response) {
@@ -100,7 +100,7 @@ const AddSchemeAccount = () => {
       setMaturityMonth(response.data.id_scheme.maturity_month);
       setMaturityDate(response.data.id_scheme.maturity_date);
       setMobile(response.data.id_customer.mobile);
-    
+
       handleStartDateChange(response.data.start_date);
 
     } else {
@@ -184,8 +184,6 @@ const AddSchemeAccount = () => {
     // }  else {
     //   setSuggestions([]);
     // }
-
-
   };
 
 
@@ -208,7 +206,7 @@ const AddSchemeAccount = () => {
   const { mutate: getallbranchMutate } = useMutation({
     mutationFn: getallbranch,
     onSuccess: (response) => {
-   
+
       if (response) {
         setBranch(response.data);
       }
@@ -226,11 +224,11 @@ const AddSchemeAccount = () => {
     }
 
     if (name === "id_branch") {
-      console.log("IdBranch",value)
+      console.log("IdBranch", value)
       if (value !== "") {
         handleClassifyChange(value);
         handleemployeebyBranch(value);
-        getemployeebybranch({id_branch:valuen});
+        getemployeebybranch({ id_branch: valuen });
 
       }
     }
@@ -238,7 +236,7 @@ const AddSchemeAccount = () => {
     if (name === "id_classification") {
       handleschemebyclassification(value);
     }
-  
+
     if (name === 'id_scheme') {
       handleschemebyid(value);
     }
@@ -347,9 +345,9 @@ const AddSchemeAccount = () => {
 
 
   useEffect(() => {
-    if (location.pathname === '/manageaccount/schemeaccount/add') {
+    if (location.pathname === '/managecustomers/customer//add') {
       setHeader('Add Scheme Account')
-      setReturnRoute('/manageaccount/schemeaccount')
+      setReturnRoute('/managecustomers/customer/')
     } else if (location.pathname === '/manageaccount/digigold/add') {
       setHeader('Add Digi Gold Account')
       setReturnRoute('/manageaccount/digigold')
@@ -357,7 +355,7 @@ const AddSchemeAccount = () => {
   }, [location.pathname])
 
   const handleCancel = () => {
-    navigate('/manageaccount/schemeaccount')
+    navigate('/managecustomers/customer/')
   }
 
   const handleAddCustomer = () => {
@@ -376,8 +374,6 @@ const AddSchemeAccount = () => {
     const year = start.getFullYear();
 
     const formattedDate = `${day}-${month}-${year}`;
-
-    console.log(formattedDate);
 
     setMaturityDate(formattedDate);
     setFormData(prev => ({ ...prev, maturity_date: formattedDate }));
@@ -460,7 +456,7 @@ const AddSchemeAccount = () => {
       if (id) {
         updateSchemeaccount(formData);
       } else {
-        
+
         createSchemeaccount(formData);
       }
 
@@ -471,9 +467,8 @@ const AddSchemeAccount = () => {
   const { mutate: createSchemeaccount } = useMutation({
     mutationFn: addschemeaccount,
     onSuccess: (response) => {
-      console.log(response);
       toast.success(response.message)
-      navigate('/manageaccount/schemeaccount')
+      navigate('/managecustomers/customer/')
     },
     onError: (error) => {
       toast.error(error.response.data.message)
@@ -483,9 +478,8 @@ const AddSchemeAccount = () => {
   const { mutate: updateSchemeaccount } = useMutation({
     mutationFn: updateschemeaccount,
     onSuccess: (response) => {
-      console.log(response);
       toast.success(response.message)
-      navigate('/manageaccount/schemeaccount')
+      navigate('/managecustomers/customer/')
     },
     onError: (error) => {
       toast.error(error.response.data.message)
@@ -497,25 +491,15 @@ const AddSchemeAccount = () => {
     <>
       <div className='flex flex-row justify-between'>
         <h2 className='text-2xl text-gray-900 font-bold justify-between'>{header}</h2>
-        
-        <button
-          className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
-          onClick={handleAddCustomer}
-          style={{ backgroundColor: layout_color }} >
-          + Add Customer
-        </button>
-       
       </div>
-      <div className='w-full flex flex-col bg-white pl-8 pr-8 pb-4 border-t-2 border-[#023453] mt-3 overflow-y-auto scrollbar-hide h-[calc(100vh-200px)]'>
-
-        <h2 className='text-1xl font-bold mb-4 mt-4'>Customer Details</h2>
+      <div className='w-full flex flex-col bg-white pl-8 pr-8 pb-4 mt-3 overflow-y-auto scrollbar-hide h-[calc(100vh-200px)]'>
 
         <div className='grid md:grid-cols-2'>
 
           <div className='flex flex-col'>
             <label className='text-black mb-1 font-normal'>Branch<span className='text-red-400'>*</span></label>
             <div className="relative">
-              <select name="id_branch" value={formData.id_branch} onChange={(e) => { filterInputchange(e)}} className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
+              <select name="id_branch" value={formData.id_branch} onChange={(e) => { filterInputchange(e) }} className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
                 <option value='' >--Select--</option>
                 {branchfilter.map((branch) => (
                   <option key={branch._id} value={branch._id}>{branch.branch_name}</option>
@@ -531,247 +515,246 @@ const AddSchemeAccount = () => {
             </div>
           </div>
         </div>
-        <div className='grid mt-2  md:grid-cols-2 gap-5'>
-
-
-          <div className='flex flex-col mt-2 relative'>
-            <label className='text-black mb-1 font-normal'>Search Mobile Number<span className='text-red-400'>*</span></label>
-            <input
-              type='text'
-              value={mobile}
-              onChange={handleautocompletemobile}
-              className='border-2 border-gray-300 rounded-md p-3  focus:border-transparent'
-              placeholder='Enter Here'
-            />
-
-            
-            {/* Search Icon */}
-            <div onClick={handleSearchmobile} className="absolute flex items-center justify-center cursor-pointer right-[0%] rounded-r-lg top-[68%] -translate-y-1/2 w-10 md:h-[50px] md:top-[54px] h-[62%] sm:right-0 sm:top-[68%] lg:right-[0%]"
-              style={{ backgroundColor: layout_color }}>
-              <Search size={20} className="text-white" />
-            </div>
-          </div>
-        </div>
-
-
+      
         <form onSubmit={onSubmit} className='mt-5'>
 
-           <div className='grid grid-rows md:grid-cols-2 gap-3'>
-           <div className='flex flex-col'>
-            <label className='text-black mb-1 font-normal'>Customer Name<span className='text-red-400'>*</span></label>
-            <input
-              readOnly
-              type='text'
-              name='customer_name'
-              value={formData.customer_name}
-              className='border-2 w-full order-gray-300 cursor-not-allowed rounded-md p-2 pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
-              placeholder='Enter name'
-            />
-            <p style={{ color: "red" }}>{errors?.customer_name}</p>
-          </div>
-          <div className='flex flex-col'>
-            <label className='text-black mb-1 font-normal'>Address</label>
-          
-            <input
-              readOnly
-              type='text'
-              name='address'
-              value={formData.address}
-              className='border-2 border-gray-300 cursor-not-allowed rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
-              placeholder='Enter address'
-            />
-          </div>
-           </div>
-          
-          <div className="flex flex-col">
-          <h2 className='text-1xl font-bold mb-4 mt-2'>Scheme Account Details</h2>
-          <div className='grid grid-rows-2 md:grid-cols-2 gap-5'>
-
+          <div className='grid grid-rows md:grid-cols-2 gap-3'>
             <div className='flex flex-col'>
-              <label className='text-black mb-1 font-normal'>Scheme Classification<span className='text-red-400'>*</span></label>
-              <div className="relative">
-                <select name="id_classification" value={formData.id_classification} onChange={(e) => { filterInputchange(e); }} className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
-                  <option value='' >--Select--</option>
-                  {classifyfilter.map((classify) => (
-                    <option key={classify._id} value={classify._id}>{classify.classification_name}</option>
-                  ))
-                  }
-                </select>
-            
-                <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
-                  <path d="M19 9l-7 7-7-7"></path>
-                </svg>
-              </div>
-           
-              </div>
-              <p style={{ color: "red" }}>{errors?.id_classification}</p>
-            </div>
-            <div className='flex flex-col'>
-              <label className='text-black mb-1 font-normal'>Scheme<span className='text-red-400'>*</span></label>
-              <div className="relative">
-                <select name="id_scheme" value={formData.id_scheme} onChange={filterInputchange} className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
-                  <option value=''>--Select--</option>
-                  {schemefilter.map((scheme) => (
-                    <option key={scheme._id} value={scheme._id}>
-                      {scheme.scheme_name}
-                      {scheme.scheme_type === 4 || scheme.scheme_type === 5 || scheme.scheme_type === 6 || scheme.scheme_type === 7 || scheme.scheme_type === 8 || scheme.scheme_type === 9 || scheme.scheme_type === 10 ? ` (Rs. ${scheme.min_amount} - Rs. ${scheme.max_amount})` : ''}
-                      {scheme.scheme_type === 3 ? ` (${scheme.min_weight} - ${scheme.max_weight})` : ''}
-                      {scheme.scheme_type === 0 || scheme.scheme_type === 1 || scheme.scheme_type === 2 ? ` (Rs. ${scheme.amount})` : ''}
-                    </option>
-                  ))}
-                </select>
-
-          
-                <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
-                  <path d="M19 9l-7 7-7-7"></path>
-                </svg>
-              </div>
-           
-              </div>
-              <p style={{ color: "red" }}>{errors?.id_scheme}</p>
-            </div>
-            <div className='flex flex-col'>
-              <label className='text-black mb-1 font-normal'>Maturity Month<span className='text-red-400'>*</span></label>
+              <label className='text-black mb-1 font-normal'>Customer Name<span className='text-red-400'>*</span></label>
               <input
-                type='text'
-                name='maturity_month'
-                value={formData.maturity_month}
-                className='border-2 cursor-not-allowed border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
-                placeholder='Enter Maturity Month'
                 readOnly
+                type='text'
+                name='customer_name'
+                value={formData.customer_name}
+                className='border-2 w-full order-gray-300 cursor-not-allowed rounded-md p-2 pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
+                placeholder='Enter name'
               />
-              <p style={{ color: "red" }}>{errors?.maturity_month}</p>
+              <p style={{ color: "red" }}>{errors?.customer_name}</p>
             </div>
             <div className='flex flex-col'>
-              <label className='text-black mb-1 font-normal'>Total Installment<span className='text-red-400'>*</span></label>
+              <label className='text-black mb-1 font-normal'>Address</label>
+
               <input
-                type='text'
-                name='total_installments'
-                value={formData.total_installments}
-                className='border-2 cursor-not-allowed border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
-                placeholder='Enter Total Installment'
                 readOnly
-              />
-              <p style={{ color: "red" }}>{errors?.total_installments}</p>
-            </div>
-            <div className='flex flex-col'>
-              <label className='text-black mb-1 font-normal'>Account Name<span className='text-red-400'>*</span></label>
-              <input
                 type='text'
-                name='account_name'
-                value={formData.account_name}
-                className='border-2 border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
-                placeholder='Enter Account Name'
+                name='address'
+                value={formData.address}
+                className='border-2 border-gray-300 cursor-not-allowed rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
+                placeholder='Enter address'
               />
-              <p style={{ color: "red" }}>{errors?.account_name}</p>
             </div>
-            {parseInt(isaccountno) === 1 && (
+          </div>
+
+          <div className="flex flex-col mt-5">
+
+            <div className='grid grid-rows-2 md:grid-cols-2 gap-5'>
+
               <div className='flex flex-col'>
-                <label className='text-black mb-1 font-normal'>Account Number</label>
-                <input
-                  type='text'
-                  name='scheme_acc_number'
-                  onChange={(e) => { filterInputchange(e); }}
-                  value={formData.scheme_acc_number}
-                  className='border-2 border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
-                  placeholder='Enter Account Number'
-                />
+                <label className='text-black mb-1 font-normal'>Scheme Classification<span className='text-red-400'>*</span></label>
+                <div className="relative">
+                  <select name="id_classification" value={formData.id_classification} onChange={(e) => { filterInputchange(e); }} className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
+                    <option value='' >--Select--</option>
+                    {classifyfilter.map((classify) => (
+                      <option key={classify._id} value={classify._id}>{classify.classification_name}</option>
+                    ))
+                    }
+                  </select>
 
+                  <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                    <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
+                      <path d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </div>
+
+                </div>
+                <p style={{ color: "red" }}>{errors?.id_classification}</p>
               </div>
-            )}
-            <div className='flex flex-col'>
-              <label className='text-gray-700 mb-1 font-normal'>Start Date<span className='text-red-400'>*</span></label>
-              <div className="relative">
-                <DatePicker
-                  selected={formData.start_date}
-                  onChange={handleStartDateChange}
-                  dateFormat="dd-MM-yyyy"
-                  placeholderText="Select Date"
-                  className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                  showMonthDropdown
-                  showYearDropdown
-                  dropdownMode="select"
-                  wrapperClassName="w-full"
-                />
-                <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-gray-500 w-14 h-[43px] justify-center items-center flex rounded-r-md pointer-events-none">
-                  <CalendarDays size={20} />
-                </span>
+              <div className='flex flex-col'>
+                <label className='text-black mb-1 font-normal'>Scheme<span className='text-red-400'>*</span></label>
+                <div className="relative">
+                  <select name="id_scheme" value={formData.id_scheme} onChange={filterInputchange} className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
+                    <option value=''>--Select--</option>
+                    {schemefilter.map((scheme) => (
+                      <option key={scheme._id} value={scheme._id}>
+                        {scheme.scheme_name}
+                        {scheme.scheme_type === 4 || scheme.scheme_type === 5 || scheme.scheme_type === 6 || scheme.scheme_type === 7 || scheme.scheme_type === 8 || scheme.scheme_type === 9 || scheme.scheme_type === 10 ? ` (Rs. ${scheme.min_amount} - Rs. ${scheme.max_amount})` : ''}
+                        {scheme.scheme_type === 3 ? ` (${scheme.min_weight} - ${scheme.max_weight})` : ''}
+                        {scheme.scheme_type === 0 || scheme.scheme_type === 1 || scheme.scheme_type === 2 ? ` (Rs. ${scheme.amount})` : ''}
+                      </option>
+                    ))}
+                  </select>
+
+
+                  <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                    <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
+                      <path d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </div>
+
+                </div>
+                <p style={{ color: "red" }}>{errors?.id_scheme}</p>
               </div>
-              <p style={{ color: "red" }}>{errors?.start_date}</p>
-            </div>
-            <div className='flex flex-col'>
-              <label className='text-black mb-1 font-normal'>Maturity Date<span className='text-red-400'>*</span></label>
-              <div className="relative">
+              <div className='flex flex-col'>
+                <label className='text-black mb-1 font-normal'>Maturity Month<span className='text-red-400'>*</span></label>
                 <input
                   type='text'
-                  name="maturity_date"
-                  value={formData.maturity_date}
+                  name='maturity_month'
+                  value={formData.maturity_month}
                   className='border-2 cursor-not-allowed border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
-                  placeholder='Enter Maturity Date'
+                  placeholder='Enter Maturity Month'
                   readOnly
                 />
+                <p style={{ color: "red" }}>{errors?.maturity_month}</p>
               </div>
-              <p style={{ color: "red" }}>{errors?.maturity_date}</p>
-            </div>
-            {ispayable === true && (
               <div className='flex flex-col'>
-                <label className='text-black mb-1 font-normal'>Payable<span className='text-red-400'>*</span></label>
+                <label className='text-black mb-1 font-normal'>Total Installment<span className='text-red-400'>*</span></label>
+                <input
+                  type='text'
+                  name='total_installments'
+                  value={formData.total_installments}
+                  className='border-2 cursor-not-allowed border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
+                  placeholder='Enter Total Installment'
+                  readOnly
+                />
+                <p style={{ color: "red" }}>{errors?.total_installments}</p>
+              </div>
+              <div className='flex flex-col'>
+                <label className='text-black mb-1 font-normal'>Account Name<span className='text-red-400'>*</span></label>
+                <input
+                  type='text'
+                  name='account_name'
+                  value={formData.account_name}
+                  className='border-2 border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
+                  placeholder='Enter Account Name'
+                />
+                <p style={{ color: "red" }}>{errors?.account_name}</p>
+              </div>
+              {parseInt(isaccountno) === 1 && (
+                <div className='flex flex-col'>
+                  <label className='text-black mb-1 font-normal'>Account Number</label>
+                  <input
+                    type='text'
+                    name='scheme_acc_number'
+                    onChange={(e) => { filterInputchange(e); }}
+                    value={formData.scheme_acc_number}
+                    className='border-2 border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
+                    placeholder='Enter Account Number'
+                  />
+
+                </div>
+              )}
+              <div className='flex flex-col'>
+                <label className='text-gray-700 mb-1 font-normal'>Start Date<span className='text-red-400'>*</span></label>
+                <div className="relative">
+                  <DatePicker
+                    selected={formData.start_date}
+                    onChange={handleStartDateChange}
+                    dateFormat="dd-MM-yyyy"
+                    placeholderText="Select Date"
+                    className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                    showMonthDropdown
+                    showYearDropdown
+                    dropdownMode="select"
+                    wrapperClassName="w-full"
+                  />
+                  <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-gray-500 w-14 h-[43px] justify-center items-center flex rounded-r-md pointer-events-none">
+                    <CalendarDays size={20} />
+                  </span>
+                </div>
+                <p style={{ color: "red" }}>{errors?.start_date}</p>
+              </div>
+              <div className='flex flex-col'>
+                <label className='text-black mb-1 font-normal'>Maturity Date<span className='text-red-400'>*</span></label>
                 <div className="relative">
                   <input
-                    type='number'
-                    name="amount"
-                    value={formData.amount}
-                    min='1'
-                    onChange={filterInputchange}
-                    className='border-2 border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
-                    placeholder='Enter Amount'
+                    type='text'
+                    name="maturity_date"
+                    value={formData.maturity_date}
+                    className='border-2 cursor-not-allowed border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
+                    placeholder='Enter Maturity Date'
+                    readOnly
                   />
-                  <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-white w-14 h-[43px] justify-center items-center flex rounded-r-md"
-                    style={{ backgroundColor: layout_color }}>INR</span>
                 </div>
-                <p style={{ color: "red" }}>{errors?.amount}</p>
+                <p style={{ color: "red" }}>{errors?.maturity_date}</p>
               </div>
-            )}
-            <div className='flex flex-col'>
-              <label className='text-black mb-1 font-normal'>Referral By</label>
-              <div className="relative">
-                <select name="referral_id" value={formData.referral_id} onChange={filterInputchange} className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
-                  <option value='' >--Select--</option>
-                  {employeefilter.map((employee) => (
-                    <option key={employee._id} value={employee._id}>{employee.firstname + " " + employee.lastname}</option>
-                  ))
-                  }
-                </select>
-                <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                  <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
-                    <path d="M19 9l-7 7-7-7"></path>
-                  </svg>
+              {ispayable === true && (
+                <div className='flex flex-col'>
+                  <label className='text-black mb-1 font-normal'>Payable<span className='text-red-400'>*</span></label>
+                  <div className="relative">
+                    <input
+                      type='number'
+                      name="amount"
+                      value={formData.amount}
+                      min='1'
+                      onChange={filterInputchange}
+                      className='border-2 border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
+                      placeholder='Enter Amount'
+                    />
+                    <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-white w-14 h-[43px] justify-center items-center flex rounded-r-md"
+                      style={{ backgroundColor: layout_color }} >INR</span>
+                  </div>
+                  <p style={{ color: "red" }}>{errors?.amount}</p>
                 </div>
-              </div>
-            </div>
-            <div className='flex flex-col'>
-              <label className='text-black mb-1 font-normal'>Agent Collection By<span className='text-red-400'> *</span></label>
-              <div className="relative">
-                <select name="collectionuserid" value={formData.collectionuserid} onChange={filterInputchange} className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
-                  <option value='' >--Select--</option>
-                  {employeefilter.map((employee) => (
-                    <option key={employee._id} value={employee._id}>{employee.firstname + " " + employee.lastname}</option>
-                  ))
-                  }
-                </select>
+              )}
 
-                <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                  <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
-                    <path d="M19 9l-7 7-7-7"></path>
-                  </svg>
+              <div className='flex flex-col relative'>
+                <label className='text-black mb-1 font-normal'>Search Refferral Number<span className='text-red-400'>*</span></label>
+                <input
+                  type='text'
+                  value={mobile}
+                  onChange={handleautocompletemobile}
+                  className='border-2 border-gray-300 rounded-md p-2  focus:border-transparent'
+                  placeholder='Enter Here'
+                />
+
+
+                {/* Search Icon */}
+                <div onClick={handleSearchmobile} className="absolute flex items-center justify-center cursor-pointer right-[0%] rounded-r-lg top-[68%] -translate-y-1/2 w-10 md:h-[43px] md:top-[50px] h-[62%] sm:right-0 sm:top-[68%] lg:right-[0%]"
+                  style={{ backgroundColor: layout_color }}>
+                  <Search size={20} className="text-white" />
                 </div>
               </div>
+
+              <div className='flex flex-col'>
+                <label className='text-black mb-1 font-normal'>Referral By</label>
+                <div className="relative">
+                  <select name="referral_id" value={formData.referral_id} onChange={filterInputchange} className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
+                    <option value='' >--Select--</option>
+                    {employeefilter.map((employee) => (
+                      <option key={employee._id} value={employee._id}>{employee.firstname + " " + employee.lastname}</option>
+                    ))
+                    }
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                    <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
+                      <path d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              <div className='flex flex-col'>
+                <label className='text-black mb-1 font-normal'>Agent Collection By<span className='text-red-400'> *</span></label>
+                <div className="relative">
+                  <select name="collectionuserid" value={formData.collectionuserid} onChange={filterInputchange} className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
+                    <option value='' >--Select--</option>
+                    {employeefilter.map((employee) => (
+                      <option key={employee._id} value={employee._id}>{employee.firstname + " " + employee.lastname}</option>
+                    ))
+                    }
+                  </select>
+
+                  <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                    <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
+                      <path d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+
             </div>
           </div>
-          </div>
-          
+
 
           <div className='bg-white p-2 border-t-2 border-gray-300 mt-4'>
             <div className='flex justify-end gap-2 mt-3'>
@@ -783,8 +766,9 @@ const AddSchemeAccount = () => {
                 Cancel
               </button>
               <button
-                className='bg-[#61A375] text-white rounded-md p-2 w-full lg:w-20'
+                className=' text-white rounded-md p-2 w-full lg:w-20'
                 type='submit'
+                style={{ backgroundColor: layout_color }}
               >
                 Submit
               </button>

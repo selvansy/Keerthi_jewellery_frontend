@@ -54,7 +54,20 @@ export const deleteemployee = async (id) => {
 }
  
 
- 
+//Wallet
+
+export const getallwallet = async (data) => {
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/wallet/get-rate`,data);
+    return response.data;
+}
+
+// 
+
+export const addwalletData = async (data) => {
+    const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/wallet/rate`,data);
+    return response.data;
+}
+
  
  
  
@@ -1535,7 +1548,6 @@ export const getSchemeTable= async(data)=>{
 }
 
 export const getschemeById= async(id)=>{
-  
     const response= await Api.get(`${import.meta.env.VITE_API_URL}/api/client/scheme/${id}`)
     return response.data
 }
@@ -1548,7 +1560,7 @@ export const changeschemestatus = async (id) => {
 
 export const updateScheme = async (id,data) => {
     const response = await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/scheme/${id}`,data);
-    return response.data;
+    return response;
 }
 
 //add scheme
