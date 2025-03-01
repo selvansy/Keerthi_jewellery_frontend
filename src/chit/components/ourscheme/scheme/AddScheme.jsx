@@ -328,7 +328,7 @@ const SchemeForm = () => {
         scheme_name: schemeData.data.scheme_name || "",
         code: schemeData.data.code || "",
         id_classification: schemeData.data.id_classification._id || "",
-        id_branch: schemeData?.data?.id_banch || "",
+        id_branch: schemeData?.data?.id_branch || "",
         id_metal: schemeData.data.id_metal._id || "",
         id_purity: schemeData.data.id_purity._id || "",
         installment_type: schemeData.data.installment_type || "",
@@ -715,12 +715,12 @@ console.log(formik.errors)
               </label>
               <Select
                 styles={customStyles}
-                options={branch}
+                options={branch || []}
                 placeholder="Select Branch"
-                value={branch.find(
+                value={branch || [].find(
                   (option) => option.value === formik.values.id_branch
                 )}
-                onChange={(option) => formik.setFieldValue("id_branch", option)}
+                onChange={(option) => formik.setFieldValue("id_branch", option.value || "")}
               />
               {formik.errors.id_branch && (
                 <div className="text-red-500 text-sm mt-1">
