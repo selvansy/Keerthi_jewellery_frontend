@@ -494,7 +494,7 @@ const AddGiftIssued = () => {
                 onChange={inputChange}
                 readOnly
                 type='text'
-                className='border-2 border-gray-300 rounded-md p-3 w-full pr-16 focus:outline-none focus:ring-2   focus:border-transparent'
+                className='border-2 border-gray-300 bg-[#e5e7eb] rounded-md p-3 w-full pr-16 focus:outline-none focus:ring-2   focus:border-transparent'
                 placeholder=''
               />
               {formErrors.id_customer && <span className="text-red-500 text-sm mt-1">{formErrors.id_customer}</span>}
@@ -507,7 +507,7 @@ const AddGiftIssued = () => {
                 onChange={inputChange}
                 readOnly
                 type='text'
-                className='border-2 border-gray-300 rounded-md p-3 w-full pr-16 focus:outline-none focus:ring-2   focus:border-transparent'
+                className='border-2 border-gray-300 bg-[#e5e7eb] rounded-md p-3 w-full pr-16 focus:outline-none focus:ring-2   focus:border-transparent'
                 placeholder=''
               />
             </div>

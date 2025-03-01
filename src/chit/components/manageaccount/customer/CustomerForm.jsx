@@ -6,6 +6,7 @@ import { CalendarDays, Camera, X, Send, Plus, Minus } from 'lucide-react'
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import { updatecustomer, getcustomerById, getallbranch, allstate, addcustomer, allcountry, allcity, } from '../../../api/Endpoints';
+import {SetaccExp} from "../../../../redux/clientFormSlice"
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { sendOtp, closeBill } from "../../../api/BackendUrl"
@@ -13,7 +14,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import Webcam from 'react-webcam';
 import { toast } from 'react-toastify';
 import { useParams } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import SpinLoading from '../../common/spinLoading';
 import Select from "react-select";
 import profileplaceholder from '../../../../assets/profileplaceholder.png'
@@ -24,8 +25,10 @@ const CustomerForm = () => {
 
     const { id } = useParams();
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const layout_color = useSelector((state) => state.clientForm.layoutColor);
     const roledata = useSelector((state) => state.clientForm.roledata);
+
     const id_branch = roledata?.branch;
 
 
@@ -43,10 +46,11 @@ const CustomerForm = () => {
     const [state, setState] = useState("")
     const [city, setCity] = useState("")
     const [branchData, setBranchData] = useState([]);
+    const [branch, setBranch] = useState(id_branch)
     const [id_proof, setid_proof] = useState(null);
     const [cus_img, setcus_img] = useState("");
     const [pathurl, setPathurl] = useState('');
-    const [branch, setBranch] = useState(id_branch)
+
 
     const [formData, setFormData] = useState({
         firstname: '',
@@ -88,6 +92,7 @@ const CustomerForm = () => {
                 id_branch: id_branch
             }))
         }
+
     }, []);
 
     useEffect(() => {
@@ -163,9 +168,9 @@ const CustomerForm = () => {
         queryFn: getallbranch,
     });
 
-
-    useEffect(() => {
-
+    
+      useEffect(() => {
+    
         if (branchresponse) {
             const data = branchresponse.data
             const branch = data.map((branch) => ({
@@ -174,6 +179,13 @@ const CustomerForm = () => {
             }));
             setBranchData(branch);
         }
+    
+      }, [branchresponse])
+
+
+    useEffect(() => {
+
+       
 
 
         if (countryresponse) {
@@ -203,13 +215,13 @@ const CustomerForm = () => {
             setCityData(city)
         }
 
-    }, [cityresponse, stateresponse, countryresponse, branchresponse])
+    }, [cityresponse, stateresponse, countryresponse])
 
 
     const handleSubmit = () => {
         setisLoading(true)
         const formPayload = new FormData();
-
+     
         Object.entries(formData).forEach(([key, value]) => {
             if (value) formPayload.append(key, value);
         });
@@ -227,24 +239,31 @@ const CustomerForm = () => {
 
             if (response) {
                 toast.success(response.message);
+                dispatch(SetaccExp({
+                    customer_name:formDatafirstname + ' ' + formDatalastname,
+                    address:formDataaddress,
+                    id_branch:formDataid_branch
+                }))
                 setFormData({})
             }
             setisLoading(false)
         },
         onError: (error) => {
             setisLoading(false)
-            console.error('Erro:', error);
+            console.error('Error:', error);
         }
     });
 
     const { mutate: updateCustomerData } = useMutation({
         mutationFn: updatecustomer,
         onSuccess: (response) => {
+
             toast.success(response.message)
             setFormData({})
             setisLoading(false)
+            navigate("/managecustomers/customer/")
         },
-
+       
         onError: (error) => {
             setisLoading(false)
             console.error("Erro:", error);
@@ -274,6 +293,7 @@ const CustomerForm = () => {
             }
         }
     };
+
     const handleFileChange = (e) => {
         e.preventDefault();
         const file = e.target.files[0];
@@ -399,8 +419,9 @@ const CustomerForm = () => {
                     enableReinitialize={true}
                     validateOnChange={false}
                     onSubmit={(values) => {
-
+                        
                         setFormData(values)
+                        console.log("form",formData)
                         setFormData(prev => ({
                             ...prev,
                             id_branch: id_branch
@@ -443,15 +464,13 @@ const CustomerForm = () => {
 
                                     </div>
 
-
-
                                     <div className='flex flex-col'>
 
                                         <label className='text-black mb-1 font-medium'>Branch<span className='text-red-400'>*</span></label>
 
                                         <Select
                                             options={branchData}
-                                            value={branchData.find(branch => branch.value === values.id_branch) || branch}
+                                            value={branchData.find(branch => branch.value === values.id_branch) || ""}
                                             onChange={(branch) => {
                                                 setFieldValue("id_branch", branch.value)
                                                 setBranch(branch.value)
@@ -464,8 +483,6 @@ const CustomerForm = () => {
                                         {errors.id_branch ? <div style={{ color: "red" }}>{errors.id_branch}</div> : null}
 
                                     </div>
-
-
 
                                     <div className='flex flex-col'>
                                         <label className='text-gray-700 mb-1 font-medium'>Mobile<span className='text-red-400'>*</span></label>

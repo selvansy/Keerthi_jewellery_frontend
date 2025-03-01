@@ -109,7 +109,7 @@ const GiftStock = () => {
   useEffect(() => {
     
     if(id_branch === "0"){
-       giftaccountcountMutate({id_branch:branch});
+       giftaccountcountMutate({id_branch:id_branch});
     }
   }, [id_branch]);
 
