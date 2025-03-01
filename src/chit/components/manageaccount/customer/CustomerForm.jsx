@@ -9,7 +9,7 @@ import { updatecustomer, getcustomerById, getallbranch, allstate, addcustomer, a
 import { SetaccExp } from "../../../../redux/clientFormSlice"
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import { sendOtp, closeBill } from "../../../api/BackendUrl"
+import { sendOtp,verifyOtp } from "../../../api/BackendUrl"
 import { useMutation, useQuery } from '@tanstack/react-query';
 import Webcam from 'react-webcam';
 import { toast } from 'react-toastify';
@@ -50,6 +50,7 @@ const CustomerForm = () => {
     const [id_proof, setid_proof] = useState(null);
     const [cus_img, setcus_img] = useState("");
     const [pathurl, setPathurl] = useState('');
+    const [mobile,setMobile] = useState("")
 
 
     const [formData, setFormData] = useState({
@@ -94,7 +95,8 @@ const CustomerForm = () => {
             setBranch(id_branch)
         }
 
-    }, []);
+    }, [id_branch]);
+
 
     useEffect(() => {
         if (id) {
@@ -345,12 +347,9 @@ const CustomerForm = () => {
         setPathurl(null);
     };
 
-
-
     const SendOtpToMobile = () => {
         const payload = {
-            mobile: formData.mobile,
-            otp: otpNumber,
+            mobile: formData.mobile || mobile,
             branchId: branch
         }
         setCanResend(true);
@@ -374,36 +373,30 @@ const CustomerForm = () => {
 
 
     const handleVerifyOtp = (num) => {
-
-        if (validateMobile(num)) {
-            toast.error("Mobile must be 10 digits");
-            return;
-        }
-
         const payload = {
-            mobile: mobileNum || mobile,
-            otp: otpNumber,
-            branchId: selectedBranch
+            mobile: formData.mobile || mobile,
+            otp: num,
         }
-        postVerifyOtp(payload)
-        setTimer(60);
-        setCanResend(false);
+        VerifyOtpNumber(payload)
+        
     }
 
 
-    const { mutate: postVerifyOtp } = useMutation({
-        mutationFn: sendOtp,
+    const { mutate: VerifyOtpNumber } = useMutation({
+        mutationFn:(data)=> verifyOtp(data),
         onSuccess: (response) => {
             if (response) {
                 toast.success(response.message);
-                setTimer(60);
-                setCanResend(false);
+                
             }
         },
+        onError:(error)=>{
+            toast.error(error.response?.data?.message)
+        }
     });
 
     useEffect(() => {
-        if (timer > 0 && canResend) {
+        if (timer > 0 && canResend === true) {
           const interval = setInterval(() => {
             setTimer((prev) => prev - 1);
           }, 1000);
@@ -411,7 +404,7 @@ const CustomerForm = () => {
         } else {
             setCanResend(false);
         }
-      }, [canResend,timer]);
+      }, [timer,canResend]);
 
 
     const formatDate = (date) => {
@@ -480,39 +473,43 @@ const CustomerForm = () => {
 
                                     </div>
 
-                                    {
-                                        id_branch !== "0" &&
-                                        <div className='flex flex-col'>
-
-                                        <label className='text-black mb-1 font-medium'>Branch<span className='text-red-400'>*</span></label>
+                                    <div className='flex flex-col'>
+                                        <label className='text-black mb-1 font-medium'>
+                                            Branch<span className='text-red-400'>*</span>
+                                        </label>
 
                                         <Select
                                             options={branchData}
-                                            value={branchData.find(branch => branch.value === values.id_branch) || ""}
+                                            value={branchData.find(branch => branch.value === (id_branch !== "0" ? values.id_branch : formData.id_branch)) || ""}
                                             onChange={(branch) => {
-                                                setFieldValue("id_branch", branch.value)
-                                                setBranch(branch.value)
+                                                setFieldValue("id_branch", branch.value);
+                                                setBranch(branch.value);
                                             }}
                                             customSelectStyles={customSelectStyles}
                                             isLoading={loadingbranch}
+                                            isDisabled={id_branch !== "0"} 
                                             placeholder="Select Branch"
                                         />
 
-                                        {errors.id_branch ? <div style={{ color: "red" }}>{errors.id_branch}</div> : null}
-
+                                        {errors.id_branch && <div style={{ color: "red" }}>{errors.id_branch}</div>}
                                     </div>
 
-                                    }
-
                                    
-
+                                    
                                     <div className='flex flex-col'>
                                         <label className='text-gray-700 mb-1 font-medium'>Mobile<span className='text-red-400'>*</span></label>
                                         <Field
                                             type='text'
                                             name='mobile'
                                             onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '')}
-                                            onChange={handleChange}
+                                            onChange={(e)=>{
+                                                    const value = e.target.value;
+                                                    setFormData(prev=>({
+                                                        ...prev,
+                                                        mobile:value
+                                                    }))
+                                                    setMobile(value)
+                                            }}
                                             value={values.mobile}
                                             pattern="\d{10}"
                                             maxLength={"10"}
@@ -898,6 +895,7 @@ const CustomerForm = () => {
                                             To verify account with OTP verification, kindly check the checkbox.
                                         </h2>
                                     </div>
+                                
                                     {showVerification && (
                                         <div className="grid grid-rows-2 md:grid-cols-2 gap-4">
                                             {/* Mobile Number Input */}
@@ -911,7 +909,11 @@ const CustomerForm = () => {
                                                     value={values.mobile}
                                                     className="border-2 w-full border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:[#D1D5DB]"
                                                     placeholder="Enter Here"
-                                                    onChange={handleChange}
+                                                    onChange={(e)=>{
+                                                    
+                                                        const value = Number(e.target.value)
+                                                        setMobile(value)
+                                                    }}
                                                     defaultValue={""}
                                                 />
                                                 <div
@@ -933,10 +935,15 @@ const CustomerForm = () => {
                                                     name="otp"
                                                     className="border-2 w-full border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:[#D1D5DB]"
                                                     placeholder="Enter OTP"
-                                                    onChange={(e) => setOtpNumber(e.target.value)}
+                                                    value={otpNumber || ""}
+                                                    onChange={(e) => {
+                                                        const value = e.target.value.replace(/\D/g, ""); 
+                                                        setOtpNumber(value);
+                                                    }}
                                                 />
                                                 <div
                                                     onClick={() => handleVerifyOtp(otpNumber)}
+                                                    disabled={!otpNumber}
                                                     className="absolute flex items-center justify-center cursor-pointer right-0 top-[29px] w-10 h-10 bg-[#023453] rounded-r-md  transition"
                                                 >
                                                     <Send size={22} className="text-white" />
@@ -945,17 +952,21 @@ const CustomerForm = () => {
 
                                             {/* Countdown Timer */}
                                             <div className="flex flex-col text-sm text-gray-600 mt-1">
-                                                {canResend ? (
+                                                {canResend ?? (
                                                     <span
                                                         className="text-blue-600 cursor-pointer hover:underline"
                                                         onClick={SendOtpToMobile}
                                                     >
                                                         Resend OTP
                                                     </span>
-                                                ) : (
+                                                ) ? (
                                                     `Resend OTP in ${timer} seconds`
-                                                )}
+                                                )
+                                                :
+                                                null
+                                            }
                                             </div>
+
                                         </div>
                                     )}
 
