@@ -95,21 +95,6 @@ const ExistingCusTable = () => {
     getcustomertableMutate(payload);
   }, [currentPage, itemsPerPage, debouncedSearch]);
 
- 
-  useEffect(() => {
-    eventEmitter.on('CONFIRMATION_SUBMIT', async(data) => {
-      try {
-        deletecustomerMutate(data.customerId);
-         
-      } catch (error) {
-        console.error('Error:', error);
-       
-      }
-    });
-    return () => {
-      eventEmitter.off('CONFIRMATION_SUBMIT');
-    };
-  }, []);
 
 
   const filterInputchange = (e) => {
@@ -204,6 +189,7 @@ const ExistingCusTable = () => {
 
 
     const handleDelete = (id) => {
+
       setActiveDropdown(null);
       dispatch(openModal({
         modalType: 'CONFIRMATION',
@@ -225,40 +211,47 @@ const ExistingCusTable = () => {
   
     };
 
+     const { mutate: deletecustomerMutate } = useMutation({
+        mutationFn:(id)=> deletecustomer(id),
+        onSuccess: (response) => {
+          if (response.message === "customer deleted successfully") {
+            const isLastItemOnPage = customerData.length === 1;
+            const isNotFirstPage = currentPage > 1;
+            if (isLastItemOnPage && isNotFirstPage) {
+              setCurrentPage(prev => prev - 1);
+            } else {
+              const payload = {
+                page: currentPage,
+                limit: itemsPerPage,
+                search: debouncedSearch,
+                from_date: from_date,
+                to_date: to_date,
+                id_branch: filters.id_branch
+            }
+              getcustomertableMutate(payload);
+            }
+          }
+            toast.success(response.message);
+            eventEmitter.off("CONFIRMATION_SUBMIT");
   
-    //mutation to get purity type
-    const { mutate: deletecustomerMutate } = useMutation({
-      mutationFn: (payload)=>deletecustomer(payload),
-      onSuccess: (response) => {
-       if(response){
-        toast.success(response.message);
-        const payload = {
-            page: currentPage,
-            limit: itemsPerPage,
-            search: debouncedSearch,
-            from_date: from_date,
-            to_date: to_date,
-            id_branch: filters.id_branch
-        }
-
-        const isLastItemOnPage = customerData.length === 1;
-        const isNotFirstPage = currentPage > 1;
-        if (isLastItemOnPage && isNotFirstPage) {
-          setCurrentPage(prev => prev - 1);
-        } else {
-        getcustomertableMutate(payload);
-        eventEmitter.off('CONFIRMATION_SUBMIT');
-       }
-        
-      }
-    },
-      onError: (error) => {
-        console.error("Error:", error);
-        eventEmitter.off('CONFIRMATION_SUBMIT');
-      },
-    });
-  
-  
+          },
+        onError: (error) => {
+          console.error("Error:", error);
+          toast.error("Failed to delete");
+        },
+      });
+    
+      useEffect(() => {
+        const handleDelete = (data) => {
+          deletecustomerMutate(data.customerId);
+        };
+    
+        eventEmitter.on("CONFIRMATION_SUBMIT", handleDelete);
+    
+        return () => {
+          eventEmitter.off("CONFIRMATION_SUBMIT", handleDelete);
+        };
+      }, []);
 
 
   const handleStatusToggle = async (id) => {
