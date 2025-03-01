@@ -317,11 +317,6 @@ const SchemeForm = () => {
         handleClassChange({ value: classItem.value, id: classItem.id });
       }
 
-      // Set fixed amounts if available
-      if (schemeData.fixedAmounts && schemeData.fixedAmounts.length > 0) {
-        setAmounts(schemeData.fixedAmounts);
-      }
-
       // Set field values
       formik.setValues({
         ...formik.values,
@@ -395,10 +390,17 @@ const SchemeForm = () => {
       if (schemeData?.data) {
         formik.setFieldValue("scheme_type", schemeData.data.scheme_type);
       }
-
-      setAmounts(schemeData.data.fixed_amounts);
+      
     }
   }, [id, schemeData]);
+
+  useEffect(() => {
+    if (schemeData?.data && Array.isArray(schemeData.data.fixed_amounts)) {
+      console.log(schemeData.data.fixed_amounts,'kdkd')
+      setAmounts(schemeData.data.fixed_amounts);
+    }
+  }, [schemeData?.data]);
+  
 
   useEffect(() => {
     if (installment_type?.data) {
@@ -1134,7 +1136,7 @@ console.log(formik.errors)
                         }`}
                         onClick={() => handleAmountSelect(index)}
                       >
-                        {amount.toLocaleString()}
+                        {amount?.toLocaleString()}
                       </button>
                     )}
                   </div>

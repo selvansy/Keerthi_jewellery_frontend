@@ -381,46 +381,33 @@ const Scheme = () => {
       ),
     },
     {
-      header: 'Scheme',
-      cell: (row) => {
-        if (row?.scheme_type === 0 || row?.scheme_type === 1 || row?.scheme_type === 2) {
-          return `${row?.scheme_name} (₹ ${row?.amount})`;
-        } else if (row?.scheme_type === 3) {
-          return `${row?.scheme_name} (GRM ${row?.min_weight} - ${row?.max_weight})`;
-        } else {
-          return `${row?.scheme_name} (₹  ${row?.min_amount} - ${row?.max_amount})`;
-        }
-      }
+        header: "Scheme",
+        cell: (row) => {
+          const { scheme_name, amount, min_amount, max_amount, min_weight, max_weight } = row;
+      
+          if (amount !== null && amount !== undefined) {
+            return `${scheme_name} (₹ ${amount})`;
+          } else if (min_weight !== null && max_weight !== null) {
+            return `${scheme_name} (GRM ${min_weight} - ${max_weight})`;
+          } else if (min_amount !== null && max_amount !== null) {
+            return `${scheme_name} (₹ ${min_amount} - ₹ ${max_amount})`;
+          } else {
+            return `${scheme_name} (Details Unavailable)`;
+          }
+        }, 
     },
     { header: "Code", cell: (row) => row?.code },
     {
       header: 'Metal Name',
-      cell: (row) => {
-        return row?.id_metal === 1 ? 'Gold' :
-          row?.id_metal === 2 ? 'Silver' :
-            row?.id_metal === 3 ? 'Diamond' :
-              row?.id_metal === 4 ? 'Platinum' : 'Gold Coins';
-      }
+      cell: (row) => row.metal_name
     },
     { header: "Installments", cell: (row) => row?.total_installments },
     { header: "Maturity Month", cell: (row) => row?.maturity_month },
     {
-      header: 'Scheme Type',
-      cell: (row) => {
-        if (row?.scheme_type === 1) return `Amount End Weight`;
-        else if (row?.scheme_type === 2) return `Amount To Weight`;
-        else if (row?.scheme_type === 3) return `Weight`;
-        else if (row?.scheme_type === 4) return `Flexible Amount To Bonus`;
-        else if (row?.scheme_type === 5) return `Flexiable Amount To Weight`;
-        else if (row?.scheme_type === 6) return `Fixed Amount To Weight`;
-        else if (row?.scheme_type === 7) return `Fixed Amount End Weight`;
-        else if (row?.scheme_type === 8) return `Fixed Amount To Bonus`;
-        else if (row?.scheme_type === 9) return `Flexible Amount End Weight`;
-        else if (row?.scheme_type === 10) return `Digi Gold`;
-        else return `Amount To Bonus`;
-      }
-    },
-    { header: "Classification", cell: (row) => row?.classificationDetails?.classification_name || 'N/A' },
+      header: "Scheme Type",
+      cell: (row) => row.schemetype_name,
+    },    
+    { header: "Classification", cell: (row) => row?.classification_name || 'N/A' },
     {
       header: "Create Date",
       cell: (row) => {
