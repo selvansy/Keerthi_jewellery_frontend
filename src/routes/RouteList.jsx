@@ -74,12 +74,12 @@ import OffersWhatsapp from "../chit/components/whatsapp/offers/index";
 import Organisation from "../chit/components/Setup/organisation";
 import Department from "../chit/components/Setup/dept/Department";
 import Topup from "../chit/components/Setup/topup";
-import SchemeForm from "../chit/components/ourscheme/scheme/newScheme";
 import Campaign from "../chit/components/Setup/campaign";
 import configNotification from "../chit/components/notification/notification-configurations/configNotification";
 import WalletRedemption from "../chit/components/wallet/WalletRedemption";
 import WalletHistory from "../chit/components/wallet/WalletHistory";
 import Addwallet from "../chit/components/wallet/Addwallet";
+import SchemeForm from "../chit/components/ourscheme/scheme/AddScheme";
 import RedeemHistory from "../chit/components/wallet/RedeemHistory";
 import PrecloseAccount from "../chit/components/manageaccount/preclose/PrecloseAccount";
 

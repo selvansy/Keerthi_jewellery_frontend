@@ -7,6 +7,9 @@ import { login  } from '../../redux/authSlice';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import SpinLoading from './common/spinLoading';
+import Logo from "../../assets/login.svg"
+import Background from "../../assets/LoginBg.PNG"
+import { toast } from 'react-toastify';
 const Login = () => {
     const dispatch= useDispatch()
     const navigate = useNavigate()
@@ -31,6 +34,7 @@ const Login = () => {
     },
     onError: (error) => {
       setLoading(false)
+      toast.error(error.response.data.message)
       console.error('Error fetching countries:', error);
     }
   });
@@ -52,16 +56,25 @@ const Login = () => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-100">
-      <div className="w-full max-w-md bg-white shadow-lg rounded-lg p-6">
-        <div className="text-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-800">Login</h1>
+    <div 
+  className="flex min-h-screen items-center justify-center bg-red-400" 
+  style={{ backgroundImage: `url(${Background})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+>
+      <div className="w-full max-w-md bg-white shadow-lg rounded-[16px] p-6">
+      <div className="text-center mb-4 flex justify-center  py-3">
+          <img src={Logo} alt="" srcset="" />
+        </div>
+        <div className="text-center py-3">
+          <h1 className="text-2xl font-bold text[#232323]">Sign-In</h1>
+        </div>
+        <div className='flex justify-center mb-8'>
+        <p className='w-[320px] text-[#6C7086] text-center '>Access the Aupay panel using your email and password.</p>
         </div>
         <form onSubmit={handleSubmit}>
           <div className="space-y-4">
-            <div className="space-y-2">
-              <div className="flex items-center border rounded-lg p-2 bg-gray-50">
-                <User className="text-gray-500" size={20} />
+            <div className="">
+              <label htmlFor="" className='ms-1'>Username or Email Id <span className='text-[#F04438]'>*</span>  </label>
+              <div className="flex items-center border rounded-lg p-2 bg-gray-50 mt-1">
                 <input
                   type="text"
                   name="username"
@@ -74,8 +87,9 @@ const Login = () => {
               </div>
             </div>
             <div className="space-y-2">
+            <label htmlFor="" className='ms-1'>Password <span className='text-[#F04438]'>*</span> </label>
               <div className="flex items-center border rounded-lg p-2 bg-gray-50">
-                <Lock className="text-gray-500" size={20} />
+               
                 <input
                   type="password"
                   name="password"
@@ -91,7 +105,7 @@ const Login = () => {
           <div className="mt-6">
             <button
               type={!isLoading?"submit":undefined}
-              className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-200"
+              className="w-full  text-white py-2 rounded-lg bg-[#004181] transition duration-200"
             >
               {isLoading?
               <div className='flex justify-center'>

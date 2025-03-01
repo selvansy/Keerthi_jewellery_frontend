@@ -353,38 +353,6 @@ const MetalRate = () => {
         return date.toLocaleDateString('en-GB'); 
       }
     },
-    {
-      header: "Gold(18CT)",
-      cell: (row) => row?.goldrate_18ct.$numberDecimal
-    },
-    {
-      header: "Gold(20CT)",
-      cell: (row) => row?.goldrate_20ct.$numberDecimal
-    },
-    {
-      header: "Gold(22CT)",
-      cell: (row) => row?.goldrate_22ct.$numberDecimal
-    },
-    {
-      header: "Gold(24CT)",
-      cell: (row) => row?.goldrate_24ct.$numberDecimal
-    },
-    {
-      header: "Silver",
-      cell: (row) => row?.silverrate_1gm.$numberDecimal
-    },
-    {
-      header: "Platinum",
-      cell: (row) => row?.platinum_1gm.$numberDecimal
-    },
-    {
-      header: "Diamond",
-      cell: (row) => row?.diamond_1gm.$numberDecimal
-    },
-    {
-      header: "Gold Coin",
-      cell: (row) => row?.goldcoin_1gm.$numberDecimal
-    }
 
   ];
 

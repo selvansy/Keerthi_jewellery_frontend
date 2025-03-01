@@ -1,0 +1,221 @@
+import * as Yup from "yup";
+
+export const schemeValidationSchema = Yup.object({
+  scheme_name: Yup.string()
+    .required("Scheme name is required")
+    .max(30, "Scheme name cannot exceed 30 characters"),
+  code: Yup.string()
+    .required("Scheme code is required")
+    .max(15, "Scheme code cannot exceed 15 characters"),
+  installment_type: Yup.string().required("Installment type is required"),
+  scheme_type:Yup.string().required('Scheme type is required'),
+  id_classification: Yup.string().required("Classification is required"),
+  id_purity: Yup.string().required("Purity is required"),
+  id_metal: Yup.string().required("Metal is required"),
+  maturity_period: Yup.number()
+    .typeError("Maturity Period must be a number")
+    .required("Maturity Period is required")
+    .integer("Maturity Period must be a whole number")
+    .positive("Maturity Period must be a positive number")
+    .max(336, "Maturity Period cannot exceed 336")
+    .test(
+      "max-length",
+      "Maturity month cannot be more than 3 digits",
+      (value) => String(value).length <= 3
+    ),
+  saving_type: Yup.number()
+    .optional("Saving type is required")
+    .required("Scheme type is required"),
+  totalCount: Yup.number().when("classType", {
+    is: true,
+    then: (schema) =>
+      schema
+        .required("Total count is required")
+        .min(0, "Minimum value allowed is 0")
+        .max(50, "Maximum value allowed is 50")
+        .test(
+          "maxDigits",
+          "Maximum 11 digits are allowed",
+          (value) => value && value.toString().length <= 11
+        ),
+  }),
+  incrementRate: Yup.number().when("classType", {
+    is: true,
+    then: (schema) =>
+      schema
+        .required("Increment rate is required")
+        .min(0, "Minimum value allowed is 0")
+        .test(
+          "maxDigits",
+          "Maximum 11 digits are allowed",
+          (value) => value && value.toString().length <= 11
+        ),
+  }),
+  startingAmount: Yup.number().when(["classType", "scheme_type"], {
+    is: (classType, scheme_type) => classType && [12, 3, 4].includes(scheme_type),
+    then: (schema) =>
+      schema
+        .required("Starting weight is required")
+        .min(0, "Minimum value allowed is 0")
+        .test(
+          "maxDigits",
+          "Maximum 11 digits are allowed",
+          (value) => value && value.toString().length <= 11
+        ),
+    otherwise: (schema) =>
+      schema.when("classType", {
+        is: true,
+        then: (schema) =>
+          schema
+            .required("Starting amount is required")
+            .min(0, "Minimum value allowed is 0")
+            .test(
+              "maxDigits",
+              "Maximum 11 digits are allowed",
+              (value) => value && value.toString().length <= 11
+            ),
+      }),
+  }),
+  description: Yup.string().required("Description is required"),
+  term_desc: Yup.string().required("Terms and conditions is required"),
+  classification_order: Yup.number(),
+  grace_period: Yup.number()
+    .typeError("Grace period must be a number")
+    .min(0, "Must be 0 or a positive number")
+    .when("grace_type", {
+      is: (grace_type) => !!grace_type,
+      then: Yup.number()
+        .required("Grace period is required")
+        .test(
+          "grace_period_validation",
+          "Grace period cannot be greater than maturity period",
+          function (grace_period) {
+            const { maturity_period } = this.parent;
+            return !maturity_period || grace_period <= maturity_period;
+          }
+        ),
+    }),
+  grace_fine: Yup.number()
+    .typeError("Grace fine must be a number")
+    .min(0, "Must be 0 or a positive number")
+    .max(100,"Fine amount must below 100")
+    .when("fine_amount", {
+      is: true,
+      then: Yup.number().required("Grace fine is required"),
+    }),
+  min_amount: Yup.number().when(["classType", "scheme_type"], {
+    is: (classType, scheme_type) =>
+      !classType && ![12, 3, 4].includes(scheme_type),
+    then: (schema) =>
+      schema
+        .required("Minimum Amount is required")
+        .min(0, "Must be 0 or a positive number"),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+  max_amount: Yup.number().when(["classType", "scheme_type"], {
+    is: (classType, scheme_type) =>
+      !classType && ![12, 3, 4].includes(scheme_type),
+    then: (schema) =>
+      schema
+        .required("Maximum Amount is required")
+        .min(0, "Must be 0 or a positive number"),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+  min_weight: Yup.number().when(["classType", "scheme_type"], {
+    is: (classType, scheme_type) =>
+      !classType && [12, 3, 4].includes(scheme_type),
+    then: (schema) =>
+      schema
+        .required("Minimum Weight is required")
+        .min(0, "Must be 0 or a positive number"),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+  max_weight: Yup.number().when(["classType", "scheme_type"], {
+    is: (classType, scheme_type) =>
+      (classType && [12, 3, 4].includes(scheme_type)) ||
+      (!classType && [12, 3, 4].includes(scheme_type)),
+    then: (schema) =>
+      schema
+        .required("Maximum Weight is required")
+        .min(0, "Must be 0 or a positive number"),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+  total_installments: Yup.number().required(
+    "Total Installments is required"
+  ),
+  buy_gst: Yup.number().optional("Buy GST is required")
+  .min(0,"Gst percentage should be below minimum 0")
+  .max(100,"Maximum gst percentage should be 100"),
+  buytgsttype: Yup.string().optional("Buy GST Type is required"),
+  wastagebenefit: Yup.string().required("Wastage Benefit is required"),
+  benefit_making: Yup.string().required(
+    "Benefit making charge is required"
+  ),
+  referral_rate: Yup.number()
+    .typeError("Must be a number")
+    .positive("Must be a positive number"),
+  incentive_rate: Yup.number()
+    .typeError("Must be a number")
+    .positive("Must be a positive number"),
+  cus_remarks: Yup.string().typeError("Must be a alphabet"),
+  agent_referral: Yup.number()
+    .typeError("Must be a number")
+    .positive("Must be a positive number"),
+  agent_incentive: Yup.number()
+    .typeError("Must be a number")
+    .positive("Must be a positive number"),
+  agent_remark: Yup.string().typeError("Must be a alphabet"),
+  agent_target: Yup.number()
+    .typeError("Must be a number")
+    .positive("Must be a positive number"),
+  partial_commission: Yup.number()
+    .typeError("Must be a number")
+    .positive("Must be a positive number")
+    .when("agent_target", {
+      is: (value) => value && value > 0,
+      then: Yup.number().required(
+        "Partial commission is required when agent target is set"
+      ),
+    }),
+  limit_installment: Yup.number()
+    .typeError("Must be a number")
+    .min(0, "Must be 0 or a positive number"),
+  pending_due_installment: Yup.number()
+    .typeError("Must be a number")
+    .min(0, "Must be 0 or a positive number"),
+  paid_installment: Yup.number()
+    .typeError("Must be a number")
+    .min(0, "Must be 0 or a positive number"),
+  scheme_customer_limit: Yup.number()
+    .typeError("Must be a number")
+    .min(0, "Must be 0 or a positive number"),
+  number_of_gifts: Yup.number()
+    .typeError("Must be a number")
+    .nullable()
+    .min(0, "Must be 0 or a positive number"),
+  reward_type: Yup.number()
+    .typeError("Must be a number")
+    .nullable()
+    .min(0, "Must be 0 or a positive number"),
+  reward_amount: Yup.number()
+    .typeError("Must be a number")
+    .nullable()
+    .min(0, "Must be 0 or a positive number"),
+  reward_percent: Yup.number()
+    .typeError("Must be a number")
+    .nullable()
+    .min(0, "Must be 0 or a positive number"),
+  not_paid_installment: Yup.number()
+    .typeError("Must be a number")
+    .min(0, "Must be 0 or a positive number"),
+  convenience_fee: Yup.number()
+    .optional("Must be a number")
+    .min(0, "Must be 0 or a positive number")
+    .max(100,"Maximum 100 percentage"),
+  fine_amount: Yup.number()
+    .typeError("Must be a number")
+    .min(0, "Must be 0 or a positive number"),
+  cumulative_fine_amount: Yup.number()
+    .typeError("Must be a number")
+    .min(0, "Must be 0 or a positive number"),
+});

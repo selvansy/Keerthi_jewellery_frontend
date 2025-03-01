@@ -3,43 +3,49 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { CalendarDays, Search } from "lucide-react";
 import "react-datepicker/dist/react-datepicker.css";
+import Select from "react-select";
 import DatePicker from "react-datepicker";
-import { getallbranch, getBranchById,  createnewarrivals, updatenewarrivals, newarrivalsbyid, getproductTable, } from "../../../api/Endpoints"
+import {
+  getallbranch,
+  getBranchById,
+  createnewarrivals,
+  updatenewarrivals,
+  newarrivalsbyid,
+  getproductTable,
+} from "../../../api/Endpoints";
 import { setid } from "../../../../redux/clientFormSlice";
 import { toast } from "react-toastify";
 import { useSelector, useDispatch } from "react-redux";
+import { customSelectStyles } from "../../Setup/purity";
 
 const AddNewArrival = () => {
   const navigate = useNavigate();
   let dispatch = useDispatch();
   const roledata = useSelector((state) => state.clientForm.roledata);
   const id_branch = roledata?.branch;
+  const {id}=useParams()
 
-  const id = useSelector((state) => state.clientForm.id);
-
-  const MAX_IMAGES = 3;
+  const MAX_IMAGES = 1;
 
   const [products, setAllProducts] = useState([]);
-
+  
   const [branchList, setBranchList] = useState([]);
   let [branch, setbranch] = useState("");
   const [new_arrivals_img, setNewarrivalsImgPath] = useState([]);
   const todaydate = new Date();
   const [expiry_date, setExpriyDate] = useState(todaydate);
   const [formData, setFormData] = useState({
-    name: "",
-    show_rate: "",
+    id_product: "",
     description: "",
     id_branch: id_branch,
     price: "",
-    startDate:new Date(),
-    endDate:null
+    start_date: new Date(),
+    end_date: null,
   });
   const [formErrors, setFormErrors] = useState({});
 
   useEffect(() => {
     getAllProducts();
-
   }, []);
 
   useEffect(() => {
@@ -56,10 +62,15 @@ const AddNewArrival = () => {
   const { mutate: getAllProducts } = useMutation({
     mutationFn: getproductTable,
     onSuccess: (response) => {
-      setAllProducts(response.data);
+      setAllProducts(
+        response.data.map((item) => ({
+          value: item._id,
+          label: item.product_name,
+        }))
+      );
     },
     onError: (error) => {
-      console.error("Error fetching countries:", error);
+      console.error("Error fetching products:", error);
     },
   });
 
@@ -97,16 +108,6 @@ const AddNewArrival = () => {
     }));
   };
 
-  //handle description image change
-  // const handleDescriptionImageChange = (e) => {
-  //   const files = e.target.files;
-  //   if (files.length > 0) {
-  //     // Add the new files to the state
-  //     setNewarrivalsImgPath((prevState) => [...prevState, ...Array.from(files)]);
-  //   }
-
-  // };
-
   const handleDescriptionImageChange = (e) => {
     const files = e.target.files;
     if (files.length > 0) {
@@ -127,28 +128,13 @@ const AddNewArrival = () => {
     }
   };
 
-  //handle wheel
-  const handleWheel = (e) => {
-    e.target.blur();
-  };
-
-  const handleExpriyDateChange = (date) => {
-    const start = new Date(date);
-    const day = String(start.getDate()).padStart(2, "0");
-    const month = String(start.getMonth() + 1).padStart(2, "0");
-    const year = start.getFullYear();
-    const formattedDate = `${year}-${month}-${day}`;
-
-    setExpriyDate(date);
-    setFormData((prev) => ({ ...prev, expiry_date: formattedDate }));
-  };
-
   // Validation function
   const validateForm = () => {
     const errors = {};
-     if(!formData.name)errors.name='Product is required'
-    if (!formData.startDate) errors.startDate = "Start Date is required";
-    if (!formData.endDate) errors.endDate = "End Date is required";
+    if (!formData.name) errors.name = "Product is required";
+    if (!formData.start_date) errors.startDate = "Start Date is required";
+    if (!formData.end_date) errors.endDate = "End Date is required";
+    if (!formData.description) errors.description = "End Date is required";
 
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
@@ -169,17 +155,16 @@ const AddNewArrival = () => {
 
   //handle submit
   const handleSubmit = () => {
-    if (!validateForm()) {
-      return;
-    }
+    // if (!validateForm()) {
+    //   return;
+    // }
 
     const formDataToSend = new FormData();
-    formDataToSend.append("name", formData.name);
-    formDataToSend.append("show_rate", formData.show_rate);
+    formDataToSend.append("id_product", formData.id_product);
     formDataToSend.append("description", formData.description);
     formDataToSend.append("id_branch", formData.id_branch);
-    formDataToSend.append("price", formData.price);
-    formDataToSend.append("expiry_date", formData.expiry_date);
+    formDataToSend.append("start_date", formData.start_date);
+    formDataToSend.append("end_date", formData.end_date);
     if (new_arrivals_img && new_arrivals_img.length > 0) {
       new_arrivals_img.forEach((image, index) => {
         if (image instanceof File) {
@@ -215,7 +200,7 @@ const AddNewArrival = () => {
       });
 
       setNewarrivalsImgPath(response.data.images_Url);
-      handletypeChange("type", response.data.show_rate);
+      // handletypeChange("type", response.data.show_rate);
     },
     onError: (error) => {
       console.error("Error fetching countries:", error);
@@ -226,7 +211,7 @@ const AddNewArrival = () => {
 
   //update newarrivals
   const { mutate: updateNewarrivalsmutate } = useMutation({
-    mutationFn:({id,data})=>updatenewarrivals(id,data),
+    mutationFn: ({ id, data }) => updatenewarrivals(id, data),
     onSuccess: (response) => {
       toast.success(response.message);
       dispatch(setid(null));
@@ -248,10 +233,8 @@ const AddNewArrival = () => {
 
     const formDataToSend = new FormData();
     formDataToSend.append("name", formData.name);
-    formDataToSend.append("show_rate", formData.show_rate);
     formDataToSend.append("description", formData.description);
     formDataToSend.append("id_branch", formData.id_branch);
-    formDataToSend.append("price", formData.price);
     formDataToSend.append("expiry_date", formData.expiry_date);
     if (new_arrivals_img && new_arrivals_img.length > 0) {
       new_arrivals_img.forEach((image, index) => {
@@ -262,7 +245,7 @@ const AddNewArrival = () => {
         }
       });
     }
-    
+
     updateNewarrivalsmutate({ id, data: formDataToSend });
   };
 
@@ -270,6 +253,42 @@ const AddNewArrival = () => {
     setNewarrivalsImgPath((prevState) =>
       prevState.filter((_, i) => i !== index)
     );
+  };
+  const handleDateChange = (date, field) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: date, // Dynamically update start_date or end_date
+    }));
+
+    // Reset error message when user selects a date
+    setFormErrors((prev) => ({
+      ...prev,
+      [field]: "",
+    }));
+  };
+
+  const handleSelect = (selectedOption) => {
+    setFormData((prev) => ({
+      ...prev,
+      id_product: selectedOption ? selectedOption.value : "",
+    }));
+
+    setFormErrors((prev) => ({
+      ...prev,
+      id_product: "",
+    }));
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+    setFormErrors((prev) => ({
+      ...prev,
+      [name]: "",
+    }));
   };
 
   return (
@@ -345,46 +364,24 @@ const AddNewArrival = () => {
               <label className="text-gray-700 mb-2 mt-2 font-medium">
                 Select Product<span className="text-red-400">*</span>
               </label>
-              <div className="relative">
-                <select
-                  name="show_rate"
-                  value={formData.product}
-                  onChange={handleInputChange}
-                  className="appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                >
-                  <option value="">--Select---</option>
-                  {products.map((type) => (
-                    <option
-                      name="type"
-                      className="text-gray-700"
-                      key={type._id}
-                      value={type._id}
-                    >
-                      {type.product_name}
-                    </option>
-                  ))}
-                </select>
-                <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                  <svg
-                    className="h-4 w-4 text-gray-400"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="3"
-                    viewBox="0 0 24 24"
-                    stroke="black"
-                  >
-                    <path d="M19 9l-7 7-7-7"></path>
-                  </svg>
-                </div>
-              </div>
+              <Select
+                name="id_producr"
+                options={products}
+                value={products.find(
+                  (option) => option.value === formData.id_product
+                )}
+                onChange={handleSelect}
+                placeholder="Select Metal"
+                styles={customSelectStyles}
+                className="react-select-container"
+                classNamePrefix="react-select"
+              />
               {formErrors.show_rate && (
                 <span className="text-red-500 text-sm mt-1">
                   {formErrors.show_rate}
                 </span>
               )}
             </div>
-
 
             <div className="flex flex-col">
               <label className="text-gray-700 mb-2 mt-2 font-medium">
@@ -448,14 +445,34 @@ const AddNewArrival = () => {
               )}
             </div>
 
+            <div className="flex flex-col ">
+              <label className="font-medium text-gray-700">
+                Description<span className="text-red-400">*</span>
+              </label>
+              <input
+                type="text"
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                placeholder="Enter Purity Name"
+                className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {formErrors.purity_name && (
+                <div className="text-red-500 text-sm">
+                  {formErrors.purity_name}
+                </div>
+              )}
+            </div>
+
             <div className="flex flex-col">
               <label className="text-gray-700 mb-1 font-normal">
                 Start Date<span className="text-red-400">*</span>
               </label>
               <div className="relative">
                 <DatePicker
-                  selected={formData.startDate}
-                  onChange={handleExpriyDateChange}
+                  name="start_date"
+                  selected={formData.start_date}
+                  onChange={(date) => handleDateChange(date, "start_date")}
                   dateFormat="dd-MM-yyyy"
                   placeholderText="Select Date"
                   className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
@@ -475,12 +492,15 @@ const AddNewArrival = () => {
               )}
             </div>
 
-            <div className='flex flex-col'>
-              <label className='text-gray-700 mb-1 font-normal'>End Date<span className='text-red-400'>*</span></label>
+            <div className="flex flex-col">
+              <label className="text-gray-700 mb-1 font-normal">
+                End Date<span className="text-red-400">*</span>
+              </label>
               <div className="relative">
                 <DatePicker
-                  selected={formData.endDate}
-                  onChange={handleExpriyDateChange}
+                  name="end_date"
+                  selected={formData.end_date}
+                  onChange={(date) => handleDateChange(date, "end_date")}
                   dateFormat="dd-MM-yyyy"
                   placeholderText="Select Date"
                   className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
@@ -499,6 +519,7 @@ const AddNewArrival = () => {
                 </span>
               )}
             </div>
+            
           </div>
           <hr className="absolute border-gray-300 mt-3 mb-3 right-0 top-[90%] md:top-[85%] lg:top-[84%] w-[100%]"></hr>
           <div className="bg-white">

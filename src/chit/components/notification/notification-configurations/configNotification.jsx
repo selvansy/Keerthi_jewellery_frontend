@@ -14,7 +14,7 @@ const configNotification = () => {
   const handleOptionToggle = (category, option) => {
     setSelectedOptions(prev => {
       const updatedCategory = [...prev[category]];
-      
+
       if (updatedCategory.includes(option)) {
         return {
           ...prev,
@@ -36,7 +36,7 @@ const configNotification = () => {
   return (
     <div className=" bg-white rounded-lg shadow p-6">
       <h1 className="text-xl font-bold mb-4">Add Configuration</h1>
-      
+
       {/* Notification Tabs */}
       <div className="flex border-b mb-6">
         {['Push Notification', 'Sms', 'WhatsApp', 'Email'].map(tab => (
@@ -49,7 +49,7 @@ const configNotification = () => {
           </button>
         ))}
       </div>
-      
+
       {/* Scheme Wise Section */}
       <div className="mb-6">
         <h2 className="text-sm font-medium mb-2">
@@ -71,7 +71,7 @@ const configNotification = () => {
                 id={option.replace(/\s+/g, '')}
                 checked={selectedOptions.schemeWise.includes(option)}
                 onChange={() => handleOptionToggle('schemeWise', option)}
-                className={`w-4 h-4 peer-checked:bg-[${layout_color}] text-blue-900 rounded border-gray-300 focus:ring-blue-900`}
+                className="w-4 h-4 text-blue-900 rounded border-gray-300 focus:ring-blue-900"
               />
               <label htmlFor={option.replace(/\s+/g, '')} className="ml-2 text-sm text-gray-700">
                 {option}
@@ -80,7 +80,7 @@ const configNotification = () => {
           ))}
         </div>
       </div>
-      
+
       {/* Wishes Section */}
       <div className="mb-6">
         <h2 className="text-sm font-medium mb-2">
@@ -103,7 +103,7 @@ const configNotification = () => {
           ))}
         </div>
       </div>
-      
+
       {/* Product Section */}
       <div className="mb-6">
         <h2 className="text-sm font-medium mb-2">
@@ -124,7 +124,7 @@ const configNotification = () => {
           </div>
         </div>
       </div>
-      
+
       {/* Buttons */}
       <div className='flex flex-row justify-end border-t-2 p-3 mt-8'>
           <div className='flex flex-row gap-6 justify-center'>
