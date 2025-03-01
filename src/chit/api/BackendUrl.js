@@ -412,6 +412,7 @@ export const postOutstandingSummaryReport = async (data) => {
 
 
 export const sendOtp = async(data)=>{
+    console.log("Mobile",data)
     const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/schemeaccount/close/${data.mobile}/branch/${data.branchId}`)
     return response.data
 }
