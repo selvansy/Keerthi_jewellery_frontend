@@ -480,14 +480,14 @@ export const getschemepaymentbyid = async (data) => {
  
 export const todaycurrentratebybranch = async (data) => {
         
-    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/metalrate/today/${data.branchId}/${data.date}`);
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/metalrate/today-rate/${data.branchId}/date/${data.date}`);
     return response.data;
 }
  
 
  
 export const schemepaymenttodayrate = async (data) => {    
-    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/metalrate/today/${data.id_branch}/${data.date}`);
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/metalrate/today-rate/${data.id_branch}/date/${data.date}`);
     return response.data;
 }
  

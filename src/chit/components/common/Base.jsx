@@ -26,7 +26,7 @@ import {
 
 import logo from "../../../assets/logo1.png";
 import RouteList from "../../../routes/RouteList";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { useSelector, useDispatch } from "react-redux";
 import { setRoleData } from "../../../redux/clientFormSlice";
@@ -36,6 +36,9 @@ import { GiConsoleController } from "react-icons/gi";
 import { setLayoutColor } from "../../../redux/clientFormSlice";
 import { logout, SetMenu } from "../../../redux/authSlice";
 import * as Icons from "lucide-react";
+import Command from "../../../assets/command.svg";
+import Search from "../../../assets/search.svg";
+import CustomerModal from "./customerModal";
 // import { LayoutGrid } from 'lucide-react';
 // import * as Icons  from "lucide-react/dynamic";
 // import { DynamicIcon } from "lucide-react/dynamic";
@@ -52,7 +55,7 @@ const Base = ({ renderContent: RenderContent }) => {
   const [selectedRoute, setSelectedRoute] = useState("");
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const [menuData, setMenuData] = useState([]);
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [laycolor, setLaycolor] = useState("");
 
   const [isOpen, setIsOpen] = useState(false);
@@ -71,6 +74,24 @@ const Base = ({ renderContent: RenderContent }) => {
   const headerMenuRef = useRef(null);
   const navigate = useNavigate();
   let dispatch = useDispatch();
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      // Detect Ctrl + F (Windows) or Cmd + F (Mac)
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "f") {
+        event.preventDefault(); // Prevent browser's search box
+        setIsModalOpen((prev) => !prev); // Toggle state
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
+  const location=useLocation()
+  const sectionName =  location.pathname.split("/")[1]?.replace(/^./, (c) => c.toUpperCase()) || "";
+
 
   const { info } = useSelector((state) => state.auth);
   const decoded = jwtDecode(info);
@@ -111,9 +132,13 @@ const Base = ({ renderContent: RenderContent }) => {
                 key={submenu.id_submenu}
                 text={submenu.submenu_name}
                 onClick={() => {
-                  console.log("Submenu",submenu.submenu_name)
+                  console.log("Submenu", submenu.submenu_name);
                   handleClick(submenu.submenu_name);
-                  navigate(submenu.pathurl.startsWith("/")?submenu.pathurl:`/${submenu.pathurl}`);
+                  navigate(
+                    submenu.pathurl.startsWith("/")
+                      ? submenu.pathurl
+                      : `/${submenu.pathurl}`
+                  );
                   // handleClick(submenu.submenu_name);
                   navigate(submenu.pathurl);
                 }}
@@ -151,8 +176,8 @@ const Base = ({ renderContent: RenderContent }) => {
       setIsSuperAdmin(true);
     } else {
       setIsSuperAdmin(false);
-      if(menus.length<0){
-        console.log(menuData)
+      if (menus.length < 0) {
+        console.log(menuData);
         getAllMenusMutate(decoded.id_role._id);
       }
     }
@@ -246,6 +271,10 @@ const Base = ({ renderContent: RenderContent }) => {
     localStorage.clear();
     dispatch(logout());
     navigate("/");
+  };
+
+  const handleClose = () => {
+    setIsModalOpen(false);
   };
 
   // const { mutate: getAllMenusMutate } = useMutation({
@@ -552,70 +581,93 @@ const Base = ({ renderContent: RenderContent }) => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="fixed top-0 right-0 left-0 bg-white shadow-md z-30 h-16">
-        <div className="flex flex-row justify-end mt-3 mr-[33px]">
-          <button
-            className="flex flex-row items-center p-2 text-gray-900 font-semibold"
-            onClick={() => setSettingsOpen((prev) => !prev)}
-          >
-            <Settings size={28} />
-          </button>
-
-          {/*   */}
-          <button className="flex flex-row items-center p-2 text-gray-900 font-semibold">
-            <Bell size={28} />
-          </button>
-
-          {roledata ? (
-            <div className="relative inline-block text-left">
-              {/* Dropdown Button */}
-              <button
-                onClick={() => setIsOpen(!isOpen)}
-                className="flex items-center gap-2 p-2 focus:outline-none"
-              >
-                {/* Profile Circle */}
-                <span
-                  className="flex items-center justify-center w-9 h-9 text-lg font-semibold text-white rounded-full"
-                  style={{ backgroundColor: layout_color }}
-                >
-                  {role}
-                </span>
-
-                <div className="pointer-events-none absolute inset-y-0 left-[44px] top-[10px] flex items-center">
-                  <svg
-                    className="h-4 w-4 text-gray-400"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="3"
-                    viewBox="0 0 24 24"
-                    stroke="black"
-                  >
-                    <path d="M19 9l-7 7-7-7"></path>
-                  </svg>
-                </div>
-              </button>
-
-              {/* Dropdown Menu */}
-              {isOpen && (
-                <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-md shadow-lg">
-                  <button
-                    className="block w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
-                    onClick={handleLogout}
-                  >
-                    Logout
-                  </button>
-                </div>
-              )}
+      <header className="fixed top-0 right-0 lg:left-64 left-0 bg-white shadow-md z-30 h-16">
+        <div className="flex justify-between items-center ms-3 ">
+          <div className="flex justify-center  ">
+            <div className="title lg:flex justify-center items-center hidden px-8">
+              <h1 className="text-lg font-semibold">{sectionName}</h1>
             </div>
-          ) : (
+            <div
+              className="se flex justify-center items-center w-[120px] h-[50px] gap-5 border text-[#F2F2F9] rounded-[8px] divide-x-2 ms-12 "
+              onClick={() => setIsModalOpen(true)}
+            >
+              <div className="search">
+                <img src={Search} alt="" className="w-7 h-7" />{" "}
+                {/* Increased size */}
+              </div>
+
+              <div className="command flex ps-2">
+                <img src={Command} alt="" className="w-7 h-7" />{" "}
+                {/* Increased size */}
+                <span className="text-black ms-1">F</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-row   mt-3 mr-[33px]">
             <button
-              className="flex flex-row items-center px-4 py-2 text-gray-900 font-semibold"
+              className="flex flex-row items-center p-2 text-gray-900 font-semibold"
               onClick={() => setSettingsOpen((prev) => !prev)}
             >
-              <UserRoundCheck size={32} />
+              <Settings size={28} />
             </button>
-          )}
+
+            {/*   */}
+            <button className="flex flex-row items-center p-2 text-gray-900 font-semibold">
+              <Bell size={28} />
+            </button>
+
+            {roledata ? (
+              <div className="relative inline-block text-left">
+                {/* Dropdown Button */}
+                <button
+                  onClick={() => setIsOpen(!isOpen)}
+                  className="flex items-center gap-2 p-2 focus:outline-none"
+                >
+                  {/* Profile Circle */}
+                  <span
+                    className="flex items-center justify-center w-9 h-9 text-lg font-semibold text-white rounded-full"
+                    style={{ backgroundColor: layout_color }}
+                  >
+                    {role}
+                  </span>
+
+                  <div className="pointer-events-none absolute inset-y-0 left-[44px] top-[10px] flex items-center">
+                    <svg
+                      className="h-4 w-4 text-gray-400"
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="3"
+                      viewBox="0 0 24 24"
+                      stroke="black"
+                    >
+                      <path d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </div>
+                </button>
+
+                {/* Dropdown Menu */}
+                {isOpen && (
+                  <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-md shadow-lg">
+                    <button
+                      className="block w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
+                      onClick={handleLogout}
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <button
+                className="flex flex-row items-center px-4 py-2 text-gray-900 font-semibold"
+                onClick={() => setSettingsOpen((prev) => !prev)}
+              >
+                <UserRoundCheck size={32} />
+              </button>
+            )}
+          </div>
         </div>
 
         <div className="container mx-auto px-4 py-3">
@@ -645,6 +697,8 @@ const Base = ({ renderContent: RenderContent }) => {
           </nav>
         </div>
       </header>
+
+      {isModalOpen && <CustomerModal close={handleClose} />}
 
       <aside
         ref={sidebarRef}

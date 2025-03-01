@@ -50,7 +50,7 @@ const CreateMetalRate = () => {
   const { mutate: getMetalRate } = useMutation({
     mutationFn: (data) => todaycurrentratebybranch(data),
     onSuccess: (response) => {
-      
+      setFormData(response.data)
     },
 
     onError: (error) => {
@@ -106,7 +106,7 @@ const CreateMetalRate = () => {
           {
             id_branch: id_branch === "0" ? seletedBranch : branchId,
             purity_id: name,
-            material_type_id: purityItem.id_metal, 
+            material_type_id: purityItem.id_metal._id, 
             rate: value,
           },
         ];
@@ -132,7 +132,8 @@ const CreateMetalRate = () => {
     setFormErrors(errors);
 
     if (Object.keys(errors).length === 0) {
-      addMetalRate(formData)
+      const filteredData = formData.map(({ _id,active,is_deleted,createdAt,updatedAt, ...rest }) => rest);
+      addMetalRate(filteredData)
     }
   };
 
@@ -152,7 +153,7 @@ const CreateMetalRate = () => {
       <div className="w-full flex flex-col bg-[#F5F5F5] border-t-2 border-[#023453] mt-3 overflow-y-auto scrollbar-hide h-[calc(100vh-200px)]">
         <div className="flex flex-col p-4 bg-white relative">
           <div className="grid grid-rows-2 md:grid-cols-2 gap-5 border-gray-300 mb-10">
-            {/* {id_branch == "0" && ( */}
+            {id_branch == "0" && (
               <>
                 <div className="flex flex-col">
                   <label className="text-gray-700 mb-2 mt-2 font-medium">
@@ -179,7 +180,7 @@ const CreateMetalRate = () => {
                   )} */}
                 </div>
               </>
-            {/* )} */}
+            )} 
             
           {purityData.map((item,index)=>(
              <div className="flex flex-col mt-2" key={index}>
