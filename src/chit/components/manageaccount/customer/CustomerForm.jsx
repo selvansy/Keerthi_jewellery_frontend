@@ -6,7 +6,7 @@ import { CalendarDays, Camera, X, Send, Plus, Minus } from 'lucide-react'
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import { updatecustomer, getcustomerById, getallbranch, allstate, addcustomer, allcountry, allcity, } from '../../../api/Endpoints';
-import {SetaccExp} from "../../../../redux/clientFormSlice"
+import { SetaccExp } from "../../../../redux/clientFormSlice"
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { sendOtp, closeBill } from "../../../api/BackendUrl"
@@ -20,7 +20,7 @@ import Select from "react-select";
 import profileplaceholder from '../../../../assets/profileplaceholder.png'
 import { customSelectStyles } from "../../Setup/purity/index"
 
- 
+
 const CustomerForm = () => {
 
     const { id } = useParams();
@@ -35,7 +35,7 @@ const CustomerForm = () => {
     const [showVerification, setShowVerification] = useState(false)
     const [isLoading, setisLoading] = useState()
     const [otpNumber, setOtpNumber] = useState("");
-    const [timer, setTimer] = useState(0);
+    const [timer, setTimer] = useState(60);
     const [canResend, setCanResend] = useState(false);
     const webcamRef = useRef(null);
     const [showWebcam, setShowWebcam] = useState(false);
@@ -46,7 +46,7 @@ const CustomerForm = () => {
     const [state, setState] = useState("")
     const [city, setCity] = useState("")
     const [branchData, setBranchData] = useState([]);
-    const [branch, setBranch] = useState(id_branch)
+    const [branch, setBranch] = useState("")
     const [id_proof, setid_proof] = useState(null);
     const [cus_img, setcus_img] = useState("");
     const [pathurl, setPathurl] = useState('');
@@ -58,7 +58,7 @@ const CustomerForm = () => {
         mobile: '',
         gender: '',
         address: '',
-        id_branch: id_branch,
+        id_branch: branch,
         id_country: country,
         id_state: state,
         id_city: city,
@@ -91,6 +91,7 @@ const CustomerForm = () => {
                 ...prev,
                 id_branch: id_branch
             }))
+            setBranch(id_branch)
         }
 
     }, []);
@@ -168,9 +169,9 @@ const CustomerForm = () => {
         queryFn: getallbranch,
     });
 
-    
-      useEffect(() => {
-    
+
+    useEffect(() => {
+
         if (branchresponse) {
             const data = branchresponse.data
             const branch = data.map((branch) => ({
@@ -179,14 +180,11 @@ const CustomerForm = () => {
             }));
             setBranchData(branch);
         }
-    
-      }, [branchresponse])
+
+    }, [branchresponse])
 
 
     useEffect(() => {
-
-       
-
 
         if (countryresponse) {
             const data = countryresponse.data
@@ -221,7 +219,7 @@ const CustomerForm = () => {
     const handleSubmit = () => {
         setisLoading(true)
         const formPayload = new FormData();
-     
+
         Object.entries(formData).forEach(([key, value]) => {
             if (value) formPayload.append(key, value);
         });
@@ -240,9 +238,9 @@ const CustomerForm = () => {
             if (response) {
                 toast.success(response.message);
                 dispatch(SetaccExp({
-                    customer_name:formDatafirstname + ' ' + formDatalastname,
-                    address:formDataaddress,
-                    id_branch:formDataid_branch
+                    customer_name: formDatafirstname + ' ' + formDatalastname,
+                    address: formDataaddress,
+                    id_branch: formData.id_branch
                 }))
                 setFormData({})
             }
@@ -263,7 +261,7 @@ const CustomerForm = () => {
             setisLoading(false)
             navigate("/managecustomers/customer/")
         },
-       
+
         onError: (error) => {
             setisLoading(false)
             console.error("Erro:", error);
@@ -297,41 +295,42 @@ const CustomerForm = () => {
     const handleFileChange = (e) => {
         e.preventDefault();
         const file = e.target.files[0];
-        console.log("Filte",file)
     
+
         if (!file) {
             toast.error("No file selected");
             return;
         }
-    
+
         const validImageTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
-        const maxSize = 500 * 1024; 
-    
+        const maxSize = 500 * 1024;
+
         if (!validImageTypes.includes(file.type)) {
             toast.error("Invalid file type. Allowed: JPG, PNG, GIF, WEBP");
             return;
         }
-    
+
         if (file.size > maxSize) {
             toast.error("File size exceeded (Max 500KB)");
             return;
         }
-    
+
         setcus_img(file);
-    
+
 
         const reader = new FileReader();
         reader.onloadend = () => {
             setPathurl(reader.result || "");
         };
-    
+
         reader.readAsDataURL(file);
     };
-    
 
 
 
-    const handleCapture = () => {
+
+    const handleCapture = (e) => {
+        e.preventDefault()
         const imageSrc = webcamRef.current.getScreenshot();
         setPathurl(imageSrc);
         fetch(imageSrc)
@@ -354,19 +353,24 @@ const CustomerForm = () => {
         const payload = {
             mobile: formData.mobile,
             otp: otpNumber,
-            branchId: id_branch
+            branchId: branch
         }
+        setCanResend(true);
         postSendOtpMobile(payload)
     }
 
 
     const { mutate: postSendOtpMobile } = useMutation({
-        mutationFn: sendOtp,
+        mutationFn:(data)=> sendOtp(data),
         onSuccess: (response) => {
             if (response) {
                 toast.success(response.message);
             }
         },
+        onError:(error)=>{
+            setCanResend(false);
+            toast.error(error.response?.data?.message)
+        }
     });
 
 
@@ -400,6 +404,17 @@ const CustomerForm = () => {
         },
     });
 
+    useEffect(() => {
+        if (timer > 0 && canResend) {
+          const interval = setInterval(() => {
+            setTimer((prev) => prev - 1);
+          }, 1000);
+          return () => clearInterval(interval);
+        } else {
+            setCanResend(false);
+        }
+      }, [canResend,timer]);
+
 
     const formatDate = (date) => {
         if (!date) return null;
@@ -410,7 +425,7 @@ const CustomerForm = () => {
     };
 
     return <>
-        <div className='w-full flex flex-col  bg-white overflow-y-auto scrollbar-hide h-[calc(100vh-200px)] '>
+        <div className='w-full flex flex-col  bg-white '>
             <div className='flex flex-col pl-8 pr-8 pb-4 pt-2 relative space-y-2'>
 
                 <Formik
@@ -418,13 +433,13 @@ const CustomerForm = () => {
                     validationSchema={validationSchema}
                     enableReinitialize={true}
                     validateOnChange={false}
+                    validateOnBlur={false}
                     onSubmit={(values) => {
-                        
+
                         setFormData(values)
-                        console.log("form",formData)
                         setFormData(prev => ({
                             ...prev,
-                            id_branch: id_branch
+                            id_branch: branch
                         }))
                         handleSubmit()
                     }}
@@ -432,7 +447,10 @@ const CustomerForm = () => {
                     {({ values, errors, setFieldValue, handleChange, handleSubmit, setTouched }) => (
 
                         <>
-                            <Form onSubmit={handleSubmit}>
+                            <Form onSubmit={(e) => {
+                                e.preventDefault();
+                                handleSubmit(e);
+                            }} >
 
                                 <div className='grid grid-rows-2 md:grid-cols-2 gap-5 border-gray-300'>
 
@@ -464,7 +482,9 @@ const CustomerForm = () => {
 
                                     </div>
 
-                                    <div className='flex flex-col'>
+                                    {
+                                        id_branch !== "0" &&
+                                        <div className='flex flex-col'>
 
                                         <label className='text-black mb-1 font-medium'>Branch<span className='text-red-400'>*</span></label>
 
@@ -483,6 +503,10 @@ const CustomerForm = () => {
                                         {errors.id_branch ? <div style={{ color: "red" }}>{errors.id_branch}</div> : null}
 
                                     </div>
+
+                                    }
+
+                                   
 
                                     <div className='flex flex-col'>
                                         <label className='text-gray-700 mb-1 font-medium'>Mobile<span className='text-red-400'>*</span></label>
@@ -846,7 +870,7 @@ const CustomerForm = () => {
                                                     />
                                                     <div className="mt-4 flex justify-center gap-2">
                                                         <button
-                                                            onClick={handleCapture}
+                                                            onClick={(e) => handleCapture(e)}
                                                             className=" text-white px-4 py-2 rounded-md"
                                                             style={{ backgroundColor: layout_color }} >
                                                             Capture
@@ -894,7 +918,7 @@ const CustomerForm = () => {
                                                 />
                                                 <div
                                                     onClick={SendOtpToMobile}
-                                                    className="absolute flex items-center justify-center cursor-pointer right-0 top-[25px] w-10 h-10 bg-[#023453] rounded-r-md  transition"
+                                                    className="absolute flex items-center justify-center cursor-pointer right-0 top-[29px] w-10 h-10 bg-[#023453] rounded-r-md  transition"
                                                 >
                                                     <Send size={22} className="text-white" />
                                                 </div>
@@ -915,7 +939,7 @@ const CustomerForm = () => {
                                                 />
                                                 <div
                                                     onClick={() => handleVerifyOtp(otpNumber)}
-                                                    className="absolute flex items-center justify-center cursor-pointer right-0 top-[25px] w-10 h-10 bg-[#023453] rounded-r-md  transition"
+                                                    className="absolute flex items-center justify-center cursor-pointer right-0 top-[29px] w-10 h-10 bg-[#023453] rounded-r-md  transition"
                                                 >
                                                     <Send size={22} className="text-white" />
                                                 </div>
