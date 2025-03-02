@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
     Accordion,
     AccordionContent,
@@ -9,32 +8,23 @@ import {
 import CustomerForm from './CustomerForm';
 import { ExistingCustomer } from '../schemeaccount/SchemeAccountform';
 import AddSchemeAccount from '../schemeaccount/SchemeAccountform';
-import { searchcustomermobile, getallbranch } from '../../../api/Endpoints'
-import { Search } from 'lucide-react'
 import { useSelector } from 'react-redux';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import Select from "react-select";
-import { customSelectStyles } from "../../Setup/purity/index"
-import { toast } from 'react-toastify';
 import { useParams } from 'react-router-dom';
 
 function Customers() {
 
     const [isCustomer, setIsCustomer] = useState(false);
-    const [openAcc, setOpenAcc] = useState("customer");
-    const [joinScheme, setJoinScheme] = useState("add-customer")
+    const [openAcc, setOpenAcc] = useState(["customer"]);
+    const [joinScheme, setJoinScheme] = useState(["add-customer"]);
 
-    const { id } = useParams()
-
-    useEffect(() => {
-
-        setOpenAcc(isCustomer ? "existingCus" : "customer");
-    }, [isCustomer]);
-
+    const { id } = useParams();
     const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
-    return (
+    useEffect(() => {
+        setOpenAcc(isCustomer ? ["existingCus"] : ["customer"]);
+    }, [isCustomer]);
 
+    return (
         <div className='flex flex-col'>
             <div className="flex items-center bg-gray-200 my-6 border border-black rounded-xxl w-fit mt-3">
                 <button
@@ -51,21 +41,21 @@ function Customers() {
                 >
                     Existing Customer
                 </button>
-
             </div>
 
             <Accordion
-                type="single"
-                collapsible
+                type="multiple"
                 className="space-y-4"
                 value={openAcc}
-                onValueChange={(value) => setOpenAcc(value || (isCustomer ? "existingCus" : "customer"))}
+                onValueChange={(value) => setOpenAcc(value)}
             >
                 {!isCustomer ? (
                     <>
-                        <Accordion type="single" collapsible
+                        <Accordion
+                            type="multiple"
                             value={joinScheme}
-                            onValueChange={(value) => setJoinScheme(value)}>
+                            onValueChange={(value) => setJoinScheme(value)}
+                        >
                             <AccordionItem value="add-customer" className="border rounded-lg bg-white">
                                 <AccordionTrigger className="px-6 py-4 text-[18px]">
                                     Add Customer
@@ -75,20 +65,16 @@ function Customers() {
                                 </AccordionContent>
                             </AccordionItem>
 
-                            {
-                                !id && (
-                                    <AccordionItem value="join-scheme" className="border rounded-lg bg-white my-3">
-                                        <AccordionTrigger className="px-6 py-4 text-[18px]">
-                                            Join Scheme
-                                        </AccordionTrigger>
-                                        <AccordionContent className="px-6 py-4 text-[16px]">
-                                            <AddSchemeAccount />
-                                        </AccordionContent>
-                                    </AccordionItem>
-
-
-                                )
-                            }
+                            {!id && (
+                                <AccordionItem value="join-scheme" className="border rounded-lg bg-white my-3">
+                                    <AccordionTrigger className="px-6 py-4 text-[18px]">
+                                        Join Scheme
+                                    </AccordionTrigger>
+                                    <AccordionContent className="px-6 py-4 text-[16px]">
+                                        <AddSchemeAccount />
+                                    </AccordionContent>
+                                </AccordionItem>
+                            )}
                         </Accordion>
                     </>
                 ) : (
@@ -102,15 +88,14 @@ function Customers() {
                             </AccordionContent>
                         </AccordionItem>
 
-                        
-                                <AccordionItem value="join-scheme" className="border rounded-lg bg-white my-3">
-                                    <AccordionTrigger className="px-6 py-4 text-[18px]">
-                                        Join Scheme
-                                    </AccordionTrigger>
-                                    <AccordionContent className="px-6 py-4 text-[16px]">
-                                        <AddSchemeAccount />
-                                    </AccordionContent>
-                                </AccordionItem>
+                        <AccordionItem value="join-scheme" className="border rounded-lg bg-white my-3">
+                            <AccordionTrigger className="px-6 py-4 text-[18px]">
+                                Join Scheme
+                            </AccordionTrigger>
+                            <AccordionContent className="px-6 py-4 text-[16px]">
+                                <AddSchemeAccount />
+                            </AccordionContent>
+                        </AccordionItem>
                     </>
                 )}
             </Accordion>
@@ -118,11 +103,4 @@ function Customers() {
     )
 }
 
-export default Customers
-
-
-
-
-
-
-
+export default Customers;
