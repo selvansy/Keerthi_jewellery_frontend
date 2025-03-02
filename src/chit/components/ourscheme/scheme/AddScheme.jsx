@@ -83,7 +83,7 @@ const SchemeForm = () => {
       installment_type: "",
       maturity_period: "", // maturityMonth
       scheme_type: null,
-      totalCount: "",
+      totalCountAmount: "",
       incrementRate: "",
       // start: "",
       startingAmount: "",
@@ -167,7 +167,7 @@ const SchemeForm = () => {
       Object.keys(values).forEach((key) => {
         if (
           !formik.values.classType &&
-          ["startingAmount", "totalCount", "incrementRate"].includes(key)
+          ["startingAmount", "totalCountAmount", "incrementRate"].includes(key)
         ) {
           return;
         }
@@ -208,7 +208,6 @@ const SchemeForm = () => {
       }
     },
   });
-  console.log(formik.values);
 
   // Customisations for react-select
   const customStyles = {
@@ -327,11 +326,11 @@ const SchemeForm = () => {
         id_metal: schemeData.data.id_metal._id || "",
         id_purity: schemeData.data.id_purity._id || "",
         installment_type: schemeData.data.installment_type || "",
-        maturity_period: schemeData.data.maturity_month || "",
+        maturity_period: schemeData.data.maturity_period || "",
         saving_type: schemeData.data.saving_type || "",
 
         // Fixed scheme specific fields
-        totalCount: schemeData.data.totalCountAmount || "",
+        totalCountAmount: schemeData?.data?.totalCountAmount || "",
         incrementRate: schemeData.data.incrementRate || "",
         startingAmount: schemeData.data.startingAmount || "",
 
@@ -467,17 +466,17 @@ const SchemeForm = () => {
     if (formik.values.incrementRate) {
       const incrementRate = formik.values.incrementRate;
       const startingAmount = formik.values.startingAmount;
-      const totalCount = formik.values.totalCount;
-      if (incrementRate === "" || startingAmount === "" || totalCount === "") {
+      const totalCountAmount = formik.values.totalCountAmount;
+      if (incrementRate === "" || startingAmount === "" || totalCountAmount === "") {
         setAmounts([]);
       } else {
-        generateAmounts(totalCount, startingAmount, incrementRate);
+        generateAmounts(totalCountAmount, startingAmount, incrementRate);
       }
     }
   }, [
     formik.values.incrementRate,
     formik.values.startingAmount,
-    formik.values.totalCount,
+    formik.values.totalCountAmount,
   ]);
 
   // useEffect for branches
@@ -521,7 +520,7 @@ const SchemeForm = () => {
   // Handler for adding new amount
   const handleAddAmount = () => {
     if (
-      formik.values.totalCount &&
+      formik.values.totalCountAmount &&
       formik.values.startingAmount &&
       formik.values.incrementRate
     ) {
@@ -549,7 +548,7 @@ const SchemeForm = () => {
       setSelectedClass(1);
       formik.setFieldValue("classType", false);
       formik.setFieldValue("scheme_type", null);
-      formik.setFieldValue("totalCount", "");
+      formik.setFieldValue("totalCountAmount", "");
       formik.setFieldValue("incrementRate", "");
       formik.setFieldValue("startingAmount", "");
       setAmounts([]);
@@ -557,7 +556,7 @@ const SchemeForm = () => {
       setSelectedClass(3);
       formik.setFieldValue("classType", false);
       formik.setFieldValue("scheme_type", null);
-      formik.setFieldValue("totalCount", "");
+      formik.setFieldValue("totalCountAmount", "");
       formik.setFieldValue("incrementRate", "");
       formik.setFieldValue("startingAmount", "");
       setAmounts([]);
@@ -633,23 +632,23 @@ const SchemeForm = () => {
   const handleReset = () => {
     setAmounts([]);
 
-    formik.setFieldValue("totalCount", "");
+    formik.setFieldValue("totalCountAmount", "");
     formik.setFieldValue("incrementRate", "");
     formik.setFieldValue("startingAmount", "");
 
-    formik.setFieldTouched("totalCount", false);
+    formik.setFieldTouched("totalCountAmount", false);
     formik.setFieldTouched("incrementRate", false);
     formik.setFieldTouched("startingAmount", false);
 
     formik.setErrors((prevErrors) => ({
       ...prevErrors,
-      totalCount: undefined,
+      totalCountAmount: undefined,
       incrementRate: undefined,
       startingAmount: undefined,
     }));
   };
 
-console.log(formik.errors)
+  console.log(validation,'dkd')
   return (
     <form
       onSubmit={formik.handleSubmit}
@@ -892,8 +891,15 @@ console.log(formik.errors)
             </label>
             <div className="relative">
               <input
-                type="number"
+                type="text"
+                name="maturity_period"
                 onWheel={(e) => e.target.blur()}
+                onInput={(e) => {
+                  if (e.target.value.length <= validation.maxLength) {
+                    console.log('kd')
+                    formik.handleChange(e);
+                  }
+                }}
                 className="w-full border rounded-md px-3 py-2"
                 placeholder="Enter Maturity Period"
                 {...formik.getFieldProps("maturity_period")}
@@ -954,12 +960,12 @@ console.log(formik.errors)
                 max={50}
                 className="w-full border rounded-md px-3 py-2"
                 placeholder="Enter total count"
-                {...formik.getFieldProps("totalCount")}
+                {...formik.getFieldProps("totalCountAmount")}
                 onBlur={formik.handleBlur}
                 onInput={(e) => {
                   let value = e.target.value;
                   if (value > "50") {
-                    formik.setFieldError("totalCount", "Max allowed is 50");
+                    formik.setFieldError("totalCountAmount", "Max allowed is 50");
                   }
 
                   if (value.length > 2) {
@@ -970,7 +976,7 @@ console.log(formik.errors)
                   }
 
                   e.target.value = value;
-                  formik.setFieldValue("totalCount", value);
+                  formik.setFieldValue("totalCountAmount", value);
                 }}
                 onKeyDown={(e) => {
                   if (e.target.value.length >= 2 && e.key !== "Backspace") {
@@ -978,9 +984,9 @@ console.log(formik.errors)
                   }
                 }}
               />
-              {formik.errors.totalCount && (
+              {formik.errors.totalCountAmount && (
                 <div className="text-red-500 text-sm mt-1">
-                  {formik.errors.totalCount}
+                  {formik.errors.totalCountAmount}
                 </div>
               )}
             </div>

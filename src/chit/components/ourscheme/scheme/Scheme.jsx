@@ -402,7 +402,7 @@ const Scheme = () => {
       cell: (row) => row.metal_name
     },
     { header: "Installments", cell: (row) => row?.total_installments },
-    { header: "Maturity Month", cell: (row) => row?.maturity_month },
+    { header: "Maturity Month", cell: (row) => row?.maturity_period },
     {
       header: "Scheme Type",
       cell: (row) => row.schemetype_name,
