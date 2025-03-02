@@ -55,7 +55,7 @@ const CustomerForm = () => {
     const [id_proof, setid_proof] = useState(null);
     const [cus_img, setcus_img] = useState("");
     const [pathurl, setPathurl] = useState('');
-    
+
 
 
     const [formData, setFormData] = useState({
@@ -248,7 +248,7 @@ const CustomerForm = () => {
                     customer_name: formData.firstname + ' ' + formData.lastname,
                     address: formData.address,
                     id_branch: formData.id_branch,
-                    mobile:formData.mobile
+                    mobile: formData.mobile
                 }))
                 setFormData({})
             }
@@ -355,11 +355,11 @@ const CustomerForm = () => {
     };
 
 
-    const ResetTimer = ()=>{
-        
+    const ResetTimer = () => {
+
         setCanResend(false);
         setIsTimerRunning(false);
-        setTimer(60)   
+        setTimer(60)
     }
 
     const SendOtpToMobile = () => {
@@ -379,7 +379,7 @@ const CustomerForm = () => {
             if (response) {
                 toast.success(response.message);
             }
-            
+
             ResetTimer()
         },
         onError: (error) => {
@@ -407,7 +407,7 @@ const CustomerForm = () => {
         onSuccess: (response) => {
             if (response) {
                 toast.success(response.message);
-                
+
             }
             ResetTimer()
             setMobile("")
@@ -454,7 +454,7 @@ const CustomerForm = () => {
                     validateOnChange={false}
                     validateOnBlur={false}
                     onSubmit={(values) => {
-
+                        console.log(values)
                         setFormData(values)
                         setFormData(prev => ({
                             ...prev,
@@ -463,39 +463,45 @@ const CustomerForm = () => {
                         handleSubmitForm()
                     }}
                 >
-                    {({ values, errors, setFieldValue, setFieldTouched, handleChange, handleSubmit, setTouched }) => (
+                    {({ values, errors, setFieldValue, setFieldTouched, handleChange, handleSubmit }) => (
 
                         <>
-                            <Form onSubmit={handleSubmit} >
+                            <Form onSubmit={(e)=>{
+                                e.preventDefault()
+                                handleSubmit(e)}} >
 
                                 <div className='grid grid-rows-2 md:grid-cols-2 gap-5 border-gray-300'>
 
                                     <div className='flex flex-col'>
                                         <label className='text-gray-700 mb-1 font-medium'>First Name<span className='text-red-400'>*</span></label>
-                                        <Field
+                                        <input
                                             type='text'
                                             name='firstname'
                                             value={values.firstname}
-                                            onChange={handleChange}
-                                            className='border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:[#D1D5DB] focus:border-transparent'
+                                            onChange={(e)=>{
+                                                handleChange(e)
+                                                setFieldTouched("firstname", false); 
+                                            }}
+                                            className='border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus-[#D1D5DB] focus:border-transparent'
                                             placeholder='Enter Here'
                                         />
                                         {errors.firstname ? <div style={{ color: "red" }}>{errors.firstname}</div> : null}
-
                                     </div>
 
                                     <div className='flex flex-col'>
                                         <label className='text-gray-700 mb-1 font-medium'>Last Name<span className='text-red-400'>*</span></label>
-                                        <Field
+                                        <input
                                             type='text'
                                             name='lastname'
                                             value={values.lastname}
-                                            onChange={handleChange}
-                                            className='border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:[#D1D5DB] focus:border-transparent'
+                                            onChange={(e)=>{
+                                                handleChange(e)
+                                                setFieldTouched("lastname", false); 
+                                            }}
+                                            className='border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus-[#D1D5DB] focus:border-transparent'
                                             placeholder='Enter Here'
                                         />
                                         {errors.lastname ? <div style={{ color: "red" }}>{errors.lastname}</div> : null}
-
                                     </div>
 
                                     <div className='flex flex-col'>
@@ -506,10 +512,16 @@ const CustomerForm = () => {
                                         <Select
                                             options={branchData}
                                             value={branchData.find(branch => branch.value === (id_branch !== "0" ? values.id_branch : formData.id_branch)) || ""}
-                                            onChange={(branch) => {
+                                            onChange={(e,branch) => {
+                                                e.preventDefault()
                                                 setFieldValue("id_branch", branch.value);
                                                 setBranch(branch.value);
                                                 setFieldTouched("id_branch", false);
+                                            }}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter') {
+                                                    e.preventDefault();
+                                                }
                                             }}
                                             customSelectStyles={customSelectStyles}
                                             isLoading={loadingbranch}
@@ -524,11 +536,12 @@ const CustomerForm = () => {
 
                                     <div className='flex flex-col'>
                                         <label className='text-gray-700 mb-1 font-medium'>Mobile<span className='text-red-400'>*</span></label>
-                                        <Field
+                                        <input
                                             type='text'
                                             name='mobile'
                                             onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '')}
                                             onChange={(e) => {
+                                                e.preventDefault()
                                                 const value = e.target.value;
                                                 setFormData(prev => ({
                                                     ...prev,
@@ -549,12 +562,16 @@ const CustomerForm = () => {
 
                                     <div className='flex flex-col'>
                                         <label className='text-gray-700 mb-1 font-medium'>Whatsapp Number</label>
-                                        <Field
+                                        <input
                                             type='text'
                                             name='whatsapp'
                                             onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '')}
                                             value={values.whatsapp}
-                                            onChange={handleChange}
+                                            onChange={(e)=>{
+                                                e.preventDefault()
+                                                handleChange(e)
+                                                setFieldTouched("whatsapp", false); 
+                                            }}
                                             pattern="\d{10}"
                                             maxLength={"10"}
                                             className='border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:[#D1D5DB] focus:border-transparent'
@@ -566,11 +583,15 @@ const CustomerForm = () => {
 
                                     <div className='flex flex-col'>
                                         <label className='text-gray-700 mb-1 font-medium'>Address<span className='text-red-400'>*</span></label>
-                                        <Field
+                                        <input
                                             type='text'
                                             name='address'
                                             value={values.address}
-                                            onChange={handleChange}
+                                            onChange={(e)=>{
+                                                e.preventDefault()
+                                                handleChange(e)
+                                                setFieldTouched("address", false); 
+                                            }}
                                             className='border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:[#D1D5DB] focus:border-transparent'
                                             placeholder='Enter Here'
                                         />
@@ -580,12 +601,16 @@ const CustomerForm = () => {
 
                                     <div className='flex flex-col'>
                                         <label className='text-gray-700 mb-1 font-medium'>Pincode<span className='text-red-400'>*</span></label>
-                                        <Field
+                                        <input
                                             type='text'
                                             name='pincode'
                                             value={values.pincode}
                                             onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '')}
-                                            onChange={handleChange}
+                                            onChange={(e)=>{
+                                                e.preventDefault()
+                                                handleChange(e)
+                                                setFieldTouched("pincode", false); 
+                                            }}
                                             pattern="\d{6}"
                                             maxLength={"6"}
                                             className='border-2 border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:[#D1D5DB] focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
@@ -610,7 +635,8 @@ const CustomerForm = () => {
                                                         }`}
                                                     style={values.gender === gender.value ? { backgroundColor: layout_color } : {}}
                                                     onClick={
-                                                        () => {
+                                                        (e) => {
+                                                            e.preventDefault()
                                                             setFieldValue("gender", gender.value)
                                                             setFieldTouched("gender", false);
                                                         }}
@@ -634,6 +660,11 @@ const CustomerForm = () => {
                                                 setCountry(ctry.value)
                                                 setFieldTouched("id_country", false);
                                             }}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter') {
+                                                    e.preventDefault();
+                                                }
+                                            }}
                                             customSelectStyles={customSelectStyles}
                                             isLoading={loadingCountries}
                                             placeholder="Select Country"
@@ -651,6 +682,11 @@ const CustomerForm = () => {
                                                 setFieldValue("id_state", e.value)
                                                 setState(e.value)
                                                 setFieldTouched("id_state", false);
+                                            }}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter') {
+                                                    e.preventDefault();
+                                                }
                                             }}
                                             customSelectStyles={customSelectStyles}
                                             isLoading={loadingStates}
@@ -672,6 +708,11 @@ const CustomerForm = () => {
                                                 setCity(e.value)
                                                 setFieldTouched("id_city", false);
                                             }}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter') {
+                                                    e.preventDefault();
+                                                }
+                                            }}
                                             customSelectStyles={customSelectStyles}
                                             isLoading={loadingCities}
                                             value={cityData.find(ctry => ctry.value === values.id_city) || city}
@@ -684,7 +725,7 @@ const CustomerForm = () => {
 
                                     <div className='flex flex-col'>
                                         <label className='text-black mb-1 font-medium'>Pan Number</label>
-                                        <Field
+                                        <input
                                             type='text'
                                             name='pan'
                                             value={values.pan}
@@ -700,7 +741,7 @@ const CustomerForm = () => {
 
                                     <div className='flex flex-col'>
                                         <label className='text-gray-700 mb-1 font-medium'>Aadhar Card Number<span className='text-red-400'></span></label>
-                                        <Field
+                                        <input
                                             type="text"
                                             name="authorno"
                                             value={values.authorno}
@@ -728,6 +769,11 @@ const CustomerForm = () => {
                                                     const value = formatDate(date)
                                                     setFieldValue("date_of_wed", value)
                                                     setFieldTouched("date_of_wed", false)
+                                                }}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter') {
+                                                        e.preventDefault();
+                                                    }
                                                 }}
                                                 dateFormat="yyyy-MM-dd"
                                                 className="w-full border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:[#D1D5DB] h-[50px]"
@@ -758,6 +804,11 @@ const CustomerForm = () => {
                                                     const value = formatDate(date)
                                                     setFieldValue("date_of_birth", value)
                                                     setFieldTouched("date_of_birth", false)
+                                                }}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter') {
+                                                        e.preventDefault();
+                                                    }
                                                 }}
                                                 dateFormat="yyyy-MM-dd"
                                                 className="w-full border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:[#D1D5DB] h-[50px]"
@@ -847,7 +898,17 @@ const CustomerForm = () => {
 
                                                 <div className='flex flex-col items-center justify-center lg:items-start lg:justify-start lg:w-52 mt-2'>
                                                     <button
-                                                        onClick={() => setShowWebcam(prev => !prev)}
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            setShowWebcam(prev => !prev)
+                                                        }}
+                                                        onKeyDown={(e) => {
+                                                            if (e.key === 'Enter') {
+                                                                e.preventDefault();
+                                                            }
+                                                        }}
+                                                        
+
                                                         className="mt-2 rounded-lg flex items-center gap-2 text-white px-3 py-1"
                                                         style={{ backgroundColor: layout_color }}
                                                     >
@@ -920,13 +981,12 @@ const CustomerForm = () => {
                                             className="w-8 h-5 accent-blue-600"
                                             name="showVerification"
                                             checked={showVerification}
-                                            onChange={() => 
-                                                {
-                                                    setShowVerification(!showVerification)
-                                                    setMobile("")
-                                                    setOtpNumber("")
-                                                    ResetTimer();
-                                                }}
+                                            onChange={() => {
+                                                setShowVerification(!showVerification)
+                                                setMobile("")
+                                                setOtpNumber("")
+                                                ResetTimer();
+                                            }}
                                         />
                                         <h2 className="text-lg text-[#023453] font-bold whitespace-nowrap px-2 my-3">
                                             To verify account with OTP verification, kindly check the checkbox.
@@ -994,14 +1054,14 @@ const CustomerForm = () => {
                                             {/* Countdown Timer */}
                                             <div className="flex flex-col text-sm text-gray-600 mt-1">
 
-                                                {(timer > 0 && isTimerRunning ) ? (
+                                                {(timer > 0 && isTimerRunning) ? (
                                                     <span>Resend OTP in {timer} seconds</span>
                                                 ) : (
                                                     (canResend) && (
                                                         <span
                                                             className="text-blue-600 cursor-pointer hover:underline"
                                                             onClick={SendOtpToMobile}
-                                                            disabled={isTimerRunning} 
+                                                            disabled={isTimerRunning}
                                                         >
                                                             Resend OTP
                                                         </span>
