@@ -18,10 +18,14 @@ import {
 import { CalendarDays, RefreshCcw } from "lucide-react";
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
-import customer from "../../../../assets/customer.svg";
-import completedacc from "../../../../assets/completedacc.svg";
-import account from "../../../../assets/account.svg";
-import closedacc from "../../../../assets/closedacc.svg";
+import customer from "../../../../assets/Total_Customer.svg";
+import Total_Account from "../../../../assets/Total_Account.svg";
+import Completed_Account from "../../../../assets/Completed_Account.svg";
+import Closed_Account from "../../../../assets/Closed_Account.svg";
+
+import whatsapp from "../../../../assets/whatsapp.svg";
+import sms from "../../../../assets/sms.svg";
+import email from "../../../../assets/email.svg";
 import gold from "../../../../assets/Gold 22.svg";
 import gold24 from "../../../../assets/Gold 24.svg";
 import gold18 from "../../../../assets/Gold 18.svg";
@@ -41,6 +45,37 @@ const options = [
   { value: "week", label: "This Week" },
   { value: "month", label: "This Month" },
   { value: "year", label: "This Year" },
+];
+
+const tableData = [
+  {
+    id: 1,
+    customerName: "John",
+    schemeName: "Gold Plan",
+    paidAmount: "1000",
+    paidDate: "2025-02-28",
+  },
+  {
+    id: 2,
+    customerName: "Jane",
+    schemeName: "Silver Plan",
+    paidAmount: "800",
+    paidDate: "2025-02-27",
+  },
+  {
+    id: 3,
+    customerName: "Michael",
+    schemeName: "Diamond Plan",
+    paidAmount: "1500",
+    paidDate: "2025-02-26",
+  },
+  {
+    id: 4,
+    customerName: "Alice",
+    schemeName: "End Weight",
+    paidAmount: "1900",
+    paidDate: "2025-02-26",
+  },
 ];
 
 function Dashboard() {
@@ -377,69 +412,76 @@ function Dashboard() {
     { label: "Completed", color: "#D99FE7", percentage: 12 },
     { label: "Refund", color: "#317BFF", percentage: 8 },
   ];
-  
+
   const totalAccounts = { count: 173, percentage: 77 };
 
   return (
     <>
-      <div className="flex flex-col gap-5 px-4 py-6 bg-gray-100 min-h-screen overflow-y-scroll scrollbar-hide">
+      <div className="flex flex-col gap-5 px-4 py-6  min-h-screen overflow-y-scroll scrollbar-hide">
         {/* Cards Section */}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {/* Card */}
-          <div className="flex flex-row items-center justify-between bg-white rounded-lg p-4 shadow-md">
-            <div className="flex flex-col">
-              <h5 className="text-[#67748E] text-sm">Total Customer</h5>
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-white rounded-[16px] pt-[20px] pb-[25px] px-[12px]">
+            <div className="rounded-md">
+              <img
+                src={customer}
+                alt="customer"
+                className="h-[40px] w-[40px]"
+              />
+            </div>
+            <div className="flex flex-col py-[12px] ms-1">
               <h5 className="text-2xl font-semibold">
                 {cardData?.total_customer || 0}
               </h5>
-            </div>
-            <div
-              className="flex items-center justify-center p-3 rounded-md"
-              style={{ backgroundColor: layout_color }}
-            >
-              <img src={customer} alt="customer" className="w-6 h-6" />
+              <h5 className="text-[#6C7086] text-md mt-2 ">Total Customer</h5>
             </div>
           </div>
-          {/* Repeat Cards */}
-          <div className="flex flex-row items-center justify-between bg-white rounded-lg p-4 shadow-md">
-            <div className="flex flex-col">
-              <h5 className="text-[#67748E] text-sm">Total Account</h5>
+
+          <div className="bg-white rounded-[16px] pt-[20px] pb-[25px] px-[12px]">
+            <div className="rounded-md">
+              <img
+                src={Total_Account}
+                alt="customer"
+                className="h-[40px] w-[40px]"
+              />
+            </div>
+            <div className="flex flex-col py-[12px] ms-1">
               <h5 className="text-2xl font-semibold">
                 {cardData?.total_account || 0}
               </h5>
-            </div>
-            <div
-              className="flex items-center justify-center p-3 rounded-md"
-              style={{ backgroundColor: layout_color }}
-            >
-              <img src={account} alt="account" className="w-6 h-6" />
+              <h5 className="text-[#6C7086] text-md mt-2 ">Total Account</h5>
             </div>
           </div>
-          <div className="flex flex-row items-center justify-between bg-white rounded-lg p-4 shadow-md">
-            <div className="flex flex-col">
-              <h5 className="text-[#67748E] text-sm">Completed Account</h5>
+
+          <div className="bg-white rounded-[16px] pt-[20px] pb-[25px] px-[12px]">
+            <div className="rounded-md">
+              <img
+                src={Completed_Account}
+                alt="customer"
+                className="h-[40px] w-[40px]"
+              />
+            </div>
+            <div className="flex flex-col py-[12px] ms-1">
               <h5 className="text-2xl font-semibold">
                 {cardData?.total_complete || 0}
               </h5>
-            </div>
-            <div
-              className="flex items-center justify-center p-3 rounded-md"
-              style={{ backgroundColor: layout_color }}
-            >
-              <img src={completedacc} alt="completedacc" className="w-6 h-6" />
+              <h5 className="text-[#6C7086] text-md mt-2 ">
+                Completed Account
+              </h5>
             </div>
           </div>
-          <div className="flex flex-row items-center justify-between bg-white rounded-lg p-4 shadow-md">
-            <div className="flex flex-col">
-              <h5 className="text-[#67748E] text-sm">Closed Account</h5>
-              <h5 className="text-2xl font-semibold">{cardData?.close || 0}</h5>
+
+          <div className="bg-white rounded-[16px] pt-[20px] pb-[25px] px-[12px]">
+            <div className="rounded-md">
+              <img
+                src={Closed_Account}
+                alt="customer"
+                className="h-[40px] w-[40px]"
+              />
             </div>
-            <div
-              className="flex items-center justify-center p-3 rounded-md"
-              style={{ backgroundColor: layout_color }}
-            >
-              <img src={closedacc} alt="closedacc" className="w-6 h-6" />
+            <div className="flex flex-col py-[12px] ms-1">
+              <h5 className="text-2xl font-semibold">{cardData?.close || 0}</h5>
+              <h5 className="text-[#6C7086] text-md mt-2 ">Closed Account</h5>
             </div>
           </div>
         </div>
@@ -453,7 +495,7 @@ function Dashboard() {
               </h2>
               <div
                 className="flex items-center justify-center p-3 rounded-md cursor-pointer bg-[#F0F7FE]"
-                onClick={() => navigate("/ourscheme/createmetalrate")}
+                onClick={() => navigate("/masters/metal/")}
               >
                 <img src={plus} alt="plus" className="w-6 h-6 cursor-pointer" />
                 <div className="text-[#004181] text-md font-medium px-2 font- cursor-pointer">
@@ -480,110 +522,365 @@ function Dashboard() {
               ))}
             </div>
           </div>
-
           {/* donut Chart */}
-          <AccountStatus statusData={statusData} totalAccounts={totalAccounts} options={options} />;
+          <AccountStatus
+            statusData={statusData}
+            totalAccounts={totalAccounts}
+            options={options}
+          />
         </div>
 
-        {/* Payment Table && Piechart section  */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-2">
-          {/* Table Section */}
-          <div className="rounded-lg  shadow-md  bg-white p-3 whitespace-normal">
-            <div className="p-2 flex justify-between items-center w-full">
-              <h2 className="text-lg font-bold px-3">Today's Payment</h2>
-              <div
-                className="flex items-center justify-center p-3 rounded-md cursor-pointer"
-                onClick={() => navigate("/payment/addschemepayment")}
-              >
-                <img
-                  src={plus}
-                  alt="plus"
-                  className="w-6 h-6 cursor-pointer"
-                  onClick={() => navigate("/payment/addschemepayment")}
-                />
-                <h6
-                  className="text-gray-900 text-md font-medium px-2 font- cursor-pointer"
-                  onClick={() => navigate("/payment/addschemepayment")}
-                >
-                  Add Payment
-                </h6>
+        {/* mode of payment and  limits  */}
+        <div className="grid grid-cols-12 gap-4">
+          {/* Left Section (3/5 of the screen) */}
+          <div className="col-span-7">
+            <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-3 gap-4">
+              <div className="bg-white rounded-[16px] pt-[20px] pb-[25px] px-[12px]">
+                <div className="rounded-md">
+                  <img
+                    src={whatsapp}
+                    alt="whatsapp"
+                    className="h-[40px] w-[40px]"
+                  />
+                </div>
+                <div className="flex flex-col py-[12px] ms-1">
+                  <h5 className="text-2xl font-semibold">
+                    {cardData?.total_whatsapp || 0}
+                  </h5>
+                  <h5 className="text-[#6C7086] text-md mt-2">
+                    WhatsApp Limit
+                  </h5>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-[16px] pt-[20px] pb-[25px] px-[12px]">
+                <div className="rounded-md">
+                  <img src={sms} alt="sms" className="h-[40px] w-[40px]" />
+                </div>
+                <div className="flex flex-col py-[12px] ms-1">
+                  <h5 className="text-2xl font-semibold">
+                    {cardData?.total_sms || 0}
+                  </h5>
+                  <h5 className="text-[#6C7086] text-md mt-2">SMS Limit</h5>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-[16px] pt-[20px] pb-[25px] px-[12px]">
+                <div className="rounded-md">
+                  <img src={email} alt="email" className="h-[40px] w-[40px]" />
+                </div>
+                <div className="flex flex-col py-[12px] ms-1">
+                  <h5 className="text-2xl font-semibold">
+                    {cardData?.total_email || 0}
+                  </h5>
+                  <h5 className="text-[#6C7086] text-md mt-2">Email Limit</h5>
+                </div>
               </div>
             </div>
 
-            <Table data={data} columns={columns} isLoading={isLoading} />
-
-            {data?.length > 0 && (
-              <div className="flex justify-between mt-4 p-2">
-                <div className="flex flex-row items-center justify-center gap-2">
-                  <div className="flex items-center gap-4">
-                    <button
-                      onClick={() => handlePageChange(currentPage - 1)}
-                      readOnly={currentPage === 1}
-                      className="p-2 text-gray-500 rounded-md"
-                    >
-                      Previous
-                    </button>
-                  </div>
-
-                  <div className="flex flex-row items-center justify-center gap-2">
-                    {paginationButtons}
-                  </div>
-
-                  <div className="flex items-center">
-                    <button
-                      onClick={() => handlePageChange(currentPage + 1)}
-                      readOnly={currentPage === totalPages}
-                      className="p-2 text-gray-500 rounded-md"
-                    >
-                      Next
-                    </button>
-                  </div>
-                </div>
-
-                <div className="mt-4 flex gap-2 justify-center items-center">
-                  <span className="text-gray-500">Show</span>
-                  <select
-                    id="itemsPerPage"
-                    value={itemsPerPage}
-                    onChange={(e) =>
-                      handleItemsPerPageChange(Number(e.target.value))
-                    }
-                    className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
+            <div>
+              <div className="bg-white rounded-lg shadow-md p-5 lg:col-span-3  mt-6">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-xl font-bold ">Payment History</h2>
+                  <div
+                    className="flex items-center justify-center p-3 rounded-md cursor-pointer bg-[#FBFCF8]"
+                    onClick={() => navigate("/masters/metal/")}
                   >
-                    <option value={10}>10</option>
-                    <option value={25}>25</option>
-                    <option value={50}>50</option>
-                    <option value={100}>100</option>
-                    <option value={250}>250</option>
-                    <option value={500}>500</option>
-                    <option value={1000}>1000</option>
-                  </select>
-                  <span className="text-gray-500">entries</span>
+                    <img
+                      src={plus}
+                      alt="plus"
+                      className="w-6 h-6 cursor-pointer"
+                    />
+                    <div className="text-[#004181] text-md font-medium px-2 font- cursor-pointer">
+                      Add Payment
+                    </div>
+                  </div>
+                </div>
+
+                <div class="relative overflow-x-auto  sm:rounded-lg">
+                  <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                    <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                      <tr>
+                        <th scope="col" className="px-6 py-3">
+                          S.no
+                        </th>
+                        <th scope="col" className="px-6 py-3">
+                          Customer Name
+                        </th>
+                        <th scope="col" className="px-6 py-3">
+                          Scheme name
+                        </th>
+                        <th scope="col" className="px-6 py-3">
+                          Paid Amount
+                        </th>
+                        <th scope="col" className="px-6 py-3">
+                          Paid Date
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {tableData.map((item, index) => (
+                        <tr
+                          key={item.id}
+                          className="bg-white  dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600"
+                        >
+                          <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                            {index + 1}
+                          </td>
+                          <td className="px-6 py-4">{item.customerName}</td>
+                          <td className="px-6 py-4">{item.schemeName}</td>
+                          <td className="px-6 py-4">{item.paidAmount}</td>
+                          <td className="px-6 py-4">{item.paidDate}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+
+                  <nav
+                    class="flex items-center flex-column flex-wrap md:flex-row justify-between p-4"
+                    aria-label="Table navigation"
+                  >
+                    <span class="text-sm font-normal text-gray-500 dark:text-gray-400 mb-4 md:mb-0 block w-full md:inline md:w-auto">
+                      Showing{" "}
+                      <span class="font-semibold text-gray-900 dark:text-white">
+                        1-10
+                      </span>{" "}
+                      of{" "}
+                      <span class="font-semibold text-gray-900 dark:text-white">
+                        1000
+                      </span>
+                    </span>
+                    <ul class="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8">
+                      <li>
+                        <a class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                          Previous
+                        </a>
+                      </li>
+                      <li>
+                        <a class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                          1
+                        </a>
+                      </li>
+                      <li>
+                        <a class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                          2
+                        </a>
+                      </li>
+                      <li>
+                        <a
+                          aria-current="page"
+                          class="flex items-center justify-center px-3 h-8 text-blue-600 border border-gray-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
+                        >
+                          3
+                        </a>
+                      </li>
+
+                      <li>
+                        <a class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                          Next
+                        </a>
+                      </li>
+                    </ul>
+                  </nav>
                 </div>
               </div>
-            )}
+            </div>
           </div>
-          {/* Pie chart Section */}
-          <div className="flex flex-col bg-white items-center justify-between mb-2">
-            {/* Title Section */}
-            <div className="p-2 flex justify-between items-center w-full">
-              <h2 className="text-lg font-bold px-3">Account</h2>
-              <div className="flex items-center justify-center p-3 rounded-md cursor-pointer">
-                <img src={plus} alt="plus" className="w-6 h-6 cursor-pointer" />
-                <h6
-                  className="text-gray-900 text-md font-medium px-2 font- cursor-pointer"
-                  onClick={() => navigate("/manageaccount/addschemeaccount")}
-                >
-                  Add Account
-                </h6>
+
+          {/* Right Section (2/5 of the screen) */}
+          <div className="col-span-5 ">
+            <div className="bg-[#FFFFFF] pt-4 px-4 rounded-[16px]">
+              <div className="flex justify-between items-center mb-[15px] ">
+                <h2 className="text-[#2F1C6A] font-semibold text-xl">
+                  Mode of Payment
+                </h2>
+
+                <Select
+                  options={options}
+                  defaultValue={options[1]}
+                  className="w-[150px]"
+                  styles={{
+                    control: (base) => ({
+                      ...base,
+                      backgroundColor: "white",
+                      borderRadius: "6px",
+                      borderColor: "#e2e8f0",
+                      padding: "2px",
+                      cursor: "pointer",
+                    }),
+                  }}
+                />
+              </div>
+              <div className="relative overflow-x-auto">
+                <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 my-5">
+                  <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                    <tr>
+                      <th scope="col" className="px-6 py-3">
+                        Payment Mode
+                      </th>
+                      <th scope="col" className="px-6 py-3">
+                        Amount
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
+                      <th
+                        scope="row"
+                        className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                      >
+                        Bank Transfer
+                      </th>
+                      <td className="px-6 py-4">1500</td>
+                    </tr>
+
+                    <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
+                      <th
+                        scope="row"
+                        className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                      >
+                        Gpay
+                      </th>
+                      <td className="px-6 py-4">1000</td>
+                    </tr>
+
+                    <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
+                      <th
+                        scope="row"
+                        className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                      >
+                        Credit Card
+                      </th>
+                      <td className="px-6 py-4">1000</td>
+                    </tr>
+
+                    <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
+                      <th
+                        scope="row"
+                        className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                      >
+                        Debit Card
+                      </th>
+                      <td className="px-6 py-4">5000</td>
+                    </tr>
+                    <tr className="bg-white  dark:bg-gray-800 dark:border-gray-700 border-gray-200">
+                      <th
+                        scope="row"
+                        className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                      >
+                        Razor Pay
+                      </th>
+                      <td className="px-6 py-4">1200</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
+            <div>
+              <div className="bg-white rounded-lg shadow-md  lg:col-span-3  mt-6">
+                <div className="flex justify-between items-center mb-4 px-5 py-3">
+                  <h2 className="text-xl font-bold ">New User Joined</h2>
+                  <Select
+                    options={options}
+                    defaultValue={options[1]}
+                    className="w-[250px]"
+                    styles={{
+                      control: (base) => ({
+                        ...base,
+                        backgroundColor: "white",
+                        borderRadius: "6px",
+                        borderColor: "#e2e8f0",
+                        padding: "2px",
+                        cursor: "pointer",
+                      }),
+                    }}
+                  />
+                </div>
 
-            {/* Chart Section */}
-            <div
-              id="piechart_3d"
-              className="w-full max-w-3xl h-[400px] mx-auto shadow-lg border rounded-lg"
-            ></div>
+                <div class="relative overflow-x-auto  sm:rounded-lg">
+                  <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 p-5">
+                    <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                      <tr>
+                        <th scope="col" className="px-6 py-3">
+                          S.no
+                        </th>
+                        <th scope="col" className="px-6 py-3">
+                          Customer Name
+                        </th>
+                        <th scope="col" className="px-6 py-3">
+                          Scheme name
+                        </th>
+                        <th scope="col" className="px-6 py-3">
+                          Paid Date
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {tableData.map((item, index) => (
+                        <tr
+                          key={item.id}
+                          className="bg-white  dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600"
+                        >
+                          <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                            {index + 1}
+                          </td>
+                          <td className="px-6 py-4">{item.customerName}</td>
+                          <td className="px-6 py-4">{item.schemeName}</td>
+                          <td className="px-6 py-4">{item.paidDate}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+
+                  <nav
+                    class="flex items-center flex-column flex-wrap md:flex-row justify-between p-4"
+                    aria-label="Table navigation"
+                  >
+                    <span class="text-sm font-normal text-gray-500 dark:text-gray-400 mb-4 md:mb-0 block w-full md:inline md:w-auto">
+                      Showing{" "}
+                      <span class="font-semibold text-gray-900 dark:text-white">
+                        1-10
+                      </span>{" "}
+                      of{" "}
+                      <span class="font-semibold text-gray-900 dark:text-white">
+                        1000
+                      </span>
+                    </span>
+                    <ul class="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8">
+                      <li>
+                        <a class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                          Previous
+                        </a>
+                      </li>
+                      <li>
+                        <a class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                          1
+                        </a>
+                      </li>
+                      <li>
+                        <a class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                          2
+                        </a>
+                      </li>
+                      <li>
+                        <a
+                          aria-current="page"
+                          class="flex items-center justify-center px-3 h-8 text-blue-600 border border-gray-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
+                        >
+                          3
+                        </a>
+                      </li>
+
+                      <li>
+                        <a class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                          Next
+                        </a>
+                      </li>
+                    </ul>
+                  </nav>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
