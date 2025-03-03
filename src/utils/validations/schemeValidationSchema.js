@@ -1,5 +1,13 @@
 import * as Yup from "yup";
 
+const amountSchema = Yup.number()
+  .typeError("Must be a valid number")
+  .test("is-decimal", "Invalid number format", (value) => {
+    if (value === undefined || value === null) return true; // Allow empty values when not required
+    return !value.toString().includes("e"); // Prevent scientific notation
+  })
+  .min(0, "Must be 0 or a positive number");
+
 export const schemeValidationSchema = Yup.object({
   scheme_name: Yup.string()
     .required("Scheme name is required")
@@ -8,6 +16,7 @@ export const schemeValidationSchema = Yup.object({
     .required("Scheme code is required")
     .max(15, "Scheme code cannot exceed 15 characters"),
   installment_type: Yup.string().required("Installment type is required"),
+  scheme_type:Yup.string().required('Scheme type is required'),
   id_classification: Yup.string().required("Classification is required"),
   id_purity: Yup.string().required("Purity is required"),
   id_metal: Yup.string().required("Metal is required"),
@@ -25,7 +34,7 @@ export const schemeValidationSchema = Yup.object({
   saving_type: Yup.number()
     .optional("Saving type is required")
     .required("Scheme type is required"),
-  totalCount: Yup.number().when("classType", {
+    totalCountAmount: Yup.number().when("classType", {
     is: true,
     then: (schema) =>
       schema
@@ -97,26 +106,37 @@ export const schemeValidationSchema = Yup.object({
   grace_fine: Yup.number()
     .typeError("Grace fine must be a number")
     .min(0, "Must be 0 or a positive number")
+    .max(100,"Fine amount must below 100")
     .when("fine_amount", {
       is: true,
       then: Yup.number().required("Grace fine is required"),
     }),
+  // min_amount: Yup.number().when(["classType", "scheme_type"], {
+  //   is: (classType, scheme_type) =>
+  //     !classType && ![12, 3, 4].includes(scheme_type),
+  //   then: (schema) =>
+  //     schema
+  //       .required("Minimum Amount is required")
+  //       .min(0, "Must be 0 or a positive number"),
+  //   otherwise: (schema) => schema.notRequired(),
+  // }),
+  // max_amount: Yup.number().when(["classType", "scheme_type"], {
+  //   is: (classType, scheme_type) =>
+  //     !classType && ![12, 3, 4].includes(scheme_type),
+  //   then: (schema) =>
+  //     schema
+  //       .required("Maximum Amount is required")
+  //       .min(0, "Must be 0 or a positive number"),
+  //   otherwise: (schema) => schema.notRequired(),
+  // }),
   min_amount: Yup.number().when(["classType", "scheme_type"], {
-    is: (classType, scheme_type) =>
-      !classType && ![12, 3, 4].includes(scheme_type),
-    then: (schema) =>
-      schema
-        .required("Minimum Amount is required")
-        .min(0, "Must be 0 or a positive number"),
+    is: (classType, scheme_type) => !classType && ![12, 3, 4].includes(scheme_type),
+    then: (schema) => amountSchema.required("Minimum Amount is required"),
     otherwise: (schema) => schema.notRequired(),
   }),
   max_amount: Yup.number().when(["classType", "scheme_type"], {
-    is: (classType, scheme_type) =>
-      !classType && ![12, 3, 4].includes(scheme_type),
-    then: (schema) =>
-      schema
-        .required("Maximum Amount is required")
-        .min(0, "Must be 0 or a positive number"),
+    is: (classType, scheme_type) => !classType && ![12, 3, 4].includes(scheme_type),
+    then: (schema) => amountSchema.required("Maximum Amount is required"),
     otherwise: (schema) => schema.notRequired(),
   }),
   min_weight: Yup.number().when(["classType", "scheme_type"], {
@@ -141,7 +161,9 @@ export const schemeValidationSchema = Yup.object({
   total_installments: Yup.number().required(
     "Total Installments is required"
   ),
-  buy_gst: Yup.number().optional("Buy GST is required"),
+  buy_gst: Yup.number().optional("Buy GST is required")
+  .min(0,"Gst percentage should be below minimum 0")
+  .max(100,"Maximum gst percentage should be 100"),
   buytgsttype: Yup.string().optional("Buy GST Type is required"),
   wastagebenefit: Yup.string().required("Wastage Benefit is required"),
   benefit_making: Yup.string().required(
@@ -205,8 +227,9 @@ export const schemeValidationSchema = Yup.object({
     .typeError("Must be a number")
     .min(0, "Must be 0 or a positive number"),
   convenience_fee: Yup.number()
-    .typeError("Must be a number")
-    .min(0, "Must be 0 or a positive number"),
+    .optional("Must be a number")
+    .min(0, "Must be 0 or a positive number")
+    .max(100,"Maximum 100 percentage"),
   fine_amount: Yup.number()
     .typeError("Must be a number")
     .min(0, "Must be 0 or a positive number"),

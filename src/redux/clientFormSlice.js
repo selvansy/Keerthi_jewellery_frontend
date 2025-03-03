@@ -18,7 +18,7 @@ const initialState = {
     pawn_active: false,
     pawn_url: "",
 },
-accExp:[],
+accExp:{},
 outreport:[],
   branchdata:[],
   reviewData:[],

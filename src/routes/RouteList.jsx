@@ -77,8 +77,11 @@ import Topup from "../chit/components/Setup/topup";
 import Campaign from "../chit/components/Setup/campaign";
 import configNotification from "../chit/components/notification/notification-configurations/configNotification";
 import WalletRedemption from "../chit/components/wallet/WalletRedemption";
+import WalletHistory from "../chit/components/wallet/WalletHistory";
 import Addwallet from "../chit/components/wallet/Addwallet";
 import SchemeForm from "../chit/components/ourscheme/scheme/AddScheme";
+import RedeemHistory from "../chit/components/wallet/RedeemHistory";
+import PrecloseAccount from "../chit/components/manageaccount/preclose/PrecloseAccount";
 
 const RouteList = [
 
@@ -307,6 +310,16 @@ const RouteList = [
     name: "Wallet",
     path: '/wallet/redeemption/',
     element: <Base renderContent={WalletRedemption} />
+  },
+  {
+    name: "Wallet History",
+    path: '/wallet/wallethistory/',
+    element: <Base renderContent={WalletHistory} />
+  },
+  {
+    name: "Redeem History",
+    path: '/wallet/redeemhistory/',
+    element: <Base renderContent={RedeemHistory} />
   },
 
 
@@ -548,7 +561,7 @@ const RouteList = [
 
   {
     name: "Closed Account",
-    path: '/manageaccount/closedaccount',
+    path: '/managecustomers/accountredemption',
     element: <Base renderContent={CloseAccount} />
   },
   {
@@ -561,9 +574,12 @@ const RouteList = [
     path: '/manageaccount/addrevertaccount',
     element: <Base renderContent={AddRvertAccount} />
   },
-
-
-
+  {
+    name: "Preclose Account",
+    path: '/managecustomers/preclose',
+    element: <Base renderContent={PrecloseAccount} />
+  },
+  
   // Outstanding Report 
 
 

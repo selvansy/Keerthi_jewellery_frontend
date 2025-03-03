@@ -76,7 +76,7 @@ const GiftHandOver = () => {
         setTotalPages(response.totalPages)
         setCurrentPage(response.currentPage)
         Setentries(response.totalDocument)
-        setTotalPages(Math.ceil(response.data.total / limit));
+     
       }
       setisLoading(false)
     },
@@ -202,6 +202,15 @@ const GiftHandOver = () => {
   const paginationData = { totalItems: totalPages, currentPage: currentPage, itemsPerPage: itemsPerPage, handlePageChange: handlePageChange }
   const paginationButtons = usePagination(paginationData)
 
+  const formatDate = (date) => {
+  
+    if (!date) return null;
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+};
+
   const columns = [
     {
       header: 'S.No',
@@ -287,10 +296,7 @@ const GiftHandOver = () => {
     },
     {
       header: "Create Date",
-      cell: (row) => {
-        const date = new Date(row?.createdAt);
-        return date.toLocaleDateString('en-GB');
-      }
+      cell: (row) => formatDate(row?.createdAt) || '-',
     },
     {
       header: 'Status',

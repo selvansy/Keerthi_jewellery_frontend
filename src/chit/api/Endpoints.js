@@ -61,16 +61,28 @@ export const getallwallet = async (data) => {
     return response.data;
 }
 
-// 
-
 export const addwalletData = async (data) => {
     const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/wallet/rate`,data);
     return response.data;
 }
 
- 
- 
- 
+export const walletRedeem = async (data) => {
+    const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/wallet/redeem`,data);
+    return response.data;
+}
+
+export const redeemType = async () => {
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/common/redeem-type`);
+    return response.data;
+}
+
+export const mobilesearch = async (mobile) => {
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/wallet/customer-details?mobileNumber=${mobile}`);
+    return response.data;
+}
+
+
+
  
 /*Metal*/
  
@@ -185,6 +197,12 @@ export const generalsettingprojectbranchbyid = async (data) => {
 //add Notifcation
 export const addnotificationsetting = async (data) => {
     const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/admin/notificationsetting`,data);
+    return response.data;
+}
+
+
+export const notificationConfig = async (data) => {
+    const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/notification-config`,data);
     return response.data;
 }
  
@@ -1288,9 +1306,8 @@ export const getallbranchscheme = async (data) => {
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/scheme/branch/${data.id_branch}`);
     return response.data;
 }
-export const getallbranchclassification = async (data) => {
-  
-    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/classification/branch/${data.id_branch}`);
+export const getallbranchclassification = async () => {
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/classification/scheme`);
     return response.data;
 }
 export const getemployeebybranch = async (data) => {
