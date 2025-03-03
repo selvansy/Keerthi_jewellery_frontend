@@ -172,28 +172,24 @@ const AddSchemeAccount = () => {
   const { id } = useParams()
   const [start_date, setStartDate] = useState(todaydate);
   const [maturity_date, setMaturityDate] = useState('');
-  const [maturity_month, setMaturityMonth] = useState(0);
+  const [maturity_period, setMaturityPeriod] = useState(0);
   const [total_installments, setTotalinstallments] = useState(0);
   const [fixedamt,setFixedAmt] = useState([])
   const [searchmobile, setSearchMobile] = useState('');
   const [mobile, setMobile] = useState('');
   const [searcherror, setSearchError] = useState('');
   const [suggestions, setSuggestions] = useState([]);
-
   const [branch, setBranch] = useState(id_branch)
   const [branchData, setBranchData] = useState([])
-
   const [header, setHeader] = useState('')
   const [returnRoute, setReturnRoute] = useState('')
-
-
   const [classifyfilter, setClassify] = useState([]);
   const [employeefilter, setEmployee] = useState([]);
   const [schemefilter, setScheme] = useState([]);
   const [errors, setErrors] = useState(null);
   const [ispayable, setIspayable] = useState(false);
-
   const [isaccountno, setIsAccountNo] = useState(0);
+  const [selectedScheme,setSelectedScheme]= useState('')
 
 
   const { data: branchresponse, isLoading: loadingbranch } = useQuery({
@@ -221,12 +217,12 @@ const AddSchemeAccount = () => {
 
 
 
-  useEffect(() => {
+  // useEffect(() => {
 
-    if (id) {
-      handleschemeaccountbyid({ id: id });
-    }
-  }, [id])
+  //   if (id) {
+  //     handleschemeaccountbyid({ id: id });
+  //   }
+  // }, [id])
 
 
   const handleschemeaccountbyid = async (data) => {
@@ -267,12 +263,12 @@ const AddSchemeAccount = () => {
         mobile: response.data.id_customer.mobile,
         address: response.data.id_customer.address,
         amount: response.data.amount,
-        maturity_month: response.data.id_scheme.maturity_month,
+        maturity_period: response.data.id_scheme.maturity_period,
         maturity_date: response.data.maturity_date,
         referral_id: response.data.referral_id,
       });
       setTotalinstallments(response.data.id_scheme.total_installments);
-      setMaturityMonth(response.data.id_scheme.maturity_month);
+      setMaturityPeriod(response.data.id_scheme.maturity_period);
       setMaturityDate(response.data.id_scheme.maturity_date);
       setMobile(response.data.id_customer.mobile);
 
@@ -303,7 +299,7 @@ const AddSchemeAccount = () => {
     min_weight: 0,
     max_weight: 0,
     total_installments: total_installments,
-    maturity_month: maturity_month,
+    maturity_period: maturity_period,
     maturity_date: maturity_date,
     referral_id: '',
   });
@@ -321,8 +317,6 @@ const handleSearchmobile = () => {
   if (mobile === "") { toast.error('Mobile Number is required!'); }
   handlesearchcustomer({ id_branch: cusData.id_branch, search_mobile: cusData.mobile });
 };
-
-
 
   const { mutate: handlesearchcustomer } = useMutation({
     mutationFn: searchcustomermobile,
@@ -348,7 +342,7 @@ const handleSearchmobile = () => {
           max_amount: 0,
           min_weight: 0,
           max_weight: 0,
-          maturity_month: maturity_month,
+          maturity_period: maturity_period,
           maturity_date: maturity_date,
           referral_id: ''
         });
@@ -363,7 +357,6 @@ const handleSearchmobile = () => {
   };
 
   const filterInputchange = (e) => {
-
     const { name, value } = e.target;
 
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -376,55 +369,66 @@ const handleSearchmobile = () => {
       if (value !== "") {
         handleClassifyChange(value);
         handleemployeebyBranch(value);
-        getemployeebybranch({ id_branch: valuen });
+        getemployeebybranch({ id_branch: value });
 
       }
     }
 
-    if (name === "id_classification") {
+    if (name === "id_classification" ) {
+      console.log(e)
       handleschemebyclassification(value);
     }
 
     if (name === 'id_scheme') {
+      
       handleschemebyid(value);
     }
-    if (formData.scheme_type === 6) {
-      if (name === "amount") {
-        const err = {}
-        if (parseInt(value) === '') {
-          err['amount'] = 'Amount is required';
-        } else if (parseInt(formData.min_amount) > parseInt(value)) {
-          err['amount'] = 'Minimum Limit amount Rs. ' + parseInt(formData.min_amount);
-        } else if (parseInt(formData.max_amount) <= parseInt(value)) {
-          err['amount'] = 'Maximum Limit amount Rs. ' + parseInt(formData.max_amount);
-        } else {
-          err['amount'] = '';
-        }
-        setErrors((prevState) => ({
-          ...prevState,
-          ...err,
-        }));
-      }
-    }
-    if (formData.scheme_type === 3) {
-      if (name === "amount") {
-        const err = {}
-        if (parseInt(value) === '') {
-          err['amount'] = 'Amount is required';
-        } else if (parseInt(formData.min_weight) > parseInt(value)) {
-          err['amount'] = 'Minimum Limit weight Rs. ' + parseInt(formData.min_weight);
-        } else if (parseInt(formData.max_weight) <= parseInt(value)) {
-          err['amount'] = 'Maximum Limit weight Rs. ' + parseInt(formData.max_weight);
-        } else {
-          err['amount'] = '';
-        }
-        setErrors((prevState) => ({
-          ...prevState,
-          ...err,
-        }));
-      }
-    }
+    // if (formData.scheme_type === 6) {
+    //   if (name === "amount") {
+    //     const err = {}
+    //     if (parseInt(value) === '') {
+    //       err['amount'] = 'Amount is required';
+    //     } else if (parseInt(formData.min_amount) > parseInt(value)) {
+    //       err['amount'] = 'Minimum Limit amount Rs. ' + parseInt(formData.min_amount);
+    //     } else if (parseInt(formData.max_amount) <= parseInt(value)) {
+    //       err['amount'] = 'Maximum Limit amount Rs. ' + parseInt(formData.max_amount);
+    //     } else {
+    //       err['amount'] = '';
+    //     }
+    //     setErrors((prevState) => ({
+    //       ...prevState,
+    //       ...err,
+    //     }));
+    //   }
+    // }
+    // if (formData.scheme_type === 3) {
+    //   if (name === "amount") {
+    //     const err = {}
+    //     if (parseInt(value) === '') {
+    //       err['amount'] = 'Amount is required';
+    //     } else if (parseInt(formData.min_weight) > parseInt(value)) {
+    //       err['amount'] = 'Minimum Limit weight Rs. ' + parseInt(formData.min_weight);
+    //     } else if (parseInt(formData.max_weight) <= parseInt(value)) {
+    //       err['amount'] = 'Maximum Limit weight Rs. ' + parseInt(formData.max_weight);
+    //     } else {
+    //       err['amount'] = '';
+    //     }
+    //     setErrors((prevState) => ({
+    //       ...prevState,
+    //       ...err,
+    //     }));
+    //   }
+    // }
   };
+
+  useEffect(()=>{
+    if(selectedScheme === "Fixed"){
+      const filteredData = schemefilter.filter((item) => String(item._id) === String(formData.id_scheme));
+      console.log(filteredData)
+      setFixedAmt(filteredData[0].fixed_amounts)
+    }
+  },[formData.id_scheme])
+  console.log(fixedamt)
 
 
   const handleschemebyid = async (data) => {
@@ -446,11 +450,11 @@ const handleSearchmobile = () => {
         id_scheme: response.data._id,
         scheme_type: response.data.scheme_type,
         total_installments: response.data.total_installments,
-        maturity_month: response.data.maturity_month,
-        min_amount: response.data.min_amount,
-        max_amount: response.data.max_amount,
-        min_weight: response.data.min_weight,
-        max_weight: response.data.max_weight
+        maturity_period: response.data.maturity_period,
+        // min_amount: response.data.min_amount,
+        // max_amount: response.data.max_amount,
+        // min_weight: response.data.min_weight,
+        // max_weight: response.data.max_weight
       }));
       handleStartDateChange(todaydate);
 
@@ -469,19 +473,16 @@ const handleSearchmobile = () => {
 
   
   const { mutate: handleschemebyclassification } = useMutation({
-    mutationFn:()=> geallschemebyclassification({ "id_classification": id_classification }),
+    mutationFn:(id)=> geallschemebyclassification(id),
     onSuccess: (response) => {
       if (response) {
         setScheme(response.data);
-        setFixedAmt(response.data[0].fixed_amounts)
       }
     },
     onError:(error)=>{
       console.log(error)
   }
   });
-
-  
 
   const { mutate: handleClassifyChange } = useMutation({
     mutationFn: getallbranchclassification,
@@ -491,8 +492,6 @@ const handleSearchmobile = () => {
       }
     },
   });
-
-
 
   const handleSelectNumber = (number) => {
     setMobile(number);
@@ -522,7 +521,7 @@ const handleSearchmobile = () => {
     setStartDate(date);
 
     const start = new Date(date);
-    start.setMonth(start.getMonth() + formData.maturity_month);
+    start.setMonth(start.getMonth() + formData.maturity_period);
 
 
     const day = String(start.getDate()).padStart(2, '0');
@@ -581,10 +580,10 @@ const handleSearchmobile = () => {
       err['total_installments'] = '';
     }
 
-    if (formData.maturity_month === '') {
-      err['maturity_month'] = 'Maturity month is required';
+    if (formData.maturity_period === '') {
+      err['maturity_period'] = 'Maturity month is required';
     } else {
-      err['maturity_month'] = '';
+      err['maturity_period'] = '';
     }
 
     if (formData.maturity_date === '') {
@@ -733,7 +732,16 @@ const handleSearchmobile = () => {
               <div className='flex flex-col'>
                 <label className='text-black mb-1 font-normal'>Scheme Classification<span className='text-red-400'>*</span></label>
                 <div className="relative">
-                  <select name="id_classification" value={formData.id_classification} onChange={(e) => { filterInputchange(e) }} className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
+                  <select name="id_classification" value={formData.id_classification} onChange={(e) => { 
+                    const selectedId = e.target.value;
+                    const selectedOption = classifyfilter.find((classify) => classify._id === selectedId);
+
+                    if (selectedOption) {
+                      setSelectedScheme(selectedOption.name)
+                    }
+                
+                    filterInputchange(e);
+                  }} className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
                     <option value='' >--Select--</option>
                     {classifyfilter.map((classify) => (
                       <option key={classify._id} value={classify._id}>{classify.name}</option>
@@ -750,12 +758,37 @@ const handleSearchmobile = () => {
                 </div>
                 <p style={{ color: "red" }}>{errors?.id_classification}</p>
               </div>
+              <div className='flex flex-col'>
+                <label className='text-black mb-1 font-normal'>Scheme<span className='text-red-400'>*</span></label>
+                <div className="relative">
+                  <select name="id_scheme" value={formData.id_scheme} onChange={filterInputchange} className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
+                    <option value=''>--Select--</option>
+                    {schemefilter.map((scheme) => (
+                      <option key={scheme._id} value={scheme._id}>
+                        {scheme.scheme_name}
+                        {scheme.scheme_type === 4 || scheme.scheme_type === 5 || scheme.scheme_type === 6 || scheme.scheme_type === 7 || scheme.scheme_type === 8 || scheme.scheme_type === 9 || scheme.scheme_type === 10 ? ` (Rs. ${scheme.min_amount} - Rs. ${scheme.max_amount})` : ''}
+                        {[12,3,4].includes(scheme.scheme_type) ? ` (${scheme.min_weight} - ${scheme.max_weight})` : ''}
+                        {scheme.scheme_type === 0 || scheme.scheme_type === 1 || scheme.scheme_type === 2 ? ` (Rs. ${scheme.amount})` : ''}
+                      </option>
+                    ))}
+                  </select>
+
+
+                  <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                    <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
+                      <path d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </div>
+
+                </div>
+                <p style={{ color: "red" }}>{errors?.id_scheme}</p>
+              </div>
               {
                 formData.id_classification === "67bad07b970bf1c652590b21" && (
                   <div className='flex flex-col'>
-                  <label className='text-black mb-1 font-normal'>Fixed Amount Scheme<span className='text-red-400'>*</span></label>
+                  <label className='text-black mb-1 font-normal'>scheme Amounts<span className='text-red-400'>*</span></label>
                   <div className="relative">
-                    <select name="id_classification" value={formData.fixedamount} onChange={(e) => { filterInputchange(e) }} className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
+                    <select name="amount" value={formData.amount} onChange={(e) => { filterInputchange(e) }} className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
                       <option value='' >--Select--</option>
                       {fixedamt?.map((amount) => (
                         <option key={amount} value={amount}>{amount}</option>
@@ -775,33 +808,6 @@ const handleSearchmobile = () => {
                 )
               }
           
-              <div className='flex flex-col'>
-                <label className='text-black mb-1 font-normal'>Scheme<span className='text-red-400'>*</span></label>
-                <div className="relative">
-                  <select name="id_scheme" value={formData.id_scheme} onChange={filterInputchange} className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
-                    <option value=''>--Select--</option>
-                    {schemefilter.map((scheme) => (
-                      <option key={scheme._id} value={scheme._id}>
-                        {scheme.scheme_name}
-                        {scheme.scheme_type === 4 || scheme.scheme_type === 5 || scheme.scheme_type === 6 || scheme.scheme_type === 7 || scheme.scheme_type === 8 || scheme.scheme_type === 9 || scheme.scheme_type === 10 ? ` (Rs. ${scheme.min_amount} - Rs. ${scheme.max_amount})` : ''}
-                        {scheme.scheme_type === 3 ? ` (${scheme.min_weight} - ${scheme.max_weight})` : ''}
-                        {scheme.scheme_type === 0 || scheme.scheme_type === 1 || scheme.scheme_type === 2 ? ` (Rs. ${scheme.amount})` : ''}
-                      </option>
-                    ))}
-                  </select>
-
-
-                  <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                    <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
-                      <path d="M19 9l-7 7-7-7"></path>
-                    </svg>
-                  </div>
-
-                </div>
-                <p style={{ color: "red" }}>{errors?.id_scheme}</p>
-              </div>
-
-              
               <div className='flex flex-col'>
                 <label className='text-black mb-1 font-normal'>Account Name<span className='text-red-400'>*</span></label>
                 <input
@@ -836,22 +842,22 @@ const handleSearchmobile = () => {
                   value={formData.total_installments}
                   className='border-2 cursor-not-allowed border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
                   placeholder='Enter Total Installment'
-                  readOnly
+                  disabled
                 />
                 <p style={{ color: "red" }}>{errors?.total_installments}</p>
               </div>
 
               <div className='flex flex-col'>
-                <label className='text-black mb-1 font-normal'>Maturity Month<span className='text-red-400'>*</span></label>
+                <label className='text-black mb-1 font-normal'>Maturity Period<span className='text-red-400'>*</span></label>
                 <input
                   type='text'
-                  name='maturity_month'
-                  value={formData.maturity_month}
+                  name='maturity_period'
+                  value={formData.maturity_period}
                   className='border-2 cursor-not-allowed border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
                   placeholder='Enter Maturity Month'
-                  readOnly
+                  disabled
                 />
-                <p style={{ color: "red" }}>{errors?.maturity_month}</p>
+                <p style={{ color: "red" }}>{errors?.maturity_period}</p>
               </div>
 
               <div className='flex flex-col'>
@@ -879,11 +885,11 @@ const handleSearchmobile = () => {
                 <div className="relative">
                   <input
                     type='text'
+                    disabled
                     name="maturity_date"
                     value={formData.maturity_date}
                     className='border-2 cursor-not-allowed border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
                     placeholder='Enter Maturity Date'
-                    readOnly
                   />
                 </div>
                 <p style={{ color: "red" }}>{errors?.maturity_date}</p>

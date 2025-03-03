@@ -1334,7 +1334,7 @@ export const getschemeaccountbyid = async (data) => {
 }
 
 export const geallschemebyclassification = async (data) => {
-    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/scheme/classification/${data.id_classification}`);
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/scheme/classification/${data}`);
     return response.data;
 }
 export const schemeaccountbyid = async (data) => {
