@@ -7,13 +7,13 @@ const AccountStatus = ({ statusData, totalAccounts, options }) => {
   let offset = 0; // To manage segment positioning
 
   return (
-    <div className="bg-gray-50 p-6 rounded-lg max-w-lg lg:col-span-2">
+    <div className="bg-[#FFFFFF] p-6 rounded-lg max-w-lg lg:col-span-2">
       <div className="flex justify-between items-center mb-8">
         <h2 className="text-[#2F1C6A] font-semibold text-xl">Account</h2>
 
         <Select
           options={options}
-          defaultValue={options[1]} // Default to "This Week"
+          defaultValue={options[1]} 
           className="w-[250px]"
           styles={{
             control: (base) => ({
@@ -108,12 +108,12 @@ const AccountStatus = ({ statusData, totalAccounts, options }) => {
       {/* Account Count Section */}
       <div className="flex justify-between items-center mt-4">
         <div className="flex items-center">
-          <div className="flex -space-x-1 mr-3">
-            {statusData.slice(0, 4).map(({ color }, index) => (
+          <div className="flex -space-x-3 mr-3">
+            {statusData.map(({ color }, index) => (
               <div
                 key={index}
                 className="w-6 h-6 rounded-full border-2 border-white"
-                style={{ backgroundColor: color, zIndex: 30 - index * 10 }}
+                style={{ backgroundColor: color }}
               ></div>
             ))}
           </div>
