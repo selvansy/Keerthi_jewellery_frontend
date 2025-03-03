@@ -30,7 +30,6 @@ const CustomerForm = () => {
     const roledata = useSelector((state) => state.clientForm.roledata);
 
     const acc = useSelector((state) => state.clientForm.accExp);
-    console.log(acc)
 
     const id_branch = roledata?.branch;
 
@@ -248,9 +247,10 @@ const CustomerForm = () => {
                     customer_name: formData.firstname + ' ' + formData.lastname,
                     address: formData.address,
                     id_branch: formData.id_branch,
-                    mobile: formData.mobile
+                    mobile: formData.mobile,
+                    customerId:formData._id
                 }))
-                setFormData({})
+                // setFormData({})
             }
             setisLoading(false)
         },
