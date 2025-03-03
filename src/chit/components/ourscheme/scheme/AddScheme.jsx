@@ -399,7 +399,6 @@ const SchemeForm = () => {
 
   useEffect(() => {
     if (schemeData?.data && Array.isArray(schemeData.data.fixed_amounts)) {
-      console.log(schemeData.data.fixed_amounts,'kdkd')
       setAmounts(schemeData.data.fixed_amounts);
     }
   }, [schemeData?.data]);

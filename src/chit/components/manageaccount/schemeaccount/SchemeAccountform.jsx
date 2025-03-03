@@ -376,9 +376,6 @@ const AddSchemeAccount = () => {
     const { name, value } = e.target;
 
     setFormData((prev) => ({ ...prev, [name]: value }));
-    if (formData.scheme_type !== 6) {
-      setFormData((prev) => ({ ...prev, amount: 0 }));
-    }
 
     if(name === "account_name"){
       setFormData((prev) => ({ ...prev, [name]: value }));
@@ -641,6 +638,7 @@ const AddSchemeAccount = () => {
     },
   });
 
+  console.log(formData)
   return (
     <>
       <div className="flex flex-row justify-between">
@@ -836,10 +834,10 @@ const AddSchemeAccount = () => {
                 </div>
                 <p style={{ color: "red" }}>{errors?.id_scheme}</p>
               </div>
-              {formData.id_classification === "67bad07b970bf1c652590b21" && (
+              {selectedScheme === 'Fixed' ? (
                 <div className="flex flex-col">
                   <label className="text-black mb-1 font-normal">
-                    scheme Amounts<span className="text-red-400">*</span>
+                    Scheme {[12,3,4].includes(formData.scheme_type) ? "Weights":"Amounts"}<span className="text-red-400">*</span>
                   </label>
                   <div className="relative">
                     <select
@@ -875,6 +873,37 @@ const AddSchemeAccount = () => {
                   </div>
                   <p style={{ color: "red" }}>{errors?.id_classification}</p>
                 </div>
+              ):(
+                <>
+                <div className="flex flex-col">
+                <label className="text-black mb-1 font-normal">
+                  {[12,3,4].includes(formData.scheme_type)? "Min weight":"Min amount"} <span className="text-red-400">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="total_installments"
+                  value={formData.total_installments}
+                  className="border-2 cursor-not-allowed border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                  placeholder="Enter Total Installment"
+                  disabled
+                />
+                <p style={{ color: "red" }}>{errors?.total_installments}</p>
+              </div>
+              <div className="flex flex-col">
+                <label className="text-black mb-1 font-normal">
+                {[12,3,4].includes(formData.scheme_type) ? "Max weight":"Max amount"}<span className="text-red-400">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="total_installments"
+                  value={formData.total_installments}
+                  className="border-2 cursor-not-allowed border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                  placeholder="Enter Total Installment"
+                  disabled
+                />
+                <p style={{ color: "red" }}>{errors?.total_installments}</p>
+              </div>
+                </>
               )}
 
               <div className="flex flex-col relative">
@@ -983,7 +1012,7 @@ const AddSchemeAccount = () => {
                 </div>
                 <p style={{ color: "red" }}>{errors?.maturity_date}</p>
               </div>
-              {ispayable === true && (
+              {/* {ispayable === true && (
                 <div className="flex flex-col">
                   <label className="text-black mb-1 font-normal">
                     Payable<span className="text-red-400">*</span>
@@ -1007,7 +1036,7 @@ const AddSchemeAccount = () => {
                   </div>
                   <p style={{ color: "red" }}>{errors?.amount}</p>
                 </div>
-              )}
+              )} */}
 
               <div className="flex flex-col relative">
                 <label className="text-black mb-1 font-normal">
@@ -1050,41 +1079,6 @@ const AddSchemeAccount = () => {
                       </option>
                     ))}
                   </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                    <svg
-                      className="h-4 w-4 text-gray-400"
-                      fill="none"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="3"
-                      viewBox="0 0 24 24"
-                      stroke="black"
-                    >
-                      <path d="M19 9l-7 7-7-7"></path>
-                    </svg>
-                  </div>
-                </div>
-              </div>
-              <div className="flex flex-col">
-                <label className="text-black mb-1 font-normal">
-                  Agent Collection By<span className="text-red-400"> *</span>
-                </label>
-                <div className="relative">
-                  <select
-                    name="collectionuserid"
-                    value={formData.collectionuserid}
-                    onChange={filterInputchange}
-                    className="appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                    defaultValue=""
-                  >
-                    <option value="">--Select--</option>
-                    {employeefilter.map((employee) => (
-                      <option key={employee._id} value={employee._id}>
-                        {employee.firstname + " " + employee.lastname}
-                      </option>
-                    ))}
-                  </select>
-
                   <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
                     <svg
                       className="h-4 w-4 text-gray-400"
