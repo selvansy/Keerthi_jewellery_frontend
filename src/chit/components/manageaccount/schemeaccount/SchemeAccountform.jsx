@@ -9,7 +9,7 @@ import { toast } from "react-toastify";
 import Select from "react-select";
 import {
   addschemeaccount,
-  searchcustomermobile,
+  searchcustomermobile, 
   geallschemebyclassification,
   getschemeaccountbyid,
   getschemeById,
@@ -22,7 +22,9 @@ import {
   getallbranchclassification,
   getemployeebybranch,
   getallbranch,
-  getSchemeAccountCount
+  getSchemeAccountCount,
+  getCustomerByMobile, //use insted of searchcustomermobile
+  getEmployeeByMobile
 } from "../../../api/Endpoints";
 import { useSelector, useDispatch } from "react-redux";
 import { customSelectStyles } from "../../Setup/purity/index";
@@ -194,22 +196,26 @@ const AddSchemeAccount = () => {
   const [maturity_period, setMaturityPeriod] = useState(0);
   const [total_installments, setTotalinstallments] = useState(0);
   const [fixedamt, setFixedAmt] = useState([]);
-  const [searchmobile, setSearchMobile] = useState("");
   const [mobile, setMobile] = useState("");
-  const [searcherror, setSearchError] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [branch, setBranch] = useState(id_branch);
   const [branchData, setBranchData] = useState([]);
   const [header, setHeader] = useState("");
   const [returnRoute, setReturnRoute] = useState("");
   const [classifyfilter, setClassify] = useState([]);
-  const [employeefilter, setEmployee] = useState([]);
   const [schemefilter, setScheme] = useState([]);
   const [errors, setErrors] = useState(null);
   const [ispayable, setIspayable] = useState(false);
   const [selectedScheme, setSelectedScheme] = useState("");
   const [acNumber,setAcNumber]=useState(1)
-
+  const referralRoles = [
+    { id: 1, role: "Employee",endpoint:getEmployeeByMobile},
+    { id: 2, role: "Customer",endpoint:getCustomerByMobile},
+    { id: 3, role: "Agent"}
+  ];
+  const [searchmobile, setSearchMobile] = useState("");
+  const [selectedRole,setRole] = useState('')
+  
   const { data: branchresponse} = useQuery({
     queryKey: ["branch", branch],
     queryFn: getallbranch,
@@ -287,7 +293,7 @@ const AddSchemeAccount = () => {
   //     toast.error("Customer not created!");
   //   }
   // };
-
+console.log(cusData,'gi')
   const [formData, setFormData] = React.useState({
     id_customer: cusData.customerId,
     mobile: cusData.mobile,
@@ -311,6 +317,7 @@ const AddSchemeAccount = () => {
     maturity_period: maturity_period,
     maturity_date: maturity_date,
     referral_id: "",
+    referral_type:'',
     installment_type:''
   });
 
@@ -325,16 +332,41 @@ const AddSchemeAccount = () => {
     handleClassifyChange();
   }, [cusData.mobile]);
 
-  const handleSearchmobile = () => {
-    setSearchError("");
-    if (mobile === "") {
-      toast.error("Mobile Number is required!");
+  // const handleSearchmobile = async() => {
+  //   referralRoles.forEach(element => {
+  //       if(formData.referral_type === element.role){
+  //           const data = await element.endpoint(searchmobile)
+  //       }
+  //   });
+  //   // setSearchError("");
+  //   // if (mobile === "") {
+  //   //   toast.error("Mobile Number is required!");
+  //   // }
+  //   // handlesearchcustomer({
+  //   //   id_branch: cusData.id_branch,
+  //   //   search_mobile: cusData.mobile,
+  //   // });
+  // };
+
+  const handleSearchmobile = async () => {
+    try {
+      console.log(selectedRole)
+      const matchingRole = referralRoles.find(
+        (element) => Number(selectedRole) === element.id
+      );
+  
+      if (matchingRole) {
+        const data = await matchingRole.endpoint(searchmobile);
+        console.log(data)
+        setFormData((prev) => ({ ...prev, "referral_type": matchingRole.role,referral_id:data?.data?._id}));
+      } else {
+        console.warn("No matching referral role found!");
+      }
+    } catch (error) {
+      console.error("Error fetching search mobile data:", error);
     }
-    handlesearchcustomer({
-      id_branch: cusData.id_branch,
-      search_mobile: cusData.mobile,
-    });
   };
+  
 
   const { mutate: handlesearchcustomer } = useMutation({
     mutationFn: searchcustomermobile,
@@ -367,15 +399,19 @@ const AddSchemeAccount = () => {
     },
   });
 
-  const handleautocompletemobile = (e) => {
-    const value = e.target.value;
-    setMobile(value);
-  };
+  // const handleautocompletemobile = (e) => {
+  //   const value = e.target.value;
+  //   setMobile(value);
+  // };
 
   const filterInputchange = (e) => {
     const { name, value } = e.target;
-
+    
     setFormData((prev) => ({ ...prev, [name]: value }));
+
+    if(name === "referral_type"){
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
 
     if(name === "account_name"){
       setFormData((prev) => ({ ...prev, [name]: value }));
@@ -405,7 +441,6 @@ const AddSchemeAccount = () => {
       const newAcNumber = countData.data !== 0 ? Number(countData.data) + 1 : 1;
   
       setAcNumber(newAcNumber);
-  
       const schemeData = schemefilter.find((item) => String(item._id) === String(id));
 
       if (schemeData) {
@@ -600,22 +635,49 @@ const AddSchemeAccount = () => {
     return !hasErrors;
   };
 
-  const onSubmit = (e) => {
-    e.preventDefault();
+//   const onSubmit = (e) => {
+//     e.preventDefault();
 
-    const formFields = new FormData(e.target);
-    const formDataObject = Object.fromEntries(formFields.entries());
+//     const formFields = new FormData(e.target);
+//     const formDataObject = Object.fromEntries(formFields.entries());
 
-    if (isValidForm()) {
-      if (id) {
-        updateSchemeaccount(formData);
-      } else {
-        createSchemeaccount(formData);
-      }
+//     if (isValidForm()) {
+//       if (id) {
+//         updateSchemeaccount(formData);
+//       } else {
+//         const acName = formData.account_name;
+// setFormData((prev) => ({
+//   ...prev,
+//   account_name: `${acName}-AC${acNumber}` 
+// }));
+//         createSchemeaccount(formData);
+//       }
+//     } else {
+//       console.log("Form has validation errors");
+//     }
+//   };
+const onSubmit = (e) => {
+  e.preventDefault();
+
+  console.log("Form Data before submission:", formData); // Log formData
+
+  if (isValidForm()) {
+    if (id) {
+      updateSchemeaccount(formData);
     } else {
-      console.log("Form has validation errors");
+      const acName = formData.account_name;
+      setFormData((prev) => ({
+        ...prev,
+        account_name: `${acName}-AC${acNumber}` 
+      }));
+      createSchemeaccount(formData);
     }
-  };
+  } else {
+    console.log("Form has validation errors");
+  }
+};
+
+
   const { mutate: createSchemeaccount } = useMutation({
     mutationFn: addschemeaccount,
     onSuccess: (response) => {
@@ -638,7 +700,6 @@ const AddSchemeAccount = () => {
     },
   });
 
-  console.log(formData)
   return (
     <>
       <div className="flex flex-row justify-between">
@@ -722,7 +783,6 @@ const AddSchemeAccount = () => {
 
             <div className="flex flex-col">
               <label className="text-black mb-1 font-normal">Address</label>
-
               <input
                 readOnly
                 type="text"
@@ -1012,70 +1072,22 @@ const AddSchemeAccount = () => {
                 </div>
                 <p style={{ color: "red" }}>{errors?.maturity_date}</p>
               </div>
-              {/* {ispayable === true && (
-                <div className="flex flex-col">
-                  <label className="text-black mb-1 font-normal">
-                    Payable<span className="text-red-400">*</span>
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="number"
-                      name="amount"
-                      value={formData.amount}
-                      min="1"
-                      onChange={filterInputchange}
-                      className="border-2 border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                      placeholder="Enter Amount"
-                    />
-                    <span
-                      className="absolute right-0 top-1/2 transform -translate-y-1/2 text-white w-14 h-[43px] justify-center items-center flex rounded-r-md"
-                      style={{ backgroundColor: layout_color }}
-                    >
-                      INR
-                    </span>
-                  </div>
-                  <p style={{ color: "red" }}>{errors?.amount}</p>
-                </div>
-              )} */}
-
-              <div className="flex flex-col relative">
-                <label className="text-black mb-1 font-normal">
-                  Search Refferral Number<span className="text-red-400">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={mobile}
-                  onChange={handleautocompletemobile}
-                  className="border-2 border-gray-300 rounded-md p-2  focus:border-transparent"
-                  placeholder="Enter Here"
-                />
-
-                {/* Search Icon */}
-                <div
-                  onClick={handleSearchmobile}
-                  className="absolute flex items-center justify-center cursor-pointer right-[0%] rounded-r-lg top-[68%] -translate-y-1/2 w-10 md:h-[43px] md:top-[50px] h-[62%] sm:right-0 sm:top-[68%] lg:right-[0%]"
-                  style={{ backgroundColor: layout_color }}
-                >
-                  <Search size={20} className="text-white" />
-                </div>
-              </div>
-
               <div className="flex flex-col">
                 <label className="text-black mb-1 font-normal">
                   Referral By
                 </label>
                 <div className="relative">
                   <select
-                    name="referral_id"
-                    value={formData.referral_id}
-                    onChange={filterInputchange}
+                    name="referral_type"
+                    value={selectedRole}
+                    onChange={(e)=>setRole(e.target.value)}
                     className="appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                     defaultValue=""
                   >
                     <option value="">--Select--</option>
-                    {employeefilter.map((employee) => (
-                      <option key={employee._id} value={employee._id}>
-                        {employee.firstname + " " + employee.lastname}
+                    {referralRoles.map((employee) => (
+                      <option key={employee.id} value={employee.id}>
+                        {employee.role}
                       </option>
                     ))}
                   </select>
@@ -1092,6 +1104,34 @@ const AddSchemeAccount = () => {
                       <path d="M19 9l-7 7-7-7"></path>
                     </svg>
                   </div>
+                </div>
+              </div>
+              <div className="flex flex-col relative">
+                <label className="text-black mb-1 font-normal">
+                  Search Refferral Number
+                  {/* <span className="text-red-400">*</span> */}
+                </label>
+                <input
+                  type="text"
+                  maxLength={10}
+                  value={searchmobile}
+                  onChange={(e)=>{
+                    if(Number(e.target.value) || e.target.value== ''){
+                      setSearchMobile(e.target.value)
+                    }
+                  }}
+                  className="border-2 border-gray-300 rounded-md p-2  focus:border-transparent"
+                  placeholder="Enter mobile number here"
+                />
+
+                {/* Search Icon */}
+                <div
+                  disabled={searchmobile === ''}
+                  onClick={handleSearchmobile}
+                  className="absolute flex items-center justify-center cursor-pointer right-[0%] rounded-r-lg top-[68%] -translate-y-1/2 w-10 md:h-[43px] md:top-[50px] h-[62%] sm:right-0 sm:top-[68%] lg:right-[0%]"
+                  style={{ backgroundColor: layout_color }}
+                >
+                  <Search size={20} className="text-white" />
                 </div>
               </div>
             </div>

@@ -1318,7 +1318,6 @@ export const getallbranchcustomer = async (data) => {
     return response.data;
 }
 export const searchcustomermobile = async (data) => {
-
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/customer/branch/${data.id_branch}/search?search=${data.search_mobile}`);
     return response.data;
 }
@@ -1327,6 +1326,7 @@ export const searchmobileschemeaccount = async (data) => {
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/schemeaccount/branch/${data.id_branch}/customer/search?mobile=${data.search_mobile}`);
     return response.data;
 }
+
 export const getschemeaccountbyid = async (data) => {
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/schemeaccount/${data.id}`);
     return response.data;       
@@ -1370,7 +1370,6 @@ export const getSchemeAccountCount = async (mobile,schemeId)=>{
 }
 
 
- 
 //Aupay Configure
 export const printtype= async()=>{
     const response= await Api.get(`${import.meta.env.VITE_API_URL}/api/client/common/printtype`);
@@ -1766,3 +1765,14 @@ export const getSchemeClassifications = async ()=>{
     return response.data;
 }
 
+//get customer details by mobile number no branch Id needed
+export const getCustomerByMobile = async (number)=>{
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/customer/mobile/search?search=${number}`)
+    return response.data;
+}
+
+export const getEmployeeByMobile = async (number)=>{
+    console.log(number)
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/employee/mobile?search=${number}`)
+    return response.data;
+}

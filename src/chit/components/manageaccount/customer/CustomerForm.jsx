@@ -248,7 +248,7 @@ const CustomerForm = () => {
                     address: formData.address,
                     id_branch: formData.id_branch,
                     mobile: formData.mobile,
-                    customerId:formData._id
+                    customerId:response.data
                 }))
                 // setFormData({})
             }
