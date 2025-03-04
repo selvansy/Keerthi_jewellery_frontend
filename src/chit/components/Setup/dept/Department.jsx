@@ -15,14 +15,13 @@ import { toast } from "react-toastify";
 import { openModal } from "../../../../redux/modalSlice";
 import { eventEmitter } from "../../../../utils/EventEmitter";
 import { useSelector, useDispatch } from "react-redux";
-import { setid } from "../../../../redux/clientFormSlice";
 import Modal from "../../common/Modal";
 import ModelOne from "../../common/Modelone";
 import { useDebounce } from "../../../hooks/useDebounce";
 import usePagination from "../../../hooks/usePagination";
 import SpinLoading from "../../common/spinLoading";
 import Loading from "../../common/Loading";
-import { metadata, tr } from "framer-motion/client";
+
 
 const Department = () => {
     const layout_color = useSelector((state) => state.clientForm.layoutColor);
@@ -73,7 +72,7 @@ const Department = () => {
         setisLoading(false);
       },
       onError: (error) => {
-        console.log(error.response.data);
+      
         setdeptData([]);
         setSearchLoading(false);
       },
@@ -609,7 +608,7 @@ const Department = () => {
               className="bg-[#E2E8F0] text-black rounded-md p-2 w-full lg:w-20"
               onClick={closeIncommingModal}
             >
-              Clear
+              Close
             </button>
   
             <button

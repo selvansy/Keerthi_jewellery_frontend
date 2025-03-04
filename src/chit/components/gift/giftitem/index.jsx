@@ -50,8 +50,6 @@ const GiftHandOver = () => {
     getallgiftitemtableMutate({ search: debouncedSearch, page: currentPage, limit: itemsPerPage });
   }
 
-
-
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (activeDropdown && !event.target.closest('.dropdown-container')) {
