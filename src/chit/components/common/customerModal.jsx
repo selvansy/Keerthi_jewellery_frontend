@@ -1,9 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 
 const CustomerModal = ({ close }) => {
   const [searchNumber, setSearchNumber] = useState("");
+  const inputRef = useRef(null); // Create a ref for the input field
+
+  useEffect(() => {
+    // Focus the input field when the modal opens
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
 
   const handleClose = () => {
     close();
@@ -16,7 +24,6 @@ const CustomerModal = ({ close }) => {
   return (
     <AnimatePresence>
       <div className="fixed inset-0 bg-black bg-opacity-20 flex items-center justify-center z-50 p-6">
-        {/* Framer Motion Modal */}
         <motion.div
           initial={{ opacity: 0, scale: 0.9, y: -20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -44,6 +51,7 @@ const CustomerModal = ({ close }) => {
                 </svg>
               </span>
               <input
+                ref={inputRef} // Attach the ref to the input field
                 type="number"
                 value={searchNumber}
                 onChange={handleSearchChange}

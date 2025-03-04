@@ -579,7 +579,7 @@ const Base = ({ renderContent: RenderContent }) => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="fixed top-0 right-0 lg:left-64 left-0 bg-white shadow-md z-30 h-16">
+      <header className="fixed top-0 right-0 lg:left-64 left-0 bg-[#FBFCF8] shadow-md z-30 h-16">
         <div className="flex justify-between items-center ms-3 ">
           <div className="flex justify-center  ">
             <div className="title lg:flex justify-center items-center hidden px-8">
