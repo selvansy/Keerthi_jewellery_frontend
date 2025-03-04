@@ -1516,9 +1516,6 @@ export const buygsttype = async () => {
 
 
 
-//Deepa
-
-
 //Category
  
 export const createcategory= async(data)=>{
@@ -1762,5 +1759,10 @@ export const getOrganisation = async (data)=>{
 
 export const getSchemeClassifications = async ()=>{
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/classification/scheme`)
+    return response.data;
+}
+
+export const getCustomerSummary = async (data)=>{
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/wallet/customer-details?mobileNumber=${data}`)
     return response.data;
 }
