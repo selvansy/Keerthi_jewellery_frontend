@@ -1786,5 +1786,9 @@ export const getEmployeeByMobile = async (number)=>{
 
 export const getCustomerSummary = async (data)=>{
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/wallet/customer-details?mobileNumber=${data}`)
+}
+
+export const digiGoldStaticData = async ()=>{
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/scheme/digigold`)
     return response.data;
 }
