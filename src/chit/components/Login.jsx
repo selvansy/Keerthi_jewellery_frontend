@@ -73,7 +73,7 @@ const Login = () => {
         <form onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div className="">
-              <label htmlFor="" className='ms-1'>Username or Email Id <span className='text-[#F04438]'>*</span>  </label>
+              <label htmlFor="" className='ms-1'>Username  <span className='text-[#F04438]'>*</span>  </label>
               <div className="flex items-center border rounded-lg p-2 bg-gray-50 mt-1">
                 <input
                   type="text"
