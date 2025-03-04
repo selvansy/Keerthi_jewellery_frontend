@@ -1583,6 +1583,7 @@ export const changeschemestatus = async (id) => {
  
 
 export const updateScheme = async (id,data) => {
+    console.log(id,data)
     const response = await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/scheme/${id}`,data);
     return response;
 }
