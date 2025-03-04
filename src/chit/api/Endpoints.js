@@ -81,6 +81,11 @@ export const mobilesearch = async (mobile) => {
     return response.data;
 }
 
+export const walletHistory = async (data) => {
+    const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/wallet/table`,data);
+    return response.data;
+}
+
 
 
  
@@ -205,6 +210,12 @@ export const notificationConfig = async (data) => {
     const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/notification-config`,data);
     return response.data;
 }
+
+export const getConfig = async () => {
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/notification-config`);
+    return response.data;
+}
+ 
  
 export const notificationsettingprojectbranchbyid = async (data) => {
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/admin/notificationsetting/project/${data.id_project}/branch/${data.id_branch}`);

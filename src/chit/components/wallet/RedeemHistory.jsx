@@ -3,29 +3,53 @@ import usePagination from "../../../chit/hooks/usePagination";
 import SpinLoading from "../../components/common/spinLoading";
 import { eventEmitter } from "../../../utils/EventEmitter";
 import { useSelector, useDispatch } from "react-redux";
+import {walletHistory} from "../../api/Endpoints"
 import { useDebounce } from "../../../chit/hooks/useDebounce"
 import Table from "../../components/common/Table";
 import { Search } from "lucide-react";
-import Modal from '../common/Modelone';
+import { useMutation } from '@tanstack/react-query';
+
+
 function RedeemHistory() {
-     const [walletData, setwalletData] = useState([]);
-       const [currentPage, setCurrentPage] = useState(1);
-       const [totalPages, setTotalPages] = useState(0);
-       const [itemsPerPage, setItemsPerPage] = useState(10);
+    
+  
+    const [walletData, setwalletData] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(0);
+    const [itemsPerPage, setItemsPerPage] = useState(10);
+    
+  
+    const [searchInput, setSearchInput] = useState("");
+    const debouncedSearch = useDebounce(searchInput, 500);
+  
+    const limit = 10;
   
   
-       const [activeDropdown, setActiveDropdown] = useState(null);
-       const [searchInput, setSearchInput] = useState("");
-       const debouncedSearch = useDebounce(searchInput, 500);
-       const [id, setId] = useState("");
-       const limit = 10;
-       const [isviewOpen, setIsviewOpen] = useState(false);
+    const [isLoading, setisLoading] = useState(false);
+    const [searchLoading, setSearchLoading] = useState(false);
+    const [totalDocuments, setTotalDocuments] = useState(0)
+       
+       
+ 
+   useEffect(() => {
+    getallWalletData({ search: debouncedSearch, page: currentPage, limit: itemsPerPage });
+  }, [currentPage, debouncedSearch, itemsPerPage]);
 
-       const [isLoading, setisLoading] = useState(false);
-       const [searchLoading, setSearchLoading] = useState(false);
-       const [totalDocuments,setTotalDocuments]=useState(0)
-
-     
+  const { mutate: getallWalletData } = useMutation({
+    mutationFn: (payload) => walletHistory(payload),
+    onSuccess: (response) => {
+      setwalletData(response.data)
+      setTotalPages(response.totalPages)
+      setCurrentPage(response.currentPage)
+      setTotalDocuments(response.totalDocuments)
+      setisLoading(false)
+    },
+    onError: (error) => {
+      console.log(error)
+      setisLoading(false)
+      setwalletData([])
+    }
+  });
 
        const handleSearch = (e) => {
         setSearchLoading(true);
@@ -60,44 +84,53 @@ function RedeemHistory() {
         handlePageChange: handlePageChange,
       };
       const paginationButtons = usePagination(paginationData);
+
+      const redeemTypes = {
+        "1": "Direct",
+        "2": "Purchase",
+        "3": "Referral",
+        "4": "Incentives",
+      };
     
 
-     const columns = [
+      const columns = [
         {
           header: "S.No",
           cell: (_, index) => index + 1 + (currentPage - 1) * limit,
         },
-       
         {
-          header: "Transaction ID",
-          cell: (row) => `${row?.purity_name}`,
+          header: "Customer name",
+          cell: (row) => `${row?.id_customer?.firstname || ""} ${row?.id_customer?.lastname || ""}`.trim() || "-",
         },
         {
-            header: "Payment Date",
-            cell: (row) => `${row?.purity_name}`,
-          },
-          {
-            header: "A/C name",
-            cell: (row) => `${row?.purity_name}`,
-          },
-          {
-            header: "Mobile",
-            cell: (row) => `${row?.purity_name}`,
-          },
-          {
-            header: "Scheme A/C no",
-            cell: (row) => `${row?.purity_name}`,
-          },
-          {
-            header: "Scheme name",
-            cell: (row) => `${row?.purity_name}`,
-          },
-          {
-            header: "Scheme Type",
-            cell: (row) => `${row?.purity_name}`,
-          },
+          header: "mobile",
+          cell: (row) => `${row?.id_customer?.mobile || "-"}`,
+        },
+        {
+          header: "Wallet Points",
+          cell: (row) => 
+            {row?.credited_point !== undefined ? Math.abs(row.credited_point) : "-"}
+          
+        },
+        {
+          header: "Amount",
+          cell: (row) => 
+              {row?.credited_amount !== undefined ? Math.abs(row.credited_amount) : "-"}
+        },       
+        {
+          header: "Type",
+          cell: (row) => redeemTypes[row?.redeem_type] || "-",
+        },
+        {
+          header: "Date",
+          cell: (row) => {
+            if (!row?.createdAt) return "-";
+            const date = new Date(row?.createdAt);
+            const formattedDate = date.toISOString().split("T")[0];
+            return formattedDate;
+          }
+        },
       ];
-
   return (
     <div>
          <div className="flex flex-col p-4 relative">
@@ -180,7 +213,7 @@ function RedeemHistory() {
 
 
       </>
-      <Modal />
+ 
     </div>
     </div>
   )
