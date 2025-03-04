@@ -38,3 +38,14 @@ export const rewardType = [
         name:'Percentage'
     }
 ]
+
+export const bonusTypeOptions = [
+    { id:1, value: "installment-wise", label: "Installment Wise" },
+    { id:2, value: "date-wise", label: "Date Wise" },
+    { id:3, value: "amount-wise", label: "Amount Wise" },
+  ];
+
+export const entryTypeOptions = [
+    { id:1, value: "individual", label: "Individual" },
+    { id:2, value: "range", label: "Range" },
+  ];

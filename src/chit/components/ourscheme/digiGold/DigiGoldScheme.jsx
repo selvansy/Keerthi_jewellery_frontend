@@ -153,7 +153,7 @@ const DigiGoldScheme = () => {
 
   const handleClick = (e) => {
     e.preventDefault();
-    navigate('/classification/addclassification');
+    navigate('/scheme/adddigigold');
   }
 
   const handleStatusToggle = async (id) => {

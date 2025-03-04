@@ -137,7 +137,6 @@ export const getallpuritytable = async (data) => {
 }
 
 export const puritybymetal = async(id)=>{
- 
     const response= await Api.get(`${import.meta.env.VITE_API_URL}/api/client/purity/metal/${id}`)
     return response.data;
 }
@@ -1774,5 +1773,10 @@ export const getCustomerByMobile = async (number)=>{
 export const getEmployeeByMobile = async (number)=>{
     console.log(number)
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/employee/mobile?search=${number}`)
+    return response.data;
+}
+
+export const digiGoldStaticData = async ()=>{
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/scheme/digigold`)
     return response.data;
 }
