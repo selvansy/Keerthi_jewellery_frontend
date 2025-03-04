@@ -548,7 +548,11 @@ const RouteList = [
     path: '/scheme/adddigigold',
     element: <Base renderContent={CreateDigiGoldScheme} />
   },
-
+  {
+    name: "Add DigiGold",
+    path: '/scheme/editdigigold/:id',
+    element: <Base renderContent={CreateDigiGoldScheme} />
+  },
   {
     name: "Add Classification",
     path: '/classification/addclassification',
