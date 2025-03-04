@@ -142,7 +142,6 @@ export const getallpuritytable = async (data) => {
 }
 
 export const puritybymetal = async(id)=>{
- 
     const response= await Api.get(`${import.meta.env.VITE_API_URL}/api/client/purity/metal/${id}`)
     return response.data;
 }
@@ -708,7 +707,7 @@ export const productbyid= async(data)=>{
  
 
 export const categorybymetalid= async(id)=>{
-   
+    console.log(id)
     const response= await Api.get(`${import.meta.env.VITE_API_URL}/api/client/category/metal/${id}`)
     return response.data
 }
@@ -1204,7 +1203,7 @@ export const getbranchbyclient = async (data)=>{
 }
  
 
-export const getbranchbyid = async (data) => {
+export const getbranchbyid = async (data) => {    
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/branch//${data.id}`);
     return response.data;
 }

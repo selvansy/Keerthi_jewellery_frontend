@@ -3,11 +3,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { getCustomerSummary } from "../../api/Endpoints";
+import { useDebounce } from "../../hooks/useDebounce";
 
 const CustomerModal = ({ close }) => {
   const [searchNumber, setSearchNumber] = useState("");
   const inputRef = useRef(null);
   const [isLoading, setIsLoading] = useState("");
+    const debouncedSearch = useDebounce(searchNumber, 1000);
   const [customerData, setCustomerData] = useState({
     name: "-",
     phone: "-",
@@ -26,12 +28,18 @@ const CustomerModal = ({ close }) => {
     }
   }, []);
 
+  useEffect(()=>{
+    
+    getCustomerData(debouncedSearch)
+  },[debouncedSearch])
+
   const handleClose = () => {
     close();
   };
   const handleSearchChange = (e) => {
     const value = e.target.value;
     if (/^\d*$/.test(value)) {
+        setIsLoading(true);
       setSearchNumber(value);
     }
   };
@@ -66,7 +74,7 @@ const CustomerModal = ({ close }) => {
   });
 
   const handleSearch = () => {
-    setIsLoading(true);
+  
     getCustomerData(searchNumber);
   };
 
