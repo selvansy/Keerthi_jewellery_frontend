@@ -180,11 +180,15 @@ const SchemeForm = () => {
         formik.values.classType &&
         [12, 3, 4].includes(formik.values.scheme_type)
       ) {
+        formData.delete("min_amount");
+        formData.delete("max_amount");
         formData.delete("min_weight");
         formData.delete("max_weight");
         formData.append("min_weight", amounts[0]);
         formData.append("max_weight", amounts[amounts.length - 1]);
       } else if (formik.values.classType) {
+        formData.delete("min_weight");
+        formData.delete("max_weight");
         formData.delete("min_amount");
         formData.delete("max_amount");
         formData.append("min_amount", amounts[0]);
@@ -395,7 +399,6 @@ const SchemeForm = () => {
 
   useEffect(() => {
     if (schemeData?.data && Array.isArray(schemeData.data.fixed_amounts)) {
-      console.log(schemeData.data.fixed_amounts,'kdkd')
       setAmounts(schemeData.data.fixed_amounts);
     }
   }, [schemeData?.data]);
