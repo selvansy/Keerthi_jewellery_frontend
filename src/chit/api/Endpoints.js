@@ -930,12 +930,9 @@ export const getallpaymentmode = async () => {
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/paymentmode`);
     return response.data;
 }
- 
- 
+
 
 //staff user
-
- 
 export const getstaffusertable= async(data)=>{
     const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/staff/table`,data);
     return response.data;
@@ -1529,9 +1526,7 @@ export const buygsttype = async () => {
 }
 
 
-
 //Category
- 
 export const createcategory= async(data)=>{
     const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/category`,data)
     return response.data
@@ -1549,24 +1544,17 @@ export const categorybyid= async(id)=>{
 }
 
 
-
 // /api/client/product 
- 
- 
 export const getproductTable= async(data)=>{
     const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/product/table`,data)
     return response.data
 }
 
 
-
 export const createproduct= async(data)=>{    
     const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/product/`,data)
     return response.data
 }
-
-
-
 
 
 //Scheme
@@ -1645,9 +1633,6 @@ export const deleteScheme = async (id) => {
     return response.data;
 }
 
-
-
-
 //Branch By Client
 export const getBranchByClient = async (data)=>{
 
@@ -1656,10 +1641,7 @@ export const getBranchByClient = async (data)=>{
 }
 
 
-
-
 //Report
-
 export const getallScheme = async (id, data) => {
     const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/admin/accountsummaryreport`, data);
     return response.data;
@@ -1681,7 +1663,6 @@ export const getnotificationtype = async (data) => {
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/common/notificationtype`);
     return response.data;
 }
-
 
 
 // Metal Rate
@@ -1710,8 +1691,33 @@ export const deletemetalrate= async(id)=>{
     return response.data
 }
 
+export const getMetalRateByMetalId= async(metalId,purityId,date)=>{  
+    console.log(metalId,purityId,date)
+    const response= await Api.get(`${import.meta.env.VITE_API_URL}/api/client/metalrate/current?metalid=${metalId}&purity=${purityId}&date=${date}`)
+    return response.data
+}
 
+export const sendwhatsappmessage= async(data)=>{
+    const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/whatsappmessage`,data)
+    return response.data
+}
+ 
+export const getmultipaymentmode = async () => {
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/common/multipaymentmode`);
+    return response.data;
+}
 
+export const todayMetalRate = async(data)=>{
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/metalrate/today/${data.id}/${data.todayDate}`);
+    return response.data;
+}
+
+export const searcaccountnumber = async (data) => {
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/schemeaccount/${data.account_number}/payment`);
+    return response.data;
+}
+
+//offers
 export const getOfferById = async (id)=>{
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/offer/${id}`)
     return response.data
@@ -1726,31 +1732,6 @@ export const getNewArrivalsById = async (id)=>{
 export const getProductById = async (id)=>{
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/product/${id}`)
     return response.data
-}
-
-
-// Metal Rate
-export const sendwhatsappmessage= async(data)=>{
-    const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/whatsappmessage`,data)
-    return response.data
-}
- 
-
-export const getmultipaymentmode = async () => {
-    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/common/multipaymentmode`);
-    return response.data;
-}
-
-export const searcaccountnumber = async (data) => {
-    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/schemeaccount/${data.account_number}/payment`);
-    return response.data;
-}
-
-
-export const todayMetalRate = async(data)=>{
-    
-    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/metalrate/today/${data.id}/${data.todayDate}`);
-    return response.data;
 }
 
 
@@ -1771,7 +1752,6 @@ export const getOrganisation = async (data)=>{
 }
 
 //new scheme api
-
 export const getSchemeClassifications = async ()=>{
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/classification/scheme`)
     return response.data;

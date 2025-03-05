@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useMutation } from "@tanstack/react-query";
+import Select from "react-select";
+import { useFormik } from "formik";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { CalendarDays, Search, ChevronDown, ChevronUp } from "lucide-react";
 import "react-datepicker/dist/react-datepicker.css";
@@ -7,7 +9,6 @@ import DatePicker from "react-datepicker";
 import { toast } from "react-toastify";
 import {
   addschemepayment,
-  schemepaymenttodayrate,
   getmultipaymentmode,
   searchmobileschemeaccount,
   getschemepaymentbyid,
@@ -16,43 +17,218 @@ import {
   getallbranchscheme,
   getallbranchclassification,
   getallbranch,
+  getBranchById,
   getallpaymentmode,
+  getMetalRateByMetalId
 } from "../../../api/Endpoints";
 import { useDispatch, useSelector } from "react-redux";
 const AddSchemePayment = () => {
   let dispatch = useDispatch();
-  const [searcherror, setSearchError] = useState("");
-  const layout_color = useSelector((state) => state.clientForm.layoutColor);
-  const roledata = useSelector((state) => state.clientForm.roledata);
-  const branch = roledata?.branch;
-  const [multipaymode, setMultiPaymode] = useState([]);
-  const [ispaymode, setIspaymode] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { id } = useParams();
   const todaydate = new Date();
 
+  //reduux
+  const layout_color = useSelector((state) => state.clientForm.layoutColor);
+  const roleData = useSelector((state) => state.clientForm.roledata);
+  const id_branch = roleData?.id_branch;
+  const accessBranch = roleData?.branch;
+
+  const [searcherror, setSearchError] = useState("");
+  const [multipaymode, setMultiPaymode] = useState([]);
+  const [ispaymode, setIspaymode] = useState(false);
+
   const formattedDate = todaydate.toISOString();
-  const { id } = useParams();
   const [date_payment, setDatePayment] = useState(formattedDate);
   const [searchmobile, setSearchMobile] = useState("");
   const [mobile, setMobile] = useState("");
   const [suggestions, setSuggestions] = useState([]);
-  const [branchfilter, setBranch] = useState([]);
   const [paymentmode, setPaymentmode] = useState([]);
   const [errors, setErrors] = useState([]);
   const [isExpanded, setIsExpanded] = useState(false);
-  const [schemedata, setSchemeData] = useState([]);
-  const [customerdata, setCustomerData] = useState({});
   const [selectedId, setSelectedId] = useState("");
-  const [selectedScheme, setSelectedScheme] = useState(null);
   const [ispayamtreadOnly, setIspayamtreadOnly] = useState(true);
-  const [id_branch, setIdBranch] = useState(branch);
+  const [branch, setBranch] = useState(() => (accessBranch === "0" ? [] : {}));
   const [paymentamount, setPaymentAmount] = useState(0);
   const [metal_rate, setMetalRate] = useState(0);
   const [fine_amount, setFineAmount] = useState(0);
   const [isseaccontno, setIsseAccontno] = useState(2);
   const [issetreceipt, setIssetReceipt] = useState(2);
   const [accountreadOnly, setAccountreadOnly] = useState(false);
+  const [schemedata, setSchemeData] = useState([]);
+  const [fullData,setFullData] = useState([])
+  const [selectedScheme, setSelectedScheme] = useState({});
+  const [formData, setFormData] = React.useState({
+    id_customer: "",
+    mobile: "",
+    date_payment: date_payment,
+    payment_mode: "",
+    itr_utr: "",
+    remark: "",
+    scheme_acc_number: "",
+    id_scheme: "",
+    id_branch: id_branch,
+    id_scheme_account: "",
+    scheme_type: 0,
+    buy_gst: 0,
+    fine_amount: 0,
+    total_amt: 0,
+    payment_amount: 0,
+    metal_rate: 0,
+    metal_weight: 0,
+    accountschemeid: "",
+    total_installments: 1,
+    id_classification: "",
+  });
+
+  // Customisations for react-select
+  const customStyles = {
+    control: (base, state) => ({
+      ...base,
+      minHeight: "42px",
+      border: state.isFocused ? "1px solid black" : "1px solid #e2e8f0",
+      boxShadow: state.isFocused ? "0 0 0 1px black" : "none",
+      borderRadius: "0.375rem",
+    }),
+  };
+
+  const formik = useFormik({
+    initialValues: {
+      id_customer: "",
+      mobile: "",
+      date_payment: date_payment,
+      payment_mode: "",
+      itr_utr: "",
+      remark: "",
+      scheme_acc_number: "",
+      id_scheme: "",
+      id_branch: "",
+      id_scheme_account: "",
+      scheme_type: 0,
+      buy_gst: 0,
+      fine_amount: 0,
+      total_amt: 0,
+      payment_amount: 0,
+      metal_rate: 0,
+      metal_weight: 0,
+      accountschemeid: "",
+      total_installments: 1,
+      id_classification: "",
+    },
+    onSubmit: (values) => {
+      // Your submit logic here
+    },
+  });
+
+  //api calls
+  const { data: branchData } = useQuery({
+    queryKey: ["branches", accessBranch, id_branch],
+    queryFn: async () => {
+      if (accessBranch === "0") {
+        return getallbranch();
+      }
+      return getBranchById(id_branch);
+    },
+    enabled: Boolean(accessBranch),
+    staleTime: 5 * 60 * 1000,
+    cacheTime: 10 * 60 * 1000,
+  });
+
+
+  const { mutate: createschemepaymentmutate } = useMutation({
+    mutationFn: addschemepayment,
+    onSuccess: (response) => {
+      toast.success(response.message);
+      navigate("/payment/schemepayment");
+    },
+    onError: (error) => {
+      toast.error(error.response.data.message);
+    },
+  });
+
+  const { mutate: updateschemepaymentmutate } = useMutation({
+    mutationFn: updateschemepayment,
+    onSuccess: (response) => {
+      toast.success(response.message);
+      navigate("/payment/schemepayment");
+    },
+    onError: (error) => {
+      toast.error(error.response.data.message);
+    },
+  });
+
+  const { mutate: handlesearchschemeaccount } = useMutation({
+    mutationFn: searchmobileschemeaccount,
+    onSuccess: (response) => {
+      if (response) {
+        if(response.data){
+          const outputData = response.data
+          const data = outputData.map((item) => ({
+            value: item._id,
+            label: item.scheme_name,
+          }));
+          setSchemeData(data);
+          setFullData(outputData)
+        }
+
+        if (response?.general) {
+          setIsseAccontno(response?.general?.account_number);
+          setIssetReceipt(response?.general?.display_receiptno);
+        }
+        toast.success(response.message);
+      }
+    },
+  });
+
+  // useEffects
+  useEffect(() => {
+    if (!branchData) return;
+
+    if (accessBranch === "0" && branchData.data) {
+      const formattedBranches = branchData.data.map((item) => ({
+        value: item._id,
+        label: item.branch_name,
+      }));
+      setBranch(formattedBranches);
+    } else if (branchData.data) {
+      setBranch(branchData.data);
+      formik.setFieldValue("id_branch", accessBranch);
+    }
+  }, [branchData, accessBranch]);
+
+  useEffect(() => {
+    const fetchMetalRate = async () => {
+      if (!formik.values.id_scheme_account || !todaydate) return;
+  
+      const filteredData = fullData.find(
+        (item) => item._id === formik.values.id_scheme_account
+      );
+  
+      if (!filteredData) return;
+      setSelectedScheme(filteredData)
+      try {
+        const metalRate = await getMetalRateByMetalId(
+          filteredData.id_scheme?.id_metal?._id || "",
+          filteredData.id_scheme?.id_purity || "",
+          todaydate
+        );
+  
+        if (metalRate) {
+          const rate = metalRate.data.rate
+          formik.setFieldValue('metal_rate',rate)
+          setMetalRate(metalRate);
+        }
+      } catch (error) {
+        console.error("Error fetching metal rate:", error);
+      }
+    };
+  
+    fetchMetalRate();
+  }, [formik.values.id_scheme_account,fullData]);
+  
+  
+
   useEffect(() => {
     if (id) {
       handlepaymentbyid({ id: id });
@@ -60,6 +236,22 @@ const AddSchemePayment = () => {
     }
   }, [id]);
 
+  useEffect(() => {
+    if (metal_rate !== "0") {
+      calculatepayment();
+    }
+  }, [metal_rate, paymentamount]);
+
+    // useEffect(() => {
+  //   if (id_branch !== "0") {
+  //     schemepaymenttodayrateMutate({
+  //       id_branch: id_branch,
+  //       date: date_payment,
+  //     });
+  //   }
+  // }, [id_branch, date_payment, selectedScheme]);
+
+  //handler functions
   const handlepaymentbyid = async (data) => {
     if (!data) return;
     const response = await getschemepaymentbyid(data);
@@ -148,7 +340,7 @@ const AddSchemePayment = () => {
         total_gifts_issued: response.data.total_gifts_issued,
       });
 
-      setIdBranch(response.data.id_branch);
+      // setIdBranch(response.data.id_branch);
       setDatePayment(response.data.date_payment);
       setMobile(response.data.id_customer.mobile);
       setMetalRate(response.data.metal_rate);
@@ -157,61 +349,23 @@ const AddSchemePayment = () => {
     }
   };
 
-  const [formData, setFormData] = React.useState({
-    id_customer: "",
-    mobile: "",
-    date_payment: date_payment,
-    payment_mode: "",
-    itr_utr: "",
-    remark: "",
-    scheme_acc_number: "",
-    id_scheme: "",
-    id_branch: id_branch,
-    id_scheme_account: "",
-    scheme_type: 0,
-    buy_gst: 0,
-    fine_amount: 0,
-    total_amt: 0,
-    payment_amount: 0,
-    metal_rate: 0,
-    metal_weight: 0,
-    accountschemeid: "",
-    total_installments: 1,
-    id_classification: "",
-  });
-
   const handleSearchmobile = () => {
     setSearchError("");
 
     if (mobile === "") {
       toast.error("Mobile Number is required!");
     }
+    const searchData ={
+        id_branch: formik.values.id_branch,
+        search_mobile: mobile,
+    }
 
-    handlesearchschemeaccount({
-      id_branch: formData.id_branch,
-      search_mobile: mobile,
-    });
+    handlesearchschemeaccount(searchData);
   };
-
-  const { mutate: handlesearchschemeaccount } = useMutation({
-    mutationFn: searchmobileschemeaccount,
-    onSuccess: (response) => {
-      if (response) {
-        setSchemeData(response.data);
-
-        if (response?.general) {
-          setIsseAccontno(response?.general?.account_number);
-          setIssetReceipt(response?.general?.display_receiptno);
-        }
-        toast.success(response.message);
-      }
-    },
-  });
+  
 
   const handleautocompletemobile = (e) => {
     let value = e.target.value;
-
-    // Allow only numbers, but "+" only at the start
     if (!/^(\+)?\d*$/.test(value)) return;
 
     if (value.length <= 13) {
@@ -224,98 +378,83 @@ const AddSchemePayment = () => {
     }
   };
 
-  const { mutate: getallbranchMutate } = useMutation({
-    mutationFn: getallbranch,
-    onSuccess: (response) => {
-      if (response) {
-        setBranch(response.data);
-      }
-    },
-  });
+  // const { mutate: getallpaymentmodeMutate } = useMutation({
+  //   mutationFn: getallpaymentmode,
+  //   onSuccess: (response) => {
+  //     if (response) {
+  //       setPaymentmode(response.data);
+  //     }
+  //   },
+  // });
 
-  const { mutate: getallpaymentmodeMutate } = useMutation({
-    mutationFn: getallpaymentmode,
-    onSuccess: (response) => {
-      if (response) {
-        setPaymentmode(response.data);
-      }
-    },
-  });
+  // const { mutate: schemepaymenttodayrateMutate } = useMutation({
+  //   mutationFn: schemepaymenttodayrate,
+  //   onSuccess: (response) => {
+  //     if (response.data) {
+  //       let metalRate = 0;
+  //       if (parseInt(selectedScheme?.id_scheme?.id_metal) === 1) {
+  //         // Gold
+  //         switch (parseInt(selectedScheme?.id_scheme?.id_purity)) {
+  //           case 1:
+  //             metalRate = response.data.goldrate_24ct.$numberDecimal;
+  //             break;
+  //           case 2:
+  //             metalRate = response.data.goldrate_22ct.$numberDecimal;
+  //             break;
+  //           case 3:
+  //             metalRate = response.data.goldrate_20ct.$numberDecimal;
+  //             break;
+  //           case 4:
+  //             metalRate = response.data.goldrate_18ct.$numberDecimal;
+  //             break;
+  //         }
+  //       } else if (parseInt(selectedScheme?.id_scheme?.id_metal) === 2) {
+  //         // Silver
+  //         metalRate = response.data.silverrate_1gm.$numberDecimal;
+  //       } else if (
+  //         parseInt(selectedScheme?.id_scheme?.id_metal.$numberDecimal) === 3
+  //       ) {
+  //         // Diamond
+  //         metalRate = response.data.diamond_1gm.$numberDecimal;
+  //       } else if (
+  //         parseInt(selectedScheme?.id_scheme?.id_metal.$numberDecimal) === 4
+  //       ) {
+  //         // Platinum
+  //         metalRate = response.data.platinum_1gm.$numberDecimal;
+  //       } else if (parseInt(selectedScheme?.id_scheme?.id_metal) === 5) {
+  //         // Coin
+  //         metalRate = response.data.goldcoin_1gm.$numberDecimal;
+  //       }
 
-  const { mutate: schemepaymenttodayrateMutate } = useMutation({
-    mutationFn: schemepaymenttodayrate,
-    onSuccess: (response) => {
-      if (response.data) {
-        let metalRate = 0;
-        if (parseInt(selectedScheme?.id_scheme?.id_metal) === 1) {
-          // Gold
-          switch (parseInt(selectedScheme?.id_scheme?.id_purity)) {
-            case 1:
-              metalRate = response.data.goldrate_24ct.$numberDecimal;
-              break;
-            case 2:
-              metalRate = response.data.goldrate_22ct.$numberDecimal;
-              break;
-            case 3:
-              metalRate = response.data.goldrate_20ct.$numberDecimal;
-              break;
-            case 4:
-              metalRate = response.data.goldrate_18ct.$numberDecimal;
-              break;
-          }
-        } else if (parseInt(selectedScheme?.id_scheme?.id_metal) === 2) {
-          // Silver
-          metalRate = response.data.silverrate_1gm.$numberDecimal;
-        } else if (
-          parseInt(selectedScheme?.id_scheme?.id_metal.$numberDecimal) === 3
-        ) {
-          // Diamond
-          metalRate = response.data.diamond_1gm.$numberDecimal;
-        } else if (
-          parseInt(selectedScheme?.id_scheme?.id_metal.$numberDecimal) === 4
-        ) {
-          // Platinum
-          metalRate = response.data.platinum_1gm.$numberDecimal;
-        } else if (parseInt(selectedScheme?.id_scheme?.id_metal) === 5) {
-          // Coin
-          metalRate = response.data.goldcoin_1gm.$numberDecimal;
-        }
+  //       setMetalRate(metalRate);
+  //       setFormData((prev) => ({ ...prev, metal_rate: metalRate }));
+  //     }
+  //   },
+  // });
 
-        setMetalRate(metalRate);
-        setFormData((prev) => ({ ...prev, metal_rate: metalRate }));
-      }
-    },
-  });
+  // useEffect(() => {
+  //   getallbranchMutate();
+  //   getallpaymentmodeMutate();
+  //   getmultipaymentmodeMutate();
+  // }, []);
 
-  useEffect(() => {
-    getallbranchMutate();
-    getallpaymentmodeMutate();
-    getmultipaymentmodeMutate();
-  }, []);
+  // const { mutate: getmultipaymentmodeMutate } = useMutation({
+  //   mutationFn: getmultipaymentmode,
+  //   onSuccess: (response) => {
+  //     if (response) {
+  //       const mutidata = multipaymode.reduce((acc, multipay) => {
+  //         acc[multipay.parameter] = 0;
+  //         return acc;
+  //       }, {});
 
-  useEffect(() => {
-    if (metal_rate !== "0") {
-      calculatepayment();
-    }
-  }, [metal_rate, paymentamount]);
-
-  const { mutate: getmultipaymentmodeMutate } = useMutation({
-    mutationFn: getmultipaymentmode,
-    onSuccess: (response) => {
-      if (response) {
-        const mutidata = multipaymode.reduce((acc, multipay) => {
-          acc[multipay.parameter] = 0;
-          return acc;
-        }, {});
-
-        setFormData((prevData) => ({
-          ...prevData,
-          ...mutidata,
-        }));
-        setMultiPaymode(response.data);
-      }
-    },
-  });
+  //       setFormData((prevData) => ({
+  //         ...prevData,
+  //         ...mutidata,
+  //       }));
+  //       setMultiPaymode(response.data);
+  //     }
+  //   },
+  // });
 
   const filterInputchange = (e) => {
     let total = 0;
@@ -445,14 +584,8 @@ const AddSchemePayment = () => {
       toast.error("Customer not created!");
     }
   };
-  useEffect(() => {
-    if (id_branch !== "0") {
-      schemepaymenttodayrateMutate({
-        id_branch: id_branch,
-        date: date_payment,
-      });
-    }
-  }, [id_branch, date_payment, selectedScheme]);
+
+
   const handleDropdownChange = (event) => {
     const { name, value } = event.target;
     const id = event.target.value;
@@ -591,171 +724,150 @@ const AddSchemePayment = () => {
     navigate("/customer/add");
   };
 
-  const isValidForm = () => {
-    const err = {};
+  // const isValidForm = () => {
+  //   const err = {};
 
-    if (formData.total_amt === "") {
-      err["total_amt"] = "Total Amount is required";
-    } else {
-      err["total_amt"] = "";
-    }
+  //   if (formData.total_amt === "") {
+  //     err["total_amt"] = "Total Amount is required";
+  //   } else {
+  //     err["total_amt"] = "";
+  //   }
 
-    if (formData.payment_mode === "") {
-      err["payment_mode"] = "Payment Mode is required";
-    } else {
-      err["payment_mode"] = "";
-    }
+  //   if (formData.payment_mode === "") {
+  //     err["payment_mode"] = "Payment Mode is required";
+  //   } else {
+  //     err["payment_mode"] = "";
+  //   }
 
-    if (formData.accountschemeid === "") {
-      err["scheme_acc_number"] = "Scheme Account Number is required";
-    } else {
-      err["scheme_acc_number"] = "";
-    }
+  //   if (formData.accountschemeid === "") {
+  //     err["scheme_acc_number"] = "Scheme Account Number is required";
+  //   } else {
+  //     err["scheme_acc_number"] = "";
+  //   }
 
-    if (formData.payment_receipt === "") {
-      err["payment_receipt"] = "Payment Receipt is required";
-    } else {
-      err["payment_receipt"] = "";
-    }
+  //   if (formData.payment_receipt === "") {
+  //     err["payment_receipt"] = "Payment Receipt is required";
+  //   } else {
+  //     err["payment_receipt"] = "";
+  //   }
 
-    if (formData.id_scheme_account === "") {
-      err["id_scheme_account"] = "Scheme Account is required";
-    } else {
-      err["id_scheme_account"] = "";
-    }
+  //   if (formData.id_scheme_account === "") {
+  //     err["id_scheme_account"] = "Scheme Account is required";
+  //   } else {
+  //     err["id_scheme_account"] = "";
+  //   }
 
-    if (formData.date_payment === "") {
-      err["date_payment"] = "Payment Date is required";
-    } else {
-      err["date_payment"] = "";
-    }
-    if (formData.metal_rate === "") {
-      err["metal_rate"] = "Metal Rate is required";
-    } else {
-      err["metal_rate"] = "";
-    }
+  //   if (formData.date_payment === "") {
+  //     err["date_payment"] = "Payment Date is required";
+  //   } else {
+  //     err["date_payment"] = "";
+  //   }
+  //   if (formData.metal_rate === "") {
+  //     err["metal_rate"] = "Metal Rate is required";
+  //   } else {
+  //     err["metal_rate"] = "";
+  //   }
 
-    if (
-      selectedScheme.scheme_type === 4 ||
-      selectedScheme.scheme_type === 5 ||
-      selectedScheme.scheme_type === 7 ||
-      selectedScheme.scheme_type === 8 ||
-      selectedScheme.scheme_type === 9 ||
-      selectedScheme.scheme_type === 10
-    ) {
-      if (formData.payment_amount < selectedScheme.min_amount) {
-        (err["payment_amount"] = "Allowed Limit Minimum Amount Rs."),
-          selectedScheme.min_amount;
-      } else if (formData.payment_amount > selectedScheme.max_amount) {
-        (err["payment_amount"] = "Allowed Limit Maximum Amount Rs."),
-          selectedScheme.max_amount;
-      } else if (formData.payment_amount === "") {
-        err["payment_amount"] = "Payment Aount is required";
-      } else {
-        err["payment_amount"] = "";
-      }
-      if (
-        selectedScheme.scheme_type === 2 ||
-        selectedScheme.scheme_type === 5 ||
-        selectedScheme.scheme_type === 6 ||
-        selectedScheme.scheme_type === 10
-      ) {
-        if (formData.metal_weight === "") {
-          err["metal_weight"] = "Metal Weight is required";
-        } else {
-          err["metal_weight"] = "";
-        }
-      }
-    } else if (selectedScheme.scheme_type === 3) {
-      if (formData.payment_amount < selectedScheme.min_weight) {
-        (err["payment_amount"] = "Allowed Limit Minimum Weight Rs."),
-          selectedScheme.min_weight;
-      } else if (formData.payment_amount > selectedScheme.max_weight) {
-        (err["payment_amount"] = "Allowed Limit Maximum Weight Rs."),
-          selectedScheme.max_weight;
-      } else if (formData.payment_amount === "") {
-        err["payment_amount"] = "Payment Weight is required";
-      } else {
-        err["payment_amount"] = "";
-      }
-    } else {
-      if (formData.payment_amount === "") {
-        err["payment_amount"] = "Payment Amount is required";
-      } else {
-        err["payment_amount"] = "";
-      }
-    }
+  //   if (
+  //     selectedScheme.scheme_type === 4 ||
+  //     selectedScheme.scheme_type === 5 ||
+  //     selectedScheme.scheme_type === 7 ||
+  //     selectedScheme.scheme_type === 8 ||
+  //     selectedScheme.scheme_type === 9 ||
+  //     selectedScheme.scheme_type === 10
+  //   ) {
+  //     if (formData.payment_amount < selectedScheme.min_amount) {
+  //       (err["payment_amount"] = "Allowed Limit Minimum Amount Rs."),
+  //         selectedScheme.min_amount;
+  //     } else if (formData.payment_amount > selectedScheme.max_amount) {
+  //       (err["payment_amount"] = "Allowed Limit Maximum Amount Rs."),
+  //         selectedScheme.max_amount;
+  //     } else if (formData.payment_amount === "") {
+  //       err["payment_amount"] = "Payment Aount is required";
+  //     } else {
+  //       err["payment_amount"] = "";
+  //     }
+  //     if (
+  //       selectedScheme.scheme_type === 2 ||
+  //       selectedScheme.scheme_type === 5 ||
+  //       selectedScheme.scheme_type === 6 ||
+  //       selectedScheme.scheme_type === 10
+  //     ) {
+  //       if (formData.metal_weight === "") {
+  //         err["metal_weight"] = "Metal Weight is required";
+  //       } else {
+  //         err["metal_weight"] = "";
+  //       }
+  //     }
+  //   } else if (selectedScheme.scheme_type === 3) {
+  //     if (formData.payment_amount < selectedScheme.min_weight) {
+  //       (err["payment_amount"] = "Allowed Limit Minimum Weight Rs."),
+  //         selectedScheme.min_weight;
+  //     } else if (formData.payment_amount > selectedScheme.max_weight) {
+  //       (err["payment_amount"] = "Allowed Limit Maximum Weight Rs."),
+  //         selectedScheme.max_weight;
+  //     } else if (formData.payment_amount === "") {
+  //       err["payment_amount"] = "Payment Weight is required";
+  //     } else {
+  //       err["payment_amount"] = "";
+  //     }
+  //   } else {
+  //     if (formData.payment_amount === "") {
+  //       err["payment_amount"] = "Payment Amount is required";
+  //     } else {
+  //       err["payment_amount"] = "";
+  //     }
+  //   }
 
-    setErrors((prevState) => ({
-      ...prevState,
-      ...err,
-    }));
+  //   setErrors((prevState) => ({
+  //     ...prevState,
+  //     ...err,
+  //   }));
 
-    const hasErrors = Object.values(err).some((error) => error.length > 0);
+  //   const hasErrors = Object.values(err).some((error) => error.length > 0);
 
-    return !hasErrors;
-  };
-  const onSubmit = (e) => {
-    e.preventDefault();
+  //   return !hasErrors;
+  // };
+  // const onSubmit = (e) => {
+  //   e.preventDefault();
 
-    const formFields = new FormData(e.target);
-    const formDataObject = Object.fromEntries(formFields.entries());
+  //   const formFields = new FormData(e.target);
+  //   const formDataObject = Object.fromEntries(formFields.entries());
 
-    if (isValidForm()) {
-      if (formData.id_customer === "") {
-        toast.error("Customer Id is Required!");
-        return;
-      } else if (formData.id_branch === "") {
-        toast.error("Branch Id is Required!");
-        return;
-      } else if (formData.mobile === "") {
-        toast.error("Mobile is Required!");
-        return;
-      } else if (selectedScheme?.id_scheme === "") {
-        toast.error("Scheme Id is Required!");
-        return;
-      } else if (selectedScheme.scheme_type === "") {
-        toast.error("Scheme Id is Required!");
-        return;
-      } else if (selectedScheme.id_classification === "") {
-        toast.error("Classification Id is Required!");
-        return;
-      } else if (selectedScheme?.id_scheme === "") {
-        toast.error("Scheme Id is Required!");
-        return;
-      }
-      setErrors({ id_scheme: "" });
+  //   if (isValidForm()) {
+  //     if (formData.id_customer === "") {
+  //       toast.error("Customer Id is Required!");
+  //       return;
+  //     } else if (formData.id_branch === "") {
+  //       toast.error("Branch Id is Required!");
+  //       return;
+  //     } else if (formData.mobile === "") {
+  //       toast.error("Mobile is Required!");
+  //       return;
+  //     } else if (selectedScheme?.id_scheme === "") {
+  //       toast.error("Scheme Id is Required!");
+  //       return;
+  //     } else if (selectedScheme.scheme_type === "") {
+  //       toast.error("Scheme Id is Required!");
+  //       return;
+  //     } else if (selectedScheme.id_classification === "") {
+  //       toast.error("Classification Id is Required!");
+  //       return;
+  //     } else if (selectedScheme?.id_scheme === "") {
+  //       toast.error("Scheme Id is Required!");
+  //       return;
+  //     }
+  //     setErrors({ id_scheme: "" });
 
-      if (!id) {
-        createschemepaymentmutate(formData);
-      } else {
-        updateschemepaymentmutate(formData);
-      }
-    } else {
-      console.log("Form has validation errors. Please correct them.");
-    }
-  };
-  const { mutate: createschemepaymentmutate } = useMutation({
-    mutationFn: addschemepayment,
-    onSuccess: (response) => {
-      toast.success(response.message);
-      navigate("/payment/schemepayment");
-    },
-    onError: (error) => {
-      toast.error(error.response.data.message);
-    },
-  });
-
-  const { mutate: updateschemepaymentmutate } = useMutation({
-    mutationFn: updateschemepayment,
-    onSuccess: (response) => {
-      toast.success(response.message);
-      navigate("/payment/schemepayment");
-    },
-    onError: (error) => {
-      toast.error(error.response.data.message);
-    },
-  });
+  //     if (!id) {
+  //       createschemepaymentmutate(formData);
+  //     } else {
+  //       updateschemepaymentmutate(formData);
+  //     }
+  //   } else {
+  //     console.log("Form has validation errors. Please correct them.");
+  //   }
+  // };
 
   const toggleAccordion = () => {
     setIsExpanded(!isExpanded);
@@ -768,7 +880,7 @@ const AddSchemePayment = () => {
           Scheme Payment
         </h2>
       </div>
-      <form onSubmit={onSubmit}>
+      <form onSubmit={formik.handleSubmit}>
         <div className="w-full flex flex-col bg-[#F5F5F5] border-t-2 border-[#023453] mt-3 overflow-y-auto scrollbar-hide h-[calc(100vh-200px)]">
           <div className="flex flex-col p-8 bg-white">
             <div className="space-y-6">
@@ -776,40 +888,53 @@ const AddSchemePayment = () => {
               <div className="flex flex-col lg:flex-row w-full justify-between">
                 <div className="lg:w-1/2 w-full">
                   <div className="grid grid-cols-1 gap-4 lg:pr-2">
-                    <div className="flex flex-col">
-                      <label className="text-black mb-2 font-normal">
-                        Branch<span className="text-red-400"> *</span>
-                      </label>
-                      <div className="relative">
-                        <select
-                          name="id_branch"
-                          value={formData.id_branch}
-                          onChange={filterInputchange}
-                          className="appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                          defaultValue=""
-                        >
-                          <option value="">--Select--</option>
-                          {branchfilter.map((branch) => (
-                            <option key={branch._id} value={branch._id}>
-                              {branch.branch_name}
-                            </option>
-                          ))}
-                        </select>
-                        <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                          <svg
-                            className="h-4 w-4"
-                            fill="none"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="3"
-                            viewBox="0 0 24 24"
-                            stroke="black"
-                          >
-                            <path d="M19 9l-7 7-7-7"></path>
-                          </svg>
-                        </div>
+                    {accessBranch === "0" ? (
+                      <div>
+                        <label className="block text-sm font-medium mb-1">
+                          Branches <span className="text-red-500">*</span>
+                        </label>
+                        <Select
+                          styles={customStyles}
+                          isClearable={true}
+                          options={branch || []}
+                          placeholder="Select Branch"
+                          value={
+                            branch?.find(
+                              (option) =>
+                                option.value === formik.values.id_branch
+                            )
+                          }
+                          onChange={(option) =>
+                            formik.setFieldValue(
+                              "id_branch",
+                              option.value || ""
+                            )
+                          }
+                        />
+                        {formik.errors.id_branch && (
+                          <div className="text-red-500 text-sm mt-1">
+                            {formik.errors.id_branch}
+                          </div>
+                        )}
                       </div>
-                    </div>
+                    ) : (
+                      <div>
+                        <label className="block text-sm text-gray-500 font-medium mb-1">
+                          Branch <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          disabled
+                          value={branch?.branch_name || ""}
+                          className="w-full border rounded-md px-3 py-2 text-gray-500"
+                        />
+                        {formik.errors.id_branch && (
+                          <div className="text-red-500 text-sm mt-1">
+                            {formik.errors.id_branch}
+                          </div>
+                        )}
+                      </div>
+                    )}
                     <div className="flex flex-col mt-2 relative">
                       <label className="text-black mb-1 font-normal">
                         Search Mobile Number
@@ -973,74 +1098,31 @@ const AddSchemePayment = () => {
                       <label className="text-black mb-2 font-normal">
                         Scheme Account<span className="text-red-400"> *</span>
                       </label>
-                      <div className="relative">
-                        <select
-                          name="id_scheme_account"
-                          value={selectedId}
-                          readOnly={accountreadOnly}
-                          onChange={handleDropdownChange}
-                          className="appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                          defaultValue=""
-                        >
-                          <option value="">--Select--</option>
-                          {schemedata.map((account) => (
-                            <option key={account._id} value={account._id}>
-                              {account.id_scheme.scheme_name}
-                              {account.id_scheme.scheme_type === 4 ||
-                              account.id_scheme.scheme_type === 5 ||
-                              account.id_scheme.scheme_type === 6 ||
-                              account.id_scheme.scheme_type === 7 ||
-                              account.id_scheme.scheme_type === 8 ||
-                              account.id_scheme.scheme_type === 9 ||
-                              account.id_scheme.scheme_type === 10
-                                ? ` (Rs. ${
-                                    account.id_scheme.min_amount
-                                  } - Rs. ${
-                                    account.id_scheme.max_amount
-                                  }) -  (${
-                                    account.scheme_acc_number !== ""
-                                      ? account.scheme_acc_number
-                                      : "Not Allocated"
-                                  })`
-                                : ""}
-                              {account.id_scheme.scheme_type === 3
-                                ? ` (${account.id_scheme.min_weight} - ${
-                                    account.id_scheme.max_weight
-                                  }) -  (${
-                                    account.scheme_acc_number !== ""
-                                      ? account.scheme_acc_number
-                                      : "Not Allocated"
-                                  })`
-                                : ""}
-                              {account.id_scheme.scheme_type === 0 ||
-                              account.id_scheme.scheme_type === 1 ||
-                              account.id_scheme.scheme_type === 2
-                                ? ` (Rs. ${account.id_scheme.amount}) -  (${
-                                    account.scheme_acc_number !== ""
-                                      ? account.scheme_acc_number
-                                      : "Not Allocated"
-                                  })`
-                                : ""}
-                            </option>
-                          ))}
-                        </select>
-                        <p style={{ color: "red" }}>
-                          {errors?.id_scheme_account}
-                        </p>
-                        <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                          <svg
-                            className="h-4 w-4"
-                            fill="none"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="3"
-                            viewBox="0 0 24 24"
-                            stroke="black"
-                          >
-                            <path d="M19 9l-7 7-7-7"></path>
-                          </svg>
-                        </div>
-                      </div>
+                      <Select
+                          styles={customStyles}
+                          isClearable={true}
+                          options={schemedata || []}
+                          placeholder="Select scheme Account"
+                          value={
+                            schemedata?.find(
+                              (option) =>
+                                option.value === formik.values.id_scheme_account
+                            )
+                          }
+                          onChange={(option) => {
+                            if (option?.value) {
+                              formik.setFieldValue("id_scheme_account", option.value);
+                            } else {
+                              formik.setFieldValue("id_scheme_account", ""); 
+                            }
+                          }}
+                          
+                        />
+                        {formik.errors.id_scheme_account && (
+                          <div className="text-red-500 text-sm mt-1">
+                            {formik.errors.id_scheme_account}
+                          </div>
+                        )}
                     </div>
                     <div className="flex flex-col w-full">
                       <label className="text-black mb-2 font-normal">
@@ -1073,7 +1155,7 @@ const AddSchemePayment = () => {
                       </label>
                       <input
                         name="metal_rate"
-                        value={formData.metal_rate}
+                        value={formik.values.metal_rate}
                         onChange={(e) => {
                           filterInputchange(e);
                         }}
@@ -1111,11 +1193,11 @@ const AddSchemePayment = () => {
                         </label>
                         <div className="relative">
                           <span
-                            className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                            className="absolute right-0 top-0 h-full w-20 flex items-center justify-center text-white rounded-r-md"
                             style={{ backgroundColor: layout_color }}
                           >
-                            {selectedScheme?.id_scheme.code
-                              ? selectedScheme?.id_scheme.code
+                            {selectedScheme?.id_scheme?.code
+                              ? selectedScheme?.id_scheme?.code
                               : "N/A"}
                           </span>
                           <input
@@ -1385,7 +1467,7 @@ const AddSchemePayment = () => {
                         className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
                         style={{ backgroundColor: layout_color }}
                       >
-                        INR
+                        GM
                       </span>
                     </div>
                   </div>
