@@ -146,7 +146,6 @@ export const getallpuritytable = async (data) => {
 }
 
 export const puritybymetal = async(id)=>{
- 
     const response= await Api.get(`${import.meta.env.VITE_API_URL}/api/client/purity/metal/${id}`)
     return response.data;
 }
@@ -712,7 +711,7 @@ export const productbyid= async(data)=>{
  
 
 export const categorybymetalid= async(id)=>{
-   
+    console.log(id)
     const response= await Api.get(`${import.meta.env.VITE_API_URL}/api/client/category/metal/${id}`)
     return response.data
 }
@@ -1208,7 +1207,7 @@ export const getbranchbyclient = async (data)=>{
 }
  
 
-export const getbranchbyid = async (data) => {
+export const getbranchbyid = async (data) => {    
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/branch//${data.id}`);
     return response.data;
 }
@@ -1531,9 +1530,6 @@ export const buygsttype = async () => {
 
 
 
-//Deepa
-
-
 //Category
  
 export const createcategory= async(data)=>{
@@ -1591,6 +1587,7 @@ export const changeschemestatus = async (id) => {
  
 
 export const updateScheme = async (id,data) => {
+    console.log(id,data)
     const response = await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/scheme/${id}`,data);
     return response;
 }
@@ -1789,5 +1786,14 @@ export const getCustomerByMobile = async (number)=>{
 export const getEmployeeByMobile = async (number)=>{
     console.log(number)
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/employee/mobile?search=${number}`)
+    return response.data;
+}
+
+export const getCustomerSummary = async (data)=>{
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/wallet/customer-details?mobileNumber=${data}`)
+}
+
+export const digiGoldStaticData = async ()=>{
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/scheme/digigold`)
     return response.data;
 }

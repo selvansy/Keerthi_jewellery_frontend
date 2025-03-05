@@ -531,10 +531,10 @@ function Dashboard() {
         </div>
 
         {/* mode of payment and  limits  */}
-        <div className="grid grid-cols-12 gap-4">
+        <div className="grid  md:grid-cols-12 gap-4">
           {/* Left Section (3/5 of the screen) */}
           <div className="col-span-7">
-            <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-4">
               <div className="bg-white rounded-[16px] pt-[20px] pb-[25px] px-[12px]">
                 <div className="rounded-md">
                   <img
@@ -689,6 +689,7 @@ function Dashboard() {
 
           {/* Right Section (2/5 of the screen) */}
           <div className="col-span-5 ">
+            
             <div className="bg-[#FFFFFF] pt-4 px-4 rounded-[16px]">
               <div className="flex justify-between items-center mb-[15px] ">
                 <h2 className="text-[#2F1C6A] font-semibold text-xl">
@@ -777,6 +778,7 @@ function Dashboard() {
               </div>
             </div>
             <div>
+
               <div className="bg-white rounded-lg shadow-md  lg:col-span-3  mt-6">
                 <div className="flex justify-between items-center mb-4 px-5 py-3">
                   <h2 className="text-xl font-bold ">New User Joined</h2>
@@ -880,6 +882,7 @@ function Dashboard() {
                   </nav>
                 </div>
               </div>
+
             </div>
           </div>
         </div>

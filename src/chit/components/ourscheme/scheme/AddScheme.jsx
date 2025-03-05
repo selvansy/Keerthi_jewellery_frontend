@@ -651,7 +651,6 @@ const SchemeForm = () => {
     }));
   };
 
-  console.log(validation,'dkd')
   return (
     <form
       onSubmit={formik.handleSubmit}
@@ -719,6 +718,7 @@ const SchemeForm = () => {
               </label>
               <Select
                 styles={customStyles}
+                isClearable={true}
                 options={branch || []}
                 placeholder="Select Branch"
                 value={branch || [].find(
@@ -743,9 +743,9 @@ const SchemeForm = () => {
                 value={branch?.branch_name || ""}
                 className="w-full border rounded-md px-3 py-2 text-gray-500"
               />
-              {formik.errors.id_banch && (
+              {formik.errors.id_branch && (
                 <div className="text-red-500 text-sm mt-1">
-                  {formik.errors.id_banch}
+                  {formik.errors.id_branch}
                 </div>
               )}
             </div>
