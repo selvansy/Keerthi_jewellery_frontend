@@ -96,7 +96,7 @@ const AddSchemePayment = () => {
   const formik = useFormik({
     initialValues: {
       id_customer: "",
-      mobile: "",
+      mobile: mobile,
       date_payment: date_payment,
       payment_mode: "",
       itr_utr: "",
@@ -1131,6 +1131,7 @@ const AddSchemePayment = () => {
                       <div className="relative">
                         <DatePicker
                           name="date_payment"
+                          disabled
                           selected={formData.date_payment}
                           onChange={(e) => {
                             filterInputchange(e);
@@ -1155,6 +1156,7 @@ const AddSchemePayment = () => {
                       </label>
                       <input
                         name="metal_rate"
+                        disabled
                         value={formik.values.metal_rate}
                         onChange={(e) => {
                           filterInputchange(e);
@@ -1173,6 +1175,7 @@ const AddSchemePayment = () => {
                         </label>
                         <input
                           name="payment_receipt"
+                          disabled
                           value={formData.payment_receipt}
                           onChange={(e) => {
                             filterInputchange(e);
@@ -1186,7 +1189,7 @@ const AddSchemePayment = () => {
                         </p>
                       </div>
                     )}
-                    {isseaccontno === 1 && (
+                    {/* {isseaccontno === 1 && (
                       <div className="flex flex-col">
                         <label className="text-black mb-2 font-normal">
                           Account Number<span className="text-red-400">*</span>
@@ -1216,7 +1219,7 @@ const AddSchemePayment = () => {
                           {errors?.accountschemeid}
                         </p>
                       </div>
-                    )}
+                    )} */}
                   </div>
                 </div>
                 <div className="lg:w-1/2 w-full items-center justify-center lg:pl-10 lg:pr-10">
@@ -1331,9 +1334,10 @@ const AddSchemePayment = () => {
                     <div className="relative">
                       <input
                         type="number"
-                        readOnly={ispayamtreadOnly}
+                        // readOnly={ispayamtreadOnly}
+                        disabled
                         name="payment_amount"
-                        value={formData.payment_amount}
+                        value={formik.values.payment_amount}
                         min="0"
                         onChange={(e) => {
                           filterInputchange(e);
@@ -1365,8 +1369,8 @@ const AddSchemePayment = () => {
                         readOnly
                         type="number"
                         name="gst_amount"
-                        value={formData.gst_amount}
-                        min="0"
+                        disabled
+                        value={formik.values.gst_amount}
                         onChange={(e) => {
                           filterInputchange(e);
                         }}
