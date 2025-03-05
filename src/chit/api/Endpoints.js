@@ -86,7 +86,11 @@ export const walletHistory = async (data) => {
     return response.data;
 }
 
-
+// 
+export const redeemHistory = async (data) => {
+    const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/wallet/redeemtable`,data);
+    return response.data;
+}
 
  
 /*Metal*/
