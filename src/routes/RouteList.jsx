@@ -564,18 +564,16 @@ const RouteList = [
     path: '/classification/addclassification/:id',
     element: <Base renderContent={CreateSchemeClassificaton} />
   },
-
-
   {
     name: "Closed Account",
     path: '/managecustomers/accountredemption',
-    element: <Base renderContent={CloseAccount} />
-  },
-  {
-    name: "Add Close Account",
-    path: '/manageaccount/addcloseaccount',
     element: <Base renderContent={AddCloseAccount} />
   },
+  // {
+  //   name: "Add Close Account",
+  //   path: '/manageaccount/addcloseaccount',
+  //   element: <Base renderContent={AddCloseAccount} />
+  // },
   {
     name: "Add Revert Account",
     path: '/manageaccount/addrevertaccount',
@@ -584,7 +582,7 @@ const RouteList = [
   {
     name: "Preclose Account",
     path: '/managecustomers/preclose',
-    element: <Base renderContent={PrecloseAccount} />
+    element: <Base renderContent={AddCloseAccount} />
   },
   
   // Outstanding Report 

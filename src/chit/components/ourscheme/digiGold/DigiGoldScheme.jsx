@@ -160,7 +160,6 @@ const DigiGoldScheme = () => {
     let response = await activateClassification(id);
     if (response) {
       toast.success(response.message);
-      console.log(response)
       getClassificationTablemuate({
         from_date: from_date,
         to_date: to_date,
@@ -174,7 +173,7 @@ const DigiGoldScheme = () => {
   };
 
   const handleEdit = (id) => {
-    navigate(`/classification/addclassification/${id}`)
+    navigate(`/scheme/editdigigold/${id}`)
   };
 
   const handleDelete = (id) => {
