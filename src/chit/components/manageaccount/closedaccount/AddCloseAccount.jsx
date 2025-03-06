@@ -220,7 +220,7 @@ const AddCloseAccount = () => {
     onSuccess: (response) => {
       if (response) {
         toast.success(response.message);
-        navigate("/manageaccount/closedaccount");
+        navigate("/managecustomers/preclose");
       }
     },
   });
@@ -711,9 +711,9 @@ const AddCloseAccount = () => {
               <button
                 className='bg-[#E2E8F0] text-black rounded-md p-2 w-full lg:w-20'
                 type='button'
-                onClick={() => navigate('/manageaccount/closedaccount')}
+                onClick={() => formik.resetForm()}
               >
-                Cancel
+                Clear
               </button>
               <button
                 className='bg-[#61A375] text-white rounded-md p-2 w-full lg:w-20'
