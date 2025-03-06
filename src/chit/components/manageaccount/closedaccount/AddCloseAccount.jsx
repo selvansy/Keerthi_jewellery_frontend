@@ -471,26 +471,6 @@ const AddCloseAccount = () => {
             </div>
 
             <div className='flex flex-col'>
-              <label className='text-black mb-1 font-normal'> Close Type</label>
-              <select
-                name='status'
-                value={formData.status}
-                onChange={handleChange}
-                className='appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white '
-              >
-                <option value=''>--Select--</option>
-                {scheData.map((account) => (
-                  <option key={account._id} value={account.id_status}>
-                    {account.status_name}
-                  </option>
-                ))}
-              </select>
-              {errors.status && <div className="text-red-500 text-sm">{errors.status}</div>}
-
-            </div>
-
-
-            <div className='flex flex-col'>
               <label className='text-black mb-1 font-normal'>Scheme Account Number</label>
               <input type='text' className='border-2 border-gray-300 rounded-md p-2 w-full pr-16 '
                 placeholder='Scheme'
@@ -647,6 +627,20 @@ const AddCloseAccount = () => {
                 />
                 <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-white bg-[#023453] w-14 h-[43px] justify-center items-center flex rounded-r-md">INR</span>
               </div>
+            </div>
+            <div className='flex flex-col'>
+              <label className='text-black mb-1 font-normal'>Add wallet point</label>
+              <div className="relative">
+                <input type='text'
+                  className='border-2 border-gray-300 rounded-md p-2 w-full pr-16 '
+                  placeholder='Add wallet points'
+                  name='wallet_point'
+                  value={selectedScheme?.wallet_points}
+                  defaultValue=""
+                  onChange={handleChange} />
+                {errors.wallet_points && <div className="text-red-500 text-sm">{errors.wallet_points}</div>}
+              </div>
+
             </div>
 
             <div className='flex flex-col'>

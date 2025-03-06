@@ -1692,7 +1692,6 @@ export const deletemetalrate= async(id)=>{
 }
 
 export const getMetalRateByMetalId= async(metalId,purityId,date)=>{  
-    console.log(metalId,purityId,date)
     const response= await Api.get(`${import.meta.env.VITE_API_URL}/api/client/metalrate/current?metalid=${metalId}&purity=${purityId}&date=${date}`)
     return response.data
 }
