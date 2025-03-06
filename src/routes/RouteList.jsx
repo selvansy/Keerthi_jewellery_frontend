@@ -83,7 +83,8 @@ import SchemeForm from "../chit/components/ourscheme/scheme/AddScheme";
 import RedeemHistory from "../chit/components/wallet/RedeemHistory";
 import PrecloseAccount from "../chit/components/manageaccount/preclose/PrecloseAccount";
 import { path } from "framer-motion/client";
-import TicketSubmissionForm from "../chit/components/help/ticket";
+import TicketSubmissionForm from "../chit/components/help/Addticket";
+import Ticket from "../chit/components/help/ticket";
 import TopUp from "../chit/components/SuperAdmin/topupApprovals/index"
 
 const RouteList = [
@@ -564,18 +565,16 @@ const RouteList = [
     path: '/classification/addclassification/:id',
     element: <Base renderContent={CreateSchemeClassificaton} />
   },
-
-
   {
     name: "Closed Account",
     path: '/managecustomers/accountredemption',
-    element: <Base renderContent={CloseAccount} />
-  },
-  {
-    name: "Add Close Account",
-    path: '/manageaccount/addcloseaccount',
     element: <Base renderContent={AddCloseAccount} />
   },
+  // {
+  //   name: "Add Close Account",
+  //   path: '/manageaccount/addcloseaccount',
+  //   element: <Base renderContent={AddCloseAccount} />
+  // },
   {
     name: "Add Revert Account",
     path: '/manageaccount/addrevertaccount',
@@ -584,7 +583,7 @@ const RouteList = [
   {
     name: "Preclose Account",
     path: '/managecustomers/preclose',
-    element: <Base renderContent={PrecloseAccount} />
+    element: <Base renderContent={AddCloseAccount} />
   },
   
   // Outstanding Report 
@@ -677,7 +676,7 @@ const RouteList = [
   {
     name:"ticket raise",
     path:'/help/raiseticket/',
-    element:<TicketSubmissionForm/>
+    element:<Base renderContent={Ticket} />
   }
 
 ];

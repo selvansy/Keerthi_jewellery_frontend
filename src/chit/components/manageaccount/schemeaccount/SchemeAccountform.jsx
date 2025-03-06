@@ -76,6 +76,7 @@ export function ExistingCustomer() {
             address: response.data.address,
             id_branch: response.data.id_branch,
             mobile: response.data.mobile,
+            id_customer: response.data._id
           })
         );
         setFormData((prev) => ({
@@ -205,9 +206,9 @@ const AddSchemeAccount = () => {
   const [classifyfilter, setClassify] = useState([]);
   const [schemefilter, setScheme] = useState([]);
   const [errors, setErrors] = useState(null);
-  const [ispayable, setIspayable] = useState(false);
   const [selectedScheme, setSelectedScheme] = useState("");
   const [acNumber,setAcNumber]=useState(1)
+  const [referralName,setReferralName] = useState('')
   const referralRoles = [
     { id: 1, role: "Employee",endpoint:getEmployeeByMobile},
     { id: 2, role: "Customer",endpoint:getCustomerByMobile},
@@ -293,9 +294,10 @@ const AddSchemeAccount = () => {
   //     toast.error("Customer not created!");
   //   }
   // };
-console.log(cusData,'gi')
+
+//* TODO use formik insted of formData
   const [formData, setFormData] = React.useState({
-    id_customer: cusData.customerId,
+    id_customer: cusData.customerId || cusData.id_customer || '',
     mobile: cusData.mobile,
     start_date: start_date,
     id_classification: "",
@@ -318,7 +320,9 @@ console.log(cusData,'gi')
     maturity_date: maturity_date,
     referral_id: "",
     referral_type:'',
-    installment_type:''
+    installment_type:'',
+    code:0,
+    scheme_count_number:''
   });
 
   useEffect(() => {
@@ -350,14 +354,13 @@ console.log(cusData,'gi')
 
   const handleSearchmobile = async () => {
     try {
-      console.log(selectedRole)
       const matchingRole = referralRoles.find(
         (element) => Number(selectedRole) === element.id
       );
   
       if (matchingRole) {
         const data = await matchingRole.endpoint(searchmobile);
-        console.log(data)
+        setReferralName(`${data.data.firstname} ${data.data.lastname}`)
         setFormData((prev) => ({ ...prev, "referral_type": matchingRole.role,referral_id:data?.data?._id}));
       } else {
         console.warn("No matching referral role found!");
@@ -394,6 +397,8 @@ console.log(cusData,'gi')
           maturity_period: maturity_period,
           maturity_date: maturity_date,
           referral_id: "",
+          code:0,
+          scheme_count_number:""
         });
       }
     },
@@ -426,6 +431,7 @@ console.log(cusData,'gi')
     }
 
     if (name === "id_classification") {
+      console.log(value)
       handleschemebyclassification(value);
     }
 
@@ -437,7 +443,7 @@ console.log(cusData,'gi')
 
   const handleschemebyid = async (id) => {
     try {
-      const countData = await getSchemeAccountCount(9360839984, id);
+      const countData = await getSchemeAccountCount(formData.mobile, id);
       const newAcNumber = countData.data !== 0 ? Number(countData.data) + 1 : 1;
   
       setAcNumber(newAcNumber);
@@ -446,10 +452,11 @@ console.log(cusData,'gi')
       if (schemeData) {
         setFormData((prevState) => ({
           ...prevState,
-          scheme_type: schemeData.scheme_type,
-          total_installments: schemeData.total_installments,
-          maturity_period: schemeData.maturity_period,
-          installment_type: schemeData.installment_type,
+          scheme_type: schemeData?.scheme_type,
+          total_installments: schemeData?.total_installments,
+          maturity_period: schemeData?.maturity_period,
+          installment_type: schemeData?.installment_type,
+          code:schemeData?.code
         }));
       } else {
         console.warn("No matching scheme found for ID:", id);
@@ -659,16 +666,16 @@ console.log(cusData,'gi')
 const onSubmit = (e) => {
   e.preventDefault();
 
-  console.log("Form Data before submission:", formData); // Log formData
+  console.log("Form Data before submission:", formData);
 
   if (isValidForm()) {
     if (id) {
       updateSchemeaccount(formData);
     } else {
-      const acName = formData.account_name;
+      // const acName = formData.account_name;
       setFormData((prev) => ({
         ...prev,
-        account_name: `${acName}-AC${acNumber}` 
+        scheme_count_number: acNumber
       }));
       createSchemeaccount(formData);
     }
@@ -1074,7 +1081,7 @@ const onSubmit = (e) => {
               </div>
               <div className="flex flex-col">
                 <label className="text-black mb-1 font-normal">
-                  Referral By
+                  Referral By {referralName && <span className="text-green-700">{referralName}</span>}
                 </label>
                 <div className="relative">
                   <select
@@ -1128,6 +1135,12 @@ const onSubmit = (e) => {
                 <div
                   disabled={searchmobile === ''}
                   onClick={handleSearchmobile}
+                  onKeyDown={(e)=>{
+                    e.preventDefault()
+                    if(e){
+                      console.log(e.key)
+                    }
+                  }}
                   className="absolute flex items-center justify-center cursor-pointer right-[0%] rounded-r-lg top-[68%] -translate-y-1/2 w-10 md:h-[43px] md:top-[50px] h-[62%] sm:right-0 sm:top-[68%] lg:right-[0%]"
                   style={{ backgroundColor: layout_color }}
                 >

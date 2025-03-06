@@ -246,7 +246,7 @@ const AddCategory = () => {
                       name="type"
                       className="text-gray-700"
                       key={type.id_metal}
-                      value={type.id_metal}
+                      value={type._id}
                     >
                       {type.metal_name}
                     </option>

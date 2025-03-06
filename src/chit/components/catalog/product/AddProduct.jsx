@@ -18,21 +18,27 @@ import {
   todaycurrentratebybranch,
   getbranchbyid,
   getAllBranch,
+  getMetalRateByMetalId,
 } from "../../../api/Endpoints";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import SpinLoading from "../../common/spinLoading";
 import { customSelectStyles } from "../../Setup/purity";
 import Select from "react-select";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../../../../../components/ui/accordion";
+import MakingChargesForm from "./makingCharge";
 const AddProduct = () => {
   const roleData = useSelector((state) => state.clientForm.roledata);
   const accessBranch = roleData?.branch;
   const [branch, setBranch] = useState(() => (accessBranch === "0" ? [] : {}));
+  const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const [metals, setMetals] = useState([]);
   const [category, setCategory] = useState([]);
+  const [currentRate,setCurrentRate]=useState('0')
   const [purity, setPurity] = useState([]);
   const [formData, setFormData] = useState({
     product_name: "",
+    product_code: "",
     id_category: "",
     description: "",
     code: "",
@@ -58,11 +64,18 @@ const AddProduct = () => {
     getMetals();
   }, []);
 
-// getting category data and fetching purityBy metal
+  useEffect(()=>{
+    if(formData.id_purity){
+      getTodayMetalRate({id_metal:formData.id_metal,id_purity:formData.id_purity,date:"2025-03-05T05:24:36.465Z"})
+    }
+  },[formData.id_purity])
+
+
+  // getting category data and fetching purityBy metal
   useEffect(() => {
     if (formData.id_metal) {
       getCategory(formData.id_metal);
-      getPurityByMetal(formData.id_purity)
+      getPurityByMetal(formData.id_metal);
     }
     setFormData((prev) => ({
       ...prev,
@@ -70,7 +83,19 @@ const AddProduct = () => {
     }));
   }, [formData.id_metal]);
 
-  //mutation to get all branches
+  const { mutate: getTodayMetalRate } = useMutation({
+    mutationFn: ({id_metal,id_purity,date}) => getMetalRateByMetalId(id_metal,id_purity,date),
+    onSuccess: (response) => {
+      const {data}=response
+      setCurrentRate(data.rate)
+
+    },
+    onError: (error) => {
+      console.error("Error fetching metal rate:", error);
+    },
+  });
+
+    //mutation to get all branches
   const { mutate: getAllBranches } = useMutation({
     mutationFn: () => getAllBranch(),
     onSuccess: (response) => {
@@ -92,7 +117,7 @@ const AddProduct = () => {
     onSuccess: (response) => {
       setMetals(
         response.data.map((metal) => ({
-          value: metal.id_metal,
+          value: metal._id,
           label: metal.metal_name,
         }))
       );
@@ -102,7 +127,7 @@ const AddProduct = () => {
     },
   });
   const { mutate: getPurityByMetal } = useMutation({
-    mutationFn: (id) =>puritybymetal (id),
+    mutationFn: (id) => puritybymetal(id),
     onSuccess: (response) => {
       setPurity(
         response.data.map((purity) => ({
@@ -150,14 +175,21 @@ const AddProduct = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+
+    if (name === "gst" && !/^\d{0,2}$/.test(value)) {
+      return;
+    }
+
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
   };
 
-  const hanlde = () => {
-    console.log(formData);
+
+
+  const handleRate = () => {
+   
   };
 
   return (
@@ -175,7 +207,7 @@ const AddProduct = () => {
       </div>
       <div className="w-full flex flex-col bg-[#F5F5F5] border-t-2 border-[#023453] mt-3 overflow-y-auto scrollbar-hide h-[calc(100vh-200px)]">
         <div className="flex flex-col p-4 bg-white relative">
-          <div className="grid grid-rows-2 md:grid-cols-2 gap-5 border-gray-300 mb-10">
+          <div className="grid grid-rows-2 md:grid-cols-2 gap-5 border-gray-300 mb-5">
             {accessBranch == "0" ? (
               <div>
                 <label className="block text-sm font-medium mb-1 mt-5">
@@ -221,12 +253,14 @@ const AddProduct = () => {
                 value={metals.find(
                   (option) => option.value === formData.id_metal
                 )}
-                onChange={(option) =>
+                onChange={(option) =>{
                   setFormData((prev) => ({
                     ...prev,
                     id_metal: option.value,
                     id_category: "",
                   }))
+                  setCurrentRate('0')
+                }
                 }
               />
             </div>
@@ -261,7 +295,6 @@ const AddProduct = () => {
               />
             </div>
 
-
             <div className="flex flex-col">
               <label className="text-gray-700 mb-2 mt-2 font-medium">
                 purity<span className="text-red-400">*</span>
@@ -270,25 +303,22 @@ const AddProduct = () => {
                 styles={customSelectStyles}
                 options={purity}
                 placeholder={
-                  purity.length > 0
-                    ? "Select purity"
-                    : "No purities available"
+                  purity.length > 0 ? "Select purity" : "No purities available"
                 }
                 value={
                   purity.find(
                     (option) => option.value === formData.id_purity
                   ) || null
                 }
-                onChange={(option) =>
+                onChange={(option) =>{
                   setFormData((prev) => ({
                     ...prev,
                     id_purity: option ? option.value : "",
                   }))
-                }
+                 handleRate()
+                }}
                 isDisabled={purity.length <= 0}
-                noOptionsMessage={() =>
-                  "No purities available for this metal"
-                }
+                noOptionsMessage={() => "No purities available for this metal"}
               />
             </div>
 
@@ -301,33 +331,121 @@ const AddProduct = () => {
                 type="text"
                 value={formData.product_name}
                 className="border-2 border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                placeholder="Enter Here"
+                placeholder="Enter Product Name"
                 onChange={handleInputChange}
               />
             </div>
-          </div>
-          <div className="bg-white">
-            <div className="flex justify-end gap-4">
-              <button
-                className="bg-[#E2E8F0] text-black rounded-md p-3 w-full lg:w-20"
-                type="button"
-                // onClick={isLoading?undefined:handleCancle}
-              >
-                Cancel
-              </button>
-              <button
-                className="bg-[#61A375] text-white rounded-md p-2 w-full lg:w-20"
-                type="button"
-                onClick={hanlde}
-                // onClick={isLoading?undefined:id ? handleUpdate : handleSubmit}
-              >
-                {/* {isLoading?
-              <SpinLoading/>:
-              id ? "Update" : "Submit"
-              } */}
-              </button>
+
+            <div className="flex flex-col mt-2">
+              <label className="text-gray-700 mb-2 font-medium">
+                Product Code <span className="text-red-400">*</span>
+              </label>
+              <input
+                name="product_code"
+                type="text"
+                value={formData.product_code}
+                className="border-2 border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                placeholder="Enter Product Code"
+                onChange={handleInputChange}
+              />
+            </div>
+
+            <div className="flex flex-col mt-2">
+              <label className="text-gray-700 mb-2 font-medium">
+                Product Description <span className="text-red-400">*</span>
+              </label>
+              <textarea
+                id="message"
+                rows="4"
+                name="description"
+                value={formData.description}
+                onChange={handleInputChange}
+                class="border-2 border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent h-[70px] min-h-[70px] max-h-[120px]"
+                placeholder="Write your thoughts here..."
+              ></textarea>
+            </div>
+
+            <div className="flex flex-col mt-2">
+              <label className="text-gray-700 mb-2 font-medium">
+                Gst %<span className="text-red-400">*</span>
+              </label>
+              <div className="relative">
+                <input
+                  name="gst"
+                  type="string"
+                  value={formData.gst}
+                  className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                  placeholder="Enter Here"
+                  onChange={handleInputChange}
+                  onWheel={(e) => e.target.blur()}
+                />
+                <span
+                  className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                  style={{ backgroundColor: layout_color }}
+                >
+                  INR
+                </span>
+              </div>
+            </div>
+
+            <div className="flex flex-col mt-2">
+              <label className="text-gray-700 mb-2 font-medium">
+                Current Metal Rate<span className="text-red-400">*</span>
+              </label>
+              <div className="relative">
+                <input
+                  name="metalrate"
+                  type="string"
+                  value={currentRate}
+                  className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none  bg-[#ebebeb]"
+                  placeholder="Current Metal Rate"
+                  readOnly
+                />
+                <span
+                  className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                  style={{ backgroundColor: layout_color }}
+                >
+                  INR
+                </span>
+              </div>
+            </div>
+
+            <div className="flex flex-col mt-2">
+              <label className="text-gray-700 mb-2 font-medium">
+                Weight<span className="text-red-400">*</span>
+              </label>
+              <div className="relative">
+                <input
+                  name="weight"
+                  type="string"
+                  value={formData.weight}
+                  className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                  placeholder="Enter Here"
+                  onChange={handleInputChange}
+                  onWheel={(e) => e.target.blur()}
+                />
+                <span
+                  className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                  style={{ backgroundColor: layout_color }}
+                >
+                  INR
+                </span>
+              </div>
             </div>
           </div>
+
+          <Accordion type="multiple" collapsible className="space-y-4">
+        <AccordionItem value="grace" className="border rounded-lg bg-white">
+          <AccordionTrigger className="px-6 py-4">
+          Charges
+          </AccordionTrigger>
+          <AccordionContent value="Charges" className="px-6 py-4">
+           <MakingChargesForm/>
+          </AccordionContent>
+        </AccordionItem>
+        </Accordion>
+
+      
         </div>
       </div>
     </>

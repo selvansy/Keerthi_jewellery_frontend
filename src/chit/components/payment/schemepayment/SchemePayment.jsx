@@ -332,12 +332,12 @@ const SchemePayment = () => {
       header: "Scheme Name",
       cell: (row) => {
         let scheme_name = "";
-        if (row?.id_scheme.scheme_type === 0 || row?.id_scheme.scheme_type === 1 || row?.id_scheme.scheme_type === 2) {
+        if (row?.id_scheme?.scheme_type === 0 || row?.id_scheme?.scheme_type === 1 || row?.id_scheme?.scheme_type === 2) {
           scheme_name = row?.id_scheme.scheme_name + "(₹. " + row?.id_scheme.amount + ")";
-        } else if (row?.id_scheme.scheme_type === 3) {
-          scheme_name = row?.id_scheme.scheme_name + "(" + row?.id_scheme.min_weight + " Grm - " + row?.id_scheme.max_weight + " Grm)";
+        } else if (row?.id_scheme?.scheme_type === 3) {
+          scheme_name = row?.id_scheme.scheme_name + "(" + row?.id_scheme?.min_weight + " Grm - " + row?.id_scheme.max_weight + " Grm)";
         } else {
-          scheme_name = row?.id_scheme.scheme_name + "(₹" + row?.id_scheme.min_amount + " - " + row?.id_scheme.max_amount + ")";
+          scheme_name = row?.id_scheme?.scheme_name + "(₹" + row?.id_scheme?.min_amount + " - " + row?.id_scheme?.max_amount + ")";
         }
         return scheme_name;
       }

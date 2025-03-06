@@ -63,6 +63,7 @@ const Metal = () => {
     onError: (error) => {
       console.log(error.response.data);
       setMetalData([]);
+      setisLoading(false);
       setSearchLoading(false);
     },
   });
@@ -89,7 +90,6 @@ const Metal = () => {
       search: debouncedSearch,
       page: currentPage,
       limit: itemsPerPage,
-      currentPage,
     });
   }, [currentPage, itemsPerPage, debouncedSearch, isviewOpen]);
 
@@ -359,7 +359,7 @@ const Metal = () => {
     setCurrentPage((prevPage) => (prevPage > 1 ? prevPage - 1 : prevPage));
   };
 
-  console.log(currentPage);
+
 
   const paginationData = {
     totalItems: totalPages,

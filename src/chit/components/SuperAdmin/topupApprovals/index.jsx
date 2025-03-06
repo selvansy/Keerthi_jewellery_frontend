@@ -115,7 +115,6 @@ const topupApprovals = () => {
       },
       {
         header: "Approved Date",
-        cell: (row) => row?.description,
         cell: (row) =>{
           const date = new Date(row?.requestedDate);
           return date.toLocaleDateString("en-GB") || "-"; 
@@ -334,8 +333,7 @@ const topupApprovals = () => {
   
     const [formErrors, setFormErrors] = useState({});
     const [isLoading,setIsLoading]=useState(false)
-    console.log("loading",isLoading)
-  
+   
     useEffect(() => {
       
       setFormData(status)
