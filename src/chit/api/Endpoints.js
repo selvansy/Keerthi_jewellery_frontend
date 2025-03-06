@@ -1779,15 +1779,6 @@ export const digiGoldStaticData = async ()=>{
     return response.data;
 }
 
-
-export const getMetalRateByMetalId=async(data)=>{ 
-    const {id_metal,id_purity,date}=data
-    console.log(data)
-    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/metalrate/current?metalid=${id_metal}&purity=${id_purity}&date=${date}`)
-    return response.data
-    
-}
-
 // ticket Raise api
 export const getAllTicket=async (data)=>{
    const response=await Api.post(`${import.meta.env.VITE_API_URL}/api/client/ticketraise/table`,data)

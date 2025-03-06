@@ -84,7 +84,7 @@ const AddProduct = () => {
   }, [formData.id_metal]);
 
   const { mutate: getTodayMetalRate } = useMutation({
-    mutationFn: (data) => getMetalRateByMetalId(data),
+    mutationFn: ({id_metal,id_purity,date}) => getMetalRateByMetalId(id_metal,id_purity,date),
     onSuccess: (response) => {
       const {data}=response
       setCurrentRate(data.rate)
