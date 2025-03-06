@@ -1786,9 +1786,34 @@ export const getEmployeeByMobile = async (number)=>{
 
 export const getCustomerSummary = async (data)=>{
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/wallet/customer-details?mobileNumber=${data}`)
+    return response.data
 }
 
 export const digiGoldStaticData = async ()=>{
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/scheme/digigold`)
     return response.data;
 }
+
+
+export const getMetalRateByMetalId=async(data)=>{ 
+    const {id_metal,id_purity,date}=data
+    console.log(data)
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/metalrate/current?metalid=${id_metal}&purity=${id_purity}&date=${date}`)
+    return response.data
+    
+}
+
+// ticket Raise api
+export const getAllTicket=async (data)=>{
+   const response=await Api.post(`${import.meta.env.VITE_API_URL}/api/client/ticketraise/table`,data)
+   return response.data
+}
+
+export const addTicketRaise=async (formData)=>{
+   const response=await Api.post(`${import.meta.env.VITE_API_URL}/api/client/ticketraise`, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+    
+   return response.data
+}
+

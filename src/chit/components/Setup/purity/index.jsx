@@ -97,6 +97,7 @@ const Purity = () => {
       console.log(error.response.data);
       setpurityData([]);
       setSearchLoading(false);
+      setisLoading(false);
     },
   });
   const { mutate: getallmetalMutate } = useMutation({

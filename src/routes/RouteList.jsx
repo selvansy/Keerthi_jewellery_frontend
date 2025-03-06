@@ -83,7 +83,8 @@ import SchemeForm from "../chit/components/ourscheme/scheme/AddScheme";
 import RedeemHistory from "../chit/components/wallet/RedeemHistory";
 import PrecloseAccount from "../chit/components/manageaccount/preclose/PrecloseAccount";
 import { path } from "framer-motion/client";
-import TicketSubmissionForm from "../chit/components/help/ticket";
+import TicketSubmissionForm from "../chit/components/help/Addticket";
+import Ticket from "../chit/components/help/ticket";
 
 const RouteList = [
 
@@ -664,7 +665,7 @@ const RouteList = [
   {
     name:"ticket raise",
     path:'/help/raiseticket/',
-    element:<TicketSubmissionForm/>
+    element:<Base renderContent={Ticket} />
   }
 
 ];

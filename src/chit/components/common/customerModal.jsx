@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import ReactDOM from "react-dom";
 import { X } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { getCustomerSummary } from "../../api/Endpoints";
@@ -8,8 +9,9 @@ import { useDebounce } from "../../hooks/useDebounce";
 const CustomerModal = ({ close }) => {
   const [searchNumber, setSearchNumber] = useState("");
   const inputRef = useRef(null);
+  const modalRootRef = useRef(document.createElement("div"));
   const [isLoading, setIsLoading] = useState("");
-    const debouncedSearch = useDebounce(searchNumber, 1000);
+  const debouncedSearch = useDebounce(searchNumber, 1000);
   const [customerData, setCustomerData] = useState({
     name: "-",
     phone: "-",
@@ -27,11 +29,16 @@ const CustomerModal = ({ close }) => {
       inputRef.current.focus();
     }
   }, []);
+  useEffect(() => {
+    document.body.appendChild(modalRootRef.current);
+    return () => {
+      document.body.removeChild(modalRootRef.current);
+    };
+  }, []);
 
-  useEffect(()=>{
-    
-    getCustomerData(debouncedSearch)
-  },[debouncedSearch])
+  useEffect(() => {
+    getCustomerData(debouncedSearch);
+  }, [debouncedSearch]);
 
   const handleClose = () => {
     close();
@@ -39,7 +46,7 @@ const CustomerModal = ({ close }) => {
   const handleSearchChange = (e) => {
     const value = e.target.value;
     if (/^\d*$/.test(value)) {
-        setIsLoading(true);
+      setIsLoading(true);
       setSearchNumber(value);
     }
   };
@@ -47,24 +54,31 @@ const CustomerModal = ({ close }) => {
   const { mutate: getCustomerData } = useMutation({
     mutationFn: (searchNumber) => getCustomerSummary(searchNumber),
     onSuccess: (response) => {
-      if (response.data) {
-        setIsLoading(false);
-        const { custData } = response.data;
-        const { walletData } = response.data;
-        setCustomerData({
-          name: custData.firstname + " " + custData.lastname,
-          phone: custData.mobile,
-          address: custData.address,
-          wallet_point: walletData.balance_point,
-          active_scheme: response.data.activeScheme,
-          total_overdues: "-",
-          total_closed: response.data.closeScheme,
-          total_completed: response.data.completedScheme,
-          overall_overdues: "-",
-        });
-      } else {
-        setIsLoading(false);
-        setCustomerData({});
+      try {
+        if (response.data) {
+          setIsLoading(false);
+          const custData = response.data?.custData ?? {};
+          const walletData = response.data?.walletData ?? {};
+
+          setCustomerData({
+            name: `${custData.firstname ?? "N/A"} ${
+              custData.lastname ?? ""
+            }`.trim(),
+            phone: custData.mobile ?? "N/A",
+            address: custData.address ?? "N/A",
+            wallet_point: walletData.balance_point ?? "N/A",
+            active_scheme: response.data?.activeScheme ?? "N/A",
+            total_overdues: "-",
+            total_closed: response.data?.closeScheme ?? "N/A",
+            total_completed: response.data?.completedScheme ?? "N/A",
+            overall_overdues: "-",
+          });
+        } else {
+          setIsLoading(false);
+          setCustomerData({});
+        }
+      } catch (err) {
+        console.log(err);
       }
     },
     onError: (err) => {
@@ -74,11 +88,10 @@ const CustomerModal = ({ close }) => {
   });
 
   const handleSearch = () => {
-  
     getCustomerData(searchNumber);
   };
 
-  return (
+  return ReactDOM.createPortal(
     <AnimatePresence>
       <div className="fixed inset-0 bg-black bg-opacity-20 flex items-center justify-center z-50 p-6">
         <motion.div
@@ -240,7 +253,8 @@ const CustomerModal = ({ close }) => {
           </div>
         </motion.div>
       </div>
-    </AnimatePresence>
+    </AnimatePresence>,
+    modalRootRef.current
   );
 };
 
