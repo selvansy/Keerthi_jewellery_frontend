@@ -84,9 +84,9 @@ import RedeemHistory from "../chit/components/wallet/RedeemHistory";
 import PrecloseAccount from "../chit/components/manageaccount/preclose/PrecloseAccount";
 import { path } from "framer-motion/client";
 import TicketSubmissionForm from "../chit/components/help/ticket";
+import TopUp from "../chit/components/SuperAdmin/topupApprovals/index"
 
 const RouteList = [
-
 
   {
     name: 'Login',
@@ -192,6 +192,7 @@ const RouteList = [
     path: 'masters/topup',
     element: <Base renderContent={Topup} />
   },
+
   {
     name: "Campaign Type",
     path: '/masters/campaign',
@@ -616,6 +617,14 @@ const RouteList = [
     element: <Base renderContent={Schemetype} />
   },
   // super admin routes
+
+  
+  {
+    name: "Top up",
+    path: '/superadmin/topup',
+    element: <Base renderContent={TopUp} />
+  },
+
   {
     name: "Client Master",
     path: '/superadmin/clientmaster',

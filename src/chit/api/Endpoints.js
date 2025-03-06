@@ -574,6 +574,25 @@ export const deleteDept = async(id)=>{
     return response.data
 }
 
+//Topup
+
+export const addTopup= async(data)=>{
+    const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/topup/add`,data)
+    return response.data
+}
+
+export const topupTable = async(data)=>{
+    const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/topup/table`,data)
+    return response.data
+}
+
+export const updateStatus = async(payload)=>{
+    const {id,data} = payload;
+    const response= await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/topup/${id}`,data)
+    return response.data
+}
+
+
 //Campaign
 
 export const getallCampaigntable = async (data) => {

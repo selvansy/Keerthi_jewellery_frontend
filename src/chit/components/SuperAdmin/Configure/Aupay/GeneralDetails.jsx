@@ -280,7 +280,7 @@ const GeneralDetails = ({setIsAddClient, onPageChange, isLoading = false }) => {
         toast.success(response.message)
         setFormData(formData);
         dispatch(pagehandler(currentStep + 1));
-        console.log(currentStep);
+        
       },
       onError: (error) => {
         toast.error(error.response.data.message)

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react'
 import { SlidersHorizontal, Search, X } from 'lucide-react'
 import { useSelector, useDispatch } from 'react-redux';
 import { useMutation } from '@tanstack/react-query';
-import { pagehandler, resetPage, setTotalPage, setSelectedProject, setClientId, setProjectId,setAupayurl,setAusaleurl,setPawnurl, setbranchId } from '../../../../../redux/clientFormSlice';
+import { pagehandler, resetPage, setTotalPage, setSelectedProject, setClientId, setProjectId, setAupayurl, setAusaleurl, setPawnurl, setbranchId } from '../../../../../redux/clientFormSlice';
 import ProgressSteps from '../../../common/ProgressSteps';
 import GeneralDetails from '../../../../components/SuperAdmin/Configure/Aupay/GeneralDetails';
 import NotificationDetails from "../../../../components/SuperAdmin/Configure/Aupay/NotificationDetails";
@@ -21,22 +21,22 @@ import {
 
 } from 'lucide-react';
 const AupayConfigure = () => {
-  const layout_color = useSelector((state) => state.clientForm.layoutColor);
-    // const [isFilterOpen, setIsFilterOpen] = React.useState(false);
+    const layout_color = useSelector((state) => state.clientForm.layoutColor);
+
     const [selectedRow, setSelectedRow] = useState(null);
     const [project, setProject] = useState([]);
     const [isAddClient, setIsAddClient] = useState(false);
     const [activeDropdown, setActiveDropdown] = useState(null);
     const [aupayData, setAupayData] = useState([]);
     const [project_type, setProjectType] = useState(1);
-     const [currentPage, setCurrentPage] = useState(1);
+    const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
     const [itemsPerPage, setItemsPerPage] = useState(10);
-    const [searchInput,setSearchInput]=useState('')
+    const [searchInput, setSearchInput] = useState('')
     const debouncedSearch = useDebounce(searchInput, 500)
     const currentStep = useSelector((state) => state.clientForm.currentStep);
     const projectTitle = useSelector((state) => state.clientForm.selectedProject);
-    const [isLoading,setisLoading] = useState(true)
+    const [isLoading, setisLoading] = useState(true)
 
     const dispatch = useDispatch();
     const [filters, setFilters] = React.useState({
@@ -45,69 +45,28 @@ const AupayConfigure = () => {
     });
 
     const { mutate: getallconfigureData } = useMutation({
-        mutationFn: (payload)=>
-             getconfigurationtable(payload),
-        
+        mutationFn: (payload) =>
+            getconfigurationtable(payload),
+
         onSuccess: (response) => {
             setAupayData(response.data);
             setisLoading(false)
         },
-        onError:()=>{
+        onError: () => {
             setisLoading(false)
         }
     });
 
     useEffect(() => {
-        getallconfigureData({ page: currentPage, limit: itemsPerPage, project_type: 1 });
-    }, [currentPage, itemsPerPage,debouncedSearch, project_type,isAddClient])
-
-
+        dispatch(setTotalPage(steps.length))
+    }, [])
 
     useEffect(() => {
         getallconfigureData({ page: currentPage, limit: itemsPerPage, project_type: 1 });
-    }, [])
-
-
+    }, [currentPage, itemsPerPage, debouncedSearch, project_type, isAddClient])
 
 
     const columns = [
-        {
-            header: 'Actions',
-            cell: (row, rowIndex) => (
-                <div className="dropdown-container">
-
-
-
-                    <div className=" text-center ">
-                        <div className="w-32 rounded-md  ring-1" style={{ backgroundColor: layout_color }}>
-                            <div className="py-1">
-                                <button key={row?._id}
-                                    className="w-full text-left px-4 py-2  flex-row justify-center item-center text-sm text-white flex items-center gap-2"
-                                    onClick={() => {
-                                        console.log(row?.id_branch)
-                                        console.log(row?.id_client)
-                                        dispatch(setClientId(row?.id_client))
-                                        dispatch(setProjectId(row?.id_project))
-                                        dispatch(setAupayurl(row?.aupay_url))
-                                        dispatch(setbranchId(row?.id_branch))
-                                        setSelectedRow(row?._id);
-                                        setActiveDropdown(activeDropdown === row?._id ? null : row?._id);
-                                        dispatch(pagehandler(0))
-                                        setIsAddClient(true)
-                                        dispatch(setSelectedProject(row?.project_name))
-                                    }}
-                                >
-                                    Configure
-
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            ),
-            sticky: 'right'
-        },
         {
             header: 'S.No',
             cell: (_, index) => index + 1,
@@ -151,13 +110,13 @@ const AupayConfigure = () => {
         {
             header: 'Sign Date',
             cell: (row) => `${row?.sign_date || '0000-00-00'}`,
-          },
-      
-          {
+        },
+
+        {
             header: 'Launch Date',
-            cell: (row) => `${row?.launch_date || '0000-00-00' }`,
-          }
-        
+            cell: (row) => `${row?.launch_date || '0000-00-00'}`,
+        }
+
     ];
 
     const steps = [
@@ -172,7 +131,7 @@ const AupayConfigure = () => {
     ];
 
     const handleAddClient = () => {
-        dispatch(pagehandler(7))
+        dispatch(pagehandler(0))
         setIsAddClient(true);
     };
 
@@ -184,9 +143,7 @@ const AupayConfigure = () => {
         }));
     };
 
-    useEffect(() => {
-        dispatch(setTotalPage(steps.length))
-    }, [])
+
 
     const paginationButtons = [];
     for (let i = 1; i <= totalPages; i++) {
@@ -215,9 +172,10 @@ const AupayConfigure = () => {
         dispatch(resetForm());
     };
 
-    const handleSearch=(e)=>{
+    const handleSearch = (e) => {
         setSearchInput(e.target.value)
-      }
+    }
+
 
     return (
         <div className="flex flex-col p-4 relative">
@@ -227,105 +185,119 @@ const AupayConfigure = () => {
                     <h2 className="text-2xl text-gray-900 font-bold">{projectTitle}</h2>
                 </div>
             </div>
-             <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
-                        <div className="relative w-full lg:w-1/3 min-w-[200px]">
-                          <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                            <Search className="text-gray-500" />
-                          </div>
-                          <input
-                          onChange={handleSearch}
-                            placeholder="Search..."
-                            className="p-3 pl-10 pr-3 border-2 bg-[#F5F5F5] border-gray-500 rounded-md w-full"
-                          />
-                        </div>
-                      </div>
-            
+            <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
+                <div className="relative w-full lg:w-1/3 min-w-[200px]">
+                    <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
+                        <Search className="text-gray-500" />
+                    </div>
+                    <input
+                        onChange={handleSearch}
+                        placeholder="Search..."
+                        className="p-3 pl-10 pr-3 border-2 bg-[#F5F5F5] border-gray-500 rounded-md w-full"
+                    />
+                </div>
+
+                <div className="flex flex-row items-center justify-end gap-2">
+                    <button
+                         className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
+                         style={{ backgroundColor: layout_color }}
+                        onClick={handleAddClient}
+                    >
+                       + Add Configure
+
+                    </button>
+                </div>
+
+
+
+            </div>
+
             <div className="mt-4">
                 {!isAddClient ? (
                     <>
 
-                    <Table data={aupayData} columns={columns} selectedRow={selectedRow} isLoading={isLoading}/>
-                    
-                    {aupayData.length > 0 && (
-                    <div className="flex justify-between mt-4 p-2">
-                        <div className="flex flex-row items-center justify-center gap-2">
-                            <div className="flex items-center gap-4">
-                                <button
-                                    onClick={() => handlePageChange(currentPage - 1)}
-                                    readOnly={currentPage === 1}
-                                    className="p-2 text-gray-500 rounded-md"
-                                >
-                                    Previous
-                                </button>
-                            </div>
+                        <Table data={aupayData} columns={columns} selectedRow={selectedRow} isLoading={isLoading} />
 
-                            <div className="flex flex-row items-center justify-center gap-2">
-                                {paginationButtons}
-                            </div>
+                        {aupayData.length > 0 && (
+                            <div className="flex justify-between mt-4 p-2">
+                                <div className="flex flex-row items-center justify-center gap-2">
+                                    <div className="flex items-center gap-4">
+                                        <button
+                                            onClick={() => handlePageChange(currentPage - 1)}
+                                            readOnly={currentPage === 1}
+                                            className="p-2 text-gray-500 rounded-md"
+                                        >
+                                            Previous
+                                        </button>
+                                    </div>
 
-                            <div className="flex items-center">
-                                <button
-                                    onClick={() => handlePageChange(currentPage + 1)}
-                                    readOnly={currentPage === totalPages}
-                                    className="p-2 text-gray-500 rounded-md"
-                                >
-                                    Next
-                                </button>
-                            </div>
-                        </div>
+                                    <div className="flex flex-row items-center justify-center gap-2">
+                                        {paginationButtons}
+                                    </div>
 
-                        <div className="mt-4 flex gap-2 justify-center items-center">
-                            <span className="text-gray-500">Show</span>
-                            <select
-                                id="itemsPerPage"
-                                value={itemsPerPage}
-                                onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
-                                className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
-                            >
-                                 <option value={10}>10</option>
-                  <option value={25}>25</option>
-                  <option value={50}>50</option>
-                  <option value={100}>100</option>
-                  <option value={250}>250</option>
-                  <option value={500}>500</option>
-                  <option value={1000}>1000</option>
-                            </select>
-                            <span className="text-gray-500">entries</span>
-                        </div>
-                    </div>
-                )}
-                </>
+                                    <div className="flex items-center">
+                                        <button
+                                            onClick={() => handlePageChange(currentPage + 1)}
+                                            readOnly={currentPage === totalPages}
+                                            className="p-2 text-gray-500 rounded-md"
+                                        >
+                                            Next
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div className="mt-4 flex gap-2 justify-center items-center">
+                                    <span className="text-gray-500">Show</span>
+                                    <select
+                                        id="itemsPerPage"
+                                        value={itemsPerPage}
+                                        onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
+                                        className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
+                                    >
+                                        <option value={10}>10</option>
+                                        <option value={25}>25</option>
+                                        <option value={50}>50</option>
+                                        <option value={100}>100</option>
+                                        <option value={250}>250</option>
+                                        <option value={500}>500</option>
+                                        <option value={1000}>1000</option>
+                                    </select>
+                                    <span className="text-gray-500">entries</span>
+                                </div>
+                            </div>
+                        )}
+                    </>
                 ) : (
-                <div className="flex flex-col lg:flex-row h-full">
-                    {/* Sidebar */}
-                    <div className="lg:w-1/4 h-full flex-shrink-0 flex flex-col">
-                        <ProgressSteps steps={steps} />
-                    </div>
+                    <div className="flex flex-col lg:flex-row h-full">
+                        {/* Sidebar */}
+                        <div className="lg:w-1/4 h-full flex-shrink-0 flex flex-col">
+                            <ProgressSteps steps={steps} />
+                        </div>
 
-                    {/* Content Area */}
-                    <div className="lg:w-3/4 w-full bg-white border-2 lg:rounded-tr-3xl lg:rounded-br-3xl border-gray-300 p-4 flex-grow">
-                        {(() => {
-                            switch (currentStep) {
-                                case 0:
-                                    return <GeneralDetails setIsAddClient={setIsAddClient} />;
-                                case 1:
-                                    return <NotificationDetails setIsAddClient={setIsAddClient} />;
-                                case 2:
-                                    return <SmsDetails setIsAddClient={setIsAddClient} />;
-                                case 3:
-                                    return <WhatsappDetails setIsAddClient={setIsAddClient} />;
-                                case 4:
-                                    return <GatewayDetails setIsAddClient={setIsAddClient} />;
-                                case 5:
-                                    return <S3bucketDetails setIsAddClient={setIsAddClient} />;
-                                case 6:
-                                    return <AppsettingDetails setIsAddClient={setIsAddClient} />;
-                                case 7:
-                                    return <LayoutSettings setIsAddClient={setIsAddClient} />
-                            }
-                        })()}
+                        {/* Content Area */}
+                        <div className="lg:w-3/4 w-full bg-white border-2 lg:rounded-tr-3xl lg:rounded-br-3xl border-gray-300 p-4 flex-grow">
+                            {(() => {
+                                switch (currentStep) {
+                                    case 0:
+                                        return <GeneralDetails setIsAddClient={setIsAddClient} />;
+                                    case 1:
+                                        return <NotificationDetails setIsAddClient={setIsAddClient} />;
+                                    case 2:
+                                        return <SmsDetails setIsAddClient={setIsAddClient} />;
+                                    case 3:
+                                        return <WhatsappDetails setIsAddClient={setIsAddClient} />;
+                                    case 4:
+                                        return <GatewayDetails setIsAddClient={setIsAddClient} />;
+                                    case 5:
+                                        return <S3bucketDetails setIsAddClient={setIsAddClient} />;
+                                    case 6:
+                                        return <AppsettingDetails setIsAddClient={setIsAddClient} />;
+                                    case 7:
+                                        return <LayoutSettings setIsAddClient={setIsAddClient} />
+                                }
+                            })()}
+                        </div>
                     </div>
-                </div>
 
                 )}
             </div>
