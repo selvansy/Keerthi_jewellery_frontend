@@ -65,8 +65,9 @@ export const formatNumber = ({
   // locale = "en-US",
   currency = null,
 } = {}) => {
-  
+
   value = emptyToZero(value);
+  
 
   const options = {
     minimumFractionDigits: decimalPlaces,

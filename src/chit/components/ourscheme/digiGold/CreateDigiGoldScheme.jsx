@@ -10,7 +10,9 @@ import {
   getBranchById,
   getallbranch,
   addscheme,
-  digiGoldStaticData
+  digiGoldStaticData,
+  getschemeById,
+  updateScheme
 } from "../../../api/Endpoints";
 import { bonusTypeOptions,entryTypeOptions} from "../../../../utils/Constants";
 import SpinLoading from "../../common/spinLoading";
@@ -49,6 +51,7 @@ const CreateDigiGoldScheme = () => {
       id_branch: id_branch || "",
       id_metal:'',
       id_purity:"",
+      id_classification:"",
       bonus_type:1,
       count: 1,
       entry_type: 1,
@@ -101,54 +104,12 @@ const CreateDigiGoldScheme = () => {
     }),
     onSubmit: (values) => {
       if (id) {
-        handleUpdate(values);
+        updateSchemeData({id,values});
       } else {
         addNewScheme(values);
       }
     },
   });
-
-  // useEffect(() => {
-  //   if (id_branch === '0') {
-  //     getallbranchmuate();
-  //   }
-  //   if (id) {
-  //     fetchClassificationById(id);
-  //   }
-  // }, [id_branch, id]);
-
-  // const { mutate: getallbranchmuate } = useMutation({
-  //   mutationFn: getallbranch,
-  //   onSuccess: (response) => {
-  //     setBranchList(response.data);
-  //   },
-  //   onError: (error) => {
-  //     console.error("Error:", error);
-  //   },
-  // });
-
-  // const { mutate: createSchemeClassificationMutate } = useMutation({
-  //   mutationFn: createSchemeClassification,
-  //   onSuccess: (response) => {
-  //     toast.success(response.message);
-  //     formik.resetForm();
-  //     navigate('/ourscheme/digigold');
-  //   },
-  //   onError: (error) => {
-  //     toast.error(error.response?.data?.message || "An error occurred");
-  //   },
-  // });
-
-  // const { mutate: updateClassification } = useMutation({
-  //   mutationFn: updateSchemeClassification,
-  //   onSuccess: (response) => {
-  //     toast.success(response.message);
-  //     navigate('/ourscheme/digigold');
-  //   },
-  //   onError: (error) => {
-  //     toast.error(error.response?.data?.message || "An error occurred");
-  //   },
-  // });
 
   //api calls
   const { data: branchData } = useQuery({
@@ -170,6 +131,15 @@ const CreateDigiGoldScheme = () => {
     cacheTime: 10 * 60 * 1000,
   })
 
+  const { data: schemeData } = useQuery({
+    queryKey: ["scheme", id],
+    queryFn: async () => await getschemeById(id),
+    enabled: Boolean(id),
+    staleTime: 5 * 60 * 1000,
+    cacheTime: 10 * 60 * 1000,
+  });
+
+
   const { mutate: addNewScheme } = useMutation({
     mutationFn: addscheme,
     onSuccess: (response) => {
@@ -183,7 +153,21 @@ const CreateDigiGoldScheme = () => {
     },
   });
 
-  
+  const { mutate: updateSchemeData } = useMutation({
+    mutationFn: ({id, values }) => updateScheme(id, values),
+    onSuccess: (response) => {
+      if (response.status === 200) {
+        setIsLoading(false);
+        toast.success(response.message);
+        navigate("/scheme/scheme/");
+      }
+    },
+    onError: () => {
+      setIsLoading(false);
+      toast.error(response.message);
+    },
+  });
+
   //useEffect
   useEffect(() => {
     if (!branchData) return;
@@ -209,35 +193,40 @@ const CreateDigiGoldScheme = () => {
       setStaticData(digigoldData.data)
       formik.setFieldValue("id_metal",digigoldData.data.id_metal._id)
       formik.setFieldValue("id_purity",digigoldData.data._id)
+      formik.setFieldValue('id_classification',digigoldData.data.id_classification)
     }
   },[digigoldData])
 
-  // const handleSubmit = (values) => {
-  //   const formDataToSend = new FormData();
-  //   Object.keys(values).forEach((key) => {
-  //     if (key === "values" || key === "bonuses") {
-  //       formDataToSend.append(key, JSON.stringify(values[key]));
-  //     } else if (values[key] !== null && values[key] !== undefined) {
-  //       formDataToSend.append(key, values[key]);
-  //     }
-  //   });
-  //   createSchemeClassificationMutate(formDataToSend);
-  // };
-
-  const handleUpdate = (values) => {
-    const formDataToSend = new FormData();
-    Object.keys(values).forEach((key) => {
-      if (key === "values" || key === "bonuses") {
-        formDataToSend.append(key, JSON.stringify(values[key]));
-      } else if (values[key] !== null && values[key] !== undefined) {
-        formDataToSend.append(key, values[key]);
-      }
-    });
-    updateClassification({ id: id, data: formDataToSend });
-  };
-
+  useEffect(()=>{
+    formik.setValues({
+      ...formik.values,
+      scheme_name: schemeData?.data?.scheme_name || "",
+      description: schemeData?.data?.description || "",
+      term_desc:schemeData?.data?.term_desc || "",
+      id_branch:schemeData?.data?.id_branch || "",
+      id_metal:schemeData?.data?.id_metal?._id || "",
+      id_purity:schemeData?.data?.id_purity._id || "",
+      id_classification:schemeData?.data?.id_classification._id,
+      bonus_type:schemeData?.data?.bonus_type || 1,
+      count: schemeData?.data?.count || 1,
+      entry_type: schemeData?.data?.entry_type || 1,
+      values: schemeData?.data?.values || [],
+      bonuses: schemeData?.data?.bonuses || [],
+      buy_gst:schemeData?.data?.buy_gst || "",
+      sell_gst: schemeData?.data?.sell_gst || "",
+      max_amount:schemeData?.data?.max_amount || "",
+      min_amount:schemeData?.data?.min_amount || "",
+      scheme_type:schemeData?.data?.scheme_type || 10
+    })
+  },[schemeData])
+  console.log(schemeData)
+ console.log(formik.values)
   const handleCancle = () => {
-    navigate("/ourscheme/digigold");
+     if(!id){
+      navigate("/ourscheme/digigold");
+     }else{
+      navigate("/scheme/scheme");
+     }
   };
 
   // Function to generate dynamic fields
@@ -247,7 +236,6 @@ const CreateDigiGoldScheme = () => {
     const fields = [];
   
     for (let i = 0; i < count; i++) {
-      // Value field with consistent styling
       fields.push(
         <div key={`value-${i}`}>
           <label className="block text-sm font-medium mb-1">
@@ -333,7 +321,6 @@ const CreateDigiGoldScheme = () => {
     return fields;
   };
 
-  console.log(formik.values);
   return (
     <>
       <div className="flex flex-row justify-between">

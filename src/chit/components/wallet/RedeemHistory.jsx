@@ -3,21 +3,22 @@ import usePagination from "../../../chit/hooks/usePagination";
 import SpinLoading from "../../components/common/spinLoading";
 import { eventEmitter } from "../../../utils/EventEmitter";
 import { useSelector, useDispatch } from "react-redux";
-import {walletHistory} from "../../api/Endpoints"
+import {redeemHistory} from "../../api/Endpoints"
 import { useDebounce } from "../../../chit/hooks/useDebounce"
 import Table from "../../components/common/Table";
 import { Search } from "lucide-react";
 import { useMutation } from '@tanstack/react-query';
-
+import {formatNumber} from "../../utils/commonFunction"
 
 function RedeemHistory() {
     
   
-    const [walletData, setwalletData] = useState([]);
+    const [redeemData, setRedeemData] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
     const [itemsPerPage, setItemsPerPage] = useState(10);
-    
+    const [redeemedPoint,setRedeemPoint] = useState(0)
+    const [redeemedAmt,setRedeemAmt] = useState(0)
   
     const [searchInput, setSearchInput] = useState("");
     const debouncedSearch = useDebounce(searchInput, 500);
@@ -32,13 +33,16 @@ function RedeemHistory() {
        
  
    useEffect(() => {
-    getallWalletData({ search: debouncedSearch, page: currentPage, limit: itemsPerPage });
+    getallRedeemData({ search: debouncedSearch, page: currentPage, limit: itemsPerPage });
   }, [currentPage, debouncedSearch, itemsPerPage]);
 
-  const { mutate: getallWalletData } = useMutation({
-    mutationFn: (payload) => walletHistory(payload),
+  const { mutate: getallRedeemData } = useMutation({
+    mutationFn: (payload) => redeemHistory(payload),
     onSuccess: (response) => {
-      setwalletData(response.data)
+      
+      setRedeemData(response.data)
+      setRedeemPoint(response.totalRedeemedPoint)
+      setRedeemAmt(response.totalRedeemedAmt)
       setTotalPages(response.totalPages)
       setCurrentPage(response.currentPage)
       setTotalDocuments(response.totalDocuments)
@@ -47,7 +51,7 @@ function RedeemHistory() {
     onError: (error) => {
       console.log(error)
       setisLoading(false)
-      setwalletData([])
+      setRedeemData([])
     }
   });
 
@@ -108,15 +112,16 @@ function RedeemHistory() {
         },
         {
           header: "Wallet Points",
-          cell: (row) => 
-            {row?.credited_point !== undefined ? Math.abs(row.credited_point) : "-"}
-          
+          cell: (row) => {
+            return row?.credited_point !== undefined ? Math.abs(row.credited_point) : "-";
+          }
         },
         {
           header: "Amount",
-          cell: (row) => 
-              {row?.credited_amount !== undefined ? Math.abs(row.credited_amount) : "-"}
-        },       
+          cell: (row) => {
+            return row?.credited_amount !== undefined ? Math.abs(row.credited_amount) : "-";
+          }
+        },             
         {
           header: "Type",
           cell: (row) => redeemTypes[row?.redeem_type] || "-",
@@ -131,6 +136,7 @@ function RedeemHistory() {
           }
         },
       ];
+      
   return (
     <div>
          <div className="flex flex-col p-4 relative">
@@ -151,11 +157,27 @@ function RedeemHistory() {
               className="p-3 pl-10 pr-3 border-2 bg-[#F5F5F5] border-gray-500 rounded-md w-full"
             />
           </div>
+  
+          <div className="flex justify-end">
+    <div className="grid grid-cols-3 sm:grid-cols-2 gap-2 w-full max-w-md">
+      {[{ label: "Total Redeemed Points", value:redeemedPoint }, { label: "Total Redeemed Amount", value: formatNumber({value: redeemedAmt}) }].map((item, index) => (
+        <div key={index} className="flex flex-row items-center justify-between bg-white rounded-lg p-2 h-16 shadow-md text-sm">
+          <div className="flex flex-col justify-center">
+            <h5 className="text-[#67748E]">{item.label}</h5>
+            <h5 className="text-lg font-semibold">{item.value}</h5>
+          </div>
+          
+        </div>
+      ))}
+    </div>
+  </div>
+
         </div>
 
+       
         <div className="mt-4">
           <Table
-            data={walletData}
+            data={redeemData}
             columns={columns}
             currentPage={currentPage}
             totalPages={totalPages}
@@ -188,7 +210,7 @@ function RedeemHistory() {
             <div className="flex items-center gap-4">
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}x
+                disabled={currentPage === 1}
                 className={`p-2 text-gray-500 rounded-md ${currentPage==1?'cursor-not-allowed':'cursor-pointer'}`}
               >
                 Previous

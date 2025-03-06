@@ -152,7 +152,7 @@ const ConfigNotification = () => {
 
   return (
     <div className="bg-white rounded-lg shadow p-6">
-      <h1 className="text-xl font-bold mb-4">Add Configuration</h1>
+      <h1 className="text-xl font-bold mb-4">Setup Configuration</h1>
 
       {loadingConfig ? (
         <SpinLoading />
