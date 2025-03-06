@@ -7,6 +7,7 @@ import { CalendarDays, Search, ChevronDown, ChevronUp } from "lucide-react";
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import { toast } from "react-toastify";
+import * as Yup from "yup";
 import {
   addschemepayment,
   getmultipaymentmode,
@@ -19,7 +20,7 @@ import {
   getallbranch,
   getBranchById,
   getallpaymentmode,
-  getMetalRateByMetalId
+  getMetalRateByMetalId,
 } from "../../../api/Endpoints";
 import { useDispatch, useSelector } from "react-redux";
 const AddSchemePayment = () => {
@@ -47,7 +48,6 @@ const AddSchemePayment = () => {
   const [paymentmode, setPaymentmode] = useState([]);
   const [errors, setErrors] = useState([]);
   const [isExpanded, setIsExpanded] = useState(false);
-  const [selectedId, setSelectedId] = useState("");
   const [ispayamtreadOnly, setIspayamtreadOnly] = useState(true);
   const [branch, setBranch] = useState(() => (accessBranch === "0" ? [] : {}));
   const [paymentamount, setPaymentAmount] = useState(0);
@@ -57,8 +57,14 @@ const AddSchemePayment = () => {
   const [issetreceipt, setIssetReceipt] = useState(2);
   const [accountreadOnly, setAccountreadOnly] = useState(false);
   const [schemedata, setSchemeData] = useState([]);
-  const [fullData,setFullData] = useState([])
+  const [fullData, setFullData] = useState([]);
   const [selectedScheme, setSelectedScheme] = useState({});
+  const [weight, setWeight] = useState([12, 3, 4]);
+  const [minWeight, setMinWeight] = useState(0);
+  const [maxWeight, setMaxWeight] = useState(0);
+  const [minAmount, setMinAmount] = useState(0);
+  const [maxAmount, setMaxAmount] = useState(0);
+  const [selectedMode,setSelectedMode]= useState(0)
   const [formData, setFormData] = React.useState({
     id_customer: "",
     mobile: "",
@@ -96,7 +102,7 @@ const AddSchemePayment = () => {
   const formik = useFormik({
     initialValues: {
       id_customer: "",
-      mobile: "",
+      mobile: 0,
       date_payment: date_payment,
       payment_mode: "",
       itr_utr: "",
@@ -112,12 +118,37 @@ const AddSchemePayment = () => {
       payment_amount: 0,
       metal_rate: 0,
       metal_weight: 0,
-      accountschemeid: "",
+      // accountschemeid: "",
       total_installments: 1,
       id_classification: "",
     },
+    validationSchema : Yup.object({
+      id_branch: Yup.string().required("Branch is required"),
+      mobile: Yup.string()
+        .required("Mobile number is required")
+        .matches(/^(\+)?\d*$/, "Invalid mobile number")
+        .min(10, "Mobile number must be at least 10 digits")
+        .max(13, "Mobile number must be at most 13 digits"),
+      id_scheme_account: Yup.string().required("Scheme account is required"),
+      date_payment: Yup.date().required("Payment date is required"),
+      metal_rate: Yup.number().optional("Metal rate is required"),
+      metal_weight: Yup.number().optional("Metal weight is required"),
+      payment_amount: Yup.number()
+        .required("Payment amount is required")
+        .min(0, "Payment amount must be greater than or equal to 0"),
+      buy_gst: Yup.number().min(0, "GST must be greater than or equal to 0"),
+      fine_amount: Yup.number().min(0, "Fine amount must be greater than or equal to 0"),
+      total_amt: Yup.number().required("Total amount is required"),
+      payment_mode: Yup.string().required("Payment mode is required"),
+      itr_utr: Yup.string(),
+      remark: Yup.string(),
+    }),
     onSubmit: (values) => {
-      // Your submit logic here
+      if(id){
+        updateschemepaymentmutate({id,values})
+      }else{
+        createschemepaymentmutate(values)
+      }
     },
   });
 
@@ -131,6 +162,25 @@ const AddSchemePayment = () => {
       return getBranchById(id_branch);
     },
     enabled: Boolean(accessBranch),
+    staleTime: 5 * 60 * 1000,
+    cacheTime: 10 * 60 * 1000,
+  });
+
+  const { data: paymentModes } = useQuery({
+    queryKey: ["modes"],
+    queryFn: getallpaymentmode,
+    enabled: Boolean(accessBranch),
+    staleTime: 5 * 60 * 1000,
+    cacheTime: 10 * 60 * 1000,
+  });
+
+  const { data: multiplayModes } = useQuery({
+    queryKey: ["multipay", formik.values.payment_mode],
+    queryFn: async () => {
+      if (formik.values.payment_mode === 7) {
+        return getmultipaymentmode();
+      }
+    },
     staleTime: 5 * 60 * 1000,
     cacheTime: 10 * 60 * 1000,
   });
@@ -162,14 +212,14 @@ const AddSchemePayment = () => {
     mutationFn: searchmobileschemeaccount,
     onSuccess: (response) => {
       if (response) {
-        if(response.data){
-          const outputData = response.data
+        if (response.data) {
+          const outputData = response.data;
           const data = outputData.map((item) => ({
             value: item._id,
             label: item.scheme_name,
           }));
           setSchemeData(data);
-          setFullData(outputData)
+          setFullData(outputData);
         }
 
         if (response?.general) {
@@ -182,6 +232,32 @@ const AddSchemePayment = () => {
   });
 
   // useEffects
+  useEffect(() => {
+    if (selectedMode === 7) {
+      if (multiplayModes) {
+        setIspaymode(true);
+        const data = multiplayModes.data.map((item) => ({
+          value: item.parameter,
+          label: item.name,
+        }));
+        setMultiPaymode(data);
+      }
+    } else {
+      setIspaymode(false);
+    }
+  }, [multiplayModes,selectedMode]);
+
+  useEffect(() => {
+    if (paymentModes) {
+      const data = paymentModes.data.map((item) => ({
+        mode: item.id_mode,
+        value:item._id,
+        label: item.mode_name,
+      }));
+      setPaymentmode(data);
+    }
+  }, [paymentModes]);
+
   useEffect(() => {
     if (!branchData) return;
 
@@ -200,34 +276,77 @@ const AddSchemePayment = () => {
   useEffect(() => {
     const fetchMetalRate = async () => {
       if (!formik.values.id_scheme_account || !todaydate) return;
-  
+
       const filteredData = fullData.find(
         (item) => item._id === formik.values.id_scheme_account
       );
-  
+
       if (!filteredData) return;
-      setSelectedScheme(filteredData)
+      setSelectedScheme(filteredData);
       try {
         const metalRate = await getMetalRateByMetalId(
           filteredData.id_scheme?.id_metal?._id || "",
           filteredData.id_scheme?.id_purity || "",
           todaydate
         );
-  
+
         if (metalRate) {
-          const rate = metalRate.data.rate
-          formik.setFieldValue('metal_rate',rate)
+          const rate = metalRate.data.rate;
+          formik.setFieldValue("metal_rate", rate);
           setMetalRate(metalRate);
         }
       } catch (error) {
         console.error("Error fetching metal rate:", error);
       }
     };
-  
+
     fetchMetalRate();
-  }, [formik.values.id_scheme_account,fullData]);
-  
-  
+  }, [formik.values.id_scheme_account, fullData]);
+
+  useEffect(() => {
+    if (selectedScheme) {
+      formik.setFieldValue("id_scheme", selectedScheme?.id_scheme?._id);
+      formik.setFieldValue("id_branch", selectedScheme?.id_scheme?.id_branch);
+      formik.setFieldValue("buy_gst", selectedScheme?.id_scheme?.buy_gst);
+      formik.setFieldValue("mobile", selectedScheme?.id_customer?.mobile);
+      formik.setFieldValue('id_classification',selectedScheme?.id_classification?._id)
+      formik.setFieldValue('id_customer',selectedScheme?.id_customer?._id)
+      // formik.setFieldValue('fine_amount',selectedScheme?.id_scheme?.fine_amount)
+
+      let payment_amount = 0;
+      console.log(
+        selectedScheme?.scheme_type,
+        selectedScheme?.id_classification?.order
+      );
+      if (
+        weight.includes(selectedScheme?.id_scheme?.scheme_type) &&
+        selectedScheme?.id_classification?.order === 2
+      ) {
+        console.log("first");
+        // setPaymentAmount(selectedScheme.amount);
+        // setMinWeight(selectedScheme.id_scheme.min_weight)
+        // setMaxWeight(selectedScheme.id_scheme.max_weight)
+        // payment_amount = selectedScheme.id_scheme.min_weight;
+        formik.setFieldValue("payment_amount", selectedScheme.amount);
+        setIspayamtreadOnly(true);
+      } else if (
+        !weight.includes(selectedScheme?.id_scheme?.scheme_type) &&
+        selectedScheme?.id_classification?.order === 2
+      ) {
+        console.log("second");
+        // setPaymentAmount(selectedScheme?.id_scheme?.min_amount);
+        payment_amount = selectedScheme.amount;
+        formik.setFieldValue("payment_amount", selectedScheme.amount);
+        setIspayamtreadOnly(true);
+      } else {
+        console.log("third");
+        setPaymentAmount(selectedScheme?.id_scheme?.amount);
+        payment_amount = selectedScheme?.id_scheme?.amount;
+        setIspayamtreadOnly(false);
+      }
+    }
+  }, [selectedScheme]);
+  console.log(formik.values);
 
   useEffect(() => {
     if (id) {
@@ -237,12 +356,12 @@ const AddSchemePayment = () => {
   }, [id]);
 
   useEffect(() => {
-    if (metal_rate !== "0") {
+    if (metal_rate !== 0) {
       calculatepayment();
     }
-  }, [metal_rate, paymentamount]);
+  }, [formik.values.metal_rate, paymentamount, formik.values.payment_amount]);
 
-    // useEffect(() => {
+  // useEffect(() => {
   //   if (id_branch !== "0") {
   //     schemepaymenttodayrateMutate({
   //       id_branch: id_branch,
@@ -256,7 +375,7 @@ const AddSchemePayment = () => {
     if (!data) return;
     const response = await getschemepaymentbyid(data);
     if (response) {
-      if (response.data.payment_mode === "67682cf7666e32053d05e04d") {
+      if (response.data.payment_mode === 6) {
         setIspaymode(true);
       } else {
         setIspaymode(false);
@@ -355,14 +474,13 @@ const AddSchemePayment = () => {
     if (mobile === "") {
       toast.error("Mobile Number is required!");
     }
-    const searchData ={
-        id_branch: formik.values.id_branch,
-        search_mobile: mobile,
-    }
+    const searchData = {
+      id_branch: formik.values.id_branch,
+      search_mobile: mobile,
+    };
 
     handlesearchschemeaccount(searchData);
   };
-  
 
   const handleautocompletemobile = (e) => {
     let value = e.target.value;
@@ -524,39 +642,80 @@ const AddSchemePayment = () => {
     }
   };
 
+  // const calculatepayment = () => {
+  //   console.log("called")
+  //   let total_amt = 0;
+  //   let gstAmount = 0;
+  //   let metalweight = 0;
+  //   if (parseInt(selectedScheme?.id_scheme?.buy_gst) > 0) {
+  //     gstAmount =
+  //       (parseFloat(paymentamount) *
+  //         parseFloat(selectedScheme?.id_scheme?.buy_gst)) /
+  //       100;
+  //   }
+
+  //   if (!weight.includes(selectedScheme?.scheme_type)) {
+  //     total_amt =
+  //       parseFloat(paymentamount) +
+  //       parseFloat(gstAmount) +
+  //       parseFloat(fine_amount);
+  //     let calc1 = paymentamount * 1000;
+  //     let calc2 = metal_rate / 1000;
+  //     total_amt = calc1 * calc2;
+  //   } else {
+  //     metalweight = parseFloat(metal_rate) / parseFloat(paymentamount);
+  //     total_amt =
+  //       parseFloat(paymentamount) +
+  //       parseFloat(gstAmount) +
+  //       parseFloat(fine_amount);
+  //   }
+
+  //   let metal_weight = metalweight.toFixed(3);
+  //   console.log(metal_weight,total_amt,gstAmount)
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     metal_weight: metal_weight,
+  //     total_amt: total_amt,
+  //     gst_amount: gstAmount,
+  //   }));
+  // };
   const calculatepayment = () => {
     let total_amt = 0;
     let gstAmount = 0;
     let metalweight = 0;
-    if (parseInt(selectedScheme?.id_scheme?.buy_gst) > 0) {
+    // Calculate GST if applicable
+    if (parseInt(formik.values.buy_gst) > 0) {
       gstAmount =
-        (parseFloat(paymentamount) *
-          parseFloat(selectedScheme?.id_scheme?.buy_gst)) /
-        100;
+        parseFloat(formik.values.payment_amount) *
+        (parseFloat(formik.values.buy_gst) / 100);
     }
 
-    if (selectedScheme?.id_scheme?.scheme_type === 3) {
+    // Calculate total amount based on scheme type
+    if (![2, 5, 6, 12, 3, 4].includes(selectedScheme?.scheme_type)) {
+      // For schemes that are not weight-based
       total_amt =
-        parseFloat(paymentamount) +
+        parseFloat(formik.values.payment_amount) +
         parseFloat(gstAmount) +
         parseFloat(fine_amount);
-      let calc1 = paymentamount * 1000;
-      let calc2 = metal_rate / 1000;
-      total_amt = calc1 * calc2;
     } else {
-      metalweight = parseFloat(metal_rate) / parseFloat(paymentamount);
+      // For weight-based schemes
+      console.log("Payment Amount:", formik.values.payment_amount); // Should be 500
+      console.log("Metal Rate:", formik.values.metal_rate); // Should be 23
+      metalweight =
+        parseFloat(formik.values.payment_amount) /
+        parseFloat(formik.values.metal_rate);
       total_amt =
-        parseFloat(paymentamount) +
+        parseFloat(formik.values.payment_amount) +
         parseFloat(gstAmount) +
         parseFloat(fine_amount);
     }
 
-    let metal_weight = metalweight.toFixed(3);
-    setFormData((prev) => ({
-      ...prev,
-      metal_weight: metal_weight,
-      total_amt: total_amt,
-      gst_amount: gstAmount,
+    // Update form data with calculated values
+    formik.setValues((prevValues) => ({
+      ...prevValues,
+      metal_weight: metalweight.toFixed(3),
+      total_amt: Number(total_amt.toFixed(2)),
+      gst_amount: Number(gstAmount.toFixed(2)),
     }));
   };
 
@@ -584,7 +743,6 @@ const AddSchemePayment = () => {
       toast.error("Customer not created!");
     }
   };
-
 
   const handleDropdownChange = (event) => {
     const { name, value } = event.target;
@@ -898,12 +1056,9 @@ const AddSchemePayment = () => {
                           isClearable={true}
                           options={branch || []}
                           placeholder="Select Branch"
-                          value={
-                            branch?.find(
-                              (option) =>
-                                option.value === formik.values.id_branch
-                            )
-                          }
+                          value={branch?.find(
+                            (option) => option.value === formik.values.id_branch
+                          )}
                           onChange={(option) =>
                             formik.setFieldValue(
                               "id_branch",
@@ -1099,30 +1254,30 @@ const AddSchemePayment = () => {
                         Scheme Account<span className="text-red-400"> *</span>
                       </label>
                       <Select
-                          styles={customStyles}
-                          isClearable={true}
-                          options={schemedata || []}
-                          placeholder="Select scheme Account"
-                          value={
-                            schemedata?.find(
-                              (option) =>
-                                option.value === formik.values.id_scheme_account
-                            )
-                          }
-                          onChange={(option) => {
-                            if (option?.value) {
-                              formik.setFieldValue("id_scheme_account", option.value);
-                            } else {
-                              formik.setFieldValue("id_scheme_account", ""); 
-                            }
-                          }}
-                          
-                        />
-                        {formik.errors.id_scheme_account && (
-                          <div className="text-red-500 text-sm mt-1">
-                            {formik.errors.id_scheme_account}
-                          </div>
+                        styles={customStyles}
+                        isClearable={true}
+                        options={schemedata || []}
+                        placeholder="Select scheme Account"
+                        value={schemedata?.find(
+                          (option) =>
+                            option.value === formik.values.id_scheme_account
                         )}
+                        onChange={(option) => {
+                          if (option?.value) {
+                            formik.setFieldValue(
+                              "id_scheme_account",
+                              option.value
+                            );
+                          } else {
+                            formik.setFieldValue("id_scheme_account", "");
+                          }
+                        }}
+                      />
+                      {formik.errors.id_scheme_account && (
+                        <div className="text-red-500 text-sm mt-1">
+                          {formik.errors.id_scheme_account}
+                        </div>
+                      )}
                     </div>
                     <div className="flex flex-col w-full">
                       <label className="text-black mb-2 font-normal">
@@ -1131,6 +1286,7 @@ const AddSchemePayment = () => {
                       <div className="relative">
                         <DatePicker
                           name="date_payment"
+                          disabled
                           selected={formData.date_payment}
                           onChange={(e) => {
                             filterInputchange(e);
@@ -1155,6 +1311,7 @@ const AddSchemePayment = () => {
                       </label>
                       <input
                         name="metal_rate"
+                        disabled
                         value={formik.values.metal_rate}
                         onChange={(e) => {
                           filterInputchange(e);
@@ -1173,6 +1330,7 @@ const AddSchemePayment = () => {
                         </label>
                         <input
                           name="payment_receipt"
+                          disabled
                           value={formData.payment_receipt}
                           onChange={(e) => {
                             filterInputchange(e);
@@ -1183,37 +1341,6 @@ const AddSchemePayment = () => {
                         />
                         <p style={{ color: "red" }}>
                           {errors?.payment_receipt}
-                        </p>
-                      </div>
-                    )}
-                    {isseaccontno === 1 && (
-                      <div className="flex flex-col">
-                        <label className="text-black mb-2 font-normal">
-                          Account Number<span className="text-red-400">*</span>
-                        </label>
-                        <div className="relative">
-                          <span
-                            className="absolute right-0 top-0 h-full w-20 flex items-center justify-center text-white rounded-r-md"
-                            style={{ backgroundColor: layout_color }}
-                          >
-                            {selectedScheme?.id_scheme?.code
-                              ? selectedScheme?.id_scheme?.code
-                              : "N/A"}
-                          </span>
-                          <input
-                            name="accountschemeid"
-                            value={formData.accountschemeid}
-                            onChange={(e) => {
-                              filterInputchange(e);
-                            }}
-                            type="text"
-                            className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                            placeholder=""
-                          />
-                        </div>
-
-                        <p style={{ color: "red" }}>
-                          {errors?.accountschemeid}
                         </p>
                       </div>
                     )}
@@ -1331,13 +1458,14 @@ const AddSchemePayment = () => {
                     <div className="relative">
                       <input
                         type="number"
-                        readOnly={ispayamtreadOnly}
+                        disabled={ispayamtreadOnly}
                         name="payment_amount"
-                        value={formData.payment_amount}
+                        value={formik.values.payment_amount}
                         min="0"
-                        onChange={(e) => {
-                          filterInputchange(e);
-                        }}
+                        // onChange={(e) => {
+                        //   filterInputchange(e);
+                        // }}
+                        {...formik.getFieldProps("payment_amount")}
                         onKeyDown={(e) => {
                           if (e.key === "-" || e.key === "e" || e.key === "E") {
                             e.preventDefault();
@@ -1356,36 +1484,41 @@ const AddSchemePayment = () => {
                     </div>
                     <p style={{ color: "red" }}>{errors?.payment_amount}</p>
                   </div>
-                  <div className="flex flex-col">
-                    <label className="text-black mb-2 font-normal">
-                      GST<span className="text-red-400"> *</span>
-                    </label>
-                    <div className="relative">
-                      <input
-                        readOnly
-                        type="number"
-                        name="gst_amount"
-                        value={formData.gst_amount}
-                        min="0"
-                        onChange={(e) => {
-                          filterInputchange(e);
-                        }}
-                        onKeyDown={(e) => {
-                          if (e.key === "-" || e.key === "e" || e.key === "E") {
-                            e.preventDefault();
-                          }
-                        }}
-                        className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                        placeholder="Enter here"
-                      />
-                      <span
-                        className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
-                        style={{ backgroundColor: layout_color }}
-                      >
-                        INR
-                      </span>
+                  {selectedScheme?.id_scheme?.buygsttype === 1 && (
+                    <div className="flex flex-col">
+                      <label className="text-black mb-2 font-normal">
+                        GST<span className="text-red-400"> *</span>
+                      </label>
+                      <div className="relative">
+                        <input
+                          disabled
+                          type="number"
+                          name="buy_gst"
+                          value={formik?.values?.buy_gst}
+                          onChange={(e) => {
+                            filterInputchange(e);
+                          }}
+                          onKeyDown={(e) => {
+                            if (
+                              e.key === "-" ||
+                              e.key === "e" ||
+                              e.key === "E"
+                            ) {
+                              e.preventDefault();
+                            }
+                          }}
+                          className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                          placeholder="Enter here"
+                        />
+                        <span
+                          className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                          style={{ backgroundColor: layout_color }}
+                        >
+                          INR
+                        </span>
+                      </div>
                     </div>
-                  </div>
+                  )}
                   <div className="flex flex-col">
                     <label className="text-black mb-2 font-normal">
                       Fine Amount<span className="text-red-400">*</span>
@@ -1395,7 +1528,7 @@ const AddSchemePayment = () => {
                         type="number"
                         readOnly
                         name="fine_amount"
-                        value={formData.fine_amount}
+                        value={formik.values.fine_amount}
                         onChange={(e) => {
                           filterInputchange(e);
                         }}
@@ -1424,7 +1557,7 @@ const AddSchemePayment = () => {
                       <input
                         type="number"
                         name="total_amt"
-                        value={formData.total_amt}
+                        value={formik.values.total_amt}
                         min="0"
                         onKeyDown={(e) => {
                           if (e.key === "-" || e.key === "e" || e.key === "E") {
@@ -1444,86 +1577,92 @@ const AddSchemePayment = () => {
                     </div>
                     <p style={{ color: "red" }}>{errors?.total_amt}</p>
                   </div>
-                  <div className="flex flex-col">
-                    <label className="text-black mb-2 font-normal">
-                      Saved Weight<span className="text-red-400">*</span>
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="number"
-                        readOnly
-                        name="metal_weight"
-                        value={formData.metal_weight}
-                        min="0"
-                        onKeyDown={(e) => {
-                          if (e.key === "-" || e.key === "e" || e.key === "E") {
-                            e.preventDefault();
-                          }
-                        }}
-                        className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                        placeholder="Enter here"
-                      />
-                      <span
-                        className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
-                        style={{ backgroundColor: layout_color }}
-                      >
-                        GM
-                      </span>
+                  {[2, 5, 6, 12, 3, 4].includes(selectedScheme.scheme_type) && (
+                    <div className="flex flex-col">
+                      <label className="text-black mb-2 font-normal">
+                        Saved Weight<span className="text-red-400">*</span>
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="number"
+                          disabled
+                          name="metal_weight"
+                          value={formik.values.metal_weight}
+                          min="0"
+                          onKeyDown={(e) => {
+                            if (
+                              e.key === "-" ||
+                              e.key === "e" ||
+                              e.key === "E"
+                            ) {
+                              e.preventDefault();
+                            }
+                          }}
+                          className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                          placeholder="Enter here"
+                        />
+                        <span
+                          className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                          style={{ backgroundColor: layout_color }}
+                        >
+                          GM
+                        </span>
+                      </div>
                     </div>
-                  </div>
+                  )}
                   <div className="flex flex-col">
                     <label className="text-black mb-2 font-normal">
                       Payment Mode<span className="text-red-400"> *</span>
                     </label>
-                    <div className="relative">
-                      <select
-                        name="payment_mode"
-                        onChange={(e) => {
-                          filterInputchange(e);
-                        }}
-                        value={formData.payment_mode}
-                        className="appearance-none border-2 border-gray-300 rounded-md p-2 w-full bg-white focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                        defaultValue=""
-                      >
-                        <option value="">--Select--</option>
-                        {paymentmode.map((mode) => (
-                          <option key={mode._id} value={mode._id}>
-                            {mode.mode_name}
-                          </option>
-                        ))}
-                      </select>
-                      <p style={{ color: "red" }}>{errors?.payment_mode}</p>
-                      <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                        <svg
-                          className="h-4 w-4"
-                          fill="none"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="3"
-                          viewBox="0 0 24 24"
-                          stroke="black"
-                        >
-                          <path d="M19 9l-7 7-7-7"></path>
-                        </svg>
+                    <Select
+                      styles={customStyles}
+                      isClearable={true}
+                      options={paymentmode || []}
+                      placeholder="Select payment mode"
+                      value={
+                        paymentmode?.find(
+                          (option) =>
+                            option.value === formik.values.payment_mode
+                        ) || null
+                      }
+                      onChange={(option) =>
+                      {
+                        if(Number(option.mode) === 7){
+                          setSelectedMode(mode)
+                        }
+                        formik.setFieldValue(
+                          "payment_mode",
+                          option ? option.value : ""
+                        )
+                      }
+                      }
+                    />
+
+                    {formik.errors.payment_mode && (
+                      <div className="text-red-500 text-sm mt-1">
+                        {formik.errors.payment_mode}
                       </div>
-                    </div>
+                    )}
                   </div>
-                  {ispaymode === true && (
+                  {ispaymode && (
                     <>
                       {multipaymode.map((multipay) => (
                         <div key={multipay.parameter} className="flex flex-col">
-                          <label className="text-black mb-2 font-normal">
-                            {multipay.name}
-                          </label>
-                          <input
-                            type="text"
-                            name={multipay.parameter}
-                            value={formData[multipay.parameter] || ""}
-                            onChange={(e) => filterInputchange(e)}
-                            className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                            placeholder="Enter Here"
-                          />
-                        </div>
+                        <label className="text-black mb-2 font-normal">
+                          {multipay.label}
+                        </label>
+                        <input
+                          type="text"
+                          name={multipay.value}
+                          value={formik.values[multipay.value] || ""}
+                          onChange={(e) => {
+                            formik.setFieldValue(multipay.value, Number(e.target.value) || 0);
+                            filterInputchange(e); 
+                          }}
+                          className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                          placeholder="Enter amount here"
+                        />
+                      </div>                      
                       ))}
                     </>
                   )}
@@ -1550,7 +1689,7 @@ const AddSchemePayment = () => {
                   <label className="text-black mb-2 font-normal">Remarks</label>
                   <textarea
                     name="remark"
-                    value={formData.remark}
+                    value={formik.values.remark}
                     onChange={(e) => {
                       filterInputchange(e);
                     }}

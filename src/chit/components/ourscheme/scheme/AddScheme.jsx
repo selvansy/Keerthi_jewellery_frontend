@@ -97,7 +97,7 @@ const SchemeForm = () => {
       min_weight: "",
       max_weight: "",
       total_installments: "",
-      buygsttype: "",
+      buygsttype:1,
       buy_gst: "",
       benefit_min_installment_wst_mkg: "",
       wastagebenefit: "",
@@ -327,8 +327,8 @@ const SchemeForm = () => {
         code: schemeData.data.code || "",
         id_classification: schemeData.data.id_classification._id || "",
         id_branch: schemeData?.data?.id_branch || "",
-        id_metal: schemeData.data.id_metal._id || "",
-        id_purity: schemeData.data.id_purity._id || "",
+        id_metal: schemeData?.data?.id_metal?._id || "",
+        id_purity: schemeData?.data?.id_purity?._id || "",
         installment_type: schemeData.data.installment_type || "",
         maturity_period: schemeData.data.maturity_period || "",
         saving_type: schemeData.data.saving_type || "",
@@ -343,8 +343,8 @@ const SchemeForm = () => {
         max_amount: schemeData.data.max_amount || "",
         min_weight: schemeData.data.min_weight || "",
         max_weight: schemeData.data.max_weight || "",
-        buy_gst: schemeData.data.buy_gst || "",
-        buygsttype: schemeData.data.buytgsttype || "",
+        buy_gst: schemeData.data.buy_gst || 0,
+        buygsttype: schemeData?.data?.buygsttype || 1,
         wastagebenefit: schemeData.data.wastagebenefit || "",
         total_installments: schemeData.data.total_installments || "",
         benefit_making: schemeData.data.makingcharge || "",
@@ -396,6 +396,7 @@ const SchemeForm = () => {
       
     }
   }, [id, schemeData]);
+  console.log(formik.values)
 
   useEffect(() => {
     if (schemeData?.data && Array.isArray(schemeData.data.fixed_amounts)) {

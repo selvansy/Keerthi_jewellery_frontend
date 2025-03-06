@@ -293,7 +293,8 @@ const AddSchemeAccount = () => {
   //     toast.error("Customer not created!");
   //   }
   // };
-console.log(cusData,'gi')
+
+//* TODO use formik insted of formData
   const [formData, setFormData] = React.useState({
     id_customer: cusData.customerId,
     mobile: cusData.mobile,
@@ -986,7 +987,7 @@ const onSubmit = (e) => {
                 </div>
                 <p style={{ color: "red" }}>{errors?.account_name}</p>
               </div>
-              {/* {parseInt(isaccountno) === 1 && (
+              {parseInt(isaccountno) === 1 && (
                 <div className="flex flex-col">
                   <label className="text-black mb-1 font-normal">
                     Account Number
@@ -1002,7 +1003,7 @@ const onSubmit = (e) => {
                     placeholder="Enter Account Number"
                   />
                 </div>
-              )} */}
+              )}
 
               <div className="flex flex-col">
                 <label className="text-black mb-1 font-normal">
