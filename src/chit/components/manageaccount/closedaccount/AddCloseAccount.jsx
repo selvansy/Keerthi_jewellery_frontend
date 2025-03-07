@@ -5,12 +5,12 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import { useMutation } from "@tanstack/react-query";
+import { useMutation,useQuery} from "@tanstack/react-query";
 import Select from 'react-select';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { sendOtp, closeBill } from "../../../api/BackendUrl";
-import { searchmobileschemeaccount, allschemestatus, getallbranch, getallpaymentmodes } from "../../../api/Endpoints";
+import { searchmobileschemeaccount, allschemestatus, getallbranch, getallpaymentmodes,getallpaymentmode} from "../../../api/Endpoints";
 import { useDebounce } from '../../../hooks/useDebounce';
 import Modal from '../../common/Modelone';
 import ModelOne from '../../common/Modelone'
@@ -39,14 +39,11 @@ const AddCloseAccount = () => {
   const [canResend, setCanResend] = useState(false);
   const [dynamic, setDynamic] = useState(false);
   const [isviewOpen, setIsviewOpen] = useState(false);
+  const [totalAmount,setAmount] = useState(0)
   
   // Format today's date
   const today = new Date();
   const formattedDate = today.toISOString().split('T')[0];
-  
-  // Debounced values
-  const debouncedOtpNumber = useDebounce(otpNumber, 300);
-  const debouncedMobileNumber = useDebounce(mobileNum, 300);
   
   // Validation schema
   const validationSchema = Yup.object({
@@ -73,14 +70,21 @@ const AddCloseAccount = () => {
       bill_date: formattedDate,
       return_amount: 0,
       refund_paymenttype: "",
-      mobile: ""
+      mobile: "",
+      penalty_amount:'',
+      total_paidamount:0
     },
     validationSchema,
     onSubmit: (values) => {
       handleSubmit(values);
     }
   });
-  
+
+  const { data: paymentModes } = useQuery({
+    queryKey: ["paymentModes"],
+    queryFn: getallpaymentmode
+  });
+
   useEffect(() => {
     const lastPart = location.pathname.substring(location.pathname.lastIndexOf("/") + 1);
     if(lastPart === 'preclose'){
@@ -89,6 +93,31 @@ const AddCloseAccount = () => {
       setDynamic(false);
     }
   }, [location.pathname]);
+
+  useEffect(() => {
+    if (paymentModes) {
+      const data = paymentModes.data
+        .filter((item) => item.id_mode !== 7)
+        .map((item) => ({
+          mode: item.id_mode,
+          value: item._id,
+          label: item.mode_name
+        }));
+  
+      setPaymentModeOptions(data);
+    }
+  }, [paymentModes]);
+  
+  useEffect(()=>{
+    if(formik.values.total_paidamount && formik.values.penalty_amount){
+      const newPayment = Number(formik.values.total_paidamount) - Number(formik.values.penalty_amount)
+      console.log(newPayment)
+      formik.setFieldValue('total_paidamount',newPayment)
+    }else if(formik.values.penalty_amount <= 0 || formik.values.penalty_amount === "") {
+      formik.setFieldValue('total_paidamount',totalAmount)
+    }
+  },[formik.values.penalty_amount,totalAmount])
+
 
   // OTP timer effect
   useEffect(() => {
@@ -186,6 +215,7 @@ const AddCloseAccount = () => {
     mutationFn: getallpaymentmodes,
     onSuccess: (response) => {
       if (response?.data) {
+        console.log(response.data)
         const options = response.data.map(mode => ({
           value: mode._id,
           label: mode.mode_name
@@ -275,7 +305,8 @@ const AddCloseAccount = () => {
     if (scheme) {
       setSelectedScheme(scheme);
       
-      // Auto-populate mobile number if customer data is available
+      setAmount(scheme.total_paidamount)
+      formik.setFieldValue('total_paidamount',scheme.total_paidamount)
       if (scheme.id_customer?.mobile) {
         setMobileNum(scheme.id_customer.mobile);
       }
@@ -309,13 +340,12 @@ const AddCloseAccount = () => {
       toast.error("OTP verification is required");
       return;
     }
-    
     BillClose(values);
   };
 
   // Filter scheme statuses to exclude status 2 and 0
   const schemeStatusOptions = schemestatus
-    .filter(status => status.id_status !== 2 && status.id_status !== 0)
+    .filter(status => status.id_status !== 0 && status.id_status !== 2)
     .map(status => ({
       value: status.id_status,
       label: status.status_name
@@ -590,6 +620,23 @@ const AddCloseAccount = () => {
                 </div>
               </div>
 
+              {refundtype && (
+                <div className='flex flex-col'>
+                <label className='text-black mb-1 font-normal'>Penalty amount</label>
+                <div className="relative">
+                  <input 
+                    type='number' 
+                    name='penalty_amount'
+                    {...formik.getFieldProps("penalty_amount")}
+                    className='border-2 border-gray-300 rounded-md p-2 w-full'
+                    placeholder='Penalty charges'
+                    value={formik.values.penalty_amount || ''}
+                  />
+                  <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-white bg-[#023453] w-14 h-[43px] justify-center items-center flex rounded-r-md">INR</span>
+                </div>
+              </div>
+              )}
+
               {/* Total Close Amount */}
               <div className='flex flex-col'>
                 <label className='text-black mb-1 font-normal'>Total Amount<span className='text-red-400'>*</span></label>
@@ -599,7 +646,7 @@ const AddCloseAccount = () => {
                     min='0' 
                     className='border-2 border-gray-300 rounded-md p-2 w-full'
                     placeholder='Total amount'
-                    value={selectedScheme?.total_paidamount || ""}
+                    value={formik.values.total_paidamount}
                     disabled={!dynamic}
                   />
                   <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-white bg-[#023453] w-14 h-[43px] justify-center items-center flex rounded-r-md">INR</span>

@@ -256,7 +256,8 @@ const Scheme = () => {
 
   const handleSearch = useCallback((e) => setSearch(e.target.value), []);
 
-  const handleStatusToggle = useCallback(async (id) => {
+  const handleStatusToggle = useCallback(async (id,accounts) => {
+   if(!accounts){
     const response = await changeschemestatus(id);
     if (response) {
       toast.success(response.message);
@@ -276,6 +277,9 @@ const Scheme = () => {
         buytgsttype: filters.buytgsttype
       });
     }
+   }else{
+    toast.error('Scheme accounts exists, action not permitted')
+   }
   }, [from_date, to_date, debouncedSearch, currentPage, itemsPerPage, filters]);
 
   const handleEdit = useCallback((id) => navigate(`/scheme/addscheme/${id}`), [navigate]);
@@ -427,7 +431,7 @@ const Scheme = () => {
       accessor: 'active',
       cell: (row) => (
         <label className="relative inline-flex items-center cursor-pointer">
-          <input type="checkbox" className="sr-only peer" checked={row?.active === true} onChange={() => handleStatusToggle(row?._id)} />
+          <input type="checkbox" className="sr-only peer" checked={row?.active === true} onChange={() => handleStatusToggle(row?._id,row?.is_accounts)} />
           <div className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-black p-[2px] after:duration-300 after:bg-black ${row?.active === true ? 'peer-checked:bg-[#61A375] peer-checked:ring-[#61A375]' : 'peer-checked:bg-gray-400 peer-checked:ring-gray-400'} after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-white peer-hover:after:scale-95`}></div>
         </label>
       )

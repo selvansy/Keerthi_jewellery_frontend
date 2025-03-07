@@ -271,11 +271,11 @@ const AddSchemeAccount = () => {
     const scheme =async ()=>{
       const schemeData = await getschemeaccountbyid(id)
        if(schemeData){
-          console.log(schemeData.data.id_classification)
           handleschemebyclassification(schemeData.data.id_classification._id);
-          // if(schemeData.data.id_classification.order === 1){
-          //   setSelectedScheme("Fixed")
-          // }
+          if(schemeData.data.id_classification.order === 2){
+            setSelectedScheme("Fixed")
+            handleschemebyclassification(schemeData?.data?.id_classification?._id);
+          }
           setFormData({
                   id: schemeData.data._id,
                   id_scheme: schemeData.data.id_scheme._id,
@@ -309,7 +309,7 @@ const AddSchemeAccount = () => {
     }
     scheme()
   },[id])
-console.log(selectedScheme)
+
   // const handleschemeaccountbyid = async (data) => {
   //   if (!data) return;
   //   const response = await getschemeaccountbyid(data);
@@ -511,9 +511,9 @@ console.log(selectedScheme)
         (item) => String(item._id) === String(formData.id_scheme)
       );
 
-      setFixedAmt(filteredData[0].fixed_amounts);
+      setFixedAmt(filteredData[0]?.fixed_amounts);
     }
-  }, [formData.id_scheme]);
+  }, [formData.id_scheme,schemefilter]);
 
   useEffect(() => {
     if (formData.start_date && formData.maturity_period && formData.installment_type) {
@@ -583,14 +583,20 @@ console.log(selectedScheme)
   };
 
   useEffect(() => {
-    if (location.pathname === "/managecustomers/customer//add") {
+    // if (location.pathname === "/managecustomers/addschemeaccount/") {
+    //   setHeader("Add Scheme Account");
+    //   setReturnRoute("/managecustomers/customer/");
+    // } 
+    // else if (location.pathname === "/manageaccount/digigold/add") {
+    //   setHeader("Add Digi Gold Account");
+    //   setReturnRoute("/manageaccount/digigold");
+    // }
+    if(id){
+      setHeader("Edit Scheme Account");
+    }else{
       setHeader("Add Scheme Account");
-      setReturnRoute("/managecustomers/customer/");
-    } else if (location.pathname === "/manageaccount/digigold/add") {
-      setHeader("Add Digi Gold Account");
-      setReturnRoute("/manageaccount/digigold");
     }
-  }, [location.pathname]);
+  }, [location.pathname,id]);
 
   const handleCancel = () => {
     navigate("/managecustomers/customer/");
@@ -666,10 +672,10 @@ console.log(selectedScheme)
       err["maturity_period"] = "";
     }
 
-    if (formData.maturity_date === "") {
-      err["maturity_date"] = "Maturity Date is required";
+    if (!formData.maturity_period && formData.maturity_period !== 0) {
+      err["maturity_period"] = "Maturity month is required";
     } else {
-      err["maturity_date"] = "";
+      err["maturity_period"] = "";
     }
 
     setErrors((prevState) => ({
@@ -684,13 +690,10 @@ console.log(selectedScheme)
 const onSubmit = (e) => {
   e.preventDefault();
 
-  console.log("Form Data before submission:", formData);
-
   if (isValidForm()) {
     if (id) {
       updateSchemeaccount(formData);
     } else {
-      // const acName = formData.account_name;
       setFormData((prev) => ({
         ...prev,
         scheme_count_number: acNumber
@@ -727,12 +730,14 @@ const onSubmit = (e) => {
   return (
     <>
       <div className="flex flex-row justify-between">
+       {!cusData && (
         <h2 className="text-2xl text-gray-900 font-bold justify-between">
-          {header}
-        </h2>
+        {header}
+      </h2>
+       )}
       </div>
-      <div className="w-full flex flex-col bg-white pl-8 pr-8 pb-4 mt-3 overflow-y-auto scrollbar-hide h-[calc(100vh-200px)]">
-        <div className="grid md:grid-cols-2 gap-3">
+      <div className={`w-full flex flex-col bg-white pl-8 pr-8 pb-4  ${!cusData && 'border-[#023453] border-t-2 h-[calc(100vh-200px)]'} mt-3 overflow-y-auto scrollbar-hide `}>
+        <div className="grid md:grid-cols-2 gap-3 mt-4">
           <div className="flex flex-col">
             <label className="text-black mb-1 font-normal">
               Branch<span className="text-red-400">*</span>
@@ -874,7 +879,7 @@ const onSubmit = (e) => {
                 <div className="relative">
                   <select
                     name="id_scheme"
-                    value={formData.id_scheme}
+                    value={formData.id_scheme }
                     onChange={filterInputchange}
                     className="appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                     defaultValue=""
@@ -966,7 +971,7 @@ const onSubmit = (e) => {
                 <input
                   type="text"
                   name="total_installments"
-                  value={formData.total_installments}
+                  value={formData.min_amount || formData.min_weight}
                   className="border-2 cursor-not-allowed border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                   placeholder="Enter Total Installment"
                   disabled
@@ -980,7 +985,7 @@ const onSubmit = (e) => {
                 <input
                   type="text"
                   name="total_installments"
-                  value={formData.total_installments}
+                  value={formData.max_amount || formData.max_weight}
                   className="border-2 cursor-not-allowed border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                   placeholder="Enter Total Installment"
                   disabled
@@ -1171,7 +1176,8 @@ const onSubmit = (e) => {
             </div>
           </div>
 
-          <div className="bg-white p-2 border-t-2 border-gray-300 mt-4">
+          <div className="bg-white p-2  mt-4">
+             {/* border-t-2 border-gray-300 */}
             <div className="flex justify-end gap-2 mt-3">
               <button
                 className="bg-[#E2E8F0] text-black rounded-md p-2 w-full lg:w-20"
@@ -1185,7 +1191,7 @@ const onSubmit = (e) => {
                 type="submit"
                 style={{ backgroundColor: layout_color }}
               >
-                Submit
+               {!id ? "Submit" : "Update"}
               </button>
             </div>
           </div>
