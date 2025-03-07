@@ -12,6 +12,8 @@ import * as Yup from 'yup';
 import { sendOtp, closeBill } from "../../../api/BackendUrl";
 import { searchmobileschemeaccount, allschemestatus, getallbranch, getallpaymentmodes } from "../../../api/Endpoints";
 import { useDebounce } from '../../../hooks/useDebounce';
+import Modal from '../../common/Modelone';
+import ModelOne from '../../common/Modelone'
 
 const AddCloseAccount = () => {
   const dispatch = useDispatch();
@@ -36,6 +38,7 @@ const AddCloseAccount = () => {
   const [timer, setTimer] = useState(0);
   const [canResend, setCanResend] = useState(false);
   const [dynamic, setDynamic] = useState(false);
+  const [isviewOpen, setIsviewOpen] = useState(false);
   
   // Format today's date
   const today = new Date();
@@ -224,6 +227,15 @@ const AddCloseAccount = () => {
       }
     },
   });
+
+  //handler functions
+  const handleRevert = () => {
+    setIsviewOpen(true)
+  };
+
+  function closeIncommingModal() {
+    setIsviewOpen(false);
+  }
 
   // Send OTP handler
   const sendOtpToMobile = () => {
@@ -724,6 +736,22 @@ const AddCloseAccount = () => {
             </div>
           </div>
         </form>
+        {/* <ModelOne
+        title={id ? "Edit Gift Vendor" : "Add Gift Vendor"}
+        extraClassName='max-w-[75%] '
+        setIsOpen={setIsviewOpen}
+        isOpen={isviewOpen}
+        closeModal={closeIncommingModal}
+      >
+        <GiftVendorForm
+          isviewOpen={isviewOpen}
+          setIsOpen={setIsviewOpen}
+          id={id}
+          setId={setId}
+          refetchTable={refetchTable}
+        />
+      </ModelOne>
+      <Modal /> */}
       </div>
     </>
   );

@@ -65,6 +65,8 @@ export function ExistingCustomer() {
     });
   };
 
+  
+
   const { mutate: handlesearchcustomer } = useMutation({
     mutationFn: searchcustomermobile,
     onSuccess: (response) => {
@@ -216,17 +218,48 @@ const AddSchemeAccount = () => {
   ];
   const [searchmobile, setSearchMobile] = useState("");
   const [selectedRole,setRole] = useState('')
+  const [schemeAccountData,setSchemeAccountData] = useState()
+  //* TODO use formik insted of formData
+  const [formData, setFormData] = React.useState({
+    id_customer: cusData.customerId || cusData.id_customer || '',
+    mobile: cusData.mobile,
+    start_date: start_date,
+    id_classification: "",
+    collectionuserid: "",
+    scheme_acc_number: "",
+    id_scheme: "",
+    id_branch: cusData.id_branch,
+    account_name: "",
+    address: cusData.address,
+    customer_name: cusData.customer_name,
+    fixedamount: "",
+    amount: 0,
+    scheme_type: 0,
+    min_amount: 0,
+    max_amount: 0,
+    min_weight: 0,
+    max_weight: 0,
+    total_installments: total_installments,
+    maturity_period: maturity_period,
+    maturity_date: maturity_date,
+    referral_id: "",
+    referral_type:'',
+    installment_type:'',
+    code:0,
+    scheme_count_number:'',
+    customer_name:''
+  });
   
   const { data: branchresponse} = useQuery({
     queryKey: ["branch", branch],
     queryFn: getallbranch,
   });
 
-  useEffect(() => {
-    return () => {
-      dispatch(SetaccExp({}));
-    };
-  }, []);
+  // useEffect(() => {
+  //   return () => {
+  //     dispatch(SetaccExp({}));
+  //   };
+  // }, []);
 
   useEffect(() => {
     if (branchresponse) {
@@ -234,13 +267,49 @@ const AddSchemeAccount = () => {
     }
   }, [branchresponse]);
 
-  // useEffect(() => {
-
-  //   if (id) {
-  //     handleschemeaccountbyid({ id: id });
-  //   }
-  // }, [id])
-
+  useEffect(()=>{
+    const scheme =async ()=>{
+      const schemeData = await getschemeaccountbyid(id)
+       if(schemeData){
+          console.log(schemeData.data.id_classification)
+          handleschemebyclassification(schemeData.data.id_classification._id);
+          // if(schemeData.data.id_classification.order === 1){
+          //   setSelectedScheme("Fixed")
+          // }
+          setFormData({
+                  id: schemeData.data._id,
+                  id_scheme: schemeData.data.id_scheme._id,
+                  scheme_type: schemeData.data.id_scheme.scheme_type,
+                  total_installments: schemeData.data.id_scheme.total_installments,
+                  min_amount: schemeData.data.id_scheme.min_amount,
+                  max_amount: schemeData.data.id_scheme.max_amount,
+                  min_weight: schemeData.data.id_scheme.min_weight,
+                  max_weight: schemeData.data.id_scheme.max_weight,
+                  id_customer: schemeData.data.id_customer._id,
+                  scheme_acc_number: schemeData.data.scheme_acc_number,
+                  start_date: schemeData.data.start_date,
+                  id_classification: schemeData.data.id_classification._id,
+                  collectionuserid: schemeData.data.collectionuserid,
+                  id_branch: schemeData.data.id_branch._id,
+                  account_name: schemeData.data.account_name,
+                  customer_name:
+                    schemeData.data.id_customer.firstname +
+                    " " +
+                    schemeData.data.id_customer.lastname,
+                  mobile: schemeData.data.id_customer.mobile,
+                  address: schemeData.data.id_customer.address,
+                  amount: schemeData.data.amount,
+                  maturity_period: schemeData.data.id_scheme.maturity_period,
+                  maturity_date: schemeData.data.maturity_date,
+                  referral_id: schemeData.data.referral_id,
+                  customer_name: schemeData.data.id_customer ? `${schemeData.data.id_customer.firstname} ${schemeData.data.id_customer.lastname}` : "",
+                });
+                setAcNumber(schemeData.data.scheme_count_number)
+       }
+    }
+    scheme()
+  },[id])
+console.log(selectedScheme)
   // const handleschemeaccountbyid = async (data) => {
   //   if (!data) return;
   //   const response = await getschemeaccountbyid(data);
@@ -294,36 +363,6 @@ const AddSchemeAccount = () => {
   //     toast.error("Customer not created!");
   //   }
   // };
-
-//* TODO use formik insted of formData
-  const [formData, setFormData] = React.useState({
-    id_customer: cusData.customerId || cusData.id_customer || '',
-    mobile: cusData.mobile,
-    start_date: start_date,
-    id_classification: "",
-    collectionuserid: "",
-    scheme_acc_number: "",
-    id_scheme: "",
-    id_branch: cusData.id_branch,
-    account_name: "",
-    address: cusData.address,
-    customer_name: cusData.customer_name,
-    fixedamount: "",
-    amount: 0,
-    scheme_type: 0,
-    min_amount: 0,
-    max_amount: 0,
-    min_weight: 0,
-    max_weight: 0,
-    total_installments: total_installments,
-    maturity_period: maturity_period,
-    maturity_date: maturity_date,
-    referral_id: "",
-    referral_type:'',
-    installment_type:'',
-    code:0,
-    scheme_count_number:''
-  });
 
   useEffect(() => {
     if (cusData) {
@@ -642,27 +681,6 @@ const AddSchemeAccount = () => {
     return !hasErrors;
   };
 
-//   const onSubmit = (e) => {
-//     e.preventDefault();
-
-//     const formFields = new FormData(e.target);
-//     const formDataObject = Object.fromEntries(formFields.entries());
-
-//     if (isValidForm()) {
-//       if (id) {
-//         updateSchemeaccount(formData);
-//       } else {
-//         const acName = formData.account_name;
-// setFormData((prev) => ({
-//   ...prev,
-//   account_name: `${acName}-AC${acNumber}` 
-// }));
-//         createSchemeaccount(formData);
-//       }
-//     } else {
-//       console.log("Form has validation errors");
-//     }
-//   };
 const onSubmit = (e) => {
   e.preventDefault();
 
@@ -683,7 +701,6 @@ const onSubmit = (e) => {
     console.log("Form has validation errors");
   }
 };
-
 
   const { mutate: createSchemeaccount } = useMutation({
     mutationFn: addschemeaccount,
@@ -723,7 +740,7 @@ const onSubmit = (e) => {
             <div className="relative">
               <select
                 name="id_branch"
-                value={cusData.id_branch}
+                value={cusData.id_branch || formData.id_branch}
                 onChange={(e) => {
                   filterInputchange(e);
                 }}
@@ -762,7 +779,7 @@ const onSubmit = (e) => {
             </label>
             <input
               type="text"
-              value={cusData.mobile}
+              value={cusData.mobile || formData.mobile}
               name="mobile"
               className="border-2 bg-[#e5e7eb] cursor-not-allowed border-gray-300 rounded-md p-2  focus:border-transparent"
               placeholder="Enter Here"
@@ -781,7 +798,7 @@ const onSubmit = (e) => {
                 readOnly
                 type="text"
                 name="customer_name"
-                value={cusData.customer_name}
+                value={cusData.customer_name || formData.customer_name}
                 className="border-2 bg-[#e5e7eb] w-full order-gray-300 cursor-not-allowed rounded-md p-2 pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                 placeholder="Enter name"
               />
@@ -794,7 +811,7 @@ const onSubmit = (e) => {
                 readOnly
                 type="text"
                 name="address"
-                value={cusData.address}
+                value={cusData.address || formData.address}
                 className="border-2 bg-[#e5e7eb] border-gray-300 cursor-not-allowed rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                 placeholder="Enter address"
               />
@@ -1079,7 +1096,9 @@ const onSubmit = (e) => {
                 </div>
                 <p style={{ color: "red" }}>{errors?.maturity_date}</p>
               </div>
-              <div className="flex flex-col">
+              {!id && (
+                <>
+                <div className="flex flex-col">
                 <label className="text-black mb-1 font-normal">
                   Referral By {referralName && <span className="text-green-700">{referralName}</span>}
                 </label>
@@ -1147,6 +1166,8 @@ const onSubmit = (e) => {
                   <Search size={20} className="text-white" />
                 </div>
               </div>
+                </>
+              )}
             </div>
           </div>
 

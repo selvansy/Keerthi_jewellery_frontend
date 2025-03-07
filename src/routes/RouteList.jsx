@@ -86,6 +86,7 @@ import { path } from "framer-motion/client";
 import TicketSubmissionForm from "../chit/components/help/Addticket";
 import Ticket from "../chit/components/help/ticket";
 import TopUp from "../chit/components/SuperAdmin/topupApprovals/index"
+import CustomerSchemes from "../../src/chit/components/manageaccount/schemeaccount/index"
 
 const RouteList = [
 
@@ -296,11 +297,15 @@ const RouteList = [
     path: '/managecustomers/editcustomer/:id',
     element: <Base renderContent={Customers} />
   },
-
   {
     name: "Completed Account",
     path: '/managecustomers/completedaccount',
     element: <Base renderContent={CompleteAccount} />
+  },
+  {
+    name:"Customer Schemes",
+    path:"/managecustomers/customerschemes",
+    element:<Base renderContent={CustomerSchemes}/>
   },
 
   //Wallet
