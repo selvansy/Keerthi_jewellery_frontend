@@ -80,6 +80,9 @@ const Grace = ({ formik, layout_color, maturity_period }) => {
             value={formik.values.grace_period}
             onChange={(e) => {
               let value = e.target.value;
+              if(value > Number(maturity_period)){
+                formik.setFieldError("grace_period", "Grace period cannot be greater than maturity period");
+              }
               if (value.length > 3) {
                 value = value.slice(0, 3);
               }

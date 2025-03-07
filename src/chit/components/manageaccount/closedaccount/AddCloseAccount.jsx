@@ -111,7 +111,6 @@ const AddCloseAccount = () => {
   useEffect(()=>{
     if(formik.values.total_paidamount && formik.values.penalty_amount){
       const newPayment = Number(formik.values.total_paidamount) - Number(formik.values.penalty_amount)
-      console.log(newPayment)
       formik.setFieldValue('total_paidamount',newPayment)
     }else if(formik.values.penalty_amount <= 0 || formik.values.penalty_amount === "") {
       formik.setFieldValue('total_paidamount',totalAmount)
@@ -663,8 +662,8 @@ const AddCloseAccount = () => {
                       className='border-2 border-gray-300 rounded-md p-2 w-full'
                       placeholder='Add wallet points'
                       name='wallet_point'
-                      value={selectedScheme?.wallet_points || ""}
-                      disabled
+                      value={formik.values.wallet_points || selectedScheme?.wallet_points || ""}
+                      {...formik.getFieldProps("wallet_points")}
                     />
                   </div>
                 </div>

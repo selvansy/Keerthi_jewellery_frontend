@@ -212,9 +212,16 @@ const Classification = ({ formik, layout_color, setMainImg, setDescImg }) => {
           <input
             type="number"
             name="classification_order"
-            value={formik?.values?.classification_order || "0"}
+            value={formik?.values?.classification_order}
             onWheel={(e)=>e.target.blur()}
-            onChange={formik?.handleChange}
+            onChange={(e) => {
+              console.log(e.target.value.length)
+              if (e.target.value < 50) {
+                formik.handleChange(e);
+              }else{
+                formik.setFieldError("classification_order", "Value must be less than 50");
+              }
+            }}            
             onBlur={formik?.handleBlur}
             className="border rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
           />
@@ -234,6 +241,9 @@ const Classification = ({ formik, layout_color, setMainImg, setDescImg }) => {
             </svg>
           </div>
         </div>
+        {formik?.touched?.classification_order && formik?.errors?.classification_order && (
+            <div className="text-red-500 text-sm mt-1">{formik.errors.classification_order}</div>
+          )}
       </div>
     </div>
   );
