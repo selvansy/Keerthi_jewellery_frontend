@@ -4,11 +4,13 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { openModal } from '../../../../redux/modalSlice'
 import { toast } from 'react-toastify';
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import Modal from '../../common/Modal'
 import { CalendarDays, CornerDownLeft } from 'lucide-react'
 import { getgiftvendorbranchById, getgiftitemvendorById, addgiftinward, getgiftinwardById, updategiftinward, getallbranch } from '../../../api/Endpoints';
 import SpinLoading from '../../common/spinLoading';
+import Select from "react-select";
+import customSelectStyles from "../../common/customSelectStyles"
 
 const AddGiftPurchase = () => {
 
@@ -19,10 +21,12 @@ const AddGiftPurchase = () => {
 
   const id_branch = roledata?.branch;
 
+
+
   const [isLoading, setisLoading] = useState(false)
   const [total, setTotal] = useState("")
   const [vendorfilter, setVendor] = useState([]);
-  const [branchfilter, setBranch] = useState([]);
+  const [branchData, setBranch] = useState([]);
   const [giftitemfilter, setGiftitem] = useState([]);
   const [formErrors, setFormErrors] = useState({});
   const { id } = useParams()
@@ -32,7 +36,7 @@ const AddGiftPurchase = () => {
     id_gift: '',
     price: "",
     buyingPrice: '',
-    vendor: '',
+    gift_vendorid: '',
     qty: "",
     gst_percenty: "",
     total: "",
@@ -44,53 +48,45 @@ const AddGiftPurchase = () => {
 
   useEffect(() => {
 
-    getallbranchMutate();
     if (id_branch !== "0") {
       setFormData(prev => ({
         ...prev,
         id_branch: id_branch
       }))
-      handleVendorChange(id_branch);
+
     }
   }, [id_branch]);
 
 
+  const branchRe = formData.id_branch;
 
-  const { mutate: handleVendorChange } = useMutation({
+  const { data: giftVendorRes, isLoading: loadingGiftVendor } = useQuery({
+    queryKey: ["vendor", branchRe],
+    queryFn: ({ queryKey }) => {
+      const [, branchId] = queryKey;
+      return getgiftvendorbranchById(branchId);
+    },
+    enabled: !!branchRe,
+  });
 
-    mutationFn: (payload) => getgiftvendorbranchById({ "id_branch": payload }),
-    onSuccess: (response) => {
-      if (response) {
-        setVendor(response.data)
-      }
+  const vendorId = formData.gift_vendorid;
+
+  const { data: giftItems, isLoading: loadingGiftItems } = useQuery({
+    queryKey: ["giftitem", vendorId],
+    queryFn: ({ queryKey }) => {
+      const [, vendorId] = queryKey;
+      return getgiftitemvendorById(vendorId);
     },
-    onError: (error) => {
-      console.log(error)
-    },
+    enabled: !!vendorId,
+
   });
 
 
-  const { mutate: GiftItems } = useMutation({
 
-    mutationFn: (payload) => getgiftitemvendorById(payload),
-    onSuccess: (response) => {
-      if (response) {
-        setGiftitem(response.data);
-      }
-    },
+  const { data: branchresponse, isLoading: loadingbranch } = useQuery({
+    queryKey: ["branch"],
+    queryFn: getallbranch,
   });
-
-
-
-  const { mutate: getallbranchMutate } = useMutation({
-    mutationFn: getallbranch,
-    onSuccess: (response) => {
-      if (response) {
-        setBranch(response.data);
-      }
-    },
-  });
-
 
   useEffect(() => {
 
@@ -98,6 +94,43 @@ const AddGiftPurchase = () => {
       fetchgiftinwardById({ id: id });
     }
   }, [id])
+
+
+  useEffect(() => {
+
+    if (giftVendorRes) {
+      const data = giftVendorRes.data;
+
+      const vendor = data.map((vendor) => ({
+        value: vendor._id,
+        label: `${vendor.vendor_name} ${vendor.mobile}`,
+      }));
+      setVendor(vendor);
+    }
+
+    if (giftItems) {
+      const data = giftItems.data;
+
+      const giftItem = data.map((giftItem) => ({
+        value: giftItem._id,
+        label: `${giftItem.gift_name}`,
+      }));
+      setGiftitem(giftItem);
+    }
+
+
+    if (branchresponse) {
+      const data = branchresponse.data
+
+      const branch = data.map((branch) => ({
+        value: branch._id,
+        label: branch.branch_name,
+      }));
+      setBranch(branch);
+    }
+
+
+  }, [giftVendorRes, giftItems, branchresponse]);
 
 
   const { mutate: fetchgiftinwardById } = useMutation({
@@ -136,11 +169,7 @@ const AddGiftPurchase = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
-    if (name === "id_branch") {
-      if (value !== "") {
-        handleVendorChange(value);
-      }
-    } else if (name === "gift_vendorid") {
+    if (name === "gift_vendorid") {
       if (value !== "") {
         GiftItems(value);
       }
@@ -149,13 +178,13 @@ const AddGiftPurchase = () => {
     if (name === "gst_percenty") {
       const gstPercentRegex = /^\d{1,2}(\.\d)?$/;
 
-      if ((value < 0) || (!gstPercentRegex.test(value)) ){
+      if ((value < 0) || (!gstPercentRegex.test(value))) {
         setFormErrors(prev => ({
           ...prev,
           gst_percenty: "Gst percent not valid"
         }));
       }
-       
+
 
       setFormData(prev => ({ ...prev, gst_percenty: value }));
 
@@ -244,12 +273,14 @@ const AddGiftPurchase = () => {
     if (!formData.cus_sellprice) errors.cus_sellprice = 'Customer Sell Price is required';
 
     setFormErrors(errors);
+    console.log("erro", errors)
     return Object.keys(errors).length === 0;
   };
 
   const handleSubmit = () => {
     setisLoading(true)
     if (!validateForm()) {
+
       setisLoading(false)
       return;
     }
@@ -363,30 +394,38 @@ const AddGiftPurchase = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Left Section */}
             <div className="flex flex-col gap-6">
-              {id_branch === "0" && (
-                <div className="flex flex-col gap-2 mt-2">
-                  <label className="text-gray-700 font-medium">
-                    Branch <span className="text-red-400">*</span>
-                  </label>
-                  <select
-                    name="id_branch"
-                    value={formData.id_branch || ""}
-                    onChange={handleInputChange}
-                    className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required
-                  >
-                    <option value="">Select Branch</option>
-                    {branchfilter.map((branch) => (
-                      <option key={branch._id} value={branch._id}>
-                        {branch.branch_name}
-                      </option>
-                    ))}
-                  </select>
-                  {formErrors.id_branch && (
-                    <span className="text-red-500 text-sm">{formErrors.id_branch}</span>
-                  )}
-                </div>
-              )}
+
+              <div className="flex flex-col gap-2 mt-2">
+                <label className="text-gray-700 font-medium">
+                  Branch <span className="text-red-400">*</span>
+                </label>
+
+                <Select
+                  options={branchData}
+                  value={
+                    id_branch !== "0"
+                      ? branchData.find(branch => branch.value === id_branch) || ""
+                      : branchData.find(branch => branch.value === formData.id_branch) || ""
+                  }
+                  onChange={(branch) => {
+                    setFormData((prev) => ({
+                      ...prev,
+                      id_branch: branch.value,
+                    }));
+                  }}
+                  customSelectStyles={customSelectStyles}
+                  isLoading={loadingbranch}
+                  isDisabled={id_branch !== "0"}
+                  placeholder="Select Branch"
+                />
+
+
+
+                {formErrors.id_branch && (
+                  <span className="text-red-500 text-sm">{formErrors.id_branch}</span>
+                )}
+              </div>
+
 
               {/* Invoice Number */}
               <div className="flex flex-col gap-2 mt-2">
@@ -398,7 +437,7 @@ const AddGiftPurchase = () => {
                   name="invoice_no"
                   value={formData.invoice_no}
                   onChange={handleInputChange}
-                  className="border-2 border-gray-300 rounded-md p-3 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                  className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                   placeholder="Enter Here"
                   required
                 />
@@ -410,22 +449,28 @@ const AddGiftPurchase = () => {
               {/* Choose Gift */}
               <div className="flex flex-col gap-2 mt-2">
                 <label className="text-gray-700 font-medium">
-                  Choose Gift Name<span className="text-red-400">*</span>
+                  Choose Gift Name<span className="text-red-400"> *</span>
                 </label>
-                <select
+
+                <Select
                   name="id_gift"
-                  value={formData.id_gift}
-                  onChange={handleInputChange}
-                  className="border-2 border-gray-300 rounded-md p-3 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                  required
-                >
-                  <option value="">Select Gift Item</option>
-                  {giftitemfilter.map((giftitem) => (
-                    <option key={giftitem._id} value={giftitem._id}>
-                      {giftitem.gift_name}
-                    </option>
-                  ))}
-                </select>
+                  options={giftitemfilter.length > 0 ? giftitemfilter : []}
+                  value={
+                    giftitemfilter.find(e => e.value === formData.id_gift) ||
+                    (giftitemfilter.length > 0 ? "" : null)
+                  }
+                  onChange={(ele) => {
+                    setFormData((prev) => ({
+                      ...prev,
+                      id_gift: ele.value,
+                    }));
+                  }}
+                  customSelectStyles={customSelectStyles}
+                  isLoading={loadingGiftItems}
+                  isDisabled={giftitemfilter.length === 0}
+                  placeholder={giftitemfilter.length === 0 ? "No Records Found" : "Select GiftItems"}
+                />
+
                 {formErrors.id_gift && (
                   <span className="text-red-500 text-sm">{formErrors.id_gift}</span>
                 )}
@@ -449,7 +494,7 @@ const AddGiftPurchase = () => {
                   }}
                   value={formData.gst_percenty}
                   onChange={handleInputChange}
-                  className="border-2 mt-2 border-gray-300 rounded-md p-3 w-full focus:border-transparent"
+                  className="border-2 mt-2 border-gray-300 rounded-md p-2 w-full focus:border-transparent"
                   placeholder="Enter Here"
                   required
                 />
@@ -468,7 +513,7 @@ const AddGiftPurchase = () => {
                   name="total"
                   value={formData.total}
                   readOnly
-                  className="border-2 mt-2 border-gray-300 rounded-md p-3 bg-gray-200 cursor-not-allowed w-full"
+                  className="border-2 mt-2 border-gray-300 rounded-md p-2 bg-gray-200 cursor-not-allowed w-full"
                 />
               </div>
             </div>
@@ -480,24 +525,32 @@ const AddGiftPurchase = () => {
                 <label className="text-gray-700 font-medium">
                   Choose Gift Vendor<span className="text-red-400">*</span>
                 </label>
-                <select
+                <Select
                   name="gift_vendorid"
-                  value={formData.gift_vendorid || ""}
-                  onChange={handleInputChange}
-                  className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                >
-                  <option value="">Select Gift Vendor</option>
-                  {vendorfilter.map((vendor) => (
-                    <option key={vendor._id} value={vendor._id}>
-                      {vendor.vendor_name}
-                    </option>
-                  ))}
-                </select>
+                  options={vendorfilter.length > 0 ? vendorfilter : []}
+                  value={
+                    vendorfilter.find(vendor => vendor.value === formData.gift_vendorid) ||
+                    (vendorfilter.length > 0 ? "" : null)
+                  }
+                  onChange={(vendor) => {
+                    setFormData((prev) => ({
+                      ...prev,
+                      gift_vendorid: vendor.value,
+                    }));
+                  }}
+                  customSelectStyles={customSelectStyles}
+                  isLoading={loadingGiftVendor}
+                  isDisabled={vendorfilter.length === 0}
+                  placeholder={vendorfilter.length === 0 ? "No Records Found" : "Select Branch"}
+                />
+
+
                 {formErrors.gift_vendorid && (
                   <span className="text-red-500 text-sm">{formErrors.gift_vendorid}</span>
                 )}
               </div>
+
+
 
               {/* Quantity */}
               <div className="flex flex-col gap-2 mt-2">
@@ -515,13 +568,13 @@ const AddGiftPurchase = () => {
                     e.target.value = e.target.value.replace(/[^0-9]/g, "");
                   }}
                   onChange={handleInputChange}
-                  className="border-2 border-gray-300 rounded-md p-3 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                  className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                   placeholder="Enter Here"
                   required
                 />
-               {
-                formErrors.qty && <span className="text-red-500 text-sm">{formErrors.qty}</span> 
-               }
+                {
+                  formErrors.qty && <span className="text-red-500 text-sm">{formErrors.qty}</span>
+                }
               </div>
 
               {/* Price */}
@@ -535,7 +588,7 @@ const AddGiftPurchase = () => {
                   min="1"
                   value={formData.price}
                   onChange={handleInputChange}
-                  className="border-2 border-gray-300 rounded-md p-3 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                  className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                   placeholder="Enter Here"
                   required
                 />
@@ -552,7 +605,7 @@ const AddGiftPurchase = () => {
                   name="cus_sellprice"
                   value={formData.cus_sellprice}
                   onChange={handleInputChange}
-                  className="border-2 border-gray-300 rounded-md p-3 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                  className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                   placeholder="Enter Here"
                   required
                 />
@@ -564,25 +617,25 @@ const AddGiftPurchase = () => {
           </div>
         </div>
       </div>
-      <div className='flex flex-row bg-white justify-end border-t-2 p-3'>
-          <div className='flex flex-row gap-6 justify-center'>
-            <button
-              type='button'
-              className='bg-[#E2E8F0] rounded-md p-2 text-black'
-              onClick={handleCancel}
-            >
-              Cancel
-            </button>
-            <button
-              type='submit'
-              className='text-white w-16 h-10 text-center p-2 rounded-md'
-              onClick={id ? handleUpdate : handleSubmit}
-              style={{ backgroundColor: layout_color }}
-            >
-              {isLoading ? <SpinLoading /> : id ? 'Update' : 'Submit'}
-            </button>
-          </div>
+      <div className='flex flex-row bg-white justify-end border-t-2 p-2'>
+        <div className='flex flex-row gap-6 justify-center'>
+          <button
+            type='button'
+            className='bg-[#E2E8F0] rounded-md p-2 text-black'
+            onClick={handleCancel}
+          >
+            Cancel
+          </button>
+          <button
+            type='submit'
+            className='text-white w-16 h-10 text-center p-2 rounded-md'
+            onClick={id ? handleUpdate : handleSubmit}
+            style={{ backgroundColor: layout_color }}
+          >
+            {isLoading ? <SpinLoading /> : id ? 'Update' : 'Submit'}
+          </button>
         </div>
+      </div>
       <Modal />
     </>
   )

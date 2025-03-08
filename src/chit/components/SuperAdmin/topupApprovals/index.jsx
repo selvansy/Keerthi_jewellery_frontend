@@ -22,6 +22,12 @@ import Loading from "../../common/Loading";
 const topupApprovals = () => {
 
     const layout_color = useSelector((state) => state.clientForm.layoutColor);
+    const roledata = useSelector((state) => state.clientForm.roledata);
+    const branch = roledata?.branch;
+
+    const branchAccess = Number(branch);
+  
+   
   
     const dispatch = useDispatch();
     const [topupData, settopupData] = useState([]);
@@ -143,10 +149,11 @@ const topupApprovals = () => {
         cell: (row, rowIndex) => (
           (row.status === 0) ? 
           <div className="dropdown-container relative">
-                <div className="rounded-md shadow-lg bg-[#d7b56d] ring-1 ring-black ring-opacity-5">
+                <div className={`${branchAccess !== 0 ? "cursor-not-allowed" : "cursor-pointer"} rounded-md shadow-lg bg-[#d7b56d] ring-1 ring-black ring-opacity-5`}>
                   <div className="py-1">
                     <button
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 font-semibold flex items-center gap-2"
+                      className={`${branchAccess !== 0 ? "cursor-not-allowed" : "cursor-pointer"} w-full text-left px-4 py-2 text-sm text-gray-700 font-semibold flex items-center gap-2`}
+                      disabled={branchAccess !== 0}
                       onClick={() => {
                         handleEdit(row);
                       }}
@@ -159,10 +166,11 @@ const topupApprovals = () => {
           </div>
           :
           <div className="dropdown-container relative">
-          <div className="rounded-md shadow-lg bg-[#61a375] ring-1 ring-black ring-opacity-5">
+          <div className={`${branchAccess !== 0 ? "cursor-not-allowed" : "cursor-pointer"} rounded-md shadow-lg bg-[#61a375] ring-1 ring-black ring-opacity-5`}>
             <div className="py-1">
               <button
-                className="w-full text-left px-4 py-2 text-sm text-white font-semibold flex items-center gap-2"
+                className={` w-full text-left px-4 py-2 text-sm text-gray-700 font-semibold flex items-center gap-2`}
+                disabled={branchAccess !== 0}
               >
                 Approved
               </button>
@@ -353,8 +361,6 @@ const topupApprovals = () => {
     
       try {
         const updatedFormData = { ...formData, status: 1 }; 
-    
-        console.log("Updated Form Data:", updatedFormData); 
 
         updateTopupStatus({ id: status._id, data: updatedFormData });
     
@@ -368,6 +374,7 @@ const topupApprovals = () => {
       mutationFn: (payload) => updateStatus(payload), 
       onSuccess: (response) => {
         if (response) {
+          closeIncommingModal()
           toast.success(response.message)
         }
         setIsLoading(false); 

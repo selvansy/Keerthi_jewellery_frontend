@@ -86,6 +86,11 @@ import { path } from "framer-motion/client";
 import TicketSubmissionForm from "../chit/components/help/Addticket";
 import Ticket from "../chit/components/help/ticket";
 import TopUp from "../chit/components/SuperAdmin/topupApprovals/index"
+import ContentManagement from "../chit/components/contentManagement/ContentManagement";
+import ContentForm from "../chit/components/contentManagement/ContentForm";
+import FaqTable from "../chit/components/faq";
+import FaqCreation from "../chit/components/SuperAdmin/faq/FaqCreation"
+import FaqIndex from "../chit/components/SuperAdmin/faq";
 
 const RouteList = [
 
@@ -619,8 +624,8 @@ const RouteList = [
 
   
   {
-    name: "Top up",
-    path: '/superadmin/topup',
+    name: "Topup Summary",
+    path: '/schemereport/topupsummary/',
     element: <Base renderContent={TopUp} />
   },
 
@@ -634,8 +639,6 @@ const RouteList = [
     path: "/superadmin/addclient",
     element: <Base renderContent={ClientForm} />
   },
-
-
 
   {
     name: "edit client",
@@ -677,7 +680,44 @@ const RouteList = [
     name:"ticket raise",
     path:'/help/raiseticket/',
     element:<Base renderContent={Ticket} />
-  }
+  },
+
+  {
+    name:"Terms and Conditions",
+    path:'/help/policy',
+    element:<Base renderContent={ContentManagement} />
+  },
+  {
+    name:"Policies",
+    path:'/help/policy/add',
+    element:<Base renderContent={ContentForm} />
+  },
+  {
+    name:"Policies",
+    path:'/help/policy/edit/:id',
+    element:<Base renderContent={ContentForm} />
+  },
+  {
+    name:"FAQ",
+    path:'/help/faq',
+    element:<Base renderContent={FaqTable} />
+  },
+  {
+    name:"FaqCreation",
+    path:'/help/faq/add',
+    element:<Base renderContent={FaqCreation} />
+  },
+  {
+    name:"FaqCreation",
+    path:"/help/faq/edit/:id",
+    element:<Base renderContent={FaqCreation} />
+  },
+  {
+    name:"FaqIndex",
+    path:'/help/faq/table',
+    element:<Base renderContent={FaqIndex} />
+  },
+
 
 ];
 
