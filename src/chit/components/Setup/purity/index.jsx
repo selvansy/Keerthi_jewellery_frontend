@@ -177,7 +177,6 @@ const Purity = () => {
   };
 
   const handleDelete = (id) => {
-    setId(id);
     dispatch(
       openModal({
         modalType: "CONFIRMATION",
@@ -371,15 +370,7 @@ const Purity = () => {
     {
       header: "Metal Name",
       cell: (row) => {
-        return row?.id_metal === 1
-          ? "Gold"
-          : row?.id_metal === 2
-          ? "Silver"
-          : row?.id_metal === 3
-          ? "Diamond"
-          : row?.id_metal === 4
-          ? "Platinum"
-          : "Gold Coins";
+        return row.id_metal.metal_name
       },
     },
 
@@ -577,25 +568,29 @@ const Purity = () => {
 
 export default Purity;
 
+
 export const PurityForm = ({ setIsOpen, metals, clearId, id }) => {
-  const dispatch = useDispatch();
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
   const [formData, setFormData] = useState({
     purity_name: "",
-    id_metal: "",
+    id_metal: null,
   });
+
   const [isLoading, setIsLoading] = useState(false);
   const [formErrors, setFormErrors] = useState({});
 
-  // getmetalById
+  // Fetch purity by ID
   const { mutate: getPurityId } = useMutation({
     mutationFn: getpurityById,
     onSuccess: (response) => {
       if (response) {
         setFormData({
           purity_name: response.data.purity_name,
-          id_metal: response.data.id_metal,
+          id_metal: {
+            value: response.data.id_metal._id,
+            label: response.data.id_metal.metal_name,
+          },
         });
       }
     },
@@ -622,7 +617,7 @@ export const PurityForm = ({ setIsOpen, metals, clearId, id }) => {
     try {
       const updateData = {
         purity_name: formData.purity_name,
-        id_metal: formData.id_metal,
+        id_metal: formData.id_metal.value, // Send only the ID
       };
 
       if (id) {
@@ -649,6 +644,7 @@ export const PurityForm = ({ setIsOpen, metals, clearId, id }) => {
       toast.error(error.response.data.message);
     },
   });
+
   const { mutate: updatepurityMutate } = useMutation({
     mutationFn: (data) => updatepurity(data),
     onSuccess: (response) => {
@@ -666,8 +662,7 @@ export const PurityForm = ({ setIsOpen, metals, clearId, id }) => {
   const handleCancel = () => {
     setFormData({
       purity_name: "",
-      id_metal: "",
-      metals: metals,
+      id_metal: null,
     });
     clearId();
     setIsOpen(false);
@@ -688,7 +683,7 @@ export const PurityForm = ({ setIsOpen, metals, clearId, id }) => {
   const handleSelect = (selectedOption) => {
     setFormData((prev) => ({
       ...prev,
-      id_metal: selectedOption ? selectedOption.value : "",
+      id_metal: selectedOption, // Store the full object
     }));
 
     setFormErrors((prev) => ({
@@ -701,7 +696,7 @@ export const PurityForm = ({ setIsOpen, metals, clearId, id }) => {
     const errors = {};
 
     if (!formData.purity_name) errors.purity_name = "Purity Name is required";
-    if (!formData.id_metal) errors.id_metal = "Metal Id is required";
+    if (!formData.id_metal) errors.id_metal = "Metal selection is required";
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -732,10 +727,9 @@ export const PurityForm = ({ setIsOpen, metals, clearId, id }) => {
         <Select
           name="id_metal"
           options={metals}
-          value={metals.find((option) => option.value === formData.id_metal)}
+          value={formData.id_metal} // Corrected to show selected metal
           onChange={handleSelect}
           placeholder="Select Metal"
-          styles={customSelectStyles}
           className="react-select-container"
           classNamePrefix="react-select"
         />
@@ -758,7 +752,7 @@ export const PurityForm = ({ setIsOpen, metals, clearId, id }) => {
             type="button"
             onClick={handleSubmit}
             disabled={isLoading}
-            className=" text-white rounded-md p-2 w-full lg:w-20"
+            className="text-white rounded-md p-2 w-full lg:w-20"
             style={{ backgroundColor: layout_color }}
           >
             {isLoading ? <SpinLoading /> : id ? "Update" : "Submit"}
@@ -768,3 +762,4 @@ export const PurityForm = ({ setIsOpen, metals, clearId, id }) => {
     </div>
   );
 };
+

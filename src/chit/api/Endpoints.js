@@ -688,8 +688,8 @@ export const deletenewarrivals= async(id)=>{
 
 
 export const updateproduct= async(data)=>{
- 
-    const response= await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/product/${data.id}`,data.data)
+    console.log(data)
+    const response= await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/product/${data.id}`,data.formDataToSend)
     return response.data
 }
  
@@ -704,14 +704,14 @@ export const activateproduct= async(id)=>{
     return response.data
 }
 
-export const productbyid= async(data)=>{
-    const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/admin/productbyid`,data)
+export const productbyid= async(id)=>{
+    const response= await Api.get(`${import.meta.env.VITE_API_URL}/api/client/product/${id}`,)
     return response.data
 }
  
 
 export const categorybymetalid= async(id)=>{
-    console.log(id)
+  
     const response= await Api.get(`${import.meta.env.VITE_API_URL}/api/client/category/metal/${id}`)
     return response.data
 }

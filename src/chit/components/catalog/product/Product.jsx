@@ -9,7 +9,6 @@ import {
   schemepaymenttodayrate
 } from "../../../api/Endpoints"
 
-import { setid } from "../../../../redux/clientFormSlice"
 import { eventEmitter } from '../../../../utils/EventEmitter';
 import { openModal } from '../../../../redux/modalSlice';
 import { CalendarDays, RefreshCcw } from 'lucide-react'
@@ -499,22 +498,13 @@ const Product = () => {
     {
       header: 'Metal Name',
       cell: (row) => {
-        return row?.id_metal === 1 ? 'Gold' :
-          row?.id_metal === 2 ? 'Silver' :
-            row?.id_metal === 3 ? 'Diamond' :
-              row?.id_metal === 4 ? 'Platinum' : 'Gold Coins';
+        return row.id_metal.metal_name
       }
     },
     {
       header: 'Purity Name',
       cell: (row) => {
-        return row?.id_purity === 1 ? '24CT' :
-          row?.id_purity === 2 ? '22CT' :
-            row?.id_purity === 3 ? '20CT' :
-              row?.id_purity === 4 ? '18CT' :
-                row?.id_purity === 5 ? 'Gold coin' :
-                  row?.id_purity === 6 ? 'Platinum' :
-                    row?.id_purity === 7 ? 'Diamond' : 'Silver'
+        return row.id_purity.purity_name
       }
     },
     {
@@ -522,35 +512,19 @@ const Product = () => {
       cell: (row) => row?.description
     },
     {
-      header: "Current Rate",
-      cell: (row) => row?.current_rate
-    },
-    {
       header: "Weight",
       cell: (row) => row?.weight
-    },
-    {
-      header: "metalcost",
-      cell: (row) => row?.metalcost
-    },
-    // {
-    //   header: "Gst %",
-    //   cell: (row) => row?.gst
-    // },
-    {
-      header: "Price",
-      cell: (row) => row?.totalprice
     },
     {
       header: "Create Date",
       cell: (row) => {
         const date = new Date(row?.createdAt);
-        return date.toLocaleDateString('en-GB'); // 'en-GB' gives the d-m-Y format
+        return date.toLocaleDateString('en-GB');
       }
     },
     {
       header: "Branch",
-      cell: (row) => row?.branch_name
+      cell: (row) => row?.id_branch.branch_name
     },
     {
       header: 'Active',
