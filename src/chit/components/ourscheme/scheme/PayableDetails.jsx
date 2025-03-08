@@ -223,13 +223,13 @@ const PayableDetails = ({
         </label>
         <Select
           styles={customStyles}
-          options={gstTypeData || []}
+          options={gstTypeData}
           isClearable={true}
           placeholder="Select gst type"
           value={
-            gstTypeData.find(
+            gstTypeData?.find(
               (option) => option.value === formik.values.buygsttype
-            ) || null
+            ) || 1
           }
           onChange={(option) =>
             formik.setFieldValue("buygsttype", option ? option.value : null)

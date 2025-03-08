@@ -214,7 +214,7 @@ const ExistingCusTable = () => {
      const { mutate: deletecustomerMutate } = useMutation({
         mutationFn:(id)=> deletecustomer(id),
         onSuccess: (response) => {
-          if (response.message === "customer deleted successfully") {
+        
             const isLastItemOnPage = customerData.length === 1;
             const isNotFirstPage = currentPage > 1;
             if (isLastItemOnPage && isNotFirstPage) {
@@ -229,7 +229,7 @@ const ExistingCusTable = () => {
                 id_branch: filters.id_branch
             }
               getcustomertableMutate(payload);
-            }
+            
           }
             toast.success(response.message);
             eventEmitter.off("CONFIRMATION_SUBMIT");

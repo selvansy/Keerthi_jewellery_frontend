@@ -65,6 +65,8 @@ export function ExistingCustomer() {
     });
   };
 
+  
+
   const { mutate: handlesearchcustomer } = useMutation({
     mutationFn: searchcustomermobile,
     onSuccess: (response) => {
@@ -76,6 +78,7 @@ export function ExistingCustomer() {
             address: response.data.address,
             id_branch: response.data.id_branch,
             mobile: response.data.mobile,
+            id_customer: response.data._id
           })
         );
         setFormData((prev) => ({
@@ -205,9 +208,9 @@ const AddSchemeAccount = () => {
   const [classifyfilter, setClassify] = useState([]);
   const [schemefilter, setScheme] = useState([]);
   const [errors, setErrors] = useState(null);
-  const [ispayable, setIspayable] = useState(false);
   const [selectedScheme, setSelectedScheme] = useState("");
   const [acNumber,setAcNumber]=useState(1)
+  const [referralName,setReferralName] = useState('')
   const referralRoles = [
     { id: 1, role: "Employee",endpoint:getEmployeeByMobile},
     { id: 2, role: "Customer",endpoint:getCustomerByMobile},
@@ -215,17 +218,48 @@ const AddSchemeAccount = () => {
   ];
   const [searchmobile, setSearchMobile] = useState("");
   const [selectedRole,setRole] = useState('')
+  const [schemeAccountData,setSchemeAccountData] = useState()
+  //* TODO use formik insted of formData
+  const [formData, setFormData] = React.useState({
+    id_customer: cusData.customerId || cusData.id_customer || '',
+    mobile: cusData.mobile,
+    start_date: start_date,
+    id_classification: "",
+    collectionuserid: "",
+    scheme_acc_number: "",
+    id_scheme: "",
+    id_branch: cusData.id_branch,
+    account_name: "",
+    address: cusData.address,
+    customer_name: cusData.customer_name,
+    fixedamount: "",
+    amount: 0,
+    scheme_type: 0,
+    min_amount: 0,
+    max_amount: 0,
+    min_weight: 0,
+    max_weight: 0,
+    total_installments: total_installments,
+    maturity_period: maturity_period,
+    maturity_date: maturity_date,
+    referral_id: "",
+    referral_type:'',
+    installment_type:'',
+    code:0,
+    scheme_count_number:'',
+    customer_name:''
+  });
   
   const { data: branchresponse} = useQuery({
     queryKey: ["branch", branch],
     queryFn: getallbranch,
   });
 
-  useEffect(() => {
-    return () => {
-      dispatch(SetaccExp({}));
-    };
-  }, []);
+  // useEffect(() => {
+  //   return () => {
+  //     dispatch(SetaccExp({}));
+  //   };
+  // }, []);
 
   useEffect(() => {
     if (branchresponse) {
@@ -233,12 +267,48 @@ const AddSchemeAccount = () => {
     }
   }, [branchresponse]);
 
-  // useEffect(() => {
-
-  //   if (id) {
-  //     handleschemeaccountbyid({ id: id });
-  //   }
-  // }, [id])
+  useEffect(()=>{
+    const scheme =async ()=>{
+      const schemeData = await getschemeaccountbyid(id)
+       if(schemeData){
+          handleschemebyclassification(schemeData.data.id_classification._id);
+          if(schemeData.data.id_classification.order === 2){
+            setSelectedScheme("Fixed")
+            handleschemebyclassification(schemeData?.data?.id_classification?._id);
+          }
+          setFormData({
+                  id: schemeData.data._id,
+                  id_scheme: schemeData.data.id_scheme._id,
+                  scheme_type: schemeData.data.id_scheme.scheme_type,
+                  total_installments: schemeData.data.id_scheme.total_installments,
+                  min_amount: schemeData.data.id_scheme.min_amount,
+                  max_amount: schemeData.data.id_scheme.max_amount,
+                  min_weight: schemeData.data.id_scheme.min_weight,
+                  max_weight: schemeData.data.id_scheme.max_weight,
+                  id_customer: schemeData.data.id_customer._id,
+                  scheme_acc_number: schemeData.data.scheme_acc_number,
+                  start_date: schemeData.data.start_date,
+                  id_classification: schemeData.data.id_classification._id,
+                  collectionuserid: schemeData.data.collectionuserid,
+                  id_branch: schemeData.data.id_branch._id,
+                  account_name: schemeData.data.account_name,
+                  customer_name:
+                    schemeData.data.id_customer.firstname +
+                    " " +
+                    schemeData.data.id_customer.lastname,
+                  mobile: schemeData.data.id_customer.mobile,
+                  address: schemeData.data.id_customer.address,
+                  amount: schemeData.data.amount,
+                  maturity_period: schemeData.data.id_scheme.maturity_period,
+                  maturity_date: schemeData.data.maturity_date,
+                  referral_id: schemeData.data.referral_id,
+                  customer_name: schemeData.data.id_customer ? `${schemeData.data.id_customer.firstname} ${schemeData.data.id_customer.lastname}` : "",
+                });
+                setAcNumber(schemeData.data.scheme_count_number)
+       }
+    }
+    scheme()
+  },[id])
 
   // const handleschemeaccountbyid = async (data) => {
   //   if (!data) return;
@@ -293,33 +363,6 @@ const AddSchemeAccount = () => {
   //     toast.error("Customer not created!");
   //   }
   // };
-console.log(cusData,'gi')
-  const [formData, setFormData] = React.useState({
-    id_customer: cusData.customerId,
-    mobile: cusData.mobile,
-    start_date: start_date,
-    id_classification: "",
-    collectionuserid: "",
-    scheme_acc_number: "",
-    id_scheme: "",
-    id_branch: cusData.id_branch,
-    account_name: "",
-    address: cusData.address,
-    customer_name: cusData.customer_name,
-    fixedamount: "",
-    amount: 0,
-    scheme_type: 0,
-    min_amount: 0,
-    max_amount: 0,
-    min_weight: 0,
-    max_weight: 0,
-    total_installments: total_installments,
-    maturity_period: maturity_period,
-    maturity_date: maturity_date,
-    referral_id: "",
-    referral_type:'',
-    installment_type:''
-  });
 
   useEffect(() => {
     if (cusData) {
@@ -350,14 +393,13 @@ console.log(cusData,'gi')
 
   const handleSearchmobile = async () => {
     try {
-      console.log(selectedRole)
       const matchingRole = referralRoles.find(
         (element) => Number(selectedRole) === element.id
       );
   
       if (matchingRole) {
         const data = await matchingRole.endpoint(searchmobile);
-        console.log(data)
+        setReferralName(`${data.data.firstname} ${data.data.lastname}`)
         setFormData((prev) => ({ ...prev, "referral_type": matchingRole.role,referral_id:data?.data?._id}));
       } else {
         console.warn("No matching referral role found!");
@@ -394,6 +436,8 @@ console.log(cusData,'gi')
           maturity_period: maturity_period,
           maturity_date: maturity_date,
           referral_id: "",
+          code:0,
+          scheme_count_number:""
         });
       }
     },
@@ -426,6 +470,7 @@ console.log(cusData,'gi')
     }
 
     if (name === "id_classification") {
+      console.log(value)
       handleschemebyclassification(value);
     }
 
@@ -437,7 +482,7 @@ console.log(cusData,'gi')
 
   const handleschemebyid = async (id) => {
     try {
-      const countData = await getSchemeAccountCount(9360839984, id);
+      const countData = await getSchemeAccountCount(formData.mobile, id);
       const newAcNumber = countData.data !== 0 ? Number(countData.data) + 1 : 1;
   
       setAcNumber(newAcNumber);
@@ -446,10 +491,11 @@ console.log(cusData,'gi')
       if (schemeData) {
         setFormData((prevState) => ({
           ...prevState,
-          scheme_type: schemeData.scheme_type,
-          total_installments: schemeData.total_installments,
-          maturity_period: schemeData.maturity_period,
-          installment_type: schemeData.installment_type,
+          scheme_type: schemeData?.scheme_type,
+          total_installments: schemeData?.total_installments,
+          maturity_period: schemeData?.maturity_period,
+          installment_type: schemeData?.installment_type,
+          code:schemeData?.code
         }));
       } else {
         console.warn("No matching scheme found for ID:", id);
@@ -465,9 +511,9 @@ console.log(cusData,'gi')
         (item) => String(item._id) === String(formData.id_scheme)
       );
 
-      setFixedAmt(filteredData[0].fixed_amounts);
+      setFixedAmt(filteredData[0]?.fixed_amounts);
     }
-  }, [formData.id_scheme]);
+  }, [formData.id_scheme,schemefilter]);
 
   useEffect(() => {
     if (formData.start_date && formData.maturity_period && formData.installment_type) {
@@ -537,14 +583,20 @@ console.log(cusData,'gi')
   };
 
   useEffect(() => {
-    if (location.pathname === "/managecustomers/customer//add") {
+    // if (location.pathname === "/managecustomers/addschemeaccount/") {
+    //   setHeader("Add Scheme Account");
+    //   setReturnRoute("/managecustomers/customer/");
+    // } 
+    // else if (location.pathname === "/manageaccount/digigold/add") {
+    //   setHeader("Add Digi Gold Account");
+    //   setReturnRoute("/manageaccount/digigold");
+    // }
+    if(id){
+      setHeader("Edit Scheme Account");
+    }else{
       setHeader("Add Scheme Account");
-      setReturnRoute("/managecustomers/customer/");
-    } else if (location.pathname === "/manageaccount/digigold/add") {
-      setHeader("Add Digi Gold Account");
-      setReturnRoute("/manageaccount/digigold");
     }
-  }, [location.pathname]);
+  }, [location.pathname,id]);
 
   const handleCancel = () => {
     navigate("/managecustomers/customer/");
@@ -620,10 +672,10 @@ console.log(cusData,'gi')
       err["maturity_period"] = "";
     }
 
-    if (formData.maturity_date === "") {
-      err["maturity_date"] = "Maturity Date is required";
+    if (!formData.maturity_period && formData.maturity_period !== 0) {
+      err["maturity_period"] = "Maturity month is required";
     } else {
-      err["maturity_date"] = "";
+      err["maturity_period"] = "";
     }
 
     setErrors((prevState) => ({
@@ -635,40 +687,16 @@ console.log(cusData,'gi')
     return !hasErrors;
   };
 
-//   const onSubmit = (e) => {
-//     e.preventDefault();
-
-//     const formFields = new FormData(e.target);
-//     const formDataObject = Object.fromEntries(formFields.entries());
-
-//     if (isValidForm()) {
-//       if (id) {
-//         updateSchemeaccount(formData);
-//       } else {
-//         const acName = formData.account_name;
-// setFormData((prev) => ({
-//   ...prev,
-//   account_name: `${acName}-AC${acNumber}` 
-// }));
-//         createSchemeaccount(formData);
-//       }
-//     } else {
-//       console.log("Form has validation errors");
-//     }
-//   };
 const onSubmit = (e) => {
   e.preventDefault();
-
-  console.log("Form Data before submission:", formData); // Log formData
 
   if (isValidForm()) {
     if (id) {
       updateSchemeaccount(formData);
     } else {
-      const acName = formData.account_name;
       setFormData((prev) => ({
         ...prev,
-        account_name: `${acName}-AC${acNumber}` 
+        scheme_count_number: acNumber
       }));
       createSchemeaccount(formData);
     }
@@ -676,7 +704,6 @@ const onSubmit = (e) => {
     console.log("Form has validation errors");
   }
 };
-
 
   const { mutate: createSchemeaccount } = useMutation({
     mutationFn: addschemeaccount,
@@ -703,12 +730,14 @@ const onSubmit = (e) => {
   return (
     <>
       <div className="flex flex-row justify-between">
+       {!cusData && (
         <h2 className="text-2xl text-gray-900 font-bold justify-between">
-          {header}
-        </h2>
+        {header}
+      </h2>
+       )}
       </div>
-      <div className="w-full flex flex-col bg-white pl-8 pr-8 pb-4 mt-3 overflow-y-auto scrollbar-hide h-[calc(100vh-200px)]">
-        <div className="grid md:grid-cols-2 gap-3">
+      <div className={`w-full flex flex-col bg-white pl-8 pr-8 pb-4  ${!cusData && 'border-[#023453] border-t-2 h-[calc(100vh-200px)]'} mt-3 overflow-y-auto scrollbar-hide `}>
+        <div className="grid md:grid-cols-2 gap-3 mt-4">
           <div className="flex flex-col">
             <label className="text-black mb-1 font-normal">
               Branch<span className="text-red-400">*</span>
@@ -716,7 +745,7 @@ const onSubmit = (e) => {
             <div className="relative">
               <select
                 name="id_branch"
-                value={cusData.id_branch}
+                value={cusData.id_branch || formData.id_branch}
                 onChange={(e) => {
                   filterInputchange(e);
                 }}
@@ -755,7 +784,7 @@ const onSubmit = (e) => {
             </label>
             <input
               type="text"
-              value={cusData.mobile}
+              value={cusData.mobile || formData.mobile}
               name="mobile"
               className="border-2 bg-[#e5e7eb] cursor-not-allowed border-gray-300 rounded-md p-2  focus:border-transparent"
               placeholder="Enter Here"
@@ -774,7 +803,7 @@ const onSubmit = (e) => {
                 readOnly
                 type="text"
                 name="customer_name"
-                value={cusData.customer_name}
+                value={cusData.customer_name || formData.customer_name}
                 className="border-2 bg-[#e5e7eb] w-full order-gray-300 cursor-not-allowed rounded-md p-2 pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                 placeholder="Enter name"
               />
@@ -787,7 +816,7 @@ const onSubmit = (e) => {
                 readOnly
                 type="text"
                 name="address"
-                value={cusData.address}
+                value={cusData.address || formData.address}
                 className="border-2 bg-[#e5e7eb] border-gray-300 cursor-not-allowed rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                 placeholder="Enter address"
               />
@@ -850,7 +879,7 @@ const onSubmit = (e) => {
                 <div className="relative">
                   <select
                     name="id_scheme"
-                    value={formData.id_scheme}
+                    value={formData.id_scheme }
                     onChange={filterInputchange}
                     className="appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                     defaultValue=""
@@ -942,7 +971,7 @@ const onSubmit = (e) => {
                 <input
                   type="text"
                   name="total_installments"
-                  value={formData.total_installments}
+                  value={formData.min_amount || formData.min_weight}
                   className="border-2 cursor-not-allowed border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                   placeholder="Enter Total Installment"
                   disabled
@@ -956,7 +985,7 @@ const onSubmit = (e) => {
                 <input
                   type="text"
                   name="total_installments"
-                  value={formData.total_installments}
+                  value={formData.max_amount || formData.max_weight}
                   className="border-2 cursor-not-allowed border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                   placeholder="Enter Total Installment"
                   disabled
@@ -1072,9 +1101,11 @@ const onSubmit = (e) => {
                 </div>
                 <p style={{ color: "red" }}>{errors?.maturity_date}</p>
               </div>
-              <div className="flex flex-col">
+              {!id && (
+                <>
+                <div className="flex flex-col">
                 <label className="text-black mb-1 font-normal">
-                  Referral By
+                  Referral By {referralName && <span className="text-green-700">{referralName}</span>}
                 </label>
                 <div className="relative">
                   <select
@@ -1128,16 +1159,25 @@ const onSubmit = (e) => {
                 <div
                   disabled={searchmobile === ''}
                   onClick={handleSearchmobile}
+                  onKeyDown={(e)=>{
+                    e.preventDefault()
+                    if(e){
+                      console.log(e.key)
+                    }
+                  }}
                   className="absolute flex items-center justify-center cursor-pointer right-[0%] rounded-r-lg top-[68%] -translate-y-1/2 w-10 md:h-[43px] md:top-[50px] h-[62%] sm:right-0 sm:top-[68%] lg:right-[0%]"
                   style={{ backgroundColor: layout_color }}
                 >
                   <Search size={20} className="text-white" />
                 </div>
               </div>
+                </>
+              )}
             </div>
           </div>
 
-          <div className="bg-white p-2 border-t-2 border-gray-300 mt-4">
+          <div className="bg-white p-2  mt-4">
+             {/* border-t-2 border-gray-300 */}
             <div className="flex justify-end gap-2 mt-3">
               <button
                 className="bg-[#E2E8F0] text-black rounded-md p-2 w-full lg:w-20"
@@ -1151,7 +1191,7 @@ const onSubmit = (e) => {
                 type="submit"
                 style={{ backgroundColor: layout_color }}
               >
-                Submit
+               {!id ? "Submit" : "Update"}
               </button>
             </div>
           </div>

@@ -22,6 +22,7 @@ import {
   PawPrintIcon,
   CircleUserRound,
   UserRoundCheck,
+  Menu, // Added Menu icon for better burger menu
 } from "lucide-react";
 
 import logo from "../../../assets/logo1.png";
@@ -39,9 +40,6 @@ import * as Icons from "lucide-react";
 import Command from "../../../assets/command.svg";
 import Search from "../../../assets/search.svg";
 import CustomerModal from "./customerModal";
-// import { LayoutGrid } from 'lucide-react';
-// import * as Icons  from "lucide-react/dynamic";
-// import { DynamicIcon } from "lucide-react/dynamic";
 
 const Base = ({ renderContent: RenderContent }) => {
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -89,16 +87,16 @@ const Base = ({ renderContent: RenderContent }) => {
     };
   }, []);
 
-  const location=useLocation()
-  const sectionName =  location.pathname.split("/")[1]?.replace(/^./, (c) => c.toUpperCase()) || "";
-
+  const location = useLocation();
+  const sectionName =
+    location.pathname.split("/")[1]?.replace(/^./, (c) => c.toUpperCase()) ||
+    "";
 
   const { info } = useSelector((state) => state.auth);
   const decoded = jwtDecode(info);
   let id = decoded.id_role._id;
 
   const menus = useSelector((state) => state.auth.menu);
-  // const submenu = useSelector((state) => state.auth.subMenu);
 
   const renderMenuItems = () => {
     if (!menus) return null;
@@ -131,14 +129,15 @@ const Base = ({ renderContent: RenderContent }) => {
               <SubMenuItem
                 key={submenu.id_submenu}
                 text={submenu.submenu_name}
+                pathUrl={submenu.pathurl}
                 onClick={() => {
-               
                   console.log("Submenu", submenu.submenu_name);
                   handleClick(submenu.submenu_name);
-                  
-                  navigate(submenu.pathurl.startsWith("/")?submenu.pathurl:`/${submenu.pathurl}`);
-                  // handleClick(submenu.submenu_name);
-                  navigate(submenu.pathurl);
+                  navigate(
+                    submenu.pathurl.startsWith("/")
+                      ? submenu.pathurl
+                      : `/${submenu.pathurl}`
+                  );
                 }}
                 isLast={index === menu.menu_list.length - 1}
                 parentSection={menu.menu_name}
@@ -216,7 +215,7 @@ const Base = ({ renderContent: RenderContent }) => {
       if (
         sidebarRef.current &&
         !sidebarRef.current.contains(event.target) &&
-        !event.target.closest('button[aria-label="toggle-sidebar"]')
+        !event.target.closest('[data-testid="toggle-sidebar"]')
       ) {
         setIsSidebarOpen(false);
       }
@@ -224,7 +223,7 @@ const Base = ({ renderContent: RenderContent }) => {
       if (
         settingsRef.current &&
         !settingsRef.current.contains(event.target) &&
-        !event.target.closest('button[aria-label="toggle-settings"]')
+        !event.target.closest('[data-testid="toggle-settings"]')
       ) {
         setSettingsOpen(false);
       }
@@ -275,14 +274,6 @@ const Base = ({ renderContent: RenderContent }) => {
     setIsModalOpen(false);
   };
 
-  // const { mutate: getAllMenusMutate } = useMutation({
-  //   mutationFn: getactivemenuaccess,
-  //   onSuccess: (response) => {
-  //     dispatch(SetMenu(response.data))
-  //   },
-  // });
-
-  //update category
   const { mutate: updatelayoutmutate } = useMutation({
     mutationFn: updatelayoutcolor,
     onSuccess: (response) => {
@@ -300,36 +291,76 @@ const Base = ({ renderContent: RenderContent }) => {
     }));
   };
 
-  const SubMenuItem = ({ text, onClick, isLast, parentSection }) => (
-    <div className="relative">
-      {!isLast && (
-        <div className="absolute left-6 top-1/2 w-[1px] h-full bg-white -translate-x-1/2" />
-      )}
-      <div className="relative flex items-center">
-        <div
-          className={`absolute left-6 w-3 h-3 rounded-full border-2 border-white -translate-x-1/2 z-10 ${
-            selectedSubSection === text ? "" : "bg-gray-400"
-          }`}
-        />
-        <div
-          className={`w-full flex items-center px-4 rounded-md py-2 pl-12 transition-colors cursor-pointer text-sm font-semibold
-            ${
-              selectedSubSection === text
-                ? "bg-white text-[#033453]"
-                : "text-white hover:bg-[#005073]"
+  // const SubMenuItem = ({ text, onClick, isLast, parentSection }) => (
+  //   <div className="relative">
+  //     {!isLast && (
+  //       <div className="absolute left-6 top-1/2 w-[1px] h-full bg-white -translate-x-1/2" />
+  //     )}
+  //     <div className="relative flex items-center">
+  //       <div
+  //         className={`absolute left-6 w-3 h-3 rounded-full border-2 border-white -translate-x-1/2 z-10 ${
+  //           selectedSubSection === text ? "" : "bg-gray-400"
+  //         }`}
+  //       />
+  //       <div
+  //         className={`w-full flex items-center px-4 rounded-md py-2 pl-12 transition-colors cursor-pointer text-sm font-semibold
+  //           ${
+  //             selectedSubSection === text
+  //               ? "bg-white text-[#033453]"
+  //               : "text-white hover:bg-[#005073]"
+  //           }`}
+  //         onClick={() => {
+  //           setSelectedSubSection(text);
+  //           setSelectedSection(text);
+  //           setSelectedParentSection(parentSection);
+  //           onClick && onClick();
+  //         }}
+  //       >
+  //         {text}
+  //       </div>
+  //     </div>
+  //   </div>
+  // );
+  const SubMenuItem = ({ text, onClick, isLast, parentSection, pathUrl }) => {
+    // Extract the URL from the pathUrl prop
+    const url = pathUrl?.startsWith("/") ? pathUrl : `/${pathUrl}`;
+
+    const handleLeftClick = (e) => {
+      // For left clicks, use your normal click handler with router navigation
+      e.preventDefault();
+      setSelectedSubSection(text);
+      setSelectedSection(text);
+      setSelectedParentSection(parentSection);
+      onClick && onClick();
+    };
+
+    return (
+      <div className="relative">
+        {!isLast && (
+          <div className="absolute left-6 top-1/2 w-[1px] h-full bg-white -translate-x-1/2" />
+        )}
+        <div className="relative flex items-center">
+          <div
+            className={`absolute left-6 w-3 h-3 rounded-full border-2 border-white -translate-x-1/2 z-10 ${
+              selectedSubSection === text ? "" : "bg-gray-400"
             }`}
-          onClick={() => {
-            setSelectedSubSection(text);
-            setSelectedSection(text);
-            setSelectedParentSection(parentSection);
-            onClick && onClick();
-          }}
-        >
-          {text}
+          />
+          <a
+            href={url}
+            className={`w-full flex items-center px-4 rounded-md py-2 pl-12 transition-colors cursor-pointer text-sm font-semibold
+              ${
+                selectedSubSection === text
+                  ? "bg-white text-[#033453]"
+                  : "text-white hover:bg-[#005073]"
+              }`}
+            onClick={handleLeftClick}
+          >
+            {text}
+          </a>
         </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   const MenuItem = ({
     text,
@@ -344,21 +375,13 @@ const Base = ({ renderContent: RenderContent }) => {
       : selectedSection === text && selectedParentSection === text;
 
     const DynamicIcon = ({ name, size = 24, color = "currentColor" }) => {
-      const IconComponent = Icons[name]; // Dynamically get the icon component
+      const IconComponent = Icons[name];
       return IconComponent ? (
         <IconComponent size={size} color={color} />
       ) : (
         <Icons.AlertCircle size={size} color={color} />
       );
     };
-    // console.log("Icons keys:", Object.keys(Icons)); // Shows all available icon names
-
-    // Ensure menuIcon is a valid key
-    // const IconComponent = Icons[String(menuIcon)] ;
-    // const IconComponent = Icons[menuIcon] ;
-    // const IconComponent = Icons[menuIcon] || Icons.AlertCircle;
-
-    // console.log("IconComponent:", IconComponent);
 
     return (
       <div className="w-full px-3 py-1 relative">
@@ -381,77 +404,7 @@ const Base = ({ renderContent: RenderContent }) => {
             }
           }}
         >
-          {/* {menuIcon && React.createElement(menuIcon)} */}
-          {/* {IconComponent && React.createElement(IconComponent, { className: "w-5 h-5 mr-3" })} */}
-          {/* {IconComponent ? <IconComponent className="w-5 h-5 mr-3" /> : <Icons.AlertCircle className="w-5 h-5 mr-3" />} */}
-          {/* <DynamicIcon name={menuIcon} className="w-5 h-5 text-white" /> */}
-
           <span className="flex-1 text-left">{text}</span>
-
-          {/* {
-            text === "Dashboard" ? (
-              <>
-                <Home className="w-5 h-5 mr-3" />
-                <span className="flex-1 text-left">{text}</span>
-              </>
-            ) :
-              text === "Master" ? (
-                <>
-                  <LayoutGrid className="w-5 h-5 mr-3" />
-                  <span className="flex-1 text-left">{text}</span>
-                </>
-              ) : text === "Configuration" ? (
-                <>
-                  <Settings2 className="w-5 h-5 mr-3" />
-                  <span className="flex-1 text-left">{text}</span>
-                </>
-              ) : text === "Our Scheme" ? (
-                <>
-                  <LayoutGrid className="w-5 h-5 mr-3" />
-                  <span className="flex-1 text-left">{text}</span>
-                </>
-              ) : text === "Manage Account" ? (
-                <>
-                  <User className="w-5 h-5 mr-3" />
-                  <span className="flex-1 text-left">{text}</span>
-                </>
-              ) : text === "Payment" ? (
-                <>
-                  <CreditCard className="w-5 h-5 mr-3" />
-                  <span className="flex-1 text-left">{text}</span>
-                </>
-              ) : text === "Catalog" ? (
-                <>
-                  <FileText className="w-5 h-5 mr-3" />
-                  <span className="flex-1 text-left">{text}</span>
-                </>
-              ) : text === "Notification" ? (
-                <>
-                  <Bell className="w-5 h-5 mr-3" />
-                  <span className="flex-1 text-left">{text}</span>
-                </>
-              ) : text === "Whatsapp" ? (
-                <>
-                  <MessageCircle className="w-5 h-5 mr-3" />
-                  <span className="flex-1 text-left">{text}</span>
-                </>
-              ) : text === "Gift" ? (
-                <>
-                  <Gift className="w-5 h-5 mr-3" />
-                  <span className="flex-1 text-left">{text}</span>
-                </>
-              ) : text === "Setting" ? (
-                <>
-                  <Settings className="w-5 h-5 mr-3" />
-                  <span className="flex-1 text-left">{text}</span>
-                </>
-              ) : text === "Reports" ? (
-                <>
-                  <BarChart2 className="w-5 h-5 mr-3" />
-                  <span className="flex-1 text-left">{text}</span>
-                </>
-              ) : null
-          } */}
 
           {hasSubmenu && (
             <span className="ml-auto transition-transform duration-300">
@@ -492,12 +445,6 @@ const Base = ({ renderContent: RenderContent }) => {
   };
 
   const superData = [
-    // {
-    //   text: "Dashboard",
-    //   icon: Home,
-    //   hasSubmenu: false,
-    //   onClick: () => setSelectedParentSection('Dashboard'),
-    // },
     {
       text: "Master",
       icon: LayoutGrid,
@@ -573,79 +520,75 @@ const Base = ({ renderContent: RenderContent }) => {
       link: "/receiptprint/printone",
       icon: <PawPrintIcon className="text-green-500" />,
     },
-    // { name: "Agent Incentive",link:"", icon: <DollarSign className="text-orange-500" /> },
-    // { name: "Referral Incentive",link:"", icon: <Share2 className="text-teal-500" /> },
   ];
 
   return (
     <div className="min-h-screen flex flex-col">
       <header className="fixed top-0 right-0 lg:left-64 left-0 bg-[#FBFCF8] shadow-md z-30 h-16">
-        <div className="flex justify-between items-center ms-3 ">
-          <div className="flex justify-center  ">
-            <div className="title lg:flex justify-center items-center hidden px-8">
-              <h1 className="text-lg font-semibold">{sectionName}</h1>
+        <div className="flex justify-between items-center h-full px-4">
+          {/* Left side of header with burger menu and section title */}
+          <div className="flex flex-row gap-4">
+            <div className="flex items-center">
+              {/* Burger menu button - positioned on the left for mobile */}
+              <button
+                className="lg:hidden p-2 mr-3"
+                data-testid="toggle-sidebar"
+                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              >
+                <Menu className="w-6 h-6" />
+              </button>
+
+              {/* Section title - hidden on mobile */}
+              <div className="title lg:flex justify-center items-center hidden">
+                <h1 className="text-lg font-semibold">{sectionName}</h1>
+              </div>
             </div>
+
+            {/* Search component */}
             <div
-              className="se flex justify-center items-center w-[120px] h-[50px] gap-5 border text-[#F2F2F9] rounded-[8px] divide-x-2 ms-12 "
+              className="se flex justify-center items-center w-[120px] h-[50px] gap-5 border text-[#F2F2F9] rounded-[8px]"
               onClick={() => setIsModalOpen(true)}
             >
               <div className="search">
-                <img src={Search} alt="" className="w-7 h-7" />{" "}
-                {/* Increased size */}
+                <img src={Search} alt="" className="w-7 h-7" />
               </div>
 
               <div className="command flex ps-2">
-                <img src={Command} alt="" className="w-7 h-7" />{" "}
-                {/* Increased size */}
+                <img src={Command} alt="" className="w-7 h-7" />
                 <span className="text-black ms-1">F</span>
               </div>
             </div>
           </div>
 
-          <div className="flex flex-row   mt-3 mr-[33px]">
+          {/* Right side with settings, notifications and user menu */}
+          <div className="flex items-center space-x-3">
             <button
-              className="flex flex-row items-center p-2 text-gray-900 font-semibold"
-              onClick={() => setSettingsOpen((prev) => !prev)}
+              className="p-2 text-gray-900"
+              data-testid="toggle-settings"
+              onClick={() => setSettingsOpen(!settingsOpen)}
             >
-              <Settings size={28} />
+              <Settings size={24} />
             </button>
 
-            {/*   */}
-            <button className="flex flex-row items-center p-2 text-gray-900 font-semibold">
-              <Bell size={28} />
+            <button className="p-2 text-gray-900">
+              <Bell size={24} />
             </button>
 
             {roledata ? (
               <div className="relative inline-block text-left">
-                {/* Dropdown Button */}
                 <button
                   onClick={() => setIsOpen(!isOpen)}
                   className="flex items-center gap-2 p-2 focus:outline-none"
                 >
-                  {/* Profile Circle */}
                   <span
                     className="flex items-center justify-center w-9 h-9 text-lg font-semibold text-white rounded-full"
                     style={{ backgroundColor: layout_color }}
                   >
                     {role}
                   </span>
-
-                  <div className="pointer-events-none absolute inset-y-0 left-[44px] top-[10px] flex items-center">
-                    <svg
-                      className="h-4 w-4 text-gray-400"
-                      fill="none"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="3"
-                      viewBox="0 0 24 24"
-                      stroke="black"
-                    >
-                      <path d="M19 9l-7 7-7-7"></path>
-                    </svg>
-                  </div>
+                  <ChevronDown className="h-4 w-4 text-gray-700" />
                 </button>
 
-                {/* Dropdown Menu */}
                 {isOpen && (
                   <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-md shadow-lg">
                     <button
@@ -658,41 +601,11 @@ const Base = ({ renderContent: RenderContent }) => {
                 )}
               </div>
             ) : (
-              <button
-                className="flex flex-row items-center px-4 py-2 text-gray-900 font-semibold"
-                onClick={() => setSettingsOpen((prev) => !prev)}
-              >
-                <UserRoundCheck size={32} />
+              <button className="p-2 text-gray-900">
+                <UserRoundCheck size={28} />
               </button>
             )}
           </div>
-        </div>
-
-        <div className="container mx-auto px-4 py-3">
-          <nav className="flex items-center justify-between lg:justify-end gap-3">
-            <button
-              className="lg:hidden p-2"
-              aria-label="toggle-sidebar"
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsSidebarOpen(!isSidebarOpen);
-              }}
-            >
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
-              </svg>
-            </button>
-          </nav>
         </div>
       </header>
 
@@ -755,9 +668,9 @@ const Base = ({ renderContent: RenderContent }) => {
         </nav>
       </aside>
 
-      <div className="flex flex-col min-h-screen bg-[#f5f5f5]  pt-14 lg:pl-64 pb-10 ">
+      <div className="flex flex-col min-h-screen bg-[#f5f5f5] pt-14 lg:pl-64 pb-10">
         {/* SettingsButton  */}
-        <div className="settingsButton flex flex-row justify-end items-center ">
+        <div className="settingsButton flex flex-row justify-end items-center">
           {settingsOpen === true && (
             <div
               ref={settingsRef}
@@ -768,7 +681,6 @@ const Base = ({ renderContent: RenderContent }) => {
               <nav className="flex-1 text-gray-900">
                 <div className="flex flex-col">
                   {/* Title  */}
-
                   <div className="flex justify-between items-center">
                     <div className="p-3 border-l">
                       <h3 className="text-xl font-semibold text-start px-3">

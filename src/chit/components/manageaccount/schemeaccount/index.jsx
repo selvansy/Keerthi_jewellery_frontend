@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import Table from '../../common/Table'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
-import { SlidersHorizontal, Search, X } from 'lucide-react'
+import { SlidersHorizontal, Search, X ,Eye } from 'lucide-react'
 import { addedtype, allschemestatus, getallschemetypes, getallbranchscheme, getallbranchclassification, getemployeebybranch, getallbranch, schemeaccounttable, changeschemeaccountStatus, deleteschemeaccount } from '../../../api/Endpoints'
 import { toast } from 'react-toastify'
 import { CalendarDays, RefreshCcw } from 'lucide-react'
@@ -68,7 +68,7 @@ const Schemeaccount = () => {
     id_classification: '',
     collectionuserid: '',
     id_scheme: '',
-    scheme_type: 1
+    scheme_type: 0
   });
  
 
@@ -86,7 +86,7 @@ const Schemeaccount = () => {
       id_classification: '',
       collectionuserid: '',
       id_scheme: '',
-      scheme_type: 1
+      scheme_type: 0
     }));
     SetFiltered(false)
     toast.success("Filter is cleared");
@@ -101,7 +101,7 @@ const Schemeaccount = () => {
       id_classification: '',
       collectionuserid: '',
       id_scheme: '',
-      scheme_type: 1
+      scheme_type: 0
     });
 
   }
@@ -431,28 +431,28 @@ const Schemeaccount = () => {
           >
             <div className="w-32 rounded-md bg-white ring-1 ring-black ring-opacity-5">
               <div className="py-1">
-                <button
-                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                  onClick={() => {
-                    handleEdit(row?._id);
-                    setActiveDropdown(null);
-                  }}
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                  </svg>
-                  Edit
-                </button>
+                  {row.total_paidinstallments === 0 && (
+                    <button
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                    onClick={() => {
+                      handleEdit(row?._id);
+                      setActiveDropdown(null);
+                    }}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    Edit
+                  </button>
+                  )}
                 <button
                   className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
                   onClick={() => {
                     handleOpenLedger(row?._id);
                   }}
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                  </svg>
-                  Ledger
+                 <Eye className='w-4 h-4'/>
+                  View
                 </button>
                 <button
                   className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
@@ -482,14 +482,18 @@ const Schemeaccount = () => {
       ),
     },
     {
-      header: 'Account Name',
-      cell: (row) => row?.account_name,
-    },
-    {
-      header: "Mobile",
-      cell: (row) => row?.mobile
-    },
-
+      header: "Account Name",
+      cell: (row) => (
+        <div className="flex flex-col gap-2">
+          <h6 className='text-nowrap'>{row?.account_name}</h6>
+          <span>{row?.mobile}</span>
+        </div>
+      ),
+    },    
+    // {
+    //   header: "Mobile",
+    //   cell: (row) => row?.mobile
+    // },
     {
       header: 'Scheme',
       cell: (row) => {
@@ -502,31 +506,22 @@ const Schemeaccount = () => {
         }
       }
     },
-    {
-      header: 'Metal Name',
-      cell: (row) => {
-        return row?.id_metal === 1 ? 'Gold' :
-          row?.id_metal === 2 ? 'Silver' :
-            row?.id_metal === 3 ? 'Diamond' :
-              row?.id_metal === 4 ? 'Platinum' : 'Gold Coins';
-      }
-    },
-    {
-      header: 'Purity Name',
-      cell: (row) => {
-        return row?.id_purity === 1 ? '24CT' :
-          row?.id_purity === 2 ? '22CT' :
-            row?.id_purity === 3 ? '20CT' :
-              row?.id_purity === 4 ? '18CT' :
-                row?.id_purity === 5 ? 'Gold coin' :
-                  row?.id_purity === 6 ? 'Platinum' :
-                    row?.id_purity === 7 ? 'Diamond' : 'Silver'
-      }
-    },
+    // {
+    //   header: 'Metal',
+    //   cell: (row) => `${row?.metal_name}(${row.purity_name})`
+    // },
     {
       header: "A/c No",
       cell: (row) => row?.scheme_acc_number === "" ? 'Not Allocated' : row?.scheme_acc_number
     },
+    {
+      header: "Paid Installments",
+      cell: (row) => (
+        <div className="bg-green-500 rounded-full p-1 text-white flex justify-center">
+          {row?.total_paidinstallments}/{row?.total_installments}
+        </div>
+      ),
+    },  
     {
       header: "Start Date",
       cell: (row) => {
@@ -536,81 +531,49 @@ const Schemeaccount = () => {
     },
     {
       header: "Maturity Date",
-      cell: (row) => {
-        const date = new Date(row?.maturity_date);
-        return date.toLocaleDateString('en-GB'); // 'en-GB' gives the d-m-Y format
-      }
-    },
-
-    {
-      header: "Total Ins",
-      cell: (row) => row?.total_installments
-    },
-    {
-      header: "Paid Ins",
-      cell: (row) => row?.total_paidinstallments
-    },
-    {
-      header: "Paid Amt",
-      cell: (row) => row?.total_paidamount
-    },
-    {
-      header: "Paid Wgt",
-      cell: (row) => row?.total_weight
-    },
+      cell: (row) => row?.maturity_date
+    },  
+    // {
+    //   header: "Total Ins",
+    //   cell: (row) => row?.total_installments
+    // },
+    // {
+    //   header: "Paid Amt",
+    //   cell: (row) => row?.total_paidamount
+    // },
+    // {
+    //   header: "Paid Wgt",
+    //   cell: (row) => row?.total_weight
+    // },
     {
       header: 'Scheme Type',
-      cell: (row) => {
-        if (row?.scheme_type === 1) {
-          return `Amount End Weight`;
-        } else if (row?.scheme_type === 2) {
-          return `Amount To Weight`;
-        } else if (row?.scheme_type === 3) {
-          return `Weight`;
-        } else if (row?.scheme_type === 4) {
-          return `Flexible Amount To Bonus`;
-        } else if (row?.scheme_type === 5) {
-          return `Flexiable Amount To Weight`;
-        } else if (row?.scheme_type === 6) {
-          return `Fixed Amount To Weight`;
-        } else if (row?.scheme_type === 7) {
-          return `Fixed Amount End Weight`;
-        } else if (row?.scheme_type === 8) {
-          return `Fixed Amount To Bonus`;
-        } else if (row?.scheme_type === 9) {
-          return `Flexible Amount End Weight`;
-        } else if (row?.scheme_type === 10) {
-          return `Digi Gold`;
-        } else {
-          return `Amount To Bonus`;
-        }
-      }
+      cell: (row) => row?.scheme_typename
     },
     {
-      header: "Classification Name",
-      cell: (row) => row?.classification_name
+      header: "Classification",
+      cell: (row) => row?.id_classification.name
     },
     {
       header: "Branch Name",
       cell: (row) => row?.branch_name
     },
-    {
-      header: "Added By",
-      cell: (row) => row?.created_through
-    },
-    {
-      header: "Create Date",
-      cell: (row) => {
-        const date = new Date(row?.createdAt);
-        return date.toLocaleDateString('en-GB'); // 'en-GB' gives the d-m-Y format
-      }
-    }
+    // {
+    //   header: "Added By",
+    //   cell: (row) => row?.created_through
+    // },
+    // {
+    //   header: "Create Date",
+    //   cell: (row) => {
+    //     const date = new Date(row?.createdAt);
+    //     return date.toLocaleDateString('en-GB'); // 'en-GB' gives the d-m-Y format
+    //   }
+    // }
 
   ];
 
   return (
     <div className="flex flex-col p-4">
-      <h2 className="text-2xl text-gray-900 font-bold">Scheme Account</h2>
+      <h2 className="text-2xl text-gray-900 font-bold">Customer Schemes</h2>
       <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
         <div className="relative w-full lg:w-1/3 min-w-[200px]">
           <div className="absolute left-3 top-1/2 transform -translate-y-1/2">

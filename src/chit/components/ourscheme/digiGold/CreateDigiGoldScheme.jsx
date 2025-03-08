@@ -204,8 +204,8 @@ const CreateDigiGoldScheme = () => {
       description: schemeData?.data?.description || "",
       term_desc:schemeData?.data?.term_desc || "",
       id_branch:schemeData?.data?.id_branch || "",
-      id_metal:schemeData?.data?.id_metal?._id || "",
-      id_purity:schemeData?.data?.id_purity._id || "",
+      id_metal:schemeData?.data?.id_metal || "",
+      id_purity:schemeData?.data?._id || "",
       id_classification:schemeData?.data?.id_classification._id,
       bonus_type:schemeData?.data?.bonus_type || 1,
       count: schemeData?.data?.count || 1,
@@ -219,8 +219,7 @@ const CreateDigiGoldScheme = () => {
       scheme_type:schemeData?.data?.scheme_type || 10
     })
   },[schemeData])
-  console.log(schemeData)
- console.log(formik.values)
+
   const handleCancle = () => {
      if(!id){
       navigate("/ourscheme/digigold");

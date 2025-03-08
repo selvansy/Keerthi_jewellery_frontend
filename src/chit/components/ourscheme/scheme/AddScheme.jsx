@@ -69,7 +69,7 @@ const SchemeForm = () => {
   const [giftType, setGiftType] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [spanText, setSpanText] = useState("");
-  const [validation,setValidation]= useState({})
+  const [validation, setValidation] = useState({});
 
   const formik = useFormik({
     initialValues: {
@@ -97,7 +97,7 @@ const SchemeForm = () => {
       min_weight: "",
       max_weight: "",
       total_installments: "",
-      buygsttype: "",
+      buygsttype: 1,
       buy_gst: "",
       benefit_min_installment_wst_mkg: "",
       wastagebenefit: "",
@@ -156,7 +156,6 @@ const SchemeForm = () => {
       const formData = new FormData();
 
       if (formik.values.classType) {
-        console.log(amounts);
         amounts.forEach((amount) => {
           if (amount !== "") {
             formData.append("fixed_amounts[]", amount);
@@ -246,9 +245,7 @@ const SchemeForm = () => {
   const { data: schemeData } = useQuery({
     queryKey: ["scheme", id],
     queryFn: async () => await getschemeById(id),
-    enabled: Boolean(id),
-    staleTime: 5 * 60 * 1000,
-    cacheTime: 10 * 60 * 1000,
+    enabled: Boolean(id)
   });
 
   const { data: metalResponse } = useQuery({
@@ -300,6 +297,7 @@ const SchemeForm = () => {
       if (response.status === 200) {
         setIsLoading(false);
         toast.success(response.message);
+        formik.resetForm()
         navigate("/scheme/scheme/");
       }
     },
@@ -327,8 +325,8 @@ const SchemeForm = () => {
         code: schemeData.data.code || "",
         id_classification: schemeData.data.id_classification._id || "",
         id_branch: schemeData?.data?.id_branch || "",
-        id_metal: schemeData.data.id_metal._id || "",
-        id_purity: schemeData.data.id_purity._id || "",
+        id_metal: schemeData?.data?.id_metal?._id || "",
+        id_purity: schemeData?.data?.id_purity?._id || "",
         installment_type: schemeData.data.installment_type || "",
         maturity_period: schemeData.data.maturity_period || "",
         saving_type: schemeData.data.saving_type || "",
@@ -343,8 +341,8 @@ const SchemeForm = () => {
         max_amount: schemeData.data.max_amount || "",
         min_weight: schemeData.data.min_weight || "",
         max_weight: schemeData.data.max_weight || "",
-        buy_gst: schemeData.data.buy_gst || "",
-        buygsttype: schemeData.data.buytgsttype || "",
+        buy_gst: schemeData.data.buy_gst || 0,
+        buygsttype: schemeData?.data?.buygsttype || 1,
         wastagebenefit: schemeData.data.wastagebenefit || "",
         total_installments: schemeData.data.total_installments || "",
         benefit_making: schemeData.data.makingcharge || "",
@@ -393,16 +391,15 @@ const SchemeForm = () => {
       if (schemeData?.data) {
         formik.setFieldValue("scheme_type", schemeData.data.scheme_type);
       }
-      
     }
   }, [id, schemeData]);
+  console.log(formik.values);
 
   useEffect(() => {
     if (schemeData?.data && Array.isArray(schemeData.data.fixed_amounts)) {
       setAmounts(schemeData.data.fixed_amounts);
     }
   }, [schemeData?.data]);
-  
 
   useEffect(() => {
     if (installment_type?.data) {
@@ -470,7 +467,11 @@ const SchemeForm = () => {
       const incrementRate = formik.values.incrementRate;
       const startingAmount = formik.values.startingAmount;
       const totalCountAmount = formik.values.totalCountAmount;
-      if (incrementRate === "" || startingAmount === "" || totalCountAmount === "") {
+      if (
+        incrementRate === "" ||
+        startingAmount === "" ||
+        totalCountAmount === ""
+      ) {
         setAmounts([]);
       } else {
         generateAmounts(totalCountAmount, startingAmount, incrementRate);
@@ -721,10 +722,13 @@ const SchemeForm = () => {
                 isClearable={true}
                 options={branch || []}
                 placeholder="Select Branch"
-                value={branch || [].find(
-                  (option) => option.value === formik.values.id_branch
-                )}
-                onChange={(option) => formik.setFieldValue("id_branch", option.value || "")}
+                value={
+                  branch ||
+                  [].find((option) => option.value === formik.values.id_branch)
+                }
+                onChange={(option) =>
+                  formik.setFieldValue("id_branch", option.value || "")
+                }
               />
               {formik.errors.id_branch && (
                 <div className="text-red-500 text-sm mt-1">
@@ -869,14 +873,14 @@ const SchemeForm = () => {
                   option ? option.value : null
                 );
                 setSpanText(option.label);
-                if(option.value === 1){
-                  setValidation({max: 12, maxLength: 2})
-                }else if(option.value ==2){
-                  setValidation({max: 52, maxLength: 2})
-                }else if(option.value === 3){
-                  setValidation({max: 336, maxLength: 3})
-                }else{
-                  setValidation({max: 9, maxLength: 1})
+                if (option.value === 1) {
+                  setValidation({ max: 12, maxLength: 2 });
+                } else if (option.value == 2) {
+                  setValidation({ max: 52, maxLength: 2 });
+                } else if (option.value === 3) {
+                  setValidation({ max: 336, maxLength: 3 });
+                } else {
+                  setValidation({ max: 9, maxLength: 1 });
                 }
               }}
               onBlur={() => formik.setFieldTouched("installment_type", true)}
@@ -894,14 +898,31 @@ const SchemeForm = () => {
             </label>
             <div className="relative">
               <input
-                type="text"
+                type="number"
                 name="maturity_period"
                 onWheel={(e) => e.target.blur()}
-                onInput={(e) => {
-                  if (e.target.value.length <= validation.maxLength) {
-                    console.log('kd')
-                    formik.handleChange(e);
+                onKeyUp={(e) => {
+                  const value = e.target.value.trim();
+                  const numValue = Number(value);
+
+                  if (value.length > validation.maxLength) {
+                    formik.setFieldError(
+                      "maturity_period",
+                      `Maturity period should be under ${validation.maxLength} characters`
+                    );
+                    return;
                   }
+
+                  if (numValue > validation.max) {
+                    formik.setFieldError(
+                      "maturity_period",
+                      `Maturity period should be under ${validation.max}`
+                    );
+                    return;
+                  }
+
+                  formik.setFieldError("maturity_period", ""); 
+                  formik.handleChange(e);
                 }}
                 className="w-full border rounded-md px-3 py-2"
                 placeholder="Enter Maturity Period"
@@ -968,7 +989,10 @@ const SchemeForm = () => {
                 onInput={(e) => {
                   let value = e.target.value;
                   if (value > "50") {
-                    formik.setFieldError("totalCountAmount", "Max allowed is 50");
+                    formik.setFieldError(
+                      "totalCountAmount",
+                      "Max allowed is 50"
+                    );
                   }
 
                   if (value.length > 2) {

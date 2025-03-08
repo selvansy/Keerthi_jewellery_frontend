@@ -574,6 +574,25 @@ export const deleteDept = async(id)=>{
     return response.data
 }
 
+//Topup
+
+export const addTopup= async(data)=>{
+    const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/topup/add`,data)
+    return response.data
+}
+
+export const topupTable = async(data)=>{
+    const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/topup/table`,data)
+    return response.data
+}
+
+export const updateStatus = async(payload)=>{
+    const {id,data} = payload;
+    const response= await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/topup/${id}`,data)
+    return response.data
+}
+
+
 //Campaign
 
 export const getallCampaigntable = async (data) => {
@@ -1339,7 +1358,7 @@ export const searchmobileschemeaccount = async (data) => {
 }
 
 export const getschemeaccountbyid = async (data) => {
-    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/schemeaccount/${data.id}`);
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/schemeaccount/${data.id || data}`);
     return response.data;       
 }
 
@@ -1575,7 +1594,6 @@ export const changeschemestatus = async (id) => {
  
 
 export const updateScheme = async (id,data) => {
-    console.log(id,data)
     const response = await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/scheme/${id}`,data);
     return response;
 }
@@ -1692,7 +1710,6 @@ export const deletemetalrate= async(id)=>{
 }
 
 export const getMetalRateByMetalId= async(metalId,purityId,date)=>{  
-    console.log(metalId,purityId,date)
     const response= await Api.get(`${import.meta.env.VITE_API_URL}/api/client/metalrate/current?metalid=${metalId}&purity=${purityId}&date=${date}`)
     return response.data
 }

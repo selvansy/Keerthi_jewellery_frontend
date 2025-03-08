@@ -85,9 +85,10 @@ import PrecloseAccount from "../chit/components/manageaccount/preclose/PrecloseA
 import { path } from "framer-motion/client";
 import TicketSubmissionForm from "../chit/components/help/Addticket";
 import Ticket from "../chit/components/help/ticket";
+import TopUp from "../chit/components/SuperAdmin/topupApprovals/index"
+import CustomerSchemes from "../../src/chit/components/manageaccount/schemeaccount/index"
 
 const RouteList = [
-
 
   {
     name: 'Login',
@@ -193,6 +194,7 @@ const RouteList = [
     path: 'masters/topup',
     element: <Base renderContent={Topup} />
   },
+
   {
     name: "Campaign Type",
     path: '/masters/campaign',
@@ -295,11 +297,15 @@ const RouteList = [
     path: '/managecustomers/editcustomer/:id',
     element: <Base renderContent={Customers} />
   },
-
   {
     name: "Completed Account",
     path: '/managecustomers/completedaccount',
     element: <Base renderContent={CompleteAccount} />
+  },
+  {
+    name:"Customer Schemes",
+    path:"/managecustomers/customerschemes",
+    element:<Base renderContent={CustomerSchemes}/>
   },
 
   //Wallet
@@ -564,18 +570,16 @@ const RouteList = [
     path: '/classification/addclassification/:id',
     element: <Base renderContent={CreateSchemeClassificaton} />
   },
-
-
   {
     name: "Closed Account",
     path: '/managecustomers/accountredemption',
-    element: <Base renderContent={CloseAccount} />
-  },
-  {
-    name: "Add Close Account",
-    path: '/manageaccount/addcloseaccount',
     element: <Base renderContent={AddCloseAccount} />
   },
+  // {
+  //   name: "Add Close Account",
+  //   path: '/manageaccount/addcloseaccount',
+  //   element: <Base renderContent={AddCloseAccount} />
+  // },
   {
     name: "Add Revert Account",
     path: '/manageaccount/addrevertaccount',
@@ -584,7 +588,7 @@ const RouteList = [
   {
     name: "Preclose Account",
     path: '/managecustomers/preclose',
-    element: <Base renderContent={PrecloseAccount} />
+    element: <Base renderContent={AddCloseAccount} />
   },
   
   // Outstanding Report 
@@ -617,6 +621,14 @@ const RouteList = [
     element: <Base renderContent={Schemetype} />
   },
   // super admin routes
+
+  
+  {
+    name: "Top up",
+    path: '/superadmin/topup',
+    element: <Base renderContent={TopUp} />
+  },
+
   {
     name: "Client Master",
     path: '/superadmin/clientmaster',
