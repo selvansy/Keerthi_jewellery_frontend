@@ -87,22 +87,38 @@ export const schemeValidationSchema = Yup.object({
   description: Yup.string().required("Description is required"),
   term_desc: Yup.string().required("Terms and conditions is required"),
   classification_order: Yup.number(),
+  // grace_period: Yup.number()
+  //   .typeError("Grace period must be a number")
+  //   .min(0, "Must be 0 or a positive number")
+  //   .when("grace_type", {
+  //     is: (grace_type) => !!grace_type,
+  //     then: Yup.number()
+  //       .required("Grace period is required")
+  //       .test(
+  //         "grace_period_validation",
+  //         "Grace period cannot be greater than maturity period",
+  //         function (grace_period) {
+  //           const { maturity_period } = this.parent;
+  //           return !maturity_period || grace_period <= maturity_period;
+  //         }
+  //       ),
+  //   }),
   grace_period: Yup.number()
-    .typeError("Grace period must be a number")
-    .min(0, "Must be 0 or a positive number")
-    .when("grace_type", {
-      is: (grace_type) => !!grace_type,
-      then: Yup.number()
-        .required("Grace period is required")
-        .test(
-          "grace_period_validation",
-          "Grace period cannot be greater than maturity period",
-          function (grace_period) {
-            const { maturity_period } = this.parent;
-            return !maturity_period || grace_period <= maturity_period;
-          }
-        ),
-    }),
+  .typeError("Grace period must be a number")
+  .min(0, "Must be 0 or a positive number")
+  .when("grace_type", {
+    is: true, // Simplified condition
+    then: Yup.number()
+      .required("Grace period is required")
+      .test(
+        "grace_period_validation",
+        "Grace period cannot be greater than maturity period",
+        function (grace_period) {
+          const { maturity_period } = this.parent;
+          return !maturity_period || grace_period <= maturity_period;
+        }
+      ),
+  }),
   grace_fine: Yup.number()
     .typeError("Grace fine must be a number")
     .min(0, "Must be 0 or a positive number")
@@ -184,17 +200,34 @@ export const schemeValidationSchema = Yup.object({
     .positive("Must be a positive number"),
   agent_remark: Yup.string().typeError("Must be a alphabet"),
   agent_target: Yup.number()
-    .typeError("Must be a number")
-    .positive("Must be a positive number"),
+  .typeError("Must be a number")
+  .when('agent_restriction', {
+    is: true,
+    then: () => Yup.number()
+      .typeError("Must be a number")
+      .positive("Must be a positive number")
+      .required("Agent target is required"),
+    otherwise: () => Yup.number().notRequired(),
+  }),
+  // partial_commission: Yup.number()
+  //   .typeError("Must be a number")
+  //   .positive("Must be a positive number")
+  //   .when("agent_target", {
+  //     is: (value) => value && value > 0,
+  //     then: Yup.number().required(
+  //       "Partial commission is required when agent target is set"
+  //     ),
+  //   }),
   partial_commission: Yup.number()
-    .typeError("Must be a number")
-    .positive("Must be a positive number")
-    .when("agent_target", {
-      is: (value) => value && value > 0,
-      then: Yup.number().required(
-        "Partial commission is required when agent target is set"
-      ),
-    }),
+  .typeError("Must be a number")
+  .positive("Must be a positive number")
+  .when(['agent_restriction', 'agent_target'], {
+    is: (agent_restriction, agent_target) => agent_restriction && agent_target && agent_target > 0,
+    then: () => Yup.number().required(
+      "Partial commission is required when agent target is set"
+    ),
+    otherwise: () => Yup.number().notRequired(),
+  }),
   limit_installment: Yup.number()
     .typeError("Must be a number")
     .min(0, "Must be 0 or a positive number"),

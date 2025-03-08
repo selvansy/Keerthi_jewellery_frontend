@@ -83,7 +83,7 @@ const AgentDetails = ({ formik,layout_color}) => {
           <div className="relative">
             <input
               type="text"
-              name="cus_remarks"
+              name="agent_remark"
               value={formik.values.agent_remark}
               onChange={formik.handleChange}
               onWheel={(e) => e.target.blur()}
@@ -109,7 +109,6 @@ const AgentDetails = ({ formik,layout_color}) => {
               value={formik.values.agent_target}
               onChange={formik.handleChange}
               onWheel={(e) => e.target.blur()}
-              onBlur={formik.handleBlur}
               className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
               placeholder="Enter Agent Target"
             />

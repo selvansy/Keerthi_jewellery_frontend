@@ -276,10 +276,6 @@ const AddCloseAccount = () => {
   });
 
   //handler functions
-  const handleRevert = () => {
-    setIsviewOpen(true);
-  };
-
   function closeIncommingModal() {
     setIsviewOpen(false);
   }
@@ -400,7 +396,8 @@ const AddCloseAccount = () => {
         <h2 className="text-2xl text-[#023453] font-bold justify-between">
           {dynamic ? "Preclose" : "Account Redemption"}
         </h2>
-        <div className="flex flex-row items-center justify-end gap-2">
+        {!dynamic && (
+          <div className="flex flex-row items-center justify-end gap-2">
           <button
             className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
             onClick={handleOpenRevert}
@@ -409,6 +406,7 @@ const AddCloseAccount = () => {
             + Revert account
           </button>
         </div>
+        )}
       </div>
 
       <div className="w-full flex flex-col bg-white pl-8 pr-8 pb-4 border-t-2 border-[#023453] mt-3 overflow-y-auto scrollbar-hide h-[calc(100vh-200px)]">
