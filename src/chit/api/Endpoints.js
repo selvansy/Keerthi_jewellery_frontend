@@ -1378,8 +1378,8 @@ export const addcloseSchemeAccount = async (data) => {
     const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/addcloseSchemeAccount`,data);
     return response.data;
 }
-export const revertschemeAccount = async (data) => {
-    const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/revertschemeAccount`,data);
+export const revertschemeAccount = async (id) => {
+    const response = await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/schemeAccount/${id}/revert`);
     return response.data;
 }
 
@@ -1396,6 +1396,11 @@ export const searchbarcodenumber = async (data) => {
 
 export const getSchemeAccountCount = async (mobile,schemeId)=>{
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/schemeaccount/accountcount?mobile=${mobile}&schemeid=${schemeId}`)
+    return response.data;
+}
+
+export const schemeAccByCusIdSchmeId = async (cusId,schemeAccNum)=>{
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/schemeaccount/revert?cusid=${cusId}&schemenum=${schemeAccNum}`)
     return response.data;
 }
 
