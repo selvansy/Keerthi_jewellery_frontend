@@ -16,7 +16,6 @@ import {
   updateschemeaccount,
   extendinstallment,
   addcloseSchemeAccount,
-  revertschemeAccount,
   schemeaccountbyid,
   getallbranchscheme,
   getallbranchclassification,

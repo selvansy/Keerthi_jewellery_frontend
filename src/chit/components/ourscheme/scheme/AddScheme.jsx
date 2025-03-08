@@ -124,7 +124,7 @@ const SchemeForm = () => {
       agent_incentive: "",
       agent_restriction: true,
       agent_remark: "",
-      agent_target: "",
+      agent_target: 0,
       partial_commission: "",
 
       wastagetype: "", // no need to pass
@@ -364,7 +364,7 @@ const SchemeForm = () => {
         // Agent referral
         agent_referral: schemeData.data.agent_referral_percentage || "",
         agent_incentive: schemeData.data.agent_percentage || "",
-        agent_target: schemeData.data.agent_target_per || "",
+        agent_target: schemeData.data.agent_target || "",
         partial_commission: schemeData.data.agent_partial_per || "",
         agent_remark: schemeData.data.agent_remark || false,
 
@@ -393,7 +393,6 @@ const SchemeForm = () => {
       }
     }
   }, [id, schemeData]);
-  console.log(formik.values);
 
   useEffect(() => {
     if (schemeData?.data && Array.isArray(schemeData.data.fixed_amounts)) {
@@ -482,7 +481,7 @@ const SchemeForm = () => {
     formik.values.startingAmount,
     formik.values.totalCountAmount,
   ]);
-
+console.log(formik.values)
   // useEffect for branches
   useEffect(() => {
     if (!branchData) return;
@@ -868,19 +867,20 @@ const SchemeForm = () => {
                 (option) => option.value === formik.values.installment_type
               )}
               onChange={(option) => {
+                formik.setFieldValue('maturity_period','')
                 formik.setFieldValue(
                   "installment_type",
                   option ? option.value : null
                 );
                 setSpanText(option.label);
                 if (option.value === 1) {
-                  setValidation({ max: 12, maxLength: 2 });
+                  setValidation({ max: 12, maxLength: 2 ,val:'month'});
                 } else if (option.value == 2) {
-                  setValidation({ max: 52, maxLength: 2 });
+                  setValidation({ max: 52, maxLength: 2,val:'weeks'});
                 } else if (option.value === 3) {
-                  setValidation({ max: 336, maxLength: 3 });
+                  setValidation({ max: 336, maxLength: 3 ,val:'Days'});
                 } else {
-                  setValidation({ max: 9, maxLength: 1 });
+                  setValidation({ max: 1, maxLength: 1,val: "year" });
                 }
               }}
               onBlur={() => formik.setFieldTouched("installment_type", true)}
@@ -916,7 +916,7 @@ const SchemeForm = () => {
                   if (numValue > validation.max) {
                     formik.setFieldError(
                       "maturity_period",
-                      `Maturity period should be under ${validation.max}`
+                      `Maturity period should be under ${validation.max} ${validation.val}`
                     );
                     return;
                   }
