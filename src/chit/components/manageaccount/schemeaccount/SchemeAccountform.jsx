@@ -495,6 +495,19 @@ const AddSchemeAccount = () => {
           installment_type: schemeData?.installment_type,
           code:schemeData?.code
         }));
+        if([12,3,4,2,5,6].includes(schemeData.scheme_type)){
+          setFormData((prevData)=>({
+            ...prevData,
+            max_weight:schemeData?.max_weight,
+            min_weight:schemeData?.min_weight
+          }))
+        }else{
+          setFormData((prevData)=>({
+            ...prevData,
+            max_amount:schemeData?.max_amount,
+            min_amount:schemeData?.min_amount
+          }))
+        }
       } else {
         console.warn("No matching scheme found for ID:", id);
       }
