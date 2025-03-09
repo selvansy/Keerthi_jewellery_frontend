@@ -86,11 +86,12 @@ export const walletHistory = async (data) => {
     return response.data;
 }
 
-// 
+
 export const redeemHistory = async (data) => {
     const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/wallet/redeemtable`,data);
     return response.data;
 }
+
 
  
 /*Metal*/
@@ -709,8 +710,8 @@ export const deletenewarrivals= async(id)=>{
 
 
 export const updateproduct= async(data)=>{
- 
-    const response= await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/product/${data.id}`,data.data)
+    console.log(data)
+    const response= await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/product/${data.id}`,data.formDataToSend)
     return response.data
 }
  
@@ -725,14 +726,14 @@ export const activateproduct= async(id)=>{
     return response.data
 }
 
-export const productbyid= async(data)=>{
-    const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/admin/productbyid`,data)
+export const productbyid= async(id)=>{
+    const response= await Api.get(`${import.meta.env.VITE_API_URL}/api/client/product/${id}`,)
     return response.data
 }
  
 
 export const categorybymetalid= async(id)=>{
-    console.log(id)
+  
     const response= await Api.get(`${import.meta.env.VITE_API_URL}/api/client/category/metal/${id}`)
     return response.data
 }
@@ -1360,7 +1361,7 @@ export const searchmobileschemeaccount = async (data) => {
 }
 
 export const getschemeaccountbyid = async (data) => {
-    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/schemeaccount/${data.id}`);
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/schemeaccount/${data.id || data}`);
     return response.data;       
 }
 
@@ -1380,8 +1381,8 @@ export const addcloseSchemeAccount = async (data) => {
     const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/addcloseSchemeAccount`,data);
     return response.data;
 }
-export const revertschemeAccount = async (data) => {
-    const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/revertschemeAccount`,data);
+export const revertschemeAccount = async (id) => {
+    const response = await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/schemeAccount/${id}/revert`);
     return response.data;
 }
 
@@ -1398,6 +1399,11 @@ export const searchbarcodenumber = async (data) => {
 
 export const getSchemeAccountCount = async (mobile,schemeId)=>{
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/schemeaccount/accountcount?mobile=${mobile}&schemeid=${schemeId}`)
+    return response.data;
+}
+
+export const schemeAccByCusIdSchmeId = async (cusId,schemeAccNum)=>{
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/schemeaccount/revert?cusid=${cusId}&schemenum=${schemeAccNum}`)
     return response.data;
 }
 
@@ -1823,7 +1829,10 @@ export const getallContent=async ()=>{
     return response.data
  }
 
-
+ export const getContentById=async (id)=>{
+    const response=await Api.get(`${import.meta.env.VITE_API_URL}/api/client/content/${id}`)
+    return response.data
+ }
  
  export const deleteContent=async (id)=>{
     const response=await Api.delete(`${import.meta.env.VITE_API_URL}/api/client/content/${id}`)

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { Search } from 'lucide-react'
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import { mobilesearch, redeemType, getallwallet, walletRedeem } from '../../../chit/api/Endpoints'
+import { mobilesearch, redeemType, getallwallet, walletRedeem, getmultipaymentmode } from '../../../chit/api/Endpoints'
 import { formatNumber } from "../../utils/commonFunction"
 import SpinLoading from '../common/spinLoading';
 import { customSelectStyles } from "../../../chit/components/Setup/purity";
@@ -17,11 +17,13 @@ function WalletRedemption() {
     const [walletData, setWalletData] = useState({})
     const [walletPoints, setWalletPoints] = useState({})
     const [redeem_type, setRedeemType] = useState([])
+    const [paymentData, setPaymentData] = useState([])
     const [formData, setFormData] = useState({
         billno: "",
         redeem_amt: "",
         redeem_point: walletData.available_point || "",
-        redeem_type: ""
+        redeem_type: "",
+        payment_mode: ""
     });
 
     const layout_color = useSelector((state) => state.clientForm.layoutColor);
@@ -84,8 +86,11 @@ function WalletRedemption() {
         if (!formData.redeem_point) errors.redeem_point = "RedeemPoint is required"
         if (!formData.redeem_amt) errors.redeem_amt = "RedeemAmount is required"
         if (!formData.redeem_type) errors.redeem_type = "ReedType is required"
-        if (formData.redeem_type == 1) {
+        if (formData.redeem_type == "2") {
             if (!formData.billno) errors.billno = "Billno is required"
+        }
+        if (formData.redeem_type == "1") {
+            if (!formData.payment_mode) errors.payment_mode = "Payment mode is required"
         }
 
         setFormErrors(errors)
@@ -173,10 +178,14 @@ function WalletRedemption() {
     });
 
 
-
     const { data: redeemTypeData } = useQuery({
         queryKey: ["redeem"],
         queryFn: redeemType,
+    });
+
+    const { data: paymentModeData } = useQuery({
+        queryKey: ["payment"],
+        queryFn: getmultipaymentmode,
     });
 
     useEffect(() => {
@@ -189,6 +198,15 @@ function WalletRedemption() {
             setRedeemType(data);
         }
 
+ 
+        if (paymentModeData) {
+            const data = paymentModeData.data.map(item => ({
+                label: item.name,
+                value: item.id
+            }));
+
+            setPaymentData(data);
+        }
 
         if (walletPointsRate) {
             const data = walletPointsRate.data
@@ -200,7 +218,7 @@ function WalletRedemption() {
 
         }
 
-    }, [redeemTypeData, walletPointsRate])
+    }, [redeemTypeData, walletPointsRate, paymentModeData])
 
 
 
@@ -222,14 +240,14 @@ function WalletRedemption() {
 
                     <div className='grid grid-rows-1 md:grid-cols-2 gap-5'>
                         <div className='flex flex-col mt-2 mb-4 relative'>
-                            <div className="flex flex-col gap-2 mt-3">
-                                <div className='flex flex-col gap-2 relative'>
+                            <div className="flex flex-col gap-3mt-3">
+                                <div className='flex flex-col gap-3relative'>
                                     <label className='text-black mb-1 font-normal'>Phone Number<span className='text-red-400'>*</span></label>
                                     <input
                                         type='text'
                                         value={mobile}
                                         onChange={(e) => {
-                                            const value = e.target.value;
+                                            const value = e.target.value.replace(/\D/g, '');
                                             setMobile(value)
                                         }}
                                         name='mobile'
@@ -242,12 +260,12 @@ function WalletRedemption() {
                                             }
                                         }}
                                         maxLength={"10"}
-                                        className='border-2 border-gray-300 rounded-md p-2  focus:border-transparent'
+                                        className='border-2 border-gray-300 rounded-md p-3 focus:border-transparent'
                                         placeholder='Enter Here'
                                     />
 
                                     {/* Search Icon */}
-                                    <div onClick={handleSearchmobile} className="absolute flex items-center justify-center cursor-pointer right-[0%] rounded-r-lg top-[60%] -translate-y-1/2 w-10 md:h-[40px] md:top-[58px] h-[50%] sm:right-0 sm:top-[73%] lg:right-[0%]"
+                                    <div onClick={handleSearchmobile} className="absolute flex items-center justify-center cursor-pointer right-[0%] rounded-r-lg top-[60%] -translate-y-1/2 w-10 md:h-[50px] md:top-[53px] h-[50%] sm:right-0 sm:top-[73%] lg:right-[0%]"
                                         style={{ backgroundColor: layout_color }}>
                                         {isLoading ? (
                                             <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
@@ -301,7 +319,7 @@ function WalletRedemption() {
                                 pattern="\d{5}"
                                 max={"5"}
                                 maxLength={"5"}
-                                className='border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
+                                className='border-2 border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
                                 placeholder='Enter redeem_point'
                             />
                             {formErrors.redeem_point && <span className="text-red-500 text-sm mt-1">{formErrors.redeem_point}</span>}
@@ -318,7 +336,7 @@ function WalletRedemption() {
                                 // onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '')}
                                 pattern="\d{5}"
                                 onChange={handleInputChange}
-                                className='border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
+                                className='border-2 border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
                                 placeholder='Enter amount value'
                             />
                             {formErrors.redeem_amt && <span className="text-red-500 text-sm mt-1">{formErrors.redeem_amt}</span>}
@@ -336,33 +354,38 @@ function WalletRedemption() {
                                     handleInputChange({ target: { name: 'redeem_type', value: selectedOption?.value } })
                                 }
                                 options={redeem_type}
-                                styles={ customSelectStyles }
+                                styles={customSelectStyles}
                                 placeholder="-- Select --"
-                                
                             />
 
-                            {/* <select
-                                name='redeem_type'
-                                value={formData.redeem_type}
-                                onChange={handleInputChange}
-                                className='border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
-                            >
-
-                                <option value="">-- Select --</option>
-                                {redeem_type.map((e) => (
-                                    <>
-                                        <option key={e.id} value={e.id}>
-                                            {e.name}
-                                        </option>
-                                    </>
-
-                                ))}
-
-                            </select> */}
                             {formErrors.redeem_type && (
                                 <span className="text-red-500 text-sm mt-1">{formErrors.redeem_type}</span>
                             )}
                         </div>
+
+
+                        {(formData.redeem_type === "1" || formData.redeem_type === 1) && (
+                            <div className='flex flex-col gap-2'>
+                                <label className='text-gray-700 font-medium'>
+                                    Payment Mode<span className='text-red-400'>*</span>
+                                </label>
+
+                                <Select
+                                    name="paymentData"
+                                    value={paymentData.find(option => option.value === formData.payment_mode)}
+                                    onChange={(selectedOption) =>
+                                        handleInputChange({ target: { name: 'payment_mode', value: selectedOption?.value } })
+                                    }
+                                    options={paymentData}
+                                    styles={customSelectStyles}
+                                    placeholder="-- Select --"
+                                />
+
+                                {formErrors.payment_mode && (
+                                    <span className="text-red-500 text-sm mt-1">{formErrors.payment_mode}</span>
+                                )}
+                            </div>
+                        )}
 
 
 
@@ -373,7 +396,7 @@ function WalletRedemption() {
                                 name='billno'
                                 value={formData.billno}
                                 onChange={handleInputChange}
-                                className='border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
+                                className='border-2 border-gray-300 rounded-md p-3 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
                                 placeholder='Enter billno'
                             />
                             {formErrors.billno && <span className="text-red-500 text-sm mt-1">{formErrors.billno}</span>}
@@ -381,7 +404,7 @@ function WalletRedemption() {
                     </div>
 
                     <div className='bg-white mt-6'>
-                        <div className='flex justify-start gap-2 mt-3'>
+                        <div className='flex justify-start gap-3 mt-3'>
                             <button
                                 className='bg-[#E2E8F0] text-black rounded-md p-3 w-1/2  lg:w-20'
                                 type='button'

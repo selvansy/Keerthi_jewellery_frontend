@@ -109,7 +109,7 @@ const AddSchemePayment = () => {
       remark: "",
       scheme_acc_number: "",
       id_scheme: "",
-      id_branch: "",
+      id_branch: id_branch || '',
       id_scheme_account: "",
       scheme_type: 0,
       buy_gst: 0,
@@ -475,7 +475,7 @@ const AddSchemePayment = () => {
       toast.error("Mobile Number is required!");
     }
     const searchData = {
-      id_branch: formik.values.id_branch,
+      id_branch: formik.values.id_branch || id_branch,
       search_mobile: mobile,
     };
 
@@ -1180,39 +1180,7 @@ const AddSchemePayment = () => {
                                   Scheme Type
                                 </span>
                                 <span className="text-gray-900">
-                                  {selectedScheme?.id_scheme?.scheme_type === 0
-                                    ? "Amount To Bonus"
-                                    : selectedScheme?.id_scheme?.scheme_type ===
-                                      1
-                                    ? "Amount End Weight"
-                                    : selectedScheme?.id_scheme?.scheme_type ===
-                                      2
-                                    ? "Amount To Weight"
-                                    : selectedScheme?.id_scheme?.scheme_type ===
-                                      3
-                                    ? "Weight"
-                                    : selectedScheme?.id_scheme?.scheme_type ===
-                                      4
-                                    ? "Flexible Amount Scheme"
-                                    : selectedScheme?.id_scheme?.scheme_type ===
-                                      5
-                                    ? "Flexible Amount to Weight"
-                                    : selectedScheme?.id_scheme?.scheme_type ===
-                                      6
-                                    ? "Fixed Amount to Weight"
-                                    : selectedScheme?.id_scheme?.scheme_type ===
-                                      7
-                                    ? "Fixed Amount end Weight"
-                                    : selectedScheme?.id_scheme?.scheme_type ===
-                                      8
-                                    ? "Fixed Amount to bonus"
-                                    : selectedScheme?.id_scheme?.scheme_type ===
-                                      9
-                                    ? "Flexible Amount End Weight"
-                                    : selectedScheme?.id_scheme?.scheme_type ===
-                                      10
-                                    ? "Digital Gold"
-                                    : "N/A"}
+                                  {selectedScheme?.scheme_typename}
                                 </span>
                               </div>
 

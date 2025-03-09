@@ -88,6 +88,7 @@ import Ticket from "../chit/components/help/ticket";
 import TopUp from "../chit/components/SuperAdmin/topupApprovals/index"
 import ContentManagement from "../chit/components/contentManagement/ContentManagement";
 import ContentForm from "../chit/components/contentManagement/ContentForm";
+import CustomerSchemes from "../../src/chit/components/manageaccount/schemeaccount/index"
 import FaqTable from "../chit/components/faq";
 import FaqCreation from "../chit/components/SuperAdmin/faq/FaqCreation"
 import FaqIndex from "../chit/components/SuperAdmin/faq";
@@ -301,11 +302,15 @@ const RouteList = [
     path: '/managecustomers/editcustomer/:id',
     element: <Base renderContent={Customers} />
   },
-
   {
     name: "Completed Account",
     path: '/managecustomers/completedaccount',
     element: <Base renderContent={CompleteAccount} />
+  },
+  {
+    name:"Customer Schemes",
+    path:"/managecustomers/customerschemes",
+    element:<Base renderContent={CustomerSchemes}/>
   },
 
   //Wallet
@@ -709,7 +714,7 @@ const RouteList = [
   },
   {
     name:"FaqCreation",
-    path:"/help/faq/edit/:id",
+    path:"/help/faq/view/:id",
     element:<Base renderContent={FaqCreation} />
   },
   {

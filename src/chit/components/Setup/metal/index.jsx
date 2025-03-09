@@ -42,6 +42,7 @@ const Metal = () => {
   const [isLoading, setisLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
+  const [ totalDocument, setTotalDocument] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [searchInput, setSearchInput] = useState("");
@@ -56,6 +57,7 @@ const Metal = () => {
       if (response) {
         setMetalData(response.data);
         setTotalPages(response.totalPages);
+        setTotalDocument(response.totalDocument)
       }
       setSearchLoading(false);
       setisLoading(false);
@@ -109,7 +111,6 @@ const Metal = () => {
   };
 
   const handleDelete = (id) => {
-    setId(id);
     dispatch(
       openModal({
         modalType: "CONFIRMATION",
@@ -428,7 +429,7 @@ const Metal = () => {
               <option value={500}>500</option>
               <option value={1000}>1000</option>
             </select>
-            <span className="text-gray-500">entries</span>
+            <span className="text-gray-500">entries of {totalDocument}</span>
           </div>
           <div className="flex flex-row items-center justify-center gap-2">
             <div className="flex items-center gap-4">

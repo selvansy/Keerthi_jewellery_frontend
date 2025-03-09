@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useSelector } from "react-redux";
 
-export default function MakingChargesForm({ onChange,initialState }) {
+export default function WastageChargeForm({ onChange,initialState }) {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
+  
 
   const [formData, setFormData] = useState(initialState);
 
@@ -144,11 +145,11 @@ export default function MakingChargesForm({ onChange,initialState }) {
         <label className="flex items-center gap-2">
           <input
             type="checkbox"
-            checked={formData.mcView}
-            onChange={() => handleInputChange("mcView", !formData.mcView)}
+            checked={formData.wastageView}
+            onChange={() => handleInputChange("wastageView", !formData.wastageView)}
             className="w-3 h-3"
           />
-          MC View
+          Wastage View
         </label>
       </div>
     </div>

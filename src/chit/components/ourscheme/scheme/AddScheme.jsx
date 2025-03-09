@@ -69,7 +69,7 @@ const SchemeForm = () => {
   const [giftType, setGiftType] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [spanText, setSpanText] = useState("");
-  const [validation,setValidation]= useState({})
+  const [validation, setValidation] = useState({});
 
   const formik = useFormik({
     initialValues: {
@@ -97,7 +97,7 @@ const SchemeForm = () => {
       min_weight: "",
       max_weight: "",
       total_installments: "",
-      buygsttype:1,
+      buygsttype: 1,
       buy_gst: "",
       benefit_min_installment_wst_mkg: "",
       wastagebenefit: "",
@@ -115,40 +115,40 @@ const SchemeForm = () => {
       classification_order: "",
 
       //customer referral
-      referral_rate: "",
-      incentive_rate: "",
-      cus_remarks: "",
+      customer_referral_per: "",
+      customer_incentive_per: "",
+      customer_ref_remarks: "",
 
       //agent referral
-      agent_referral: "",
+      agent_referral_percentage: "",
       agent_incentive: "",
       agent_restriction: true,
       agent_remark: "",
-      agent_target: "",
-      partial_commission: "",
+      agent_target_per: 0,
+      agent_partial_per: "",
 
       wastagetype: "", // no need to pass
 
       // AdvancedSettings fields
       limit_installment: "",
-      pending_due_installment: "",
+      pending_installment: "",
       paid_installment: "",
-      scheme_customer_limit: "",
+      limit_customer: "",
       gift_minimum_paid_installment: "",
 
       //gift
       gift_type: 1,
-      number_of_gifts: 0,
+      no_of_gifts: 0,
 
       bonus_type: "",
       bonus_amount: "",
       bonus_percent: "",
       not_paid_installment: "",
-      convenience_fee: "",
+      convenience_fees: "",
       fine_amount: 0,
       cumulative_fine_amount: "",
       display_referral: false,
-      display_weight_in_ledger: false,
+      display_Weight_in_ledger: false,
       wallet_redemption_onpayment: false,
     },
     validationSchema: schemeValidationSchema,
@@ -156,7 +156,6 @@ const SchemeForm = () => {
       const formData = new FormData();
 
       if (formik.values.classType) {
-        console.log(amounts);
         amounts.forEach((amount) => {
           if (amount !== "") {
             formData.append("fixed_amounts[]", amount);
@@ -246,9 +245,7 @@ const SchemeForm = () => {
   const { data: schemeData } = useQuery({
     queryKey: ["scheme", id],
     queryFn: async () => await getschemeById(id),
-    enabled: Boolean(id),
-    staleTime: 5 * 60 * 1000,
-    cacheTime: 10 * 60 * 1000,
+    enabled: Boolean(id)
   });
 
   const { data: metalResponse } = useQuery({
@@ -300,6 +297,7 @@ const SchemeForm = () => {
       if (response.status === 200) {
         setIsLoading(false);
         toast.success(response.message);
+        formik.resetForm()
         navigate("/scheme/scheme/");
       }
     },
@@ -351,41 +349,48 @@ const SchemeForm = () => {
 
         // Grace period
         grace_type: schemeData.data.grace_type || "",
-        grace_period: schemeData.data.gracePeriod || "",
-        grace_fine: schemeData.data.graceFineAmount || "",
+        grace_period: schemeData.data.grace_period || "",
+        grace_fine: schemeData.data.grace_fine || "",
 
         // Classification
         description: schemeData.data.description || "",
         term_desc: schemeData.data.term_desc || "",
 
         // Customer referral
-        referral_rate: schemeData.data.customer_referral_per || "",
-        incentive_rate: schemeData.data.customer_incentive_per || "",
-        cus_remarks: schemeData.data.cus_remark || "",
+        customer_referral_per: schemeData.data.customer_referral_per || "",
+        customer_incentive_per: schemeData.data.customer_incentive_per || "",
+        customer_ref_remarks: schemeData.data.customer_ref_remarks || "",
 
         // Agent referral
-        agent_referral: schemeData.data.agent_referral_percentage || "",
-        agent_incentive: schemeData.data.agent_percentage || "",
-        agent_target: schemeData.data.agent_target_per || "",
-        partial_commission: schemeData.data.agent_partial_per || "",
+        agent_referral_percentage: schemeData.data.agent_referral_percentage || "",
+        agent_incentive: schemeData.data.agent_incentive || "",
+        agent_target_per: schemeData.data.agent_target_per || "",
+        agent_partial_per: schemeData.data.agent_partial_per || "",
         agent_remark: schemeData.data.agent_remark || false,
 
         // AdvancedSettings
         limit_installment: schemeData.data.limit_installment || "",
-        pending_due_installment: schemeData.data.pending_installment || "",
+        pending_installment: schemeData.data.pending_installment || "",
         paid_installment: schemeData.data.allowed_minpaid || "",
-        scheme_customer_limit: schemeData.data.limit_customer || "",
+        limit_customer: schemeData.data.limit_customer || "",
         gift_type: schemeData.data.gift_type || 1,
-        number_of_gifts: schemeData.data.number_of_gifts || 0,
-        convenience_fee: schemeData.data.convenience_fees || "",
+        no_of_gifts: schemeData.data.no_of_gifts || 0,
+        convenience_fees: schemeData.data.convenience_fees || "",
         fine_amount: schemeData.data.fine_amount || 0,
         cumulative_fine_amount: schemeData.data.cumulative_fine_amount || "",
         display_referral: schemeData.data.display_referral || false,
-        display_weight_in_ledger:
-          schemeData.data.display_Weight_in_ledger || false,
-        wallet_redemption_onpayment: schemeData.data.wallet_redemption || false,
+        display_Weight_in_ledger:
+          schemeData?.data?.display_Weight_in_ledger || false,
+        wallet_redemption_onpayment: schemeData.data.wallet_redemption_onpayment || false,
         gift_minimum_paid_installment:
           schemeData.data.gift_minimum_paid_installment || "",
+        bonus_type:schemeData.data.bonus_type || "",
+        bonus_amount:schemeData?.data?.bonus_amount || "",
+        bonus_percent: schemeData?.data?.bonus_percent || "",
+        not_paid_installment:schemeData?.data?.not_paid_installment || "",
+        benefit_min_installment_wst_mkg:schemeData?.data?.benefit_min_installment_wst_mkg || "",
+        classification_order:schemeData?.data?.classification_order,
+        grace_fine_amount:schemeData?.data?.grace_fine_amount || ""
       });
       if (schemeData?.data?.fixed_amounts.length > 0) {
         formik.setFieldValue("classType", true);
@@ -393,17 +398,14 @@ const SchemeForm = () => {
       if (schemeData?.data) {
         formik.setFieldValue("scheme_type", schemeData.data.scheme_type);
       }
-      
     }
   }, [id, schemeData]);
-  console.log(formik.values)
 
   useEffect(() => {
     if (schemeData?.data && Array.isArray(schemeData.data.fixed_amounts)) {
       setAmounts(schemeData.data.fixed_amounts);
     }
   }, [schemeData?.data]);
-  
 
   useEffect(() => {
     if (installment_type?.data) {
@@ -471,7 +473,11 @@ const SchemeForm = () => {
       const incrementRate = formik.values.incrementRate;
       const startingAmount = formik.values.startingAmount;
       const totalCountAmount = formik.values.totalCountAmount;
-      if (incrementRate === "" || startingAmount === "" || totalCountAmount === "") {
+      if (
+        incrementRate === "" ||
+        startingAmount === "" ||
+        totalCountAmount === ""
+      ) {
         setAmounts([]);
       } else {
         generateAmounts(totalCountAmount, startingAmount, incrementRate);
@@ -482,7 +488,7 @@ const SchemeForm = () => {
     formik.values.startingAmount,
     formik.values.totalCountAmount,
   ]);
-
+console.log(formik.values)
   // useEffect for branches
   useEffect(() => {
     if (!branchData) return;
@@ -722,10 +728,13 @@ const SchemeForm = () => {
                 isClearable={true}
                 options={branch || []}
                 placeholder="Select Branch"
-                value={branch || [].find(
-                  (option) => option.value === formik.values.id_branch
-                )}
-                onChange={(option) => formik.setFieldValue("id_branch", option.value || "")}
+                value={
+                  branch ||
+                  [].find((option) => option.value === formik.values.id_branch)
+                }
+                onChange={(option) =>
+                  formik.setFieldValue("id_branch", option.value || "")
+                }
               />
               {formik.errors.id_branch && (
                 <div className="text-red-500 text-sm mt-1">
@@ -865,19 +874,20 @@ const SchemeForm = () => {
                 (option) => option.value === formik.values.installment_type
               )}
               onChange={(option) => {
+                formik.setFieldValue('maturity_period','')
                 formik.setFieldValue(
                   "installment_type",
                   option ? option.value : null
                 );
                 setSpanText(option.label);
-                if(option.value === 1){
-                  setValidation({max: 12, maxLength: 2})
-                }else if(option.value ==2){
-                  setValidation({max: 52, maxLength: 2})
-                }else if(option.value === 3){
-                  setValidation({max: 336, maxLength: 3})
-                }else{
-                  setValidation({max: 9, maxLength: 1})
+                if (option.value === 1) {
+                  setValidation({ max: 12, maxLength: 2 ,val:'month'});
+                } else if (option.value == 2) {
+                  setValidation({ max: 52, maxLength: 2,val:'weeks'});
+                } else if (option.value === 3) {
+                  setValidation({ max: 336, maxLength: 3 ,val:'Days'});
+                } else {
+                  setValidation({ max: 1, maxLength: 1,val: "year" });
                 }
               }}
               onBlur={() => formik.setFieldTouched("installment_type", true)}
@@ -895,14 +905,31 @@ const SchemeForm = () => {
             </label>
             <div className="relative">
               <input
-                type="text"
+                type="number"
                 name="maturity_period"
                 onWheel={(e) => e.target.blur()}
-                onInput={(e) => {
-                  if (e.target.value.length <= validation.maxLength) {
-                    console.log('kd')
-                    formik.handleChange(e);
+                onKeyUp={(e) => {
+                  const value = e.target.value.trim();
+                  const numValue = Number(value);
+
+                  if (value.length > validation.maxLength) {
+                    formik.setFieldError(
+                      "maturity_period",
+                      `Maturity period should be under ${validation.maxLength} characters`
+                    );
+                    return;
                   }
+
+                  if (numValue > validation.max) {
+                    formik.setFieldError(
+                      "maturity_period",
+                      `Maturity period should be under ${validation.max} ${validation.val}`
+                    );
+                    return;
+                  }
+
+                  formik.setFieldError("maturity_period", ""); 
+                  formik.handleChange(e);
                 }}
                 className="w-full border rounded-md px-3 py-2"
                 placeholder="Enter Maturity Period"
@@ -969,7 +996,10 @@ const SchemeForm = () => {
                 onInput={(e) => {
                   let value = e.target.value;
                   if (value > "50") {
-                    formik.setFieldError("totalCountAmount", "Max allowed is 50");
+                    formik.setFieldError(
+                      "totalCountAmount",
+                      "Max allowed is 50"
+                    );
                   }
 
                   if (value.length > 2) {
