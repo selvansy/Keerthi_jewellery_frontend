@@ -55,7 +55,7 @@ import MenuComp from "../chit/components/Setup/menu/index";
 import Login from "../chit/components/Login";
 import ClientMaster from '../chit/components/SuperAdmin/ClientMaster/index';
 import ClientForm from '../chit/components/SuperAdmin/ClientMaster/ClientForm';
-import AupayConfigure from "../chit/components/SuperAdmin/Configure/aupay/index";
+import AupayConfigure from "../chit/components/SuperAdmin/Configure/Aupay/index";
 import AdminMaster from "../chit/components/SuperAdmin/Accounts/AdminMaster";
 import Dashboard from "../chit/components/SuperAdmin/Dashboard/Dashboard"
 import AddNotfication from "../chit/components/notification/pushnotification/AddNotfication";
