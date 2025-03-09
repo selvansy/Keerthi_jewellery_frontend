@@ -3,8 +3,8 @@ import * as Yup from "yup";
 const amountSchema = Yup.number()
   .typeError("Must be a valid number")
   .test("is-decimal", "Invalid number format", (value) => {
-    if (value === undefined || value === null) return true; // Allow empty values when not required
-    return !value.toString().includes("e"); // Prevent scientific notation
+    if (value === undefined || value === null) return true;
+    return !value.toString().includes("e");
   })
   .min(0, "Must be 0 or a positive number");
 
@@ -129,7 +129,7 @@ export const schemeValidationSchema = Yup.object({
     }),
   // min_amount: Yup.number().when(["classType", "scheme_type"], {
   //   is: (classType, scheme_type) =>
-  //     !classType && ![12, 3, 4].includes(scheme_type),
+  //     !classType && ![12, 3, 4,2,5,6].includes(scheme_type),
   //   then: (schema) =>
   //     schema
   //       .required("Minimum Amount is required")
@@ -138,26 +138,16 @@ export const schemeValidationSchema = Yup.object({
   // }),
   // max_amount: Yup.number().when(["classType", "scheme_type"], {
   //   is: (classType, scheme_type) =>
-  //     !classType && ![12, 3, 4].includes(scheme_type),
+  //     !classType && ![12, 3, 4,2,5,6].includes(scheme_type),
   //   then: (schema) =>
   //     schema
   //       .required("Maximum Amount is required")
   //       .min(0, "Must be 0 or a positive number"),
   //   otherwise: (schema) => schema.notRequired(),
   // }),
-  min_amount: Yup.number().when(["classType", "scheme_type"], {
-    is: (classType, scheme_type) => !classType && ![12, 3, 4].includes(scheme_type),
-    then: (schema) => amountSchema.required("Minimum Amount is required"),
-    otherwise: (schema) => schema.notRequired(),
-  }),
-  max_amount: Yup.number().when(["classType", "scheme_type"], {
-    is: (classType, scheme_type) => !classType && ![12, 3, 4].includes(scheme_type),
-    then: (schema) => amountSchema.required("Maximum Amount is required"),
-    otherwise: (schema) => schema.notRequired(),
-  }),
   min_weight: Yup.number().when(["classType", "scheme_type"], {
     is: (classType, scheme_type) =>
-      !classType && [12, 3, 4].includes(scheme_type),
+      !classType && [12, 3, 4,2,5,6].includes(Number(scheme_type)),
     then: (schema) =>
       schema
         .required("Minimum Weight is required")
@@ -166,12 +156,22 @@ export const schemeValidationSchema = Yup.object({
   }),
   max_weight: Yup.number().when(["classType", "scheme_type"], {
     is: (classType, scheme_type) =>
-      (classType && [12, 3, 4].includes(scheme_type)) ||
-      (!classType && [12, 3, 4].includes(scheme_type)),
+      (classType && [12, 3, 4,2,5,6].includes(Number(scheme_type))) ||
+      (!classType && [12, 3, 4,2,5,6].includes(Number(scheme_type))),
     then: (schema) =>
       schema
         .required("Maximum Weight is required")
         .min(0, "Must be 0 or a positive number"),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+  min_amount: Yup.number().when(["classType", "scheme_type"], {
+    is: (classType, scheme_type) => !classType && !([12, 3, 4, 2, 5, 6].includes(Number(scheme_type))),
+    then: (schema) => schema.required("Minimum Amount is required"),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+  max_amount: Yup.number().when(["classType", "scheme_type"], {
+    is: (classType, scheme_type) => !classType && !([12, 3, 4, 2, 5, 6].includes(Number(scheme_type))),
+    then: (schema) => schema.required("Maximum Amount is required"),
     otherwise: (schema) => schema.notRequired(),
   }),
   total_installments: Yup.number().required(
@@ -209,15 +209,6 @@ export const schemeValidationSchema = Yup.object({
       .required("Agent target is required"),
     otherwise: () => Yup.number().notRequired(),
   }),
-  // agent_partial_per: Yup.number()
-  //   .typeError("Must be a number")
-  //   .positive("Must be a positive number")
-  //   .when("agent_target_per", {
-  //     is: (value) => value && value > 0,
-  //     then: Yup.number().required(
-  //       "Partial commission is required when agent target is set"
-  //     ),
-  //   }),
   agent_partial_per: Yup.number()
   .typeError("Must be a number")
   .positive("Must be a positive number")
