@@ -3,8 +3,8 @@ import * as Yup from "yup";
 const amountSchema = Yup.number()
   .typeError("Must be a valid number")
   .test("is-decimal", "Invalid number format", (value) => {
-    if (value === undefined || value === null) return true; // Allow empty values when not required
-    return !value.toString().includes("e"); // Prevent scientific notation
+    if (value === undefined || value === null) return true;
+    return !value.toString().includes("e");
   })
   .min(0, "Must be 0 or a positive number");
 
@@ -209,15 +209,6 @@ export const schemeValidationSchema = Yup.object({
       .required("Agent target is required"),
     otherwise: () => Yup.number().notRequired(),
   }),
-  // agent_partial_per: Yup.number()
-  //   .typeError("Must be a number")
-  //   .positive("Must be a positive number")
-  //   .when("agent_target_per", {
-  //     is: (value) => value && value > 0,
-  //     then: Yup.number().required(
-  //       "Partial commission is required when agent target is set"
-  //     ),
-  //   }),
   agent_partial_per: Yup.number()
   .typeError("Must be a number")
   .positive("Must be a positive number")
