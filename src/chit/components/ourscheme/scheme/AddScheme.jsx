@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useFormik, useFormikContext } from "formik";
 import Select from "react-select";
-import { Plus, Trash2, SquarePen } from "lucide-react";
+import { Plus, Trash2, SquarePen,CalendarDays} from "lucide-react";
 import {
   getSchemeClassifications,
   allinstallmenttype,
@@ -18,7 +18,6 @@ import {
   getBranchById,
 } from "../../../api/Endpoints";
 import { useQuery, useQueries, useMutation } from "@tanstack/react-query";
-import "react-datepicker/dist/react-datepicker.css";
 import PayableDetails from "./PayableDetails";
 import AdvancedSettings from "./AdvancedSettings";
 import CustomerDetails from "./CustomerDetails";
@@ -36,6 +35,8 @@ import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { schemeValidationSchema } from "../../../../utils/validations/schemeValidationSchema";
 import SpinLoading from "../../common/spinLoading";
+import "react-datepicker/dist/react-datepicker.css";
+import DatePicker from "react-datepicker";
 
 const SchemeForm = () => {
   // const { setFieldValue, validateForm, values } = useFormikContext();
@@ -90,6 +91,7 @@ const SchemeForm = () => {
       startingAmount: "",
       // fixed_amounts: "",
       saving_type: "",
+      final_join_date:'',
 
       // PayableDetails fields
       amount: "", // no need to pass
@@ -212,7 +214,7 @@ const SchemeForm = () => {
       }
     },
   });
-  console.log(formik.errors);
+  console.log(formik.values);
   // Customisations for react-select
   const customStyles = {
     control: (base, state) => ({
@@ -995,6 +997,27 @@ const SchemeForm = () => {
                 {formik.errors.saving_type}
               </div>
             )}
+          </div>
+          <div>
+          <label className="block text-sm font-medium mb-1">
+              Final Join Date
+            </label>
+            <div className="relative">
+              <DatePicker
+                selected={formik.values.final_join_date}
+                onChange={(date) => formik.setFieldValue('final_join_date',date)}
+                // dateFormat="dd-MM-yyyy"
+                placeholderText="Select Date"
+                className="border border-gray-300 rounded-md p-3 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                showMonthDropdown
+                showYearDropdown
+                dropdownMode="select"
+                wrapperClassName="w-full"
+              />
+              <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-gray-500 w-14 h-[43px] justify-center items-center flex rounded-r-md pointer-events-none">
+                <CalendarDays size={20} />
+              </span>
+            </div>
           </div>
         </div>
         {formik.values.classType && (
