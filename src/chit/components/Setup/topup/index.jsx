@@ -129,7 +129,7 @@ function Topup() {
 
 
     return (
-        <div>
+        <>
             <div className="flex flex-col p-4 relative">
                 <>
                     <h2 className="text-2xl text-gray-900 font-bold">Add Top-Up</h2>
@@ -280,7 +280,7 @@ function Topup() {
                 </>
 
             </div>
-        </div>
+        </>
     )
 }
 
