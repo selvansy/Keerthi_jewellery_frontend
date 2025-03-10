@@ -396,7 +396,8 @@ const SchemeForm = () => {
         benefit_min_installment_wst_mkg:
           schemeData?.data?.benefit_min_installment_wst_mkg || "",
         classification_order: schemeData?.data?.classification_order,
-        grace_fine_amount: schemeData?.data?.grace_fine_amount || "",
+        grace_fine_amount: schemeData?.data?.grace_fine_amount || false,
+        final_join_date: schemeData?.data?.final_join_date || ""
       });
       if (schemeData?.data?.fixed_amounts.length > 0) {
         formik.setFieldValue("classType", true);
