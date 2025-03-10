@@ -24,6 +24,7 @@ import Loading from "../../common/Loading";
 
 
 const Department = () => {
+  
     const layout_color = useSelector((state) => state.clientForm.layoutColor);
   
     const dispatch = useDispatch();

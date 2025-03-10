@@ -92,6 +92,9 @@ import CustomerSchemes from "../../src/chit/components/manageaccount/schemeaccou
 import FaqTable from "../chit/components/faq";
 import FaqCreation from "../chit/components/SuperAdmin/faq/FaqCreation"
 import FaqIndex from "../chit/components/SuperAdmin/faq";
+import PromotionSummary from "../chit/components/notification/promotions";
+import AddPromotion from "../chit/components/notification/promotions/AddPromotion";
+import NotificationHistory from "../chit/components/notification/notificationhistory/NotificationHistory";
 
 const RouteList = [
 
@@ -721,6 +724,22 @@ const RouteList = [
     name:"FaqIndex",
     path:'/help/faq/table',
     element:<Base renderContent={FaqIndex} />
+  },
+  {
+    name:"Promotions Summary",
+    path:'/schemereport/promosummary/',
+    element:<Base renderContent={PromotionSummary} />
+  },
+  {
+    name:"Notifications Summary",
+    path:'/schemerepor/notification/',
+    element:<Base renderContent={NotificationHistory} />
+  },
+
+  {
+    name:"Promotions Creation",
+    path:'/promotions/promotioncreations',
+    element:<Base renderContent={AddPromotion} />
   },
 
 

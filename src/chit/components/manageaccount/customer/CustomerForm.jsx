@@ -171,7 +171,7 @@ const CustomerForm = () => {
 
 
     const { data: branchresponse, isLoading: loadingbranch } = useQuery({
-        queryKey: ["branch", branch],
+        queryKey: ["branch"],
         queryFn: getallbranch,
     });
 
@@ -437,15 +437,17 @@ const CustomerForm = () => {
                     enableReinitialize={true}
                     validateOnChange={false}
                     validateOnBlur={false}
+                    // onSubmit={(values) => {
+                    //     const updatedValues = { ...values, id_branch: branch }; 
+                    //     handleSubmitForm(updatedValues);
+                    //   }}
                     onSubmit={(values) => {
-                        console.log(values)
-                        setFormData(values)
-                        setFormData(prev => ({
-                            ...prev,
-                            id_branch: branch
-                        }))
-                        handleSubmitForm()
-                    }}
+                        handleSubmitForm({ 
+                          id_branch: branch,
+                          ...values, 
+                        });
+                      }}
+                    
                 >
                     {({ values, errors, setFieldValue, setFieldTouched, handleChange, handleSubmit }) => (
 

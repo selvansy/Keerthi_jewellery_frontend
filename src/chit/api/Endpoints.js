@@ -19,6 +19,12 @@ export const staffLofgin=  async(data)=>{
 }
 
 
+//scheme
+export const getallSchemes = async () => {
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/scheme`);
+    return response.data;
+}
+
 
 
 //add employee
@@ -89,6 +95,18 @@ export const walletHistory = async (data) => {
 
 export const redeemHistory = async (data) => {
     const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/wallet/redeemtable`,data);
+    return response.data;
+}
+
+// Promotions 
+export const PromotionsHistory = async (data) => {
+    const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/notify/pormotion-table`,data);
+    return response.data;
+}
+
+//Notification History
+export const NotifcationsHistory = async (data) => {
+    const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/notify/push-notify-table`,data);
     return response.data;
 }
 
@@ -1067,6 +1085,7 @@ export const getallschemetypes = async () => {
 
 
 
+
 //Client
 
 
@@ -1302,7 +1321,13 @@ export const getallcustomer = async (data) => {
     return response.data;
 }
 
- 
+export const getcustomerByBranchId = async (id) => {
+    
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/customer/branch/${id}`);
+    return response.data;
+}
+
+
 
 export const getcustomerById = async (id) => {
 
@@ -1883,3 +1908,9 @@ export const updateFaq = async (data) => {
     const response = await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/faq/update/${data.id}`,data.values);
     return response.data;
 }
+
+
+export const addPromotions = async (data)=>{
+    const response=await Api.post(`${import.meta.env.VITE_API_URL}/api/client/notify/promotion`,data)
+    return response.data
+ }
