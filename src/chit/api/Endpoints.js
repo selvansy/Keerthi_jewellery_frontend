@@ -1814,4 +1814,3 @@ export const addTicketRaise=async (formData)=>{
     
    return response.data
 }
-
