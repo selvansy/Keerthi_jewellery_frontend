@@ -163,17 +163,27 @@ export const schemeValidationSchema = Yup.object({
         .required("Maximum Weight is required")
         .min(0, "Must be 0 or a positive number"),
     otherwise: (schema) => schema.notRequired(),
+  })
+  .test("is-greater", "Maximum weight must be greater than Minimum weight", function (value) {
+    const { min_weight } = this.parent;
+    return value === undefined || min_weight === undefined || value > min_weight;
   }),
   min_amount: Yup.number().when(["classType", "scheme_type"], {
     is: (classType, scheme_type) => !classType && !([12, 3, 4, 2, 5, 6].includes(Number(scheme_type))),
     then: (schema) => schema.required("Minimum Amount is required"),
     otherwise: (schema) => schema.notRequired(),
   }),
-  max_amount: Yup.number().when(["classType", "scheme_type"], {
-    is: (classType, scheme_type) => !classType && !([12, 3, 4, 2, 5, 6].includes(Number(scheme_type))),
-    then: (schema) => schema.required("Maximum Amount is required"),
-    otherwise: (schema) => schema.notRequired(),
-  }),
+  max_amount: Yup.number()
+    .when(["classType", "scheme_type"], {
+      is: (classType, scheme_type) => 
+        !classType && ![12, 3, 4, 2, 5, 6].includes(Number(scheme_type)),
+      then: (schema) => schema.required("Maximum Amount is required"),
+      otherwise: (schema) => schema.notRequired(),
+    })
+    .test("is-greater", "Maximum Amount must be greater than Minimum Amount", function (value) {
+      const { min_amount } = this.parent;
+      return value === undefined || min_amount === undefined || value > min_amount;
+    }),
   total_installments: Yup.number().required(
     "Total Installments is required"
   ),
