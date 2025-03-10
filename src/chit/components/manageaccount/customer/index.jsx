@@ -30,10 +30,11 @@ const ExistingCusTable = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [totalDocument,setTotalDoc] = useState(0)
 
   const [filtered, SetFiltered] = useState(false)
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-
+  
   const [customerData, setcustomerData] = useState([]);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [selectedRow, setSelectedRow] = useState(null);
@@ -138,7 +139,7 @@ const ExistingCusTable = () => {
       if (response?.data) {
         setcustomerData(response.data);
         setTotalPages(response.totalPages);
-
+        setTotalDoc(response.totalDocument)
       }
       setisLoading(false)
     },
@@ -644,7 +645,7 @@ const ExistingCusTable = () => {
           <option value={500}>500</option>
           <option value={1000}>1000</option>
         </select>
-        <span className="text-gray-500">entries</span>
+        <span className="text-gray-500">{totalDocument} entries</span>
       </div>
     </div>
      }

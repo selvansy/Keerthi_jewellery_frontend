@@ -29,7 +29,7 @@ function GiftVendorForm({ setIsOpen, isviewOpen, id, refetchTable, setId }) {
         mobile: '',
         gst: '',
         address: '',
-        id_branch: "",
+        id_branch: id_branch,
     });
     const [errors, setErrors] = useState({});
 
@@ -57,6 +57,7 @@ function GiftVendorForm({ setIsOpen, isviewOpen, id, refetchTable, setId }) {
     useEffect(() => {
         if (branchresponse) {
             const data = branchresponse.data
+       
             const branch = data.map((branch) => ({
                 value: branch._id,
                 label: branch.branch_name,
@@ -257,9 +258,7 @@ function GiftVendorForm({ setIsOpen, isviewOpen, id, refetchTable, setId }) {
                     {errors.id_branch ? <div style={{ color: "red" }}>{errors.id_branch}</div> : null}
 
                 </div>
-
-
-
+                
                 {/* Gift Vendor Name field */}
                 <div className="flex flex-col ">
                     <label className="font-medium text-gray-700">

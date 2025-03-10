@@ -86,11 +86,12 @@ export const walletHistory = async (data) => {
     return response.data;
 }
 
-// 
+
 export const redeemHistory = async (data) => {
     const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/wallet/redeemtable`,data);
     return response.data;
 }
+
 
  
 /*Metal*/
@@ -392,12 +393,14 @@ export const giftaccountcount = async (data) => {
 
 
 export const getgiftvendorbranchById = async (data) => {
-    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/giftvendor/branch/${data.id_branch}`);
+    
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/giftvendor/branch/${data}`);
     return response.data;
 }
 
 
 export const getgiftitemvendorById = async (data) => {
+ 
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/giftitem/vendor/${data}`);
     return response.data;
 }
@@ -1813,4 +1816,70 @@ export const addTicketRaise=async (formData)=>{
   });
     
    return response.data
+}
+
+export const getallContent=async ()=>{
+    const response=await Api.get(`${import.meta.env.VITE_API_URL}/api/client/common/content-type`)
+    return response.data
+ }
+
+
+ export const addContent=async (data)=>{
+    const response=await Api.post(`${import.meta.env.VITE_API_URL}/api/client/content/add`,data)
+    return response.data
+ }
+
+ export const getContentById=async (id)=>{
+    const response=await Api.get(`${import.meta.env.VITE_API_URL}/api/client/content/${id}`)
+    return response.data
+ }
+ 
+ export const deleteContent=async (id)=>{
+    const response=await Api.delete(`${import.meta.env.VITE_API_URL}/api/client/content/${id}`)
+    return response.data
+ }
+
+
+export const getfaqCat = async ()=>{
+    const response=await Api.get(`${import.meta.env.VITE_API_URL}/api/client/common/faq-category`)
+    return response.data
+ }
+
+ 
+export const getAllfaq = async (data)=>{
+    const response=await Api.post(`${import.meta.env.VITE_API_URL}/api/client/faq/all/`,data)
+    return response.data
+ }
+ 
+ export const addFaq = async (data)=>{
+    const response=await Api.post(`${import.meta.env.VITE_API_URL}/api/client/faq/add/`,data)
+    return response.data
+ }
+
+ export const deleteFaq = async (data)=>{
+    const response=await Api.delete(`${import.meta.env.VITE_API_URL}/api/client/faq/${data}`)
+    return response.data
+ }
+
+ 
+ export const getfaqTable = async (data)=>{
+    const response=await Api.post(`${import.meta.env.VITE_API_URL}/api/client/faq/all/`,data)
+    return response.data
+ }
+
+
+export const getContentTable = async (data)=>{
+    const response=await Api.post(`${import.meta.env.VITE_API_URL}/api/client/content/all/`,data)
+    return response.data
+ }
+
+ export const getFaqId =async (id)=>{
+    const response=await Api.get(`${import.meta.env.VITE_API_URL}/api/client/faq/${id}`)
+    return response.data
+ }
+
+  
+export const updateFaq = async (data) => {
+    const response = await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/faq/update/${data.id}`,data.values);
+    return response.data;
 }

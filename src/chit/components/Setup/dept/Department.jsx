@@ -33,6 +33,7 @@ const Department = () => {
     const [isLoading, setisLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
+    const [doc, setDocument] = useState(0);
     const [itemsPerPage, setItemsPerPage] = useState(10);
     const [activeDropdown, setActiveDropdown] = useState(null);
     const [searchInput, setSearchInput] = useState("");
@@ -67,6 +68,7 @@ const Department = () => {
         if (response) {
           setdeptData(response.data);
           setTotalPages(response.totalPages);
+          setDocument(response.totalDocument)
         }
         setSearchLoading(false);
         setisLoading(false);
@@ -452,7 +454,7 @@ const Department = () => {
                     <option value={500}>500</option>
                     <option value={1000}>1000</option>
                   </select>
-                  <span className="text-gray-500">entries</span>
+                  <span className="text-gray-500">{doc} entries </span>
                 </div>
               </div>
             )

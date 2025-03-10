@@ -60,19 +60,19 @@ const AdvancedSettings = ({ formik, layout_color, installment_type }) => {
         <div className="relative">
           <input
             type="number"
-            name="pending_due_installment"
+            name="pending_installment"
             onWheel={(e) => e.target.blur()}
-            value={formik.values.pending_due_installment}
+            value={formik.values.pending_installment}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
             placeholder="Enter Pending Due Installment"
           />
         </div>
-        {formik.touched.pending_due_installment &&
-          formik.errors.pending_due_installment && (
+        {formik.touched.pending_installment &&
+          formik.errors.pending_installment && (
             <span className="text-red-500 text-sm mt-1">
-              {formik.errors.pending_due_installment}
+              {formik.errors.pending_installment}
             </span>
           )}
       </div>
@@ -109,19 +109,19 @@ const AdvancedSettings = ({ formik, layout_color, installment_type }) => {
         <div className="relative">
           <input
             type="number"
-            name="scheme_customer_limit"
+            name="limit_customer"
             onWheel={(e) => e.target.blur()}
-            value={formik.values.scheme_customer_limit}
+            value={formik.values.limit_customer}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
             placeholder="Enter Scheme Customer Limit"
           />
         </div>
-        {formik.touched.scheme_customer_limit &&
-          formik.errors.scheme_customer_limit && (
+        {formik.touched.limit_customer &&
+          formik.errors.limit_customer && (
             <span className="text-red-500 text-sm mt-1">
-              {formik.errors.scheme_customer_limit}
+              {formik.errors.limit_customer}
             </span>
           )}
       </div>
@@ -134,18 +134,18 @@ const AdvancedSettings = ({ formik, layout_color, installment_type }) => {
         <div className="relative">
           <input
             type="number"
-            name="number_of_gifts"
+            name="no_of_gifts"
             onWheel={(e) => e.target.blur()}
-            value={formik.values.number_of_gifts}
+            value={formik.values.no_of_gifts}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
             placeholder="Enter Number of Gifts"
           />
         </div>
-        {formik.touched.number_of_gifts && formik.errors.number_of_gifts && (
+        {formik.touched.no_of_gifts && formik.errors.no_of_gifts && (
           <span className="text-red-500 text-sm mt-1">
-            {formik.errors.number_of_gifts}
+            {formik.errors.no_of_gifts}
           </span>
         )}
       </div>
@@ -236,9 +236,9 @@ const AdvancedSettings = ({ formik, layout_color, installment_type }) => {
         <div className="relative">
           <input
             type="number"
-            name="convenience_fee"
+            name="convenience_fees"
             onWheel={(e) => e.target.blur()}
-            value={formik.values.convenience_fee}
+            value={formik.values.convenience_fees}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
@@ -251,9 +251,9 @@ const AdvancedSettings = ({ formik, layout_color, installment_type }) => {
             %
           </span>
         </div>
-        {formik.touched.convenience_fee && formik.errors.convenience_fee && (
+        {formik.touched.convenience_fees && formik.errors.convenience_fees && (
           <span className="text-red-500 text-sm mt-1">
-            {formik.errors.convenience_fee}
+            {formik.errors.convenience_fees}
           </span>
         )}
       </div>
@@ -364,10 +364,10 @@ const AdvancedSettings = ({ formik, layout_color, installment_type }) => {
         <div className="flex flex-row border border-gray-300 rounded-lg overflow-hidden w-32 h-10 items-center">
           <div
             onClick={() =>
-              formik.setFieldValue("display_weight_in_ledger", true)
+              formik.setFieldValue("display_Weight_in_ledger", true)
             }
             className={`${
-              formik.values.display_weight_in_ledger
+              formik.values.display_Weight_in_ledger
                 ? "text-white"
                 : "bg-white text-[#888888]"
             } p-3 w-full cursor-pointer transition-colors duration-200 text-center font-medium`}
@@ -378,10 +378,10 @@ const AdvancedSettings = ({ formik, layout_color, installment_type }) => {
           <div className="w-px bg-gray-300" />
           <div
             onClick={() =>
-              formik.setFieldValue("display_weight_in_ledger", false)
+              formik.setFieldValue("display_Weight_in_ledger", false)
             }
             className={`${
-              !formik.values.display_weight_in_ledger
+              !formik.values.display_Weight_in_ledger
                 ? "text-white"
                 : "bg-white text-[#888888]"
             } p-3 w-full cursor-pointer transition-colors duration-200 text-center font-medium`}
@@ -390,10 +390,10 @@ const AdvancedSettings = ({ formik, layout_color, installment_type }) => {
             No
           </div>
         </div>
-        {formik.touched.display_weight_in_ledger &&
-          formik.errors.display_weight_in_ledger && (
+        {formik.touched.display_Weight_in_ledger &&
+          formik.errors.display_Weight_in_ledger && (
             <span className="text-red-500 text-sm mt-1">
-              {formik.errors.display_weight_in_ledger}
+              {formik.errors.display_Weight_in_ledger}
             </span>
           )}
       </div>

@@ -248,7 +248,7 @@ const CustomerForm = () => {
                     address: formData.address,
                     id_branch: formData.id_branch,
                     mobile: formData.mobile,
-                    customerId:response.data
+                    customerId: response.data
                 }))
                 // setFormData({})
             }
@@ -362,15 +362,7 @@ const CustomerForm = () => {
         setTimer(60)
     }
 
-    const SendOtpToMobile = () => {
-        const payload = {
-            mobile: formData.mobile || mobile,
-            branchId: branch
-        }
-        setCanResend(false);
-        setIsTimerRunning(true);
-        postSendOtpMobile(payload)
-    }
+   
 
 
     const { mutate: postSendOtpMobile } = useMutation({
@@ -386,21 +378,13 @@ const CustomerForm = () => {
             setCanResend(true);
             setIsTimerRunning(false);
             setTimer(60)
-            toast.error(error.response?.data?.message)
+            toast.error("Invalid mobile number")
         }
     });
 
 
 
-    const handleVerifyOtp = (num) => {
-        const payload = {
-            mobile: formData.mobile || mobile,
-            otp: num,
-        }
-        VerifyOtpNumber(payload)
-
-    }
-
+   
 
     const { mutate: VerifyOtpNumber } = useMutation({
         mutationFn: (data) => verifyOtp(data),
@@ -466,9 +450,10 @@ const CustomerForm = () => {
                     {({ values, errors, setFieldValue, setFieldTouched, handleChange, handleSubmit }) => (
 
                         <>
-                            <Form onSubmit={(e)=>{
+                            <Form onSubmit={(e) => {
                                 e.preventDefault()
-                                handleSubmit(e)}} >
+                                handleSubmit(e)
+                            }} >
 
                                 <div className='grid grid-rows-2 md:grid-cols-2 gap-5 border-gray-300'>
 
@@ -478,9 +463,9 @@ const CustomerForm = () => {
                                             type='text'
                                             name='firstname'
                                             value={values.firstname}
-                                            onChange={(e)=>{
+                                            onChange={(e) => {
                                                 handleChange(e)
-                                                setFieldTouched("firstname", false); 
+                                                setFieldTouched("firstname", false);
                                             }}
                                             className='border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus-[#D1D5DB] focus:border-transparent'
                                             placeholder='Enter Here'
@@ -494,9 +479,9 @@ const CustomerForm = () => {
                                             type='text'
                                             name='lastname'
                                             value={values.lastname}
-                                            onChange={(e)=>{
+                                            onChange={(e) => {
                                                 handleChange(e)
-                                                setFieldTouched("lastname", false); 
+                                                setFieldTouched("lastname", false);
                                             }}
                                             className='border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus-[#D1D5DB] focus:border-transparent'
                                             placeholder='Enter Here'
@@ -512,7 +497,7 @@ const CustomerForm = () => {
                                         <Select
                                             options={branchData}
                                             value={branchData.find(branch => branch.value === (id_branch !== "0" ? values.id_branch : formData.id_branch)) || ""}
-                                            onChange={(e,branch) => {
+                                            onChange={(e, branch) => {
                                                 e.preventDefault()
                                                 setFieldValue("id_branch", branch.value);
                                                 setBranch(branch.value);
@@ -532,30 +517,27 @@ const CustomerForm = () => {
                                         {errors.id_branch && <div style={{ color: "red" }}>{errors.id_branch}</div>}
                                     </div>
 
-
-
                                     <div className='flex flex-col'>
                                         <label className='text-gray-700 mb-1 font-medium'>Mobile<span className='text-red-400'>*</span></label>
                                         <input
                                             type='text'
                                             name='mobile'
-                                            onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '')}
-                                            onChange={(e) => {
-                                                e.preventDefault()
-                                                const value = e.target.value;
-                                                setFormData(prev => ({
-                                                    ...prev,
-                                                    mobile: value
-                                                }))
-                                                setMobile(value)
-                                                setFieldTouched("mobile", false);
+                                            onInput={(e) => {
+                                                e.target.value = e.target.value.replace(/\D/g, '');
+                                                handleChange(e);
                                             }}
                                             value={values.mobile}
                                             pattern="\d{10}"
                                             maxLength={"10"}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter') {
+                                                    e.preventDefault();
+                                                }
+                                            }}
                                             className='border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:[#D1D5DB] focus:border-transparent'
                                             placeholder='Enter Mobile Number'
                                         />
+
                                         {errors.mobile ? <div style={{ color: "red" }}>{errors.mobile}</div> : null}
 
                                     </div>
@@ -567,10 +549,10 @@ const CustomerForm = () => {
                                             name='whatsapp'
                                             onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '')}
                                             value={values.whatsapp}
-                                            onChange={(e)=>{
+                                            onChange={(e) => {
                                                 e.preventDefault()
                                                 handleChange(e)
-                                                setFieldTouched("whatsapp", false); 
+                                                setFieldTouched("whatsapp", false);
                                             }}
                                             pattern="\d{10}"
                                             maxLength={"10"}
@@ -587,10 +569,10 @@ const CustomerForm = () => {
                                             type='text'
                                             name='address'
                                             value={values.address}
-                                            onChange={(e)=>{
+                                            onChange={(e) => {
                                                 e.preventDefault()
                                                 handleChange(e)
-                                                setFieldTouched("address", false); 
+                                                setFieldTouched("address", false);
                                             }}
                                             className='border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:[#D1D5DB] focus:border-transparent'
                                             placeholder='Enter Here'
@@ -606,10 +588,10 @@ const CustomerForm = () => {
                                             name='pincode'
                                             value={values.pincode}
                                             onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '')}
-                                            onChange={(e)=>{
+                                            onChange={(e) => {
                                                 e.preventDefault()
                                                 handleChange(e)
-                                                setFieldTouched("pincode", false); 
+                                                setFieldTouched("pincode", false);
                                             }}
                                             pattern="\d{6}"
                                             maxLength={"6"}
@@ -660,11 +642,7 @@ const CustomerForm = () => {
                                                 setCountry(ctry.value)
                                                 setFieldTouched("id_country", false);
                                             }}
-                                            onKeyDown={(e) => {
-                                                if (e.key === 'Enter') {
-                                                    e.preventDefault();
-                                                }
-                                            }}
+                                            
                                             customSelectStyles={customSelectStyles}
                                             isLoading={loadingCountries}
                                             placeholder="Select Country"
@@ -683,11 +661,11 @@ const CustomerForm = () => {
                                                 setState(e.value)
                                                 setFieldTouched("id_state", false);
                                             }}
-                                            onKeyDown={(e) => {
-                                                if (e.key === 'Enter') {
-                                                    e.preventDefault();
-                                                }
-                                            }}
+                                            // onKeyDown={(e) => {
+                                            //     if (e.key === 'Enter') {
+                                            //         e.preventDefault();
+                                            //     }
+                                            // }}
                                             customSelectStyles={customSelectStyles}
                                             isLoading={loadingStates}
                                             value={stateData.find(ctry => ctry.value === values.id_state) || state}
@@ -708,11 +686,11 @@ const CustomerForm = () => {
                                                 setCity(e.value)
                                                 setFieldTouched("id_city", false);
                                             }}
-                                            onKeyDown={(e) => {
-                                                if (e.key === 'Enter') {
-                                                    e.preventDefault();
-                                                }
-                                            }}
+                                            // onKeyDown={(e) => {
+                                            //     if (e.key === 'Enter') {
+                                            //         e.preventDefault();
+                                            //     }
+                                            // }}
                                             customSelectStyles={customSelectStyles}
                                             isLoading={loadingCities}
                                             value={cityData.find(ctry => ctry.value === values.id_city) || city}
@@ -736,7 +714,7 @@ const CustomerForm = () => {
                                             style={{ textTransform: 'uppercase' }}
                                         />
                                         {errors.pan ? <div style={{ color: "red" }}>{errors.pan}</div> : null}
-                                        <ErrorMessage name='pan' component='span' className='text-red-500 text-sm mt-1' />
+                                        
                                     </div>
 
                                     <div className='flex flex-col'>
@@ -898,16 +876,19 @@ const CustomerForm = () => {
 
                                                 <div className='flex flex-col items-center justify-center lg:items-start lg:justify-start lg:w-52 mt-2'>
                                                     <button
+                                                       type='button'
                                                         onClick={(e) => {
                                                             e.preventDefault();
-                                                            setShowWebcam(prev => !prev)
+                                                            e.stopPropagation();
+                                                            setShowWebcam(prev => !prev);
                                                         }}
+                                                        
                                                         onKeyDown={(e) => {
                                                             if (e.key === 'Enter') {
                                                                 e.preventDefault();
                                                             }
                                                         }}
-                                                        
+
 
                                                         className="mt-2 rounded-lg flex items-center gap-2 text-white px-3 py-1"
                                                         style={{ backgroundColor: layout_color }}
@@ -1004,21 +985,23 @@ const CustomerForm = () => {
                                                     type="text"
                                                     name="mobile"
                                                     value={values.mobile || mobile}
-                                                    className="border-2 w-full border-gray-300 rounded-md p-2 focus:outline-none"
+                                                    className="border-2 w-full border-gray-300  bg-[#f2f2f2] rounded-md p-2 focus:outline-none"
                                                     placeholder="Enter Here"
-                                                    onChange={(e) => {
-                                                        const value = e.target.value.replace(/\D/g, "");
-                                                        if (value.length <= 10) {
-                                                            setFieldValue("mobile", value);
-                                                            setMobile(value);
-                                                        }
-                                                    }}
+                                                    readOnly
                                                     maxLength={10}
                                                 />
 
 
                                                 <div
-                                                    onClick={SendOtpToMobile}
+                                                    onClick={()=>{
+                                                        const payload = {
+                                                            mobile: values.mobile,
+                                                            branchId: branch
+                                                        }
+                                                        setCanResend(false);
+                                                        setIsTimerRunning(true);
+                                                        postSendOtpMobile(payload)
+                                                    }}
                                                     className="absolute flex items-center justify-center cursor-pointer right-0 top-[29px] w-10 h-10 bg-[#023453] rounded-r-md  transition"
                                                 >
                                                     <Send size={22} className="text-white" />
@@ -1037,13 +1020,25 @@ const CustomerForm = () => {
                                                     className="border-2 w-full border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:[#D1D5DB]"
                                                     placeholder="Enter OTP"
                                                     value={otpNumber || ""}
+                                                    // onInput={(e) => {
+                                                    //     e.target.value = e.target.value.replace(/\D/g, '');
+                                                    //     handleChange(e);
+                                                    // }}
                                                     onChange={(e) => {
-                                                        const value = e.target.value.replace(/\D/g, "");
-                                                        setOtpNumber(value);
+                                                        const value = e.target.value.replace(/\D/g, '');
+                                                        setOtpNumber(value)
                                                     }}
+    
                                                 />
                                                 <div
-                                                    onClick={() => handleVerifyOtp(otpNumber)}
+                                                    onClick={()=>{
+                                                        const payload = {
+                                                            mobile: values.mobile,
+                                                            otp: otpNumber,
+                                                        }
+                                                        VerifyOtpNumber(payload)
+                                                
+                                                    }}
                                                     disabled={!otpNumber}
                                                     className="absolute flex items-center justify-center cursor-pointer right-0 top-[29px] w-10 h-10 bg-[#023453] rounded-r-md  transition"
                                                 >
@@ -1060,7 +1055,15 @@ const CustomerForm = () => {
                                                     (canResend) && (
                                                         <span
                                                             className="text-blue-600 cursor-pointer hover:underline"
-                                                            onClick={SendOtpToMobile}
+                                                            onClick={()=>{
+                                                                const payload = {
+                                                                    mobile: values.mobile,
+                                                                    branchId: branch
+                                                                }
+                                                                setCanResend(false);
+                                                                setIsTimerRunning(true);
+                                                                postSendOtpMobile(payload)
+                                                            }}
                                                             disabled={isTimerRunning}
                                                         >
                                                             Resend OTP
