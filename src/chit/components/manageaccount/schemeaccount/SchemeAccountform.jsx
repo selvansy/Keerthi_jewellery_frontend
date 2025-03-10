@@ -469,7 +469,6 @@ const AddSchemeAccount = () => {
     }
 
     if (name === "id_classification") {
-      console.log(value)
       handleschemebyclassification(value);
     }
 
@@ -496,6 +495,19 @@ const AddSchemeAccount = () => {
           installment_type: schemeData?.installment_type,
           code:schemeData?.code
         }));
+        if([12,3,4,2,5,6].includes(schemeData.scheme_type)){
+          setFormData((prevData)=>({
+            ...prevData,
+            max_weight:schemeData?.max_weight,
+            min_weight:schemeData?.min_weight
+          }))
+        }else{
+          setFormData((prevData)=>({
+            ...prevData,
+            max_amount:schemeData?.max_amount,
+            min_amount:schemeData?.min_amount
+          }))
+        }
       } else {
         console.warn("No matching scheme found for ID:", id);
       }
@@ -965,7 +977,7 @@ const onSubmit = (e) => {
                 <>
                 <div className="flex flex-col">
                 <label className="text-black mb-1 font-normal">
-                  {[12,3,4].includes(formData.scheme_type)? "Min weight":"Min amount"} <span className="text-red-400">*</span>
+                  {[12,3,4,2,5,6].includes(formData.scheme_type)? "Min weight":"Min amount"} <span className="text-red-400">*</span>
                 </label>
                 <input
                   type="text"
@@ -979,7 +991,7 @@ const onSubmit = (e) => {
               </div>
               <div className="flex flex-col">
                 <label className="text-black mb-1 font-normal">
-                {[12,3,4].includes(formData.scheme_type) ? "Max weight":"Max amount"}<span className="text-red-400">*</span>
+                {[12,3,4,2,5,6].includes(formData.scheme_type) ? "Max weight":"Max amount"}<span className="text-red-400">*</span>
                 </label>
                 <input
                   type="text"

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useFormik } from "formik";
+import { useFormik, useFormikContext } from "formik";
 import Select from "react-select";
 import { Plus, Trash2, SquarePen } from "lucide-react";
 import {
@@ -38,6 +38,7 @@ import { schemeValidationSchema } from "../../../../utils/validations/schemeVali
 import SpinLoading from "../../common/spinLoading";
 
 const SchemeForm = () => {
+  // const { setFieldValue, validateForm, values } = useFormikContext();
   const navigate = useNavigate();
 
   let { id } = useParams();
@@ -211,7 +212,7 @@ const SchemeForm = () => {
       }
     },
   });
-
+  console.log(formik.errors);
   // Customisations for react-select
   const customStyles = {
     control: (base, state) => ({
@@ -245,7 +246,7 @@ const SchemeForm = () => {
   const { data: schemeData } = useQuery({
     queryKey: ["scheme", id],
     queryFn: async () => await getschemeById(id),
-    enabled: Boolean(id)
+    enabled: Boolean(id),
   });
 
   const { data: metalResponse } = useQuery({
@@ -297,7 +298,7 @@ const SchemeForm = () => {
       if (response.status === 200) {
         setIsLoading(false);
         toast.success(response.message);
-        formik.resetForm()
+        formik.resetForm();
         navigate("/scheme/scheme/");
       }
     },
@@ -362,7 +363,8 @@ const SchemeForm = () => {
         customer_ref_remarks: schemeData.data.customer_ref_remarks || "",
 
         // Agent referral
-        agent_referral_percentage: schemeData.data.agent_referral_percentage || "",
+        agent_referral_percentage:
+          schemeData.data.agent_referral_percentage || "",
         agent_incentive: schemeData.data.agent_incentive || "",
         agent_target_per: schemeData.data.agent_target_per || "",
         agent_partial_per: schemeData.data.agent_partial_per || "",
@@ -381,16 +383,18 @@ const SchemeForm = () => {
         display_referral: schemeData.data.display_referral || false,
         display_Weight_in_ledger:
           schemeData?.data?.display_Weight_in_ledger || false,
-        wallet_redemption_onpayment: schemeData.data.wallet_redemption_onpayment || false,
+        wallet_redemption_onpayment:
+          schemeData.data.wallet_redemption_onpayment || false,
         gift_minimum_paid_installment:
           schemeData.data.gift_minimum_paid_installment || "",
-        bonus_type:schemeData.data.bonus_type || "",
-        bonus_amount:schemeData?.data?.bonus_amount || "",
+        bonus_type: schemeData.data.bonus_type || "",
+        bonus_amount: schemeData?.data?.bonus_amount || "",
         bonus_percent: schemeData?.data?.bonus_percent || "",
-        not_paid_installment:schemeData?.data?.not_paid_installment || "",
-        benefit_min_installment_wst_mkg:schemeData?.data?.benefit_min_installment_wst_mkg || "",
-        classification_order:schemeData?.data?.classification_order,
-        grace_fine_amount:schemeData?.data?.grace_fine_amount || ""
+        not_paid_installment: schemeData?.data?.not_paid_installment || "",
+        benefit_min_installment_wst_mkg:
+          schemeData?.data?.benefit_min_installment_wst_mkg || "",
+        classification_order: schemeData?.data?.classification_order,
+        grace_fine_amount: schemeData?.data?.grace_fine_amount || "",
       });
       if (schemeData?.data?.fixed_amounts.length > 0) {
         formik.setFieldValue("classType", true);
@@ -488,7 +492,7 @@ const SchemeForm = () => {
     formik.values.startingAmount,
     formik.values.totalCountAmount,
   ]);
-console.log(formik.values)
+  console.log(formik.values);
   // useEffect for branches
   useEffect(() => {
     if (!branchData) return;
@@ -787,6 +791,23 @@ console.log(formik.values)
             <label className="block text-sm font-medium mb-1">
               Scheme Type <span className="text-red-500">*</span>
             </label>
+            {/* <Select
+              styles={customStyles}
+              options={filteredSchemeTypeData}
+              isDisabled={!formik.values.id_classification}
+              placeholder={
+                !formik.values.id_classification
+                  ? "Choose a classification first"
+                  : "Select scheme type"
+              }
+              value={filteredSchemeTypeData?.find(
+                (option) => option.value === formik.values.scheme_type
+              )}
+              onChange={(option) => {
+                formik.setFieldValue("scheme_type", option?.value);
+              }}
+              onBlur={() => formik.setFieldTouched("scheme_type", true)}
+            /> */}
             <Select
               styles={customStyles}
               options={filteredSchemeTypeData}
@@ -801,6 +822,7 @@ console.log(formik.values)
               )}
               onChange={(option) => {
                 formik.setFieldValue("scheme_type", option?.value);
+                formik.validateForm(); // Trigger revalidation
               }}
               onBlur={() => formik.setFieldTouched("scheme_type", true)}
             />
@@ -874,20 +896,20 @@ console.log(formik.values)
                 (option) => option.value === formik.values.installment_type
               )}
               onChange={(option) => {
-                formik.setFieldValue('maturity_period','')
+                formik.setFieldValue("maturity_period", "");
                 formik.setFieldValue(
                   "installment_type",
                   option ? option.value : null
                 );
                 setSpanText(option.label);
                 if (option.value === 1) {
-                  setValidation({ max: 12, maxLength: 2 ,val:'month'});
+                  setValidation({ max: 12, maxLength: 2, val: "month" });
                 } else if (option.value == 2) {
-                  setValidation({ max: 52, maxLength: 2,val:'weeks'});
+                  setValidation({ max: 52, maxLength: 2, val: "weeks" });
                 } else if (option.value === 3) {
-                  setValidation({ max: 336, maxLength: 3 ,val:'Days'});
+                  setValidation({ max: 336, maxLength: 3, val: "Days" });
                 } else {
-                  setValidation({ max: 1, maxLength: 1,val: "year" });
+                  setValidation({ max: 1, maxLength: 1, val: "year" });
                 }
               }}
               onBlur={() => formik.setFieldTouched("installment_type", true)}
@@ -928,7 +950,7 @@ console.log(formik.values)
                     return;
                   }
 
-                  formik.setFieldError("maturity_period", ""); 
+                  formik.setFieldError("maturity_period", "");
                   formik.handleChange(e);
                 }}
                 className="w-full border rounded-md px-3 py-2"
