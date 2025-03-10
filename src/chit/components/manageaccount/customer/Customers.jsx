@@ -24,6 +24,10 @@ function Customers() {
         setOpenAcc(isCustomer ? ["existingCus"] : ["customer"]);
     }, [isCustomer]);
 
+    useEffect(()=>{
+      console.log("resetinggg")
+    },[])
+
     return (
         <div className='flex flex-col'>
             {
@@ -57,7 +61,8 @@ function Customers() {
                     <>
                         <Accordion
                             type="single"
-                           
+                            value={joinScheme}
+                            onValueChange={(value) => setJoinScheme(value)}
                         >
                             <AccordionItem value="add-customer" className="border rounded-lg bg-white">
                                 <AccordionTrigger className="px-6 py-4 text-[18px]">
