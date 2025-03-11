@@ -6,8 +6,7 @@ import { CalendarDays, Camera, X, Send, Plus, Minus } from 'lucide-react'
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import { updatecustomer, getcustomerById, getallbranch, allstate, addcustomer, allcountry, allcity, } from '../../../api/Endpoints';
-import { SetaccExp } from "../../../../redux/clientFormSlice"
-import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { useFormik } from "formik";
 import * as Yup from 'yup';
 import { sendOtp, verifyOtp } from "../../../api/BackendUrl"
 import { useMutation, useQuery } from '@tanstack/react-query';
@@ -19,6 +18,7 @@ import SpinLoading from '../../common/spinLoading';
 import Select from "react-select";
 import profileplaceholder from '../../../../assets/profileplaceholder.png'
 import { customSelectStyles } from "../../Setup/purity/index"
+import { SetaccExp } from '../../../../redux/clientFormSlice';
 
 
 const CustomerForm = () => {
@@ -55,7 +55,7 @@ const CustomerForm = () => {
     const [cus_img, setcus_img] = useState("");
     const [pathurl, setPathurl] = useState('');
 
-
+   
 
     const [formData, setFormData] = useState({
         firstname: '',
@@ -73,8 +73,7 @@ const CustomerForm = () => {
         pincode: '',
         authorno: "",
     })
-
-
+  
     const validationSchema = Yup.object({
         firstname: Yup.string().required('First name is required'),
         lastname: Yup.string().required('Last name is required'),
@@ -106,11 +105,11 @@ const CustomerForm = () => {
         if (id) {
             getCustomerData(id);
         }
-        return () => {
-            setcus_img("")
-            setPathurl("")
-            setFormData({})
-        }
+        // return () => {
+        //     setcus_img("")
+        //     setPathurl("")
+        //     setFormData({})
+        // }
 
     }, [id]);
 
@@ -222,19 +221,19 @@ const CustomerForm = () => {
     }, [cityresponse, stateresponse, countryresponse])
 
 
-    const handleSubmitForm = () => {
-        setisLoading(true)
-        const formPayload = new FormData();
+    // const handleSubmitForm =  async() => {
+    //     setisLoading(true)
+    //     const formPayload = new FormData();
 
-        Object.entries(formData).forEach(([key, value]) => {
-            if (value) formPayload.append(key, value);
-        });
+    //     Object.entries(formData).forEach(([key, value]) => {
+    //         if (value) formPayload.append(key, value);
+    //     });
 
-        if (cus_img) formPayload.append('cus_img', cus_img);
-        if (id_proof) formPayload.append('id_proof', id_proof);
+    //     if (cus_img) formPayload.append('cus_img', cus_img);
+    //     if (id_proof) formPayload.append('id_proof', id_proof);
 
-        id ? updateCustomerData({ id, data: formPayload }) : addcustomerMutate(formPayload);
-    };
+    //     id ? updateCustomerData({ id, data: formPayload }) : addcustomerMutate(formPayload);
+    // };
 
 
     const { mutate: addcustomerMutate } = useMutation({
@@ -243,14 +242,11 @@ const CustomerForm = () => {
 
             if (response) {
                 toast.success(response.message);
-                dispatch(SetaccExp({
-                    customer_name: formData.firstname + ' ' + formData.lastname,
-                    address: formData.address,
-                    id_branch: formData.id_branch,
-                    mobile: formData.mobile,
+                console.log(formik.values)
+                dispatch(SetaccExp((prev) => ({
+                    ...prev, 
                     customerId: response.data
-                }))
-                // setFormData({})
+                })))  
             }
             setisLoading(false)
         },
@@ -362,9 +358,6 @@ const CustomerForm = () => {
         setTimer(60)
     }
 
-   
-
-
     const { mutate: postSendOtpMobile } = useMutation({
         mutationFn: (data) => sendOtp(data),
         onSuccess: (response) => {
@@ -381,10 +374,6 @@ const CustomerForm = () => {
             toast.error("Invalid mobile number")
         }
     });
-
-
-
-   
 
     const { mutate: VerifyOtpNumber } = useMutation({
         mutationFn: (data) => verifyOtp(data),
@@ -427,686 +416,651 @@ const CustomerForm = () => {
         return `${year}-${month}-${day}`;
     };
 
+   const handleDispatch=(data)=>{
+    dispatch(SetaccExp({
+        customer_name: data.firstname + ' ' + data.lastname,
+        address: data.address,
+        id_branch: data.id_branch,
+        mobile: data.mobile,
+
+    }))
+    }
+
+
     return <>
-        <div className='w-full flex flex-col  bg-white '>
-            <div className='flex flex-col pl-8 pr-8 pb-4 pt-2 relative space-y-2'>
+       <div className='w-full flex flex-col bg-white'>
+    <div className='flex flex-col pl-8 pr-8 pb-4 pt-2 relative space-y-2'>
+        {/* Replace Formik with useFormik implementation */}
+        {(() => {
+            const formik = useFormik({
+                initialValues: formData,
+                validationSchema: validationSchema,
+                enableReinitialize: true,
+                validateOnChange: false,
+                validateOnBlur: false,
+                onSubmit: (values) => {
+                    handleDispatch(values)
+                    setisLoading(true)
+                    const formPayload = new FormData();
+            
+                    Object.entries(values).forEach(([key, value]) => {
+                        if (value) formPayload.append(key, value);
+                    });
+            
+                    if (cus_img) formPayload.append('cus_img', cus_img);
+                    if (id_proof) formPayload.append('id_proof', id_proof);
+            
+                    id ? updateCustomerData({ id, data: formPayload }) : addcustomerMutate(formPayload);
+                }
+            });
 
-                <Formik
-                    initialValues={formData}
-                    validationSchema={validationSchema}
-                    enableReinitialize={true}
-                    validateOnChange={false}
-                    validateOnBlur={false}
-                    // onSubmit={(values) => {
-                    //     const updatedValues = { ...values, id_branch: branch }; 
-                    //     handleSubmitForm(updatedValues);
-                    //   }}
-                    onSubmit={(values) => {
-                        handleSubmitForm({ 
-                          id_branch: branch,
-                          ...values, 
-                        });
-                      }}
-                    
-                >
-                    {({ values, errors, setFieldValue, setFieldTouched, handleChange, handleSubmit }) => (
+            return (
+                <>
+                    <form onSubmit={(e) => {
+                        e.preventDefault();
+                        formik.handleSubmit(e);
+                    }}>
+                        <div className='grid grid-rows-2 md:grid-cols-2 gap-5 border-gray-300'>
+                            <div className='flex flex-col'>
+                                <label className='text-gray-700 mb-1 font-medium'>First Name<span className='text-red-400'>*</span></label>
+                                <input
+                                    type='text'
+                                    name='firstname'
+                                    value={formik.values.firstname}
+                                    onChange={(e) => {
+                                        formik.handleChange(e);
+                                        formik.setFieldTouched("firstname", false);
+                                    }}
+                                    className='border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus-[#D1D5DB] focus:border-transparent'
+                                    placeholder='Enter Here'
+                                />
+                                {formik.errors.firstname ? <div style={{ color: "red" }}>{formik.errors.firstname}</div> : null}
+                            </div>
 
-                        <>
-                            <Form onSubmit={(e) => {
-                                e.preventDefault()
-                                handleSubmit(e)
-                            }} >
+                            <div className='flex flex-col'>
+                                <label className='text-gray-700 mb-1 font-medium'>Last Name<span className='text-red-400'>*</span></label>
+                                <input
+                                    type='text'
+                                    name='lastname'
+                                    value={formik.values.lastname}
+                                    onChange={(e) => {
+                                        formik.handleChange(e);
+                                        formik.setFieldTouched("lastname", false);
+                                    }}
+                                    className='border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus-[#D1D5DB] focus:border-transparent'
+                                    placeholder='Enter Here'
+                                />
+                                {formik.errors.lastname ? <div style={{ color: "red" }}>{formik.errors.lastname}</div> : null}
+                            </div>
 
-                                <div className='grid grid-rows-2 md:grid-cols-2 gap-5 border-gray-300'>
+                            <div className='flex flex-col'>
+                                <label className='text-black mb-1 font-medium'>
+                                    Branch<span className='text-red-400'>*</span>
+                                </label>
 
-                                    <div className='flex flex-col'>
-                                        <label className='text-gray-700 mb-1 font-medium'>First Name<span className='text-red-400'>*</span></label>
-                                        <input
-                                            type='text'
-                                            name='firstname'
-                                            value={values.firstname}
-                                            onChange={(e) => {
-                                                handleChange(e)
-                                                setFieldTouched("firstname", false);
+                                <Select
+                                    options={branchData}
+                                    value={branchData.find(branch => branch.value === (id_branch !== "0" ? formik.values.id_branch : formData.id_branch)) || ""}
+                                    onChange={(e, branch) => {
+                                        e.preventDefault();
+                                        formik.setFieldValue("id_branch", branch.value);
+                                        setBranch(branch.value);
+                                        formik.setFieldTouched("id_branch", false);
+                                    }}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            e.preventDefault();
+                                        }
+                                    }}
+                                    customSelectStyles={customSelectStyles}
+                                    isLoading={loadingbranch}
+                                    isDisabled={id_branch !== "0"}
+                                    placeholder="Select Branch"
+                                />
+
+                                {formik.errors.id_branch && <div style={{ color: "red" }}>{formik.errors.id_branch}</div>}
+                            </div>
+
+                            <div className='flex flex-col'>
+                                <label className='text-gray-700 mb-1 font-medium'>Mobile<span className='text-red-400'>*</span></label>
+                                <input
+                                    type='text'
+                                    name='mobile'
+                                    onInput={(e) => {
+                                        e.target.value = e.target.value.replace(/\D/g, '');
+                                        formik.handleChange(e);
+                                    }}
+                                    value={formik.values.mobile}
+                                    pattern="\d{10}"
+                                    maxLength={"10"}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            e.preventDefault();
+                                        }
+                                    }}
+                                    className='border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:[#D1D5DB] focus:border-transparent'
+                                    placeholder='Enter Mobile Number'
+                                />
+
+                                {formik.errors.mobile ? <div style={{ color: "red" }}>{formik.errors.mobile}</div> : null}
+                            </div>
+
+                            <div className='flex flex-col'>
+                                <label className='text-gray-700 mb-1 font-medium'>Whatsapp Number</label>
+                                <input
+                                    type='text'
+                                    name='whatsapp'
+                                    onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '')}
+                                    value={formik.values.whatsapp}
+                                    onChange={(e) => {
+                                        e.preventDefault();
+                                        formik.handleChange(e);
+                                        formik.setFieldTouched("whatsapp", false);
+                                    }}
+                                    pattern="\d{10}"
+                                    maxLength={"10"}
+                                    className='border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:[#D1D5DB] focus:border-transparent'
+                                    placeholder='Enter Whatsapp Number'
+                                />
+                                {formik.errors.whatsapp ? <div style={{ color: "red" }}>{formik.errors.whatsapp}</div> : null}
+                            </div>
+
+                            <div className='flex flex-col'>
+                                <label className='text-gray-700 mb-1 font-medium'>Address<span className='text-red-400'>*</span></label>
+                                <input
+                                    type='text'
+                                    name='address'
+                                    value={formik.values.address}
+                                    onChange={(e) => {
+                                        e.preventDefault();
+                                        formik.handleChange(e);
+                                        formik.setFieldTouched("address", false);
+                                    }}
+                                    className='border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:[#D1D5DB] focus:border-transparent'
+                                    placeholder='Enter Here'
+                                />
+                                {formik.errors.address ? <div style={{ color: "red" }}>{formik.errors.address}</div> : null}
+                            </div>
+
+                            <div className='flex flex-col'>
+                                <label className='text-gray-700 mb-1 font-medium'>Pincode<span className='text-red-400'>*</span></label>
+                                <input
+                                    type='text'
+                                    name='pincode'
+                                    value={formik.values.pincode}
+                                    onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '')}
+                                    onChange={(e) => {
+                                        e.preventDefault();
+                                        formik.handleChange(e);
+                                        formik.setFieldTouched("pincode", false);
+                                    }}
+                                    pattern="\d{6}"
+                                    maxLength={"6"}
+                                    className='border-2 border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:[#D1D5DB] focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
+                                    placeholder='Enter Pincode'
+                                />
+                                {formik.errors.pincode ? <div style={{ color: "red" }}>{formik.errors.pincode}</div> : null}
+                            </div>
+
+                            <div className='flex flex-col'>
+                                <label className='text-black mb-1 font-medium'>Gender<span className='text-red-400'>*</span></label>
+                                <div className='flex flex-row gap-6 justify-start'>
+                                    {[
+                                        { label: 'Male', value: 1 },
+                                        { label: 'Female', value: 2 },
+                                        { label: 'Other', value: 3 }
+                                    ].map((gender) => (
+                                        <button
+                                            key={gender.value}
+                                            type='button'
+                                            className={`rounded-full w-20 h-10 flex items-center justify-center border-2 border-black transition-colors duration-200 ${formik.values.gender === gender.value ? 'text-white' : 'bg-white text-black'
+                                                }`}
+                                            style={formik.values.gender === gender.value ? { backgroundColor: layout_color } : {}}
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                formik.setFieldValue("gender", gender.value);
+                                                formik.setFieldTouched("gender", false);
                                             }}
-                                            className='border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus-[#D1D5DB] focus:border-transparent'
-                                            placeholder='Enter Here'
-                                        />
-                                        {errors.firstname ? <div style={{ color: "red" }}>{errors.firstname}</div> : null}
-                                    </div>
-
-                                    <div className='flex flex-col'>
-                                        <label className='text-gray-700 mb-1 font-medium'>Last Name<span className='text-red-400'>*</span></label>
-                                        <input
-                                            type='text'
-                                            name='lastname'
-                                            value={values.lastname}
-                                            onChange={(e) => {
-                                                handleChange(e)
-                                                setFieldTouched("lastname", false);
-                                            }}
-                                            className='border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus-[#D1D5DB] focus:border-transparent'
-                                            placeholder='Enter Here'
-                                        />
-                                        {errors.lastname ? <div style={{ color: "red" }}>{errors.lastname}</div> : null}
-                                    </div>
-
-                                    <div className='flex flex-col'>
-                                        <label className='text-black mb-1 font-medium'>
-                                            Branch<span className='text-red-400'>*</span>
-                                        </label>
-
-                                        <Select
-                                            options={branchData}
-                                            value={branchData.find(branch => branch.value === (id_branch !== "0" ? values.id_branch : formData.id_branch)) || ""}
-                                            onChange={(e, branch) => {
-                                                e.preventDefault()
-                                                setFieldValue("id_branch", branch.value);
-                                                setBranch(branch.value);
-                                                setFieldTouched("id_branch", false);
-                                            }}
-                                            onKeyDown={(e) => {
-                                                if (e.key === 'Enter') {
-                                                    e.preventDefault();
-                                                }
-                                            }}
-                                            customSelectStyles={customSelectStyles}
-                                            isLoading={loadingbranch}
-                                            isDisabled={id_branch !== "0"}
-                                            placeholder="Select Branch"
-                                        />
-
-                                        {errors.id_branch && <div style={{ color: "red" }}>{errors.id_branch}</div>}
-                                    </div>
-
-                                    <div className='flex flex-col'>
-                                        <label className='text-gray-700 mb-1 font-medium'>Mobile<span className='text-red-400'>*</span></label>
-                                        <input
-                                            type='text'
-                                            name='mobile'
-                                            onInput={(e) => {
-                                                e.target.value = e.target.value.replace(/\D/g, '');
-                                                handleChange(e);
-                                            }}
-                                            value={values.mobile}
-                                            pattern="\d{10}"
-                                            maxLength={"10"}
-                                            onKeyDown={(e) => {
-                                                if (e.key === 'Enter') {
-                                                    e.preventDefault();
-                                                }
-                                            }}
-                                            className='border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:[#D1D5DB] focus:border-transparent'
-                                            placeholder='Enter Mobile Number'
-                                        />
-
-                                        {errors.mobile ? <div style={{ color: "red" }}>{errors.mobile}</div> : null}
-
-                                    </div>
-
-                                    <div className='flex flex-col'>
-                                        <label className='text-gray-700 mb-1 font-medium'>Whatsapp Number</label>
-                                        <input
-                                            type='text'
-                                            name='whatsapp'
-                                            onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '')}
-                                            value={values.whatsapp}
-                                            onChange={(e) => {
-                                                e.preventDefault()
-                                                handleChange(e)
-                                                setFieldTouched("whatsapp", false);
-                                            }}
-                                            pattern="\d{10}"
-                                            maxLength={"10"}
-                                            className='border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:[#D1D5DB] focus:border-transparent'
-                                            placeholder='Enter Whatsapp Number'
-                                        />
-                                        {errors.whatsapp ? <div style={{ color: "red" }}>{errors.whatsapp}</div> : null}
-
-                                    </div>
-
-                                    <div className='flex flex-col'>
-                                        <label className='text-gray-700 mb-1 font-medium'>Address<span className='text-red-400'>*</span></label>
-                                        <input
-                                            type='text'
-                                            name='address'
-                                            value={values.address}
-                                            onChange={(e) => {
-                                                e.preventDefault()
-                                                handleChange(e)
-                                                setFieldTouched("address", false);
-                                            }}
-                                            className='border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:[#D1D5DB] focus:border-transparent'
-                                            placeholder='Enter Here'
-                                        />
-                                        {errors.address ? <div style={{ color: "red" }}>{errors.address}</div> : null}
-
-                                    </div>
-
-                                    <div className='flex flex-col'>
-                                        <label className='text-gray-700 mb-1 font-medium'>Pincode<span className='text-red-400'>*</span></label>
-                                        <input
-                                            type='text'
-                                            name='pincode'
-                                            value={values.pincode}
-                                            onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '')}
-                                            onChange={(e) => {
-                                                e.preventDefault()
-                                                handleChange(e)
-                                                setFieldTouched("pincode", false);
-                                            }}
-                                            pattern="\d{6}"
-                                            maxLength={"6"}
-                                            className='border-2 border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:[#D1D5DB] focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
-                                            placeholder='Enter Pincode'
-                                        />
-                                        {errors.pincode ? <div style={{ color: "red" }}>{errors.pincode}</div> : null}
-
-                                    </div>
-
-                                    <div className='flex flex-col'>
-                                        <label className='text-black mb-1 font-medium'>Gender<span className='text-red-400'>*</span></label>
-                                        <div className='flex flex-row gap-6 justify-start'>
-                                            {[
-                                                { label: 'Male', value: 1 },
-                                                { label: 'Female', value: 2 },
-                                                { label: 'Other', value: 3 }
-                                            ].map((gender) => (
-                                                <button
-                                                    key={gender.value}
-                                                    type='button'
-                                                    className={`rounded-full w-20 h-10 flex items-center justify-center border-2 border-black transition-colors duration-200 ${values.gender === gender.value ? 'text-white' : 'bg-white text-black'
-                                                        }`}
-                                                    style={values.gender === gender.value ? { backgroundColor: layout_color } : {}}
-                                                    onClick={
-                                                        (e) => {
-                                                            e.preventDefault()
-                                                            setFieldValue("gender", gender.value)
-                                                            setFieldTouched("gender", false);
-                                                        }}
-                                                >
-                                                    {gender.label}
-                                                </button>
-                                            ))}
-                                        </div>
-                                        {errors.gender ? <div style={{ color: "red" }}>{errors.gender}</div> : null}
-
-                                    </div>
-
-                                    <div className='flex flex-col'>
-                                        <label className='text-black mb-1 font-medium'>Country<span className='text-red-400'>*</span></label>
-
-                                        <Select
-                                            options={countryData}
-                                            value={countryData.find(ctry => ctry.value === values.id_country) || country}
-                                            onChange={(ctry) => {
-                                                setFieldValue("id_country", ctry.value)
-                                                setCountry(ctry.value)
-                                                setFieldTouched("id_country", false);
-                                            }}
-                                            
-                                            customSelectStyles={customSelectStyles}
-                                            isLoading={loadingCountries}
-                                            placeholder="Select Country"
-                                        />
-                                        {errors.id_country ? <div style={{ color: "red" }}>{errors.id_country}</div> : null}
-
-                                    </div>
-
-                                    <div className='flex flex-col'>
-                                        <label className='text-black mb-1 font-medium'>State<span className='text-red-400'>*</span></label>
-
-                                        <Select
-                                            options={stateData}
-                                            onChange={(e) => {
-                                                setFieldValue("id_state", e.value)
-                                                setState(e.value)
-                                                setFieldTouched("id_state", false);
-                                            }}
-                                            // onKeyDown={(e) => {
-                                            //     if (e.key === 'Enter') {
-                                            //         e.preventDefault();
-                                            //     }
-                                            // }}
-                                            customSelectStyles={customSelectStyles}
-                                            isLoading={loadingStates}
-                                            value={stateData.find(ctry => ctry.value === values.id_state) || state}
-                                            placeholder="Select state"
-                                        />
-
-                                        {errors.id_state ? <div style={{ color: "red" }}>{errors.id_state}</div> : null}
-
-                                    </div>
-
-                                    <div className='flex flex-col'>
-                                        <label className='text-black mb-1 font-medium'>City<span className='text-red-400'>*</span></label>
-
-                                        <Select
-                                            options={cityData}
-                                            onChange={(e) => {
-                                                setFieldValue("id_city", e.value)
-                                                setCity(e.value)
-                                                setFieldTouched("id_city", false);
-                                            }}
-                                            // onKeyDown={(e) => {
-                                            //     if (e.key === 'Enter') {
-                                            //         e.preventDefault();
-                                            //     }
-                                            // }}
-                                            customSelectStyles={customSelectStyles}
-                                            isLoading={loadingCities}
-                                            value={cityData.find(ctry => ctry.value === values.id_city) || city}
-                                            placeholder="Select city"
-                                        />
-
-                                        {errors.id_city ? <div style={{ color: "red" }}>{errors.id_city}</div> : null}
-
-                                    </div>
-
-                                    <div className='flex flex-col'>
-                                        <label className='text-black mb-1 font-medium'>Pan Number</label>
-                                        <input
-                                            type='text'
-                                            name='pan'
-                                            value={values.pan}
-                                            onChange={handleChange}
-                                            className='border-2 w-full border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:[#D1D5DB] focus:border-transparent'
-                                            placeholder='Enter Here'
-                                            maxLength='10'
-                                            style={{ textTransform: 'uppercase' }}
-                                        />
-                                        {errors.pan ? <div style={{ color: "red" }}>{errors.pan}</div> : null}
-                                        
-                                    </div>
-
-                                    <div className='flex flex-col'>
-                                        <label className='text-gray-700 mb-1 font-medium'>Aadhar Card Number<span className='text-red-400'></span></label>
-                                        <input
-                                            type="text"
-                                            name="authorno"
-                                            value={values.authorno}
-                                            pattern="\d{12}"
-                                            onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '')}
-                                            maxLength="12"
-                                            inputMode="numeric"
-                                            onChange={handleChange}
-                                            className="border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:[#D1D5DB] focus:border-transparent"
-                                            placeholder="Enter Here"
-                                        />
-
-                                        {errors.authorno ? <div style={{ color: "red" }}>{errors.authorno}</div> : null}
-
-                                    </div>
-
-
-                                    <div className='flex flex-col'>
-                                        <label className='text-gray-700 mb-1 font-medium'>Date Of Wedding</label>
-
-                                        <div className="relative w-full">
-                                            <DatePicker
-                                                selected={values.date_of_wed}
-                                                onChange={(date) => {
-                                                    const value = formatDate(date)
-                                                    setFieldValue("date_of_wed", value)
-                                                    setFieldTouched("date_of_wed", false)
-                                                }}
-                                                onKeyDown={(e) => {
-                                                    if (e.key === 'Enter') {
-                                                        e.preventDefault();
-                                                    }
-                                                }}
-                                                dateFormat="yyyy-MM-dd"
-                                                className="w-full border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:[#D1D5DB] h-[50px]"
-                                                placeholderText="Select Date"
-                                                wrapperClassName="w-full"
-                                                showMonthDropdown
-                                                showYearDropdown
-                                                dropdownMode='select'
-                                                title="Enter a date in YYYY-MM-DD format"
-
-                                            />
-                                            <CalendarDays
-                                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none"
-                                                size={20}
-                                            />
-                                        </div>
-                                        {errors.date_of_wed ? <div style={{ color: "red" }}>{errors.date_of_wed}</div> : null}
-
-                                    </div>
-
-                                    <div className='flex flex-col'>
-                                        <label className='text-gray-700 mb-1 font-medium'>Date Of Birth<span className='text-red-400'>*</span></label>
-                                        <div className="relative">
-                                            <DatePicker
-
-                                                selected={values.date_of_birth}
-                                                onChange={(date) => {
-                                                    const value = formatDate(date)
-                                                    setFieldValue("date_of_birth", value)
-                                                    setFieldTouched("date_of_birth", false)
-                                                }}
-                                                onKeyDown={(e) => {
-                                                    if (e.key === 'Enter') {
-                                                        e.preventDefault();
-                                                    }
-                                                }}
-                                                dateFormat="yyyy-MM-dd"
-                                                className="w-full border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:[#D1D5DB] h-[50px]"
-                                                placeholderText="Select Date"
-                                                wrapperClassName="w-full"
-                                                showMonthDropdown
-                                                showYearDropdown
-                                                dropdownMode='select'
-                                            />
-
-                                            <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-gray-500 w-14 h-[43px] justify-center items-center flex rounded-r-md pointer-events-none">
-                                                <CalendarDays size={20} />
-                                            </span>
-                                        </div>
-                                        {errors.date_of_birth ? <div style={{ color: "red" }}>{errors.date_of_birth}</div> : null}
-
-                                    </div>
-
-                                    <div className='flex flex-col'>
-                                        <label className='text-black mb-1 font-medium'>Upload Document</label>
-                                        <label
-                                            htmlFor="id_proof"
-                                            className="flex flex-col justify-center items-center w-full h-12 border-2 border-dashed border-gray-300 text-black cursor-pointer p-5 text-center hover:bg-gray-50 transition-colors"
                                         >
-                                            <p className='text-gray-900'>
-                                                {id_proof ? (id_proof.name || id_proof) : 'Browse to upload Document (.pdf,.doc,.docx,.xls,.xlsx,.txt)'}
-                                            </p>
+                                            {gender.label}
+                                        </button>
+                                    ))}
+                                </div>
+                                {formik.errors.gender ? <div style={{ color: "red" }}>{formik.errors.gender}</div> : null}
+                            </div>
+
+                            <div className='flex flex-col'>
+                                <label className='text-black mb-1 font-medium'>Country<span className='text-red-400'>*</span></label>
+
+                                <Select
+                                    options={countryData}
+                                    value={countryData.find(ctry => ctry.value === formik.values.id_country) || country}
+                                    onChange={(ctry) => {
+                                        formik.setFieldValue("id_country", ctry.value);
+                                        setCountry(ctry.value);
+                                        formik.setFieldTouched("id_country", false);
+                                    }}
+                                    customSelectStyles={customSelectStyles}
+                                    isLoading={loadingCountries}
+                                    placeholder="Select Country"
+                                />
+                                {formik.errors.id_country ? <div style={{ color: "red" }}>{formik.errors.id_country}</div> : null}
+                            </div>
+
+                            <div className='flex flex-col'>
+                                <label className='text-black mb-1 font-medium'>State<span className='text-red-400'>*</span></label>
+
+                                <Select
+                                    options={stateData}
+                                    onChange={(e) => {
+                                        formik.setFieldValue("id_state", e.value);
+                                        setState(e.value);
+                                        formik.setFieldTouched("id_state", false);
+                                    }}
+                                    customSelectStyles={customSelectStyles}
+                                    isLoading={loadingStates}
+                                    value={stateData.find(ctry => ctry.value === formik.values.id_state) || state}
+                                    placeholder="Select state"
+                                />
+
+                                {formik.errors.id_state ? <div style={{ color: "red" }}>{formik.errors.id_state}</div> : null}
+                            </div>
+
+                            <div className='flex flex-col'>
+                                <label className='text-black mb-1 font-medium'>City<span className='text-red-400'>*</span></label>
+
+                                <Select
+                                    options={cityData}
+                                    onChange={(e) => {
+                                        formik.setFieldValue("id_city", e.value);
+                                        setCity(e.value);
+                                        formik.setFieldTouched("id_city", false);
+                                    }}
+                                    customSelectStyles={customSelectStyles}
+                                    isLoading={loadingCities}
+                                    value={cityData.find(ctry => ctry.value === formik.values.id_city) || city}
+                                    placeholder="Select city"
+                                />
+
+                                {formik.errors.id_city ? <div style={{ color: "red" }}>{formik.errors.id_city}</div> : null}
+                            </div>
+
+                            <div className='flex flex-col'>
+                                <label className='text-black mb-1 font-medium'>Pan Number</label>
+                                <input
+                                    type='text'
+                                    name='pan'
+                                    value={formik.values.pan}
+                                    onChange={formik.handleChange}
+                                    className='border-2 w-full border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:[#D1D5DB] focus:border-transparent'
+                                    placeholder='Enter Here'
+                                    maxLength='10'
+                                    style={{ textTransform: 'uppercase' }}
+                                />
+                                {formik.errors.pan ? <div style={{ color: "red" }}>{formik.errors.pan}</div> : null}
+                            </div>
+
+                            <div className='flex flex-col'>
+                                <label className='text-gray-700 mb-1 font-medium'>Aadhar Card Number<span className='text-red-400'></span></label>
+                                <input
+                                    type="text"
+                                    name="authorno"
+                                    value={formik.values.authorno}
+                                    pattern="\d{12}"
+                                    onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '')}
+                                    maxLength="12"
+                                    inputMode="numeric"
+                                    onChange={formik.handleChange}
+                                    className="border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:[#D1D5DB] focus:border-transparent"
+                                    placeholder="Enter Here"
+                                />
+
+                                {formik.errors.authorno ? <div style={{ color: "red" }}>{formik.errors.authorno}</div> : null}
+                            </div>
+
+                            <div className='flex flex-col'>
+                                <label className='text-gray-700 mb-1 font-medium'>Date Of Wedding</label>
+
+                                <div className="relative w-full">
+                                    <DatePicker
+                                        selected={formik.values.date_of_wed}
+                                        onChange={(date) => {
+                                            const value = formatDate(date);
+                                            formik.setFieldValue("date_of_wed", value);
+                                            formik.setFieldTouched("date_of_wed", false);
+                                        }}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                                e.preventDefault();
+                                            }
+                                        }}
+                                        dateFormat="yyyy-MM-dd"
+                                        className="w-full border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:[#D1D5DB] h-[50px]"
+                                        placeholderText="Select Date"
+                                        wrapperClassName="w-full"
+                                        showMonthDropdown
+                                        showYearDropdown
+                                        dropdownMode='select'
+                                        title="Enter a date in YYYY-MM-DD format"
+                                    />
+                                    <CalendarDays
+                                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none"
+                                        size={20}
+                                    />
+                                </div>
+                                {formik.errors.date_of_wed ? <div style={{ color: "red" }}>{formik.errors.date_of_wed}</div> : null}
+                            </div>
+
+                            <div className='flex flex-col'>
+                                <label className='text-gray-700 mb-1 font-medium'>Date Of Birth<span className='text-red-400'>*</span></label>
+                                <div className="relative">
+                                    <DatePicker
+                                        selected={formik.values.date_of_birth}
+                                        onChange={(date) => {
+                                            const value = formatDate(date);
+                                            formik.setFieldValue("date_of_birth", value);
+                                            formik.setFieldTouched("date_of_birth", false);
+                                        }}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                                e.preventDefault();
+                                            }
+                                        }}
+                                        dateFormat="yyyy-MM-dd"
+                                        className="w-full border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:[#D1D5DB] h-[50px]"
+                                        placeholderText="Select Date"
+                                        wrapperClassName="w-full"
+                                        showMonthDropdown
+                                        showYearDropdown
+                                        dropdownMode='select'
+                                    />
+
+                                    <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-gray-500 w-14 h-[43px] justify-center items-center flex rounded-r-md pointer-events-none">
+                                        <CalendarDays size={20} />
+                                    </span>
+                                </div>
+                                {formik.errors.date_of_birth ? <div style={{ color: "red" }}>{formik.errors.date_of_birth}</div> : null}
+                            </div>
+
+                            <div className='flex flex-col'>
+                                <label className='text-black mb-1 font-medium'>Upload Document</label>
+                                <label
+                                    htmlFor="id_proof"
+                                    className="flex flex-col justify-center items-center w-full h-12 border-2 border-dashed border-gray-300 text-black cursor-pointer p-5 text-center hover:bg-gray-50 transition-colors"
+                                >
+                                    <p className='text-gray-900'>
+                                        {id_proof ? (id_proof.name || id_proof) : 'Browse to upload Document (.pdf,.doc,.docx,.xls,.xlsx,.txt)'}
+                                    </p>
+                                </label>
+                                <input
+                                    className="hidden"
+                                    name="id_proof"
+                                    id="id_proof"
+                                    type="file"
+                                    accept=".pdf,.doc,.docx,.xls,.xlsx,.txt"
+                                    onChange={(e) => handleid_proofUpload(e)}
+                                />
+                                {formik.errors.id_proof ? <div style={{ color: "red" }}>{formik.errors.id_proof}</div> : null}
+
+                                {id_proof && (
+                                    <div className="flex items-center gap-2 mt-2">
+                                        <span className="text-sm text-gray-600">
+                                            Selected file: {id_proof.name || id_proof}
+                                        </span>
+                                        <button
+                                            onClick={() => {
+                                                setid_proof(null);
+                                                document.getElementById('id_proof').value = '';
+                                            }}
+                                            className="text-red-500 hover:text-red-700"
+                                        >
+                                            <X size={16} />
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className='flex flex-col'>
+                                <div className="flex flex-row " >
+                                    <label className='text-black mb-1 font-medium'>Upload Profile Image</label>
+                                    <p className='text-gray-900 text-[12px] truncate text-start mx-2'>
+                                        (Maximum file size(500KB))
+                                    </p>
+                                </div>
+                                <div className='flex flex-col sm:flex-row gap-4'>
+                                    <div className='flex-1'>
+                                        <label
+                                            htmlFor="profile-image"
+                                            className="flex justify-center items-center w-full h-12 border-2 border-dashed border-gray-300 text-black cursor-pointer px-4"
+                                        >
+                                            <div className="text-gray-900 text-center text-[12px]">
+                                                {cus_img ? cus_img.name : "Browse"}
+                                                <span>
+                                                    {cus_img?.size ? ` (${(cus_img.size / 1024).toFixed()} KB)` : profileplaceholder}
+                                                </span>
+                                            </div>
                                         </label>
+
                                         <input
                                             className="hidden"
-                                            name="id_proof"
-                                            id="id_proof"
+                                            name="profile_image"
+                                            id="profile-image"
                                             type="file"
-                                            accept=".pdf,.doc,.docx,.xls,.xlsx,.txt"
-
-                                            onChange={(e) => handleid_proofUpload(e)}
+                                            accept="image/*"
+                                            onChange={handleFileChange}
                                         />
-                                        {errors.id_proof ? <div style={{ color: "red" }}>{errors.id_proof}</div> : null}
 
-                                        {id_proof && (
-                                            <div className="flex items-center gap-2 mt-2">
-                                                <span className="text-sm text-gray-600">
-                                                    Selected file: {id_proof.name || id_proof}
-                                                </span>
+                                        <div className='flex flex-col items-center justify-center lg:items-start lg:justify-start lg:w-52 mt-2'>
+                                            <button
+                                                type='button'
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    setShowWebcam(prev => !prev);
+                                                }}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter') {
+                                                        e.preventDefault();
+                                                    }
+                                                }}
+                                                className="mt-2 rounded-lg flex items-center gap-2 text-white px-3 py-1"
+                                                style={{ backgroundColor: layout_color }}
+                                            >
+                                                <Camera size={16} />
+                                                <span className='text-sm'>{showWebcam ? 'Close Camera' : 'Open Camera'}</span>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div className='flex items-start justify-center'>
+                                        <div className='relative w-20 h-20 bg-gray-200 rounded-md overflow-hidden'>
+                                            <img
+                                                src={
+                                                    pathurl
+                                                        ? pathurl
+                                                        : profileplaceholder
+                                                }
+                                                alt="Profile Preview"
+                                                className={`w-full h-full ${cus_img ? "object-cover" : "object-contain"}`}
+                                            />
+
+                                            {pathurl && (
                                                 <button
-                                                    onClick={() => {
-                                                        setid_proof(null);
-                                                        document.getElementById('id_proof').value = '';
-                                                    }}
-                                                    className="text-red-500 hover:text-red-700"
+                                                    onClick={handleClearImage}
+                                                    className="absolute top-1 right-1 bg-white rounded-full p-1 shadow-md hover:bg-gray-100"
                                                 >
-                                                    <X size={16} />
+                                                    <X size={14} />
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {showWebcam && (
+                                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                                    <div className="bg-white p-4 rounded-lg">
+                                        <div className="relative">
+                                            <Webcam
+                                                ref={webcamRef}
+                                                screenshotFormat="image/jpeg"
+                                                className="rounded-lg"
+                                            />
+                                            <div className="mt-4 flex justify-center gap-2">
+                                                <button
+                                                    onClick={(e) => handleCapture(e)}
+                                                    className=" text-white px-4 py-2 rounded-md"
+                                                    style={{ backgroundColor: layout_color }} >
+                                                    Capture
+                                                </button>
+                                                <button
+                                                    onClick={() => setShowWebcam(false)}
+                                                    className="bg-gray-500 text-white px-4 py-2 rounded-md"
+                                                >
+                                                    Cancel
                                                 </button>
                                             </div>
-                                        )}
-                                    </div>
-
-                                    <div className='flex flex-col'>
-                                        <div className="flex flex-row " >
-                                            <label className='text-black mb-1 font-medium'>Upload Profile Image</label>
-                                            <p className='text-gray-900 text-[12px] truncate text-start mx-2'>
-                                                (Maximum file size(500KB))
-                                            </p>
-                                        </div>
-                                        <div className='flex flex-col sm:flex-row gap-4'>
-                                            <div className='flex-1'>
-                                                <label
-                                                    htmlFor="profile-image"
-                                                    className="flex justify-center items-center w-full h-12 border-2 border-dashed border-gray-300 text-black cursor-pointer px-4"
-                                                >
-                                                    <div className="text-gray-900 text-center text-[12px]">
-                                                        {cus_img ? cus_img.name : "Browse"}
-                                                        <span>
-                                                            {cus_img?.size ? ` (${(cus_img.size / 1024).toFixed()} KB)` : profileplaceholder}
-                                                        </span>
-                                                    </div>
-                                                </label>
-
-                                                <input
-                                                    className="hidden"
-                                                    name="profile_image"
-                                                    id="profile-image"
-                                                    type="file"
-                                                    accept="image/*"
-                                                    onChange={handleFileChange}
-                                                />
-
-                                                <div className='flex flex-col items-center justify-center lg:items-start lg:justify-start lg:w-52 mt-2'>
-                                                    <button
-                                                       type='button'
-                                                        onClick={(e) => {
-                                                            e.preventDefault();
-                                                            e.stopPropagation();
-                                                            setShowWebcam(prev => !prev);
-                                                        }}
-                                                        
-                                                        onKeyDown={(e) => {
-                                                            if (e.key === 'Enter') {
-                                                                e.preventDefault();
-                                                            }
-                                                        }}
-
-
-                                                        className="mt-2 rounded-lg flex items-center gap-2 text-white px-3 py-1"
-                                                        style={{ backgroundColor: layout_color }}
-                                                    >
-                                                        <Camera size={16} />
-                                                        <span className='text-sm'>{showWebcam ? 'Close Camera' : 'Open Camera'}</span>
-                                                    </button>
-                                                </div>
-                                            </div>
-
-
-                                            <div className='flex items-start justify-center'>
-
-                                                <div className='relative w-20 h-20 bg-gray-200 rounded-md overflow-hidden'>
-
-                                                    <img
-                                                        src={
-                                                            pathurl
-                                                                ? pathurl
-                                                                : profileplaceholder
-                                                        }
-                                                        alt="Profile Preview"
-                                                        className={`w-full h-full ${cus_img ? "object-cover" : "object-contain"}`}
-                                                    />
-
-
-                                                    {pathurl && (
-                                                        <button
-                                                            onClick={handleClearImage}
-                                                            className="absolute top-1 right-1 bg-white rounded-full p-1 shadow-md hover:bg-gray-100"
-                                                        >
-                                                            <X size={14} />
-                                                        </button>
-                                                    )}
-                                                </div>
-                                            </div>
                                         </div>
                                     </div>
-                                    {showWebcam && (
-                                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                                            <div className="bg-white p-4 rounded-lg">
-                                                <div className="relative">
-                                                    <Webcam
-                                                        ref={webcamRef}
-                                                        screenshotFormat="image/jpeg"
-                                                        className="rounded-lg"
-                                                    />
-                                                    <div className="mt-4 flex justify-center gap-2">
-                                                        <button
-                                                            onClick={(e) => handleCapture(e)}
-                                                            className=" text-white px-4 py-2 rounded-md"
-                                                            style={{ backgroundColor: layout_color }} >
-                                                            Capture
-                                                        </button>
-                                                        <button
-                                                            onClick={() => setShowWebcam(false)}
-                                                            className="bg-gray-500 text-white px-4 py-2 rounded-md"
-                                                        >
-                                                            Cancel
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
                                 </div>
-                                <div className="flex flex-col mt-3">
-                                    <div className="flex flex-row items-center">
+                            )}
+                        </div>
+                        <div className="flex flex-col mt-3">
+                            <div className="flex flex-row items-center">
+                                <input
+                                    type="checkbox"
+                                    className="w-8 h-5 accent-blue-600"
+                                    name="showVerification"
+                                    checked={showVerification}
+                                    onChange={() => {
+                                        setShowVerification(!showVerification);
+                                        setMobile("");
+                                        setOtpNumber("");
+                                        ResetTimer();
+                                    }}
+                                />
+                                <h2 className="text-lg text-[#023453] font-bold whitespace-nowrap px-2 my-3">
+                                    To verify account with OTP verification, kindly check the checkbox.
+                                </h2>
+                            </div>
+
+                            {showVerification && (
+                                <div className="grid grid-rows-2 md:grid-cols-2 gap-4">
+                                    {/* Mobile Number Input */}
+                                    <div className="flex flex-col relative">
+                                        <label className="text-black mb-1 font-normal">
+                                            Mobile Number <span className="text-red-400">*</span>
+                                        </label>
                                         <input
-                                            type="checkbox"
-                                            className="w-8 h-5 accent-blue-600"
-                                            name="showVerification"
-                                            checked={showVerification}
-                                            onChange={() => {
-                                                setShowVerification(!showVerification)
-                                                setMobile("")
-                                                setOtpNumber("")
-                                                ResetTimer();
+                                            type="text"
+                                            name="mobile"
+                                            value={formik.values.mobile || mobile}
+                                            className="border-2 w-full border-gray-300  bg-[#f2f2f2] rounded-md p-2 focus:outline-none"
+                                            placeholder="Enter Here"
+                                            readOnly
+                                            maxLength={10}
+                                        />
+
+                                        <div
+                                            onClick={() => {
+                                                const payload = {
+                                                    mobile: formik.values.mobile,
+                                                    branchId: branch
+                                                };
+                                                setCanResend(false);
+                                                setIsTimerRunning(true);
+                                                postSendOtpMobile(payload);
+                                            }}
+                                            className="absolute flex items-center justify-center cursor-pointer right-0 top-[29px] w-10 h-10 bg-[#023453] rounded-r-md transition"
+                                        >
+                                            <Send size={22} className="text-white" />
+                                        </div>
+                                    </div>
+
+                                    {/* OTP Input */}
+                                    <div className="flex flex-col relative">
+                                        <label className="text-black mb-1 font-normal">
+                                            OTP Number <span className="text-red-400">*</span>
+                                        </label>
+                                        <input
+                                            type="text"
+                                            name="otp"
+                                            className="border-2 w-full border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:[#D1D5DB]"
+                                            placeholder="Enter OTP"
+                                            value={otpNumber || ""}
+                                            onChange={(e) => {
+                                                const value = e.target.value.replace(/\D/g, '');
+                                                setOtpNumber(value);
                                             }}
                                         />
-                                        <h2 className="text-lg text-[#023453] font-bold whitespace-nowrap px-2 my-3">
-                                            To verify account with OTP verification, kindly check the checkbox.
-                                        </h2>
+                                        <div
+                                            onClick={() => {
+                                                const payload = {
+                                                    mobile: formik.values.mobile,
+                                                    otp: otpNumber,
+                                                };
+                                                VerifyOtpNumber(payload);
+                                            }}
+                                            disabled={!otpNumber}
+                                            className="absolute flex items-center justify-center cursor-pointer right-0 top-[29px] w-10 h-10 bg-[#023453] rounded-r-md transition"
+                                        >
+                                            <Send size={22} className="text-white" />
+                                        </div>
                                     </div>
 
-                                    {showVerification && (
-                                        <div className="grid grid-rows-2 md:grid-cols-2 gap-4">
-                                            {/* Mobile Number Input */}
-                                            <div className="flex flex-col relative">
-                                                <label className="text-black mb-1 font-normal">
-                                                    Mobile Number <span className="text-red-400">*</span>
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    name="mobile"
-                                                    value={values.mobile || mobile}
-                                                    className="border-2 w-full border-gray-300  bg-[#f2f2f2] rounded-md p-2 focus:outline-none"
-                                                    placeholder="Enter Here"
-                                                    readOnly
-                                                    maxLength={10}
-                                                />
-
-
-                                                <div
-                                                    onClick={()=>{
+                                    {/* Countdown Timer */}
+                                    <div className="flex flex-col text-sm text-gray-600 mt-1">
+                                        {(timer > 0 && isTimerRunning) ? (
+                                            <span>Resend OTP in {timer} seconds</span>
+                                        ) : (
+                                            (canResend) && (
+                                                <span
+                                                    className="text-blue-600 cursor-pointer hover:underline"
+                                                    onClick={() => {
                                                         const payload = {
-                                                            mobile: values.mobile,
+                                                            mobile: formik.values.mobile,
                                                             branchId: branch
-                                                        }
+                                                        };
                                                         setCanResend(false);
                                                         setIsTimerRunning(true);
-                                                        postSendOtpMobile(payload)
+                                                        postSendOtpMobile(payload);
                                                     }}
-                                                    className="absolute flex items-center justify-center cursor-pointer right-0 top-[29px] w-10 h-10 bg-[#023453] rounded-r-md  transition"
+                                                    disabled={isTimerRunning}
                                                 >
-                                                    <Send size={22} className="text-white" />
-                                                </div>
-
-                                            </div>
-
-                                            {/* OTP Input */}
-                                            <div className="flex flex-col relative">
-                                                <label className="text-black mb-1 font-normal">
-                                                    OTP Number <span className="text-red-400">*</span>
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    name="otp"
-                                                    className="border-2 w-full border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:[#D1D5DB]"
-                                                    placeholder="Enter OTP"
-                                                    value={otpNumber || ""}
-                                                    // onInput={(e) => {
-                                                    //     e.target.value = e.target.value.replace(/\D/g, '');
-                                                    //     handleChange(e);
-                                                    // }}
-                                                    onChange={(e) => {
-                                                        const value = e.target.value.replace(/\D/g, '');
-                                                        setOtpNumber(value)
-                                                    }}
-    
-                                                />
-                                                <div
-                                                    onClick={()=>{
-                                                        const payload = {
-                                                            mobile: values.mobile,
-                                                            otp: otpNumber,
-                                                        }
-                                                        VerifyOtpNumber(payload)
-                                                
-                                                    }}
-                                                    disabled={!otpNumber}
-                                                    className="absolute flex items-center justify-center cursor-pointer right-0 top-[29px] w-10 h-10 bg-[#023453] rounded-r-md  transition"
-                                                >
-                                                    <Send size={22} className="text-white" />
-                                                </div>
-                                            </div>
-
-                                            {/* Countdown Timer */}
-                                            <div className="flex flex-col text-sm text-gray-600 mt-1">
-
-                                                {(timer > 0 && isTimerRunning) ? (
-                                                    <span>Resend OTP in {timer} seconds</span>
-                                                ) : (
-                                                    (canResend) && (
-                                                        <span
-                                                            className="text-blue-600 cursor-pointer hover:underline"
-                                                            onClick={()=>{
-                                                                const payload = {
-                                                                    mobile: values.mobile,
-                                                                    branchId: branch
-                                                                }
-                                                                setCanResend(false);
-                                                                setIsTimerRunning(true);
-                                                                postSendOtpMobile(payload)
-                                                            }}
-                                                            disabled={isTimerRunning}
-                                                        >
-                                                            Resend OTP
-                                                        </span>
-                                                    )
-                                                )}
-                                            </div>
-
-
-                                        </div>
-                                    )}
-
-                                </div>
-                                <div>
-
-                                    <div className='bg-white mt-6'>
-                                        <div className='flex justify-end gap-2 mt-3'>
-                                            <button
-                                                className='bg-[#E2E8F0] text-black rounded-md p-2 w-full lg:w-20'
-                                                type='button'
-                                                onClick={() => navigate('/manageaccount/customer/')}
-                                            >
-                                                Cancel
-                                            </button>
-                                            <button
-                                                className=" text-white rounded-md p-2 w-full lg:w-20"
-                                                type='submit'
-                                                style={{ backgroundColor: layout_color }}
-                                                disabled={isLoading}
-                                            >
-                                                {isLoading ? <SpinLoading /> : id ? 'Update' : 'Save'}
-                                            </button>
-                                        </div>
+                                                    Resend OTP
+                                                </span>
+                                            )
+                                        )}
                                     </div>
                                 </div>
-                            </Form>
-                        </>
-                    )}
-                </Formik>
-            </div>
-        </div>
+                            )}
+                        </div>
+                        <div>
+                            <div className='bg-white mt-6'>
+                                <div className='flex justify-end gap-2 mt-3'>
+                                    <button
+                                        className='bg-[#E2E8F0] text-black rounded-md p-2 w-full lg:w-20'
+                                        type='button'
+                                        onClick={() => navigate('/manageaccount/customer/')}
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        className="text-white rounded-md p-2 w-full lg:w-20"
+                                        type='submit'
+                                        style={{ backgroundColor: layout_color }}
+                                        disabled={isLoading}
+                                    >
+                                        {isLoading ? <SpinLoading /> : id ? 'Update' : 'Save'}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </>
+            );
+        })()}
+    </div>
+</div>
     </>
 }
 

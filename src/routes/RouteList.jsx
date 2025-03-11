@@ -466,7 +466,7 @@ const RouteList = [
   },
   {
     name: "Employee Creation",
-    path: '/employee/creation/:id',
+    path: '/employee/edit/:id',
     element: <Base renderContent={AddEmployee} />
   },
 
