@@ -168,15 +168,16 @@ const AdvancedSettings = ({ formik, layout_color, installment_type }) => {
           }
           onBlur={() => formik.setFieldTouched("bonus_type", true)}
         />
-        {formik.touched.bonus_type && formik.errors.bonus_type && (
+        {formik.errors.bonus_type && (
           <div className="text-red-500 text-sm mt-1">
             {formik.errors.bonus_type}
           </div>
         )}
       </div>
-      <div className="flex flex-col mt-2">
+      {formik.values.bonus_type !== 2 ? (
+        <div className="flex flex-col mt-2">
         <label className="text-black mb-2 font-normal">
-          Bonus
+          Bonus Amount
         </label>
         <div className="relative">
           <input
@@ -202,6 +203,37 @@ const AdvancedSettings = ({ formik, layout_color, installment_type }) => {
           </span>
         )}
       </div>
+      ):(
+        <div className="flex flex-col mt-2">
+        <label className="text-black mb-2 font-normal">
+          Bonus Percentage
+        </label>
+        <div className="relative">
+          <input
+            type="number"
+            max={100}
+            name="bonus_percent"
+            onWheel={(e) => e.target.blur()}
+            value={formik.values.bonus_percent}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+            placeholder="Enter Reward Percent"
+          />
+          <span
+            className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+            style={{ backgroundColor: layout_color }}
+          >
+            %
+          </span>
+        </div>
+        {formik.touched.bonus_percent && formik.errors.bonus_percent && (
+          <span className="text-red-500 text-sm mt-1">
+            {formik.errors.bonus_percent}
+          </span>
+        )}
+      </div>
+      )}
 
       {/* Not Paid Limit Installment */}
       <div className="flex flex-col mt-2">

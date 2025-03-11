@@ -314,10 +314,6 @@ const AddSchemePayment = () => {
       // formik.setFieldValue('fine_amount',selectedScheme?.id_scheme?.fine_amount)
 
       let payment_amount = 0;
-      console.log(
-        selectedScheme?.scheme_type,
-        selectedScheme?.id_classification?.order
-      );
       if (
         weight.includes(selectedScheme?.id_scheme?.scheme_type) &&
         selectedScheme?.id_classification?.order === 2
