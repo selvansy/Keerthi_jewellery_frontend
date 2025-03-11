@@ -1937,3 +1937,7 @@ export const refundSummary = async (data)=>{
     const response=await Api.post(`${import.meta.env.VITE_API_URL}/api/client/reports/refundsummary`)
     return response.data
  }
+export const getOverAllSummary = async (data)=>{
+    const response=await Api.post(`${import.meta.env.VITE_API_URL}/api/client/reports/overallreport`)
+    return response.data
+ }
