@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useFormik, useFormikContext } from "formik";
 import Select from "react-select";
-import { Plus, Trash2, SquarePen } from "lucide-react";
+import { Plus, Trash2, SquarePen,CalendarDays} from "lucide-react";
 import {
   getSchemeClassifications,
   allinstallmenttype,
@@ -18,7 +18,6 @@ import {
   getBranchById,
 } from "../../../api/Endpoints";
 import { useQuery, useQueries, useMutation } from "@tanstack/react-query";
-import "react-datepicker/dist/react-datepicker.css";
 import PayableDetails from "./PayableDetails";
 import AdvancedSettings from "./AdvancedSettings";
 import CustomerDetails from "./CustomerDetails";
@@ -36,6 +35,8 @@ import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { schemeValidationSchema } from "../../../../utils/validations/schemeValidationSchema";
 import SpinLoading from "../../common/spinLoading";
+import "react-datepicker/dist/react-datepicker.css";
+import DatePicker from "react-datepicker";
 
 const SchemeForm = () => {
   // const { setFieldValue, validateForm, values } = useFormikContext();
@@ -71,6 +72,7 @@ const SchemeForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [spanText, setSpanText] = useState("");
   const [validation, setValidation] = useState({});
+  const[pathUrl,setPathUrl] = useState('')
 
   const formik = useFormik({
     initialValues: {
@@ -90,6 +92,7 @@ const SchemeForm = () => {
       startingAmount: "",
       // fixed_amounts: "",
       saving_type: "",
+      final_join_date:'',
 
       // PayableDetails fields
       amount: "", // no need to pass
@@ -105,7 +108,7 @@ const SchemeForm = () => {
       benefit_making: "",
 
       //grce
-      grace_type: "",
+      grace_type:"",
       grace_period: "",
       grace_fine_amount: false,
       grace_fine: 0,
@@ -123,9 +126,9 @@ const SchemeForm = () => {
       //agent referral
       agent_referral_percentage: "",
       agent_incentive: "",
-      agent_restriction: true,
+      agent_restriction: false,
       agent_remark: "",
-      agent_target_per: 0,
+      agent_target_per: "",
       agent_partial_per: "",
 
       wastagetype: "", // no need to pass
@@ -213,6 +216,7 @@ const SchemeForm = () => {
     },
   });
   console.log(formik.errors);
+  console.log(formik.values)
   // Customisations for react-select
   const customStyles = {
     control: (base, state) => ({
@@ -394,13 +398,25 @@ const SchemeForm = () => {
         benefit_min_installment_wst_mkg:
           schemeData?.data?.benefit_min_installment_wst_mkg || "",
         classification_order: schemeData?.data?.classification_order,
-        grace_fine_amount: schemeData?.data?.grace_fine_amount || "",
+        grace_fine_amount: schemeData?.data?.grace_fine_amount || false,
+        final_join_date: schemeData?.data?.final_join_date || "",
+        setMainImage:schemeData?.data?.logo || null,
+        setDescriptionImage: schemeData?.data?.desc_img || null
       });
+      if(schemeData?.data?.logo){
+        setMainImage(schemeData?.data?.logo)
+      }
+      if(schemeData?.data?.desc_img){
+        setDescriptionImage(schemeData?.data?.desc_img)
+      }
       if (schemeData?.data?.fixed_amounts.length > 0) {
         formik.setFieldValue("classType", true);
       }
       if (schemeData?.data) {
         formik.setFieldValue("scheme_type", schemeData.data.scheme_type);
+      }
+      if(schemeData?.data?.pathUrl){
+        setPathUrl(schemeData?.data?.pathUrl)
       }
     }
   }, [id, schemeData]);
@@ -492,7 +508,7 @@ const SchemeForm = () => {
     formik.values.startingAmount,
     formik.values.totalCountAmount,
   ]);
-  console.log(formik.values);
+
   // useEffect for branches
   useEffect(() => {
     if (!branchData) return;
@@ -644,7 +660,17 @@ const SchemeForm = () => {
   }, [schemeTypeData, formik.values.classType, selectedClass]);
 
   const handleReset = () => {
-    setAmounts([]);
+    if(selectedAmount && editAmount){
+      const handleRemoveAmount = (index) => {
+        const updatedAmounts = amounts.filter((_, i) => i !== index);
+        setAmounts(updatedAmounts);
+        formik.setFieldValue("totalCountAmount", updatedAmounts.length);
+        setSelectedAmount('')
+        setEditAmount('');
+      };
+      handleRemoveAmount(selectedAmount)
+    }else{
+      setAmounts([]);
 
     formik.setFieldValue("totalCountAmount", "");
     formik.setFieldValue("incrementRate", "");
@@ -660,7 +686,10 @@ const SchemeForm = () => {
       incrementRate: undefined,
       startingAmount: undefined,
     }));
+    }
   };
+
+  console.log(selectedAmount,editAmount)
 
   return (
     <form
@@ -933,7 +962,7 @@ const SchemeForm = () => {
                 onKeyUp={(e) => {
                   const value = e.target.value.trim();
                   const numValue = Number(value);
-
+                  console.log(validation)
                   if (value.length > validation.maxLength) {
                     formik.setFieldError(
                       "maturity_period",
@@ -995,6 +1024,27 @@ const SchemeForm = () => {
                 {formik.errors.saving_type}
               </div>
             )}
+          </div>
+          <div>
+          <label className="block text-sm font-medium mb-1">
+              Final Join Date
+            </label>
+            <div className="relative">
+              <DatePicker
+                selected={formik.values.final_join_date}
+                onChange={(date) => formik.setFieldValue('final_join_date',date)}
+                // dateFormat="dd-MM-yyyy"
+                placeholderText="Select Date"
+                className="border border-gray-300 rounded-md p-3 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                showMonthDropdown
+                showYearDropdown
+                dropdownMode="select"
+                wrapperClassName="w-full"
+              />
+              <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-gray-500 w-14 h-[43px] justify-center items-center flex rounded-r-md pointer-events-none">
+                <CalendarDays size={20} />
+              </span>
+            </div>
           </div>
         </div>
         {formik.values.classType && (
@@ -1236,6 +1286,9 @@ const SchemeForm = () => {
               layout_color={layout_color}
               setMainImg={setMainImage}
               setDescImg={setDescriptionImage}
+              pathurl={pathUrl}
+              logo= {mainImage}
+              desc_img= {descriptionImage}
             />
           </AccordionContent>
         </AccordionItem>

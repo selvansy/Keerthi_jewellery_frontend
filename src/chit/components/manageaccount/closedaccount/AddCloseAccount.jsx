@@ -72,7 +72,7 @@ const AddCloseAccount = () => {
   // Initialize formik
   const formik = useFormik({
     initialValues: {
-      status: "",
+      status: !dynamic ? 1 : "",
       id_scheme_account: "",
       comments: "",
       bill_no: "",
@@ -91,6 +91,7 @@ const AddCloseAccount = () => {
     validateOnBlur: true,
     validateOnChange: false, 
   });
+  console.log(formik.errors)
 
   const { data: paymentModes } = useQuery({
     queryKey: ["paymentModes"],
@@ -215,6 +216,10 @@ const AddCloseAccount = () => {
         toast.success(response.message);
       }
     },
+    onError:(error)=>{
+      console.log(error)
+      toast.error(error.response.data.message)
+    }
   });
 
   // Scheme status API mutation
@@ -270,7 +275,13 @@ const AddCloseAccount = () => {
     onSuccess: (response) => {
       if (response) {
         toast.success(response.message);
-        navigate("/managecustomers/preclose");
+       if(formik.values.status === 1){
+        navigate("/report/redemptionsummary/");
+       }else if(Number(formik.values.status) === 3){
+        navigate("/reports/preclosesummary");
+       }else{
+        navigate('/report/refund/')
+       }
       }
     },
   });

@@ -21,6 +21,7 @@ const AgentDetails = ({ formik,layout_color}) => {
           <div className="relative">
             <input
               type="number"
+              max={100}
               name="agent_referral_percentage"
               value={formik.values.agent_referral_percentage}
               onWheel={(e) => e.target.blur()}

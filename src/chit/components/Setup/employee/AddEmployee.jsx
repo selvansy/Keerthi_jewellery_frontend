@@ -256,8 +256,9 @@ const AddEmployee = () => {
       navigate("/employee/details/");
     },
     onError: (error) => {
+      console.log(error)
       setIsLoading(false);
-      toast.error(error.response.message);
+      toast.error(error.response.data.message);
     },
   });
 
