@@ -72,7 +72,8 @@ const SchemeForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [spanText, setSpanText] = useState("");
   const [validation, setValidation] = useState({});
-
+  const[pathUrl,setPathUrl] = useState('')
+console.log(mainImage,'main')
   const formik = useFormik({
     initialValues: {
       classType: false,
@@ -107,7 +108,7 @@ const SchemeForm = () => {
       benefit_making: "",
 
       //grce
-      grace_type: "",
+      grace_type:"",
       grace_period: "",
       grace_fine_amount: false,
       grace_fine: 0,
@@ -125,9 +126,9 @@ const SchemeForm = () => {
       //agent referral
       agent_referral_percentage: "",
       agent_incentive: "",
-      agent_restriction: true,
+      agent_restriction: false,
       agent_remark: "",
-      agent_target_per: 0,
+      agent_target_per: "",
       agent_partial_per: "",
 
       wastagetype: "", // no need to pass
@@ -214,7 +215,8 @@ const SchemeForm = () => {
       }
     },
   });
-  console.log(formik.values);
+  console.log(formik.errors);
+  console.log(formik.values)
   // Customisations for react-select
   const customStyles = {
     control: (base, state) => ({
@@ -397,13 +399,24 @@ const SchemeForm = () => {
           schemeData?.data?.benefit_min_installment_wst_mkg || "",
         classification_order: schemeData?.data?.classification_order,
         grace_fine_amount: schemeData?.data?.grace_fine_amount || false,
-        final_join_date: schemeData?.data?.final_join_date || ""
+        final_join_date: schemeData?.data?.final_join_date || "",
+        setMainImage:schemeData?.data?.logo || null,
+        setDescriptionImage: schemeData?.data?.desc_img || null
       });
+      if(schemeData?.data?.logo){
+        setMainImage(schemeData?.data?.logo)
+      }
+      if(schemeData?.data?.desc_img){
+        setDescriptionImage(schemeData?.data?.desc_img)
+      }
       if (schemeData?.data?.fixed_amounts.length > 0) {
         formik.setFieldValue("classType", true);
       }
       if (schemeData?.data) {
         formik.setFieldValue("scheme_type", schemeData.data.scheme_type);
+      }
+      if(schemeData?.data?.pathUrl){
+        setPathUrl(schemeData?.data?.pathUrl)
       }
     }
   }, [id, schemeData]);
@@ -495,7 +508,7 @@ const SchemeForm = () => {
     formik.values.startingAmount,
     formik.values.totalCountAmount,
   ]);
-  console.log(formik.values);
+
   // useEffect for branches
   useEffect(() => {
     if (!branchData) return;
@@ -936,7 +949,7 @@ const SchemeForm = () => {
                 onKeyUp={(e) => {
                   const value = e.target.value.trim();
                   const numValue = Number(value);
-
+                  console.log(validation)
                   if (value.length > validation.maxLength) {
                     formik.setFieldError(
                       "maturity_period",
@@ -1260,6 +1273,9 @@ const SchemeForm = () => {
               layout_color={layout_color}
               setMainImg={setMainImage}
               setDescImg={setDescriptionImage}
+              pathurl={pathUrl}
+              logo= {mainImage}
+              desc_img= {descriptionImage}
             />
           </AccordionContent>
         </AccordionItem>
