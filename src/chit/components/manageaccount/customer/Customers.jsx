@@ -24,10 +24,6 @@ function Customers() {
         setOpenAcc(isCustomer ? ["existingCus"] : ["customer"]);
     }, [isCustomer]);
 
-    useEffect(()=>{
-      console.log("resetinggg")
-    },[])
-
     return (
         <div className='flex flex-col'>
             {
@@ -60,7 +56,7 @@ function Customers() {
                 {!isCustomer ? (
                     <>
                         <Accordion
-                            type="single"
+                            type="multiple"
                             value={joinScheme}
                             onValueChange={(value) => setJoinScheme(value)}
                         >
