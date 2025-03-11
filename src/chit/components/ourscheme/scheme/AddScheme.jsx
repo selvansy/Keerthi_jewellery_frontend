@@ -73,7 +73,7 @@ const SchemeForm = () => {
   const [spanText, setSpanText] = useState("");
   const [validation, setValidation] = useState({});
   const[pathUrl,setPathUrl] = useState('')
-console.log(mainImage,'main')
+
   const formik = useFormik({
     initialValues: {
       classType: false,
@@ -660,7 +660,17 @@ console.log(mainImage,'main')
   }, [schemeTypeData, formik.values.classType, selectedClass]);
 
   const handleReset = () => {
-    setAmounts([]);
+    if(selectedAmount && editAmount){
+      const handleRemoveAmount = (index) => {
+        const updatedAmounts = amounts.filter((_, i) => i !== index);
+        setAmounts(updatedAmounts);
+        formik.setFieldValue("totalCountAmount", updatedAmounts.length);
+        setSelectedAmount('')
+        setEditAmount('');
+      };
+      handleRemoveAmount(selectedAmount)
+    }else{
+      setAmounts([]);
 
     formik.setFieldValue("totalCountAmount", "");
     formik.setFieldValue("incrementRate", "");
@@ -676,7 +686,10 @@ console.log(mainImage,'main')
       incrementRate: undefined,
       startingAmount: undefined,
     }));
+    }
   };
+
+  console.log(selectedAmount,editAmount)
 
   return (
     <form
