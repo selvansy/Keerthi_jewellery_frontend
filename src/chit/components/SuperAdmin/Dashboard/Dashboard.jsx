@@ -495,11 +495,11 @@ function Dashboard() {
               </h2>
               <div
                 className="flex items-center justify-center p-3 rounded-md cursor-pointer bg-[#F0F7FE]"
-                onClick={() => navigate("/masters/metal/")}
+                onClick={() => navigate("/masters/metalrate")}
               >
                 <img src={plus} alt="plus" className="w-6 h-6 cursor-pointer" />
                 <div className="text-[#004181] text-md font-medium px-2 font- cursor-pointer">
-                  Add Metal
+                 Add Metal Rate
                 </div>
               </div>
             </div>

@@ -95,6 +95,11 @@ import FaqIndex from "../chit/components/SuperAdmin/faq";
 import PromotionSummary from "../chit/components/notification/promotions";
 import AddPromotion from "../chit/components/notification/promotions/AddPromotion";
 import NotificationHistory from "../chit/components/notification/notificationhistory/NotificationHistory";
+import OverDueReport from "../chit/components/Report/overDueReport";
+import PreClose from "../chit/components/Report/preclose";
+import PreCloseReport from "../chit/components/Report/preclose";
+import RedemptionReport from "../chit/components/Report/Redemptionsummary";
+import RefundReport from "../chit/components/Report/RefundSummary";
 
 const RouteList = [
 
@@ -424,7 +429,7 @@ const RouteList = [
   },
   {
     name: "Account Summary Report",
-    path: '/reports/accountsummaryreport',
+    path: '/reports/accountsummary',
     element: <Base renderContent={AccountSummaryReport} />
   },
   {
@@ -509,6 +514,16 @@ const RouteList = [
     name: "Payment Mode Ledger",
     path: '/reports/paymentmodeledger',
     element: <Base renderContent={ModeWisePayment} />
+  },
+  {
+    name: "preclose summary",
+    path: '/reports/preclosesummary',
+    element: <Base renderContent={PreCloseReport} />
+  },
+  {
+    name: "redemption summary",
+    path: '/report/redemptionsummary/',
+    element: <Base renderContent={RedemptionReport} />
   },
 
   //Whatsapp 
@@ -633,7 +648,7 @@ const RouteList = [
   
   {
     name: "Topup Summary",
-    path: '/schemereport/topupsummary/',
+    path: '/schemereport/topupsummary',
     element: <Base renderContent={TopUp} />
   },
 
@@ -686,7 +701,7 @@ const RouteList = [
   /// help
   {
     name:"ticket raise",
-    path:'/help/raiseticket/',
+    path:'/help/raiseticket',
     element:<Base renderContent={Ticket} />
   },
 
@@ -740,6 +755,18 @@ const RouteList = [
     name:"Promotions Creation",
     path:'/promotions/promotioncreations',
     element:<Base renderContent={AddPromotion} />
+  },
+
+  {
+    name:"Over Due",
+    path:'/report/overdue',
+    element:<Base renderContent={OverDueReport} />
+  },
+
+  {
+    name:"Refund",
+    path:'/report/refund',
+    element:<Base renderContent={RefundReport} />
   },
 
 
