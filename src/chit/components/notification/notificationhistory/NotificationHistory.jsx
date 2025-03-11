@@ -42,7 +42,6 @@ function NotificationHistory() {
   
     const limit = 10;
 
-  
 
     const { mutate: getallNotificationsTable } = useMutation({
       mutationFn: (payload) => NotifcationsHistory(payload),
@@ -189,15 +188,14 @@ function NotificationHistory() {
         },
       },
       {
-    
         header: "Actions",
         cell: (row, rowIndex) => (
           (row.status === "pending") ? 
           <div className="dropdown-container relative">
-                <div className={`${branchAccess !== 0 ? "cursor-not-allowed" : "cursor-pointer"} rounded-md shadow-lg bg-[#d7b56d] ring-1 ring-black ring-opacity-5`}>
-                  <div className="py-1">
+                <div className={`${branchAccess !== 0 ? "cursor-not-allowed" : "cursor-pointer"} lg:w-20  rounded-md shadow-lg bg-[#d7b56d] ring-1 ring-black ring-opacity-5`}>
+                  <div>
                     <button
-                      className={`${branchAccess !== 0 ? "cursor-not-allowed" : "cursor-pointer"} w-full text-left px-4 py-2 text-sm text-gray-700 font-semibold flex items-center gap-2`}
+                      className={`${branchAccess !== 0 ? "cursor-not-allowed" : "cursor-pointer"} lg:w-20  text-center p-2 text-sm text-gray-700 font-semibold flex items-center gap-2`}
                       disabled={branchAccess !== 0}
                       onClick={() => {
                         handleEdit(row);
@@ -211,10 +209,10 @@ function NotificationHistory() {
           </div>
           :
           <div className="dropdown-container relative">
-          <div className={`${branchAccess !== 0 ? "cursor-not-allowed" : "cursor-pointer"} rounded-md shadow-lg bg-[#61a375] ring-1 ring-black ring-opacity-5`}>
-            <div className="py-1">
+          <div className={`${branchAccess !== 0 ? "cursor-not-allowed" : "cursor-pointer"} lg:w-20 rounded-md shadow-lg bg-[#61a375] ring-1 ring-black ring-opacity-5`}>
+            <div>
               <button
-                className={` w-full text-left px-4 py-2 text-sm text-gray-700 font-semibold flex items-center gap-2`}
+                className={`lg:w-20 text-center p-2 text-sm text-gray-700 font-semibold flex items-center gap-2`}
                 disabled={branchAccess !== 0}
               >
                 Approved
@@ -225,8 +223,7 @@ function NotificationHistory() {
     </div>
         ),
         sticky: "right",
-      
-
+    
       }
     ];
   

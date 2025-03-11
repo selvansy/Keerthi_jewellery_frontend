@@ -411,8 +411,8 @@ export const giftaccountcount = async (data) => {
 
 
 export const getgiftvendorbranchById = async (data) => {
-    
-    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/giftvendor/branch/${data}`);
+    const {id_branch} = data
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/giftvendor/branch/${id_branch}`);
     return response.data;
 }
 
@@ -469,6 +469,12 @@ export const getgiftinwardById = async (data) => {
 
 export const getallgiftinward = async () => {
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/giftinwards`);
+    return response.data;
+}
+
+export const getallgiftInwardByBranch = async (branch) => {
+    console.log("id",branch)
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/giftinwards/branch/${branch}`);
     return response.data;
 }
 
@@ -1417,7 +1423,7 @@ export const getcustomerschemeaccount = async (data) => {
 }
 
 export const searchbarcodenumber = async (data) => {
-
+   
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/giftissues/branch/${data.id_branch}/barcode?search=${data.barcode}`);
     return response.data;
 }
@@ -1855,7 +1861,9 @@ export const getallContent=async ()=>{
  }
 
  export const getContentById=async (id)=>{
+   
     const response=await Api.get(`${import.meta.env.VITE_API_URL}/api/client/content/${id}`)
+   
     return response.data
  }
  
@@ -1914,3 +1922,12 @@ export const addPromotions = async (data)=>{
     const response=await Api.post(`${import.meta.env.VITE_API_URL}/api/client/notify/promotion`,data)
     return response.data
  }
+
+ export const getContentTypes = async (data)=>{
+     console.log(data)
+    const response=await Api.post(`${import.meta.env.VITE_API_URL}/api/client/content/all/type/${data.type}`,data.data)
+    return response.data
+ }
+
+
+// 

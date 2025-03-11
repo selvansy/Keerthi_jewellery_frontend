@@ -837,8 +837,12 @@ const Base = ({ renderContent: RenderContent }) => {
         </main>
       </div>
 
-      <footer className="flex flex-row justify-center bg-white border-t p-2 fixed bottom-0 left-0 lg:left-40 w-full z-30">
-        <div>Copyright 2024 © Aurumm by Atts</div>
+      <footer className="flex flex-row justify-center items-center w-full h-3 bg-white border-t py-3 px-2 fixed bottom-0 left-0 lg:left-40 z-30">
+       <div className="flex w-3/4 justify-end items-center ">
+       <div className="mx-2">Copyright 2024 © Aurumm by Atts </div>
+       <div className="mx-2">/</div>
+       <div className="mx-2 cursor-pointer" onClick={()=>navigate("/help/policy")}> <span className="text-blue-700">Legal Policies</span></div>
+       </div>
       </footer>
     </div>
   );
