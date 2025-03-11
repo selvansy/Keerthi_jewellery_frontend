@@ -184,6 +184,7 @@ const AddSchemeAccount = () => {
   let dispatch = useDispatch();
 
   const cusData = useSelector((state) => state.clientForm.accExp);
+  console.log(cusData)
   const id_branch = cusData?.id_branch;
 
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
@@ -394,6 +395,9 @@ const AddSchemeAccount = () => {
 
   const handleSearchmobile = async () => {
     try {
+      if(Number(searchmobile) === Number(cusData.mobile)){
+        return toast.error("Self referral is not allowed")
+       }
       const matchingRole = referralRoles.find(
         (element) => Number(selectedRole) === element.id
       );
@@ -1247,8 +1251,8 @@ const AddSchemeAccount = () => {
                       maxLength={10}
                       value={searchmobile}
                       onChange={(e) => {
-                        if (Number(e.target.value) || e.target.value == "") {
-                          setSearchMobile(e.target.value);
+                        if (Number(e.target.value) || e.target.value == "") {               
+                            setSearchMobile(e.target.value);
                         }
                       }}
                       className="border-2 border-gray-300 rounded-md p-2  focus:border-transparent"
