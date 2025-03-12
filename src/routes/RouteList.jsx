@@ -67,7 +67,7 @@ import AccountSummaryReport from "../chit/components/Report/AccountSummary";
 import OutStandingReport from "../chit/components/common/OutStandingReport";
 import OutStandingAmount from "../chit/components/Report/OutStandingAmout";
 import CardPrint from "../chit/components/Print/CardPrint/CardPrint";
-import ReceiptPrint from "../chit/components/print/ReceiptPrint/AccountSearchAndPrint";
+import AccountSearchAndPrint from "../chit/components/print/ReceiptPrint/AccountSearchAndPrint";
 import NewArrivalsWhatsapp from "../chit/components/whatsapp/newarrivals/index";
 import ProductWhatsapp from "../chit/components/whatsapp/product/index";
 import OffersWhatsapp from "../chit/components/whatsapp/offers/index";
@@ -556,7 +556,7 @@ const RouteList = [
   {
     name: "Receipt Print",
     path: '/receiptprint/printone',
-    element: <Base renderContent={ReceiptPrint} />
+    element: <Base renderContent={AccountSearchAndPrint} />
   },
 
   {
