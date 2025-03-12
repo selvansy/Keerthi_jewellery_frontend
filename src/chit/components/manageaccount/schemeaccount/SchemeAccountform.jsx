@@ -245,7 +245,6 @@ const AddSchemeAccount = () => {
     installment_type: "",
     code: 0,
     scheme_count_number: "",
-    customer_name: "",
   });
 
   const { data: branchresponse } = useQuery({

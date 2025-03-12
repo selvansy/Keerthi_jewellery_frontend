@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import SpinLoading from './common/spinLoading';
 import Logo from "../../assets/login.svg"
-import Background from "../../assets/LoginBg.PNG"
+import Background from "../../assets/LoginBg.png"
 import { toast } from 'react-toastify';
 const Login = () => {
     const dispatch= useDispatch()
