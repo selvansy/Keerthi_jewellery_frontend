@@ -5,8 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'react-toastify'
 import {
-  getproductTable,getProductById,sendwhatsappmessage,getallbranch,getBranchById, deleteproduct, activateproduct, puritybymetal , showtype,displayselltype, getallmetal,categorybymetalid,
-  schemepaymenttodayrate} from "../../../api/Endpoints"
+  getproductTable,getProductById,sendwhatsappmessage,getallbranch,getBranchById, deleteproduct, puritybymetal , showtype,displayselltype, getallmetal,categorybymetalid} from "../../../api/Endpoints"
   import ModelOne from '../../common/Modelone';
 
 
