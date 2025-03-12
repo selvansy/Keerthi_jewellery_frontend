@@ -154,8 +154,8 @@ function WalletRedemption() {
                 setWalletData({
                     customer_name: res.firstname + ' ' + res.lastname,
                     phone: res.mobile,
-                    redeemed_point: res?.redeemed_point,
-                    available_point: res?.balance_point,
+                    redeemed_point: response.data?.walletData?.redeemed_point,
+                    balance_point: response.data?.walletData?.balance_point,
                     active_scheme: response.data?.activeScheme,
                 })
 
@@ -279,7 +279,7 @@ function WalletRedemption() {
                         </div>
                     </div>
                     <div className="w-full">
-
+                       <div>{console.log(walletData)}</div>
                         <div className="py-3 my-5 border-gray-300">
                             <table className="min-w-full table-auto my-3">
                                 <thead>
@@ -296,7 +296,7 @@ function WalletRedemption() {
                                         <td className="text-center px-2 py-2">{walletData.customer_name || "-"}</td>
                                         <td className="px-2 py-2 text-center">{walletData.phone || "-"}</td>
                                         <td className="px-2 py-2 text-center">{walletData.active_scheme ?? "-"}</td>
-                                        <td className="px-2 py-2 text-center">{walletData.available_point ?? "-"}</td>
+                                        <td className="px-2 py-2 text-center">{walletData.balance_point ?? "-"}</td>
                                         <td className="px-2 py-2 text-center">{walletData.redeemed_point ?? "-"}</td>
                                     </tr>
                                 </tbody>
