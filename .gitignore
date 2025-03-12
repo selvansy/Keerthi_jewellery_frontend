@@ -13,6 +13,8 @@ dist-ssr
 *.local
 backup.jsx
 .env
+.env.production
+.env.development
 
 # Editor directories and files
 .vscode/*
