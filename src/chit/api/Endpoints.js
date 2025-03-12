@@ -411,8 +411,8 @@ export const giftaccountcount = async (data) => {
 
 
 export const getgiftvendorbranchById = async (data) => {
-    
-    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/giftvendor/branch/${data}`);
+    const {id_branch} = data
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/giftvendor/branch/${id_branch}`);
     return response.data;
 }
 
@@ -469,6 +469,12 @@ export const getgiftinwardById = async (data) => {
 
 export const getallgiftinward = async () => {
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/giftinwards`);
+    return response.data;
+}
+
+export const getallgiftInwardByBranch = async (branch) => {
+    console.log("id",branch)
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/giftinwards/branch/${branch}`);
     return response.data;
 }
 
@@ -552,7 +558,7 @@ export const todaycurrentratebybranch = async (data) => {
  
 
  
-export const schemepaymenttodayrate = async (data) => {    
+export const schemepaymenttodayrate = async (data) => {  
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/metalrate/today-rate/${data.id_branch}/date/${data.date}`);
     return response.data;
 }
@@ -853,7 +859,7 @@ export const getpaymentmodesummary = async (data) => {
     return response.data;
 }
 
-export const getpaymentDashboard = async (data) => {
+export const dashboardCardsData = async (data) => {
     const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/dashboard`,data);
     return response.data;
 }
@@ -1386,6 +1392,7 @@ export const searchcustomermobile = async (data) => {
 }
 
 export const searchmobileschemeaccount = async (data) => {
+    console.log("data",data)
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/schemeaccount/branch/${data.id_branch}/customer/search?mobile=${data.search_mobile}`);
     return response.data;
 }
@@ -1422,7 +1429,7 @@ export const getcustomerschemeaccount = async (data) => {
 }
 
 export const searchbarcodenumber = async (data) => {
-
+   
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/giftissues/branch/${data.id_branch}/barcode?search=${data.barcode}`);
     return response.data;
 }
@@ -1860,7 +1867,9 @@ export const getallContent=async ()=>{
  }
 
  export const getContentById=async (id)=>{
+   
     const response=await Api.get(`${import.meta.env.VITE_API_URL}/api/client/content/${id}`)
+   
     return response.data
  }
  
@@ -1920,6 +1929,14 @@ export const addPromotions = async (data)=>{
     return response.data
  }
 
+ export const getContentTypes = async (data)=>{
+     console.log(data)
+    const response=await Api.post(`${import.meta.env.VITE_API_URL}/api/client/content/all/type/${data.type}`,data.data)
+    return response.data
+ }
+
+
+// 
 export const dueReportSummary = async (data)=>{
     const response=await Api.post(`${import.meta.env.VITE_API_URL}/api/client/reports/overdue`)
     return response.data

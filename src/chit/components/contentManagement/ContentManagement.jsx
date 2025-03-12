@@ -78,7 +78,7 @@ function ContentManagement() {
         navigate(`/help/policy/view/${id}`)
       };
     
-      const handleAddgiftitem = () => {
+      const handleAddcontentitem = () => {
         navigate("/help/policy/add")
       };
     
@@ -179,6 +179,15 @@ function ContentManagement() {
         { id: "2", name: "Privacy Policy" },
         { id: "3", name: "Return Policy" },
         { id: "4", name: "Refund Policy" } ]
+
+        const formatDate = (dateString) => {
+          if (!dateString) return '';
+          const date = new Date(dateString);
+          const day = String(date.getDate()).padStart(2, '0');
+          const month = String(date.getMonth() + 1).padStart(2, '0');
+          const year = date.getFullYear();
+          return `${day}/${month}/${year}`;
+        };
     
       const columns = [
         {
@@ -265,7 +274,11 @@ function ContentManagement() {
               const contentType = row.type; 
               return type[contentType - 1]?.name || "N/A"; 
             },
-        }
+        },
+        {
+          header: "Create Date",
+          cell: (row) => formatDate(row?.createdAt) || "-"
+        },
      
       ];
     
@@ -293,7 +306,7 @@ function ContentManagement() {
             <div className="flex flex-row items-center justify-end gap-2">
               <button
                 className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
-                onClick={handleAddgiftitem}
+                onClick={handleAddcontentitem}
                 style={{ backgroundColor: layout_color }} >
                 + Add Policy
               </button>

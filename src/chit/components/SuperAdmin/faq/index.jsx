@@ -84,7 +84,7 @@ function FaqIndex() {
     
     
       const handleEdit = (id) => {
-        navigate(`/help/faq/edit/${id}`)
+        navigate(`/help/policy/edit/${id}`)
       };
     
       const handleAdd = () => {

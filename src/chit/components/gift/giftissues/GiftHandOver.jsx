@@ -284,7 +284,10 @@ const GiftIssued = () => {
     },
     {
       header: "No.Of Gifts",
-      cell: (row) => row?.gifts?.length
+      cell: (row) => {
+       const gifts = row?.gifts?.reduce((acc, curr) => acc + curr.qty, 0);
+        return gifts;
+      }
     },
     {
       header: "Issue Type",

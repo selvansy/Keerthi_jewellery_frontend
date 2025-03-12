@@ -71,13 +71,13 @@ function PromotionSummary() {
         if (response) {
           setdeptData(response.data);
           setTotalPages(response.totalPages);
-          setDocument(response.totalDocument)
+          setCurrentPage(response.currentPage);
+          setDocument(response.totalDocuments);
         }
         setSearchLoading(false);
         setisLoading(false);
       },
       onError: (error) => {
-      
         setdeptData([]);
         setSearchLoading(false);
       },
@@ -188,38 +188,41 @@ function PromotionSummary() {
         cell: (_, index) => index + 1 + (currentPage - 1) * limit,
       },
       {
-        header: "Push Count",
-        cell: (row) => row?.pushCount,
-      },
-      {
-        header: "Push FailCount",
-        cell: (row) => row?.pushFailCount,
-      },
-      {
-        header: "Created Date",
+        header: "Start Date",
         cell: (row) =>{
           const date = new Date(row?.createdAt);
           return date.toLocaleDateString("en-GB") || "-"; 
         },
       },
       {
-        header: "Approved Date",
-        cell: (row) =>{
-          const date = new Date(row?.updatedAt);
-          return date.toLocaleDateString("en-GB") || "-"; 
-        },
+        header: "Promotion Name",
+        cell: (row) => row?.title,
+      },
+      // {
+      //   header: "Target Audience",
+      //   cell: (row) => row?.customerId.firstname,
+      // },
+      {
+        header: "Promotion Medium",
+        cell: (row) =>
+          [
+            row?.sms ? "SMS" : null,
+            row?.email ? "Email" : null,
+            row?.whatsapp ? "WhatsApp" : null,
+            row?.pushNotification ? "Push Notification" : null,
+          ]
+            .filter(Boolean)
+            .join(", ") || "-",
       },
       {
-      
-      
-        header: "Actions",
+        header: "Status",
         cell: (row, rowIndex) => (
-          (row.status === "pending") ? 
+          (row.status !== "sent") ? 
           <div className="dropdown-container relative">
-                <div className={`${branchAccess !== 0 ? "cursor-not-allowed" : "cursor-pointer"} rounded-md shadow-lg bg-[#d7b56d] ring-1 ring-black ring-opacity-5`}>
-                  <div className="py-1">
+                <div className={`${branchAccess !== 0 ? "cursor-not-allowed" : "cursor-pointer"} lg:w-20  rounded-md shadow-lg bg-[#d7b56d] ring-1 ring-black ring-opacity-5`}>
+                  <div>
                     <button
-                      className={`${branchAccess !== 0 ? "cursor-not-allowed" : "cursor-pointer"} w-full text-left px-4 py-2 text-sm text-gray-700 font-semibold flex items-center gap-2`}
+                      className={`${branchAccess !== 0 ? "cursor-not-allowed" : "cursor-pointer"} lg:w-20  text-center p-2 text-sm text-white font-semibold flex items-center gap-2`}
                       disabled={branchAccess !== 0}
                       onClick={() => {
                         handleEdit(row);
@@ -233,10 +236,10 @@ function PromotionSummary() {
           </div>
           :
           <div className="dropdown-container relative">
-          <div className={`${branchAccess !== 0 ? "cursor-not-allowed" : "cursor-pointer"} rounded-md shadow-lg bg-[#61a375] ring-1 ring-black ring-opacity-5`}>
-            <div className="py-1">
+          <div className={`${branchAccess !== 0 ? "cursor-not-allowed" : "cursor-pointer"} lg:w-20 rounded-md shadow-lg bg-[#61a375] ring-1 ring-black ring-opacity-5`}>
+            <div>
               <button
-                className={` w-full text-left px-4 py-2 text-sm text-gray-700 font-semibold flex items-center gap-2`}
+                className={`lg:w-20 text-center p-2 text-sm text-gray-700 font-semibold flex items-center gap-2`}
                 disabled={branchAccess !== 0}
               >
                 Approved
@@ -247,9 +250,13 @@ function PromotionSummary() {
     </div>
         ),
         sticky: "right",
-      
+    
+      },
+      // {
+      //   header: "Remarks",
+      //   cell: (row) => row?.title,
+      // },
 
-      }
     ];
   
     const handleSearch = (e) => {

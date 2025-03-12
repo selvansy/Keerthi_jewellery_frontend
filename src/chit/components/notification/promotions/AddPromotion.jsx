@@ -10,6 +10,7 @@ import { layoutGridMoveHorizontal } from "@lucide/lab";
 import { toast } from "react-toastify";
 import SpinLoading from "../../common/spinLoading";
 import { useNavigate } from "react-router-dom";
+// import {handleFileChange} from "../../.../../common/fileUpload"
 
 
 
@@ -220,6 +221,9 @@ function AddPromotion() {
     
 
     const handleClear = () => {
+
+        handleClearImage()
+        setFormData((prev) => ({ ...prev, noti_image: "" }));
         setFormData({
             title: "",
             body: "",
@@ -230,12 +234,13 @@ function AddPromotion() {
             sms: false,
             whatsapp: false,
             email: false,
-            isHtml: false
+            isHtml: false,
+            noti_image:""
         });
-
-        setPathurl(null);
-        fileInputRef.current.value = "";
+       
     }
+
+    
 
     const { mutate: addcustomerMutate } = useMutation({
         mutationFn: (data) => addPromotions(data),
@@ -255,19 +260,40 @@ function AddPromotion() {
     });
 
 
+    const handleCheckboxChange = (field) => {
+        setFormData((prevData) => ({
+            ...prevData,
+            [field]: !prevData[field],
+        }));
+    }
+   
+
+
     return (
         <div className="p-6 bg-white rounded-md shadow-md w-full mx-auto">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Add Promotions</h2>
-
+        <div>
             {/* Notification Options */}
             <div className="flex gap-4 mb-4">
-                {["Push Notification", "Sms", "WhatsApp", "Email"].map((type) => (
-                    <label key={type} className="flex items-center space-x-2 gap-2">
-                        <input type="checkbox" name={type} />
-                        <span>{type}</span>
+                {[
+                    { label: "Push Notification", field: "pushNotification" },
+                    { label: "SMS", field: "sms" },
+                    { label: "WhatsApp", field: "whatsapp" },
+                    { label: "Email", field: "email" },
+                ].map(({ label, field }) => (
+                    <label key={field} className="flex items-center space-x-2 gap-2">
+                        <input
+                            type="checkbox"
+                            name={field}
+                            checked={formData[field]}
+                            className="w-5 h-5"
+                            onChange={() => handleCheckboxChange(field)}
+                        />
+                        <span>{label}</span>
                     </label>
                 ))}
             </div>
+        </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Branch Selection */}
@@ -393,7 +419,7 @@ function AddPromotion() {
 
                     {/* Image Preview */}
                     {pathurl && (
-                        <div className="flex items-start justify-center">
+                        <div className="w-20 h-16 flex items-start justify-center">
                             <div className="relative rounded-md overflow-hidden">
                                 <img
                                     src={pathurl}
@@ -413,11 +439,9 @@ function AddPromotion() {
 
             </div>
 
-
-
             {/* Buttons */}
             <div className="flex justify-end mt-6 space-x-4">
-                <button className="bg-gray-300 px-4 py-2 rounded-md" onChange={handleClear}>Clear</button>
+                <button type="button" className="bg-gray-300 px-4 py-2 rounded-md" onClick={handleClear}>Clear</button>
                 <button
                     className=" text-white rounded-md p-2  lg:w-20"
                     type='submit'

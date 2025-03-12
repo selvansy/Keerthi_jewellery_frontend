@@ -182,7 +182,7 @@ function Topup() {
                             <div className="grid grid-rows-2 md:grid-cols-2 gap-5 border-gray-300 mb-10 mt-10">
                                 <div className="flex flex-col space-y-2">
                                     <label className="font-medium text-gray-700">
-                                        Purchase limit<span className="text-red-400"> *</span>
+                                        Purchase Credits<span className="text-red-400"> *</span>
                                     </label>
                                     <input
                                         type="text"
@@ -202,7 +202,7 @@ function Topup() {
 
                                 <div className="flex flex-col space-y-2">
                                     <label className="font-medium text-gray-700">
-                                        Availabe notification credit<span className="text-red-400"> *</span>
+                                        Availabe notification credits<span className="text-red-400"> *</span>
                                     </label>
                                     <input
                                         type="text"
@@ -219,7 +219,7 @@ function Topup() {
 
                                 <div className="flex flex-col space-y-2">
                                     <label className="font-medium text-gray-700">
-                                        Limit Rate<span className="text-red-400"> *</span>
+                                        Credits Rate<span className="text-red-400"> *</span>
                                     </label>
                                     <input
                                         type="text"

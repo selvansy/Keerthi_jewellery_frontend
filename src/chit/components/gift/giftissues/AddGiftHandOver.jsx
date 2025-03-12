@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import { useMutation } from '@tanstack/react-query'
 import { useNavigate, useLocation, useParams } from 'react-router-dom'
 import { CalendarDays, Search } from 'lucide-react'
 import "react-datepicker/dist/react-datepicker.css";
@@ -7,29 +6,34 @@ import DatePicker from "react-datepicker";
 import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux'
 import { Trash2 } from 'lucide-react';
+import Select from "react-select";
+import { customSelectStyles } from "../../../components/Setup/purity/index";
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { emptyToZero, formatNumber } from "../../../utils/commonFunction"
 
-import { addgiftissues, searchbarcodenumber, giftissuetype, getcustomerschemeaccount, searchmobileschemeaccount, getallbranch, getschemeaccountbyid } from '../../../api/Endpoints'
+
+import { addgiftissues, searchbarcodenumber, giftissuetype, searchcustomermobile, getallgiftInwardByBranch, searchmobileschemeaccount, getallbranch, getschemeaccountbyid } from '../../../api/Endpoints'
 import SpinLoading from '../../common/spinLoading';
+
 const AddGiftIssued = () => {
 
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const navigate = useNavigate();
   const roledata = useSelector((state) => state.clientForm.roledata);
-
   const id_branch = roledata?.branch;
-  const [branchList, setBranchList] = useState([]);
-  const [branchId, setIdbranch] = useState(id_branch);
-  const [schId,setSchId] = useState("")
-  const [giftId,setgiftId] = useState("")
-  const [excessamt,setExcessamt] = useState("")
+  const branchaccess = roledata?.id_branch;
 
+  const [branchList, setBranchList] = useState([]);
+  const [branchId, setIdbranch] = useState("");
+  const [schId, setSchId] = useState("")
+  const [giftId, setgiftId] = useState("")
+  const [excessamt, setExcessamt] = useState("")
   const [mobile, setMobile] = useState('');
+  const [noOfgifts, setNoGifts] = useState("")
   const [searcherror, setSearchError] = useState('');
   const [barcodeerror, setBarcodeError] = useState('');
-
   const [issuetype, setIssuetype] = useState([]);
-
-  const [quantity,setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState(1);
   const [schemeaccount, setSchemeaccount] = useState([]);
   const [customer_name, setCustomername] = useState('');
   const [address, setAddress] = useState('');
@@ -39,32 +43,23 @@ const AddGiftIssued = () => {
   const [received_gift_amount, setReceivedgiftamt] = useState(0);
   const [balance_gift_amount, setBalancegiftamt] = useState(0);
   const [searchbarcode, setSearchbarcode] = useState('');
- 
   const [barcodeData, setBarcodeData] = useState([]);
- 
-  
   const [formErrors, setFormErrors] = useState({});
-
   const [price, setPrice] = useState(0);
   const [id_giftinward, setIdgiftinward] = useState([]);
   const [id_gift, setIdgift] = useState([]);
   const [barcode, setBarcode] = useState([]);
+  const [barcodeNums, setBarcodeNums] = useState([]);
   const [excess_amount, setExcessamount] = useState([]);
-  const [isLoading,setisLoading]= useState(false)
+
+  const [isLoading, setLoading] = useState(false);
   const [visibleaccount, setVisibleaccount] = useState(false);
   const [formData, setFormData] = React.useState({
     id_customer: "",
     mobile: null,
     id_branch: "",
     issue_type: null,
-    gift_issues: [{
-        gift_id: "",
-        price:"",
-        qty: null,
-        barcode: null,
-        excess_amount: null,
-        id_scheme_account: ""
-      }]
+    gift_issues: []
   });
 
   useEffect(() => {
@@ -73,68 +68,35 @@ const AddGiftIssued = () => {
 
   }, []);
 
+
+  const { data: giftResponse, isLoading: loadingGifts } = useQuery({
+    queryKey: ["barcode", branchId],
+    queryFn: () => getallgiftInwardByBranch(branchId),
+  });
+
   useEffect(() => {
-    if (id_branch === "0") {
+    if (giftResponse?.data) {
+      const barCodes = giftResponse.data.map((item) => ({
+        value: Number(item?.barcode),
+        label: `${item?.barcode} - ${item.id_gift?.gift_name}`,
+      }));
+
+      setBarcodeNums(barCodes);
+    }
+  }, [giftResponse]);
+
+
+  useEffect(() => {
+    if (id_branch !== "0" || id_branch !== 0) {
       setFormData(prev => ({
         ...prev,
-        id_branch: id_branch
+        id_branch: branchaccess
       }));
+      setIdbranch(id_branch || branchaccess)
     }
-  }, [id_branch]);
 
-  useEffect(() => {
-    let totalCussellprice = 0;
-    let updatedExcessamount = [];
-    let updatedBarcode = [];
-    let updatedIdgiftinwards = [];
-    let updatedIdgift = [];
-    let updatedPrice = [];
-    
-  
-    barcodeData.forEach((bar) => {
-      const balance = parseFloat(balance_gift_amount) || 0;
-      let excessgiftprice = 0;
-     
-        totalCussellprice += parseFloat(bar.cus_sellprice) * quantity;
-  
-      if (totalCussellprice > balance) {
-        excessgiftprice = totalCussellprice - balance;
-      }
+  }, [visibleaccount, id_branch]);
 
-      setgiftId(bar.id_gift._id)
-      setPrice(bar.cus_sellprice);
-      setExcessamt(excessgiftprice)
-  
-      updatedIdgiftinwards.push(bar._id);
-      updatedIdgift.push(bar.id_gift._id);
-      updatedBarcode.push(bar.barcode);
-      updatedExcessamount.push(excessgiftprice);
-      updatedPrice.push(bar.cus_sellprice);
-    });
-
-    let giftIssues ={
-      gift_id:giftId,
-      qty: quantity,
-      price:price,
-      barcode: searchbarcode,
-      excess_amount: excessamt,
-      id_scheme_account: schId
-    };
-
-    setFormData((prevFormData) => ({
-      ...prevFormData, 
-      gift_issues: [{...giftIssues}] 
-    }));
-  
-    setBarcode(updatedBarcode);
-    
-    setExcessamount(updatedExcessamount)
-    setIdgiftinward(updatedIdgiftinwards);
-    setIdgift(updatedIdgift);
-    setQuantity(quantity); 
-  
-  }, [barcodeData, balance_gift_amount, searchbarcode]); 
-  
 
   const { mutate: getBranchList } = useMutation({
     mutationFn: getallbranch,
@@ -152,9 +114,41 @@ const AddGiftIssued = () => {
     if (mobile === "") {
       toast.error('Mobile Number is required!');
     }
-    handlesearchcustomer({ search_mobile: mobile, id_branch: branchId });
-   
+    if (visibleaccount === true) {
+      setFormData(prev => ({
+        ...prev,
+        mobile: mobile,
+      }));
+      handlesearchScheme({ search_mobile: mobile, id_branch: branchId })
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        mobile: mobile,
+      }));
+      handlesearchcustomer({ search_mobile: mobile, id_branch: branchId });
+    }
+
   };
+
+  const { mutate: handlesearchcustomer } = useMutation({
+    mutationFn: (payload) => searchcustomermobile(payload),
+    onSuccess: (response) => {
+      if (response) {
+        setCustomername(response.data.firstname + ' ' + response.data.lastname);
+        setAddress(response.data.address);
+        setFormData(prev => ({
+          ...prev,
+          id_customer: response.data._id,
+          mobile: response.data.mobile,
+        }));
+      }
+      setLoading(false);
+    },
+    onError: (error) => {
+      toast.error(error?.response?.data?.message);
+      setLoading(false);
+    },
+  });
 
 
   const { mutate: getallissuetypeMutate } = useMutation({
@@ -166,34 +160,38 @@ const AddGiftIssued = () => {
     },
   });
 
-  const { mutate: handlesearchcustomer } = useMutation({
-    mutationFn: searchmobileschemeaccount,
+  const { mutate: handlesearchScheme } = useMutation({
+    mutationFn: (data) => searchmobileschemeaccount(data),
     onSuccess: (response) => {
       if (response) {
         setCustomername(response.data[0].id_customer?.firstname + ' ' + response.data[0]?.id_customer?.lastname);
         setAddress(response.data[0]?.id_customer?.address);
+        setNoGifts(response.data[0]?.id_scheme?.no_of_gifts)
+        // setPrice(response.data[0]?.id_scheme?.no_of_gifts)
         setSchId(response.data[0].id_scheme_account)
-        setFormData(prev => ({ ...prev,  
+        setFormData(prev => ({
+          ...prev,
           id_customer: response.data[0].id_customer?._id,
-          mobile: response.data[0].id_customer?.mobile }));
-          
+          mobile: response.data[0].id_customer?.mobile,
+        }));
+
         handleschemeaccountbyBranch(response.data);
         toast.success(response.data.message)
-      }},
-    onError:(error)=>{
+      }
+    },
+    onError: (error) => {
       toast.error(error.response.data.message)
     }
- 
   });
 
   const handleschemeaccountbyBranch = async (data) => {
     if (data.length > 0) {
       let account = [];
-  
+
       for (let index in data) {
         const item = data[index];
         let scheme_name = '';
-  
+
         if (item.id_scheme.scheme_type === 0 || item.id_scheme.scheme_type === 1 || item.id_scheme.scheme_type === 2) {
           scheme_name = "₹. " + item.id_scheme.amount;
         } else if (item.id_scheme.scheme_type === 3) {
@@ -201,16 +199,16 @@ const AddGiftIssued = () => {
         } else {
           scheme_name = `₹. ${item.id_scheme.min_amount} ₹. ${item.id_scheme.max_amount}`;
         }
-  
+
         account.push({ _id: item._id, scheme_name: item.id_scheme.scheme_name + " (" + scheme_name + ")" });
       }
-  
+
       setSchemeaccount(account);
     }
   };
-  
+
   const inputChange = (e) => {
-   
+
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     if (name === "id_branch") {
@@ -219,21 +217,24 @@ const AddGiftIssued = () => {
 
     if (name === "issue_type") {
       if (value === "1") {
-        setFormData(prev => ({ ...prev, issue_type:value }));
+        setFormData(prev => ({ ...prev, issue_type: value }));
         setVisibleaccount(true);
-      }else{
+      } else {
+
         setVisibleaccount(false);
+        // setCustomername(null);
+        // setAddress(null);
+        // setNoGifts(null)
+
       }
     } else if (name === "id_scheme_account") {
       handleschemeaccountlist(e.target.value);
-    } else if (name === "searchbarcode") {
-      setSearchbarcode(value);
     }
 
   };
 
   const handleschemeaccountlist = async (id_scheme_account) => {
-  
+
     if (!id_scheme_account) return;
     const response = await getschemeaccountbyid({ "id": id_scheme_account });
     if (response) {
@@ -254,47 +255,108 @@ const AddGiftIssued = () => {
   };
 
 
-  const handleBarQuantity = ()=>{
-    setQuantity(1);
-    handlegiftbarcodeno({ barcode: searchbarcode, id_branch: branchId });
-  }
+  // const handleBarQuantity = async() => {
+
+  //   const existingBarcode = barcodeData?.find(bar => bar.barcode === searchbarcode);
+
+
+  //   existingBarcode
+  //     ? setQuantity(item => (item.qty < existingBarcode.qty ? quantity + 1 : (toast.error('Stock limit reached!'))))
+  //     : setQuantity(1);
+
+  // }
 
 
   const handleSearchbarcode = () => {
     setBarcodeError('');
-  
     if (!searchbarcode) {
       toast.error('Barcode Number is required!');
       return;
     }
-  
-    const existingBarcode = barcodeData?.find(bar => bar.barcode == searchbarcode);
- 
-    existingBarcode
-      ? setQuantity(qty => (qty < existingBarcode.qty ? qty + 1 : (toast.error('Stock limit reached!'), qty)))
-      : handleBarQuantity();
-  };
-  
+    
+    console.log("totalGifts,",totalGifts)
+    console.log("noOfgifts",noOfgifts)
+    if (totalGifts < noOfgifts) {
+      handlegiftbarcodeno({ barcode: searchbarcode, id_branch: branchId });
+    }else{
+      toast.error("Gift limit reached");
+    } 
+  }
 
+     
+  const totalGifts = barcodeData.reduce((acc, curr) => acc + curr.quantity, 0);
+  
 
   const { mutate: handlegiftbarcodeno } = useMutation({
-    mutationFn:(payload)=> searchbarcodenumber(payload),
+    mutationFn: (payload) => searchbarcodenumber(payload),
     onSuccess: (response) => {
-     
       if (response && response.data) {
-        setBarcodeData((prevData) => [...prevData, response.data]);
-        
-        toast.success(response.message);
-      } else {
-        toast.error("Unexpected response format or no data returned");
+        updateBarcodeData(response.data);
+        updateFormData(response.data);
+        setSearchbarcode("");
       }
     },
     onError: (error) => {
-
       console.error(error);
       toast.error("Failed to fetch barcode data");
     },
   });
+
+ 
+
+  const updateBarcodeData = (barcodeData) => {
+    setBarcodeData((prevData) => {
+      const existingIndex = prevData.findIndex((item) => item.barcode === barcodeData.barcode);
+  
+      if (existingIndex !== -1) {
+        return prevData.map((item, index) => {
+          if (index === existingIndex) {
+            if (item.quantity < item.qty) { 
+              return { ...item, quantity: item.quantity + 1 };
+            }
+            toast.error("Gift Stock limit reached");
+          }
+          return item;
+        });
+      } else {
+        return [...prevData, { ...barcodeData, quantity: 1 }];
+      }
+    });
+  };
+  
+
+  const updateFormData = (barcodeData) => {
+    setFormData((prevFormData) => {
+      const existingIssueIndex = prevFormData.gift_issues.findIndex(
+        (issue) => issue.barcode === barcodeData.barcode
+      );
+
+      let updatedGiftIssues;
+      if (existingIssueIndex !== -1) {
+        updatedGiftIssues = prevFormData.gift_issues.map((issue, index) => {
+          if (index === existingIssueIndex) {
+            if (issue.qty < noOfgifts) {
+              return { ...issue, qty: issue.qty + 1 };
+            }
+            return issue;
+          }
+          return issue;
+        });
+      } else {
+        updatedGiftIssues = [
+          ...prevFormData.gift_issues,
+          {
+            gift_id: barcodeData.id_gift?._id || "",
+            qty: 1,
+            price: barcodeData.price,
+            barcode: barcodeData.barcode,
+          },
+        ];
+      }
+
+      return { ...prevFormData, gift_issues: updatedGiftIssues };
+    });
+  };
 
 
   const removeRowById = (idToRemove) => {
@@ -316,17 +378,20 @@ const AddGiftIssued = () => {
     navigate('/manageaccount/addcustomer')
   }
 
-  
 
   const validateForm = () => {
     const errors = {};
 
     if (formData.issue_type === "1")
-    if (!formData.id_scheme_account) errors.id_scheme_account = 'Scheme Account is required';
+      if (!formData.id_scheme_account) errors.id_scheme_account = 'Scheme Account is required';
 
     if (!id_branch) errors.id_branch = 'Branch is required';
     if (!formData.mobile) errors.mobile = 'Mobile Number is required';
     if (!formData.issue_type) errors.issue_type = 'Issue Type is required';
+
+    if (!formData.gift_issues.length === 0) {
+      toast.error('Handover Gift is required!');
+    }
 
 
     setFormErrors(errors);
@@ -334,39 +399,39 @@ const AddGiftIssued = () => {
   };
 
   const handleSubmit = () => {
-    setisLoading(true)
-    if (!validateForm()) {
-      return;
-    }
 
+    try {
 
-    if (id_gift.length === 0) {
-      toast.error('Gift Id is required!');
-    } else if (barcode.length === 0) {
-      toast.error('Barcode is required!');
-    } else if (id_giftinward.length === 0) {
-      toast.error('Gift Inwards Id is required!');
-    } else if (excess_amount.length === 0) {
-      toast.error('Excess Amount is required!');
-    } else {
+      setLoading(true)
+      if (!validateForm()) {
 
+        setLoading(false)
+        return;
+      }
+      console.log(formData)
       createGiftissuesMutate(formData);
+
+    } catch (error) {
+      console.log("SDFGHJKL", error)
+      setLoading(false)
     }
   };
 
 
   const { mutate: createGiftissuesMutate } = useMutation({
-    mutationFn: addgiftissues,
+    mutationFn: (payload) => addgiftissues(payload),
     onSuccess: (response) => {
-      setisLoading(false)
+      setLoading(false)
       toast.success(response.message)
       navigate('/gift/gifthandover')
     },
     onError: (error) => {
-      setisLoading(false)
+      setLoading(false)
       toast.error(error.response.data.message)
     }
   });
+
+
 
   return (
     <>
@@ -392,7 +457,7 @@ const AddGiftIssued = () => {
                   <select value={formData.id_branch} onChange={(e) => inputChange(e)}
                     name="id_branch"
                     className='appearance-none border-2 border-gray-300 rounded-md p-3  w-full bg-white pr-8 focus:outline-none focus:ring-2  focus:border-transparent'
-                    
+
                     defaultValue=''>
                     <option value='' >--Select--</option>
 
@@ -406,7 +471,7 @@ const AddGiftIssued = () => {
                       </option>
                     ))}
                   </select>
-                
+
                   <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
                     <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
                       <path d="M19 9l-7 7-7-7"></path>
@@ -423,7 +488,7 @@ const AddGiftIssued = () => {
               <div className="relative">
                 <select value={formData.issue_type}
                   name="issue_type"
-                  onChange={ inputChange }
+                  onChange={inputChange}
                   className='appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2focus:border-transparent'
                   defaultValue=''>
 
@@ -432,7 +497,7 @@ const AddGiftIssued = () => {
                     <option key={issue.id} value={issue.id}>{issue.name}</option>
                   ))}
                 </select>
-          
+
                 <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
                   <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
                     <path d="M19 9l-7 7-7-7"></path>
@@ -445,7 +510,7 @@ const AddGiftIssued = () => {
 
             <div className='flex flex-col mt-2 relative'>
               <label className='text-black mb-1 font-normal'>Search Mobile Number<span className='text-red-400'>*</span></label>
-          
+
               <input
                 type='tel'
                 name='mobile'
@@ -469,7 +534,7 @@ const AddGiftIssued = () => {
               <div className='flex flex-col mt-2'>
                 <label className='text-black mb-1 font-medium'>Scheme Account<span className='text-red-400'>*</span></label>
                 <div className="relative">
-                  <select onChange={(e)=>inputChange(e)} name="id_scheme_account" className='appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2  focus:border-transparent' defaultValue=''>
+                  <select onChange={(e) => inputChange(e)} name="id_scheme_account" className='appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2  focus:border-transparent' defaultValue=''>
                     <option value='' readOnly>--Select--</option>
                     {schemeaccount.map((account) => (
                       <option key={account._id} value={account._id}>{account.scheme_name}</option>
@@ -486,8 +551,8 @@ const AddGiftIssued = () => {
               </div>
             )}
 
-       
-          <div className='flex flex-col mt-2'>
+
+            <div className='flex flex-col mt-2'>
               <label className='text-gray-700 mb-1 font-medium'>Customer Name<span className='text-red-400'>*</span></label>
               <input
                 value={customer_name}
@@ -511,10 +576,27 @@ const AddGiftIssued = () => {
                 placeholder=''
               />
             </div>
+
+            {
+              (visibleaccount === true) &&
+              <div className='flex flex-col mt-2'>
+                <label className='text-gray-700 mb-1 font-medium'>Number of Gifts</label>
+                <input
+                  value={noOfgifts}
+                  onChange={inputChange}
+                  readOnly
+                  type='text'
+                  className='border-2 border-gray-300 bg-[#e5e7eb] rounded-md p-3 w-full pr-16 focus:outline-none focus:ring-2   focus:border-transparent'
+                  placeholder=''
+                />
+              </div>
+            }
+
           </div>
 
+
           <div className='lg:flex lg:flex-col md:flex md:flex-col md:mt-2 hidden'></div>
-          {visibleaccount === true && (
+          {/* {visibleaccount === true && (
             <>
               <h2 className='text-1xl font-semibold mb-4 mt-4'>Gift Details</h2>
               <div className="w-full shadow-md bg-gray-50">
@@ -577,26 +659,29 @@ const AddGiftIssued = () => {
                 </div>
               </div>
             </>
-          )}
+          )} */}
         </div>
-      
+
         <div className='grid grid-rows-1 md:grid-cols-2 gap-5'>
+
           <div className='flex flex-col mt-2 mb-4 relative'>
             <label className='text-gray-700 mb-1 font-medium'>Barcode Number<span className='text-red-400'>*</span></label>
-            <input
+
+            <Select
               name='searchbarcode'
-              onChange={(e) => inputChange(e)}
-              type='text'
-              className='border-2 border-gray-300 rounded-md p-3  focus:border-transparent'
-              placeholder='Enter Barcode Number'
+              options={barcodeNums}
+              value={barcodeNums.find(option => option.value === searchbarcode) || ""}
+              onChange={(selectedOption) => {
+                setSearchbarcode(selectedOption.value);
+              }}
+              styles={customSelectStyles}
+              isLoading={loadingGifts}
+              placeholder="Select Barcode"
             />
-
-          
-
-             <div onClick={handleSearchbarcode} className="absolute flex items-center justify-center cursor-pointer right-[0%] rounded-r-lg top-[68%] -translate-y-1/2 w-10 md:h-[50px] md:top-[54px] h-[62%] sm:right-0 sm:top-[68%] lg:right-[0%]"
-                style={{ backgroundColor: layout_color }}>
-                <Search size={20} className="text-white" />
-              </div>
+            <div onClick={handleSearchbarcode} className="absolute flex items-center justify-center cursor-pointer right-[0%] rounded-r-lg top-[68%] -translate-y-1/2 w-10 md:h-[50px] md:top-[54px] h-[62%] sm:right-0 sm:top-[68%] lg:right-[0%]"
+              style={{ backgroundColor: layout_color }}>
+              <Search size={20} className="text-white" />
+            </div>
           </div>
         </div>
         <div className="w-full shadow-md bg-gray-50">
@@ -611,37 +696,37 @@ const AddGiftIssued = () => {
                   <th className="px-2 py-2 text-center">Barcode</th>
                   <th className="px-2 py-2 text-center">Gift Name</th>
                   <th className="px-2 py-2 text-center">Gift Price</th>
-                 
-                  {visibleaccount === true && (
+
+                  {/* {visibleaccount === true && (
                     <th className="px-2 py-2 text-center">Excess Amount</th>
-                  )}
+                  )} */}
                 </tr>
               </thead>
               <tbody>
-                {barcodeData.length === 0 ? (
+                {barcodeData?.length === 0 ? (
                   <tr>
                     <td colSpan="5" className="text-center py-4 text-black font-medium">
                       No Record Data
                     </td>
                   </tr>
                 ) : (
-                  barcodeData.map((bar, index) => {
+                  barcodeData?.map((bar, index) => {
                     const excessgiftprice = excess_amount[index] || 0;
 
                     return (
                       <tr key={index}>
                         <td className="flex flex-row items-center justify-center gap-3 text-center py-2">
                           <a onClick={() => removeRowById(index)} href="#" className="text-red-600 hover:bg-gray-100">
-                          <Trash2 size={20}/>
+                            <Trash2 size={20} />
                           </a>
                         </td>
-                        <td className="text-center py-2">{quantity}</td>
+                        <td className="text-center py-2">{bar.quantity}</td>
                         <td className="text-center py-2">{bar.barcode}</td>
                         <td className="text-center py-2">{bar.id_gift ? bar.id_gift.gift_name : 'N/A'}</td>
-                        <td className="text-center py-2">{bar.cus_sellprice > 0 ? bar.cus_sellprice : 'N/A'}</td>
-                        {visibleaccount === true && (
-                          <td className="text-center py-2">{excessgiftprice > 0 ? excessgiftprice : 'N/A'}</td>
-                        )}
+                        <td className="text-center py-2">{bar.cus_sellprice > 0 ? formatNumber({ value: bar.cus_sellprice }) : 'N/A'}</td>
+                        {/* {visibleaccount === true && (
+                          <td className="text-center py-2">{excessgiftprice > 0 ? formatNumber({value:excessgiftprice}) : 'N/A'}</td>
+                        )} */}
                       </tr>
                     );
                   })
@@ -664,7 +749,7 @@ const AddGiftIssued = () => {
               type='button'
               onClick={handleSubmit}
             >
-             {isLoading ? <SpinLoading/> : 'Submit'}
+              {isLoading ? <SpinLoading /> : 'Submit'}
             </button>
           </div>
         </div>

@@ -22,7 +22,7 @@ import {
   getemployeebybranch,
   getallbranch,
   getSchemeAccountCount,
-  getCustomerByMobile, //use insted of searchcustomermobile
+  getCustomerByMobile, 
   getEmployeeByMobile,
 } from "../../../api/Endpoints";
 import { useSelector, useDispatch } from "react-redux";

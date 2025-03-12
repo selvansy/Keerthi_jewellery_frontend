@@ -41,7 +41,7 @@ function GiftItemForm({ setIsOpen,isviewOpen,id,setId,refetchTable  }) {
     });
 
     const { mutate: getgiftvendorbranchByIdmuate } = useMutation({
-        mutationFn: getgiftvendorbranchById,
+        mutationFn:(payload)=> getgiftvendorbranchById(payload),
         onSuccess: (response) => {
      
             if (response) {
@@ -89,8 +89,19 @@ function GiftItemForm({ setIsOpen,isviewOpen,id,setId,refetchTable  }) {
         if (!formData.gift_name) newErrors.gift_name = 'Gift name is required';
         if (!formData.gift_vendorid) newErrors.gift_vendorid = 'Gift vendor is required';
         if (!formData.id_branch) newErrors.id_branch = 'Branch is required';
+
+      
+        if (Object.keys(newErrors).length > 0) {
+            setErrors((prev) => ({
+                ...prev,
+                ...newErrors
+            }));
+        }
+
         return newErrors;
     };
+
+  
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -98,10 +109,8 @@ function GiftItemForm({ setIsOpen,isviewOpen,id,setId,refetchTable  }) {
             ...formData,
             [name]: value,
         });
-        setErrors({
-            ...response.data,
-            gift_image: response.data.gift_image,  
-        });
+        
+       
     };
 
     const handleCancel = () => {

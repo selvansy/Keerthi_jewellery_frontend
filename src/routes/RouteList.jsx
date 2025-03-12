@@ -95,6 +95,8 @@ import FaqIndex from "../chit/components/SuperAdmin/faq";
 import PromotionSummary from "../chit/components/notification/promotions";
 import AddPromotion from "../chit/components/notification/promotions/AddPromotion";
 import NotificationHistory from "../chit/components/notification/notificationhistory/NotificationHistory";
+import ContentView from "../chit/components/contentManagement/ContentView";
+import PolicyView from "../chit/components/contentManagement/PolicyView";
 import OverDueReport from "../chit/components/Report/overDueReport";
 import PreClose from "../chit/components/Report/preclose";
 import PreCloseReport from "../chit/components/Report/preclose";
@@ -719,8 +721,8 @@ const RouteList = [
   },
   {
     name:"Policies",
-    path:'/help/policy/edit/:id',
-    element:<Base renderContent={ContentForm} />
+    path:'/help/policy/view/:id',
+    element:<Base renderContent={ContentView} />
   },
   {
     name:"FAQ",
@@ -749,7 +751,7 @@ const RouteList = [
   },
   {
     name:"Notifications Summary",
-    path:'/schemerepor/notification/',
+    path:'/schemereport/notification/',
     element:<Base renderContent={NotificationHistory} />
   },
 
@@ -757,6 +759,11 @@ const RouteList = [
     name:"Promotions Creation",
     path:'/promotions/promotioncreations',
     element:<Base renderContent={AddPromotion} />
+  },
+  {
+    name:"Policy View",
+    path:'/help/policy/',
+    element:<Base renderContent={PolicyView} />
   },
 
   {

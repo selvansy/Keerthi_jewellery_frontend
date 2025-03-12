@@ -239,7 +239,6 @@ const CustomerForm = () => {
     const { mutate: addcustomerMutate } = useMutation({
         mutationFn: (data) => addcustomer(data),
         onSuccess: (response) => {
-
             if (response) {
                 toast.success(response.message);
                 console.log(formik.values)
