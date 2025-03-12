@@ -278,6 +278,7 @@ const MetalRate = () => {
     setCurrentPage(1);
   };
 
+  console.log(selectedData)
   return (
     <div className="flex flex-col p-4">
       <h2 className="text-2xl text-gray-900 font-bold">Metal Rate</h2>
@@ -514,8 +515,7 @@ const MetalRate = () => {
       <h2 className="text-2xl font-bold text-gray-800 mb-4">Metal Details</h2>
 
       <div className="space-y-2 text-gray-700">
-        <p><strong>Branch Name:</strong> {selectedData.id_branch?.branch_name}</p>
-        <p><strong>Updated At:</strong> {new Date(selectedData.updatedAt).toLocaleDateString('en-GB')}</p>
+        <p><strong>Updated At:</strong> {new Date(selectedData.createdAt).toLocaleDateString('en-GB')}</p>
       </div>
 
       <div className="mt-4 border-t pt-4">

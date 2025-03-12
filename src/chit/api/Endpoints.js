@@ -1941,3 +1941,7 @@ export const getOverAllSummary = async (data)=>{
     const response=await Api.post(`${import.meta.env.VITE_API_URL}/api/client/reports/overallreport`)
     return response.data
  }
+export const getPaymentLedger = async (data)=>{
+    const response=await Api.post(`${import.meta.env.VITE_API_URL}/api/client/reports/paymentledger`,data)
+    return response.data
+ }

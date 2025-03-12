@@ -101,6 +101,7 @@ import PreCloseReport from "../chit/components/Report/preclose";
 import RedemptionReport from "../chit/components/Report/Redemptionsummary";
 import RefundReport from "../chit/components/Report/RefundSummary";
 import overallReport from "../chit/components/Report/overallReport";
+import PaymentLedger from "../chit/components/Report/PaymentLedger";
 
 const RouteList = [
 
@@ -773,6 +774,11 @@ const RouteList = [
     name:"over all",
     path:'/report/overallreport',
     element:<Base renderContent={overallReport} />
+  },
+  {
+    name:"Payment Ledger",
+    path:'/report/paymentmodeledger',
+    element:<Base renderContent={PaymentLedger} />
   },
 
 

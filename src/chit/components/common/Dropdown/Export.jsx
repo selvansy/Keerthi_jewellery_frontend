@@ -2,8 +2,12 @@ import React from 'react';
 import { Download, FileSpreadsheet, FileText } from 'lucide-react';
 import { Menu, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
+import { useSelector } from 'react-redux';
+import { ExportToExcel } from './Excelexport';
+import { ExportToPDF } from './ExportPdf';
 
-const ExportDropdown = ({ onExportExcel, onExportPDF }) => {
+const ExportDropdown = ({apiData,fileName}) => {
+  const layout_color = useSelector((state) => state.clientForm.layoutColor);
   return (
     <Menu as="div" className="relative inline-block text-left">
       <div>
@@ -27,28 +31,12 @@ const ExportDropdown = ({ onExportExcel, onExportPDF }) => {
           <div className="py-1">
             <Menu.Item>
               {({ active }) => (
-                <button
-                  onClick={onExportExcel}
-                  className={`${
-                    active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
-                  } flex items-center gap-2 w-full px-4 py-2 text-sm cursor-pointer`}
-                  style={{ backgroundColor: layout_color }} >
-                  <FileSpreadsheet className="h-4 w-4" />
-                  Export as Excel
-                </button>
+                <ExportToExcel apiData={apiData} fileName={fileName}/>
               )}
             </Menu.Item>
             <Menu.Item>
               {({ active }) => (
-                <button
-                  onClick={onExportPDF}
-                  className={`${
-                    active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
-                  } flex items-center gap-2 w-full px-4 py-2 text-sm cursor-pointer`}
-                  style={{ backgroundColor: layout_color }} >
-                  <FileText className="h-4 w-4" />
-                  Export as PDF
-                </button>
+                <ExportToPDF apiData={apiData} fileName={fileName}/>
               )}
             </Menu.Item>
           </div>
@@ -59,3 +47,9 @@ const ExportDropdown = ({ onExportExcel, onExportPDF }) => {
 };
 
 export default ExportDropdown;
+
+
+
+
+
+        

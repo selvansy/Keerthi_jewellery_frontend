@@ -85,7 +85,7 @@ export const getBranchbyclient = async (id) => {
 }
 
 
-export const getAllBranch = async () => {
+export const getAllBranch = async (data) => {
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/branch`,data);
     return response.data;
 }
