@@ -179,7 +179,7 @@ const Classification = ({ formik, layout_color, setMainImg, setDescImg,pathurl,l
 
       {/* Classification Order */}
       <div className="mt-4">
-        <label className="block mb-2">Classification Order</label>
+        <label className="block mb-2">Display Order</label>
         <div className="relative w-full md:w-1/4">
           <input
             type="number"
@@ -196,7 +196,7 @@ const Classification = ({ formik, layout_color, setMainImg, setDescImg,pathurl,l
             onBlur={formik?.handleBlur}
             className="border rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
           />
-          <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+          {/* <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
@@ -210,7 +210,7 @@ const Classification = ({ formik, layout_color, setMainImg, setDescImg,pathurl,l
             >
               <path d="M18 15l-6-6-6 6" />
             </svg>
-          </div>
+          </div> */}
         </div>
         {formik?.touched?.classification_order && formik?.errors?.classification_order && (
             <div className="text-red-500 text-sm mt-1">{formik.errors.classification_order}</div>

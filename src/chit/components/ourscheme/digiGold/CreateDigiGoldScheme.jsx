@@ -96,8 +96,8 @@ const CreateDigiGoldScheme = () => {
           .max(100, "Bonus must be at most 100")
           .required("Bonus is required"),
       ),
-      buy_gst: Yup.number().required("Buy GST is required"),
-      sell_gst: Yup.number().required("Sell GST is required"),
+      buy_gst: Yup.number().optional("Buy GST is required"),
+      sell_gst: Yup.number().optional("Sell GST is required"),
       max_amount: Yup.number().required("Max Amount is required"),
       min_amount: Yup.number().required("Min Amount is required"),
       scheme_type: Yup.number().required("Scheme type is required"),
@@ -425,7 +425,7 @@ const CreateDigiGoldScheme = () => {
               {/* Buy GST */}
               <div>
                 <label className="block text-sm font-medium mb-1">
-                  Buy GST <span className="text-red-400">*</span>
+                  Buy GST
                 </label>
                <div className="relative">
                <input
@@ -455,7 +455,7 @@ const CreateDigiGoldScheme = () => {
               {/* Sell GST */}
               <div>
                 <label className="block text-sm font-medium mb-1">
-                  Sell GST<span className="text-red-400">*</span>
+                  Sell GST
                 </label>
                 <div className="relative">
                 <input
@@ -529,7 +529,7 @@ const CreateDigiGoldScheme = () => {
               {/* Bonus Type */}
               <div>
                 <label className="block text-sm font-medium mb-1">
-                  Bonus Type<span className="text-red-400">*</span>
+                  Bonus Type
                 </label>
                 <Select
                   styles={customStyles}

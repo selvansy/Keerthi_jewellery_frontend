@@ -19,7 +19,6 @@ const PolicyView = () => {
             setContentData(response.data);
         },
         onError: (error) => {
-           
             setContentData([]);
         }
     });
@@ -39,15 +38,19 @@ const PolicyView = () => {
                 className="navbar fixed top-20 inset-x-0 z-10 rounded-lg shadow-md w-full p-4 flex flex-col md:flex-row md:items-center md:justify-end transition-transform translate-y-0"
                 aria-label="Navigation Tabs"
             >
-                <ul className="flex w-full md:w-auto menu md:menu-horizontal gap-4 p-0 text-lg font-medium text-gray-700">
+                <ul className="flex w-full md:w-auto menu md:menu-horizontal gap-4 p-0 text-lg text-gray-700">
                     {sections.map(({ id, name }) => (
                         <li key={id}>
                             <button
+                               type="button"
                                 onClick={() => setActiveTab(id)}
-                                className={`px-3 py-2 rounded-lg transition-colors ${
+                                className={`px-3 py-1 rounded-lg transition-colors text-md font-md ${
                                     activeTab === id ? "text-white" : "bg-gray-200 text-black"
                                 }`}
-                                style={activeTab === id ? { backgroundColor: layout_color } : {}}
+                                style={{
+                                    fontSize: "14px",
+                                    ...(activeTab === id && { backgroundColor: layout_color }),
+                                }}
                             >
                                 {name}
                             </button>
@@ -60,11 +63,11 @@ const PolicyView = () => {
                 {sections.map(({ id, name }) =>
                     activeTab === id ? (
                         <div key={id} id={id} className="mb-8 p-4 bg-white rounded-lg shadow-md">
-                            <p className="text-xl font-semibold text-gray-900">{name}</p>
+                            <p className="text-xl font-semibold text-gray-900 m-3">{name}</p>
                             {contentData.length > 0 ? (
                                 contentData.map((e) => (
                                     <div key={e._id} className="flex flex-col items-start">
-                                        <p className="mt-2 font-semibold text-lg text-gray-600">
+                                        <p className="m-3 font-semibold text-lg text-gray-600">
                                             {e.title}
                                         </p>
 
@@ -79,7 +82,7 @@ const PolicyView = () => {
                                     </div>
                                 ))
                             ) : (
-                                <p className=" text-gray-900 mt-3">No records found</p>
+                                <p className=" text-gray-400 mt-3">No records found</p>
                             )}
                         </div>
                     ) : null

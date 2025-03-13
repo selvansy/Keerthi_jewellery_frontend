@@ -125,6 +125,7 @@ const CustomerForm = () => {
                     mobile: res.mobile,
                     gender: res.gender,
                     address: res.address,
+                    whatsapp:res.whatsapp,
                     id_branch: res.branchDetails?._id,
                     id_country: res.countryDetails?._id,
                     id_state: res.stateDetails?._id,
@@ -685,14 +686,14 @@ const CustomerForm = () => {
                             </div>
 
                             <div className='flex flex-col'>
-                                <label className='text-black mb-1 font-medium'>Pan Number</label>
+                                <label className='text-black mb-1 font-medium'>Pan Number<span className='text-red-400'> *</span></label>
                                 <input
                                     type='text'
                                     name='pan'
                                     value={formik.values.pan}
                                     onChange={formik.handleChange}
                                     className='border-2 w-full border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:[#D1D5DB] focus:border-transparent'
-                                    placeholder='Enter Here'
+                                    placeholder='ABCDE1234F'
                                     maxLength='10'
                                     style={{ textTransform: 'uppercase' }}
                                 />
@@ -700,7 +701,7 @@ const CustomerForm = () => {
                             </div>
 
                             <div className='flex flex-col'>
-                                <label className='text-gray-700 mb-1 font-medium'>Aadhar Card Number<span className='text-red-400'></span></label>
+                                <label className='text-gray-700 mb-1 font-medium'>Aadhar Card Number<span className='text-red-400'> *</span></label>
                                 <input
                                     type="text"
                                     name="authorno"
@@ -711,7 +712,7 @@ const CustomerForm = () => {
                                     inputMode="numeric"
                                     onChange={formik.handleChange}
                                     className="border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:[#D1D5DB] focus:border-transparent"
-                                    placeholder="Enter Here"
+                                    placeholder="Enter Aadhar Number"
                                 />
 
                                 {formik.errors.authorno ? <div style={{ color: "red" }}>{formik.errors.authorno}</div> : null}

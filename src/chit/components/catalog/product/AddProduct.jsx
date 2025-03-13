@@ -58,7 +58,6 @@ const AddProduct = () => {
     id_category: "",
     id_branch: "",
     description: "",
-    code: "",
     id_metal: "",
     weight: "0",
     id_purity: "",

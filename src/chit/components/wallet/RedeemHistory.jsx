@@ -25,7 +25,6 @@ function RedeemHistory() {
   
     const limit = 10;
   
-  
     const [isLoading, setisLoading] = useState(false);
     const [searchLoading, setSearchLoading] = useState(false);
     const [totalDocuments, setTotalDocuments] = useState(0)

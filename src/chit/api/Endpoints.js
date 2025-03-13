@@ -61,7 +61,6 @@ export const deleteemployee = async (id) => {
  
 
 //Wallet
-
 export const getallwallet = async (data) => {
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/wallet/get-rate`,data);
     return response.data;
@@ -110,11 +109,7 @@ export const NotifcationsHistory = async (data) => {
     return response.data;
 }
 
-
- 
 /*Metal*/
- 
- 
 export const getallmetaltable = async (data) => {
     const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/metal/table`,data);
     return response.data;
@@ -411,8 +406,8 @@ export const giftaccountcount = async (data) => {
 
 
 export const getgiftvendorbranchById = async (data) => {
-    const {id_branch} = data
-    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/giftvendor/branch/${id_branch}`);
+   
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/giftvendor/branch/${data}`);
     return response.data;
 }
 
@@ -629,6 +624,11 @@ export const updateStatus = async(payload)=>{
 
 export const getallCampaigntable = async (data) => {
     const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/campaigntype/allcampaigntype`,data);
+    return response.data;
+}
+
+export const getallCampaign = async () => {
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/campaigntype`);
     return response.data;
 }
 
@@ -1392,7 +1392,7 @@ export const searchcustomermobile = async (data) => {
 }
 
 export const searchmobileschemeaccount = async (data) => {
-    console.log("data",data)
+  
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/schemeaccount/branch/${data.id_branch}/customer/search?mobile=${data.search_mobile}`);
     return response.data;
 }
