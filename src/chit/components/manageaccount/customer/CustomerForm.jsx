@@ -125,6 +125,7 @@ const CustomerForm = () => {
                     mobile: res.mobile,
                     gender: res.gender,
                     address: res.address,
+                    whatsapp:res.whatsapp,
                     id_branch: res.branchDetails?._id,
                     id_country: res.countryDetails?._id,
                     id_state: res.stateDetails?._id,

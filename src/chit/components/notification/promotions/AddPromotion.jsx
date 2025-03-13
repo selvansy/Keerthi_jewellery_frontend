@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { getallSchemes, getallbranch, getcustomerByBranchId, addPromotions } from "../../../api/Endpoints";
+import { getallSchemes, getallbranch, getcustomerByBranchId, addPromotions, getallCampaign } from "../../../api/Endpoints";
 import Select from "react-select";
 import { customSelectStyles } from "../../Setup/purity";
 import { MultiSelect } from "react-multi-select-component";
@@ -14,68 +14,29 @@ import { useNavigate } from "react-router-dom";
 
 
 
-export const customMultiSelectStyles = {
-    multiselectContainer: (provided) => ({
+export const customStyles = {
+    control: (provided) => ({
         ...provided,
-        minHeight: "50px",
-        height: "50px",
-        borderWidth: "2px",
-        border: "1px solid #D1D5DB",
+        padding: "2px",
         borderRadius: "6px",
-        backgroundColor: "#F3F4F6",
-        padding: "4px",
-        display: "flex",
-        alignItems: "center",
+        borderColor: "#cbd5e1",
+        boxShadow: "none",
         "&:hover": {
-            borderColor: "#9CA3AF",
+            borderColor: "#94a3b8",
         },
     }),
-
-    searchBox: {
-        border: "none",
-        minHeight: "50px",
-        padding: "0 12px",
-        fontSize: "16px",
-        color: "#374151",
-        backgroundColor: "#F3F4F6",
-        outline: "none",
-    },
-
-    option: (provided, { isSelected }) => ({
+    menu: (provided) => ({
         ...provided,
-        backgroundColor: isSelected ? "#6366F1" : "#fff",
-        color: isSelected ? "#fff" : "#111827",
-        padding: "10px",
-        cursor: "pointer",
-    }),
-
-    optionContainer: (provided) => ({
-        ...provided,
-        maxHeight: "200px",
-        overflowY: "auto",
         borderRadius: "6px",
-        boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+        zIndex: 10,
     }),
-
-    valueContainer: (provided) => ({
+    option: (provided, state) => ({
         ...provided,
-        minHeight: "50px",
-        padding: "0 12px",
-        display: "flex",
-        alignItems: "center",
-        backgroundColor: "#F3F4F6",
-    }),
-
-    indicatorsContainer: (provided) => ({
-        ...provided,
-        height: "50px",
-        display: "flex",
-        alignItems: "center",
-        paddingRight: "8px",
+        backgroundColor: state.isSelected ? "#3b82f6" : state.isFocused ? "#bfdbfe" : "white",
+        color: state.isSelected ? "white" : "black",
+        padding: "8px 12px",
     }),
 };
-
-
 
 function AddPromotion() {
 
@@ -99,9 +60,10 @@ function AddPromotion() {
     const [branchData, setBranchData] = useState([]);
     const [schemeData, setSchemeData] = useState([]);
     const [cusData, setCusData] = useState([]);
+    const [campaignData, setCampaignData] = useState([])
 
     const [pathurl, setPathurl] = useState(null);
-    const [isLoading, setisLoading] = useState()
+    const [isLoading, setisLoading] = useState("")
 
 
     const layout_color = useSelector((state) => state.clientForm.layoutColor);
@@ -114,6 +76,11 @@ function AddPromotion() {
     const { data: branchResponse, isLoading: loadingBranch } = useQuery({
         queryKey: ["branch"],
         queryFn: getallbranch,
+    });
+
+    const { data: campaignResponse, isLoading: loadingCampaign } = useQuery({
+        queryKey: ["campaign"],
+        queryFn: getallCampaign,
     });
 
     // Fetch schemes
@@ -152,7 +119,14 @@ function AddPromotion() {
             })));
         }
 
-    }, [branchResponse, schemeResponse, customerResponse]);
+        if (campaignResponse) {
+            setCampaignData(campaignResponse.data.map((campaign) => ({
+                value: campaign._id,
+                label: campaign.name,
+            })));
+        }
+
+    }, [branchResponse, schemeResponse, customerResponse, campaignResponse]);
 
 
 
@@ -160,11 +134,23 @@ function AddPromotion() {
 
         const { name, value } = e.target;
 
+        if (name === "noti_image") {
+
+            setFormData(prev => ({
+                ...prev,
+                noti_image: value
+            }))
+
+            setPathurl(value);
+
+        }
+
         setFormData(prev => ({
             ...prev,
             [name]: value
         }))
     }
+
 
     const handleSelectChange = (selectedOptions, allOptions, setFormData, fieldName) => {
         if (selectedOptions.some((opt) => opt.value === "select_all")) {
@@ -205,7 +191,7 @@ function AddPromotion() {
     const handleSubmit = () => {
         setisLoading(true);
         const formPayload = new FormData();
-    
+
         Object.entries(formData).forEach(([key, value]) => {
             if (Array.isArray(value)) {
                 value.forEach((item, index) => {
@@ -215,10 +201,10 @@ function AddPromotion() {
                 formPayload.append(key, value);
             }
         });
-    
+
         addcustomerMutate(formPayload);
     };
-    
+
 
     const handleClear = () => {
 
@@ -235,12 +221,12 @@ function AddPromotion() {
             whatsapp: false,
             email: false,
             isHtml: false,
-            noti_image:""
+            noti_image: ""
         });
-       
+
     }
 
-    
+
 
     const { mutate: addcustomerMutate } = useMutation({
         mutationFn: (data) => addPromotions(data),
@@ -266,34 +252,34 @@ function AddPromotion() {
             [field]: !prevData[field],
         }));
     }
-   
+
 
 
     return (
         <div className="p-6 bg-white rounded-md shadow-md w-full mx-auto">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Add Promotions</h2>
-        <div>
-            {/* Notification Options */}
-            <div className="flex gap-4 mb-4">
-                {[
-                    { label: "Push Notification", field: "pushNotification" },
-                    { label: "SMS", field: "sms" },
-                    { label: "WhatsApp", field: "whatsapp" },
-                    { label: "Email", field: "email" },
-                ].map(({ label, field }) => (
-                    <label key={field} className="flex items-center space-x-2 gap-2">
-                        <input
-                            type="checkbox"
-                            name={field}
-                            checked={formData[field]}
-                            className="w-5 h-5"
-                            onChange={() => handleCheckboxChange(field)}
-                        />
-                        <span>{label}</span>
-                    </label>
-                ))}
+            <div>
+                {/* Notification Options */}
+                <div className="flex gap-4 mb-4">
+                    {[
+                        { label: "Push Notification", field: "pushNotification" },
+                        { label: "SMS", field: "sms" },
+                        { label: "WhatsApp", field: "whatsapp" },
+                        { label: "Email", field: "email" },
+                    ].map(({ label, field }) => (
+                        <label key={field} className="flex items-center space-x-2 gap-2">
+                            <input
+                                type="checkbox"
+                                name={field}
+                                checked={formData[field]}
+                                className="w-5 h-5"
+                                onChange={() => handleCheckboxChange(field)}
+                            />
+                            <span>{label}</span>
+                        </label>
+                    ))}
+                </div>
             </div>
-        </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Branch Selection */}
@@ -354,25 +340,40 @@ function AddPromotion() {
                     />
                 </div>
 
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col">
                     <label className="font-medium text-gray-700">
                         Title <span className="text-red-400">*</span>
                     </label>
-                    <input
-                        type="text"
-                        name="title"
-                        onChange={handleChange}
-                        placeholder="Enter title"
-                        className="border p-2 rounded-md text-gray-700"
+                    <Select
+                        styles={customStyles}
+                        options={campaignData}
+                        className=" py-2 rounded-md text-gray-100"
+                        placeholder="Select title"
+                        value={campaignData.find(
+                            (option) => option.label === formData.title
+                        )}
+                        isLoading={loadingCampaign}
+                        onChange={(option) => {
+                            setFormData((prev) => ({
+                                ...prev,
+                                title: option.label,
+                            }));
+                        }}
                     />
+
                 </div>
 
                 <div className="flex flex-col gap-2">
                     <label className="font-medium text-gray-700">Image URL</label>
-                    <input type="text" className="border p-2 rounded-md text-gray-400" placeholder="Enter image URL" />
-                    <div className="mt-4 flex items-end gap-2">
-                        <input type="text" name="imageUrl" onChange={handleChange} className="hidden" />
-                    </div>
+                    <input
+                        type="text"
+                        name="noti_image"
+                        className={`${ ((!!formData.noti_image) && pathurl) ? "cursor-not-allowed bg-gray-100" : "cursor-pointer"} border p-2 rounded-md text-gray-700`}
+                        placeholder="Enter image URL"
+                        value={formData.noti_image}
+                        onChange={handleChange}
+                        disabled={!!formData.noti_image && pathurl} 
+                    />
                 </div>
 
                 {/* Content */}
@@ -396,7 +397,7 @@ function AddPromotion() {
                     <div className="relative w-full">
                         <input
                             type="text"
-                            className="border p-2 pr-24 rounded-md text-gray-400 w-full cursor-pointer"
+                            className={`${ ((!!formData.noti_image )&& pathurl) ? "cursor-not-allowed bg-gray-100" : "cursor-pointer"} border p-2 pr-24 rounded-md text-gray-400 w-full `}
                             placeholder="No file chosen"
                             value={formData.noti_image}
                             readOnly
@@ -406,12 +407,15 @@ function AddPromotion() {
                             type="file"
                             accept="image/*"
                             ref={fileInputRef}
+                            disabled={!!formData.noti_image && pathurl} 
                             onChange={handleFileChange}
-                            className="hidden"
+                            className={`${ ((!!formData.noti_image )&& pathurl) ? "cursor-not-allowed bg-gray-100" : "cursor-pointer"} border p-2 pr-24 rounded-md text-gray-400 w-full hidden`}
                         />
                         <div
-                            className="absolute right-2 top-1/2 -translate-y-1/2 bg-gray-200 px-3 py-1 rounded-md cursor-pointer text-sm"
+                            className={`${((!!formData.noti_image) && pathurl) ? "cursor-not-allowed bg-gray-100": "cursor-pointer"}  absolute right-2 top-1/2 -translate-y-1/2 bg-gray-200 px-3 py-1 rounded-md  text-sm`}
                             onClick={() => fileInputRef.current.click()}
+                            disabled={!!formData.noti_image && pathurl} 
+
                         >
                             Choose File
                         </div>
@@ -419,7 +423,7 @@ function AddPromotion() {
 
                     {/* Image Preview */}
                     {pathurl && (
-                        <div className="w-20 h-16 flex items-start justify-center">
+                        <div className="w-[130px] h-[130px] flex items-start justify-center">
                             <div className="relative rounded-md overflow-hidden">
                                 <img
                                     src={pathurl}
@@ -440,7 +444,7 @@ function AddPromotion() {
             </div>
 
             {/* Buttons */}
-            <div className="flex justify-end mt-6 space-x-4">
+            <div className="flex justify-end mt-12 space-x-4">
                 <button type="button" className="bg-gray-300 px-4 py-2 rounded-md" onClick={handleClear}>Clear</button>
                 <button
                     className=" text-white rounded-md p-2  lg:w-20"
