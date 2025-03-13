@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { Search } from 'lucide-react'
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import { mobilesearch, redeemType, getallwallet, walletRedeem, getmultipaymentmode } from '../../../chit/api/Endpoints'
+import { mobilesearch, redeemType, getallwallet, walletRedeem, getallpaymentmode } from '../../../chit/api/Endpoints'
 import { formatNumber } from "../../utils/commonFunction"
 import SpinLoading from '../common/spinLoading';
 import { customSelectStyles } from "../../../chit/components/Setup/purity";
@@ -31,22 +31,25 @@ function WalletRedemption() {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
+
         const numericValue = value.trim() === "" ? 0 : Number(value);
+      
 
         setFormData((prevData) => {
             let updatedData = { ...prevData };
             let errors = { ...formErrors };
 
             const conversionRate = walletPoints.points && Number(walletPoints.points);
-
+          
             const validateAndSet = (field, limit, relatedField, conversion) => {
-
+              
                 if (isNaN(numericValue) || numericValue < 0) {
                     errors[field] = "Invalid value";
                     return prevData;
                 }
 
                 const isExceeding = numericValue > limit;
+            
                 errors[field] = isExceeding ? `Value shouldn't exceed ${limit}` : "";
 
                 if (!isExceeding) {
@@ -56,15 +59,16 @@ function WalletRedemption() {
             };
 
             if (name === "redeem_point") {
+               
                 validateAndSet(
                     "redeem_point",
-                    walletData.available_point,
+                    walletData.balance_point,
                     "redeem_amt",
-                    (val) => Number((val / conversionRate).toFixed(2))
+                    (val) => Number((val * conversionRate * 10).toFixed(2))
                 );
             } else if (name === "redeem_amt") {
-                const maxRedeemableAmt = walletData.available_point / conversionRate;
-
+                const maxRedeemableAmt = walletData.available_point * conversionRate;
+              
                 validateAndSet(
                     "redeem_amt",
                     maxRedeemableAmt,
@@ -137,6 +141,7 @@ function WalletRedemption() {
 
             setLoading(false)
             toast.success(response.message)
+            
         },
         onError: (error) => {
             toast.error(error?.response?.data?.message)
@@ -185,7 +190,7 @@ function WalletRedemption() {
 
     const { data: paymentModeData } = useQuery({
         queryKey: ["payment"],
-        queryFn: getmultipaymentmode,
+        queryFn: getallpaymentmode,
     });
 
     useEffect(() => {
@@ -201,8 +206,8 @@ function WalletRedemption() {
  
         if (paymentModeData) {
             const data = paymentModeData.data.map(item => ({
-                label: item.name,
-                value: item.id
+                label: item.mode_name,
+                value: item.id_mode
             }));
 
             setPaymentData(data);
@@ -279,7 +284,7 @@ function WalletRedemption() {
                         </div>
                     </div>
                     <div className="w-full">
-                       <div>{console.log(walletData)}</div>
+                  
                         <div className="py-3 my-5 border-gray-300">
                             <table className="min-w-full table-auto my-3">
                                 <thead>
@@ -374,7 +379,11 @@ function WalletRedemption() {
                                     name="paymentData"
                                     value={paymentData.find(option => option.value === formData.payment_mode)}
                                     onChange={(selectedOption) =>
-                                        handleInputChange({ target: { name: 'payment_mode', value: selectedOption?.value } })
+                                        // handleInputChange({ target: { name: 'payment_mode', value: selectedOption?.value } })
+                                        setFormData(prev=>({
+                                            ...prev,
+                                            payment_mode:selectedOption?.value
+                                        }))
                                     }
                                     options={paymentData}
                                     styles={customSelectStyles}

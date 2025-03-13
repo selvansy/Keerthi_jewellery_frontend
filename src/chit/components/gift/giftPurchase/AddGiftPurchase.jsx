@@ -20,8 +20,7 @@ const AddGiftPurchase = () => {
   const roledata = useSelector((state) => state.clientForm.roledata);
 
   const id_branch = roledata?.branch;
-
-
+  const branchAccess = roledata?.id_branch
 
   const [isLoading, setisLoading] = useState(false)
   const [total, setTotal] = useState("")
@@ -47,25 +46,21 @@ const AddGiftPurchase = () => {
 
 
   useEffect(() => {
-
+    if(!roledata) return
     if (id_branch !== "0") {
       setFormData(prev => ({
         ...prev,
-        id_branch: id_branch
+        id_branch: branchAccess
       }))
-
     }
-  }, [id_branch]);
+  }, [roledata]);
 
 
-  const branchRe = formData.id_branch;
+  const branchRe = formData.id_branch || branchAccess;
 
   const { data: giftVendorRes, isLoading: loadingGiftVendor } = useQuery({
     queryKey: ["vendor", branchRe],
-    queryFn: ({ queryKey }) => {
-      const [, branchId] = queryKey;
-      return getgiftvendorbranchById(branchId);
-    },
+    queryFn: ()=> getgiftvendorbranchById(branchRe),
     enabled: !!branchRe,
   });
 
