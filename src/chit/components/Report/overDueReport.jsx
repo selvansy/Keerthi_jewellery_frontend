@@ -37,7 +37,7 @@ function OverDueReport() {
     mutationFn: dueReportSummary,
     onSuccess: (response) => {
       const { data } = response;
-      setOverDueData(data);
+      setOverDueData(data.data);
       setisLoading(false);
     },
     onError: (error) => {

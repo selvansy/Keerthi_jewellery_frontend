@@ -9,7 +9,7 @@ import { ExportToPDF } from './ExportPdf';
 const ExportDropdown = ({apiData,fileName}) => {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   return (
-    <Menu as="div" className="relative inline-block text-left">
+    <Menu as="div" className="relative inline-block text-left z-20">
       <div>
         <Menu.Button className=" text-white hover:bg-[#034571] flex items-center gap-2 px-4 py-2 rounded-md"
         style={{ backgroundColor: layout_color }} >
