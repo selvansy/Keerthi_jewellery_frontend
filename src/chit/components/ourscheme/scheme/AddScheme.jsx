@@ -102,7 +102,7 @@ const SchemeForm = () => {
       min_weight: "",
       max_weight: "",
       total_installments: "",
-      buygsttype: 1,
+      buygsttype: "",
       buy_gst: "",
       benefit_min_installment_wst_mkg: "",
       wastagebenefit: "",
@@ -216,6 +216,8 @@ const SchemeForm = () => {
       }
     },
   });
+console.log(formik.errors)
+
   // Customisations for react-select
   const customStyles = {
     control: (base, state) => ({

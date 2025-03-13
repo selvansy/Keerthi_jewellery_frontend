@@ -219,7 +219,7 @@ const PayableDetails = ({
 
       <div>
         <label className="block text-sm font-medium mb-1 mt-2">
-          Buy GST Type<span className="text-red-500">*</span>
+          Buy GST Type
         </label>
         <Select
           styles={customStyles}
@@ -229,7 +229,7 @@ const PayableDetails = ({
           value={
             gstTypeData?.find(
               (option) => option.value === formik.values.buygsttype
-            ) || 1
+            )
           }
           onChange={(option) =>
             formik.setFieldValue("buygsttype", option ? option.value : null)
