@@ -218,6 +218,7 @@ const ConfigNotification = () => {
               ))}
             </div>
           </div>
+          
           {/* Product Section */}
           {/* <div className="mb-6">
             <h2 className="text-sm font-medium mb-2">

@@ -42,7 +42,6 @@ function NotificationHistory() {
   
     const limit = 10;
 
-
     const { mutate: getallNotificationsTable } = useMutation({
       mutationFn: (payload) => NotifcationsHistory(payload),
       onSuccess: (response) => {

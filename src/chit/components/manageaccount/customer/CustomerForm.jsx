@@ -73,7 +73,7 @@ const CustomerForm = () => {
         pincode: '',
         authorno: "",
     })
-  
+
     const validationSchema = Yup.object({
         firstname: Yup.string().required('First name is required'),
         lastname: Yup.string().required('Last name is required'),
@@ -430,7 +430,7 @@ const CustomerForm = () => {
     return <>
        <div className='w-full flex flex-col bg-white'>
     <div className='flex flex-col pl-8 pr-8 pb-4 pt-2 relative space-y-2'>
-        {/* Replace Formik with useFormik implementation */}
+   
         {(() => {
             const formik = useFormik({
                 initialValues: formData,

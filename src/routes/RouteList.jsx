@@ -24,7 +24,7 @@ import ExistingCusTable from "../chit/components/manageaccount/customer/index";
 import Customers from "../chit/components/manageaccount/customer/Customers";
 import OutStandingWeight from "../chit/components/Report/OutStandingWeight";
 import ModeWisePayment from "../chit/components/Report/PaymentModeLedger";
-import GiftStock from "../chit/components/Report/GiftStock";
+
 import Branch from "../chit/components/Setup/branch/Branch";
 import AddBranch from "../chit/components/Setup/branch/AddBranch";
 import OurEmployee from "../chit/components/Setup/employee/OurEmployee";
@@ -104,6 +104,7 @@ import RedemptionReport from "../chit/components/Report/Redemptionsummary";
 import RefundReport from "../chit/components/Report/RefundSummary";
 import overallReport from "../chit/components/Report/overallReport";
 import PaymentLedger from "../chit/components/Report/PaymentLedger";
+import GiftReport from "../chit/components/Report/GiftReport";
 
 const RouteList = [
 
@@ -394,7 +395,7 @@ const RouteList = [
   {
     name: "Gift Stock Report",
     path: '/gift/stockreport/',
-    element: <Base renderContent={GiftStock} />
+    element: <Base renderContent={GiftReport} />
   },
 
   //Notifications

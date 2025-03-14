@@ -11,7 +11,6 @@ export const adminLogin=  async(data)=>{
     return response.data
 }
 
-
 //staff user login
 export const staffLofgin=  async(data)=>{
     const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/auth/login`,data)
@@ -24,8 +23,6 @@ export const getallSchemes = async () => {
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/scheme`);
     return response.data;
 }
-
-
 
 //add employee
 export const addemployee = async (data) => {
@@ -368,6 +365,11 @@ export const updategiftitem = async (id, data) => {
 
 export const getallgiftitem = async (id, data) => {
     const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/giftitem`, data);
+    return response.data;
+}
+
+export const getgiftStock = async (data) => {
+    const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/reports/giftreport?id_branch=${data.id_branch}&limit=${data.limit}&page=${data.page}`);
     return response.data;
 }
 
