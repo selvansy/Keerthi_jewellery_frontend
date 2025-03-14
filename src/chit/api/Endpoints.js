@@ -731,6 +731,7 @@ export const newarrivalsbyid= async(data)=>{
 
  
 export const deletenewarrivals= async(id)=>{
+    console.log(id)
     const response= await Api.delete(`${import.meta.env.VITE_API_URL}/api/client/newarrivals/${id}`)
     return response.data
 }
@@ -1793,6 +1794,10 @@ export const getNewArrivalsById = async (id)=>{
 
 export const getProductById = async (id)=>{
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/product/${id}`)
+    return response.data
+}
+export const getProductByBranch = async (id)=>{
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/product/branch/${id}`)
     return response.data
 }
 
