@@ -134,7 +134,7 @@ const Metal = () => {
   const { mutate: deleteMetal } = useMutation({
     mutationFn: deletemetal,
     onSuccess: (response) => {
-      if (response.message === "Metal deleted successfully") {
+      if (response.message) {
         const isLastItemOnPage = MetalData.length === 1;
         const isNotFirstPage = currentPage > 1;
         if (isLastItemOnPage && isNotFirstPage) {
@@ -349,17 +349,7 @@ const Metal = () => {
     setCurrentPage(pageNumber);
   };
 
-  const nextPage = () => {
-    setCurrentPage((prevPage) => {
-      console.log("prevPage:", prevPage, "totalPages:", totalPages);
-      return prevPage < totalPages ? prevPage + 1 : prevPage;
-    });
-  };
-
-  const prevPage = () => {
-    setCurrentPage((prevPage) => (prevPage > 1 ? prevPage - 1 : prevPage));
-  };
-
+ 
 
 
   const paginationData = {

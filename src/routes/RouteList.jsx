@@ -294,7 +294,7 @@ const RouteList = [
   },
   {
     name: "Update New Arrivals",
-    path: '/catalog/addnewarrivals/:id',
+    path: '/catalog/editnewarrivals/:id',
     element: <Base renderContent={AddNewArrival} />
   },
 

@@ -22,6 +22,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { eventEmitter } from "../../../../utils/EventEmitter";
 import { openModal } from "../../../../redux/modalSlice";
 import Modal from "../../../components/common/Modal";
+import usePagination from "../../../hooks/usePagination";
 
 const NewArrivals = () => {
   const navigate = useNavigate();
@@ -39,9 +40,10 @@ const NewArrivals = () => {
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  const [itemsPerPage, setItemsPerPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedRow, setSelectedRow] = useState(null);
   const [activeDropdown, setActiveDropdown] = useState(null);
+  const [totalDocuments,setTotalDocuments]=useState(0)
 
   const [filtertype, setOfferstype] = useState([]);
   const [filtermetaltype, setMetaltype] = useState([]);
@@ -58,18 +60,6 @@ const NewArrivals = () => {
   });
   const [formErrors, setFormErrors] = useState({});
 
-  useEffect(() => {
-    const filterTosend = {
-      page: currentPage,
-      from_date: from_date,
-      to_date: to_date,
-      limit: itemsPerPage,
-      search: "",
-      type: "",
-      id_branch: id_branch,
-    };
-    getnewarrivalsData(filterTosend);
-  }, []);
 
   const handleReset = (e) => {
     setFromdate("");
@@ -178,17 +168,17 @@ const NewArrivals = () => {
 
   //mutation to get scheme type
   const { mutate: getnewarrivalsData } = useMutation({
-    mutationFn: () => getnewarrivalsTable(),
+    mutationFn: (data) => getnewarrivalsTable(data),
     onSuccess: (response) => {
       setnewarrivalsData(response.data);
-      console.log(newarrivalsData)
-      setTotalPages(response.data.totalPages);
+      console.log(newarrivalsData);
+      setTotalPages(response.totalPages);
+      setTotalDocuments(response.totalDocuments)
       setisLoading(false);
     },
   });
 
   useEffect(() => {
-    console.log("dj");
     getnewarrivalsData({
       page: currentPage,
       limit: itemsPerPage,
@@ -218,12 +208,23 @@ const NewArrivals = () => {
     }
   };
 
+  useEffect(() => {
+    const handleDelete = (id) => {
+      deleteNewArrivals(id);
+    };
+
+    eventEmitter.on("CONFIRMATION_SUBMIT", handleDelete);
+
+    return () => {
+      eventEmitter.off("CONFIRMATION_SUBMIT", handleDelete);
+    };
+  }, []);
+
   const handleDelete = (id) => {
-    setActiveDropdown(null);
     dispatch(
       openModal({
         modalType: "CONFIRMATION",
-        header: "Delete Scheme",
+        header: "Delete New Arrivals",
         formData: {
           message: "Are you sure you want to delete?",
           newArrivalsId: id,
@@ -242,33 +243,27 @@ const NewArrivals = () => {
 
   //mutation to get purity type
   const { mutate: deleteNewArrivals } = useMutation({
-    mutationFn: deletenewarrivals,
+    mutationFn:({newArrivalsId})=>deletenewarrivals(newArrivalsId),
     onSuccess: (response) => {
+      const isLastItemOnPage = newarrivalsData.length === 1;
+        const isNotFirstPage = currentPage > 1;
+        if (isLastItemOnPage && isNotFirstPage) {
+          setCurrentPage(prev => prev - 1);
+        } else {
+          getnewarrivalsData({
+            page: currentPage,
+            limit: itemsPerPage,
+            search: search,
+            id_branch: id_branch,
+          });
+        }
       toast.success(response.message);
-      getnewarrivalsData({
-        page: currentPage,
-        limit: itemsPerPage,
-        search: search,
-        id_branch: id_branch,
-      });
+    
     },
     onError: (error) => {
       console.error("Error:", error);
     },
   });
-
-  useEffect(() => {
-    eventEmitter.on("CONFIRMATION_SUBMIT", async (data) => {
-      try {
-        deleteNewArrivals(data.newArrivalsId);
-      } catch (error) {
-        console.error("Error:", error);
-      }
-    });
-    return () => {
-      eventEmitter.off("CONFIRMATION_SUBMIT");
-    };
-  }, [eventEmitter, newarrivalsData]);
 
   const handleEdit = (id) => {
     dispatch(setid(id));
@@ -392,25 +387,25 @@ const NewArrivals = () => {
       cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
     },
     {
+      header: "Title",
+      cell: (row) => row?.title,
+    },
+    {
       header: "Product Name",
       cell: (row) => row?.id_product.product_name,
     },
     {
-      header: "Description",
-      cell: (row) => row?.description,
-    },
-    {
       header: "Start Date",
-      cell: (row) =>{
+      cell: (row) => {
         const date = new Date(row?.start_date);
-        return date.toLocaleDateString("en-GB"); 
+        return date.toLocaleDateString("en-GB");
       },
     },
     {
       header: "End Date",
       cell: (row) => {
         const date = new Date(row?.end_date);
-        return date.toLocaleDateString("en-GB"); 
+        return date.toLocaleDateString("en-GB");
       },
     },
     {
@@ -443,30 +438,32 @@ const NewArrivals = () => {
     },
   ];
 
-  const paginationButtons = [];
-  for (let i = 1; i <= totalPages; i++) {
-    paginationButtons.push(
-      <button
-        key={i}
-        onClick={() => handlePageChange(i)}
-        className={`p-2 w-10 h-10 rounded-md  ${
-          currentPage === i ? " text-white" : "text-slate-400"
-        }`}
-        style={{ backgroundColor: layout_color }}
-      >
-        {i}
-      </button>
-    );
-  }
-
   const handleItemsPerPageChange = (value) => {
     setItemsPerPage(value);
     setCurrentPage(1);
   };
 
   const handlePageChange = (page) => {
-    setCurrentPage(page);
+    const pageNumber = Number(page);
+    if (
+      !pageNumber ||
+      isNaN(pageNumber) ||
+      pageNumber < 1 ||
+      pageNumber > totalPages
+    ) {
+      return;
+    }
+
+    setCurrentPage(pageNumber);
   };
+
+  const paginationData = {
+    totalItems: totalPages,
+    currentPage: currentPage,
+    itemsPerPage: itemsPerPage,
+    handlePageChange: handlePageChange,
+  };
+  const paginationButtons = usePagination(paginationData);
 
   return (
     <div className="flex flex-col p-4">
@@ -698,33 +695,7 @@ const NewArrivals = () => {
       </div>
 
       {newarrivalsData?.length > 0 && (
-        <div className="flex justify-between mt-4 p-2">
-          <div className="flex flex-row items-center justify-center gap-2">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => handlePageChange(currentPage - 1)}
-                readOnly={currentPage === 1}
-                className="p-2 text-gray-500 rounded-md"
-              >
-                Previous
-              </button>
-            </div>
-
-            <div className="flex flex-row items-center justify-center gap-2">
-              {paginationButtons}
-            </div>
-
-            <div className="flex items-center">
-              <button
-                onClick={() => handlePageChange(currentPage + 1)}
-                readOnly={currentPage === totalPages}
-                className="p-2 text-gray-500 rounded-md"
-              >
-                Next
-              </button>
-            </div>
-          </div>
-
+          <div className="flex  justify-between mt-4 p-2">
           <div className="mt-4 flex gap-2 justify-center items-center">
             <span className="text-gray-500">Show</span>
             <select
@@ -741,7 +712,32 @@ const NewArrivals = () => {
               <option value={500}>500</option>
               <option value={1000}>1000</option>
             </select>
-            <span className="text-gray-500">entries</span>
+            <span className="text-gray-500">entries {totalDocuments} </span>
+          </div>
+          <div className="flex flex-row items-center justify-center gap-2">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}x
+                className={`p-2 text-gray-500 rounded-md ${currentPage==1?'cursor-not-allowed':'cursor-pointer'}`}
+              >
+                Previous
+              </button>
+            </div>
+
+            <div className="flex flex-row items-center justify-center gap-2">
+              {paginationButtons}
+            </div>
+
+            <div className="flex items-center">
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className={`p-2 text-gray-500 rounded-md ${currentPage === totalPages?'cursor-not-allowed':'cursor-pointer'}`}
+              >
+                Next
+              </button>
+            </div>
           </div>
         </div>
       )}
