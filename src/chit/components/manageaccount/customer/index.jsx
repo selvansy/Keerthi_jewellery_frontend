@@ -17,6 +17,7 @@ import { SlidersHorizontal, Search, X } from 'lucide-react'
 import { CalendarDays, RefreshCcw } from 'lucide-react'
 import "react-datepicker/dist/react-datepicker.css";
 import usePagination from '../../../hooks/usePagination'
+import ExportDropdown from '../../common/Dropdown/Export'
 
 
 const ExistingCusTable = () => {
@@ -429,9 +430,9 @@ const ExistingCusTable = () => {
             + Add Customer
           </button>
 
-
-          <ExportToExcel apiData={customerData} fileName="customer Report" />
-          <ExportToPDF apiData={customerData} fileName="customer account" />
+          
+          <ExportDropdown apiData={customerData} fileName="customer Report"/>
+         
 
           {
             filtered ?
