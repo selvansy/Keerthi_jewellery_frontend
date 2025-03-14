@@ -624,6 +624,11 @@ export const updateStatus = async(payload)=>{
     return response.data
 }
 
+export const getTopupByClient = async(id)=>{
+    const response= await Api.get(`${import.meta.env.VITE_API_URL}/api/client/topup/${id}`)
+    return response.data
+}
+
 
 //Campaign
 

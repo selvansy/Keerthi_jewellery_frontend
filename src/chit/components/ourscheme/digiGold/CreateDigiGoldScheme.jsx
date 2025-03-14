@@ -29,6 +29,7 @@ const CreateDigiGoldScheme = () => {
   const [layout_color, setLayoutColor] = useState("#015173");
   const [staticData,setStaticData] = useState({})
   const [isLoading, setIsLoading] = useState(false);
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
 
  
   // Customisations for react-select
@@ -63,7 +64,8 @@ const CreateDigiGoldScheme = () => {
       min_amount: "",
       scheme_type: 10, // digigold scheme type
     },
-    validationSchema:Yup.object({
+    validationSchema: isDataLoaded
+    ? Yup.object({
       scheme_name: Yup.string().required("Scheme name is required"),
       description: Yup.string().required("Description is required"),
       term_desc: Yup.string().required("Terms & conditions is required"),
@@ -101,7 +103,7 @@ const CreateDigiGoldScheme = () => {
       max_amount: Yup.number().required("Max Amount is required"),
       min_amount: Yup.number().required("Min Amount is required"),
       scheme_type: Yup.number().required("Scheme type is required"),
-    }),
+    }):Yup.object({}),
     onSubmit: (values) => {
       if (id) {
         updateSchemeData({id,values});
@@ -190,6 +192,12 @@ const CreateDigiGoldScheme = () => {
       formik.setFieldValue("id_branch", branchData.data._id);
     }
   }, [branchData, accessBranch]);
+
+  useEffect(() => {
+    if (branchData && digigoldData && (!id || schemeData)) {
+      setIsDataLoaded(true);
+    }
+  }, [branchData, digigoldData, schemeData, id]);
 
   useEffect(()=>{
     if(digigoldData){
@@ -361,7 +369,7 @@ const CreateDigiGoldScheme = () => {
               {accessBranch === "0" ? (
                 <div>
                   <label className="block text-sm font-medium mb-1">
-                    Branches <span className="text-red-500">*</span>
+                    Branche <span className="text-red-500">*</span>
                   </label>
                   <Select
                     styles={customStyles}
