@@ -116,42 +116,6 @@ const CustomerForm = () => {
     // }
   }, [id]);
 
-    const { mutate: getCustomerData } = useMutation({
-        mutationFn: (id) => getcustomerById(id),
-        onSuccess: (response) => {
-            if (response) {
-                const res = response.data
-                const formValues = {
-                    firstname: res.firstname,
-                    lastname: res.lastname,
-                    mobile: res.mobile,
-                    gender: res.gender,
-                    address: res.address,
-                    whatsapp:res.whatsapp,
-                    id_branch: res.branchDetails?._id,
-                    id_country: res.countryDetails?._id,
-                    id_state: res.stateDetails?._id,
-                    id_city: res.cityDetails?._id,
-                    date_of_wed: res.date_of_wed,
-                    pan: res.pan,
-                    date_of_birth: res.date_of_birth,
-                    pincode: res.pincode,
-                    authorno: res.authorno,
-                }
-                setFormData(formValues)
-                setcus_img(response.data.cus_img)
-                const img = `${response.data.pathurl}${response.data.cus_img}`
-                setPathurl(img);
-                setid_proof(res.id_proof)
-
-                setCountry(res.countryDetails?._id)
-                setState(res.stateDetails?._id)
-                setCity(res.cityDetails?._id)
-
-            }
-        },
-    });
-
   const { mutate: getCustomerData } = useMutation({
     mutationFn: (id) => getcustomerById(id),
     onSuccess: (response) => {
