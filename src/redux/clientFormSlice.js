@@ -49,6 +49,7 @@ const clientFormSlice = createSlice({
       }
     },
     SetaccExp:(state,action)=>{
+      if (!action.payload) return;
       state.accExp = action.payload
     },
     SetOutreport:(state,action)=>{

@@ -265,7 +265,7 @@ function AddPromotion() {
                         { label: "Push Notification", field: "pushNotification" },
                         { label: "SMS", field: "sms" },
                         { label: "WhatsApp", field: "whatsapp" },
-                        { label: "Email", field: "email" },
+                        // { label: "Email", field: "email" },
                     ].map(({ label, field }) => (
                         <label key={field} className="flex items-center space-x-2 gap-2">
                             <input

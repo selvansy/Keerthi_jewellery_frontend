@@ -16,6 +16,7 @@ function Customers() {
     const [isCustomer, setIsCustomer] = useState(false);
     const [openAcc, setOpenAcc] = useState(["customer"]);
     const [joinScheme, setJoinScheme] = useState(["add-customer"]);
+    const [cusData,setCusData] = useState({})
 
     const { id } = useParams();
     const layout_color = useSelector((state) => state.clientForm.layoutColor);
@@ -65,7 +66,7 @@ function Customers() {
                                    {id ? "Edit Customer" : " Add Customer"}
                                 </AccordionTrigger>
                                 <AccordionContent className="px-6 py-4 text-[16px]">
-                                    <CustomerForm />
+                                    <CustomerForm setCusData={setCusData} />
                                 </AccordionContent>
                             </AccordionItem>
 
@@ -75,7 +76,7 @@ function Customers() {
                                         Join Scheme
                                     </AccordionTrigger>
                                     <AccordionContent className="px-6 py-4 text-[16px]">
-                                        <AddSchemeAccount />
+                                        <AddSchemeAccount cusData={cusData} />
                                     </AccordionContent>
                                 </AccordionItem>
                             )}
@@ -88,7 +89,7 @@ function Customers() {
                                 Existing Customer
                             </AccordionTrigger>
                             <AccordionContent className="px-6 py-4 text-[16px]">
-                                <ExistingCustomer />
+                                <ExistingCustomer setCusData={setCusData}/>
                             </AccordionContent>
                         </AccordionItem>
 
@@ -97,7 +98,7 @@ function Customers() {
                                 Join Scheme
                             </AccordionTrigger>
                             <AccordionContent className="px-6 py-4 text-[16px]">
-                                <AddSchemeAccount />
+                                <AddSchemeAccount cusData={cusData}/>
                             </AccordionContent>
                         </AccordionItem>
                     </>

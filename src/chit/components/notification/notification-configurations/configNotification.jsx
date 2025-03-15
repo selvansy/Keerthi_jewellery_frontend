@@ -8,14 +8,14 @@ import SpinLoading from "../../common/spinLoading";
 const ConfigNotification = () => {
 
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
-  const avl = ["pushNotification", "sms", "whatsapp", "email"];
+  const avl = ["pushNotification", "sms", "whatsapp"];
   const [activeTab, setActiveTab] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState({
     pushNotification: { schemeWise: {}, wishes: {} },
     sms: { schemeWise: {}, wishes: {}  },
     whatsapp: { schemeWise: {}, wishes: {}},
-    email: { schemeWise: {}, wishes: {}},
+    // email: { schemeWise: {}, wishes: {}},
   });
 
   const { data: configurationData, isLoading: loadingConfig } = useQuery({

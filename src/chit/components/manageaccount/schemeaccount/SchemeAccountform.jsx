@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { CalendarDays, Search } from "lucide-react";
@@ -28,7 +28,8 @@ import {
 import { useSelector, useDispatch } from "react-redux";
 import { customSelectStyles } from "../../Setup/purity/index";
 
-export function ExistingCustomer() {
+export function ExistingCustomer({setCusData}) {
+
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const roledata = useSelector((state) => state.clientForm.roledata);
   const id_branch = roledata?.branch;
@@ -65,25 +66,9 @@ export function ExistingCustomer() {
   };
 
   const { mutate: handlesearchcustomer } = useMutation({
-    mutationFn: searchcustomermobile,
+    mutationFn:(data)=> searchcustomermobile(data),
     onSuccess: (response) => {
-      if (response) {
-        dispatch(
-          SetaccExp({
-            customer_name:
-              response.data.firstname + " " + response.data.lastname,
-            address: response.data.address,
-            id_branch: response.data.id_branch,
-            mobile: response.data.mobile,
-            id_customer: response.data._id,
-          })
-        );
-        setFormData((prev) => ({
-          ...prev,
-          customer_name: response.data.firstname + " " + response.data.lastname,
-        }));
-      }
-
+      handleResData(response.data)
       setLoading(false);
     },
     onError: (error) => {
@@ -91,6 +76,23 @@ export function ExistingCustomer() {
       setLoading(false);
     },
   });
+
+  const handleResData = (data)=>{
+    setFormData((prev) => ({
+      ...prev,
+      customer_name: data.firstname + " " + data.lastname,
+    }));
+
+      setCusData({
+            customer_name:
+            data.firstname + " " + data.lastname,
+            address: data.address,
+            id_branch: data.id_branch,
+            mobile: data.mobile,
+            id_customer: data._id,
+          })
+
+  }
 
   return (
     <div className="grid grid-rows-2 md:grid-cols-2 gap-2">
@@ -102,9 +104,7 @@ export function ExistingCustomer() {
           name="id_branch"
           options={branchData}
           value={
-            branchData.find((branch) => branch.value === formData.id_branch) ||
-            ""
-          }
+            branchData.find((branch) => branch.value === formData.id_branch) || ""  }
           onChange={(branch) => {
             setFormData((prev) => ({
               ...prev,
@@ -180,11 +180,10 @@ export function ExistingCustomer() {
   );
 }
 
-const AddSchemeAccount = () => {
-  let dispatch = useDispatch();
+const AddSchemeAccount = ({cusData}) => {
 
-  const cusData = useSelector((state) => state.clientForm.accExp);
-  console.log(cusData)
+  let dispatch = useDispatch();
+ 
   const id_branch = cusData?.id_branch;
 
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
@@ -251,12 +250,6 @@ const AddSchemeAccount = () => {
     queryKey: ["branch", branch],
     queryFn: getallbranch,
   });
-
-  // useEffect(() => {
-  //   return () => {
-  //     dispatch(SetaccExp({}));
-  //   };
-  // }, []);
 
   useEffect(() => {
     if (branchresponse) {
