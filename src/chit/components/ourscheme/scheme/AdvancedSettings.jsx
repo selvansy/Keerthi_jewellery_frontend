@@ -321,7 +321,7 @@ const AdvancedSettings = ({ formik, layout_color, installment_type }) => {
       </div>
 
       {/* Cumulative Fine Amount */}
-      <div className="flex flex-col mt-2">
+      {/* <div className="flex flex-col mt-2">
         <label className="text-black mb-2 font-normal">
           Cumulative Fine Amount
         </label>
@@ -349,7 +349,7 @@ const AdvancedSettings = ({ formik, layout_color, installment_type }) => {
               {formik.errors.cumulative_fine_amount}
             </span>
           )}
-      </div>
+      </div> */}
 
       {/* Display Referral */}
       <div className="flex flex-col mt-2">
