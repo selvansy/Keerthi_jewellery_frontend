@@ -759,7 +759,7 @@ const AddCloseAccount = () => {
               </div>
 
               {/* Add wallet point */}
-              {!dynamic && (
+              {/* {!dynamic && (
                 <div className="flex flex-col">
                   <label className="text-black mb-1 font-normal">
                     Add wallet point
@@ -779,7 +779,7 @@ const AddCloseAccount = () => {
                     />
                   </div>
                 </div>
-              )}
+              )} */}
 
               {/* Remarks */}
               <div className="flex flex-col">
