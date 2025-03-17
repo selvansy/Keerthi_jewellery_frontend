@@ -115,14 +115,14 @@ export const schemeValidationSchema = Yup.object({
 //         }
 //       ),
 //   }),
-  grace_fine: Yup.number()
-    .typeError("Grace fine must be a number")
-    .min(0, "Must be 0 or a positive number")
-    .max(100,"Fine amount must below 100")
-    .when("fine_amount", {
-      is: true,
-      then: Yup.number().required("Grace fine is required"),
-    }),
+  // grace_fine: Yup.number()
+  //   .typeError("Grace fine must be a number")
+  //   .min(0, "Must be 0 or a positive number")
+  //   .max(100,"Fine amount must below 100")
+  //   .when("fine_amount", {
+  //     is: true,
+  //     then: Yup.number().required("Grace fine is required"),
+  //   }),
   // min_amount: Yup.number().when(["classType", "scheme_type"], {
   //   is: (classType, scheme_type) =>
   //     !classType && ![12, 3, 4,2,5,6].includes(scheme_type),
@@ -191,51 +191,51 @@ export const schemeValidationSchema = Yup.object({
   benefit_making: Yup.string().required(
     "Benefit making charge is required"
   ),
-  customer_referral_per: Yup.number()
-   .max(100,"Maximum allowed percentage is 100")
-    .typeError("Must be a number")
-    .positive("Must be a positive number"),
-  customer_incentive_per: Yup.number()
-  .max(100,"Maximum allowed percentage is 100")
-    .typeError("Must be a number")
-    .positive("Must be a positive number"),
-  customer_ref_remarks: Yup.string().typeError("Must be a alphabet"),
-  agent_referral_percentage: Yup.number()
-  .max(100,"Max agent referra percentage is 100")
-    .typeError("Must be a number")
-    .positive("Must be a positive number"),
-  agent_incentive: Yup.number()
-  .max(100,"Max allowed percentage is 100")
-    .typeError("Must be a number")
-    .positive("Must be a positive number"),
-  agent_remark: Yup.string().typeError("Must be a alphabet"),
-  agent_restriction: Yup.boolean()
-  .nullable()
-  .transform((value, originalValue) => (originalValue === "" ? null : value)) // Converts empty string to null
-  .optional(),
-  agent_target_per: Yup.number()
-  .typeError("Must be a number")
-  .when('agent_restriction', {
-    is: true,
-    then: () => Yup.number()
-      .max(100,'Maximum allowed percentage is 100')
-      .typeError("Must be a number")
-      .positive("Must be a positive number")
-      .required("Agent target is required"),
-    otherwise: () => Yup.number().notRequired(),
-  }),
-  agent_partial_per: Yup.number()
-  .typeError("Must be a number")
-  .positive("Must be a positive number")
-  .when(['agent_restriction', 'agent_target_per'], {
-    is: (agent_restriction, agent_target_per) => agent_restriction && agent_target_per && Number(agent_target_per) > 0,
-    then: () => Yup.number()
-    .max(100,"Max allowed percentage is 100")
-    .required(
-      "Partial commission is required when agent target is set"
-    ),
-    otherwise: () => Yup.number().notRequired(),
-  }),
+  // customer_referral_per: Yup.number()
+  //  .max(100,"Maximum allowed percentage is 100")
+  //   .typeError("Must be a number")
+  //   .positive("Must be a positive number"),
+  // customer_incentive_per: Yup.number()
+  // .max(100,"Maximum allowed percentage is 100")
+  //   .typeError("Must be a number")
+  //   .positive("Must be a positive number"),
+  // customer_ref_remarks: Yup.string().typeError("Must be a alphabet"),
+  // agent_referral_percentage: Yup.number()
+  // .max(100,"Max agent referra percentage is 100")
+  //   .typeError("Must be a number")
+  //   .positive("Must be a positive number"),
+  // agent_incentive: Yup.number()
+  // .max(100,"Max allowed percentage is 100")
+  //   .typeError("Must be a number")
+  //   .positive("Must be a positive number"),
+  // agent_remark: Yup.string().typeError("Must be a alphabet"),
+  // agent_restriction: Yup.boolean()
+  // .nullable()
+  // .transform((value, originalValue) => (originalValue === "" ? null : value)) // Converts empty string to null
+  // .optional(),
+  // agent_target_per: Yup.number()
+  // .typeError("Must be a number")
+  // .when('agent_restriction', {
+  //   is: true,
+  //   then: () => Yup.number()
+  //     .max(100,'Maximum allowed percentage is 100')
+  //     .typeError("Must be a number")
+  //     .positive("Must be a positive number")
+  //     .required("Agent target is required"),
+  //   otherwise: () => Yup.number().notRequired(),
+  // }),
+  // agent_partial_per: Yup.number()
+  // .typeError("Must be a number")
+  // .positive("Must be a positive number")
+  // .when(['agent_restriction', 'agent_target_per'], {
+  //   is: (agent_restriction, agent_target_per) => agent_restriction && agent_target_per && Number(agent_target_per) > 0,
+  //   then: () => Yup.number()
+  //   .max(100,"Max allowed percentage is 100")
+  //   .required(
+  //     "Partial commission is required when agent target is set"
+  //   ),
+  //   otherwise: () => Yup.number().notRequired(),
+  // }),
   limit_installment: Yup.number()
     .typeError("Must be a number")
     .min(0, "Must be 0 or a positive number"),
@@ -271,12 +271,12 @@ export const schemeValidationSchema = Yup.object({
     .optional("Must be a number")
     .min(0, "Must be 0 or a positive number")
     .max(100,"Maximum 100 percentage"),
-  fine_amount: Yup.number()
-    .typeError("Must be a number")
-    .min(0, "Must be 0 or a positive number"),
-  cumulative_fine_amount: Yup.number()
-    .typeError("Must be a number")
-    .min(0, "Must be 0 or a positive number"),
+  // fine_amount: Yup.number()
+  //   .typeError("Must be a number")
+  //   .min(0, "Must be 0 or a positive number"),
+  // cumulative_fine_amount: Yup.number()
+  //   .typeError("Must be a number")
+  //   .min(0, "Must be 0 or a positive number"),
     bonus_type: Yup.number()
     .nullable() 
     .transform((value, originalValue) => 
