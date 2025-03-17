@@ -52,15 +52,7 @@ const Base = ({ renderContent: RenderContent }) => {
 
   const [isOpen, setIsOpen] = useState(false);
 
-  const [openMenus, setOpenMenus] = useState({
-    schemes: false,
-    manageAccount: false,
-    gifts: false,
-    catalog: false,
-    payment: false,
-    report: false,
-    setup: false,
-  });
+  const [activeMenu, setActiveMenu] = useState(null);
 
   const sidebarRef = useRef(null);
   const headerMenuRef = useRef(null);
@@ -94,18 +86,17 @@ const Base = ({ renderContent: RenderContent }) => {
 
   const renderMenuItems = () => {
     if (!menus) return null;
-
+  
     return menus.map((menu) => {
       const menuKey = menu.menu_name.toLowerCase().replace(/\s+/g, "");
       const hasSubmenu = menu.menu_list && menu.menu_list.length > 0;
-
+  
       return (
         <MenuItem
           key={menu._id}
           text={menu.menu_name}
           menuIcon={menu.menu_icon}
           hasSubmenu={hasSubmenu}
-          isOpen={openMenus[menuKey]}
           onClick={() => {
             if (hasSubmenu) {
               setSelectedParentSection(menu.menu_name);
@@ -278,10 +269,7 @@ const Base = ({ renderContent: RenderContent }) => {
   });
 
   const toggleMenu = (menu) => {
-    setOpenMenus((prev) => ({
-      ...prev,
-      [menu]: !prev[menu],
-    }));
+    setActiveMenu(prevActiveMenu => prevActiveMenu === menu ? null : menu);
   };
 
   const SubMenuItem = ({ text, onClick, isLast, parentSection, pathUrl }) => {
@@ -329,10 +317,11 @@ const Base = ({ renderContent: RenderContent }) => {
     text,
     menuIcon,
     hasSubmenu = false,
-    isOpen = false,
     onClick,
     children,
   }) => {
+    const menuKey = text.toLowerCase().replace(/\s+/g, "");
+    const isOpen = activeMenu === menuKey;
     const isSelected = hasSubmenu
       ? selectedParentSection === text
       : selectedSection === text && selectedParentSection === text;
@@ -349,7 +338,7 @@ const Base = ({ renderContent: RenderContent }) => {
           onClick={() => {
             if (hasSubmenu) {
               setSelectedParentSection(text);
-              toggleMenu(text.toLowerCase().replace(/\s+/g, ""));
+              toggleMenu(menuKey);
             } else {
               setSelectedSection(text);
               setSelectedParentSection(text);
@@ -358,11 +347,14 @@ const Base = ({ renderContent: RenderContent }) => {
             }
           }}
         >
-          <img
-            className={`w-6 h-6 ${isOpen ? "fill-white" : "fill-current"}`}
-            src={`${import.meta.env.VITE_API_URL}/${menuIcon}`}
-            alt="Menu Icon"
-          />
+           <img
+          className={`w-6 h-6 ${isSelected ? "fill-white" : "fill-current"}`}
+          src={`${import.meta.env.VITE_API_URL}/${menuIcon}`}
+          alt="Menu Icon"
+          style={{
+            filter: isSelected ? "brightness(0) invert(1)" : "none",
+          }}
+        />
   
           <span className={`flex-1 text-left ml-2`}>
             {text}
