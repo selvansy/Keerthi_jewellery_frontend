@@ -7,21 +7,15 @@ import {
   LayoutGrid,
   Settings,
   CreditCard,
-  Gift,
-  FileText,
-  BarChart2,
-  Home,
   User,
-  Settings2,
-  MessageCircle,
   Bell,
   X,
   Star,
   RefreshCcw,
   LucidePrinter,
   PawPrintIcon,
-  CircleUserRound,
   UserRoundCheck,
+  ChevronRight,
   Menu, // Added Menu icon for better burger menu
 } from "lucide-react";
 
@@ -58,26 +52,18 @@ const Base = ({ renderContent: RenderContent }) => {
 
   const [isOpen, setIsOpen] = useState(false);
 
-  const [openMenus, setOpenMenus] = useState({
-    schemes: false,
-    manageAccount: false,
-    gifts: false,
-    catalog: false,
-    payment: false,
-    report: false,
-    setup: false,
-  });
+  const [activeMenu, setActiveMenu] = useState(null);
 
   const sidebarRef = useRef(null);
   const headerMenuRef = useRef(null);
   const navigate = useNavigate();
   let dispatch = useDispatch();
+
   useEffect(() => {
     const handleKeyDown = (event) => {
-      // Detect Ctrl + F (Windows) or Cmd + F (Mac)
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "f") {
-        event.preventDefault(); // Prevent browser's search box
-        setIsModalOpen((prev) => !prev); // Toggle state
+        event.preventDefault();
+        setIsModalOpen((prev) => !prev);
       }
     };
 
@@ -100,18 +86,17 @@ const Base = ({ renderContent: RenderContent }) => {
 
   const renderMenuItems = () => {
     if (!menus) return null;
-
+  
     return menus.map((menu) => {
       const menuKey = menu.menu_name.toLowerCase().replace(/\s+/g, "");
       const hasSubmenu = menu.menu_list && menu.menu_list.length > 0;
-
+  
       return (
         <MenuItem
           key={menu._id}
           text={menu.menu_name}
           menuIcon={menu.menu_icon}
           hasSubmenu={hasSubmenu}
-          isOpen={openMenus[menuKey]}
           onClick={() => {
             if (hasSubmenu) {
               setSelectedParentSection(menu.menu_name);
@@ -131,7 +116,6 @@ const Base = ({ renderContent: RenderContent }) => {
                 text={submenu.submenu_name}
                 pathUrl={submenu.pathurl}
                 onClick={() => {
-                  console.log("Submenu", submenu.submenu_name);
                   handleClick(submenu.submenu_name);
                   navigate(
                     submenu.pathurl.startsWith("/")
@@ -285,10 +269,7 @@ const Base = ({ renderContent: RenderContent }) => {
   });
 
   const toggleMenu = (menu) => {
-    setOpenMenus((prev) => ({
-      ...prev,
-      [menu]: !prev[menu],
-    }));
+    setActiveMenu(prevActiveMenu => prevActiveMenu === menu ? null : menu);
   };
 
   const SubMenuItem = ({ text, onClick, isLast, parentSection, pathUrl }) => {
@@ -298,7 +279,6 @@ const Base = ({ renderContent: RenderContent }) => {
       if (event.ctrlKey || event.metaKey) {
         window.open(url, "_blank");
       } else {
-        // Regular click behavior
         setSelectedSubSection(text);
         setSelectedSection(text);
         setSelectedParentSection(parentSection);
@@ -321,8 +301,8 @@ const Base = ({ renderContent: RenderContent }) => {
             className={`w-full flex items-center px-4 rounded-md py-2 pl-12 transition-colors cursor-pointer text-sm font-semibold
                     ${
                       selectedSubSection === text
-                        ? "bg-white text-[#033453]"
-                        : "text-white hover:bg-[#005073]"
+                        ? "bg-[#004181] text-white"
+                        : "text-[#6C7086] hover:bg-[#004181] hover:text-white"
                     }`}
             onClick={handleLeftClick}
           >
@@ -337,36 +317,28 @@ const Base = ({ renderContent: RenderContent }) => {
     text,
     menuIcon,
     hasSubmenu = false,
-    isOpen = false,
     onClick,
     children,
   }) => {
+    const menuKey = text.toLowerCase().replace(/\s+/g, "");
+    const isOpen = activeMenu === menuKey;
     const isSelected = hasSubmenu
       ? selectedParentSection === text
       : selectedSection === text && selectedParentSection === text;
-
-    // const DynamicIcon = ({ name, size = 24, color = "currentColor" }) => {
-    //   const IconComponent = Icons[name];
-    //   return IconComponent ? (
-    //     <IconComponent size={size} color={color} />
-    //   ) : (
-    //     <Icons.AlertCircle size={size} color={color} />
-    //   );
-    // };
-
+  
     return (
       <div className="w-full px-3 py-1 relative">
         <div
-          className={`w-full flex items-center px-4 py-3 cursor-pointer rounded-md text-gray-300 transition-colors
+          className={`w-full flex items-center px-4 py-3 cursor-pointer rounded-md transition-colors
             ${
               isSelected
-                ? "border-2 border-white"
-                : "hover:bg-[#005070] border-2 border-transparent"
+                ? "border-2 border-[#004181] bg-[#004181] text-white"
+                : "hover:bg-[#004181] hover:text-white border-2 border-transparent text-[#6b7086]"
             }`}
           onClick={() => {
             if (hasSubmenu) {
               setSelectedParentSection(text);
-              toggleMenu(text.toLowerCase().replace(/\s+/g, ""));
+              toggleMenu(menuKey);
             } else {
               setSelectedSection(text);
               setSelectedParentSection(text);
@@ -375,20 +347,30 @@ const Base = ({ renderContent: RenderContent }) => {
             }
           }}
         >
-          <img src={`${import.meta.env.VITE_API_URL}/${menuIcon}`} />
-          <span className="flex-1 text-left ml-2">{text}</span>
-
+           <img
+          className={`w-6 h-6 ${isSelected ? "fill-white" : "fill-current"} hover:fill-white`}
+          src={`${import.meta.env.VITE_API_URL}/${menuIcon}`}
+          alt="Menu Icon"
+          style={{
+            filter: isSelected ? "brightness(0) invert(1)" : "none",
+          }}
+        />
+  
+          <span className={`flex-1 text-left ml-2`}>
+            {text}
+          </span>
+  
           {hasSubmenu && (
             <span className="ml-auto transition-transform duration-300">
               {isOpen ? (
-                <ChevronUp className="w-4 h-4" />
-              ) : (
                 <ChevronDown className="w-4 h-4" />
+              ) : (
+                <ChevronRight className="w-4 h-4" />
               )}
             </span>
           )}
         </div>
-
+  
         <div
           className={`relative overflow-y-auto overflow-hidden transition-all scrollbar-hide duration-300 ease-in-out
           ${isOpen ? "max-h-[60vh] opacity-100 mt-2" : "max-h-0 opacity-0"}`}
