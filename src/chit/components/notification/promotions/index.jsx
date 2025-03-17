@@ -110,35 +110,17 @@ function PromotionSummary() {
       {
         header: "Status",
         cell: (row, rowIndex) => (
-          (row.status === "sent") ? 
+          (row.status !== "sent") ? 
           <div className="dropdown-container relative">
-                <div className={`${branchAccess !== 0 ? "cursor-not-allowed" : "cursor-pointer"} lg:w-20  rounded-md shadow-lg bg-[#d7b56d] ring-1 ring-black ring-opacity-5`}>
-                  <div>
-                    <button
-                      className={`${branchAccess !== 0 ? "cursor-not-allowed" : "cursor-pointer"} lg:w-20  text-center p-2 text-sm text-gray-600 font-semibold flex items-center gap-2`}
-                      disabled={branchAccess !== 0}
-                      onClick={() => {
-                        handleEdit(row);
-                      }}
-                    >
-                      Pending
-                    </button>
-                  
-                  </div>
+                <div className={`${branchAccess !== 0 ? "cursor-not-allowed" : "cursor-pointer"} rounded-md`}>
+                <span className="bg-yellow-100 text-yellow-800 text-xs font-medium me-2 px-2.5 py-1 rounded-md dark:bg-yellow-900 dark:text-yellow-300">pending</span>
                 </div>
           </div>
           :
           <div className="dropdown-container relative">
-          <div className={`${branchAccess !== 0 ? "cursor-not-allowed" : "cursor-pointer"} lg:w-20 rounded-md shadow-lg bg-[#61a375] ring-1 ring-black ring-opacity-5`}>
-            <div>
-              <button
-                className={`lg:w-20 text-center p-2 text-sm text-gray-700 font-semibold flex items-center gap-2`}
-                disabled={branchAccess !== 0}
-              >
-                Approved
-              </button>
-            
-            </div>
+             
+       <div className={`${branchAccess !== 0 ? "cursor-not-allowed" : "cursor-pointer"}  rounded-md `}>
+           <span className="bg-green-100 text-green-800 text-sm font-medium me-2 px-2.5 py-1 rounded-md dark:bg-green-900 dark:text-green-300" disabled={branchAccess !== 0}>sent</span>
           </div>
     </div>
         ),

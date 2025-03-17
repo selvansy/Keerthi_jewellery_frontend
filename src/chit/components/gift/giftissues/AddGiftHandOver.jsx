@@ -10,8 +10,6 @@ import Select from "react-select";
 import { customSelectStyles } from "../../../components/Setup/purity/index";
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { emptyToZero, formatNumber } from "../../../utils/commonFunction"
-
-
 import { addgiftissues, searchbarcodenumber, giftissuetype, searchcustomermobile, getallgiftInwardByBranch, searchmobileschemeaccount, getallbranch, getschemeaccountbyid } from '../../../api/Endpoints'
 import SpinLoading from '../../common/spinLoading';
 
@@ -62,17 +60,28 @@ const AddGiftIssued = () => {
     gift_issues: []
   });
 
-  useEffect(() => {
-    getBranchList();
-    getallissuetypeMutate();
+  // useEffect(() => {
+  //   getallissuetypeMutate();
 
-  }, []);
+  // }, []);
 
 
   const { data: giftResponse, isLoading: loadingGifts } = useQuery({
     queryKey: ["barcode", branchId],
     queryFn: () => getallgiftInwardByBranch(branchId),
   });
+
+  const { data: branchresponse, isLoading: loadingbranch } = useQuery({
+    queryKey: ["branch"],
+    queryFn: getallbranch,
+  });
+
+  const { data: giftIssueResponse, isLoading: loadingGiftItems } = useQuery({
+    queryKey: ["giftissues",branchId],
+    queryFn: giftissuetype,
+  });
+
+
 
   useEffect(() => {
     if (giftResponse?.data) {
@@ -83,7 +92,29 @@ const AddGiftIssued = () => {
 
       setBarcodeNums(barCodes);
     }
-  }, [giftResponse]);
+
+    if (branchresponse) {
+      const data = branchresponse.data
+
+      const branch = data.map((branch) => ({
+        value: branch._id,
+        label: branch.branch_name,
+      }));
+      setBranchList(branch);
+    }
+
+    if (giftIssueResponse) {
+      const data = giftIssueResponse.data
+    
+      const giftitem = data.map((giftitem) => ({
+        value: giftitem.id,
+        label: giftitem.name,
+      }));
+      setIssuetype(giftitem);
+    }
+
+
+  }, [giftResponse, branchresponse,giftIssueResponse]);
 
 
   useEffect(() => {
@@ -95,19 +126,7 @@ const AddGiftIssued = () => {
       setIdbranch(id_branch || branchaccess)
     }
 
-  }, [visibleaccount, id_branch]);
-
-
-  const { mutate: getBranchList } = useMutation({
-    mutationFn: getallbranch,
-    onSuccess: (response) => {
-      setBranchList(response.data);
-    },
-    onError: (error) => {
-      console.error("Error:", error);
-    },
-  });
-
+  }, [visibleaccount, roledata]);
 
   const handleSearchmobile = () => {
     setSearchError('');
@@ -151,14 +170,7 @@ const AddGiftIssued = () => {
   });
 
 
-  const { mutate: getallissuetypeMutate } = useMutation({
-    mutationFn: giftissuetype,
-    onSuccess: (response) => {
-      if (response) {
-        setIssuetype(response.data);
-      }
-    },
-  });
+
 
   const { mutate: handlesearchScheme } = useMutation({
     mutationFn: (data) => searchmobileschemeaccount(data),
@@ -255,17 +267,6 @@ const AddGiftIssued = () => {
   };
 
 
-  // const handleBarQuantity = async() => {
-
-  //   const existingBarcode = barcodeData?.find(bar => bar.barcode === searchbarcode);
-
-
-  //   existingBarcode
-  //     ? setQuantity(item => (item.qty < existingBarcode.qty ? quantity + 1 : (toast.error('Stock limit reached!'))))
-  //     : setQuantity(1);
-
-  // }
-
 
   const handleSearchbarcode = () => {
     setBarcodeError('');
@@ -273,19 +274,19 @@ const AddGiftIssued = () => {
       toast.error('Barcode Number is required!');
       return;
     }
-    
-    console.log("totalGifts,",totalGifts)
-    console.log("noOfgifts",noOfgifts)
+
+    console.log("totalGifts,", totalGifts)
+    console.log("noOfgifts", noOfgifts)
     if (totalGifts < noOfgifts) {
       handlegiftbarcodeno({ barcode: searchbarcode, id_branch: branchId });
-    }else{
+    } else {
       toast.error("Gift limit reached");
-    } 
+    }
   }
 
-     
+
   const totalGifts = barcodeData.reduce((acc, curr) => acc + curr.quantity, 0);
-  
+
 
   const { mutate: handlegiftbarcodeno } = useMutation({
     mutationFn: (payload) => searchbarcodenumber(payload),
@@ -302,16 +303,16 @@ const AddGiftIssued = () => {
     },
   });
 
- 
+
 
   const updateBarcodeData = (barcodeData) => {
     setBarcodeData((prevData) => {
       const existingIndex = prevData.findIndex((item) => item.barcode === barcodeData.barcode);
-  
+
       if (existingIndex !== -1) {
         return prevData.map((item, index) => {
           if (index === existingIndex) {
-            if (item.quantity < item.qty) { 
+            if (item.quantity < item.qty) {
               return { ...item, quantity: item.quantity + 1 };
             }
             toast.error("Gift Stock limit reached");
@@ -323,7 +324,7 @@ const AddGiftIssued = () => {
       }
     });
   };
-  
+
 
   const updateFormData = (barcodeData) => {
     setFormData((prevFormData) => {
@@ -412,7 +413,6 @@ const AddGiftIssued = () => {
       createGiftissuesMutate(formData);
 
     } catch (error) {
-      console.log("SDFGHJKL", error)
       setLoading(false)
     }
   };
@@ -454,23 +454,22 @@ const AddGiftIssued = () => {
               <div className='flex flex-col mt-2'>
                 <label className='text-black mb-1 font-medium'>Branch<span className='text-red-400'>*</span></label>
                 <div className="relative">
-                  <select value={formData.id_branch} onChange={(e) => inputChange(e)}
-                    name="id_branch"
-                    className='appearance-none border-2 border-gray-300 rounded-md p-3  w-full bg-white pr-8 focus:outline-none focus:ring-2  focus:border-transparent'
 
-                    defaultValue=''>
-                    <option value='' >--Select--</option>
+                  <Select
+                    options={branchList}
+                    value={branchList.find(branch => branch.value === formData.id_branch) || branchId}
+                    onChange={(branch) => {
+                      setFormData((prev) => ({
+                        ...prev,
+                        id_branch: branch.value,
+                      }));
 
-                    {branchList.map((branch) => (
-                      <option
-                        className="text-gray-700"
-                        key={branch._id}
-                        value={branch._id}
-                      >
-                        {branch.branch_name}
-                      </option>
-                    ))}
-                  </select>
+                      setIdbranch(branch.value)
+                    }}
+                    customSelectStyles={customSelectStyles}
+                    isLoading={loadingbranch}
+                    placeholder="Select Branch"
+                  />
 
                   <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
                     <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
@@ -486,7 +485,24 @@ const AddGiftIssued = () => {
             <div className='flex flex-col mt-2'>
               <label className='text-black mb-1 font-medium'>Gift Issued Type<span className='text-red-400'>*</span></label>
               <div className="relative">
-                <select value={formData.issue_type}
+
+                
+               <Select
+                    options={issuetype}
+                    value={issuetype.find(item => item.value === formData.issue_type) || ""}
+                    onChange={(item) => {
+                      setFormData((prev) => ({
+                        ...prev,
+                        issue_type: item.value,
+                      }));
+                    }}
+                    customSelectStyles={customSelectStyles}
+                    isLoading={loadingGiftItems}
+                    placeholder="Select GiftIssued Type"
+                  />
+
+
+                {/* <select value={formData.issue_type}
                   name="issue_type"
                   onChange={inputChange}
                   className='appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2focus:border-transparent'
@@ -496,7 +512,7 @@ const AddGiftIssued = () => {
                   {issuetype.map((issue) => (
                     <option key={issue.id} value={issue.id}>{issue.name}</option>
                   ))}
-                </select>
+                </select> */}
 
                 <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
                   <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">

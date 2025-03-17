@@ -1803,6 +1803,11 @@ export const getProductById = async (id)=>{
     return response.data
 }
 
+export const getNewArrivalByBranch = async (id)=>{
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/newarrivals/branch/${id}`)
+    return response.data
+}
+
 
 export const updatelayoutcolor = async (data) => {
     const response = await Api.patch(`${import.meta.env.VITE_API_URL}/api/admin/layoutsetting/color`, data);

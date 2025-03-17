@@ -22,13 +22,14 @@ import {
   getemployeebybranch,
   getallbranch,
   getSchemeAccountCount,
-  getCustomerByMobile, 
+  getCustomerByMobile,
   getEmployeeByMobile,
 } from "../../../api/Endpoints";
 import { useSelector, useDispatch } from "react-redux";
 import { customSelectStyles } from "../../Setup/purity/index";
+import SpinLoading from "../../common/spinLoading";
 
-export function ExistingCustomer({setCusData}) {
+export function ExistingCustomer({ setCusData }) {
 
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const roledata = useSelector((state) => state.clientForm.roledata);
@@ -41,10 +42,12 @@ export function ExistingCustomer({setCusData}) {
   const [branch, setBranch] = useState(id_branch);
   const [branchData, setBranchData] = useState([]);
 
-  const { data: branchresponse, isLoading: loadingbranch } = useQuery({
-    queryKey: ["branch", branch],
+ 
+  const { data: branchresponse, isLoading: branchloading } = useQuery({
+    queryKey: ["branch"],
     queryFn: getallbranch,
-  });
+});
+ 
 
   useEffect(() => {
     if (branchresponse) {
@@ -66,7 +69,7 @@ export function ExistingCustomer({setCusData}) {
   };
 
   const { mutate: handlesearchcustomer } = useMutation({
-    mutationFn:(data)=> searchcustomermobile(data),
+    mutationFn: (data) => searchcustomermobile(data),
     onSuccess: (response) => {
       handleResData(response.data)
       setLoading(false);
@@ -77,46 +80,48 @@ export function ExistingCustomer({setCusData}) {
     },
   });
 
-  const handleResData = (data)=>{
+  const handleResData = (data) => {
     setFormData((prev) => ({
       ...prev,
       customer_name: data.firstname + " " + data.lastname,
     }));
 
-      setCusData({
-            customer_name:
-            data.firstname + " " + data.lastname,
-            address: data.address,
-            id_branch: data.id_branch,
-            mobile: data.mobile,
-            id_customer: data._id,
-          })
+    setCusData({
+      customer_name:
+        data.firstname + " " + data.lastname,
+      address: data.address,
+      id_branch: data.id_branch,
+      mobile: data.mobile,
+      id_customer: data._id,
+    })
 
   }
 
   return (
     <div className="grid grid-rows-2 md:grid-cols-2 gap-2">
+   
       <div className="flex flex-col">
-        <label className="text-black mb-1 font-normal">
-          Branch<span className="text-red-400">*</span>
-        </label>
-        <Select
-          name="id_branch"
-          options={branchData}
-          value={
-            branchData.find((branch) => branch.value === formData.id_branch) || ""  }
-          onChange={(branch) => {
-            setFormData((prev) => ({
-              ...prev,
-              id_branch: branch.value,
-            }));
-            setBranch(branch.value);
-          }}
-          customSelectStyles={customSelectStyles}
-          isLoading={loadingbranch}
-          placeholder="Select Branch"
-        />
-      </div>
+      <label className="text-black mb-1 font-normal">
+        Branch<span className="text-red-400">*</span>
+      </label>
+      <Select
+        name="id_branch"
+        options={branchData}
+        value={
+          branchData.find((branch) => branch.value === formData.id_branch) || ""}
+        onChange={(branch) => {
+          setFormData((prev) => ({
+            ...prev,
+            id_branch: branch.value,
+          }));
+          setBranch(branch.value);
+        }}
+        customSelectStyles={customSelectStyles}
+        isLoading={branchloading}
+        placeholder="Select Branch"
+      />
+    </div>
+    
 
       <div className="flex flex-col relative">
         <label className="text-black mb-1 font-normal">
@@ -180,10 +185,10 @@ export function ExistingCustomer({setCusData}) {
   );
 }
 
-const AddSchemeAccount = ({cusData}) => {
+const AddSchemeAccount = ({ cusData,handleClear }) => {
 
   let dispatch = useDispatch();
- 
+
   const id_branch = cusData?.id_branch;
 
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
@@ -191,6 +196,8 @@ const AddSchemeAccount = ({cusData}) => {
   const location = useLocation();
   const todaydate = new Date();
   const { id } = useParams();
+  
+  const [isLoading, setLoading] = useState(false);
   const [start_date, setStartDate] = useState(todaydate);
   const [maturity_date, setMaturityDate] = useState("");
   const [maturity_period, setMaturityPeriod] = useState(0);
@@ -246,16 +253,22 @@ const AddSchemeAccount = ({cusData}) => {
     scheme_count_number: "",
   });
 
-  const { data: branchresponse } = useQuery({
-    queryKey: ["branch", branch],
+  const { data: branchresponse, isLoading: branchloading } = useQuery({
+    queryKey: ["branch"],
     queryFn: getallbranch,
-  });
+});
+
 
   useEffect(() => {
-    if (branchresponse) {
-      setBranchData(branchresponse.data);
-    }
-  }, [branchresponse]);
+          if (branchresponse) {
+              const data = branchresponse.data;
+              const branch = data.map((branch) => ({
+                  value: branch._id,
+                  label: branch.branch_name,
+              }));
+              setBranchData(branch);
+          }
+      }, [branchresponse]);
 
   useEffect(() => {
     const scheme = async () => {
@@ -387,9 +400,9 @@ const AddSchemeAccount = ({cusData}) => {
 
   const handleSearchmobile = async () => {
     try {
-      if(Number(searchmobile) === Number(cusData.mobile)){
+      if (Number(searchmobile) === Number(cusData.mobile)) {
         return toast.error("Self referral is not allowed")
-       }
+      }
       const matchingRole = referralRoles.find(
         (element) => Number(selectedRole) === element.id
       );
@@ -527,12 +540,12 @@ const AddSchemeAccount = ({cusData}) => {
     try {
       const countData = await getSchemeAccountCount(formData.mobile, id);
       const newAcNumber = countData.data !== 0 ? Number(countData.data) + 1 : 1;
-  
+
       setAcNumber(newAcNumber);
       const schemeData = schemefilter.find(
         (item) => String(item._id) === String(id)
       );
-  
+
       if (schemeData) {
         setFormData((prevState) => ({
           ...prevState,
@@ -542,7 +555,7 @@ const AddSchemeAccount = ({cusData}) => {
           installment_type: schemeData?.installment_type,
           code: schemeData?.code,
         }));
-  
+
         // Update min_amount, max_amount, min_weight, max_weight based on scheme type
         if ([12, 3, 4, 2, 5, 6].includes(schemeData.scheme_type)) {
           setFormData((prevData) => ({
@@ -765,15 +778,17 @@ const AddSchemeAccount = ({cusData}) => {
 
   const onSubmit = (e) => {
     e.preventDefault();
-
+    
     if (isValidForm()) {
       if (id) {
+        setLoading(true);
         updateSchemeaccount(formData);
       } else {
         setFormData((prev) => ({
           ...prev,
           scheme_count_number: acNumber,
         }));
+        setLoading(true);
         createSchemeaccount(formData);
       }
     } else {
@@ -785,9 +800,12 @@ const AddSchemeAccount = ({cusData}) => {
     mutationFn: addschemeaccount,
     onSuccess: (response) => {
       toast.success(response.message);
+      setLoading(false);
+      handleClear();
       navigate("/managecustomers/customer/");
     },
     onError: (error) => {
+      setLoading(false);
       toast.error(error.response.data.message);
     },
   });
@@ -796,12 +814,16 @@ const AddSchemeAccount = ({cusData}) => {
     mutationFn: updateschemeaccount,
     onSuccess: (response) => {
       toast.success(response.message);
+      setLoading(false);
       navigate("/managecustomers/customer/");
     },
     onError: (error) => {
+      setLoading(false);
       toast.error(error.response.data.message);
     },
   });
+
+ 
 
   return (
     <>
@@ -813,51 +835,41 @@ const AddSchemeAccount = ({cusData}) => {
         )}
       </div>
       <div
-        className={`w-full flex flex-col bg-white pl-8 pr-8 pb-4  ${
-          !cusData && "border-[#023453] border-t-2 h-[calc(100vh-200px)]"
-        } mt-3 overflow-y-auto scrollbar-hide `}
+        className={`w-full flex flex-col bg-white pl-8 pr-8 pb-4  ${!cusData && "border-[#023453] border-t-2 h-[calc(100vh-200px)]"
+          } mt-3 overflow-y-auto scrollbar-hide `}
       >
         <div className="grid md:grid-cols-2 gap-3 mt-4">
           <div className="flex flex-col">
-            <label className="text-black mb-1 font-normal">
+            <label className="text-black mb-1 font-medium">
               Branch<span className="text-red-400">*</span>
             </label>
-            <div className="relative">
-              <select
-                name="id_branch"
-                value={cusData.id_branch || formData.id_branch}
-                onChange={(e) => {
-                  filterInputchange(e);
-                }}
-                disabled
-                className="appearance-none border bg-[#e5e7eb] border-gray-300 cursor-not-allowed rounded-md p-2 w-full pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-              >
-                <option value="">-- Select --</option>
-                {branchData.map((branch) => (
-                  <>
-                    <option key={branch._id} value={branch._id}>
-                      {branch.branch_name}
-                    </option>
-                  </>
-                ))}
-              </select>
-              <p style={{ color: "red" }}>{errors?.id_branch}</p>
-              <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                <svg
-                  className="h-4 w-4 text-gray-400"
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="3"
-                  viewBox="0 0 24 24"
-                  stroke="black"
-                >
-                  <path d="M19 9l-7 7-7-7"></path>
-                </svg>
-              </div>
-            </div>
-          </div>
 
+            <Select
+              options={branchData}
+              value={
+                branchData.find(
+                  (option) => option.value === cusData.id_branch 
+                ) || formData.id_branch
+              }
+              onChange={(option) =>
+                formik.setFieldValue("id_branch", option?.value || "")
+              }
+              onKeyDown={(e) =>
+                e.key === "Enter" && e.preventDefault()
+              }
+              styles={customSelectStyles}
+              isLoading={branchloading}
+              isDisabled={id_branch !== "0"}
+              placeholder="Select Branch"
+            />
+
+            {errors?.id_branch && (
+              <div style={{ color: "red" }}>
+                {errors?.id_branch}
+              </div>
+            )}
+          </div>
+       
           <div className="flex flex-col relative">
             <label className="text-black mb-1 font-normal">
               Mobile Number<span className="text-red-400">*</span>
@@ -1010,7 +1022,7 @@ const AddSchemeAccount = ({cusData}) => {
                 <div className="flex flex-col">
                   <label className="text-black mb-1 font-normal">
                     Scheme{" "}
-                    {[12, 3, 4,2,5,6].includes(formData.scheme_type)
+                    {[12, 3, 4, 2, 5, 6].includes(formData.scheme_type)
                       ? "Weights"
                       : "Amounts"}
                     <span className="text-red-400">*</span>
@@ -1108,6 +1120,7 @@ const AddSchemeAccount = ({cusData}) => {
                 </div>
                 <p style={{ color: "red" }}>{errors?.account_name}</p>
               </div>
+
               {/* {parseInt(isaccountno) === 1 && (
                 <div className="flex flex-col">
                   <label className="text-black mb-1 font-normal">
@@ -1243,8 +1256,8 @@ const AddSchemeAccount = ({cusData}) => {
                       maxLength={10}
                       value={searchmobile}
                       onChange={(e) => {
-                        if (Number(e.target.value) || e.target.value == "") {               
-                            setSearchMobile(e.target.value);
+                        if (Number(e.target.value) || e.target.value == "") {
+                          setSearchMobile(e.target.value);
                         }
                       }}
                       className="border-2 border-gray-300 rounded-md p-2  focus:border-transparent"
@@ -1285,9 +1298,10 @@ const AddSchemeAccount = ({cusData}) => {
               <button
                 className=" text-white rounded-md p-2 w-full lg:w-20"
                 type="submit"
+                disabled={isLoading}
                 style={{ backgroundColor: layout_color }}
               >
-                {!id ? "Submit" : "Update"}
+                 {isLoading ? <SpinLoading /> : id ? "Update" : "Save"}
               </button>
             </div>
           </div>

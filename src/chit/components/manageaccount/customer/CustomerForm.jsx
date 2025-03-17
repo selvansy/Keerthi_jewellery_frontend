@@ -27,14 +27,13 @@ import profileplaceholder from "../../../../assets/profileplaceholder.png";
 import { customSelectStyles } from "../../Setup/purity/index";
 import { SetaccExp } from "../../../../redux/clientFormSlice";
 
-const CustomerForm = ({setCusData}) => {
-    const { id } = useParams();
+const CustomerForm = ({ setCusData, id, setaddCusData, addCusData, id_proof, setid_proof, cus_img, pathurl, setcus_img, setPathurl, handleClear }) => {
+
+
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const layout_color = useSelector((state) => state.clientForm.layoutColor);
     const roledata = useSelector((state) => state.clientForm.roledata);
-
-    const acc = useSelector((state) => state.clientForm.accExp);
 
     const id_branch = roledata?.branch;
 
@@ -54,27 +53,8 @@ const CustomerForm = ({setCusData}) => {
     const [state, setState] = useState("");
     const [city, setCity] = useState("");
     const [branchData, setBranchData] = useState([]);
-    const [branch, setBranch] = useState("");
-    const [id_proof, setid_proof] = useState(null);
-    const [cus_img, setcus_img] = useState("");
-    const [pathurl, setPathurl] = useState("");
 
-    const [formData, setFormData] = useState({
-        firstname: "",
-        lastname: "",
-        mobile: "",
-        gender: "",
-        address: "",
-        id_branch: branch,
-        id_country: country,
-        id_state: state,
-        id_city: city,
-        date_of_wed: "",
-        pan: "",
-        date_of_birth: "",
-        pincode: "",
-        authorno: "",
-    });
+
 
     const validationSchema = Yup.object({
         firstname: Yup.string().required("First name is required"),
@@ -93,30 +73,19 @@ const CustomerForm = ({setCusData}) => {
         pincode: Yup.string()
             .required("Pincode is required")
             .matches(/^\d{6}$/, "Pincode must be 6 digits"),
-            pan: Yup.string()
-    .matches(/^[A-Z]{5}[0-9]{4}[A-Z]$/, "Invalid PAN format")
-    .nullable(),
+
     });
 
-    useEffect(() => {
-        if (id_branch !== "0") {
-            setFormData((prev) => ({
-                ...prev,
-                id_branch: id_branch,
-            }));
-            setBranch(id_branch);
-        }
-    }, [id_branch]);
+
 
     useEffect(() => {
+
         if (id) {
             getCustomerData(id);
+        } else {
+            handleClear();
         }
-        // return () => {
-        //     setcus_img("")
-        //     setPathurl("")
-        //     setFormData({})
-        // }
+
     }, [id]);
 
     const { mutate: getCustomerData } = useMutation({
@@ -130,7 +99,7 @@ const CustomerForm = ({setCusData}) => {
                     mobile: res.mobile,
                     gender: res.gender,
                     address: res.address,
-                    whatsapp:res.whatsapp,
+                    whatsapp: res.whatsapp,
                     id_branch: res.branchDetails?._id,
                     id_country: res.countryDetails?._id,
                     id_state: res.stateDetails?._id,
@@ -141,7 +110,7 @@ const CustomerForm = ({setCusData}) => {
                     pincode: res.pincode,
                     authorno: res.authorno,
                 };
-                setFormData(formValues);
+                setaddCusData(formValues);
                 setcus_img(response.data.cus_img);
                 const img = `${response.data.pathurl}${response.data.cus_img}`;
                 setPathurl(img);
@@ -152,6 +121,9 @@ const CustomerForm = ({setCusData}) => {
                 setCity(res.cityDetails?._id);
             }
         },
+        onError: (error) => {
+            toast.error(error.response.data.message)
+        }
     });
 
     const { data: countryresponse, isLoading: loadingCountries } = useQuery({
@@ -177,6 +149,7 @@ const CustomerForm = ({setCusData}) => {
     });
 
     useEffect(() => {
+     
         if (branchresponse) {
             const data = branchresponse.data;
             const branch = data.map((branch) => ({
@@ -216,19 +189,7 @@ const CustomerForm = ({setCusData}) => {
         }
     }, [cityresponse, stateresponse, countryresponse]);
 
-    // const handleSubmitForm =  async() => {
-    //     setisLoading(true)
-    //     const formPayload = new FormData();
 
-    //     Object.entries(formData).forEach(([key, value]) => {
-    //         if (value) formPayload.append(key, value);
-    //     });
-
-    //     if (cus_img) formPayload.append('cus_img', cus_img);
-    //     if (id_proof) formPayload.append('id_proof', id_proof);
-
-    //     id ? updateCustomerData({ id, data: formPayload }) : addcustomerMutate(formPayload);
-    // };
 
     const { mutate: addcustomerMutate } = useMutation({
         mutationFn: (data) => addcustomer(data),
@@ -236,7 +197,7 @@ const CustomerForm = ({setCusData}) => {
             if (response) {
                 toast.success(response.message);
 
-                setCusData(prev=>({
+                setCusData(prev => ({
                     ...prev,
                     customerId: response.data,
                 }))
@@ -261,8 +222,8 @@ const CustomerForm = ({setCusData}) => {
         mutationFn: updatecustomer,
         onSuccess: (response) => {
             toast.success(response.message);
-            setFormData({});
             setisLoading(false);
+            handleClear()
             navigate("/managecustomers/customer/");
         },
 
@@ -296,6 +257,30 @@ const CustomerForm = ({setCusData}) => {
             }
         }
     };
+
+    // const handleCancel = ()=>{
+    //     setcus_img("")
+    //     setPathurl("")
+    //     setid_proof(null)
+    //     setaddCusData({
+    //         firstname: "",
+    //         lastname: "",
+    //         mobile: "",
+    //         gender: "",
+    //         address: "",
+    //         whatsapp: "",
+    //         id_branch: "",
+    //         id_country: "",
+    //         id_state: "",
+    //         id_city: "",
+    //         date_of_wed: "",
+    //         pan: "",
+    //         date_of_birth: "",
+    //         pincode: "",
+    //         authorno: "", 
+    //     })
+
+    // }
 
     const handleFileChange = (e) => {
         e.preventDefault();
@@ -416,6 +401,7 @@ const CustomerForm = ({setCusData}) => {
     };
 
     const handleDispatch = (data) => {
+     
         setCusData({
             customer_name: data.firstname + " " + data.lastname,
             address: data.address,
@@ -432,6 +418,8 @@ const CustomerForm = ({setCusData}) => {
         // );
     };
 
+
+
     return (
         <>
             <div className="w-full flex flex-col bg-white">
@@ -439,13 +427,13 @@ const CustomerForm = ({setCusData}) => {
                     {/* Replace Formik with useFormik implementation */}
                     {(() => {
                         const formik = useFormik({
-                            initialValues: formData,
+                            initialValues: addCusData,
                             validationSchema: validationSchema,
                             enableReinitialize: true,
                             validateOnChange: false,
                             validateOnBlur: false,
                             onSubmit: (values) => {
-                                console.log("values", values)
+                              
                                 handleDispatch(values);
                                 setisLoading(true);
                                 const formPayload = new FormData();
@@ -525,20 +513,18 @@ const CustomerForm = ({setCusData}) => {
                                                 options={branchData}
                                                 value={
                                                     branchData.find(
-                                                        (option) => option.value === formik.values.id_branch
-                                                    ) || null
+                                                        (option) =>
+                                                            option.value === (id_branch !== "0" ? addCusData.id_branch : formik.values.id_branch)
+                                                    ) || ""
                                                 }
-                                                onChange={(option) =>
-                                                    formik.setFieldValue("id_branch", option?.value || "")
-                                                }
-                                                onKeyDown={(e) =>
-                                                    e.key === "Enter" && e.preventDefault()
-                                                }
+                                                onChange={(option) => formik.setFieldValue("id_branch", option?.value || "")}
+                                                onKeyDown={(e) => e.key === "Enter" && e.preventDefault()}
                                                 styles={customSelectStyles}
                                                 isLoading={loadingbranch}
                                                 isDisabled={id_branch !== "0"}
                                                 placeholder="Select Branch"
                                             />
+
 
                                             {formik.errors.id_branch && (
                                                 <div style={{ color: "red" }}>
@@ -670,8 +656,8 @@ const CustomerForm = ({setCusData}) => {
                                                         key={gender.value}
                                                         type="button"
                                                         className={`rounded-full w-20 h-10 flex items-center justify-center border-2 border-black transition-colors duration-200 ${formik.values.gender === gender.value
-                                                                ? "text-white"
-                                                                : "bg-white text-black"
+                                                            ? "text-white"
+                                                            : "bg-white text-black"
                                                             }`}
                                                         style={
                                                             formik.values.gender === gender.value
@@ -781,7 +767,7 @@ const CustomerForm = ({setCusData}) => {
                                             ) : null}
                                         </div>
 
-                                        <div className="flex flex-col">
+                                        {/* <div className="flex flex-col">
                                             <label className="text-black mb-1 font-medium">
                                                 Pan Number<span className="text-red-400"> *</span>
                                             </label>
@@ -800,7 +786,7 @@ const CustomerForm = ({setCusData}) => {
                                             {formik.errors.pan ? (
                                                 <div style={{ color: "red" }}>{formik.errors.pan}</div>
                                             ) : null}
-                                        </div>
+                                        </div> */}
 
                                         <div className="flex flex-col">
                                             <label className="text-gray-700 mb-1 font-medium">
@@ -1155,7 +1141,7 @@ const CustomerForm = ({setCusData}) => {
                                                                 onClick={() => {
                                                                     const payload = {
                                                                         mobile: formik.values.mobile,
-                                                                        branchId: branch,
+                                                                        branchId: id_branch,
                                                                     };
                                                                     setCanResend(false);
                                                                     setIsTimerRunning(true);
@@ -1177,7 +1163,10 @@ const CustomerForm = ({setCusData}) => {
                                                 <button
                                                     className="bg-[#E2E8F0] text-black rounded-md p-2 w-full lg:w-20"
                                                     type="button"
-                                                    onClick={() => navigate("/managecustomers/customer/")}
+                                                    onClick={() => {
+                                                        handleCancel();
+                                                        navigate("/managecustomers/customer/")
+                                                    }}
                                                 >
                                                     Cancel
                                                 </button>
