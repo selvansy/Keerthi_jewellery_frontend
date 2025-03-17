@@ -345,14 +345,14 @@ const Base = ({ renderContent: RenderContent }) => {
       ? selectedParentSection === text
       : selectedSection === text && selectedParentSection === text;
 
-    const DynamicIcon = ({ name, size = 24, color = "currentColor" }) => {
-      const IconComponent = Icons[name];
-      return IconComponent ? (
-        <IconComponent size={size} color={color} />
-      ) : (
-        <Icons.AlertCircle size={size} color={color} />
-      );
-    };
+    // const DynamicIcon = ({ name, size = 24, color = "currentColor" }) => {
+    //   const IconComponent = Icons[name];
+    //   return IconComponent ? (
+    //     <IconComponent size={size} color={color} />
+    //   ) : (
+    //     <Icons.AlertCircle size={size} color={color} />
+    //   );
+    // };
 
     return (
       <div className="w-full px-3 py-1 relative">
@@ -375,7 +375,8 @@ const Base = ({ renderContent: RenderContent }) => {
             }
           }}
         >
-          <span className="flex-1 text-left">{text}</span>
+          <img src={`${import.meta.env.VITE_API_URL}/${menuIcon}`} />
+          <span className="flex-1 text-left ml-2">{text}</span>
 
           {hasSubmenu && (
             <span className="ml-auto transition-transform duration-300">
