@@ -291,47 +291,19 @@ const Base = ({ renderContent: RenderContent }) => {
     }));
   };
 
-  // const SubMenuItem = ({ text, onClick, isLast, parentSection }) => (
-  //   <div className="relative">
-  //     {!isLast && (
-  //       <div className="absolute left-6 top-1/2 w-[1px] h-full bg-white -translate-x-1/2" />
-  //     )}
-  //     <div className="relative flex items-center">
-  //       <div
-  //         className={`absolute left-6 w-3 h-3 rounded-full border-2 border-white -translate-x-1/2 z-10 ${
-  //           selectedSubSection === text ? "" : "bg-gray-400"
-  //         }`}
-  //       />
-  //       <div
-  //         className={`w-full flex items-center px-4 rounded-md py-2 pl-12 transition-colors cursor-pointer text-sm font-semibold
-  //           ${
-  //             selectedSubSection === text
-  //               ? "bg-white text-[#033453]"
-  //               : "text-white hover:bg-[#005073]"
-  //           }`}
-  //         onClick={() => {
-  //           setSelectedSubSection(text);
-  //           setSelectedSection(text);
-  //           setSelectedParentSection(parentSection);
-  //           onClick && onClick();
-  //         }}
-  //       >
-  //         {text}
-  //       </div>
-  //     </div>
-  //   </div>
-  // );
   const SubMenuItem = ({ text, onClick, isLast, parentSection, pathUrl }) => {
-    // Extract the URL from the pathUrl prop
     const url = pathUrl?.startsWith("/") ? pathUrl : `/${pathUrl}`;
 
-    const handleLeftClick = (e) => {
-      // For left clicks, use your normal click handler with router navigation
-      e.preventDefault();
-      setSelectedSubSection(text);
-      setSelectedSection(text);
-      setSelectedParentSection(parentSection);
-      onClick && onClick();
+    const handleLeftClick = (event) => {
+      if (event.ctrlKey || event.metaKey) {
+        window.open(url, "_blank");
+      } else {
+        // Regular click behavior
+        setSelectedSubSection(text);
+        setSelectedSection(text);
+        setSelectedParentSection(parentSection);
+        onClick && onClick();
+      }
     };
 
     return (
@@ -345,18 +317,17 @@ const Base = ({ renderContent: RenderContent }) => {
               selectedSubSection === text ? "" : "bg-gray-400"
             }`}
           />
-          <a
-            href={url}
+          <div
             className={`w-full flex items-center px-4 rounded-md py-2 pl-12 transition-colors cursor-pointer text-sm font-semibold
-              ${
-                selectedSubSection === text
-                  ? "bg-white text-[#033453]"
-                  : "text-white hover:bg-[#005073]"
-              }`}
+                    ${
+                      selectedSubSection === text
+                        ? "bg-white text-[#033453]"
+                        : "text-white hover:bg-[#005073]"
+                    }`}
             onClick={handleLeftClick}
           >
             {text}
-          </a>
+          </div>
         </div>
       </div>
     );
@@ -838,11 +809,17 @@ const Base = ({ renderContent: RenderContent }) => {
       </div>
 
       <footer className="flex flex-row justify-center items-center w-full h-3 bg-white border-t py-3 px-2 fixed bottom-0 left-0 lg:left-40 z-30">
-       <div className="flex w-3/4 justify-end items-center ">
-       <div className="mx-2">Copyright 2024 © Aurumm by Atts </div>
-       <div className="mx-2">/</div>
-       <div className="mx-2 cursor-pointer" onClick={()=>navigate("/help/policy")}> <span className="text-blue-700">Legal Policies</span></div>
-       </div>
+        <div className="flex w-3/4 justify-end items-center ">
+          <div className="mx-2">Copyright 2024 © Aurumm by Atts </div>
+          <div className="mx-2">/</div>
+          <div
+            className="mx-2 cursor-pointer"
+            onClick={() => navigate("/help/policy")}
+          >
+            {" "}
+            <span className="text-blue-700">Legal Policies</span>
+          </div>
+        </div>
       </footer>
     </div>
   );
