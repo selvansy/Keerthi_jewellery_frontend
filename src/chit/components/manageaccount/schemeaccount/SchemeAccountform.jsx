@@ -1248,7 +1248,7 @@ const AddSchemeAccount = ({cusData}) => {
                         }
                       }}
                       className="border-2 border-gray-300 rounded-md p-2  focus:border-transparent"
-                      placeholder="Enter mobile number here"
+                      placeholder="Enter mobile number or referral code"
                     />
 
                     {/* Search Icon */}

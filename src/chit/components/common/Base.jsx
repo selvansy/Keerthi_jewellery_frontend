@@ -348,7 +348,7 @@ const Base = ({ renderContent: RenderContent }) => {
           }}
         >
            <img
-          className={`w-6 h-6 ${isSelected ? "fill-white" : "fill-current"}`}
+          className={`w-6 h-6 ${isSelected ? "fill-white" : "fill-current"} hover:fill-white`}
           src={`${import.meta.env.VITE_API_URL}/${menuIcon}`}
           alt="Menu Icon"
           style={{
