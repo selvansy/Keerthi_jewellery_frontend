@@ -296,7 +296,7 @@ const Base = ({ renderContent: RenderContent }) => {
             }`}
           />
           <div
-            className={`w-full flex items-center px-4 rounded-md py-2 pl-12 transition-colors cursor-pointer text-sm font-semibold
+            className={`w-full flex items-center px-4 rounded-md py-2 pl-12 transition-colors cursor-pointer my-1 text-sm font-semibold
                     ${
                       selectedSubSection === text
                         ? "bg-[#004181] text-white"
