@@ -35,6 +35,7 @@ const CompleteAccount = () => {
   const [schaccExp, setschaccExp] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
+  const [totalDocument,setTotalDocument]=useState(0)
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedRow, setSelectedRow] = useState(null)
   const [activeDropdown, setActiveDropdown] = useState(null)
@@ -83,20 +84,6 @@ const CompleteAccount = () => {
       setCurrentPage(pageNumber);
     
   };
-
-
-    const nextPage = () => {
-      setCurrentPage((prevPage) => (prevPage < totalPages ? prevPage + 1 : prevPage));
-    };
-  
-    const prevPage = () => {
-      setCurrentPage((prevPage) => (prevPage > 1 ? prevPage - 1 : prevPage));
-    };
-  
-
-  const paginationData = {totalItems:totalPages,currentPage:currentPage,itemsPerPage:itemsPerPage,handlePageChange:handlePageChange}
-  const paginationButtons = usePagination(paginationData)
-
 
   const handleReset = (e) => {
     setFromdate("");
@@ -272,7 +259,7 @@ const CompleteAccount = () => {
     onSuccess: (response) => {
       setschemeaccount(response.data)
       setTotalPages(response.totalPages);
-
+      setTotalDocument(response.totalDocument)
       let arrayData = [];
       if (response.data.length !== 0) {
         for (var i = 0; i < response.data.length; i++) {
@@ -443,7 +430,7 @@ const CompleteAccount = () => {
     //               </svg>
     //               Ledger
     //             </button> */}
-    //             {/* <button
+    //            <button
     //               className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
     //               onClick={() => {
     //                 handleDelete(row?._id);
@@ -454,7 +441,7 @@ const CompleteAccount = () => {
     //                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
     //               </svg>
     //               Delete
-    //             </button> */}
+    //             </button> 
     //             <button
     //               className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
     //               onClick={() => setActiveDropdown(null)}
@@ -822,62 +809,18 @@ const CompleteAccount = () => {
         />
       )}
       <div className="mt-4 overflow-x-auto">
-        <Table
-          data={schemeaccount}
-          columns={columns}
-          isLoading={isLoading}
-        />
+      <Table
+            data={schemeaccount}
+            columns={columns}
+            isLoading={isLoading}
+            currentPage={currentPage}
+            handlePageChange={handlePageChange}
+            itemsPerPage={itemsPerPage}
+            totalItems={totalDocument}
+            handleItemsPerPageChange={handleItemsPerPageChange}
+          />
       </div>
-      {schemeaccount.length > 0 && (
-        <div className="flex justify-between mt-4 p-2">
-        <div className={`flex flex-row items-center justify-center gap-2  `}>
-          <div className="flex items-center gap-4">
-            <button
-              onClick={prevPage}
-              readOnly={currentPage === 1}
-             
-              className={`p-2 text-gray-500 rounded-md ${currentPage === 1 ? "cursor-not-allowed" : "cursor-pointer"} `}
-            >
-              Previous
-            </button>
-          </div>
-  
-          <div className="flex flex-row items-center justify-center gap-2">
-            {paginationButtons}
-          </div>
-  
-          <div className="flex items-center">
-            <button
-              onClick={nextPage}
-              readOnly={currentPage === totalPages}
-              
-              className={`p-2 text-gray-500 rounded-md  ${currentPage === totalPages ? "cursor-not-allowed" : "cursor-pointer"}`}
-            >
-              Next
-            </button>
-          </div>
-        </div>
-  
-        <div className="mt-4 flex gap-2 justify-center items-center">
-          <span className="text-gray-500">Show</span>
-          <select
-            id="itemsPerPage"
-            value={itemsPerPage}
-            onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
-            className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
-          >
-            <option value={10}>10</option>
-            <option value={25}>25</option>
-            <option value={50}>50</option>
-            <option value={100}>100</option>
-            <option value={250}>250</option>
-            <option value={500}>500</option>
-            <option value={1000}>1000</option>
-          </select>
-          <span className="text-gray-500">entries</span>
-        </div>
-      </div>
-      )}
+     
       {displaysetting === 1 && (
         <ModelOne
           title={popuptitle}
