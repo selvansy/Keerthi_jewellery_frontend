@@ -28,12 +28,13 @@ function Ledgerdetails({ setIsOpen }) {
   const getLedgerData = async (data) => {
     if (!data) return;
     const response = await getschemeaccountbyid({ id: data });
+    console.log(response.data.scheme_typename,'jf')
     if (response) {
       setLedgerData({
         id: response.data._id,
         id_scheme: response.data.id_scheme._id,
-        scheme_type: response.data.id_scheme.scheme_type,
-        scheme_name: response.data.id_scheme.scheme_name,
+        scheme_type: response.data.scheme_type,
+        scheme_name: response.data.scheme_typename,
         total_installments: response.data.id_scheme.total_installments,
         min_amount: response.data.id_scheme.min_amount,
         max_amount: response.data.id_scheme.max_amount,
@@ -81,18 +82,7 @@ function Ledgerdetails({ setIsOpen }) {
       <div className="space-y-1">
         <p className="text-sm font-semibold text-gray-700">Scheme Type</p>
         <p className="text-sm">
-          {
-            ledgerData?.id_schme?.scheme_type === 1 ? "Amount End Weight" :
-            ledgerData?.id_schme?.scheme_type === 2 ? "Amount To Weight" :
-            ledgerData?.id_schme?.scheme_type === 3 ? "Weight" :
-            ledgerData?.id_schme?.scheme_type === 4 ? "Flexible Amount To Bonus" :
-            ledgerData?.id_schme?.scheme_type === 5 ? "Flexible Amount To Weight" :
-            ledgerData?.id_schme?.scheme_type === 6 ? "Fixed Amount To Weight" :
-            ledgerData?.id_schme?.scheme_type === 7 ? "Fixed Amount End Weight" :
-            ledgerData?.id_schme?.scheme_type === 8 ? "Fixed Amount To Bonus" :
-            ledgerData?.id_schme?.scheme_type === 9 ? "Flexible Amount End Weight" :
-            ledgerData?.id_schme?.scheme_type === 10 ? "Digi Gold" : "Amount To Bonus"
-          }
+          {ledgerData?.scheme_name}
         </p>
       </div>
 

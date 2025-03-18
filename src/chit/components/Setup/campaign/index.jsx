@@ -382,7 +382,7 @@ function Campaign() {
 
             <ModelOne
                 title={id ? "Edit campaign" : "Add campaign"}
-                extraClassName="max-w-[75%] "
+                extraClassName="max-w-lg"
                 setIsOpen={setIsviewOpen}
                 isOpen={isviewOpen}
                 closeModal={closeIncommingModal}
