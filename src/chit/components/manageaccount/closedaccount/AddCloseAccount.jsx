@@ -405,7 +405,7 @@ const AddCloseAccount = () => {
     <>
       <div className="flex flex-row justify-between">
         <h2 className="text-2xl text-[#023453] font-bold justify-between">
-          {dynamic ? "Preclose" : "Account Redemption"}
+          {dynamic ? "Preclose" : "Closed Account"}
         </h2>
         {!dynamic && (
           <div className="flex flex-row items-center justify-end gap-2">
