@@ -25,6 +25,7 @@ import * as Yup from "yup";
 import SpinLoading from "../../common/spinLoading";
 import Loading from "../../common/Loading";
 import { metadata, tr } from "framer-motion/client";
+import Action from "../../common/action";
 
 const Metal = () => {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
@@ -42,7 +43,7 @@ const Metal = () => {
   const [isLoading, setisLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  const [ totalDocument, setTotalDocument] = useState(0);
+  const [totalDocument, setTotalDocument] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [searchInput, setSearchInput] = useState("");
@@ -57,7 +58,7 @@ const Metal = () => {
       if (response) {
         setMetalData(response.data);
         setTotalPages(response.totalPages);
-        setTotalDocument(response.totalDocument)
+        setTotalDocument(response.totalDocument);
       }
       setSearchLoading(false);
       setisLoading(false);
@@ -94,8 +95,6 @@ const Metal = () => {
       limit: itemsPerPage,
     });
   }, [currentPage, itemsPerPage, debouncedSearch, isviewOpen]);
-
-
 
   const clearId = () => {
     setId("");
@@ -138,7 +137,7 @@ const Metal = () => {
         const isLastItemOnPage = MetalData.length === 1;
         const isNotFirstPage = currentPage > 1;
         if (isLastItemOnPage && isNotFirstPage) {
-          setCurrentPage(prev => prev - 1);
+          setCurrentPage((prev) => prev - 1);
         } else {
           // Otherwise, just refresh current page
           getallmetaltableMutate({
@@ -147,7 +146,7 @@ const Metal = () => {
             limit: itemsPerPage,
           });
         }
-        
+
         toast.success(response.message);
         eventEmitter.off("CONFIRMATION_SUBMIT");
         setId("");
@@ -182,121 +181,16 @@ const Metal = () => {
     return () => document.removeEventListener("click", handleClickOutside);
   }, [activeDropdown]);
 
+  const hanldeActiveDropDown = (data) => {
+    setActiveDropdown(data);
+  };
+
   const columns = [
     {
       header: "S.No",
       cell: (_, index) => index + 1 + (currentPage - 1) * limit,
     },
-    {
-      header: "Actions",
-      cell: (row, rowIndex) => (
-        <div className="dropdown-container relative">
-          <button
-            className="p-1 hover:bg-gray-100 rounded-full"
-            onClick={(e) => {
-              e.stopPropagation();
-              setActiveDropdown(activeDropdown === row?._id ? null : row?._id);
-            }}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 text-gray-600"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
-            </svg>
-          </button>
 
-          {activeDropdown === row?._id && (
-            <div
-              className="absolute"
-              style={{
-                top: rowIndex >= MetalData.length - 2 ? "auto" : "72%",
-                bottom: rowIndex >= MetalData.length - 2 ? "-74%" : "auto",
-                // top: 'auto',
-                // bottom: '-440%',
-                zIndex: 9999,
-                marginBottom: "8px",
-                filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.15))",
-              }}
-            >
-              <div className="w-32 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
-                <div className="py-1">
-                  <button
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                    onClick={() => {
-                      handleEdit(row?._id);
-                      setActiveDropdown(null);
-                    }}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                      />
-                    </svg>
-                    Edit
-                  </button>
-                  <button
-                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
-                    onClick={() => {
-                      handleDelete(row?._id);
-                      setActiveDropdown(null);
-                    }}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                      />
-                    </svg>
-                    Delete
-                  </button>
-                  <button
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                    onClick={() => setActiveDropdown(null)}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      ),
-      sticky: "right",
-    },
     {
       header: "Metal Name",
       accessor: "metal_name",
@@ -323,6 +217,21 @@ const Metal = () => {
         </label>
       ),
     },
+    {
+      header: "Actions",
+      cell: (row, rowIndex) => (
+        <Action
+          row={row}
+          data={metadata}
+          rowIndex={rowIndex}
+          activeDropdown={activeDropdown}
+          setActive={hanldeActiveDropDown}
+          handleEdit={handleEdit}
+          handleDelete={handleDelete}
+        />
+      ),
+      sticky: "right",
+    },
   ];
 
   const handleSearch = (e) => {
@@ -348,17 +257,6 @@ const Metal = () => {
 
     setCurrentPage(pageNumber);
   };
-
- 
-
-
-  const paginationData = {
-    totalItems: totalPages,
-    currentPage: currentPage,
-    itemsPerPage: itemsPerPage,
-    handlePageChange: handlePageChange,
-  };
-  const paginationButtons = usePagination(paginationData);
 
   return (
     <div className="flex flex-col p-4 relative">
@@ -394,58 +292,13 @@ const Metal = () => {
           <Table
             data={MetalData}
             columns={columns}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-            pageSize={limit}
             isLoading={isLoading}
+            currentPage={currentPage}
+            handlePageChange={handlePageChange}
+            itemsPerPage={itemsPerPage}
+            totalItems={totalDocument}
+            handleItemsPerPageChange={handleItemsPerPageChange}
           />
-        </div>
-
-          <div className="flex  justify-between mt-4 p-2">
-          <div className="mt-4 flex gap-2 justify-center items-center">
-            <span className="text-gray-500">Show</span>
-            <select
-              id="itemsPerPage"
-              value={itemsPerPage}
-              onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
-              className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
-            >
-              <option value={10}>10</option>
-              <option value={25}>25</option>
-              <option value={50}>50</option>
-              <option value={100}>100</option>
-              <option value={250}>250</option>
-              <option value={500}>500</option>
-              <option value={1000}>1000</option>
-            </select>
-            <span className="text-gray-500">entries of {totalDocument}</span>
-          </div>
-          <div className="flex flex-row items-center justify-center gap-2">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}x
-                className="p-2 text-gray-500 rounded-md"
-              >
-                Previous
-              </button>
-            </div>
-
-            <div className="flex flex-row items-center justify-center gap-2">
-              {paginationButtons}
-            </div>
-
-            <div className="flex items-center">
-              <button
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                className="p-2 text-gray-500 rounded-md"
-              >
-                Next
-              </button>
-            </div>
-          </div>
         </div>
       </>
 
@@ -465,7 +318,7 @@ const Metal = () => {
 
 export default Metal;
 
-export const MetalForm = ({setIsOpen, id, clearId }) => {
+export const MetalForm = ({ setIsOpen, id, clearId }) => {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
   const [formData, setFormData] = useState({
@@ -474,7 +327,7 @@ export const MetalForm = ({setIsOpen, id, clearId }) => {
 
   console.log(id);
   const [formErrors, setFormErrors] = useState({});
-  const [isLoading,setIsLoading]=useState(false)
+  const [isLoading, setIsLoading] = useState(false);
   // getmetalById
   const { mutate: getmetalId } = useMutation({
     mutationFn: getmetalById,
@@ -503,7 +356,7 @@ export const MetalForm = ({setIsOpen, id, clearId }) => {
     if (!validateForm()) {
       return;
     }
-    setIsLoading(true)
+    setIsLoading(true);
 
     try {
       const updateData = {
@@ -526,11 +379,11 @@ export const MetalForm = ({setIsOpen, id, clearId }) => {
       if (response) {
         toast.success(response.data.message);
         setIsOpen(false);
-        setIsLoading(false)
+        setIsLoading(false);
       }
     },
     onError: (error) => {
-      setIsLoading(false)
+      setIsLoading(false);
       toast.error(error.response.data.message);
     },
   });
@@ -541,10 +394,10 @@ export const MetalForm = ({setIsOpen, id, clearId }) => {
       toast.success(response.data.message);
       clearId();
       setIsOpen(false);
-      setIsLoading(false)
+      setIsLoading(false);
     },
     onError: (error) => {
-      setIsLoading(false)
+      setIsLoading(false);
       toast.error(error.response.data.message);
     },
   });
@@ -618,7 +471,7 @@ export const MetalForm = ({setIsOpen, id, clearId }) => {
             className=" text-white rounded-md p-2 w-full lg:w-20"
             style={{ backgroundColor: layout_color }}
           >
-            {isLoading ? <SpinLoading/>: id ? "Update" : "Submit"}
+            {isLoading ? <SpinLoading /> : id ? "Update" : "Submit"}
           </button>
         </div>
       </div>

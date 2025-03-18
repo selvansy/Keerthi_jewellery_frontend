@@ -46,7 +46,7 @@ const MetalRate = () => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [filtered, SetFiltered] = useState(false);
   const [id, setId] = useState("");
-
+  const [totalDocuments,setTotalDocuments]=useState(0)
   const [activeDropdown, setActiveDropdown] = useState(null);
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -84,15 +84,7 @@ const MetalRate = () => {
     setCurrentPage(pageNumber);
   };
 
-  const nextPage = () => {
-    setCurrentPage((prevPage) =>
-      prevPage < totalPages ? prevPage + 1 : prevPage
-    );
-  };
-
-  const prevPage = () => {
-    setCurrentPage((prevPage) => (prevPage > 1 ? prevPage - 1 : prevPage));
-  };
+ 
 
   const paginationData = {
     totalItems: totalPages,
@@ -183,6 +175,7 @@ const MetalRate = () => {
 
         setMetalRate(groupedData);
         setTotalPages(response.totalPages);
+        setTotalDocuments(Math.round(response.totalDocument-response.totalDocument/2));
       }
       setisLoading(false);
     },
@@ -278,7 +271,6 @@ const MetalRate = () => {
     setCurrentPage(1);
   };
 
-  console.log(selectedData)
   return (
     <div className="flex flex-col p-4">
       <h2 className="text-2xl text-gray-900 font-bold">Metal Rate</h2>
@@ -451,62 +443,10 @@ const MetalRate = () => {
         />
       )}
       <div className="mt-4">
-        <Table data={metalRate} columns={columns} isLoading={isLoading} />
+      <Table data={metalRate} columns={columns} isLoading={isLoading}  currentPage={currentPage} handlePageChange={handlePageChange} itemsPerPage={itemsPerPage} totalItems={totalDocuments} handleItemsPerPageChange={handleItemsPerPageChange} />
+
       </div>
-      {metalRate.length > 0 && (
-        <div className="flex justify-between mt-4 p-2">
-          <div className={`flex flex-row items-center justify-center gap-2  `}>
-            <div className="flex items-center gap-4">
-              <button
-                onClick={prevPage}
-                readOnly={currentPage === 1}
-                className={`p-2 text-gray-500 rounded-md ${
-                  currentPage === 1 ? "cursor-not-allowed" : "cursor-pointer"
-                } `}
-              >
-                Previous
-              </button>
-            </div>
-
-            <div className="flex flex-row items-center justify-center gap-2">
-              {paginationButtons}
-            </div>
-
-            <div className="flex items-center">
-              <button
-                onClick={nextPage}
-                readOnly={currentPage === totalPages}
-                className={`p-2 text-gray-500 rounded-md  ${
-                  currentPage === totalPages
-                    ? "cursor-not-allowed"
-                    : "cursor-pointer"
-                }`}
-              >
-                Next
-              </button>
-            </div>
-          </div>
-
-          <div className="mt-4 flex gap-2 justify-center items-center">
-            <span className="text-gray-500">Show</span>
-            <select
-              id="itemsPerPage"
-              value={itemsPerPage}
-              onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
-              className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
-            >
-              <option value={10}>10</option>
-              <option value={25}>25</option>
-              <option value={50}>50</option>
-              <option value={100}>100</option>
-              <option value={250}>250</option>
-              <option value={500}>500</option>
-              <option value={1000}>1000</option>
-            </select>
-            <span className="text-gray-500">entries</span>
-          </div>
-        </div>
-      )}
+   
 
 
 {isModalOpen && selectedData && (
