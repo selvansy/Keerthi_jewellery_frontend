@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Pagination from "./pagination";
 
-const Table = ({
+const ReusableTable = ({
   data = [],
   columns = [],
   className = "",
@@ -25,7 +25,7 @@ const Table = ({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-  
+
   return (
     <section className={`  antialiased ${className}`}>
       <div className="mx-auto">
@@ -103,12 +103,10 @@ const Table = ({
         </div>
       </div>
 
-    {data.length>=1 &&(
-         <Pagination currentPage={currentPage} handlePageChange={handlePageChange} itemsPerPage={itemsPerPage} totalItems={totalItems} handleItemsPerPageChange={handleItemsPerPageChange}/>
 
-    )}
+   <Pagination currentPage={currentPage} handlePageChange={handlePageChange} itemsPerPage={itemsPerPage} totalItems={totalItems} handleItemsPerPageChange={handleItemsPerPageChange}/>
     </section>
   );
 };
 
-export default Table;
+export default ReusableTable;
