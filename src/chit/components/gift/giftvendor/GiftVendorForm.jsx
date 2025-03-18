@@ -10,7 +10,6 @@ import Select from "react-select";
 import customSelectStyles from "../../common/customSelectStyles"
 
 
-
 function GiftVendorForm({ setIsOpen, isviewOpen, id, refetchTable, setId }) {
 
 
@@ -57,7 +56,7 @@ function GiftVendorForm({ setIsOpen, isviewOpen, id, refetchTable, setId }) {
     useEffect(() => {
         if (branchresponse) {
             const data = branchresponse.data
-       
+
             const branch = data.map((branch) => ({
                 value: branch._id,
                 label: branch.branch_name,
@@ -137,19 +136,17 @@ function GiftVendorForm({ setIsOpen, isviewOpen, id, refetchTable, setId }) {
             const formattedValue = value.toUpperCase().slice(0, 15);
 
             const gstRegex = /^(?=.*[0-9])(?=.*[A-Z])[0-9A-Z]{15}$/;
-            const gstError = 
+            const gstError =
                 !formattedValue ? "GST number is required" :
-                formattedValue.length < 15 ? "GST number must be exactly 15 characters" :
-                !gstRegex.test(formattedValue) ? "GST number must contain both numbers and uppercase letters" : "";
-        
-            setErrors(prev => ({ ...prev, gst: gstError }));
-            
-            if (!/^[0-9A-Z]*$/.test(formattedValue)) return; 
-            console.log("form",formattedValue)
-            setFormData(prev => ({ ...prev, gst: formattedValue }));
+                    formattedValue.length < 15 ? "GST number must be exactly 15 characters" :
+                        !gstRegex.test(formattedValue) ? "GST number must contain both numbers and uppercase letters" : "";
 
-            console.log('valueafterfor',formData)
-        } 
+            setErrors(prev => ({ ...prev, gst: gstError }));
+
+            if (!/^[0-9A-Z]*$/.test(formattedValue)) return;
+
+            setFormData(prev => ({ ...prev, gst: formattedValue }));
+        }
 
     };
 
@@ -258,7 +255,7 @@ function GiftVendorForm({ setIsOpen, isviewOpen, id, refetchTable, setId }) {
                     {errors.id_branch ? <div style={{ color: "red" }}>{errors.id_branch}</div> : null}
 
                 </div>
-                
+
                 {/* Gift Vendor Name field */}
                 <div className="flex flex-col ">
                     <label className="font-medium text-gray-700">
@@ -316,11 +313,17 @@ function GiftVendorForm({ setIsOpen, isviewOpen, id, refetchTable, setId }) {
                         name="gst"
                         value={formData.gst}
                         pattern="[0-9A-Z]*"
-                        onChange={handleChange}
+                        onChange={(e) => {
+                            const value = e.target.value.toUpperCase();
+                            if (/^[0-9A-Z]*$/.test(value)) {
+                                handleChange(e);
+                            }
+                        }}
                         placeholder="Enter GST Number"
                         className="p-3 border uppercase border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600"
                         maxLength="15"
                     />
+
                     {errors.gst && <span className="text-red-500 text-sm mt-1">{errors.gst}</span>}
                 </div>
 

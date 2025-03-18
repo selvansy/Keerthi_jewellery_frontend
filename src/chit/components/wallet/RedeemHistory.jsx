@@ -10,6 +10,7 @@ import { Search } from "lucide-react";
 import { useMutation } from '@tanstack/react-query';
 import {formatNumber} from "../../utils/commonFunction"
 
+
 function RedeemHistory() {
     
   
@@ -118,7 +119,7 @@ function RedeemHistory() {
         {
           header: "Amount",
           cell: (row) => {
-            return row?.credited_amount !== undefined ? Math.abs(row.credited_amount) : "-";
+            return row?.credited_amount !== undefined ? formatNumber({value:  Math.abs(row.credited_amount)}) : "-";
           }
         },             
         {

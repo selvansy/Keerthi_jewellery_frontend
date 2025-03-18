@@ -63,12 +63,16 @@ const FAQForm = () => {
         if (id) {
             getFaqById(id)
         }
-    }, [])
+    }, [id])
 
 
     const handleClear = () => {
+        if(id){
+            getFaqById(id)
+        }else{
         setFormData({})
         setFormErrors({})
+        }
     }
 
 

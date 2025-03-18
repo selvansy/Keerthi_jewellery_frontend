@@ -77,7 +77,6 @@ const AddGiftPurchase = () => {
   });
 
 
-
   const { data: branchresponse, isLoading: loadingbranch } = useQuery({
     queryKey: ["branch"],
     queryFn: getallbranch,
@@ -411,7 +410,7 @@ const AddGiftPurchase = () => {
                   customSelectStyles={customSelectStyles}
                   isLoading={loadingbranch}
                   isDisabled={id_branch !== "0"}
-                  placeholder="Select Branch"
+                  placeholder="Select"
                 />
 
 
@@ -536,7 +535,7 @@ const AddGiftPurchase = () => {
                   customSelectStyles={customSelectStyles}
                   isLoading={loadingGiftVendor}
                   isDisabled={vendorfilter.length === 0}
-                  placeholder={vendorfilter.length === 0 ? "No Records Found" : "Select Branch"}
+                  placeholder={vendorfilter.length === 0 ? "No Records Found" : "Select"}
                 />
 
 
@@ -544,8 +543,6 @@ const AddGiftPurchase = () => {
                   <span className="text-red-500 text-sm">{formErrors.gift_vendorid}</span>
                 )}
               </div>
-
-
 
               {/* Quantity */}
               <div className="flex flex-col gap-2 mt-2">

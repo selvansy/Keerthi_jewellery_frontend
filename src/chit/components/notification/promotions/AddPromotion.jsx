@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { getallSchemes, getallbranch, getcustomerByBranchId, addPromotions, getallCampaign } from "../../../api/Endpoints";
+import { getallSchemes, getallbranch, getcustomerByBranchId, addPromotions, getallCampaign ,getNewArrivalByBranch } from "../../../api/Endpoints";
 import Select from "react-select";
 import { customSelectStyles } from "../../Setup/purity";
 import { MultiSelect } from "react-multi-select-component";
@@ -46,6 +46,7 @@ function AddPromotion() {
         id_branch: [],
         id_scheme: [],
         customer_id: [],
+        newArraivalId:"",
         noti_image: "",
         pushNotification: true,
         sms: false,
@@ -61,6 +62,7 @@ function AddPromotion() {
     const [schemeData, setSchemeData] = useState([]);
     const [cusData, setCusData] = useState([]);
     const [campaignData, setCampaignData] = useState([])
+    const [newArrivals, setnewaArrivals] = useState([])
 
     const [pathurl, setPathurl] = useState(null);
     const [isLoading, setisLoading] = useState("")
@@ -96,6 +98,12 @@ function AddPromotion() {
         enabled: !!branchId,
     });
 
+    const { data: newarrivalsResponse, isLoading: loadingNewarrivals } = useQuery({
+        queryKey: ["newarrivals", branchId],
+        queryFn: () => getNewArrivalByBranch(branchId),
+        enabled: !!branchId,
+    });
+
     useEffect(() => {
         if (branchResponse) {
             setBranchData(branchResponse.data.map((branch) => ({
@@ -126,7 +134,14 @@ function AddPromotion() {
             })));
         }
 
-    }, [branchResponse, schemeResponse, customerResponse, campaignResponse]);
+        if (newarrivalsResponse) {
+            setnewaArrivals(newarrivalsResponse.data.map((newarrivals) => ({
+                value: newarrivals._id,
+                label: newarrivals.title,
+            })));
+        }
+
+    }, [branchResponse, schemeResponse, customerResponse, campaignResponse, newarrivalsResponse]);
 
 
 
@@ -265,7 +280,7 @@ function AddPromotion() {
                         { label: "Push Notification", field: "pushNotification" },
                         { label: "SMS", field: "sms" },
                         { label: "WhatsApp", field: "whatsapp" },
-                        { label: "Email", field: "email" },
+                        // { label: "Email", field: "email" },
                     ].map(({ label, field }) => (
                         <label key={field} className="flex items-center space-x-2 gap-2">
                             <input
@@ -361,7 +376,30 @@ function AddPromotion() {
                         }}
                     />
 
-                </div>
+                </div> 
+
+                <div className="flex flex-col">
+                    <label className="font-medium text-gray-700">
+                        New Arrivals <span className="text-red-400">*</span>
+                    </label>
+                    <Select
+                        styles={customStyles}
+                        options={newArrivals}
+                        className=" py-2 rounded-md text-gray-100"
+                        placeholder="Select NewArrivals"
+                        value={newArrivals.find(
+                            (option) => option.label === formData.newArraivalId
+                        )}
+                        isLoading={loadingNewarrivals}
+                        onChange={(option) => {
+                            setFormData((prev) => ({
+                                ...prev,
+                                newArraivalId: option.label,
+                            }));
+                        }}
+                    />
+
+                </div> 
 
                 <div className="flex flex-col gap-2">
                     <label className="font-medium text-gray-700">Image URL</label>

@@ -137,14 +137,13 @@ const GiftHandOver = () => {
     mutationFn: (id) => deletegiftitem(id),
     onSuccess: (response) => {
       if (response.message === "Gift deleted successfully") {
-        const deletedData = giftitemData.filter(e => e._id !== id)
-        setgiftitemData(deletedData)
         const isLastItemOnPage = giftitemData.length === 1;
+   
         const isNotFirstPage = currentPage > 1;
         if (isLastItemOnPage && isNotFirstPage) {
           setCurrentPage(prev => prev - 1);
         } else {
-          refetchTable()
+          getallgiftitemtableMutate({ search: debouncedSearch, page: currentPage, limit: itemsPerPage });
         }
       }
       toast.success(response.message);
@@ -199,14 +198,14 @@ const GiftHandOver = () => {
   const paginationData = { totalItems: totalPages, currentPage: currentPage, itemsPerPage: itemsPerPage, handlePageChange: handlePageChange }
   const paginationButtons = usePagination(paginationData)
 
-  const formatDate = (date) => {
-  
-    if (!date) return null;
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
     const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-};
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
 
   const columns = [
     {
@@ -293,7 +292,7 @@ const GiftHandOver = () => {
     },
     {
       header: "Create Date",
-      cell: (row) => formatDate(row?.createdAt) || '-',
+      cell: (row) => formatDate(row?.createdAt)
     },
     {
       header: 'Status',
