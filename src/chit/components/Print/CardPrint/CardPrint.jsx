@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
-import { searcaccountnumber } from '../../../api/Endpoints';
+import { searchaccountnumber } from '../../../api/Endpoints';
 import { useSelector } from 'react-redux';
 
 const CardPrint = () => {
@@ -13,7 +13,7 @@ const CardPrint = () => {
 
   // Mutation to fetch payment data by account number
   const { mutate: handleSearchAccountNumber, isLoading } = useMutation({
-    mutationFn: searcaccountnumber,
+    mutationFn: searchaccountnumber,
     onSuccess: (response) => {
       if (response) {
         setPaymentData(response.data);
@@ -50,7 +50,7 @@ const CardPrint = () => {
     }
     setPaymentData([]);
     setSelectedRows([]);
-    handleSearchAccountNumber({ account_number: accountNumber });
+    handleSearchAccountNumber({ branchId: id_branch,mobile:mobile });
   };
 
   // Function to automatically change input value to uppercase
@@ -66,7 +66,7 @@ const CardPrint = () => {
     );
 
     if (selectedRowsData.length === 0) {
-      alert('No rows selected for printing.');
+      toast.error('No rows selected for printing.');
       return;
     }
 
@@ -222,12 +222,12 @@ const CardPrint = () => {
                   className="form-checkbox"
                   onChange={(e) => {
                     if (e.target.checked) {
-                      setSelectedRows(paymentData.map((row) => row._id));  // Select all rows
+                      setSelectedRows(paymentData.map((row) => row._id)); 
                     } else {
-                      setSelectedRows([]);  // Deselect all rows
+                      setSelectedRows([]);  
                     }
                   }}
-                  checked={selectedRows.length === paymentData.length} // Simplified logic for "select all" checkbox
+                  checked={selectedRows.length === paymentData.length} 
                 />
               </th>
               <th className="px-4 py-2 text-left">Installment</th>

@@ -11,8 +11,7 @@ import { customSelectStyles } from "../Setup/purity";
 function GiftReport() {
 
   const roleData = useSelector((state) => state.clientForm.roledata);
-  const id_role = roleData?.id_role?.id_role;
-  const id_client = roleData?.id_client;
+ 
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const accessBranch = roleData?.branch;
   const branchId = roleData?.id_branch;
@@ -34,10 +33,11 @@ function GiftReport() {
     } else {
       setBranch(branchId)
     }
-  }, [roleData, branchId]);
+  }, [roleData]);
   
   
   useEffect(() => {
+   if(!branch) return;
     getGiftStockData({
       limit: itemsPerPage,
       page: currentPage,

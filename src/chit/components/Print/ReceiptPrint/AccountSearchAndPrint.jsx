@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
-import { searcaccountnumber } from '../../../api/Endpoints';
+import { searchaccountnumber } from '../../../api/Endpoints';
 import { useSelector } from 'react-redux';
 
 const AccountSearchAndPrint = () => {
@@ -12,7 +12,7 @@ const AccountSearchAndPrint = () => {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
   const { mutate: handleSearchAccountNumber, isLoading } = useMutation({
-    mutationFn: searcaccountnumber,
+    mutationFn: searchaccountnumber,
     onSuccess: (response) => {
       if (response) {
         setPaymentData(response?.data);

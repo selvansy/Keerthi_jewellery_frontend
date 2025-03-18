@@ -16,11 +16,11 @@ function WalletHistory() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [redeemedPoint,setRedeemPoint] = useState(0)
-  const [balPoint,setbalPoint] = useState(0)
+  const [redeemedAmt,setRedeemAmt] = useState(0)
+  const [balAmt,setbalAmt] = useState(0)
   
 
-  const [searchInput, setSearchInput] = useState("");
+  const [searchInput, setSearchInput] = useState(""); 
   const debouncedSearch = useDebounce(searchInput, 500);
 
   const limit = 10;
@@ -39,8 +39,8 @@ function WalletHistory() {
       mutationFn: (payload) => walletHistory(payload),
       onSuccess: (response) => {
         setwalletData(response.data)
-        setRedeemPoint(response.totalRedeemedPoint)
-        setbalPoint(response.totalBalancePoint)
+        setRedeemAmt(response.totalRedeemedAmt)
+        setbalAmt(response.totalBalanceAmt)
         setTotalPages(response.totalPages)
         setCurrentPage(response.currentPage)
         setTotalDocuments(response.totalDocuments)
@@ -111,14 +111,14 @@ function WalletHistory() {
       header: "mobile",
       cell: (row) => `${row?.id_customer?.mobile || "-"}`,
     },
-    {
-      header: "Wallet Points",
-      cell: (row) => (
-        <span style={{ color: row?.credited_point < 0 ? "red" : "inherit" }}>
-          {row?.credited_point !== undefined ? Math.abs(row.credited_point) : "-"}
-        </span>
-      ),
-    },
+    // {
+    //   header: "Wallet Points",
+    //   cell: (row) => (
+    //     <span style={{ color: row?.credited_point < 0 ? "red" : "inherit" }}>
+    //       {row?.credited_point !== undefined ? Math.abs(row.credited_point) : "-"}
+    //     </span>
+    //   ),
+    // },
     {
       header: "Amount",
       cell: (row) => (
@@ -164,7 +164,7 @@ function WalletHistory() {
     </div>
     <div className="flex justify-end">
     <div className="grid grid-cols-3 sm:grid-cols-2 gap-2 w-full max-w-md">
-      {[{ label: "Total Redeemed Points", value: redeemedPoint }, { label: "Balance Redeemed Points", value: balPoint }].map((item, index) => (
+      {[{ label: "Total Redeemed Amount", value: redeemedAmt }, { label: "Balance Redeemed Amount", value: balAmt }].map((item, index) => (
         <div key={index} className="flex flex-row items-center justify-between bg-white rounded-lg p-2 h-16 shadow-md text-sm">
           <div className="flex flex-col justify-center">
             <h5 className="text-[#67748E]">{item.label}</h5>

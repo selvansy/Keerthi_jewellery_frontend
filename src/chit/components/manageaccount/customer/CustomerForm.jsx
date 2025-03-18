@@ -592,57 +592,6 @@ const CustomerForm = ({ setCusData, id, setaddCusData, addCusData, id_proof, set
                                         </div>
 
                                         <div className="flex flex-col">
-                                            <label className="text-gray-700 mb-1 font-medium">
-                                                Address<span className="text-red-400">*</span>
-                                            </label>
-                                            <input
-                                                type="text"
-                                                name="address"
-                                                value={formik.values.address}
-                                                onChange={(e) => {
-                                                    e.preventDefault();
-                                                    formik.handleChange(e);
-                                                    formik.setFieldTouched("address", false);
-                                                }}
-                                                className="border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:[#D1D5DB] focus:border-transparent"
-                                                placeholder="Enter Here"
-                                            />
-                                            {formik.errors.address ? (
-                                                <div style={{ color: "red" }}>
-                                                    {formik.errors.address}
-                                                </div>
-                                            ) : null}
-                                        </div>
-
-                                        <div className="flex flex-col">
-                                            <label className="text-gray-700 mb-1 font-medium">
-                                                Pincode<span className="text-red-400">*</span>
-                                            </label>
-                                            <input
-                                                type="text"
-                                                name="pincode"
-                                                value={formik.values.pincode}
-                                                onInput={(e) =>
-                                                    (e.target.value = e.target.value.replace(/\D/g, ""))
-                                                }
-                                                onChange={(e) => {
-                                                    e.preventDefault();
-                                                    formik.handleChange(e);
-                                                    formik.setFieldTouched("pincode", false);
-                                                }}
-                                                pattern="\d{6}"
-                                                maxLength={"6"}
-                                                className="border-2 border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:[#D1D5DB] focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                                                placeholder="Enter Pincode"
-                                            />
-                                            {formik.errors.pincode ? (
-                                                <div style={{ color: "red" }}>
-                                                    {formik.errors.pincode}
-                                                </div>
-                                            ) : null}
-                                        </div>
-
-                                        <div className="flex flex-col">
                                             <label className="text-black mb-1 font-medium">
                                                 Gender<span className="text-red-400">*</span>
                                             </label>
@@ -763,6 +712,57 @@ const CustomerForm = ({ setCusData, id, setaddCusData, addCusData, id_proof, set
                                             {formik.errors.id_city ? (
                                                 <div style={{ color: "red" }}>
                                                     {formik.errors.id_city}
+                                                </div>
+                                            ) : null}
+                                        </div>
+
+                                        <div className="flex flex-col">
+                                            <label className="text-gray-700 mb-1 font-medium">
+                                                Address<span className="text-red-400">*</span>
+                                            </label>
+                                            <input
+                                                type="text"
+                                                name="address"
+                                                value={formik.values.address}
+                                                onChange={(e) => {
+                                                    e.preventDefault();
+                                                    formik.handleChange(e);
+                                                    formik.setFieldTouched("address", false);
+                                                }}
+                                                className="border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:[#D1D5DB] focus:border-transparent"
+                                                placeholder="Enter Here"
+                                            />
+                                            {formik.errors.address ? (
+                                                <div style={{ color: "red" }}>
+                                                    {formik.errors.address}
+                                                </div>
+                                            ) : null}
+                                        </div>
+
+                                        <div className="flex flex-col">
+                                            <label className="text-gray-700 mb-1 font-medium">
+                                                Pincode<span className="text-red-400">*</span>
+                                            </label>
+                                            <input
+                                                type="text"
+                                                name="pincode"
+                                                value={formik.values.pincode}
+                                                onInput={(e) =>
+                                                    (e.target.value = e.target.value.replace(/\D/g, ""))
+                                                }
+                                                onChange={(e) => {
+                                                    e.preventDefault();
+                                                    formik.handleChange(e);
+                                                    formik.setFieldTouched("pincode", false);
+                                                }}
+                                                pattern="\d{6}"
+                                                maxLength={"6"}
+                                                className="border-2 border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:[#D1D5DB] focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                                placeholder="Enter Pincode"
+                                            />
+                                            {formik.errors.pincode ? (
+                                                <div style={{ color: "red" }}>
+                                                    {formik.errors.pincode}
                                                 </div>
                                             ) : null}
                                         </div>
@@ -1164,7 +1164,7 @@ const CustomerForm = ({ setCusData, id, setaddCusData, addCusData, id_proof, set
                                                     className="bg-[#E2E8F0] text-black rounded-md p-2 w-full lg:w-20"
                                                     type="button"
                                                     onClick={() => {
-                                                        handleCancel();
+                                                        handleClear();
                                                         navigate("/managecustomers/customer/")
                                                     }}
                                                 >

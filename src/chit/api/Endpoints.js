@@ -369,14 +369,13 @@ export const getallgiftitem = async (id, data) => {
 }
 
 export const getgiftStock = async (data) => {
-    const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/reports/giftreport?id_branch=${data.id_branch}&limit=${data.limit}&page=${data.page}`);
+    const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/reports/giftreport`,data);
     return response.data;
 }
 
 
 
 /* Gift Vendor*/
-
 export const getAllgiftvendors = async (data) => {
   
     const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/giftvendor/table`,data);
@@ -1781,8 +1780,9 @@ export const todayMetalRate = async(data)=>{
     return response.data;
 }
 
-export const searcaccountnumber = async (data) => {
-    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/schemeaccount/${data.account_number}/payment`);
+export const searchaccountnumber = async (data) => {
+    console.log("data---",data)
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/schemeaccount/branch/${data.branchId}/customer/search/${data.mobile}`);
     return response.data;
 }
 
