@@ -24,13 +24,10 @@ import RouteList from "../../../routes/RouteList";
 import { useLocation, useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { useSelector, useDispatch } from "react-redux";
-import { setRoleData } from "../../../redux/clientFormSlice";
 import { useMutation } from "@tanstack/react-query";
 import { getactivemenuaccess, updatelayoutcolor } from "../../api/Endpoints";
-import { GiConsoleController } from "react-icons/gi";
 import { setLayoutColor } from "../../../redux/clientFormSlice";
 import { logout, SetMenu } from "../../../redux/authSlice";
-import * as Icons from "lucide-react";
 import Command from "../../../assets/command.svg";
 import Search from "../../../assets/search.svg";
 import CustomerModal from "./customerModal";
@@ -134,6 +131,7 @@ const Base = ({ renderContent: RenderContent }) => {
 
   const roledata = useSelector((state) => state.clientForm.roledata);
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
+  const sidebar_color = useSelector((state)=>state.clientForm.sideBarColor)
 
   const getRoleCharacter = (id) => {
     switch (id) {
@@ -570,7 +568,7 @@ const Base = ({ renderContent: RenderContent }) => {
         className={`fixed top-0 left-0 h-full w-64 lg:w-64 scrollbar-hide transform transition-transform duration-300 ease-in-out ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         } lg:translate-x-0 z-50 pt-16 lg:pt-4 overflow-auto flex flex-col`}
-        style={{ backgroundColor: layout_color }}
+        style={{ backgroundColor: sidebar_color }}
       >
         <div className="flex justify-center items-center mb-10">
           <img src={logo} alt="Logo" className="h-50 w-50 object-fill" />
