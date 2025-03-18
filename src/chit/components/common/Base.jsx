@@ -1,6 +1,4 @@
 import React, { useState, useEffect, useRef } from "react";
-import { IoSettingsOutline } from "react-icons/io5";
-import { FaBell } from "react-icons/fa";
 import {
   ChevronDown,
   ChevronUp,
@@ -16,7 +14,7 @@ import {
   PawPrintIcon,
   UserRoundCheck,
   ChevronRight,
-  Menu, // Added Menu icon for better burger menu
+  Menu,
 } from "lucide-react";
 
 import logo from "../../../assets/logo1.png";
@@ -25,7 +23,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { useSelector, useDispatch } from "react-redux";
 import { useMutation } from "@tanstack/react-query";
-import { getactivemenuaccess, updatelayoutcolor } from "../../api/Endpoints";
+import {updatelayoutcolor } from "../../api/Endpoints";
 import { setLayoutColor } from "../../../redux/clientFormSlice";
 import { logout, SetMenu } from "../../../redux/authSlice";
 import Command from "../../../assets/command.svg";
@@ -35,7 +33,6 @@ import CustomerModal from "./customerModal";
 const Base = ({ renderContent: RenderContent }) => {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const settingsRef = useRef(null);
-  const [menuLayout, setMenuLayout] = useState("left");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isHeaderMenuOpen, setIsHeaderMenuOpen] = useState(false);
   const [selectedSection, setSelectedSection] = useState("");
@@ -570,7 +567,7 @@ const Base = ({ renderContent: RenderContent }) => {
         style={{ backgroundColor: sidebar_color }}
       >
         <div className="flex justify-center items-center mb-10">
-          <img src={logo} alt="Logo" className="h-50 w-50 object-fill" />
+          <img src={logo} alt="Logo" className="h-28 w-52 object-fill" />
         </div>
 
         <nav className="flex-1 text-white scrollbar-hide overflow-y-auto">

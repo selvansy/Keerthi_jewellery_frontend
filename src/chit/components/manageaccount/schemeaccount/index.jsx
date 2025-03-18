@@ -783,7 +783,7 @@ const Schemeaccount = () => {
       {displaysetting === 1 && (
         <ModelOne
           title={popuptitle}
-          extraClassName='w-2/3'
+          extraClassName='w-2/3 h-[794px]'
           setIsOpen={setIsviewOpen}
           isOpen={isviewOpen}
           closeModal={closeIncommingModal}
