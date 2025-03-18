@@ -56,23 +56,23 @@ function MenuForm({ setIsOpen }) {
   const { mutate: getmenuByid } = useMutation({
     mutationFn: getMenuById,
     onSuccess: (response) => {
-      const formDataObj = new FormData();
-      formDataObj.append("id", id);
-      formDataObj.append("menu_name", response.data.menu_name);
-      formDataObj.append("display_order", response.data.display_order);
-      formDataObj.append("id_project", response.data.id_project);
+      const { menu_name, display_order, id_project, menu_icon } = response.data;
 
-      // Store the initial form data
+      // Set form data
       setFormData({
-        id: id,
-        menu_name: response.data.menu_name,
-        menu_icon: response.data.menu_icon,
-        display_order: response.data.display_order,
-        id_project: response.data.id_project,
+        menu_name,
+        display_order,
+        id_project,
+        menu_icon: menu_icon || null,
       });
 
-      if (response.data.menu_icon) {
-        setIconPreview(response.data.menu_icon);
+      // Set icon preview for existing images
+      if (menu_icon) {
+        setIconPreview(
+          `${import.meta.env.VITE_API_URL}/${menu_icon}`
+        );
+      } else {
+        setIconPreview(null);
       }
     },
   });
@@ -115,6 +115,7 @@ function MenuForm({ setIsOpen }) {
         return;
       }
 
+      // Generate a preview URL for the new file
       const previewUrl = URL.createObjectURL(file);
       setIconPreview(previewUrl);
       setFieldValue("menu_icon", file);
@@ -152,7 +153,16 @@ function MenuForm({ setIsOpen }) {
       getmenuByid(id);
     }
     getallprojectsMutate();
-  }, []);
+  }, [id]);
+
+  // Clean up the preview URL when the component unmounts or when a new image is uploaded
+  useEffect(() => {
+    return () => {
+      if (iconPreview && iconPreview.startsWith("blob:")) {
+        URL.revokeObjectURL(iconPreview);
+      }
+    };
+  }, [iconPreview]);
 
   return (
     <div>
@@ -208,11 +218,7 @@ function MenuForm({ setIsOpen }) {
                 {iconPreview && (
                   <div className="w-16 h-16 flex items-center justify-center border rounded-md">
                     <img
-                      src={
-                        typeof iconPreview === "string"
-                          ? `${import.meta.env.VITE_API_URL}/usecases/public/uploads/icons/${iconPreview}`
-                          : iconPreview
-                      }
+                      src={iconPreview}
                       alt="Icon Preview"
                       className="max-w-full max-h-full"
                     />
@@ -255,11 +261,15 @@ function MenuForm({ setIsOpen }) {
                 className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">Select Project</option>
-                {projects.map((project) => (
-                  <option key={project._id} value={project._id}>
-                    {project.project_name}
-                  </option>
-                ))}
+                {projects.map((project) => {
+                  if(project.id_project === 1){
+                    return (
+                      <option key={project._id} value={project._id}>
+                        {project.project_name}
+                      </option>
+                    )
+                  }
+                })}
               </select>
               {errors.id_project && touched.id_project && (
                 <div className="text-red-500 text-sm">{errors.id_project}</div>
@@ -287,7 +297,7 @@ function MenuForm({ setIsOpen }) {
                 </div>
               )}
             </div>
-            <div className="bg-white p-2 border-t-2 border-gray-300 mt-4">
+            <div className="bg-white p-2 mt-4">
               <div className="flex justify-end gap-2 mt-3">
                 <button
                   className="bg-[#E2E8F0] text-black rounded-md p-2 w-full lg:w-20"
@@ -312,8 +322,8 @@ function MenuForm({ setIsOpen }) {
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className="text-white rounded-md p-2 w-full lg:w-20"
-                    style={{ backgroundColor: layout_color }}
+                    className="text-white rounded-md p-2 w-full lg:w-20 bg-[#004181]"
+                    // style={{ backgroundColor: layout_color }}
                   >
                     Update
                   </button>

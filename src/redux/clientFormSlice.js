@@ -25,7 +25,8 @@ outreport:[],
   whatsappData:[],
   superAdmin:true,
   totalSteps: null,
-  layoutColor:"#023453",
+  layoutColor: "#004181",
+  sideBarColor: "#ffffff",
   selectedProject: null,
   pushnotifyId:null,
   id_scheme_account:null,
@@ -49,6 +50,7 @@ const clientFormSlice = createSlice({
       }
     },
     SetaccExp:(state,action)=>{
+      if (!action.payload) return;
       state.accExp = action.payload
     },
     SetOutreport:(state,action)=>{

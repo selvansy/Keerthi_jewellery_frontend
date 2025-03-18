@@ -737,7 +737,7 @@ const RouteList = [
   },
   {
     name:"FaqCreation",
-    path:"/help/faq/view/:id",
+    path:"/help/policy/edit/:id",
     element:<Base renderContent={FaqCreation} />
   },
   {

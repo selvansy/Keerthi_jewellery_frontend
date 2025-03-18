@@ -1,19 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { getallgiftvendor, getallbranch, getgiftvendorbranchById, getgiftitemById,addgiftitem,updategiftitem } from '../../../api/Endpoints';
-import { useMutation } from '@tanstack/react-query';
+import { getallgiftvendor, getallbranch, getgiftvendorbranchById, getgiftitemById, addgiftitem, updategiftitem } from '../../../api/Endpoints';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { toast } from 'react-toastify';
 import { useNavigate, useParams } from 'react-router-dom';
 import SpinLoading from '../../common/spinLoading';
+import Select from "react-select";
+import customSelectStyles from "../../common/customSelectStyles"
 
-function GiftItemForm({ setIsOpen,isviewOpen,id,setId,refetchTable  }) {
+function GiftItemForm({ setIsOpen, isviewOpen, id, setId, refetchTable }) {
 
-    
+
     const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
     let navigate = useNavigate();
-    const [branch, setBranch] = useState([]);
+
+
+    const [branchData, setBranch] = useState([]);
+    const [branch, setbranch] = useState("")
     const [vendorfilter, setVendor] = useState([]);
     const [gift_image, setGiftImage] = useState(null);
     const [pathurl, setPathurl] = useState('');
@@ -21,68 +26,83 @@ function GiftItemForm({ setIsOpen,isviewOpen,id,setId,refetchTable  }) {
         gift_name: '',
         gift_image: '',
         gift_vendorid: '',
-        id_branch: '', 
+        id_branch: '',
     });
     const [errors, setErrors] = useState({});
     const [isLoading, setIsLoading] = useState(false);
 
 
-    
+
     let dispatch = useDispatch();
 
+    useEffect(() => {
 
-    const { mutate: getallbranchMutate } = useMutation({
-        mutationFn: getallbranch,
-        onSuccess: (response) => {
-            if (response) {
-                setBranch(response.data);
-            }
-        },
-    });
-
-    const { mutate: getgiftvendorbranchByIdmuate } = useMutation({
-        mutationFn:(payload)=> getgiftvendorbranchById(payload),
-        onSuccess: (response) => {
-     
-            if (response) {
-                setVendor(response.data);
-            }
-        },onError:(error)=>{
-           toast.error(error)
+        if (id && (isviewOpen === true)) {
+            getGiftitemId(id);
         }
+    }, [id, isviewOpen]);
+
+    useEffect(() => {
+
+        return () => {
+            setId("")
+        }
+    }, [])
+
+    const { data: branchresponse, isLoading: loadingbranch } = useQuery({
+        queryKey: ["branch", branch],
+        queryFn: getallbranch,
     });
+
+    const { data: Vendorresponse, isLoading: loadingVendor } = useQuery({
+        queryKey: ["vendor", branch],
+        queryFn:()=> getgiftvendorbranchById(branch),
+    });
+
+    useEffect(() => {
+        if (branchresponse) {
+            const data = branchresponse.data
+
+            const branch = data.map((branch) => ({
+                value: branch._id,
+                label: branch.branch_name,
+            }));
+            setBranch(branch);
+        }
+
+        if (Vendorresponse) {
+            const data = Vendorresponse.data
+            const vendor = data.map((vendor) => ({
+                value: vendor._id,
+                label: vendor.vendor_name,
+            }));
+
+            setVendor(vendor);
+        }
+
+    }, [branchresponse, Vendorresponse,branch])
+
+
+
 
     const { mutate: getGiftitemId } = useMutation({
         mutationFn: getgiftitemById,
         onSuccess: (response) => {
             if (response) {
-         
+
                 setFormData({
                     ...response.data,
-                    gift_image: response.data.gift_image, 
+                    gift_image: response.data.gift_image,
                 });
-                getgiftvendorbranchByIdmuate({ id_branch: response.data.id_branch });
+                setbranch(response.data.id_branch);
                 setGiftImage(response.data.gift_image);
                 setPathurl(response.data.pathurl);
             }
         },
     });
 
-    
 
-    useEffect(() => {
-        
-        if (id &&(isviewOpen === true)) {
-            getGiftitemId(id);
-        }
-    }, [id,isviewOpen]);
 
-    useEffect(()=>{
-        getallbranchMutate()
-      return ()=>{
-        setId("")
-      }
-    },[])
 
     const validateForm = () => {
         const newErrors = {};
@@ -90,7 +110,7 @@ function GiftItemForm({ setIsOpen,isviewOpen,id,setId,refetchTable  }) {
         if (!formData.gift_vendorid) newErrors.gift_vendorid = 'Gift vendor is required';
         if (!formData.id_branch) newErrors.id_branch = 'Branch is required';
 
-      
+
         if (Object.keys(newErrors).length > 0) {
             setErrors((prev) => ({
                 ...prev,
@@ -101,7 +121,7 @@ function GiftItemForm({ setIsOpen,isviewOpen,id,setId,refetchTable  }) {
         return newErrors;
     };
 
-  
+
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -109,8 +129,8 @@ function GiftItemForm({ setIsOpen,isviewOpen,id,setId,refetchTable  }) {
             ...formData,
             [name]: value,
         });
-        
-       
+
+
     };
 
     const handleCancel = () => {
@@ -121,15 +141,15 @@ function GiftItemForm({ setIsOpen,isviewOpen,id,setId,refetchTable  }) {
             id_branch: '',
         });
         setIsOpen(false);
-      setId("")
+        setId("")
     };
 
     const handlegiftImageChange = (e) => {
         const file = e.target.files[0];
-    
+
         if (file) {
             const validImageTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
-    
+
             if (validImageTypes.includes(file.type) && file.size <= (500 * 1024)) {
                 setGiftImage(file);
             } else {
@@ -139,7 +159,7 @@ function GiftItemForm({ setIsOpen,isviewOpen,id,setId,refetchTable  }) {
             toast.error("No file selected");
         }
     };
-    
+
 
     const handleRemovegiftImage = () => {
         setGiftImage(null);
@@ -151,63 +171,65 @@ function GiftItemForm({ setIsOpen,isviewOpen,id,setId,refetchTable  }) {
         e.preventDefault();
         const validationErrors = validateForm();
         setErrors(validationErrors);
-     
+
         if (Object.keys(validationErrors).length === 0) {
             setIsLoading(true)
             const formDataToSend = new FormData();
-                formDataToSend.append("gift_name", formData.gift_name);
-                if(gift_image  !=="" || gift_image  !==null){
+            formDataToSend.append("gift_name", formData.gift_name);
+            if (gift_image !== "" || gift_image !== null) {
                 formDataToSend.append("gift_image", gift_image);
-                }
-                formDataToSend.append("gift_vendorid", formData.gift_vendorid);
-                formDataToSend.append("id_branch", formData.id_branch);
-            if(id){
+            }
+            formDataToSend.append("gift_vendorid", formData.gift_vendorid);
+            formDataToSend.append("id_branch", formData.id_branch);
+            if (id) {
                 updategiftitemMutate({ id: id, data: formDataToSend });
-            } else {               
+            } else {
                 addgiftitemMutate(formDataToSend);
             };
 
-            }
+        }
     };
 
 
     // Add Mutation
-const { mutate: addgiftitemMutate } = useMutation({
-    mutationFn: addgiftitem,
-    onSuccess: (response) => {
-        if (response) {
-            refetchTable()
-            toast.success('Gift item added successfully');
-            setIsOpen(false); 
-             
-        }
-    },
-    onError: (error) => {
-        setIsLoading(false)
-        toast.error(error.response.data.message);
-    },
-});
+    const { mutate: addgiftitemMutate } = useMutation({
+        mutationFn: addgiftitem,
+        onSuccess: (response) => {
+            if (response) {
+                refetchTable()
+                toast.success('Gift item added successfully');
+                setIsOpen(false);
 
-// Update Mutation
-const { mutate: updategiftitemMutate } = useMutation({
-    mutationFn:({id,data}) =>updategiftitem(id,data),
-    onSuccess: (response) => {
-        if (response) {
-            refetchTable()
-            toast.success('Gift item updated successfully');
-            setIsOpen(false);
-            setId("")
-        }
-    },
-    onError: (error) => {
-        setIsLoading(false)
-        toast.error(error.response.data.message);
-    },
-});
+            }
+        },
+        onError: (error) => {
+            setIsLoading(false)
+            toast.error(error.response.data.message);
+        },
+    });
+
+    // Update Mutation
+    const { mutate: updategiftitemMutate } = useMutation({
+        mutationFn: ({ id, data }) => updategiftitem(id, data),
+        onSuccess: (response) => {
+            if (response) {
+                refetchTable()
+                toast.success('Gift item updated successfully');
+                setIsOpen(false);
+                setId("")
+            }
+        },
+        onError: (error) => {
+            setIsLoading(false)
+            toast.error(error.response.data.message);
+        },
+    });
+
+
 
     return (
         <div>
-            <form  className="space-y-4">
+            <form className="space-y-4">
                 <div className="flex flex-col space-y-2">
                     <label className="font-medium text-gray-700">
                         Gift Item Name<span className="text-red-400">*</span>
@@ -223,7 +245,7 @@ const { mutate: updategiftitemMutate } = useMutation({
                     {errors.gift_name && <div className="text-red-500 text-sm">{errors.gift_name}</div>}
                 </div>
 
-                <div className="flex flex-col space-y-2">
+                {/* <div className="flex flex-col space-y-2">
                     <label className="font-medium text-gray-700">
                         Branch<span className="text-red-400">*</span>
                     </label>
@@ -248,36 +270,65 @@ const { mutate: updategiftitemMutate } = useMutation({
                         ))}
                     </select>
                     {errors.id_branch && <div className="text-red-500 text-sm">{errors.id_branch}</div>}
+                </div> */}
+
+
+                <div className='flex flex-col space-y-2'>
+
+                    <label className='text-black mb-1 font-medium'>Branch<span className='text-red-400'>*</span></label>
+
+                    <Select
+                        options={branchData}
+                        value={branchData.find(branch => branch.value === formData.id_branch) || branch}
+                        onChange={(branch) => {
+                            setFormData((prev) => ({
+                                ...prev,
+                                id_branch: branch.value,
+                            }));
+
+                            setbranch(branch.value)
+                        }}
+                        customSelectStyles={customSelectStyles}
+                        isLoading={loadingbranch}
+                        placeholder="Select Branch"
+                    />
+
+                    {errors.id_branch && <div className="text-red-500 text-sm">{errors.id_branch}</div>}
+
                 </div>
 
-                <div className="flex flex-col space-y-2">
-                    <label className="font-medium text-gray-700">
-                        Gift Vendor<span className="text-red-400">*</span>
-                    </label>
-                    <select
-                        name="gift_vendorid"
-                        value={formData.gift_vendorid}
-                        onChange={handleChange}
-                        className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                        <option value="">Select Gift Vendor</option>
-                        {vendorfilter.map((vendor) => (
-                            <option key={vendor._id} value={vendor._id}>
-                                {vendor.vendor_name}
-                            </option>
-                        ))}
-                    </select>
+
+                <div className='flex flex-col space-y-2'>
+
+                    <label className='text-black mb-1 font-medium'>Gift Vendor<span className='text-red-400'>*</span></label>
+
+                    <Select
+                        options={vendorfilter}
+                        value={vendorfilter.find(vendor => vendor.value === formData.gift_vendorid || "")}
+                        onChange={(vendor) => {
+                            setFormData((prev) => ({
+                                ...prev,
+                                gift_vendorid: vendor.value,
+                            }));
+                        }}
+                        customSelectStyles={customSelectStyles}
+                        isLoading={loadingVendor}
+                        placeholder="Select Vendor"
+                    />
+
                     {errors.gift_vendorid && <div className="text-red-500 text-sm">{errors.gift_vendorid}</div>}
+
                 </div>
 
+
                 <div className="flex flex-col space-y-2">
-                <div className="flex flex-row " >
-                <label className="text-gray-700 font-medium">Upload Gift Image<span className='text-red-400'>*</span></label>
-                                                <p className='text-gray-900 text-[12px] truncate text-start mt-1 mx-2'>
-                                                    (Maximum file size(500KB))
-                                                </p>
-                                            </div>
-                   
+                    <div className="flex flex-row " >
+                        <label className="text-gray-700 font-medium">Upload Gift Image<span className='text-red-400'>*</span></label>
+                        <p className='text-gray-900 text-[12px] truncate text-start mt-1 mx-2'>
+                            (Maximum file size(500KB))
+                        </p>
+                    </div>
+
                     <div className="flex gap-4">
                         <div className="flex-1">
                             <label
@@ -285,12 +336,12 @@ const { mutate: updategiftitemMutate } = useMutation({
                                 className="flex flex-col justify-center items-center w-full h-20 border-2 border-dashed border-gray-300 text-gray-700 cursor-pointer p-5 text-center"
                             >
                                 <p> {
-                                     (gift_image && typeof gift_image === 'string')
-                                     ? gift_image
-                                     : (gift_image && typeof gift_image === 'object' && gift_image)
-                                         ? gift_image.name
-                                         : 'Browse to find or drag image here'
-                                }</p> 
+                                    (gift_image && typeof gift_image === 'string')
+                                        ? gift_image
+                                        : (gift_image && typeof gift_image === 'object' && gift_image)
+                                            ? gift_image.name
+                                            : 'Browse to find or drag image here'
+                                }</p>
                             </label>
                             <input
                                 onChange={handlegiftImageChange}
@@ -300,7 +351,7 @@ const { mutate: updategiftitemMutate } = useMutation({
                                 type="file"
                                 accept="image/*"
                             />
-                           
+
                         </div>
 
                         {gift_image && (
@@ -312,13 +363,13 @@ const { mutate: updategiftitemMutate } = useMutation({
                                 >
                                     ×
                                 </button>
-                            
+
                                 <img
                                     src={typeof gift_image === 'string' ? `${pathurl}${gift_image}` : URL.createObjectURL(gift_image)}
                                     alt="Gift image preview"
                                     className="w-full h-full object-cover"
                                 />
-                               
+
                             </div>
                         )}
                     </div>
@@ -335,16 +386,16 @@ const { mutate: updategiftitemMutate } = useMutation({
                         </button>
                         <button
                             type="button"
-                            onClick={(e)=>handleSubmit(e)}
+                            onClick={(e) => handleSubmit(e)}
                             readOnly={isLoading == true}
                             className=" text-white rounded-md p-2 w-full lg:w-20"
                             style={{ backgroundColor: layout_color }} >
-                                {isLoading ? <SpinLoading/> : id ? 'Update' : 'Submit'}
+                            {isLoading ? <SpinLoading /> : id ? 'Update' : 'Submit'}
                         </button>
-                            </div>
-                        </div>
-                    
-                  </form>
+                    </div>
+                </div>
+
+            </form>
 
         </div>
     );

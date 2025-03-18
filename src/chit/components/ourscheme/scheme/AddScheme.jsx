@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { useFormik, useFormikContext } from "formik";
+import React, { useEffect, useState, Suspense, lazy } from "react";
+import { useFormik } from "formik";
 import Select from "react-select";
-import { Plus, Trash2, SquarePen, CalendarDays } from "lucide-react";
+import { Plus, Trash2, SquarePen } from "lucide-react";
 import {
   getSchemeClassifications,
   allinstallmenttype,
@@ -18,12 +18,12 @@ import {
   getBranchById,
 } from "../../../api/Endpoints";
 import { useQuery, useQueries, useMutation } from "@tanstack/react-query";
-import PayableDetails from "./PayableDetails";
-import AdvancedSettings from "./AdvancedSettings";
-import CustomerDetails from "./CustomerDetails";
-import AgentDetails from "./AgentDetails";
-import Classification from "./Classification";
-import Grace from "./GracePeriod";
+const PayableDetails = lazy(() => import("./PayableDetails"));
+const AdvancedSettings = lazy(() => import("./AdvancedSettings"));
+const Classification = lazy(() => import("./Classification"));
+// import CustomerDetails from "./CustomerDetails";
+// import AgentDetails from "./AgentDetails";
+// import Grace from "./GracePeriod";
 import {
   Accordion,
   AccordionContent,
@@ -37,6 +37,26 @@ import { schemeValidationSchema } from "../../../../utils/validations/schemeVali
 import SpinLoading from "../../common/spinLoading";
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
+
+const LoadingSkeleton = () => (
+  <div className="w-full mx-auto p-6 space-y-6">
+    <div className="bg-white rounded-lg p-6 shadow-sm animate-pulse">
+      <div className="h-8 bg-gray-200 rounded w-1/4 mb-6"></div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {[...Array(8)].map((_, i) => (
+          <div key={i}>
+            <div className="h-5 bg-gray-200 rounded w-1/3 mb-2"></div>
+            <div className="h-10 bg-gray-200 rounded w-full"></div>
+          </div>
+        ))}
+      </div>
+    </div>
+    <div className="bg-white rounded-lg p-6 shadow-sm animate-pulse">
+      <div className="h-6 bg-gray-200 rounded w-1/5 mb-4"></div>
+      <div className="h-32 bg-gray-200 rounded w-full"></div>
+    </div>
+  </div>
+);
 
 const SchemeForm = () => {
   // const { setFieldValue, validateForm, values } = useFormikContext();
@@ -52,12 +72,13 @@ const SchemeForm = () => {
   const [classifications, setClassifications] = useState([]);
   const [mainImage, setMainImage] = useState(null);
   const [descriptionImage, setDescriptionImage] = useState(null);
-  const [branch, setBranch] = useState(() => (accessBranch === "0" ? [] : {}));
+
   const [metal, setMetal] = useState([]);
   const [purity, setPurity] = useState([]);
   const [layout_color, setLayoutColor] = useState("#015173");
   //  const [classType, setClass] = useState(false);
   const [selectedClass, setSelectedClass] = useState(null);
+  const [branch, setBranch] = useState(() => (accessBranch === "0" ? [] : {}));
   const [amounts, setAmounts] = useState([]);
   const [newAmount, setNewAmount] = useState("");
   const [isEditMode, setIsEditMode] = useState(false);
@@ -109,10 +130,10 @@ const SchemeForm = () => {
       benefit_making: "",
 
       //grce
-      grace_type: "",
-      grace_period: "",
-      grace_fine_amount: false,
-      grace_fine: 0,
+      // grace_type: "",
+      // grace_period: "",
+      // grace_fine_amount: false,
+      // grace_fine: 0,
 
       //classification
       description: "",
@@ -120,17 +141,17 @@ const SchemeForm = () => {
       classification_order: "",
 
       //customer referral
-      customer_referral_per: "",
-      customer_incentive_per: "",
-      customer_ref_remarks: "",
+      // customer_referral_per: "",
+      // customer_incentive_per: "",
+      // customer_ref_remarks: "",
 
       //agent referral
-      agent_referral_percentage: "",
-      agent_incentive: "",
-      agent_restriction: false,
-      agent_remark: "",
-      agent_target_per: "",
-      agent_partial_per: "",
+      // agent_referral_percentage: "",
+      // agent_incentive: "",
+      // agent_restriction: false,
+      // agent_remark: "",
+      // agent_target_per: "",
+      // agent_partial_per: "",
 
       wastagetype: "", // no need to pass
 
@@ -150,8 +171,8 @@ const SchemeForm = () => {
       bonus_percent: "",
       not_paid_installment: "",
       convenience_fees: "",
-      fine_amount: 0,
-      cumulative_fine_amount: "",
+      // fine_amount: 0,
+      // cumulative_fine_amount: "",
       display_referral: false,
       display_Weight_in_ledger: false,
       wallet_redemption_onpayment: false,
@@ -216,7 +237,7 @@ const SchemeForm = () => {
       }
     },
   });
-console.log(formik.errors)
+  console.log(formik.errors);
 
   // Customisations for react-select
   const customStyles = {
@@ -239,8 +260,10 @@ console.log(formik.errors)
     queryKey: ["branches", accessBranch, id_branch],
     queryFn: async () => {
       if (accessBranch === "0") {
+        setIsLoading(true);
         return getallbranch();
       }
+      setIsLoading(true);
       return getBranchById(id_branch);
     },
     enabled: Boolean(accessBranch),
@@ -520,9 +543,11 @@ console.log(formik.errors)
         label: item.branch_name,
       }));
       setBranch(formattedBranches);
+      setIsLoading(false);
     } else if (branchData.data) {
       setBranch(branchData.data);
       formik.setFieldValue("id_branch", branchData.data._id);
+      setIsLoading(false);
     }
   }, [branchData, accessBranch]);
 
@@ -750,7 +775,7 @@ console.log(formik.errors)
               </div>
             )}
           </div>
-          {accessBranch === "0" ? (
+          {accessBranch === "0" && branch.length > 0 && !isLoading ? (
             <div>
               <label className="block text-sm font-medium mb-1">
                 Branches <span className="text-red-500">*</span>
@@ -758,12 +783,12 @@ console.log(formik.errors)
               <Select
                 styles={customStyles}
                 isClearable={true}
-                options={branch || []}
+                options={branch}
                 placeholder="Select Branch"
                 value={
                   branch.find(
                     (option) => option.value === formik.values.id_branch
-                  ) || null
+                  ) || ""
                 }
                 onChange={(option) =>
                   formik.setFieldValue("id_branch", option ? option.value : "")
@@ -1025,7 +1050,7 @@ console.log(formik.errors)
               </div>
             )}
           </div>
-          <div>
+          {/* <div>
             <label className="block text-sm font-medium mb-1">
               Final Join Date
             </label>
@@ -1047,7 +1072,7 @@ console.log(formik.errors)
                 <CalendarDays size={20} />
               </span>
             </div>
-          </div>
+          </div> */}
         </div>
         {formik.values.classType && (
           <div className="grid grid-cols-3 gap-4 w-full mt-3">
@@ -1261,7 +1286,7 @@ console.log(formik.errors)
       </div>
 
       <Accordion type="multiple" collapsible className="space-y-4">
-        <AccordionItem value="grace" className="border rounded-lg bg-white">
+        {/* <AccordionItem value="grace" className="border rounded-lg bg-white">
           <AccordionTrigger className="px-6 py-4">
             Grace Period
           </AccordionTrigger>
@@ -1273,7 +1298,7 @@ console.log(formik.errors)
               maturity_period={formik.values.maturity_period}
             />
           </AccordionContent>
-        </AccordionItem>
+        </AccordionItem> */}
 
         <AccordionItem
           value="classification"
@@ -1283,15 +1308,17 @@ console.log(formik.errors)
             Classification
           </AccordionTrigger>
           <AccordionContent value="classification" className="px-6 py-4">
-            <Classification
-              formik={formik}
-              layout_color={layout_color}
-              setMainImg={setMainImage}
-              setDescImg={setDescriptionImage}
-              pathurl={pathUrl}
-              logo={mainImage}
-              desc_img={descriptionImage}
-            />
+            <Suspense fallback={<SpinLoading />}>
+              <Classification
+                formik={formik}
+                layout_color={layout_color}
+                setMainImg={setMainImage}
+                setDescImg={setDescriptionImage}
+                pathurl={pathUrl}
+                logo={mainImage}
+                desc_img={descriptionImage}
+              />
+            </Suspense>
           </AccordionContent>
         </AccordionItem>
 
@@ -1300,48 +1327,52 @@ console.log(formik.errors)
             Payable Details
           </AccordionTrigger>
           <AccordionContent className="px-6 py-4">
-            <PayableDetails
-              formik={formik}
-              layout_color={layout_color}
-              gstTypeData={bygstdata || []}
-              wastagedata={wastagedata || []}
-              install_type={formik.values.installment_type}
-              classType={formik.values.classType}
-              maturity_period={formik.values.maturity_period}
-              scheme_type={formik.values.scheme_type}
-            />
+            <Suspense fallback={<SpinLoading />}>
+              <PayableDetails
+                formik={formik}
+                layout_color={layout_color}
+                gstTypeData={bygstdata || []}
+                wastagedata={wastagedata || []}
+                install_type={formik.values.installment_type}
+                classType={formik.values.classType}
+                maturity_period={formik.values.maturity_period}
+                scheme_type={formik.values.scheme_type}
+              />
+            </Suspense>
           </AccordionContent>
         </AccordionItem>
 
-        <AccordionItem value="customer" className="border rounded-lg bg-white">
+        {/* <AccordionItem value="customer" className="border rounded-lg bg-white">
           <AccordionTrigger className="px-6 py-4">
             Customer Details
           </AccordionTrigger>
           <AccordionContent className="px-6 py-4">
             <CustomerDetails formik={formik} layout_color={layout_color} />
           </AccordionContent>
-        </AccordionItem>
+        </AccordionItem> */}
 
-        <AccordionItem value="agent" className="border rounded-lg bg-white">
+        {/* <AccordionItem value="agent" className="border rounded-lg bg-white">
           <AccordionTrigger className="px-6 py-4">
             Agent Details
           </AccordionTrigger>
           <AccordionContent className="px-6 py-4">
             <AgentDetails formik={formik} layout_color={layout_color} />
           </AccordionContent>
-        </AccordionItem>
+        </AccordionItem> */}
 
         <AccordionItem value="advanced" className="border rounded-lg bg-white">
           <AccordionTrigger className="px-6 py-4">
             Advanced Settings
           </AccordionTrigger>
           <AccordionContent className="px-6 py-4">
-            <AdvancedSettings
-              formik={formik}
-              layout_color={layout_color}
-              giftData={giftType}
-              installment_type={formik.values.installment_type}
-            />
+            <Suspense fallback={<SpinLoading />}>
+              <AdvancedSettings
+                formik={formik}
+                layout_color={layout_color}
+                giftData={giftType}
+                installment_type={formik.values.installment_type}
+              />
+            </Suspense>
           </AccordionContent>
         </AccordionItem>
       </Accordion>

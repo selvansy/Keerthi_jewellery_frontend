@@ -63,7 +63,8 @@ export const formatNumber = ({
   decimalPlaces = 2,
   locale = "en-IN",
   // locale = "en-US",
-  currency = null,
+  // currency = null,
+  currency = "INR",
 } = {}) => {
 
   value = emptyToZero(value);

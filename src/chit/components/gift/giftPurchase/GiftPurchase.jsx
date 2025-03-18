@@ -299,6 +299,15 @@ const GiftPurchase = () => {
   const paginationData = { totalItems: totalPages, currentPage: currentPage, itemsPerPage: itemsPerPage, handlePageChange: handlePageChange }
   const paginationButtons = usePagination(paginationData)
 
+  
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
 
   const columns = [
     {
@@ -347,12 +356,7 @@ const GiftPurchase = () => {
     },
     {
       header: "Create Date",
-      cell: (row) => {
-        if (!row?.createdAt) return "-";
-        const date = new Date(row?.createdAt);
-        const formattedDate = date.toISOString().split("T")[0];
-        return formattedDate;
-      }
+      cell: (row) => formatDate(row?.gift_vendorid.createdAt)
     },
     {
       header: 'Active',
