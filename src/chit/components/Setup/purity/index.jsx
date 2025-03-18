@@ -394,7 +394,7 @@ const Purity = () => {
       </>
       <ModelOne
         title={id ? "Edit Purity" : "Add Purity"}
-        extraClassName="max-w-[75%] "
+        extraClassName="max-w-lg"
         setIsOpen={setIsviewOpen}
         isOpen={isviewOpen}
         closeModal={closeIncommingModal}

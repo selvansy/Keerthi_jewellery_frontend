@@ -262,7 +262,7 @@ const StaffUser = () => {
 
         <ModelOne
           title={'Create new user'}
-          extraClassName="max-w-[60%]"
+          extraClassName="max-w-lg"
           setIsOpen={setIsviewOpen}
           isOpen={isviewOpen}
           closeModal={closeIncommingModal}

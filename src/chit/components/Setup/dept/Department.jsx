@@ -294,7 +294,7 @@ const Department = () => {
 
       <ModelOne
         title={id ? "Edit Department" : "Add Department"}
-        extraClassName="max-w-[75%] "
+        extraClassName="max-w-lg"
         setIsOpen={setIsviewOpen}
         isOpen={isviewOpen}
         closeModal={closeIncommingModal}

@@ -330,7 +330,7 @@ const GiftHandOver = () => {
       )}
       <ModelOne
         title={id ? "Edit GiftItem" : "Add GiftItem"}
-        extraClassName="max-w-[75%] "
+        extraClassName="max-w-lg"
         setIsOpen={setIsviewOpen}
         isOpen={isviewOpen}
         closeModal={closeIncommingModal}

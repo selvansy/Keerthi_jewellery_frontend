@@ -341,7 +341,7 @@ const Submenu = () => {
 
       <ModelOne
         title={id?"Edit Sub Menu":"Add Sub Menu"}
-        extraClassName="max-w-[75%] "
+        extraClassName="max-w-lg"
         setIsOpen={setIsviewOpen}
         isOpen={isviewOpen}
         closeModal={closeIncommingModal}
