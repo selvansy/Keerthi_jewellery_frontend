@@ -36,7 +36,6 @@ import { toast } from "react-toastify";
 import { schemeValidationSchema } from "../../../../utils/validations/schemeValidationSchema";
 import SpinLoading from "../../common/spinLoading";
 import "react-datepicker/dist/react-datepicker.css";
-import DatePicker from "react-datepicker";
 
 const SchemeForm = () => {
   // const { setFieldValue, validateForm, values } = useFormikContext();
@@ -45,6 +44,7 @@ const SchemeForm = () => {
   let { id } = useParams();
   //reduux
   const roleData = useSelector((state) => state.clientForm.roledata);
+  const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const id_branch = roleData?.id_branch;
   const accessBranch = roleData?.branch;
 
@@ -55,8 +55,7 @@ const SchemeForm = () => {
 
   const [metal, setMetal] = useState([]);
   const [purity, setPurity] = useState([]);
-  const [layout_color, setLayoutColor] = useState("#015173");
-  //  const [classType, setClass] = useState(false);
+  // const [layout_color, setLayoutColor] = useState("#015173");
   const [selectedClass, setSelectedClass] = useState(null);
   const [branch, setBranch] = useState(() => (accessBranch === "0" ? [] : {}));
   const [amounts, setAmounts] = useState([]);

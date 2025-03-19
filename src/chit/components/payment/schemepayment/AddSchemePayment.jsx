@@ -58,7 +58,8 @@ const AddSchemePayment = () => {
   const [fullData, setFullData] = useState([]);
   const [selectedScheme, setSelectedScheme] = useState({});
   const [weight, setWeight] = useState([12, 3, 4]);
-  const [selectedMode,setSelectedMode]= useState(0)
+  const [selectedMode, setSelectedMode] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = React.useState({
     id_customer: "",
     mobile: "",
@@ -103,7 +104,7 @@ const AddSchemePayment = () => {
       remark: "",
       scheme_acc_number: "",
       id_scheme: "",
-      id_branch: id_branch || '',
+      id_branch: id_branch || "",
       id_scheme_account: "",
       scheme_type: 0,
       buy_gst: 0,
@@ -116,7 +117,7 @@ const AddSchemePayment = () => {
       total_installments: 1,
       id_classification: "",
     },
-    validationSchema : Yup.object({
+    validationSchema: Yup.object({
       id_branch: Yup.string().required("Branch is required"),
       mobile: Yup.string()
         .required("Mobile number is required")
@@ -131,17 +132,20 @@ const AddSchemePayment = () => {
         .required("Payment amount is required")
         .min(0, "Payment amount must be greater than or equal to 0"),
       buy_gst: Yup.number().min(0, "GST must be greater than or equal to 0"),
-      fine_amount: Yup.number().min(0, "Fine amount must be greater than or equal to 0"),
+      fine_amount: Yup.number().min(
+        0,
+        "Fine amount must be greater than or equal to 0"
+      ),
       total_amt: Yup.number().required("Total amount is required"),
       payment_mode: Yup.string().required("Payment mode is required"),
       itr_utr: Yup.string(),
       remark: Yup.string(),
     }),
     onSubmit: (values) => {
-      if(id){
-        updateschemepaymentmutate({id,values})
-      }else{
-        createschemepaymentmutate(values)
+      if (id) {
+        updateschemepaymentmutate({ id, values });
+      } else {
+        createschemepaymentmutate(values);
       }
     },
   });
@@ -178,7 +182,6 @@ const AddSchemePayment = () => {
     staleTime: 5 * 60 * 1000,
     cacheTime: 10 * 60 * 1000,
   });
-
 
   const { mutate: createschemepaymentmutate } = useMutation({
     mutationFn: addschemepayment,
@@ -239,13 +242,13 @@ const AddSchemePayment = () => {
     } else {
       setIspaymode(false);
     }
-  }, [multiplayModes,selectedMode]);
+  }, [multiplayModes, selectedMode]);
 
   useEffect(() => {
     if (paymentModes) {
       const data = paymentModes.data.map((item) => ({
         mode: item.id_mode,
-        value:item._id,
+        value: item._id,
         label: item.mode_name,
       }));
       setPaymentmode(data);
@@ -261,9 +264,11 @@ const AddSchemePayment = () => {
         label: item.branch_name,
       }));
       setBranch(formattedBranches);
+      setIsLoading(false);
     } else if (branchData.data) {
       setBranch(branchData.data);
-      formik.setFieldValue("id_branch", accessBranch);
+      formik.setFieldValue("id_branch", branchData.data._id);
+      setIsLoading(false);
     }
   }, [branchData, accessBranch]);
 
@@ -303,8 +308,11 @@ const AddSchemePayment = () => {
       formik.setFieldValue("id_branch", selectedScheme?.id_scheme?.id_branch);
       formik.setFieldValue("buy_gst", selectedScheme?.id_scheme?.buy_gst);
       formik.setFieldValue("mobile", selectedScheme?.id_customer?.mobile);
-      formik.setFieldValue('id_classification',selectedScheme?.id_classification?._id)
-      formik.setFieldValue('id_customer',selectedScheme?.id_customer?._id)
+      formik.setFieldValue(
+        "id_classification",
+        selectedScheme?.id_classification?._id
+      );
+      formik.setFieldValue("id_customer", selectedScheme?.id_customer?._id);
       // formik.setFieldValue('fine_amount',selectedScheme?.id_scheme?.fine_amount)
 
       let payment_amount = 0;
@@ -1031,7 +1039,7 @@ const AddSchemePayment = () => {
               <div className="flex flex-col lg:flex-row w-full justify-between">
                 <div className="lg:w-1/2 w-full">
                   <div className="grid grid-cols-1 gap-4 lg:pr-2">
-                    {accessBranch === "0" ? (
+                  {accessBranch === "0" && branch.length > 0 && !isLoading ? (
                       <div>
                         <label className="block text-sm font-medium mb-1">
                           Branches <span className="text-red-500">*</span>
@@ -1091,7 +1099,7 @@ const AddSchemePayment = () => {
                       {/* Search Icon */}
                       <div
                         onClick={handleSearchmobile}
-                        className="absolute flex items-center justify-center cursor-pointer right-[0%] rounded-r-lg top-[68%] -translate-y-1/2 w-10 h-[62%] sm:right-0 sm:top-[68%] sm:rounded-r-lg md:right-[20%] md:rounded-lg lg:rounded-lg lg:right-[0%]"
+                        className="absolute inset-y-1/2 right-0 -translate-y-2 w-10 h-[62%] flex items-center justify-center cursor-pointer rounded-r-md"
                         style={{ backgroundColor: layout_color }}
                       >
                         <Search size={20} className="text-white" />
@@ -1578,17 +1586,15 @@ const AddSchemePayment = () => {
                             option.value === formik.values.payment_mode
                         ) || null
                       }
-                      onChange={(option) =>
-                      {
-                        if(Number(option.mode) === 7){
-                          setSelectedMode(mode)
+                      onChange={(option) => {
+                        if (Number(option.mode) === 7) {
+                          setSelectedMode(mode);
                         }
                         formik.setFieldValue(
                           "payment_mode",
                           option ? option.value : ""
-                        )
-                      }
-                      }
+                        );
+                      }}
                     />
 
                     {formik.errors.payment_mode && (
@@ -1601,21 +1607,24 @@ const AddSchemePayment = () => {
                     <>
                       {multipaymode.map((multipay) => (
                         <div key={multipay.parameter} className="flex flex-col">
-                        <label className="text-black mb-2 font-normal">
-                          {multipay.label}
-                        </label>
-                        <input
-                          type="text"
-                          name={multipay.value}
-                          value={formik.values[multipay.value] || ""}
-                          onChange={(e) => {
-                            formik.setFieldValue(multipay.value, Number(e.target.value) || 0);
-                            filterInputchange(e); 
-                          }}
-                          className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                          placeholder="Enter amount here"
-                        />
-                      </div>                      
+                          <label className="text-black mb-2 font-normal">
+                            {multipay.label}
+                          </label>
+                          <input
+                            type="text"
+                            name={multipay.value}
+                            value={formik.values[multipay.value] || ""}
+                            onChange={(e) => {
+                              formik.setFieldValue(
+                                multipay.value,
+                                Number(e.target.value) || 0
+                              );
+                              filterInputchange(e);
+                            }}
+                            className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                            placeholder="Enter amount here"
+                          />
+                        </div>
                       ))}
                     </>
                   )}
