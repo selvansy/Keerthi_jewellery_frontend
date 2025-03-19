@@ -783,7 +783,7 @@ const Schemeaccount = () => {
       {displaysetting === 1 && (
         <ModelOne
           title={popuptitle}
-          extraClassName='w-2/3 h-[794px]'
+          extraClassName='w-2/3 max-h-[90vh] overflow-y-auto'
           setIsOpen={setIsviewOpen}
           isOpen={isviewOpen}
           closeModal={closeIncommingModal}

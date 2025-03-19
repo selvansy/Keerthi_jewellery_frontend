@@ -36,7 +36,7 @@ const PayableDetails = ({
   const inputHeight = "42px";
 
   // Check if scheme_type is one of 12, 3, 4
-  const isSpecialSchemeType = [12, 3, 4,2,5,6].includes(scheme_type);
+  const isSpecialSchemeType = [12, 3, 4].includes(scheme_type);
 
   // Determine which fields to show based on the conditions
   //(classType && isSpecialSchemeType) ||

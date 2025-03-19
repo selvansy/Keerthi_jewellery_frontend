@@ -681,7 +681,7 @@ const AddSchemePayment = () => {
     }
 
     // Calculate total amount based on scheme type
-    if (![2, 5, 6, 12, 3, 4].includes(selectedScheme?.scheme_type)) {
+    if (![12, 3, 4].includes(selectedScheme?.scheme_type)) {
       // For schemes that are not weight-based
       total_amt =
         parseFloat(formik.values.payment_amount) +
@@ -1530,7 +1530,7 @@ const AddSchemePayment = () => {
                     </div>
                     <p style={{ color: "red" }}>{errors?.total_amt}</p>
                   </div>
-                  {[2, 5, 6, 12, 3, 4].includes(selectedScheme.scheme_type) && (
+                  {[12, 3, 4].includes(selectedScheme.scheme_type) && (
                     <div className="flex flex-col">
                       <label className="text-black mb-2 font-normal">
                         Saved Weight<span className="text-red-400">*</span>
