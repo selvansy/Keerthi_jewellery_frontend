@@ -183,10 +183,10 @@ export const schemeValidationSchema = Yup.object({
   total_installments: Yup.number().required(
     "Total Installments is required"
   ),
-  buy_gst: Yup.number().optional("Buy GST is required")
-  .min(0,"Gst percentage should be below minimum 0")
-  .max(100,"Maximum gst percentage should be 100"),
-  buytgsttype: Yup.string().optional("Buy GST Type is required"),
+  // buy_gst: Yup.number().optional("Buy GST is required")
+  // .min(0,"Gst percentage should be below minimum 0")
+  // .max(100,"Maximum gst percentage should be 100"),
+  // buytgsttype: Yup.string().optional("Buy GST Type is required"),
   wastagebenefit: Yup.string().required("Wastage Benefit is required"),
   benefit_making: Yup.string().required(
     "Benefit making charge is required"
