@@ -28,13 +28,15 @@ function Ledgerdetails({ setIsOpen }) {
   const getLedgerData = async (data) => {
     if (!data) return;
     const response = await getschemeaccountbyid({ id: data });
+    console.log(response,'jf')
     if (response) {
       setLedgerData({
         id: response.data._id,
         id_scheme: response.data.id_scheme._id,
-        scheme_type: response.data.id_scheme.scheme_type,
-        scheme_name: response.data.id_scheme.scheme_name,
-        total_installments: response.data.id_scheme.total_installments,
+        scheme_type: response.data.scheme_type,
+        scheme_name: response.data?.id_scheme?.scheme_name,
+        scheme_typename: response.data.scheme_typename,
+        total_installments: response.data.total_installments,
         min_amount: response.data.id_scheme.min_amount,
         max_amount: response.data.id_scheme.max_amount,
         min_weight: response.data.id_scheme.min_weight,
@@ -48,11 +50,11 @@ function Ledgerdetails({ setIsOpen }) {
         total_weight: response.data.total_weight,
         bill_no: response.data.bill_no,
         bill_date: response.data.bill_date,
-        id_classification: response.data.id_scheme.id_classification,
+        id_classification: response?.data?.id_classification,
         id_branch: response.data.id_branch._id,
         account_name: response.data.account_name,
         address: response.data.id_customer.address,
-        customer_name: response.data.id_customer.firstname + ' ' + response.data.id_customer.lastname,
+        customer_name: response?.data?.id_customer?.firstname + ' ' + response.data?.id_customer?.lastname,
         mobile: response.data.id_customer.mobile,
         maturity_date: response.data.maturity_date
       });
@@ -81,24 +83,13 @@ function Ledgerdetails({ setIsOpen }) {
       <div className="space-y-1">
         <p className="text-sm font-semibold text-gray-700">Scheme Type</p>
         <p className="text-sm">
-          {
-            ledgerData?.id_schme?.scheme_type === 1 ? "Amount End Weight" :
-            ledgerData?.id_schme?.scheme_type === 2 ? "Amount To Weight" :
-            ledgerData?.id_schme?.scheme_type === 3 ? "Weight" :
-            ledgerData?.id_schme?.scheme_type === 4 ? "Flexible Amount To Bonus" :
-            ledgerData?.id_schme?.scheme_type === 5 ? "Flexible Amount To Weight" :
-            ledgerData?.id_schme?.scheme_type === 6 ? "Fixed Amount To Weight" :
-            ledgerData?.id_schme?.scheme_type === 7 ? "Fixed Amount End Weight" :
-            ledgerData?.id_schme?.scheme_type === 8 ? "Fixed Amount To Bonus" :
-            ledgerData?.id_schme?.scheme_type === 9 ? "Flexible Amount End Weight" :
-            ledgerData?.id_schme?.scheme_type === 10 ? "Digi Gold" : "Amount To Bonus"
-          }
+          {ledgerData?.scheme_typename}
         </p>
       </div>
 
       <div className="space-y-1">
         <p className="text-sm font-semibold text-gray-700">Classification</p>
-        <p className="text-sm">{ledgerData?.classification_name || 'N/A'}</p>
+        <p className="text-sm">{ledgerData?.id_classification?.name || 'N/A'}</p>
       </div>
 
       <div className="space-y-1">
@@ -171,64 +162,50 @@ function Ledgerdetails({ setIsOpen }) {
   </div>
 
   {/* Payment Data Table */}
-  <div className="overflow-x-auto">
-    <table className="min-w-full divide-y divide-gray-200">
-      <thead className="rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors" style={{ backgroundColor: layout_color }}>
-        <tr>
-          <th className="px-4 py-2">SNo</th>
-          <th className="px-4 py-2">Paid Inst</th>
-          <th className="px-4 py-2">Paid Date</th>
-          <th className="px-4 py-2">Receipt No</th>
-          <th className="px-4 py-2">GST AMT</th>
-          <th className="px-4 py-2">Fine AMT</th>
-          <th className="px-4 py-2">Total AMT</th>
-          <th className="px-4 py-2">ITR/UTR</th>
-          <th className="px-4 py-2">Remarks</th>
-        </tr>
-      </thead>
-      <tbody>
-        {paymentdata.map((payment, index) => {
-          const formatDate = (dateString) => {
-            const date = new Date(dateString);
-            return date.toLocaleDateString('en-GB');
-          };
+  <div className="overflow-x-auto" style={{ maxHeight:'300px', overflowY: 'auto' }}>
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50 sticky top-0">
+              <tr>
+                <th className="px-4 py-2">SNo</th>
+                <th className="px-4 py-2">Paid Inst</th>
+                <th className="px-4 py-2">Paid Date</th>
+                <th className="px-4 py-2">Receipt No</th>
+                <th className="px-4 py-2">Total AMT</th>
+                <th className="px-4 py-2">Mode of payment</th>
+              </tr>
+            </thead>
+            <tbody>
+              {paymentdata.map((payment, index) => {
+                const formatDate = (dateString) => {
+                  const date = new Date(dateString);
+                  return date.toLocaleDateString('en-GB');
+                };
 
-          return (
-            <tr key={payment._id} className="border-t">
-              <td className="px-4 py-2">{index + 1}</td>
-              <td className="px-4 py-2">{payment.paid_installments}</td>
-              <td className="px-4 py-2">{formatDate(payment.date_payment)}</td>
-              <td className="px-4 py-2">{payment.payment_receipt}</td>
-              <td className="px-4 py-2">{payment.gst_amount}</td>
-              <td className="px-4 py-2">{payment.fine_amount}</td>
-              <td className="px-4 py-2">{payment.total_amt}</td>
-              <td className="px-4 py-2">{payment.itr_utr || 'N/A'}</td>
-              <td className="px-4 py-2">{payment.remark || 'N/A'}</td>
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
-  </div>
-</div>
-
-
-
-      <div className="bg-white p-2 border-t-2 border-gray-300 mt-4">
-        <div className="flex justify-end gap-2 mt-3">
-
-          <>
-            <button
-              className="bg-[#E2E8F0] text-black rounded-md p-2 w-full lg:w-20"
-              onClick={handleCancel}
-            >
-              Cancel
-            </button>
-
-          </>
+                return (
+                  <tr key={payment._id} className="border-t my-auto">
+                    <td className="px-4 py-2">{index + 1}</td>
+                    <td className="px-4 py-2">{payment.paid_installments}</td>
+                    <td className="px-4 py-2">{formatDate(payment.date_payment)}</td>
+                    <td className="px-4 py-2">{payment.payment_receipt}</td>
+                    <td className="px-4 py-2">{payment.total_amt}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       </div>
 
+      <div className="bg-white p-2 border-t-2 border-gray-300 mt-4">
+        <div className="flex justify-end gap-2 mt-3">
+          <button
+            className="bg-[#E2E8F0] text-black rounded-md p-2 w-full lg:w-20"
+            onClick={handleCancel}
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

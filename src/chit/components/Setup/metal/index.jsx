@@ -302,7 +302,7 @@ const Metal = () => {
 
       <ModelOne
         title={id ? "Edit Metal" : "Add Metal"}
-        extraClassName="max-w-[75%] "
+        extraClassName="max-w-lg"
         setIsOpen={setIsviewOpen}
         isOpen={isviewOpen}
         closeModal={closeIncommingModal}

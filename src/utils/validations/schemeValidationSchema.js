@@ -125,7 +125,7 @@ export const schemeValidationSchema = Yup.object({
   //   }),
   // min_amount: Yup.number().when(["classType", "scheme_type"], {
   //   is: (classType, scheme_type) =>
-  //     !classType && ![12, 3, 4,2,5,6].includes(scheme_type),
+  //     !classType && ![12, 3, 4].includes(scheme_type),
   //   then: (schema) =>
   //     schema
   //       .required("Minimum Amount is required")
@@ -134,7 +134,7 @@ export const schemeValidationSchema = Yup.object({
   // }),
   // max_amount: Yup.number().when(["classType", "scheme_type"], {
   //   is: (classType, scheme_type) =>
-  //     !classType && ![12, 3, 4,2,5,6].includes(scheme_type),
+  //     !classType && ![12, 3, 4].includes(scheme_type),
   //   then: (schema) =>
   //     schema
   //       .required("Maximum Amount is required")
@@ -152,8 +152,8 @@ export const schemeValidationSchema = Yup.object({
   }),
   max_weight: Yup.number().when(["classType", "scheme_type"], {
     is: (classType, scheme_type) =>
-      (classType && [12, 3, 4,2,5,6].includes(Number(scheme_type))) ||
-      (!classType && [12, 3, 4,2,5,6].includes(Number(scheme_type))),
+      (classType && [12, 3, 4].includes(Number(scheme_type))) ||
+      (!classType && [12, 3, 4].includes(Number(scheme_type))),
     then: (schema) =>
       schema
         .required("Maximum Weight is required")
@@ -165,14 +165,14 @@ export const schemeValidationSchema = Yup.object({
     return value === undefined || min_weight === undefined || value > min_weight;
   }),
   min_amount: Yup.number().when(["classType", "scheme_type"], {
-    is: (classType, scheme_type) => !classType && !([12, 3, 4, 2, 5, 6].includes(Number(scheme_type))),
+    is: (classType, scheme_type) => !classType && !([12, 3, 4].includes(Number(scheme_type))),
     then: (schema) => schema.required("Minimum Amount is required"),
     otherwise: (schema) => schema.notRequired(),
   }),
   max_amount: Yup.number()
     .when(["classType", "scheme_type"], {
       is: (classType, scheme_type) => 
-        !classType && ![12, 3, 4, 2, 5, 6].includes(Number(scheme_type)),
+        !classType && ![12, 3, 4].includes(Number(scheme_type)),
       then: (schema) => schema.required("Maximum Amount is required"),
       otherwise: (schema) => schema.notRequired(),
     })

@@ -557,7 +557,7 @@ const AddSchemeAccount = ({ cusData,handleClear }) => {
         }));
 
         // Update min_amount, max_amount, min_weight, max_weight based on scheme type
-        if ([12, 3, 4, 2, 5, 6].includes(schemeData.scheme_type)) {
+        if ([12, 3, 4].includes(schemeData.scheme_type)) {
           setFormData((prevData) => ({
             ...prevData,
             min_weight: schemeData?.min_weight,
@@ -981,7 +981,7 @@ const AddSchemeAccount = ({ cusData,handleClear }) => {
                       let displayValue = scheme.scheme_name;
 
                       if (
-                        [2, 3, 4, 6, 12].includes(scheme.scheme_type) &&
+                        [3, 4, 12].includes(scheme.scheme_type) &&
                         scheme.min_weight !== 0 &&
                         scheme.max_weight !== 0
                       ) {
@@ -1022,7 +1022,7 @@ const AddSchemeAccount = ({ cusData,handleClear }) => {
                 <div className="flex flex-col">
                   <label className="text-black mb-1 font-normal">
                     Scheme{" "}
-                    {[12, 3, 4, 2, 5, 6].includes(formData.scheme_type)
+                    {[12, 3, 4].includes(formData.scheme_type)
                       ? "Weights"
                       : "Amounts"}
                     <span className="text-red-400">*</span>
@@ -1065,7 +1065,7 @@ const AddSchemeAccount = ({ cusData,handleClear }) => {
                 <>
                   <div className="flex flex-col">
                     <label className="text-black mb-1 font-normal">
-                      {[12, 3, 4, 2, 5, 6].includes(formData.scheme_type)
+                      {[12, 3, 4].includes(formData.scheme_type)
                         ? "Min weight"
                         : "Min amount"}{" "}
                       <span className="text-red-400">*</span>
@@ -1082,7 +1082,7 @@ const AddSchemeAccount = ({ cusData,handleClear }) => {
                   </div>
                   <div className="flex flex-col">
                     <label className="text-black mb-1 font-normal">
-                      {[12, 3, 4, 2, 5, 6].includes(formData.scheme_type)
+                      {[12, 3, 4].includes(formData.scheme_type)
                         ? "Max weight"
                         : "Max amount"}
                       <span className="text-red-400">*</span>

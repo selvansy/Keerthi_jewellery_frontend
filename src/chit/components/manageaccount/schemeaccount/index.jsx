@@ -763,7 +763,7 @@ const Schemeaccount = () => {
       </div>
       {isFilterOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-30"
+          className="fixed inset-0 bg-black bg-opacity-50 z-30 w-3/4"
           onClick={() => setIsFilterOpen(false)}
         />
       )}
@@ -783,7 +783,7 @@ const Schemeaccount = () => {
       {displaysetting === 1 && (
         <ModelOne
           title={popuptitle}
-          extraClassName='max-w-5xl w-full '
+          extraClassName='w-2/3 max-h-[90vh] overflow-y-auto'
           setIsOpen={setIsviewOpen}
           isOpen={isviewOpen}
           closeModal={closeIncommingModal}
