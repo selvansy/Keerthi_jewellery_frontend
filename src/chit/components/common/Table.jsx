@@ -7,7 +7,11 @@ const Table = ({
   className = "",
   loading = false,
   noDataMessage = "No data available",
-  totalItems, currentPage, itemsPerPage, handlePageChange,handleItemsPerPageChange
+  totalItems,
+  currentPage,
+  itemsPerPage,
+  handlePageChange,
+  handleItemsPerPageChange,
 }) => {
   const [activeDropdown, setActiveDropdown] = useState(null);
   const dropdownRef = useRef(null);
@@ -25,12 +29,12 @@ const Table = ({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-  
+
   return (
     <section className={`  antialiased ${className}`}>
       <div className="mx-auto">
         <div className="bg-white relative  overflow-hidden ">
-          <div className="overflow-x-auto min-h-[220px]">
+          <div className="overflow-x-auto ]">
             <table className="w-full text-sm text-left text-gray-500">
               <thead className="text-xs text-gray-700 uppercase bg-[#E7EEF5] h-[37px]">
                 <tr>
@@ -103,10 +107,15 @@ const Table = ({
         </div>
       </div>
 
-    {data.length>=1 &&(
-         <Pagination currentPage={currentPage} handlePageChange={handlePageChange} itemsPerPage={itemsPerPage} totalItems={totalItems} handleItemsPerPageChange={handleItemsPerPageChange}/>
-
-    )}
+      {data.length >= 1 && (
+        <Pagination
+          currentPage={currentPage}
+          handlePageChange={handlePageChange}
+          itemsPerPage={itemsPerPage}
+          totalItems={totalItems}
+          handleItemsPerPageChange={handleItemsPerPageChange}
+        />
+      )}
     </section>
   );
 };
