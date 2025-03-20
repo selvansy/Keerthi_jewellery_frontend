@@ -3,16 +3,18 @@ import { useMutation } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import { searchaccountnumber } from '../../../api/Endpoints';
 import { useSelector } from 'react-redux';
+import SpinLoading from '../../common/spinLoading';
 
 const CardPrint = () => {
+
   const [paymentData, setPaymentData] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
-  const [accountNumber, setAccountNumber] = useState('');
+  const [value, setvalue] = useState('');
   const [totalWeight, setTotalWeight] = useState(0);
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
   // Mutation to fetch payment data by account number
-  const { mutate: handleSearchAccountNumber, isLoading } = useMutation({
+  const { mutate: handleSearchvalue, isLoading } = useMutation({
     mutationFn: searchaccountnumber,
     onSuccess: (response) => {
       if (response) {
@@ -44,19 +46,20 @@ const CardPrint = () => {
 
   // Handle search on submit
   const handleSearchSubmit = () => {
-    if (!accountNumber.trim()) {
+    if (!value.trim()) {
       toast.error('Please enter a valid account number');
       return;
     }
+
     setPaymentData([]);
     setSelectedRows([]);
-    handleSearchAccountNumber({ branchId: id_branch,mobile:mobile });
+    handleSearchvalue(value);
   };
 
   // Function to automatically change input value to uppercase
-  const handleAccountNumberChange = (e) => {
-    const value = e.target.value.toUpperCase();
-    setAccountNumber(value);
+  const handlevalueChange = (e) => {
+    const value = e.target.value;
+    setvalue(value);
   };
 
   // Handle print action
@@ -180,15 +183,15 @@ const CardPrint = () => {
       {/* Search Card */}
       <div className="flex justify-center mb-6">
         <div className="bg-white shadow-lg rounded-lg p-6 w-full max-w-sm">
-          <h3 className="text-xl font-semibold mb-4 text-center">Search by Account Number</h3>
+          <h3 className="text-xl font-semibold mb-4 text-center">Search A/C number or Mobile</h3>
 
           {/* Search Input */}
           <div className="flex mb-4">
             <input
               type="text"
-              placeholder="Enter Account Number"
-              value={accountNumber}
-              onChange={handleAccountNumberChange}
+              placeholder="Enter A/C number or Mobile"
+              value={value}
+              onChange={handlevalueChange}
               className="px-4 py-2 border rounded-l-md w-full"
             />
             <button
@@ -197,7 +200,8 @@ const CardPrint = () => {
               style={{ backgroundColor: layout_color }}
               readOnly={isLoading}
             >
-              {isLoading ? 'Loading...' : 'Search'}
+              {isLoading ? <SpinLoading /> : 'Search'}
+              
             </button>
           </div>
         </div>
