@@ -143,7 +143,7 @@ export const schemeValidationSchema = Yup.object({
   // }),
   min_weight: Yup.number().when(["classType", "scheme_type"], {
     is: (classType, scheme_type) =>
-      !classType && [12, 3, 4,2,5,6].includes(Number(scheme_type)),
+      !classType && [12, 3, 4].includes(Number(scheme_type)),
     then: (schema) =>
       schema
         .required("Minimum Weight is required")
