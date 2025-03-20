@@ -469,7 +469,6 @@ export const getallgiftinward = async () => {
 }
 
 export const getallgiftInwardByBranch = async (branch) => {
-    console.log("id",branch)
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/giftinwards/branch/${branch}`);
     return response.data;
 }
@@ -1784,6 +1783,12 @@ export const searchaccountnumber = async (data) => {
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/payment/schacc?schAcc=${data}`);
     return response.data;
 }
+
+export const searchSchAccByMobile = async (data) => {
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/schemeaccount/accnum/mobile/search?value=${data}`);
+    return response.data;
+}
+
 
 //offers
 export const getOfferById = async (id)=>{

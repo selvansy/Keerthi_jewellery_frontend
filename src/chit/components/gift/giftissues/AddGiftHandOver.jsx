@@ -10,7 +10,7 @@ import Select from "react-select";
 import { customSelectStyles } from "../../../components/Setup/purity/index";
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { emptyToZero, formatNumber } from "../../../utils/commonFunction"
-import { addgiftissues, searchbarcodenumber, giftissuetype, searchcustomermobile, getallgiftInwardByBranch, searchaccountnumber, getallbranch, getschemeaccountbyid } from '../../../api/Endpoints'
+import { addgiftissues, searchbarcodenumber, giftissuetype, searchcustomermobile, getallgiftInwardByBranch, searchSchAccByMobile, getallbranch, getschemeaccountbyid } from '../../../api/Endpoints'
 import SpinLoading from '../../common/spinLoading';
 
 const AddGiftIssued = () => {
@@ -129,52 +129,28 @@ const AddGiftIssued = () => {
   }, [visibleaccount, roledata]);
 
 
+  console.log("fpr",formData.issue_type)
 
   const handleSearchmobile = () => {
     setSearchError('');
     if (mobile === "") {
       toast.error('Mobile Number is required!');
     }
-    if (formData.issue_type === "1") {
+    if (formData.issue_type === "1" || formData.issue_type === 1) {
       setFormData(prev => ({
         ...prev,
         mobile: mobile,
       }));
-      handlesearchScheme({ search_mobile: mobile, id_branch: branchId })
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        mobile: mobile,
-      }));
-      handlesearchcustomer({ search_mobile: mobile, id_branch: branchId });
+      handlesearchScheme(mobile)
     }
 
   };
 
-  const { mutate: handlesearchcustomer } = useMutation({
-    mutationFn: (payload) => searchcustomermobile(payload),
-    onSuccess: (response) => {
-      if (response) {
-        setCustomername(response.data.firstname + ' ' + response.data.lastname);
-        setAddress(response.data.address);
-        setFormData(prev => ({
-          ...prev,
-          id_customer: response.data._id,
-          mobile: response.data.mobile,
-        }));
-      }
-      setLoading(false);
-    },
-    onError: (error) => {
-      toast.error(error?.response?.data?.message);
-      setLoading(false);
-    },
-  });
-
 
   const { mutate: handlesearchScheme } = useMutation({
-    mutationFn: (data) => searchaccountnumber(data),
+    mutationFn: (data) => searchSchAccByMobile(data),
     onSuccess: (response) => {
+      console.log("response",response)
       if (response) {
         setCustomername(response.data[0].id_customer?.firstname + ' ' + response.data[0]?.id_customer?.lastname);
         setAddress(response.data[0]?.id_customer?.address);
@@ -234,6 +210,7 @@ const AddGiftIssued = () => {
   };
 
   const handleSchemeAcc = (value)=>{
+    console.log("value",value)
       if (value === "1" || value === 1) {
         setVisibleaccount(true);
       } else {
@@ -491,6 +468,7 @@ const AddGiftIssued = () => {
                         ...prev,
                         issue_type: item.value,
                       }));
+
                       handleSchemeAcc(item.value);
                     }}
                     customSelectStyles={customSelectStyles}
