@@ -31,3 +31,46 @@ body{
   text-align: center;
 }
 
+@media print {
+  #customers {
+    font-family: Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 20px;
+  }
+
+  @page {
+    size: auto;
+    margin: 0mm;
+  }
+
+  #customers td, #customers th {
+    border: none;
+    padding: 8px;
+    text-align: left;
+  }
+
+  #customers thead {
+    display: none;
+  }
+
+  .tdoneaction, .print-button {
+    display: none;
+  }
+
+  .fixedhgt {
+    height: 40px !important;
+    position: fixed;
+  }
+
+  .tdonefirst, .tdonesecond, .tdonethree,
+  .tdonefour, .tdonefive, .tdonesix {
+    font-size: 14px;
+    padding: 8px;
+    text-align: center;
+  }
+
+  #customers tr {
+    page-break-inside: avoid;
+  }
+}

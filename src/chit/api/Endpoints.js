@@ -1781,7 +1781,7 @@ export const todayMetalRate = async(data)=>{
 }
 
 export const searchaccountnumber = async (data) => {
-    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/schemeaccount/branch/${data.branchId}/customer/search/${data.mobile}`);
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/payment/schacc?schAcc=${data}`);
     return response.data;
 }
 

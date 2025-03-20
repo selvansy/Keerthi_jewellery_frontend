@@ -105,6 +105,7 @@ import RefundReport from "../chit/components/Report/RefundSummary";
 import overallReport from "../chit/components/Report/overallReport";
 import PaymentLedger from "../chit/components/Report/PaymentLedger";
 import GiftReport from "../chit/components/Report/GiftReport";
+import PaymentPrint from "../chit/components/Print/CardPrint/PaymentPrint";
 
 const RouteList = [
 
@@ -547,12 +548,10 @@ const RouteList = [
     path: '/whatsapp/newarrivals',
     element: <Base renderContent={NewArrivalsWhatsapp} />
   },
-
-
   {
     name: "Card Print",
     path: '/cardprint/printone',
-    element: <Base renderContent={CardPrint} />
+    element: <Base renderContent={PaymentPrint} />
   },
   {
     name: "Receipt Print",

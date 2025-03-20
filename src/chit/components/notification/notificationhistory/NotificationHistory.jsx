@@ -327,7 +327,7 @@ function NotificationHistory() {
             />
           </div>
   
-        {
+        {/* {
             notiData.length > 0 &&(
                 <div className="flex justify-between mt-4 p-2">
                 <div className={`flex flex-row items-center justify-center gap-2  `}>
@@ -378,7 +378,7 @@ function NotificationHistory() {
                 </div>
               </div>
             )
-        }
+        } */}
         </>
         <Modal />
       </div>
