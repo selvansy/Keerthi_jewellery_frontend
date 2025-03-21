@@ -6,15 +6,10 @@ import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import {
   getallmetal,
-  productbyId,
   puritybymetal,
-  getBranchById,
-  getallbranch,
   createproduct,
   updateproduct,
   categorybymetalid,
-  showtype,
-  todaycurrentratebybranch,
   getbranchbyid,
   getAllBranch,
   getMetalRateByMetalId,

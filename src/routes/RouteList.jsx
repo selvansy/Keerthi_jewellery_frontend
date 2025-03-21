@@ -106,6 +106,7 @@ import overallReport from "../chit/components/Report/overallReport";
 import PaymentLedger from "../chit/components/Report/PaymentLedger";
 import GiftReport from "../chit/components/Report/GiftReport";
 import PaymentPrint from "../chit/components/Print/CardPrint/PaymentPrint";
+import Delist from "../chit/components/ourscheme/delist";
 
 const RouteList = [
 
@@ -136,6 +137,11 @@ const RouteList = [
     name: "Add Scheme",
     path: "/scheme/addscheme/:id",
     element: <Base renderContent={AddScheme} />,
+  },
+  {
+    name: "Delist",
+    path: "/scheme/delist",
+    element: <Base renderContent={Delist} />,
   },
 
   //ManageAccount

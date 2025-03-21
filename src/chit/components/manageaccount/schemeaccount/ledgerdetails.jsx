@@ -170,7 +170,7 @@ function Ledgerdetails({ setIsOpen }) {
                 <th className="px-4 py-2">Paid Inst</th>
                 <th className="px-4 py-2">Paid Date</th>
                 <th className="px-4 py-2">Receipt No</th>
-                <th className="px-4 py-2">Total AMT</th>
+                {/* <th className="px-4 py-2">Total AMT</th> */}
                 <th className="px-4 py-2">Mode of payment</th>
               </tr>
             </thead>
@@ -187,7 +187,7 @@ function Ledgerdetails({ setIsOpen }) {
                     <td className="px-4 py-2">{payment.paid_installments}</td>
                     <td className="px-4 py-2">{formatDate(payment.date_payment)}</td>
                     <td className="px-4 py-2">{payment.payment_receipt}</td>
-                    <td className="px-4 py-2">{payment.total_amt}</td>
+                    {/* <td className="px-4 py-2">{payment.total_amt}</td> */}
                   </tr>
                 );
               })}

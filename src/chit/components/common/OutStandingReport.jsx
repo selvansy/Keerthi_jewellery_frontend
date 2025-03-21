@@ -8,11 +8,10 @@ import ExportDropdown from '../../components/common/Dropdown/Export';
 import { ExportToExcel } from '../common/Dropdown/Excelexport';
 import { ExportToPDF } from '../common/Dropdown/ExportPdf';
 import {
-    getbranchbyclient,getallbranchclassification, getallScheme, getallbranch,
-    getallmetal, puritybymetal, allinstallmenttype, wastagetype, getallschemetypes, addscheme,allbranchclassification 
+   getallbranch, getallschemetypes,allbranchclassification 
 } from "../../../chit/api/Endpoints";
 import {SetaccExp ,SetOutreport} from "../../../redux/clientFormSlice"
-import {getOutstandingSummaryReport , postOutstandingSummaryReport} from "../../api/BackendUrl"
+import {getOutstandingSummaryReport} from "../../api/Endpoints"
 import {toast} from "react-toastify"
 import { SlidersHorizontal, Search, X } from 'lucide-react'
 import { CalendarDays, RefreshCcw} from 'lucide-react'

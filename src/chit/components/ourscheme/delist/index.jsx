@@ -1,16 +1,11 @@
 import React, { useState, useEffect } from "react";
 import Table from "../../common/Table";
-import { Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
-  getallprojects,
-  getallmenu,
-  getallsubmenudatatable,
-  changesubmenuStatus,
   deletesubmenu,
 } from "../../../api/Endpoints";
 import { useMutation } from "@tanstack/react-query";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { openModal } from "../../../../redux/modalSlice";
 import { eventEmitter } from "../../../../utils/EventEmitter";
 import { useSelector, useDispatch } from "react-redux";
@@ -18,11 +13,10 @@ import ModelOne from "../../common/Modelone";
 import Modal from "../../common/Modal";
 import { useDebounce } from "../../../hooks/useDebounce";
 import { setid } from "../../../../redux/clientFormSlice";
-import SubmenuForm from "./SubmenuForm";
 import usePagination from "../../../hooks/usePagination";
 import Action from "../../common/action";
 
-const Submenu = () => {
+const Delist = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -36,63 +30,36 @@ const Submenu = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [activeDropdown, setActiveDropdown] = useState(null);
-  const [projects, setProjects] = useState([]);
   const [menus, setMenus] = useState([]);
   const [searchInput, setSearchInput] = useState("");
   const debouncedSearch = useDebounce(searchInput, 500);
   const [id,setId]=useState('')
-  const limit = 10;
 
   function closeIncommingModal() {
     setIsviewOpen(false);
   }
 
-  const { mutate: getallsubmenusMutate } = useMutation({
-    mutationFn: (payload) => getallsubmenudatatable(payload),
-    onSuccess: (response) => {
-      if (response) {
-        console.log(response)
-        setsubmenuData(response.data);
-        setTotalPages(response.totalPages);
-        setTotalDocuments(response.totalDocument)
-      }
-      setisLoading(false);
-    },
-    onError: () => {
-      setsubmenuData([])
-      setisLoading(false);
-    },
-  });
+//   const { mutate: getallmenuMutate } = useMutation({
+//     mutationFn: getallmenu,
+//     onSuccess: (response) => {
+//       if (response) {
+//         setMenus(response.data);
+//       }
+//     },
+//   });
 
-  const { mutate: getallmenuMutate } = useMutation({
-    mutationFn: getallmenu,
-    onSuccess: (response) => {
-      if (response) {
-        setMenus(response.data);
-      }
-    },
-  });
-
-  const handleStatusToggle = async (id, currentStatus) => {
+  const handleStatusToggle = async (id) => {
     try {
       let response = await changesubmenuStatus(id);
       toast.success(response.message);
-
-      setsubmenuData((prevData) =>
-        prevData.map((submenu) =>
-          submenu._id === id
-            ? { ...submenu, active: currentStatus === true ? false : true }
-            : submenu
-        )
-      );
     } catch (error) {
       console.error("Error updating status:", error);
     }
   };
 
-  useEffect(() => {
-    getallsubmenusMutate({ search: debouncedSearch, page: currentPage, limit:itemsPerPage });
-  }, [currentPage, itemsPerPage, debouncedSearch, isviewOpen]);
+//   useEffect(() => {
+//     getallsubmenusMutate({ search: debouncedSearch, page: currentPage, limit:itemsPerPage });
+//   }, [currentPage, itemsPerPage, debouncedSearch, isviewOpen]);
 
   const handleEdit = async (id) => {
     setId(id)
@@ -168,13 +135,13 @@ const Submenu = () => {
   };
   const paginationButtons = usePagination(paginationData);
 
-  useEffect(() => {
-    getallmenuMutate();
-    return () => {
-      eventEmitter.off("EDIT_SUBMENU_SUBMIT");
-      eventEmitter.off("CONFIRMATION_SUBMIT");
-    };
-  }, []);
+//   useEffect(() => {
+//     getallmenuMutate();
+//     return () => {
+//       eventEmitter.off("EDIT_SUBMENU_SUBMIT");
+//       eventEmitter.off("CONFIRMATION_SUBMIT");
+//     };
+//   }, []);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -194,17 +161,21 @@ const Submenu = () => {
       cell: (_, index) => index + 1 + (currentPage - 1) * limit,
     },
     {
-      header: "Sub Menu Name",
+      header: "Scheme Name",
       accessor: "submenu_name",
     },
     {
-      header: "Menu Name",
+      header: "Metal type",
       accessor: "submenu_name",
     },
     {
-      header: "Display Order",
+      header: "Classification",
       accessor: "display_order",
     },
+    {
+        header: "Installment type",
+        accessor: "display_order",
+      },
     {
       header: "Path Url",
       accessor: "pathurl",
@@ -246,28 +217,27 @@ const Submenu = () => {
     setSearchInput(e.target.value);
   };
 
-  const { mutate: getallprojectsMutate } = useMutation({
-    mutationFn: getallprojects,
-    onSuccess: (response) => {
-      if (response) {
-        setProjects(response.data);
-      }
-    },
-  });
+//   const { mutate: getallprojectsMutate } = useMutation({
+//     mutationFn: getallprojects,
+//     onSuccess: (response) => {
+//       if (response) {
+//         setProjects(response.data);
+//       }
+//     },
+//   });
 
-  useEffect(() => {
-    getallsubmenusMutate({ search: debouncedSearch, page: currentPage, limit });
-  }, [currentPage, debouncedSearch]);
+//   useEffect(() => {
+//     getallsubmenusMutate({ search: debouncedSearch, page: currentPage, limit });
+//   }, [currentPage, debouncedSearch]);
 
-  useEffect(() => {
-    getallprojectsMutate();
-    getallmenuMutate();
-  }, []);
+//   useEffect(() => {
+//     getallprojectsMutate();
+//     getallmenuMutate();
+//   }, []);
 
   useEffect(() => {
     eventEmitter.on("CONFIRMATION_SUBMIT", async (data) => {
       try {
-        console.log(data);
         let response = await deletesubmenu(data.subid);
         toast.success(response.message);
         getallsubmenusMutate({ page: currentPage, limit: itemsPerPage });
@@ -346,17 +316,17 @@ const Submenu = () => {
         isOpen={isviewOpen}
         closeModal={closeIncommingModal}
       >
-        <SubmenuForm
+        {/* <SubmenuForm
           menus={menus}
           setIsOpen={setIsviewOpen}
           getallsubmenusMutate={getallsubmenusMutate}
           id={id}
           clearId={clearId}
-        />
+        /> */}
       </ModelOne>
       <Modal />
     </div>
   );
 };
 
-export default Submenu;
+export default Delist;

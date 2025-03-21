@@ -9,7 +9,6 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import Select from "react-select";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { sendOtp, closeBill } from "../../../api/BackendUrl";
 import {
   searchmobileschemeaccount,
   allschemestatus,
