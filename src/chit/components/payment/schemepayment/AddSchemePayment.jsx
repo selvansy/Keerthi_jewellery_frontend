@@ -13,10 +13,7 @@ import {
   getmultipaymentmode,
   searchmobileschemeaccount,
   getschemepaymentbyid,
-  getschemeById,
   updateschemepayment,
-  getallbranchscheme,
-  getallbranchclassification,
   getallbranch,
   getBranchById,
   getallpaymentmode,
@@ -69,8 +66,6 @@ const AddSchemePayment = () => {
     id_branch: id_branch,
     id_scheme_account: "",
     scheme_type: 0,
-    // buy_gst: 0,
-    // fine_amount: 0,
     // total_amt: 0,
     payment_amount: 0,
     metal_rate: 0,
@@ -104,8 +99,6 @@ const AddSchemePayment = () => {
       id_branch: id_branch || "",
       id_scheme_account: "",
       scheme_type: 0,
-      // buy_gst: 0,
-      // fine_amount: 0,
       total_amt: 0,
       payment_amount: 0,
       metal_rate: 0,
@@ -128,11 +121,6 @@ const AddSchemePayment = () => {
       payment_amount: Yup.number()
         .required("Payment amount is required")
         .min(0, "Payment amount must be greater than or equal to 0"),
-      // buy_gst: Yup.number().min(0, "GST must be greater than or equal to 0"),
-      // fine_amount: Yup.number().min(
-      //   0,
-      //   "Fine amount must be greater than or equal to 0"
-      // ),
       total_amt: Yup.number().optional("Total amount is required"),
       payment_mode: Yup.string().required("Payment mode is required"),
       itr_utr: Yup.string(),
@@ -289,7 +277,6 @@ const AddSchemePayment = () => {
         if (metalRate) {
           const rate = metalRate.data.rate;
           formik.setFieldValue("metal_rate", rate);
-          setMetalRate(metalRate);
         }
       } catch (error) {
         console.error("Error fetching metal rate:", error);

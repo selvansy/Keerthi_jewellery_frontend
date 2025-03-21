@@ -1,26 +1,18 @@
 import React, { useEffect, useState } from "react";
 import Table from "../../components/common/Table";
 import { useMutation } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
-import jsPDF from "jspdf";
 import "jspdf-autotable";
 import ExportDropdown from "../../components/common/Dropdown/Export";
-import { ExportToExcel } from "../common/Dropdown/Excelexport";
-import { ExportToPDF } from "../common/Dropdown/ExportPdf";
+
 import {
-  dueReportSummary,
   getbranchbyid,
-  getOverAllSummary,
   getPaymentLedger,
-  preCloseSummary,
 } from "../../../chit/api/Endpoints";
-import { SlidersHorizontal, Search, X } from "lucide-react";
-import { CalendarDays, RefreshCcw } from "lucide-react";
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import { useSelector } from "react-redux";
 import usePagination from "../../hooks/usePagination";
-import { getAllBranch } from "../../api/BackendUrl";
+import { getAllBranch } from "../../api/Endpoints";
 import Select from "react-select";
 import { customSelectStyles } from "../Setup/purity";
 

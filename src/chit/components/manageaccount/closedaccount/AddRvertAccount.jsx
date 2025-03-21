@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { toast } from 'react-toastify';
 import { useMutation } from "@tanstack/react-query";
-import {sendOtp , revertBill} from "../../../api/BackendUrl"
+import {sendOtp , revertBill} from "../../../api/Endpoints"
 import { searchmobileschemeaccount, allschemestatus, getallbranch, getallpaymentmodes } from "../../../api/Endpoints"
 import { useDebounce } from '../../../hooks/useDebounce';
 

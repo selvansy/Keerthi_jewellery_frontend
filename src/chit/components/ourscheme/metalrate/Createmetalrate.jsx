@@ -6,7 +6,7 @@ import { X } from "lucide-react";
 import {
   createmetalrate,
   getallpurity,
-  todaycurrentratebybranch,
+  schemepaymenttodayrate,
 } from "../../../api/Endpoints";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
@@ -48,7 +48,7 @@ const CreateMetalRate = () => {
 
   // mutation for geting current metal rate
   const { mutate: getMetalRate } = useMutation({
-    mutationFn: (data) => todaycurrentratebybranch(data),
+    mutationFn: (data) => schemepaymenttodayrate(data),
     onSuccess: (response) => {
       setFormData(response.data)
     },
