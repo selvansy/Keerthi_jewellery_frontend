@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
 import Table from "../../common/Table";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useLocation} from "react-router-dom";
+
 import {
-  deletesubmenu,
+  getDelistedSchemes,
+  deleteScheme,
+  changeschemestatus
 } from "../../../api/Endpoints";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -19,13 +22,14 @@ import Action from "../../common/action";
 const Delist = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const location = useLocation()
 
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
   const [isLoading, setisLoading] = useState(true);
   const [totalDocuments,setTotalDocuments]=useState()
   const [isviewOpen, setIsviewOpen] = useState(false);
-  const [submenuData, setsubmenuData] = useState([]);
+  const [schemes, schemesData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -33,33 +37,44 @@ const Delist = () => {
   const [menus, setMenus] = useState([]);
   const [searchInput, setSearchInput] = useState("");
   const debouncedSearch = useDebounce(searchInput, 500);
+  const [bred,setBred]= useState('')
   const [id,setId]=useState('')
 
   function closeIncommingModal() {
     setIsviewOpen(false);
   }
 
-//   const { mutate: getallmenuMutate } = useMutation({
-//     mutationFn: getallmenu,
-//     onSuccess: (response) => {
-//       if (response) {
-//         setMenus(response.data);
-//       }
-//     },
-//   });
+  const { mutate: getList, isLoading: isFetching } = useMutation({
+    mutationFn: getDelistedSchemes,
+    onSuccess: (response) => {
+      if (response) {
+        schemesData(response.data);
+        setTotalDocuments(response.totalDocument);
+        setTotalPages(Math.ceil(response.totalDocument / itemsPerPage));
+        setisLoading(isFetching);
+      }
+    },
+    onError: (error) => {
+      toast.error("Failed to fetch delisted schemes");
+      setisLoading(isFetching);
+    },
+  });
+
+  useEffect(() => {
+    getList({ search: debouncedSearch, page: currentPage, limit: itemsPerPage });
+  }, [currentPage, itemsPerPage, debouncedSearch, isviewOpen]);
 
   const handleStatusToggle = async (id) => {
     try {
-      let response = await changesubmenuStatus(id);
+      let response = await changeschemestatus(id);
+      if(response){
+        getList({ search: debouncedSearch, page: currentPage, limit: itemsPerPage });
+      }
       toast.success(response.message);
     } catch (error) {
       console.error("Error updating status:", error);
     }
   };
-
-//   useEffect(() => {
-//     getallsubmenusMutate({ search: debouncedSearch, page: currentPage, limit:itemsPerPage });
-//   }, [currentPage, itemsPerPage, debouncedSearch, isviewOpen]);
 
   const handleEdit = async (id) => {
     setId(id)
@@ -70,17 +85,13 @@ const Delist = () => {
     setId('')
   }
 
-  const handleAddsubmenu = () => {
-    setIsviewOpen(true);
-  };
-
   const handleDelete = (id) => {
     dispatch(
       openModal({
         modalType: "CONFIRMATION",
-        header: "Delete Submenu",
+        header: "Delete Scheme",
         formData: {
-          message: "Are you sure you want to delete this submenu?",
+          message: "Are you sure you want to delete this scheme?",
           subid: id,
         },
         buttons: {
@@ -95,10 +106,11 @@ const Delist = () => {
     );
 
     eventEmitter.on("CONFIRMATION_SUBMIT", async (data) => {
+      console.log(data)
       try {
-        let response = await deletesubmenu(data.subid);
+        let response = await deleteScheme(data.subid);
         toast.success(response.message);
-        getallsubmenusMutate({ page: currentPage, limit: itemsPerPage });
+        getList({ search: debouncedSearch, page: currentPage, limit: itemsPerPage });
       } catch (error) {
         console.error("Error deleting submenu:", error);
       }
@@ -110,16 +122,6 @@ const Delist = () => {
       setCurrentPage(page);
       getallsubmenusMutate({ search: debouncedSearch, page, limit: itemsPerPage });
     }
-  };
-
-  const nextPage = () => {
-    setCurrentPage((prevPage) =>
-      prevPage < totalPages ? prevPage + 1 : prevPage
-    );
-  };
-
-  const prevPage = () => {
-    setCurrentPage((prevPage) => (prevPage > 1 ? prevPage - 1 : prevPage));
   };
 
   const handleItemsPerPageChange = (value) => {
@@ -134,14 +136,6 @@ const Delist = () => {
     handlePageChange: handlePageChange,
   };
   const paginationButtons = usePagination(paginationData);
-
-//   useEffect(() => {
-//     getallmenuMutate();
-//     return () => {
-//       eventEmitter.off("EDIT_SUBMENU_SUBMIT");
-//       eventEmitter.off("CONFIRMATION_SUBMIT");
-//     };
-//   }, []);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -158,28 +152,32 @@ const Delist = () => {
 
     {
       header: "S.No",
-      cell: (_, index) => index + 1 + (currentPage - 1) * limit,
+      cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
     },
     {
       header: "Scheme Name",
-      accessor: "submenu_name",
+      accessor: "scheme_name",
     },
     {
       header: "Metal type",
-      accessor: "submenu_name",
+      accessor: "metal_name",
     },
     {
       header: "Classification",
-      accessor: "display_order",
+      accessor: "classification_name",
     },
     {
         header: "Installment type",
-        accessor: "display_order",
+        accessor: "installment_type",
       },
     {
-      header: "Path Url",
-      accessor: "pathurl",
+      header: "Maturiyt Period",
+      accessor: "maturity_period",
     },
+    {
+        header: "Scheme Type",
+        accessor: "schemetype_name",
+      },
     {
       header: "Status",
       accessor: "active",
@@ -204,7 +202,7 @@ const Delist = () => {
     {
       header: "Actions",
       cell: (row, rowIndex) => (
-        <Action row={row} data={submenuData} rowIndex={rowIndex} activeDropdown={activeDropdown} setActive={hanldeActiveDropDown}  handleEdit={handleEdit} handleDelete={handleDelete}/>
+        <Action showEdit={false} row={row} data={schemes} rowIndex={rowIndex} activeDropdown={activeDropdown} setActive={hanldeActiveDropDown}  handleEdit={handleEdit} handleDelete={handleDelete}/>
       ),
       sticky: "right",
     },
@@ -213,44 +211,10 @@ const Delist = () => {
   const hanldeActiveDropDown = (data) => {
     setActiveDropdown(data);
   };
+
   const handleSearch = (e) => {
     setSearchInput(e.target.value);
   };
-
-//   const { mutate: getallprojectsMutate } = useMutation({
-//     mutationFn: getallprojects,
-//     onSuccess: (response) => {
-//       if (response) {
-//         setProjects(response.data);
-//       }
-//     },
-//   });
-
-//   useEffect(() => {
-//     getallsubmenusMutate({ search: debouncedSearch, page: currentPage, limit });
-//   }, [currentPage, debouncedSearch]);
-
-//   useEffect(() => {
-//     getallprojectsMutate();
-//     getallmenuMutate();
-//   }, []);
-
-  useEffect(() => {
-    eventEmitter.on("CONFIRMATION_SUBMIT", async (data) => {
-      try {
-        let response = await deletesubmenu(data.subid);
-        toast.success(response.message);
-        getallsubmenusMutate({ page: currentPage, limit: itemsPerPage });
-      } catch (error) {
-        console.error("Error deleting submenu:", error);
-      }
-    });
-
-    return () => {
-      eventEmitter.off("EDIT_SUBMENU_SUBMIT");
-      eventEmitter.off("CONFIRMATION_SUBMIT");
-    };
-  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -263,38 +227,42 @@ const Delist = () => {
     return () => document.removeEventListener("click", handleClickOutside);
   }, [activeDropdown]);
 
+useEffect(() => {
+    if (location.pathname) {
+      const formatPath = (path) => {
+        return path
+          .replace(/^\//, "") 
+          .replace(/^(\w)/, (match) => match.toUpperCase()) 
+          .replace(/\/(\w)/g, (match, p1) => "/" + p1.toUpperCase());
+      };
+
+      const formattedPath = formatPath(location.pathname);
+      setBred(formattedPath)
+    }
+  }, [location.pathname]);
+
   return (
     <div className="flex flex-col p-4 relative">
       {isLoading ? (
         <div>Loading...</div>
       ) : (
         <>
-          <h2 className="text-2xl text-gray-900 font-bold">Sub Menu</h2>
-          <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
-            <div className="relative w-full lg:w-1/3 min-w-[200px]">
-              <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                <Search className="text-gray-500" />
-              </div>
-              <input
-                onChange={handleSearch}
-                placeholder="Search..."
-                className="p-3 pl-10 pr-3 border-2 bg-[#F5F5F5] border-gray-500 rounded-md w-full"
-              />
-            </div>
+          <h6 className="text-gray-900 font-bold mb-4">{bred}</h6>
+          {/* <div className="flex flex-col gap-4 lg:flex-row lg:justify-end lg:items-center mt-4">
             <div className="flex flex-row items-center justify-end gap-2">
               <button
                 className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
-                onClick={handleAddsubmenu}
+                onClick={navigateToSchemes}
                 style={{ backgroundColor: layout_color }}
               >
-                + Add submenu
+                Go To schemes
               </button>
             </div>
-          </div>
+          </div>  */}
 
           <div className="mt-4">
             <Table
-              data={submenuData}
+              data={schemes}
               columns={columns}
               currentPage={currentPage}
               handleItemsPerPageChange={handleItemsPerPageChange}

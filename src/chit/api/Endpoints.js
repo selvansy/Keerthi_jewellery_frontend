@@ -2215,6 +2215,7 @@ export const createproduct = async (data) => {
 
 //Scheme
 export const getSchemeTable = async (data) => {
+  console.log(data)
   const response = await Api.post(
     `${import.meta.env.VITE_API_URL}/api/client/scheme/table`,
     data
@@ -2732,5 +2733,11 @@ export const closeBill = async(data)=>{
 
 export const revertBill = async(data)=>{ 
   const response= await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/schemeaccount/${data.id_scheme_account}/revert`)
+  return response.data
+}
+
+//scheme
+export const getDelistedSchemes = async(data)=>{ 
+  const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/scheme/delist`,data)
   return response.data
 }
