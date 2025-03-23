@@ -6,7 +6,7 @@ import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { CalendarDays, Search, ChevronDown, ChevronUp } from "lucide-react";
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import * as Yup from "yup";
 import {
   addschemepayment,
@@ -54,6 +54,7 @@ const AddSchemePayment = () => {
   const [weight] = useState([12, 3, 4]);
   const [selectedMode, setSelectedMode] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [multiplayModes, setMultiplayModes] = useState("");
   const [formData, setFormData] = React.useState({
     id_customer: "",
     mobile: "",
@@ -96,7 +97,7 @@ const AddSchemePayment = () => {
       remark: "",
       scheme_acc_number: "",
       id_scheme: "",
-      id_branch: id_branch || "",
+      id_branch: "",
       id_scheme_account: "",
       scheme_type: 0,
       total_amt: 0,
@@ -107,6 +108,7 @@ const AddSchemePayment = () => {
       total_installments: 1,
       id_classification: "",
     },
+
     validationSchema: Yup.object({
       id_branch: Yup.string().required("Branch is required"),
       mobile: Yup.string()
@@ -126,6 +128,8 @@ const AddSchemePayment = () => {
       itr_utr: Yup.string(),
       remark: Yup.string(),
     }),
+    validateOnBlur: false,
+    validateOnChange: false,
     onSubmit: (values) => {
       if (id) {
         updateschemepaymentmutate({ id, values });
@@ -157,16 +161,27 @@ const AddSchemePayment = () => {
     cacheTime: 10 * 60 * 1000,
   });
 
-  const { data: multiplayModes } = useQuery({
-    queryKey: ["multipay", formik.values.payment_mode],
-    queryFn: async () => {
-      if (formik.values.payment_mode === 7) {
-        return getmultipaymentmode();
-      }
-    },
-    staleTime: 5 * 60 * 1000,
-    cacheTime: 10 * 60 * 1000,
-  });
+  // const { data: multiplayModes } = useQuery({
+  //   queryKey: ["multipay", formik.values.payment_mode],
+  //   queryFn: async () => {
+  //     console.log(typeof selectedMode)
+  //     if (selectedMode === 7) {
+  //       return await getmultipaymentmode();
+  //     }
+  //     return [];
+  //   },
+  // });
+
+  useEffect(() => {
+    const getMutliOptions = async () => {
+      const data = await getmultipaymentmode();
+      setMultiplayModes(data);
+    };
+
+    if (selectedMode === 7) {
+      getMutliOptions();
+    }
+  }, [selectedMode]);
 
   const { mutate: createschemepaymentmutate } = useMutation({
     mutationFn: addschemepayment,
@@ -193,8 +208,8 @@ const AddSchemePayment = () => {
   const { mutate: handlesearchschemeaccount } = useMutation({
     mutationFn: searchmobileschemeaccount,
     onSuccess: (response) => {
-      if (response) {
-        if (response.data) {
+      if (response && response.data) {
+        try {
           const outputData = response.data;
           const data = outputData.map((item) => ({
             value: item._id,
@@ -202,13 +217,22 @@ const AddSchemePayment = () => {
           }));
           setSchemeData(data);
           setFullData(outputData);
+          toast.success(response.message);
+        } catch (error) {
+          toast.error("Error processing response data");
         }
+      } else {
+        toast.error("No data found in response");
+      }
 
-        if (response?.general) {
-          setIsseAccontno(response?.general?.account_number);
-          setIssetReceipt(response?.general?.display_receiptno);
-        }
-        toast.success(response.message);
+      if (response?.general) {
+        setIsseAccontno(response?.general?.account_number);
+        setIssetReceipt(response?.general?.display_receiptno);
+      }
+    },
+    onError: (error) => {
+      if (error?.response?.data?.message) {
+        toast.error(error?.response?.data?.message);
       }
     },
   });
@@ -216,7 +240,7 @@ const AddSchemePayment = () => {
   // useEffects
   useEffect(() => {
     if (selectedMode === 7) {
-      if (multiplayModes) {
+      if (multiplayModes?.data?.length > 0) {
         setIspaymode(true);
         const data = multiplayModes.data.map((item) => ({
           value: item.parameter,
@@ -228,6 +252,10 @@ const AddSchemePayment = () => {
       setIspaymode(false);
     }
   }, [multiplayModes, selectedMode]);
+
+  useEffect(() => {
+    formik.setFieldValue("id_branch", id_branch);
+  }, [id_branch]);
 
   useEffect(() => {
     if (paymentModes) {
@@ -324,6 +352,15 @@ const AddSchemePayment = () => {
       setAccountreadOnly(true);
     }
   }, [id]);
+
+  useEffect(() => {
+    if (mobile === "" || mobile) {
+      setSchemeData([]);
+      setFullData([]);
+      setSelectedScheme({});
+      formik.setFieldValue("id_scheme_account", "");
+    }
+  }, [mobile]);
 
   // useEffect(() => {
   //   if (metal_rate !== 0) {
@@ -444,6 +481,11 @@ const AddSchemePayment = () => {
     if (mobile === "") {
       return toast.error("Mobile Number is required!");
     }
+
+    if (mobile !== "" && schemedata.length > 0 && fullData.length > 0) {
+      return toast.error("Scheme accounts alredy fetched");
+    }
+
     const searchData = {
       id_branch: formik.values.id_branch || id_branch,
       search_mobile: mobile,
@@ -544,103 +586,36 @@ const AddSchemePayment = () => {
   //   },
   // });
 
-  const filterInputchange = (e) => {
-    let total = 0;
-    const { name, value } = e.target;
+  console.log(formik.values);
+  // const calculatepayment = () => {
+  //   let total_amt = 0;
+  //   let metalweight = 0;
+  //   // Calculate GST if applicable
+  //   if (parseInt(formik.values.buy_gst) > 0) {
+  //     gstAmount =
+  //       parseFloat(formik.values.payment_amount) *
+  //       (parseFloat(formik.values.buy_gst) / 100);
+  //   }
 
-    if (name === "payment_amount") {
-      setPaymentAmount(value);
-    } else if (name === "metal_rate") {
-      setMetalRate(value);
-    } else if (name === "fine_amount") {
-      setFineAmount(value);
-    }
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-    if (name === "payment_mode") {
-      if (value === "67682cf7666e32053d05e04d") {
-        setIspaymode(true);
-      } else {
-        setIspaymode(false);
-      }
-    }
+  //   // Calculate total amount based on scheme type
+  //   if (![12, 3, 4].includes(selectedScheme?.scheme_type)) {
+  //     // For schemes that are not weight-based
+  //     total_amt = parseFloat(formik.values.payment_amount);
+  //   } else {
+  //     // For weight-based schemes
+  //     metalweight =
+  //       parseFloat(formik.values.payment_amount) /
+  //       parseFloat(formik.values.metal_rate);
+  //     total_amt = parseFloat(formik.values.payment_amount);
+  //   }
 
-    if (name === "accountschemeid") {
-      setFormData((prev) => ({
-        ...prev,
-        scheme_acc_number: selectedScheme.id_scheme.code + "" + value,
-      }));
-    }
-
-    if (name === "date_payment") {
-      setDatePayment(value);
-    }
-
-    if (name === "id_branch") {
-      setIdBranch(value);
-      if (value !== "") {
-        getallbranchMutate();
-      } else {
-        setMobile("");
-        setSchemeData([]);
-        setFormData((prev) => ({
-          ...prev,
-          id_customer: "",
-          mobile: "",
-          date_payment: date_payment,
-          payment_mode: "",
-          itr_utr: "",
-          remark: "",
-          scheme_acc_number: "",
-          id_scheme: "",
-          id_branch: id_branch,
-          id_scheme_account: "",
-          scheme_type: 0,
-          // buy_gst: 0,
-          // fine_amount: 0,
-          total_amt: 0,
-          payment_amount: 0,
-          metal_rate: 0,
-          metal_weight: 0,
-          accountschemeid: "",
-          total_installments: 1,
-          id_classification: "",
-        }));
-      }
-    }
-  };
-
-  const calculatepayment = () => {
-    let total_amt = 0;
-    let metalweight = 0;
-    // Calculate GST if applicable
-    if (parseInt(formik.values.buy_gst) > 0) {
-      gstAmount =
-        parseFloat(formik.values.payment_amount) *
-        (parseFloat(formik.values.buy_gst) / 100);
-    }
-
-    // Calculate total amount based on scheme type
-    if (![12, 3, 4].includes(selectedScheme?.scheme_type)) {
-      // For schemes that are not weight-based
-      total_amt = parseFloat(formik.values.payment_amount);
-    } else {
-      // For weight-based schemes
-      metalweight =
-        parseFloat(formik.values.payment_amount) /
-        parseFloat(formik.values.metal_rate);
-      total_amt = parseFloat(formik.values.payment_amount);
-    }
-
-    // Update form data with calculated values
-    formik.setValues((prevValues) => ({
-      ...prevValues,
-      metal_weight: metalweight.toFixed(3),
-      total_amt: Number(total_amt.toFixed(2)),
-    }));
-  };
+  //   // Update form data with calculated values
+  //   formik.setValues((prevValues) => ({
+  //     ...prevValues,
+  //     metal_weight: metalweight.toFixed(3),
+  //     total_amt: Number(total_amt.toFixed(2)),
+  //   }));
+  // };
 
   // const handleschemebyid = async (data) => {
   //   if (!data) return;
@@ -795,155 +770,6 @@ const AddSchemePayment = () => {
   const handleCancel = () => {
     navigate("/payment/schemepayment");
   };
-
-  const handleAddCustomer = () => {
-    navigate("/managecustomers/addcustomer");
-  };
-
-  // const isValidForm = () => {
-  //   const err = {};
-
-  //   if (formData.total_amt === "") {
-  //     err["total_amt"] = "Total Amount is required";
-  //   } else {
-  //     err["total_amt"] = "";
-  //   }
-
-  //   if (formData.payment_mode === "") {
-  //     err["payment_mode"] = "Payment Mode is required";
-  //   } else {
-  //     err["payment_mode"] = "";
-  //   }
-
-  //   if (formData.accountschemeid === "") {
-  //     err["scheme_acc_number"] = "Scheme Account Number is required";
-  //   } else {
-  //     err["scheme_acc_number"] = "";
-  //   }
-
-  //   if (formData.payment_receipt === "") {
-  //     err["payment_receipt"] = "Payment Receipt is required";
-  //   } else {
-  //     err["payment_receipt"] = "";
-  //   }
-
-  //   if (formData.id_scheme_account === "") {
-  //     err["id_scheme_account"] = "Scheme Account is required";
-  //   } else {
-  //     err["id_scheme_account"] = "";
-  //   }
-
-  //   if (formData.date_payment === "") {
-  //     err["date_payment"] = "Payment Date is required";
-  //   } else {
-  //     err["date_payment"] = "";
-  //   }
-  //   if (formData.metal_rate === "") {
-  //     err["metal_rate"] = "Metal Rate is required";
-  //   } else {
-  //     err["metal_rate"] = "";
-  //   }
-
-  //   if (
-  //     selectedScheme.scheme_type === 4 ||
-  //     selectedScheme.scheme_type === 5 ||
-  //     selectedScheme.scheme_type === 7 ||
-  //     selectedScheme.scheme_type === 8 ||
-  //     selectedScheme.scheme_type === 9 ||
-  //     selectedScheme.scheme_type === 10
-  //   ) {
-  //     if (formData.payment_amount < selectedScheme.min_amount) {
-  //       (err["payment_amount"] = "Allowed Limit Minimum Amount Rs."),
-  //         selectedScheme.min_amount;
-  //     } else if (formData.payment_amount > selectedScheme.max_amount) {
-  //       (err["payment_amount"] = "Allowed Limit Maximum Amount Rs."),
-  //         selectedScheme.max_amount;
-  //     } else if (formData.payment_amount === "") {
-  //       err["payment_amount"] = "Payment Aount is required";
-  //     } else {
-  //       err["payment_amount"] = "";
-  //     }
-  //     if (
-  //       selectedScheme.scheme_type === 2 ||
-  //       selectedScheme.scheme_type === 5 ||
-  //       selectedScheme.scheme_type === 6 ||
-  //       selectedScheme.scheme_type === 10
-  //     ) {
-  //       if (formData.metal_weight === "") {
-  //         err["metal_weight"] = "Metal Weight is required";
-  //       } else {
-  //         err["metal_weight"] = "";
-  //       }
-  //     }
-  //   } else if (selectedScheme.scheme_type === 3) {
-  //     if (formData.payment_amount < selectedScheme.min_weight) {
-  //       (err["payment_amount"] = "Allowed Limit Minimum Weight Rs."),
-  //         selectedScheme.min_weight;
-  //     } else if (formData.payment_amount > selectedScheme.max_weight) {
-  //       (err["payment_amount"] = "Allowed Limit Maximum Weight Rs."),
-  //         selectedScheme.max_weight;
-  //     } else if (formData.payment_amount === "") {
-  //       err["payment_amount"] = "Payment Weight is required";
-  //     } else {
-  //       err["payment_amount"] = "";
-  //     }
-  //   } else {
-  //     if (formData.payment_amount === "") {
-  //       err["payment_amount"] = "Payment Amount is required";
-  //     } else {
-  //       err["payment_amount"] = "";
-  //     }
-  //   }
-
-  //   setErrors((prevState) => ({
-  //     ...prevState,
-  //     ...err,
-  //   }));
-
-  //   const hasErrors = Object.values(err).some((error) => error.length > 0);
-
-  //   return !hasErrors;
-  // };
-  // const onSubmit = (e) => {
-  //   e.preventDefault();
-
-  //   const formFields = new FormData(e.target);
-  //   const formDataObject = Object.fromEntries(formFields.entries());
-
-  //   if (isValidForm()) {
-  //     if (formData.id_customer === "") {
-  //       toast.error("Customer Id is Required!");
-  //       return;
-  //     } else if (formData.id_branch === "") {
-  //       toast.error("Branch Id is Required!");
-  //       return;
-  //     } else if (formData.mobile === "") {
-  //       toast.error("Mobile is Required!");
-  //       return;
-  //     } else if (selectedScheme?.id_scheme === "") {
-  //       toast.error("Scheme Id is Required!");
-  //       return;
-  //     } else if (selectedScheme.scheme_type === "") {
-  //       toast.error("Scheme Id is Required!");
-  //       return;
-  //     } else if (selectedScheme.id_classification === "") {
-  //       toast.error("Classification Id is Required!");
-  //       return;
-  //     } else if (selectedScheme?.id_scheme === "") {
-  //       toast.error("Scheme Id is Required!");
-  //       return;
-  //     }
-  //     setErrors({ id_scheme: "" });
-
-  //     if (!id) {
-  //       createschemepaymentmutate(formData);
-  //     } else {
-  //       updateschemepaymentmutate(formData);
-  //     }
-  //   } else {
-  //     console.log("Form has validation errors. Please correct them.");
-  //   }
-  // };
 
   const toggleAccordion = () => {
     setIsExpanded(!isExpanded);
@@ -1175,9 +1001,6 @@ const AddSchemePayment = () => {
                           name="date_payment"
                           disabled
                           selected={formData.date_payment}
-                          onChange={(e) => {
-                            filterInputchange(e);
-                          }}
                           dateFormat="dd-MM-yyyy"
                           placeholderText="Select Date"
                           className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
@@ -1200,9 +1023,6 @@ const AddSchemePayment = () => {
                         name="metal_rate"
                         disabled
                         value={formik.values.metal_rate}
-                        onChange={(e) => {
-                          filterInputchange(e);
-                        }}
                         type="text"
                         className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                         placeholder=""
@@ -1330,9 +1150,6 @@ const AddSchemePayment = () => {
                         name="payment_amount"
                         value={formik.values.payment_amount}
                         min="0"
-                        // onChange={(e) => {
-                        //   filterInputchange(e);
-                        // }}
                         {...formik.getFieldProps("payment_amount")}
                         onKeyDown={(e) => {
                           if (e.key === "-" || e.key === "e" || e.key === "E") {
@@ -1392,17 +1209,14 @@ const AddSchemePayment = () => {
                     <Select
                       styles={customStyles}
                       isClearable={true}
-                      options={paymentmode || []}
+                      options={paymentmode}
                       placeholder="Select payment mode"
-                      value={
-                        paymentmode?.find(
-                          (option) =>
-                            option.value === formik.values.payment_mode
-                        ) || null
-                      }
+                      value={paymentmode?.find(
+                        (option) => option.value === formik.values.payment_mode
+                      )}
                       onChange={(option) => {
                         if (Number(option.mode) === 7) {
-                          setSelectedMode(mode);
+                          setSelectedMode(option.mode);
                         }
                         formik.setFieldValue(
                           "payment_mode",
@@ -1419,21 +1233,20 @@ const AddSchemePayment = () => {
                   </div>
                   {ispaymode && (
                     <>
-                      {multipaymode.map((multipay) => (
+                      {multiplayModes?.data?.map((multipay) => (
                         <div key={multipay.parameter} className="flex flex-col">
                           <label className="text-black mb-2 font-normal">
-                            {multipay.label}
+                            {multipay.name}
                           </label>
                           <input
-                            type="text"
-                            name={multipay.value}
-                            value={formik.values[multipay.value] || ""}
+                            type="number"
+                            name={multipay.parameter}
+                            value={formik.values[multipay.parameter] || ""}
                             onChange={(e) => {
                               formik.setFieldValue(
-                                multipay.value,
-                                Number(e.target.value) || 0
+                                multipay.parameter,
+                                Number(e.target.value) || ""
                               );
-                              filterInputchange(e);
                             }}
                             className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                             placeholder="Enter amount here"
@@ -1449,10 +1262,8 @@ const AddSchemePayment = () => {
                     <input
                       type="text"
                       name="itr_utr"
-                      value={formData.itr_utr}
-                      onChange={(e) => {
-                        filterInputchange(e);
-                      }}
+                      value={formik.values.itr_utr}
+                      onChange={formik.handleChange}
                       className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                       placeholder="Enter ITR/UTR ID"
                     />
