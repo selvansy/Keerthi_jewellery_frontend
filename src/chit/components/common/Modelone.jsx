@@ -10,7 +10,7 @@ export default function Modal({
 
   extraClassName = "",
 
-  className = "w-full max-w-lg bg-white rounded-2xl shadow-lg p-6",
+  className = "bg-white rounded-2xl shadow-lg p-6",
 
   children,
 

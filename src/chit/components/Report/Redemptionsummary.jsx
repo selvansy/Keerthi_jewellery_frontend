@@ -86,7 +86,11 @@ function RedemptionReport() {
             day: "numeric",
           });
         }
-      }
+      },
+      // {
+      //   header: "Remarks",
+      //   cell: (row)=>"Keep your obnoxious remarks to yourself.",
+      // },
       
   ];
 

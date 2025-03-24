@@ -10,7 +10,7 @@ import Select from "react-select";
 import { customSelectStyles } from "../../../components/Setup/purity/index";
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { emptyToZero, formatNumber } from "../../../utils/commonFunction"
-import { addgiftissues, searchbarcodenumber, giftissuetype, searchcustomermobile, getallgiftInwardByBranch, searchmobileschemeaccount, getallbranch, getschemeaccountbyid } from '../../../api/Endpoints'
+import { addgiftissues, searchbarcodenumber, giftissuetype, searchcustomermobile, getallgiftInwardByBranch, searchSchAccByMobile, getallbranch, getschemeaccountbyid } from '../../../api/Endpoints'
 import SpinLoading from '../../common/spinLoading';
 
 const AddGiftIssued = () => {
@@ -60,11 +60,7 @@ const AddGiftIssued = () => {
     gift_issues: []
   });
 
-  // useEffect(() => {
-  //   getallissuetypeMutate();
-
-  // }, []);
-
+  console.log("brnahc",branchId)
 
   const { data: giftResponse, isLoading: loadingGifts } = useQuery({
     queryKey: ["barcode", branchId],
@@ -118,63 +114,43 @@ const AddGiftIssued = () => {
 
 
   useEffect(() => {
+
+    if(!roledata) return;
     if (id_branch !== "0" || id_branch !== 0) {
       setFormData(prev => ({
         ...prev,
         id_branch: branchaccess
       }));
-      setIdbranch(id_branch || branchaccess)
+      setIdbranch(branchaccess)
     }
 
-  }, [visibleaccount, roledata]);
+  }, [branchaccess,visibleaccount, roledata]);
+
 
   const handleSearchmobile = () => {
     setSearchError('');
     if (mobile === "") {
       toast.error('Mobile Number is required!');
     }
-    if (visibleaccount === true) {
-      setFormData(prev => ({
-        ...prev,
-        mobile: mobile,
-      }));
-      handlesearchScheme({ search_mobile: mobile, id_branch: branchId })
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        mobile: mobile,
-      }));
-      handlesearchcustomer({ search_mobile: mobile, id_branch: branchId });
+
+    setFormData(prev => ({
+      ...prev,
+      mobile: mobile,
+    }));
+
+    if (formData.issue_type === "1" || formData.issue_type === 1) {
+      handlesearchScheme({ value: mobile, branchId: formData.id_branch })
+    }else{
+      handlesearchcustomer({ search: mobile, id_branch: formData.id_branch });
     }
-
   };
-
-  const { mutate: handlesearchcustomer } = useMutation({
-    mutationFn: (payload) => searchcustomermobile(payload),
-    onSuccess: (response) => {
-      if (response) {
-        setCustomername(response.data.firstname + ' ' + response.data.lastname);
-        setAddress(response.data.address);
-        setFormData(prev => ({
-          ...prev,
-          id_customer: response.data._id,
-          mobile: response.data.mobile,
-        }));
-      }
-      setLoading(false);
-    },
-    onError: (error) => {
-      toast.error(error?.response?.data?.message);
-      setLoading(false);
-    },
-  });
-
 
 
 
   const { mutate: handlesearchScheme } = useMutation({
-    mutationFn: (data) => searchmobileschemeaccount(data),
+    mutationFn: (data) => searchSchAccByMobile(data),
     onSuccess: (response) => {
+    
       if (response) {
         setCustomername(response.data[0].id_customer?.firstname + ' ' + response.data[0]?.id_customer?.lastname);
         setAddress(response.data[0]?.id_customer?.address);
@@ -194,6 +170,26 @@ const AddGiftIssued = () => {
     onError: (error) => {
       toast.error(error.response.data.message)
     }
+  });
+
+  const { mutate: handlesearchcustomer } = useMutation({
+    mutationFn: (payload) => searchcustomermobile(payload),
+    onSuccess: (response) => {
+      if (response) {
+        setCustomername(response.data.firstname + ' ' + response.data.lastname);
+        setAddress(response.data.address);
+        setFormData(prev => ({
+          ...prev,
+          id_customer: response.data._id,
+          mobile: response.data.mobile,
+        }));
+      }
+      setLoading(false);
+    },
+    onError: (error) => {
+      toast.error(error?.response?.data?.message);
+      setLoading(false);
+    },
   });
 
   const handleschemeaccountbyBranch = async (data) => {
@@ -227,23 +223,23 @@ const AddGiftIssued = () => {
       setIdbranch(value);
     }
 
-    if (name === "issue_type") {
-      if (value === "1") {
-        setFormData(prev => ({ ...prev, issue_type: value }));
-        setVisibleaccount(true);
-      } else {
-
-        setVisibleaccount(false);
-        // setCustomername(null);
-        // setAddress(null);
-        // setNoGifts(null)
-
-      }
-    } else if (name === "id_scheme_account") {
+     if (name === "id_scheme_account") {
       handleschemeaccountlist(e.target.value);
     }
 
   };
+
+  const handleSchemeAcc = (value)=>{
+
+      if (value === "1" || value === 1) {
+        setVisibleaccount(true);
+      } else {
+        setVisibleaccount(false);
+        setCustomername(null);
+        setAddress(null);
+        setNoGifts(null)
+      }
+  }
 
   const handleschemeaccountlist = async (id_scheme_account) => {
 
@@ -257,15 +253,12 @@ const AddGiftIssued = () => {
       } else {
         setSchemeammount("₹ " + response.data.id_scheme.amount);
       }
-
-
       setGiftpercentage(response.data.gift_percentage);
       setAllocategiftamt(response.data.allocate_gift_amount);
       setReceivedgiftamt(response.data.received_gift_amount);
       setBalancegiftamt(response.data.balance_gift_amount);
     }
   };
-
 
 
   const handleSearchbarcode = () => {
@@ -275,12 +268,10 @@ const AddGiftIssued = () => {
       return;
     }
 
-    console.log("totalGifts,", totalGifts)
-    console.log("noOfgifts", noOfgifts)
-    if (totalGifts < noOfgifts) {
-      handlegiftbarcodeno({ barcode: searchbarcode, id_branch: branchId });
-    } else {
+    if (totalGifts >= noOfgifts && (formData.issue_type === "1" || formData.issue_type === 1) ) {
       toast.error("Gift limit reached");
+    } else {
+      handlegiftbarcodeno({ barcode: searchbarcode, id_branch: formData.id_branch });
     }
   }
 
@@ -359,9 +350,13 @@ const AddGiftIssued = () => {
     });
   };
 
-
   const removeRowById = (idToRemove) => {
-    setBarcodeData((prevData) => prevData.filter((bar, index) => index !== idToRemove));
+    setBarcodeData((prevData) => prevData.filter((_, index) => index !== idToRemove));
+  
+    setFormData((prevFormData) => {
+      const updatedGiftIssues = prevFormData.gift_issues.filter((_, index) => index !== idToRemove);
+      return { ...prevFormData, gift_issues: updatedGiftIssues };
+    });
   };
 
 
@@ -432,7 +427,6 @@ const AddGiftIssued = () => {
   });
 
 
-
   return (
     <>
       <div className='flex flex-row justify-between'>
@@ -463,7 +457,6 @@ const AddGiftIssued = () => {
                         ...prev,
                         id_branch: branch.value,
                       }));
-
                       setIdbranch(branch.value)
                     }}
                     customSelectStyles={customSelectStyles}
@@ -495,24 +488,14 @@ const AddGiftIssued = () => {
                         ...prev,
                         issue_type: item.value,
                       }));
+
+                      handleSchemeAcc(item.value);
                     }}
                     customSelectStyles={customSelectStyles}
                     isLoading={loadingGiftItems}
                     placeholder="Select GiftIssued Type"
                   />
 
-
-                {/* <select value={formData.issue_type}
-                  name="issue_type"
-                  onChange={inputChange}
-                  className='appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2focus:border-transparent'
-                  defaultValue=''>
-
-                  <option value='' readOnly>--Select--</option>
-                  {issuetype.map((issue) => (
-                    <option key={issue.id} value={issue.id}>{issue.name}</option>
-                  ))}
-                </select> */}
 
                 <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
                   <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
@@ -554,7 +537,6 @@ const AddGiftIssued = () => {
                     <option value='' readOnly>--Select--</option>
                     {schemeaccount.map((account) => (
                       <option key={account._id} value={account._id}>{account.scheme_name}</option>
-
                     ))}
                   </select>
                   {formErrors.id_scheme_account && <span className="text-red-500 text-sm mt-1">{formErrors.id_scheme_account}</span>}
@@ -566,7 +548,6 @@ const AddGiftIssued = () => {
                 </div>
               </div>
             )}
-
 
             <div className='flex flex-col mt-2'>
               <label className='text-gray-700 mb-1 font-medium'>Customer Name<span className='text-red-400'>*</span></label>

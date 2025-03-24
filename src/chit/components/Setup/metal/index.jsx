@@ -190,31 +190,9 @@ const Metal = () => {
       header: "S.No",
       cell: (_, index) => index + 1 + (currentPage - 1) * limit,
     },
-
     {
       header: "Metal Name",
       accessor: "metal_name",
-    },
-
-    {
-      header: "Status",
-      accessor: "active",
-      cell: (row) => (
-        <label className="relative inline-flex items-center cursor-pointer">
-          <input
-            type="checkbox"
-            className="sr-only peer"
-            checked={row?.active === true}
-            onChange={() => handleStatusToggle(row?._id, row?.active)}
-          />
-          <div
- className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-[#E7EEF5] p-[2px] after:duration-300 after:bg-[#004181] ${
-              row?.active === true
-                ? "peer-checked:bg-[#E7EEF5] peer-checked:ring-[#E7EEF5]"
-                : "peer-checked:bg-[#E7EEF5] peer-checked:ring-gray-400"
-            } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-[${layout_color}] peer-hover:after:scale-95`}          ></div>
-        </label>
-      ),
     },
     {
       header: "Actions",
@@ -231,6 +209,27 @@ const Metal = () => {
       ),
       sticky: "right",
     },
+    // {
+    //   header: "Status",
+    //   accessor: "active",
+    //   cell: (row) => (
+    //     <label className="relative inline-flex items-center cursor-pointer">
+    //       <input
+    //         type="checkbox"
+    //         className="sr-only peer"
+    //         checked={row?.active === true}
+    //         onChange={() => handleStatusToggle(row?._id, row?.active)}
+    //       />
+    //       <div
+    //         className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-black p-[2px] after:duration-300 after:bg-black ${
+    //           row.active === true
+    //             ? "peer-checked:bg-[#61A375] peer-checked:ring-[#61A375]"
+    //             : "peer-checked:bg-gray-400 peer-checked:ring-gray-400"
+    //         } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-white peer-hover:after:scale-95`}
+    //       ></div>
+    //     </label>
+    //   ),
+    // },
   ];
 
   const handleSearch = (e) => {
@@ -303,7 +302,7 @@ const Metal = () => {
 
       <ModelOne
         title={id ? "Edit Metal" : "Add Metal"}
-        extraClassName="max-w-[75%] "
+        extraClassName="max-w-lg"
         setIsOpen={setIsviewOpen}
         isOpen={isviewOpen}
         closeModal={closeIncommingModal}

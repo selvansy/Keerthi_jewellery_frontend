@@ -67,7 +67,7 @@ import AccountSummaryReport from "../chit/components/Report/AccountSummary";
 import OutStandingReport from "../chit/components/common/OutStandingReport";
 import OutStandingAmount from "../chit/components/Report/OutStandingAmout";
 import CardPrint from "../chit/components/Print/CardPrint/CardPrint";
-import AccountSearchAndPrint from "../chit/components/print/ReceiptPrint/AccountSearchAndPrint";
+import AccountSearchAndPrint from "../chit/components/Print/ReceiptPrint/AccountSearchAndPrint";
 import NewArrivalsWhatsapp from "../chit/components/whatsapp/newarrivals/index";
 import ProductWhatsapp from "../chit/components/whatsapp/product/index";
 import OffersWhatsapp from "../chit/components/whatsapp/offers/index";
@@ -105,6 +105,8 @@ import RefundReport from "../chit/components/Report/RefundSummary";
 import overallReport from "../chit/components/Report/overallReport";
 import PaymentLedger from "../chit/components/Report/PaymentLedger";
 import GiftReport from "../chit/components/Report/GiftReport";
+import PaymentPrint from "../chit/components/Print/CardPrint/PaymentPrint";
+import Delist from "../chit/components/ourscheme/delist";
 
 const RouteList = [
 
@@ -135,6 +137,11 @@ const RouteList = [
     name: "Add Scheme",
     path: "/scheme/addscheme/:id",
     element: <Base renderContent={AddScheme} />,
+  },
+  {
+    name: "Delist",
+    path: "/scheme/delist",
+    element: <Base renderContent={Delist} />,
   },
 
   //ManageAccount
@@ -547,27 +554,16 @@ const RouteList = [
     path: '/whatsapp/newarrivals',
     element: <Base renderContent={NewArrivalsWhatsapp} />
   },
-
-
   {
     name: "Card Print",
     path: '/cardprint/printone',
-    element: <Base renderContent={CardPrint} />
+    element: <Base renderContent={PaymentPrint} />
   },
   {
     name: "Receipt Print",
     path: '/receiptprint/printone',
     element: <Base renderContent={AccountSearchAndPrint} />
   },
-
-  {
-    name: "Card Print",
-    path: '/cardprint/printone',
-    element: <Base renderContent={CardPrint} />
-  },
-
-
-
   {
     name: "Classification",
     path: '/ourscheme/classification',

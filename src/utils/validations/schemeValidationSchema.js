@@ -125,7 +125,7 @@ export const schemeValidationSchema = Yup.object({
   //   }),
   // min_amount: Yup.number().when(["classType", "scheme_type"], {
   //   is: (classType, scheme_type) =>
-  //     !classType && ![12, 3, 4,2,5,6].includes(scheme_type),
+  //     !classType && ![12, 3, 4].includes(scheme_type),
   //   then: (schema) =>
   //     schema
   //       .required("Minimum Amount is required")
@@ -134,7 +134,7 @@ export const schemeValidationSchema = Yup.object({
   // }),
   // max_amount: Yup.number().when(["classType", "scheme_type"], {
   //   is: (classType, scheme_type) =>
-  //     !classType && ![12, 3, 4,2,5,6].includes(scheme_type),
+  //     !classType && ![12, 3, 4].includes(scheme_type),
   //   then: (schema) =>
   //     schema
   //       .required("Maximum Amount is required")
@@ -143,7 +143,7 @@ export const schemeValidationSchema = Yup.object({
   // }),
   min_weight: Yup.number().when(["classType", "scheme_type"], {
     is: (classType, scheme_type) =>
-      !classType && [12, 3, 4,2,5,6].includes(Number(scheme_type)),
+      !classType && [12, 3, 4].includes(Number(scheme_type)),
     then: (schema) =>
       schema
         .required("Minimum Weight is required")
@@ -152,8 +152,8 @@ export const schemeValidationSchema = Yup.object({
   }),
   max_weight: Yup.number().when(["classType", "scheme_type"], {
     is: (classType, scheme_type) =>
-      (classType && [12, 3, 4,2,5,6].includes(Number(scheme_type))) ||
-      (!classType && [12, 3, 4,2,5,6].includes(Number(scheme_type))),
+      (classType && [12, 3, 4].includes(Number(scheme_type))) ||
+      (!classType && [12, 3, 4].includes(Number(scheme_type))),
     then: (schema) =>
       schema
         .required("Maximum Weight is required")
@@ -165,14 +165,14 @@ export const schemeValidationSchema = Yup.object({
     return value === undefined || min_weight === undefined || value > min_weight;
   }),
   min_amount: Yup.number().when(["classType", "scheme_type"], {
-    is: (classType, scheme_type) => !classType && !([12, 3, 4, 2, 5, 6].includes(Number(scheme_type))),
+    is: (classType, scheme_type) => !classType && !([12, 3, 4].includes(Number(scheme_type))),
     then: (schema) => schema.required("Minimum Amount is required"),
     otherwise: (schema) => schema.notRequired(),
   }),
   max_amount: Yup.number()
     .when(["classType", "scheme_type"], {
       is: (classType, scheme_type) => 
-        !classType && ![12, 3, 4, 2, 5, 6].includes(Number(scheme_type)),
+        !classType && ![12, 3, 4].includes(Number(scheme_type)),
       then: (schema) => schema.required("Maximum Amount is required"),
       otherwise: (schema) => schema.notRequired(),
     })
@@ -183,10 +183,10 @@ export const schemeValidationSchema = Yup.object({
   total_installments: Yup.number().required(
     "Total Installments is required"
   ),
-  buy_gst: Yup.number().optional("Buy GST is required")
-  .min(0,"Gst percentage should be below minimum 0")
-  .max(100,"Maximum gst percentage should be 100"),
-  buytgsttype: Yup.string().optional("Buy GST Type is required"),
+  // buy_gst: Yup.number().optional("Buy GST is required")
+  // .min(0,"Gst percentage should be below minimum 0")
+  // .max(100,"Maximum gst percentage should be 100"),
+  // buytgsttype: Yup.string().optional("Buy GST Type is required"),
   wastagebenefit: Yup.string().required("Wastage Benefit is required"),
   benefit_making: Yup.string().required(
     "Benefit making charge is required"

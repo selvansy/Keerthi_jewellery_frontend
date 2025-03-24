@@ -291,7 +291,7 @@ const Userrole = () => {
       </>
       <Modelone
         title={id ? "Edit User Role" : "Add User Role"}
-        extraClassName="max-w-[75%] "
+        extraClassName="max-w-lg"
         setIsOpen={setIsviewOpen}
         isOpen={isviewOpen}
         closeModal={closeIncommingModal}

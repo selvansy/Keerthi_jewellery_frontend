@@ -1,6 +1,4 @@
 import React, { useState, useEffect, useRef } from "react";
-import { IoSettingsOutline } from "react-icons/io5";
-import { FaBell } from "react-icons/fa";
 import {
   ChevronDown,
   ChevronUp,
@@ -16,7 +14,7 @@ import {
   PawPrintIcon,
   UserRoundCheck,
   ChevronRight,
-  Menu, // Added Menu icon for better burger menu
+  Menu,
 } from "lucide-react";
 
 import logo from "../../../assets/logo1.png";
@@ -25,7 +23,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { useSelector, useDispatch } from "react-redux";
 import { useMutation } from "@tanstack/react-query";
-import { getactivemenuaccess, updatelayoutcolor } from "../../api/Endpoints";
+import {updatelayoutcolor } from "../../api/Endpoints";
 import { setLayoutColor } from "../../../redux/clientFormSlice";
 import { logout, SetMenu } from "../../../redux/authSlice";
 import Command from "../../../assets/command.svg";
@@ -35,7 +33,6 @@ import CustomerModal from "./customerModal";
 const Base = ({ renderContent: RenderContent }) => {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const settingsRef = useRef(null);
-  const [menuLayout, setMenuLayout] = useState("left");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isHeaderMenuOpen, setIsHeaderMenuOpen] = useState(false);
   const [selectedSection, setSelectedSection] = useState("");
@@ -289,14 +286,14 @@ const Base = ({ renderContent: RenderContent }) => {
         {!isLast && (
           <div className="absolute left-6 top-1/2 w-[1px] h-full bg-white -translate-x-1/2" />
         )}
-        <div className="relative flex items-center">
+        <div className="relative flex items-center pl-12">
           <div
-            className={`absolute left-6 w-3 h-3 rounded-full border-2 border-white -translate-x-1/2 z-10 ${
-              selectedSubSection === text ? "" : "bg-gray-400"
+            className={`absolute left-6 w-3 h-3 rounded-full border-2 -translate-x-1/2 z-10 ${
+              selectedSubSection !== text ? "border-white" : "bg-white border-[#004181]"
             }`}
           />
           <div
-            className={`w-full flex items-center px-4 rounded-md py-2 pl-12 transition-colors cursor-pointer my-1 text-sm font-semibold
+            className={`w-full flex items-start px-4 rounded-md py-2  transition-colors cursor-pointer my-1 text-sm font-semibold
                     ${
                       selectedSubSection === text
                         ? "bg-[#004181] text-white"
@@ -345,7 +342,7 @@ const Base = ({ renderContent: RenderContent }) => {
             }
           }}
         >
-           <img
+          <img
           className={`w-6 h-6 ${isSelected ? "fill-white" : "fill-current"} hover:fill-white`}
           src={`${import.meta.env.VITE_API_URL}/${menuIcon}`}
           alt="Menu Icon"
@@ -357,7 +354,6 @@ const Base = ({ renderContent: RenderContent }) => {
           <span className={`flex-1 text-left ml-2`}>
             {text}
           </span>
-  
           {hasSubmenu && (
             <span className="ml-auto transition-transform duration-300">
               {isOpen ? (
@@ -571,7 +567,7 @@ const Base = ({ renderContent: RenderContent }) => {
         style={{ backgroundColor: sidebar_color }}
       >
         <div className="flex justify-center items-center mb-10">
-          <img src={logo} alt="Logo" className="h-50 w-50 object-fill" />
+          <img src={logo} alt="Logo" className="h-28 w-52 object-fill" />
         </div>
 
         <nav className="flex-1 text-white scrollbar-hide overflow-y-auto">

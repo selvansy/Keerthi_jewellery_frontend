@@ -4,11 +4,9 @@ import { useDebounce } from "../../../hooks/useDebounce";
 import {
   SlidersHorizontal,
   Search,
-  X,
-  CalendarDays,
   RefreshCcw,
 } from "lucide-react";
-import { data, useNavigate } from "react-router-dom";
+import {useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import {
@@ -21,18 +19,15 @@ import {
   allinstallmenttype,
   allFundtype,
   puritybymetal,
-  buygsttype,
   wastagetype,
   deleteScheme,
 } from "../../../api/Endpoints";
 import { useDispatch, useSelector } from "react-redux";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { eventEmitter } from "../../../../utils/EventEmitter";
 import { openModal } from "../../../../redux/modalSlice";
 import Modal from "../../../components/common/Modal";
-import usePagination from "../../../hooks/usePagination";
-import FilterForm from "./FilterForm"; // Assume this is a new component for the filter form
+import FilterForm from "./FilterForm";
 import Action from "../../common/action";
 
 const Scheme = () => {
@@ -60,7 +55,6 @@ const Scheme = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [totalDocument, setTotalDocument] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [selectedRow, setSelectedRow] = useState(null);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [from_date, setFromdate] = useState("");
@@ -77,7 +71,6 @@ const Scheme = () => {
     id_purity: "",
     weekmonth: "",
     scheme_type: "",
-    buytgsttype: "",
   });
 
   const handlePageChange = (page) => {
@@ -94,28 +87,6 @@ const Scheme = () => {
     setCurrentPage(pageNumber);
   };
 
-  const nextPage = useCallback(() => {
-    setCurrentPage((prevPage) =>
-      prevPage < totalPages ? prevPage + 1 : prevPage
-    );
-  }, [totalPages]);
-
-  const prevPage = useCallback(() => {
-    setCurrentPage((prevPage) => (prevPage > 1 ? prevPage - 1 : prevPage));
-  }, []);
-
-  const paginationData = useMemo(
-    () => ({
-      totalItems: totalPages,
-      currentPage,
-      itemsPerPage,
-      handlePageChange,
-    }),
-    [totalPages, currentPage, itemsPerPage, handlePageChange]
-  );
-
-  const paginationButtons = usePagination(paginationData);
-
   const handleReset = useCallback(() => {
     setFromdate("");
     setTodate("");
@@ -127,7 +98,6 @@ const Scheme = () => {
       id_purity: "",
       weekmonth: "",
       scheme_type: "",
-      buytgsttype: "",
     }));
     SetFiltered(false);
     toast.success("Filter is cleared");
@@ -142,7 +112,6 @@ const Scheme = () => {
       id_purity: "",
       weekmonth: "",
       scheme_type: "",
-      buytgsttype: "",
     });
   }, [currentPage, itemsPerPage, id_branch]);
 
@@ -195,12 +164,6 @@ const Scheme = () => {
     onError: (error) => console.error("Error fetching scheme types:", error),
   });
 
-  const { mutate: gstTypeDataTable } = useMutation({
-    mutationFn: buygsttype,
-    onSuccess: (response) => setgstTypeData(response.data),
-    onError: (error) => console.error("Error:", error),
-  });
-
   const { mutate: getSavingType } = useMutation({
     mutationFn: allFundtype,
     onSuccess: (response) => setFundType(response.data),
@@ -214,7 +177,6 @@ const Scheme = () => {
         name === "id_purity" ||
         name === "weekmonth" ||
         name === "scheme_type" ||
-        name === "buytgsttype" ||
         name === "wastagebenefit"
       ) {
         setFilters((prev) => ({ ...prev, [name]: Number(value) }));
@@ -246,7 +208,6 @@ const Scheme = () => {
         weekmonth: filters.weekmonth,
         wastagebenefit: filters.wastagebenefit,
         scheme_type: filters.scheme_type,
-        buytgsttype: filters.buytgsttype,
       };
       SetFiltered(true);
       getSchemeDataTable(filterTosend);
@@ -275,7 +236,7 @@ const Scheme = () => {
   useEffect(() => {
     const handleConfirmationSubmit = async (data) => {
       try {
-        await deleteSchemeId(data.schemeId);
+        deleteSchemeId(data.schemeId);
       } catch (error) {
         console.error("Error:", error);
       }
@@ -310,24 +271,34 @@ const Scheme = () => {
   const handleStatusToggle = useCallback(
     async (id, accounts) => {
       if (!accounts) {
-        const response = await changeschemestatus(id);
-        if (response) {
-          toast.success(response.message);
-          getSchemeTable({
-            from_date: from_date,
-            to_date: to_date,
-            search: debouncedSearch,
-            page: currentPage,
-            limit: itemsPerPage,
-            id_branch: filters.id_branch,
-            id_classification: filters.id_classification,
-            metalid: filters.metalid,
-            id_purity: filters.id_purity,
-            weekmonth: filters.weekmonth,
-            wastagebenefit: filters.wastagebenefit,
-            scheme_type: filters.scheme_type,
-            buytgsttype: filters.buytgsttype,
-          });
+        try {
+          const response = await changeschemestatus(id);
+          if (response) {
+            toast.success(response.message);
+            setSchemeData((prevData) =>
+              prevData.map((scheme) =>
+                scheme._id === id
+                  ? { ...scheme, active: !scheme.active }
+                  : scheme
+              )
+            );
+  
+            getSchemeDataTable({
+              from_date: from_date,
+              to_date: to_date,
+              search: debouncedSearch,
+              page: currentPage,
+              limit: itemsPerPage,
+              id_branch: filters.id_branch,
+              id_classification: filters.id_classification,
+              metalid: filters.metalid,
+              id_purity: filters.id_purity,
+              scheme_type: filters.scheme_type,
+            });
+          }
+        } catch (error) {
+          toast.error("Failed to toggle scheme status");
+          console.error("Error:", error);
         }
       } else {
         toast.error("Scheme accounts exists, action not permitted");
@@ -365,7 +336,6 @@ const Scheme = () => {
     getAllInstallmentTypes,
     getAllSchemeTypes,
     getAllWastage,
-    gstTypeDataTable,
     getSavingType,
   ]);
 
@@ -511,8 +481,8 @@ const Scheme = () => {
   return (
     <div className="flex flex-col p-4">
       <h2 className="text-2xl text-gray-900 font-bold">Schemes</h2>
-      <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
-        <div className="relative w-full lg:w-1/3 min-w-[200px]">
+      <div className="flex flex-col gap-4 lg:flex-row lg:justify-end lg:items-center mt-4">
+        {/* <div className="relative w-full lg:w-1/3 min-w-[200px]">
           <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
             <Search className="text-gray-500" />
           </div>
@@ -521,7 +491,7 @@ const Scheme = () => {
             className="p-3 pl-10 pr-3 border-2 bg-[#F5F5F5] border-gray-500 rounded-md w-full"
             onChange={handleSearch}
           />
-        </div>
+        </div> */}
         <div className="flex flex-row items-center justify-end gap-2">
           <button
             className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
@@ -583,6 +553,7 @@ const Scheme = () => {
           itemsPerPage={itemsPerPage}
           totalItems={totalDocument}
           handleItemsPerPageChange={handleItemsPerPageChange}
+          debounceSearch={handleSearch}
         />
       </div>
 

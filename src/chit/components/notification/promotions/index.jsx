@@ -85,7 +85,7 @@ function PromotionSummary() {
         cell: (row) =>{
           const date = new Date(row?.createdAt);
           return date.toLocaleDateString("en-GB") || "-"; 
-        },
+        }, 
       },
       {
         header: "Promotion Name",
@@ -219,7 +219,7 @@ function PromotionSummary() {
             />
           </div>
   
-        {
+        {/* {
             deptData.length > 0 &&(
                 <div className="flex justify-between mt-4 p-2">
                 <div className={`flex flex-row items-center justify-center gap-2  `}>
@@ -270,7 +270,7 @@ function PromotionSummary() {
                 </div>
               </div>
             )
-        }
+        } */}
         </>
         <Modal />
       </div>

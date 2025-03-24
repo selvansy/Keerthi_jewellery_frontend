@@ -263,7 +263,7 @@ const MenuComp = () => {
       <Modal />
       <ModelOne
         title={"Add Menu"}
-        extraClassName="max-w-[75%] "
+        extraClassName="max-w-lg"
         setIsOpen={setIsviewOpen}
         isOpen={isviewOpen}
         closeModal={closeIncommingModal}

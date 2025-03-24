@@ -6,16 +6,8 @@ import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import {
   getproductTable,
-  getallbranch,
-  getBranchById,
   deleteproduct,
   activateproduct,
-  puritybymetal,
-  showtype,
-  displayselltype,
-  getallmetal,
-  categorybymetalid,
-  schemepaymenttodayrate,
 } from "../../../api/Endpoints";
 
 import { eventEmitter } from "../../../../utils/EventEmitter";

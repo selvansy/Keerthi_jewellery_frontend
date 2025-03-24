@@ -1,26 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
-import { searcaccountnumber } from '../../../api/Endpoints';
+import { searchaccountnumber } from '../../../api/Endpoints';
 import { useSelector } from 'react-redux';
+import SpinLoading from '../../common/spinLoading';
 
 const AccountSearchAndPrint = () => {
+
+
+  const [isLoading, setIsLoading] = useState(false);
   const [paymentData, setPaymentData] = useState([]);
   const [calculationdata, setcalculationData] = useState({});
-  const [selectedRow, setSelectedRow] = useState(null); // Store the selected row
+  const [selectedRow, setSelectedRow] = useState(null); 
   const [accountNumber, setAccountNumber] = useState('');
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
-  const { mutate: handleSearchAccountNumber, isLoading } = useMutation({
-    mutationFn: searcaccountnumber,
+  const { mutate: handleSearchAccountNumber } = useMutation({
+    mutationFn: (data)=> searchaccountnumber(data),
     onSuccess: (response) => {
       if (response) {
         setPaymentData(response?.data);
         setcalculationData(response?.calculations);
         toast.success(response.message);
       }
+      setIsLoading(false)
     },
     onError: (error) => {
+      (setIsLoading(false))
       toast.error(error.message || 'Something went wrong');
     }
   });
@@ -35,21 +41,22 @@ const AccountSearchAndPrint = () => {
       toast.error('Please enter a valid account number');
       return;
     }
-    setPaymentData([]); // Clear any previous payment data
-    setSelectedRow(null); // Reset selected row
-    handleSearchAccountNumber({ account_number: accountNumber });
+    setPaymentData([]); 
+    setSelectedRow(null); 
+    setIsLoading(true)
+    handleSearchAccountNumber({mobile:mobile,acc_num:accountNumber });
   };
 
   const handlePrint = () => {
     if (!selectedRow) {
-      alert('No row selected for printing.');
+      toast.error('No row selected for printing.');
       return;
     }
 
     const selectedRowData = paymentData.find((data) => data._id === selectedRow);
 
     if (!selectedRowData) {
-      alert('Selected row data not found.');
+      toast.error('Selected row data not found.');
       return;
     }
 
@@ -67,7 +74,7 @@ const AccountSearchAndPrint = () => {
     } else {
       scheme_name = `${scheme_details?.scheme_name} (₹${scheme_details?.min_amount} - ₹${scheme_details?.max_amount})`;
     }
-console.log(paymentData)
+
     const str = `
       <div className="main_section">
         <div>
@@ -267,9 +274,10 @@ console.log(paymentData)
               onClick={handleSearchSubmit}
               className="px-6 py-2 text-white rounded-r-md hover:bg-blue-600"
               style={{ backgroundColor: layout_color }}
-              readOnly={isLoading}
+              disabled={isLoading}
             >
-              {isLoading ? 'Loading...' : 'Search'}
+              {isLoading ? <SpinLoading /> : 'Search'}
+              
             </button>
           </div>
         </div>
