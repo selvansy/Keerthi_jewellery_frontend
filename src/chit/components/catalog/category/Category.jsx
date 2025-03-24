@@ -242,7 +242,9 @@ const Category = () => {
                 ? "peer-checked:bg-[#E7EEF5] peer-checked:ring-[#E7EEF5]"
                 : "peer-checked:bg-[#E7EEF5] peer-checked:ring-gray-400"
             } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-[${layout_color}] peer-hover:after:scale-95`}
-          ></div>
+          >
+            
+          </div>
         </label>
       ),
     },

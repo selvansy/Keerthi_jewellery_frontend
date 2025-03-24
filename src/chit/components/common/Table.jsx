@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import Pagination from "./pagination";
+import Loading from "./Loading";
 
 const Table = ({
   data = [],
@@ -60,7 +61,7 @@ const Table = ({
                       colSpan={columns.length}
                       className="px-4 py-3 text-center"
                     >
-                      Loading...
+                    <Loading/>
                     </td>
                   </tr>
                 ) : data.length > 0 ? (

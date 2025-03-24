@@ -149,12 +149,16 @@ const GiftHandOver = () => {
     onSuccess: (response) => {
       if (response.message === "Gift deleted successfully") {
         const isLastItemOnPage = giftitemData.length === 1;
-   
+
         const isNotFirstPage = currentPage > 1;
         if (isLastItemOnPage && isNotFirstPage) {
           setCurrentPage((prev) => prev - 1);
         } else {
-          getallgiftitemtableMutate({ search: debouncedSearch, page: currentPage, limit: itemsPerPage });
+          getallgiftitemtableMutate({
+            search: debouncedSearch,
+            page: currentPage,
+            limit: itemsPerPage,
+          });
         }
       }
       toast.success(response.message);
@@ -198,24 +202,29 @@ const GiftHandOver = () => {
     setCurrentPage(pageNumber);
   };
 
-
   const nextPage = () => {
-    setCurrentPage((prevPage) => (prevPage < totalPages ? prevPage + 1 : prevPage));
+    setCurrentPage((prevPage) =>
+      prevPage < totalPages ? prevPage + 1 : prevPage
+    );
   };
 
   const prevPage = () => {
     setCurrentPage((prevPage) => (prevPage > 1 ? prevPage - 1 : prevPage));
   };
 
-
-  const paginationData = { totalItems: totalPages, currentPage: currentPage, itemsPerPage: itemsPerPage, handlePageChange: handlePageChange }
-  const paginationButtons = usePagination(paginationData)
+  const paginationData = {
+    totalItems: totalPages,
+    currentPage: currentPage,
+    itemsPerPage: itemsPerPage,
+    handlePageChange: handlePageChange,
+  };
+  const paginationButtons = usePagination(paginationData);
 
   const formatDate = (dateString) => {
-    if (!dateString) return '';
+    if (!dateString) return "";
     const date = new Date(dateString);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
   };
@@ -235,7 +244,7 @@ const GiftHandOver = () => {
     },
     {
       header: "Create Date",
-      cell: (row) => formatDate(row?.createdAt)
+      cell: (row) => formatDate(row?.createdAt),
     },
     {
       header: "Status",
@@ -249,11 +258,11 @@ const GiftHandOver = () => {
             onChange={() => handleStatusToggle(row?._id, row?.active)}
           />
           <div
-            className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-black p-[2px] after:duration-300 after:bg-black ${
-              row.active === true
-                ? "peer-checked:bg-[#61A375] peer-checked:ring-[#61A375]"
-                : "peer-checked:bg-gray-400 peer-checked:ring-gray-400"
-            } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-white peer-hover:after:scale-95`}
+            className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-[#E7EEF5] p-[2px] after:duration-300 after:bg-[#004181] ${
+              row?.active === true
+                ? "peer-checked:bg-[#E7EEF5] peer-checked:ring-[#E7EEF5]"
+                : "peer-checked:bg-[#E7EEF5] peer-checked:ring-gray-400"
+            } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-[${layout_color}] peer-hover:after:scale-95`}
           ></div>
         </label>
       ),
