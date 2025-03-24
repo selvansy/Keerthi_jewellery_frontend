@@ -25,6 +25,7 @@ const AddSchemePayment = () => {
   const location = useLocation();
   const { id } = useParams();
   const todaydate = new Date();
+  const formattedDate = todaydate.toISOString();
 
   //reduux
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
@@ -32,11 +33,8 @@ const AddSchemePayment = () => {
   const id_branch = roleData?.id_branch;
   const accessBranch = roleData?.branch;
 
-  const [searcherror, setSearchError] = useState("");
-  const [multipaymode, setMultiPaymode] = useState([]);
   const [ispaymode, setIspaymode] = useState(false);
-
-  const formattedDate = todaydate.toISOString();
+  const [multipaymode, setMultiPaymode] = useState([]);
   const [date_payment, setDatePayment] = useState(formattedDate);
   const [mobile, setMobile] = useState("");
   const [paymentmode, setPaymentmode] = useState([]);
@@ -54,7 +52,7 @@ const AddSchemePayment = () => {
   const [weight] = useState([12, 3, 4]);
   const [selectedMode, setSelectedMode] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const [multiplayModes, setMultiplayModes] = useState("");
+  const [multiplayModes, setMultiplayModes] = useState([]);
   const [formData, setFormData] = React.useState({
     id_customer: "",
     mobile: "",
@@ -161,16 +159,6 @@ const AddSchemePayment = () => {
     cacheTime: 10 * 60 * 1000,
   });
 
-  // const { data: multiplayModes } = useQuery({
-  //   queryKey: ["multipay", formik.values.payment_mode],
-  //   queryFn: async () => {
-  //     console.log(typeof selectedMode)
-  //     if (selectedMode === 7) {
-  //       return await getmultipaymentmode();
-  //     }
-  //     return [];
-  //   },
-  // });
 
   useEffect(() => {
     const getMutliOptions = async () => {
@@ -288,20 +276,24 @@ const AddSchemePayment = () => {
   useEffect(() => {
     const fetchMetalRate = async () => {
       if (!formik.values.id_scheme_account || !todaydate) return;
-
+  
       const filteredData = fullData.find(
         (item) => item._id === formik.values.id_scheme_account
       );
-
+  
       if (!filteredData) return;
       setSelectedScheme(filteredData);
+      
+      const branchId = formik.values.id_branch || id_branch;
+      
       try {
         const metalRate = await getMetalRateByMetalId(
           filteredData.id_scheme?.id_metal?._id || "",
           filteredData.id_scheme?.id_purity || "",
-          todaydate
+          todaydate,
+          branchId 
         );
-
+  
         if (metalRate) {
           const rate = metalRate.data.rate;
           formik.setFieldValue("metal_rate", rate);
@@ -310,9 +302,9 @@ const AddSchemePayment = () => {
         console.error("Error fetching metal rate:", error);
       }
     };
-
+  
     fetchMetalRate();
-  }, [formik.values.id_scheme_account, fullData]);
+  }, [formik.values.id_scheme_account]);
 
   useEffect(() => {
     if (selectedScheme) {
@@ -461,8 +453,6 @@ const AddSchemePayment = () => {
   };
 
   const handleSearchmobile = () => {
-    setSearchError("");
-
     if (mobile === "") {
       return toast.error("Mobile Number is required!");
     }
