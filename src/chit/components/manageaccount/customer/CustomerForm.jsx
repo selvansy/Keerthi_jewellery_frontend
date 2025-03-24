@@ -15,7 +15,7 @@ import {
 } from "../../../api/Endpoints";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { sendOtp, verifyOtp } from "../../../api/BackendUrl";
+import { sendOtp, verifyOtp } from "../../../api/Endpoints";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import Webcam from "react-webcam";
 import { toast } from "react-toastify";

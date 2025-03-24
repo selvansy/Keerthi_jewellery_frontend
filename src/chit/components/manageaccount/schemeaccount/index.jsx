@@ -23,6 +23,10 @@ import Action from '../../common/action'
 
 const Schemeaccount = () => {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
+  const roledata = useSelector((state) => state.clientForm.roledata);
+  let id_client = roledata?.id_client;
+  const branch = roledata?.branch;
+  const id_branch = roledata?.id_branch
 
   const dispatch = useDispatch();
   const [isLoading, setisLoading] = useState(true)
@@ -54,11 +58,7 @@ const Schemeaccount = () => {
   const [displaysetting, setDiplaySetting] = useState(0);
   const [ispayable, setIspayable] = useState(false);
   const [isviewOpen, setIsviewOpen] = useState(false);
-  const roledata = useSelector((state) => state.clientForm.roledata);
-  let id_client = roledata?.id_client;
-  const id_branch = roledata?.branch;
   const [branchList, setBranchList] = useState([]);
-  let [branch, setbranch] = useState("");
   const [filters, setFilters] = React.useState({
 
     from_date: from_date,
@@ -408,10 +408,6 @@ const Schemeaccount = () => {
         </div>
       ),
     },    
-    // {
-    //   header: "Mobile",
-    //   cell: (row) => row?.mobile
-    // },
     {
       header: 'Scheme',
       cell: (row) => {
@@ -424,10 +420,6 @@ const Schemeaccount = () => {
         }
       }
     },
-    // {
-    //   header: 'Metal',
-    //   cell: (row) => `${row?.metal_name}(${row.purity_name})`
-    // },
     {
       header: "A/c No",
       cell: (row) => row?.scheme_acc_number === "" ? 'Not Allocated' : row?.scheme_acc_number
@@ -451,18 +443,6 @@ const Schemeaccount = () => {
       header: "Maturity Date",
       cell: (row) => row?.maturity_date
     },  
-    // {
-    //   header: "Total Ins",
-    //   cell: (row) => row?.total_installments
-    // },
-    // {
-    //   header: "Paid Amt",
-    //   cell: (row) => row?.total_paidamount
-    // },
-    // {
-    //   header: "Paid Wgt",
-    //   cell: (row) => row?.total_weight
-    // },
     {
       header: 'Scheme Type',
       cell: (row) => row?.scheme_typename
@@ -471,7 +451,7 @@ const Schemeaccount = () => {
       header: "Classification",
       cell: (row) => row?.id_classification.name
     },
-    {
+    branch === '0' && {
       header: "Branch Name",
       cell: (row) => row?.branch_name
     },
@@ -481,20 +461,8 @@ const Schemeaccount = () => {
         <Action row={row} data={schemeaccount} rowIndex={rowIndex} activeDropdown={activeDropdown} setActive={hanldeActiveDropDown}  handleEdit={handleEdit} handleDelete={handleDelete} handleView={handleOpenLedger}/>
       ),
       sticky: "right",
-    },
-    // {
-    //   header: "Added By",
-    //   cell: (row) => row?.created_through
-    // },
-    // {
-    //   header: "Create Date",
-    //   cell: (row) => {
-    //     const date = new Date(row?.createdAt);
-    //     return date.toLocaleDateString('en-GB'); // 'en-GB' gives the d-m-Y format
-    //   }
-    // }
-
-  ];
+    }
+  ].filter(Boolean); ;
 
   return (
     <div className="flex flex-col p-4">
