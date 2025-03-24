@@ -1392,7 +1392,7 @@ export const getallbranchcustomer = async (data) => {
     return response.data;
 }
 export const searchcustomermobile = async (data) => {
-    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/customer/branch/${data.id_branch}/search?search=${data.search_mobile}`);
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/customer/branch/${data.id_branch}/search?search=${data.search}`);
     return response.data;
 }
 
@@ -1784,7 +1784,7 @@ export const searchaccountnumber = async (data) => {
 }
 
 export const searchSchAccByMobile = async (data) => {
-    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/schemeaccount/accnum/mobile/search?value=${data}`);
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/schemeaccount/accnum/mobile/search?value=${data.value}&branchId=${data.branchId}`);
     return response.data;
 }
 

@@ -27,7 +27,7 @@ import profileplaceholder from "../../../../assets/profileplaceholder.png";
 import { customSelectStyles } from "../../Setup/purity/index";
 import { SetaccExp } from "../../../../redux/clientFormSlice";
 
-const CustomerForm = ({ setCusData, id, setaddCusData, addCusData, id_proof, setid_proof, cus_img, pathurl, setcus_img, setPathurl, handleClear }) => {
+const CustomerForm = ({ setCusData, id, setaddCusData, addCusData, id_proof, setIdProof, cus_img, pathurl, setCusImg, setPathurl, handleClear }) => {
 
 
     const navigate = useNavigate();
@@ -111,10 +111,10 @@ const CustomerForm = ({ setCusData, id, setaddCusData, addCusData, id_proof, set
                     authorno: res.authorno,
                 };
                 setaddCusData(formValues);
-                setcus_img(response.data.cus_img);
+                setCusImg(response.data.cus_img);
                 const img = `${response.data.pathurl}${response.data.cus_img}`;
                 setPathurl(img);
-                setid_proof(res.id_proof);
+                setIdProof(res.id_proof);
 
                 setCountry(res.countryDetails?._id);
                 setState(res.stateDetails?._id);
@@ -247,9 +247,9 @@ const CustomerForm = ({ setCusData, id, setaddCusData, addCusData, id_proof, set
 
         if (file) {
             if (allowedTypes.includes(file.type)) {
-                setid_proof(file);
+                setIdProof(file);
             } else {
-                setid_proof(null);
+                setIdProof(null);
                 toast.error(
                     "Please upload a valid file format (PDF, DOC, DOCX, XLS, XLSX, or TXT)"
                 );
@@ -259,9 +259,9 @@ const CustomerForm = ({ setCusData, id, setaddCusData, addCusData, id_proof, set
     };
 
     // const handleCancel = ()=>{
-    //     setcus_img("")
+    //     setCusImg("")
     //     setPathurl("")
-    //     setid_proof(null)
+    //     setIdProof(null)
     //     setaddCusData({
     //         firstname: "",
     //         lastname: "",
@@ -309,7 +309,7 @@ const CustomerForm = ({ setCusData, id, setaddCusData, addCusData, id_proof, set
             return;
         }
 
-        setcus_img(file);
+        setCusImg(file);
 
         const reader = new FileReader();
         reader.onloadend = () => {
@@ -329,13 +329,13 @@ const CustomerForm = ({ setCusData, id, setaddCusData, addCusData, id_proof, set
                 const file = new File([blob], "webcam-photo.jpg", {
                     type: "image/jpeg",
                 });
-                setcus_img(file);
+                setCusImg(file);
             });
         setShowWebcam(false);
     };
 
     const handleClearImage = () => {
-        setcus_img(null);
+        setCusImg(null);
         setPathurl(null);
     };
 
@@ -926,7 +926,7 @@ const CustomerForm = ({ setCusData, id, setaddCusData, addCusData, id_proof, set
                                                     </span>
                                                     <button
                                                         onClick={() => {
-                                                            setid_proof(null);
+                                                            setIdProof(null);
                                                             document.getElementById("id_proof").value = "";
                                                         }}
                                                         className="text-red-500 hover:text-red-700"
@@ -1087,7 +1087,7 @@ const CustomerForm = ({ setCusData, id, setaddCusData, addCusData, id_proof, set
                                                         onClick={() => {
                                                             const payload = {
                                                                 mobile: formik.values.mobile,
-                                                                branchId: branch,
+                                                                branchId: formik.values.id_branch || branch,
                                                             };
                                                             setCanResend(false);
                                                             setIsTimerRunning(true);

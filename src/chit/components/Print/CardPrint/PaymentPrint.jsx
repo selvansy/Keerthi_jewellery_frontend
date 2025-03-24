@@ -56,7 +56,6 @@ const PaymentPrint = () => {
       `;
     });
   
-    
   
     // Close the table
     printContent += `
@@ -174,8 +173,6 @@ const PaymentPrint = () => {
     setvalue(value);
   };
 
-
-
   
   const handleCheckbox = (e, row) => {
   
@@ -185,7 +182,6 @@ const PaymentPrint = () => {
       setSelectedRows((prev) => prev.filter((e) => e._id !== row._id));
     }
   };
-
 
   
   const handleSelectAll = (e) => {
@@ -202,6 +198,7 @@ const PaymentPrint = () => {
   const columns = [
     {
       header: () => (
+     <>
         <div className="flex items-center justify-center">
           <input
             type="checkbox"
@@ -209,7 +206,9 @@ const PaymentPrint = () => {
             onChange={handleSelectAll}
             checked={paymentData.length > 0 && selectedRows.length === paymentData.length}
           />
+          <span>Select All</span>
         </div>
+     </>
       ),
       accessor: "select",
       cell: (row ) => (
@@ -266,8 +265,6 @@ const PaymentPrint = () => {
     },
 
   ];
-
-
 
   return (
 

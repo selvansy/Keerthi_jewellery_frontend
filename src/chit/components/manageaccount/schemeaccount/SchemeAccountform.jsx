@@ -297,10 +297,10 @@ const AddSchemeAccount = ({ cusData,handleClear }) => {
           collectionuserid: schemeData.data.collectionuserid,
           id_branch: schemeData.data.id_branch._id,
           account_name: schemeData.data.account_name,
-          customer_name:
-            schemeData.data.id_customer.firstname +
-            " " +
-            schemeData.data.id_customer.lastname,
+          // customer_name:
+          //   schemeData.data.id_customer.firstname +
+          //   " " +
+          //   schemeData.data.id_customer.lastname,
           mobile: schemeData.data.id_customer.mobile,
           address: schemeData.data.id_customer.address,
           amount: schemeData.data.amount,
