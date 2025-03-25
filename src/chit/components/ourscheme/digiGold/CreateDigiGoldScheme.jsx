@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams,useLocation} from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import Select from "react-select";
 import { toast } from "react-toastify";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import {
   getBranchById,
   getallbranch,
@@ -22,9 +22,9 @@ import SpinLoading from "../../common/spinLoading";
 import ToggleSwitch from "../../common/ToggleSwitch";
 
 const CreateDigiGoldScheme = () => {
-  const dispatch = useDispatch();
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation()
   const roleData = useSelector((state) => state.clientForm.roledata);
   const id_branch = roleData?.id_branch;
   const accessBranch = roleData?.branch;
@@ -35,6 +35,8 @@ const CreateDigiGoldScheme = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
   const [isBonus, setBonus] = useState(false);
+  const [silver,setSilver]= useState(false)
+  const [header,setHeader]= useState('')
 
   // Customisations for react-select
   const customStyles = {
@@ -46,6 +48,22 @@ const CreateDigiGoldScheme = () => {
       borderRadius: "0.375rem",
     }),
   };
+
+  useEffect(()=>{
+    if(location.pathname === "/scheme/digisilver"){
+      setSilver(true)
+      setHeader('Create Digisilver')
+    }else if(location.pathname === "/scheme/digisilver" && id){
+      setSilver(true)
+      setHeader('Edit Digisilver')
+    }else if(!id &&  location.pathname !== "/scheme/digisilver"){
+      setSilver(false)
+      setHeader('Add Digigold')
+    }else{
+      setSilver(false)
+      setHeader('Edit Digigold')
+    }
+  },[location.pathname])
 
   // Formik initialization
   const formik = useFormik({
@@ -66,7 +84,7 @@ const CreateDigiGoldScheme = () => {
       sell_gst: "",
       max_amount: "",
       min_amount: "",
-      scheme_type: 10, // digigold scheme type
+      scheme_type: 10, 
     },
     validationSchema: Yup.object({
       scheme_name: Yup.string().required("Scheme name is required"),
@@ -368,14 +386,12 @@ const CreateDigiGoldScheme = () => {
     formik.validateForm();
   };
 
-  console.log(formik.values);
-  console.log(formik.errors);
-
   return (
     <>
       <div className="flex flex-row justify-between">
         <h2 className="text-2xl text-gray-900 font-bold">
-          {id ? "Edit DigiGoldScheme" : "Create DigiGoldScheme"}
+          {/* {id && !silver ? "Edit DigiGoldScheme" : "Create DigiGoldScheme"} */}
+          {header}
         </h2>
       </div>
       <div className="w-full flex flex-col bg-[#F5F5F5] border-t-2 border-[#023453] mt-3 overflow-y-auto scrollbar-hide h-[calc(100vh-200px)]">

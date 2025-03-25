@@ -143,6 +143,21 @@ const RouteList = [
     path: "/scheme/delist",
     element: <Base renderContent={Delist} />,
   },
+  {
+    name: "Add DigiGold",
+    path: '/scheme/adddigigold',
+    element: <Base renderContent={CreateDigiGoldScheme} />
+  },
+  {
+    name: "Add DigiGold",
+    path: '/scheme/editdigigold/:id',
+    element: <Base renderContent={CreateDigiGoldScheme} />
+  },
+  {
+    name: "Add DigiGold",
+    path: '/scheme/digisilver',
+    element: <Base renderContent={CreateDigiGoldScheme} />
+  },
 
   //ManageAccount
 
@@ -569,31 +584,22 @@ const RouteList = [
     path: '/ourscheme/classification',
     element: <Base renderContent={SchemeClassification} />
   },
-  {
-    name: "Digi Gold",
-    path: 'scheme/digigold',
-    element: <Base renderContent={DigiGoldScheme} />
-  },
-  {
-    name: "Add DigiGold",
-    path: '/scheme/adddigigold',
-    element: <Base renderContent={CreateDigiGoldScheme} />
-  },
-  {
-    name: "Add DigiGold",
-    path: '/scheme/editdigigold/:id',
-    element: <Base renderContent={CreateDigiGoldScheme} />
-  },
-  {
-    name: "Add Classification",
-    path: '/classification/addclassification',
-    element: <Base renderContent={CreateSchemeClassificaton} />
-  },
-  {
-    name: "Add Classification",
-    path: '/classification/addclassification/:id',
-    element: <Base renderContent={CreateSchemeClassificaton} />
-  },
+  // {
+  //   name: "Digi Gold",
+  //   path: 'scheme/digigold',
+  //   element: <Base renderContent={DigiGoldScheme} />
+  // },
+ 
+  // {
+  //   name: "Add Classification",
+  //   path: '/classification/addclassification',
+  //   element: <Base renderContent={CreateSchemeClassificaton} />
+  // },
+  // {
+  //   name: "Add Classification",
+  //   path: '/classification/addclassification/:id',
+  //   element: <Base renderContent={CreateSchemeClassificaton} />
+  // },
   {
     name: "Closed Account",
     path: '/managecustomers/accountredemption',
