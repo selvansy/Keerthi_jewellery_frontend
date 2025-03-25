@@ -357,8 +357,21 @@ const AddSchemePayment = () => {
           setIspayamtreadOnly(true);
         }
       }
+    } else{
+      if (weightSchemeTypes.includes(schemeType)) {
+        setMinWeight(selectedScheme?.id_scheme?.min_weight || 0);
+        setMaxWeight(selectedScheme?.id_scheme?.max_weight || 0);
+        setShowWeightInput(true);
+        setIspayamtreadOnly(false);
+      } else {
+        setMinAmount(selectedScheme?.id_scheme?.min_amount || 0);
+        setMaxAmount(selectedScheme?.id_scheme?.max_amount || 0);
+        setShowAmountInput(true);
+        setIspayamtreadOnly(false);
+      }
     }
   }, [selectedScheme, metalRate]);
+
 
   useEffect(() => {
     if (formik.values.metal_weight && metalRate) {
