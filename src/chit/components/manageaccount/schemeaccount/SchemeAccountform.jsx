@@ -64,7 +64,7 @@ export function ExistingCustomer({ setCusData }) {
     setLoading(true);
     handlesearchcustomer({
       id_branch: formData.id_branch,
-      search_mobile: formData.mobile,
+      search: formData.mobile,
     });
   };
 
@@ -238,6 +238,7 @@ const AddSchemeAccount = ({ cusData,handleClear }) => {
     customer_name: cusData.customer_name,
     fixedamount: "",
     amount: 0,
+    weight:0,
     scheme_type: 0,
     min_amount: 0,
     max_amount: 0,
@@ -446,6 +447,7 @@ const AddSchemeAccount = ({ cusData,handleClear }) => {
           customer_name: response.data.firstname + " " + response.data.lastname,
           total_installments: total_installments,
           amount: 0,
+          weight:0,
           scheme_type: 0,
           min_amount: 0,
           max_amount: 0,
@@ -1029,11 +1031,14 @@ const AddSchemeAccount = ({ cusData,handleClear }) => {
                   </label>
                   <div className="relative">
                     <select
-                      name="amount"
-                      value={formData.amount}
-                      onChange={(e) => {
-                        filterInputchange(e);
-                      }}
+                      name={[12, 3, 4].includes(formData.scheme_type) ? 'weight' : 'amount'}
+                      value={(() => {
+                        if ([12, 3, 4].includes(formData.scheme_type)) {
+                          return formData.weight || "";
+                        }
+                        return formData.amount || "";
+                      })()}
+                      onChange={(e) => filterInputchange(e)}
                       className="appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                       defaultValue=""
                     >
