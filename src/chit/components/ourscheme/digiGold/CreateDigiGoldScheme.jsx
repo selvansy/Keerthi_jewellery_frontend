@@ -242,14 +242,25 @@ const CreateDigiGoldScheme = () => {
   }, [branchData, digigoldData, schemeData, id]);
 
   useEffect(() => {
+    console.log(digigoldData)
     if (digigoldData) {
-      setStaticData(digigoldData.data);
-      formik.setFieldValue("id_metal", digigoldData.data.id_metal._id);
-      formik.setFieldValue("id_purity", digigoldData.data._id);
+      if(!silver){
+        setStaticData(digigoldData.data);
+      formik.setFieldValue("id_metal", digigoldData.data.gold.id_metal._id);
+      formik.setFieldValue("id_purity", digigoldData.data.gold._id);
       formik.setFieldValue(
         "id_classification",
         digigoldData.data.id_classification
       );
+      }else{
+        setStaticData(digigoldData.data);
+        formik.setFieldValue("id_metal", digigoldData.data.silver.id_metal._id);
+        formik.setFieldValue("id_purity", digigoldData.data.silver._id);
+      formik.setFieldValue(
+        "id_classification",
+        digigoldData.data.id_classification
+      );
+      }
     }
   }, [digigoldData]);
 
@@ -390,7 +401,6 @@ const CreateDigiGoldScheme = () => {
     <>
       <div className="flex flex-row justify-between">
         <h2 className="text-2xl text-gray-900 font-bold">
-          {/* {id && !silver ? "Edit DigiGoldScheme" : "Create DigiGoldScheme"} */}
           {header}
         </h2>
       </div>
@@ -471,7 +481,7 @@ const CreateDigiGoldScheme = () => {
                 </label>
                 <input
                   disabled
-                  value={staticData?.id_metal?.metal_name}
+                  value={!silver ? staticData?.gold?.id_metal?.metal_name : staticData?.silver?.id_metal?.metal_name}
                   className="w-full border rounded-md px-3 py-2"
                 />
               </div>
@@ -481,7 +491,7 @@ const CreateDigiGoldScheme = () => {
                 </label>
                 <input
                   disabled
-                  value={staticData?.purity_name}
+                  value={silver ? staticData?.silver?.purity_name : staticData?.gold?.purity_name}
                   className="w-full border rounded-md px-3 py-2"
                 />
               </div>
