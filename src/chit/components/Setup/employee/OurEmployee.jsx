@@ -8,13 +8,12 @@ import {
   changeEmployeeStatus,
   deleteemployee,
 } from "../../../api/Endpoints";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { openModal } from "../../../../redux/modalSlice";
 import { eventEmitter } from "../../../../utils/EventEmitter";
 import { useDispatch, useSelector } from "react-redux";
 import Modal from "../../common/Modal";
 import { useDebounce } from "../../../hooks/useDebounce";
-import usePagination from "../../../hooks/usePagination";
 import Action from "../../common/action";
 
 const OurEmployee = () => {
@@ -34,7 +33,6 @@ const OurEmployee = () => {
   const [isLoading, setisLoading] = useState(true);
   const [employeeData, setEmployeeData] = useState([]);
   const [activeDropdown, setActiveDropdown] = useState(null);
-  const [selectedRow, setSelectedRow] = useState(null);
 
   const [searchInput, setSearchInput] = useState("");
   const debouncedSearch = useDebounce(searchInput, 500);

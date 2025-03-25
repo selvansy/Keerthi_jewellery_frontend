@@ -186,7 +186,7 @@ function MenuForm({ setIsOpen }) {
           handleChange,
         }) => (
           <form
-            className="flex w-full flex-col pl-8 pr-8 pb-4 bg-white space-y-4"
+            className="flex w-full flex-col  bg-white space-y-4"
             onSubmit={handleSubmit}
             encType="multipart/form-data"
           >

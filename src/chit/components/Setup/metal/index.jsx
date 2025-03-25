@@ -19,11 +19,7 @@ import { setid } from "../../../../redux/clientFormSlice";
 import Modal from "../../common/Modal";
 import ModelOne from "../../common/Modelone";
 import { useDebounce } from "../../../hooks/useDebounce";
-import usePagination from "../../../hooks/usePagination";
-import { Formik } from "formik";
-import * as Yup from "yup";
 import SpinLoading from "../../common/spinLoading";
-import Loading from "../../common/Loading";
 import { metadata, tr } from "framer-motion/client";
 import Action from "../../common/action";
 
@@ -302,7 +298,7 @@ const Metal = () => {
 
       <ModelOne
         title={id ? "Edit Metal" : "Add Metal"}
-        extraClassName="max-w-lg"
+        extraClassName="w-96"
         setIsOpen={setIsviewOpen}
         isOpen={isviewOpen}
         closeModal={closeIncommingModal}
@@ -323,7 +319,6 @@ export const MetalForm = ({ setIsOpen, id, clearId }) => {
     metal_name: "",
   });
 
-  console.log(id);
   const [formErrors, setFormErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   // getmetalById
