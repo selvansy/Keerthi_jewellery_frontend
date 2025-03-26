@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { ChevronLeft, ChevronRight, MoreVertical, ArrowUpDown } from "lucide-react";
+import Loading from "./Loading";
 
 const Table = ({
   data = [],

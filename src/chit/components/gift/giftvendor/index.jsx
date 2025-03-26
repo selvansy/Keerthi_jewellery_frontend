@@ -1,25 +1,32 @@
-import React, { useState, useEffect } from 'react';
-import Table from '../../common/Table';
-import { Search } from 'lucide-react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { getallgiftvendor, getallbranch, getAllgiftvendors, changegiftvendorStatus, deletegiftvendor, getgiftvendorById, updategiftvendor, addgiftvendor } from '../../../api/Endpoints';
-import { useMutation } from '@tanstack/react-query';
-import { toast } from 'react-toastify';
-import { openModal } from '../../../../redux/modalSlice';
-import { eventEmitter } from '../../../../utils/EventEmitter';
-import { useDispatch, useSelector } from 'react-redux';
-import ModelOne from "../../../components/common/Modelone"
-import Modal from '../../../components/common/Modal';
-import { useDebounce } from '../../../hooks/useDebounce';
-import { setid } from "../../../../redux/clientFormSlice"
-import GiftVendorForm from "./GiftVendorForm"
-import Loading from '../../common/Loading';
-import usePagination from '../../../hooks/usePagination'
-import Action from '../../common/action';
-
+import React, { useState, useEffect } from "react";
+import Table from "../../common/Table";
+import { Search } from "lucide-react";
+import { useNavigate, useParams } from "react-router-dom";
+import {
+  getallgiftvendor,
+  getallbranch,
+  getAllgiftvendors,
+  changegiftvendorStatus,
+  deletegiftvendor,
+  getgiftvendorById,
+  updategiftvendor,
+  addgiftvendor,
+} from "../../../api/Endpoints";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "react-toastify";
+import { openModal } from "../../../../redux/modalSlice";
+import { eventEmitter } from "../../../../utils/EventEmitter";
+import { useDispatch, useSelector } from "react-redux";
+import ModelOne from "../../../components/common/Modelone";
+import Modal from "../../../components/common/Modal";
+import { useDebounce } from "../../../hooks/useDebounce";
+import { setid } from "../../../../redux/clientFormSlice";
+import GiftVendorForm from "./GiftVendorForm";
+import Loading from "../../common/Loading";
+import usePagination from "../../../hooks/usePagination";
+import Action from "../../common/action";
 
 const Giftvendor = () => {
-
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
   const navigate = useNavigate();
@@ -27,53 +34,57 @@ const Giftvendor = () => {
   const [giftvendorData, setgiftvendorData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [selectedRow, setSelectedRow] = useState(null)
+  const [selectedRow, setSelectedRow] = useState(null);
   const [totalPages, setTotalPages] = useState(0);
-  const [entries,Setentries] = useState(0)
+  const [entries, Setentries] = useState(0);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [isviewOpen, setIsviewOpen] = useState(false);
-  const [isLoading, setisLoading] = useState(true)
-  const [id,setId] = useState("")
-  const [totalDocuments,setTotalDocuments]=useState(0)
+  const [isLoading, setisLoading] = useState(true);
+  const [id, setId] = useState("");
+  const [totalDocuments, setTotalDocuments] = useState(0);
 
   function closeIncommingModal() {
     setIsviewOpen(false);
   }
 
-  const [searchInput, setSearchInput] = useState('')
-  const debouncedSearch = useDebounce(searchInput, 500)
+  const [searchInput, setSearchInput] = useState("");
+  const debouncedSearch = useDebounce(searchInput, 500);
 
   const limit = 1;
 
   useEffect(() => {
-    getAllgiftvendorsMutate({ search: debouncedSearch, page: currentPage, limit:itemsPerPage });
-  }, [currentPage, debouncedSearch,itemsPerPage]);
+    getAllgiftvendorsMutate({
+      search: debouncedSearch,
+      page: currentPage,
+      limit: itemsPerPage,
+    });
+  }, [currentPage, debouncedSearch, itemsPerPage]);
 
-  const refetchTable = ()=>{
-    getAllgiftvendorsMutate({ search: debouncedSearch, page: currentPage, limit:itemsPerPage });
-  }
+  const refetchTable = () => {
+    getAllgiftvendorsMutate({
+      search: debouncedSearch,
+      page: currentPage,
+      limit: itemsPerPage,
+    });
+  };
 
-
-
-  const { mutate: getAllgiftvendorsMutate} = useMutation({
+  const { mutate: getAllgiftvendorsMutate } = useMutation({
     mutationFn: (payload) => getAllgiftvendors(payload),
     onSuccess: (response) => {
       if (response) {
         setgiftvendorData(response.data);
-        setTotalPages(response.totalPages)
-        setCurrentPage(response.currentPage)
-        setTotalDocuments(response.totalDocument)
-        Setentries(response.totalDocument)
+        setTotalPages(response.totalPages);
+        setCurrentPage(response.currentPage);
+        setTotalDocuments(response.totalDocument);
+        Setentries(response.totalDocument);
       }
-      setisLoading(false)
-  
+      setisLoading(false);
     },
     onError: () => {
-      setgiftvendorData([])
-      setisLoading(false)
-    }
+      setgiftvendorData([]);
+      setisLoading(false);
+    },
   });
-
 
   const handleStatusToggle = async (id, currentStatus) => {
     try {
@@ -88,75 +99,77 @@ const Giftvendor = () => {
         )
       );
     } catch (error) {
-      console.error('Error updating status:', error);
+      console.error("Error updating status:", error);
     }
   };
 
   const handleEdit = (id) => {
-    setIsviewOpen(true)
-    setId(id)
+    setIsviewOpen(true);
+    setId(id);
   };
 
   const handleAddgiftvendor = () => {
-    setIsviewOpen(true)
+    setIsviewOpen(true);
   };
 
   const handleDelete = (id) => {
-      setId(id)
-      dispatch(openModal({
-        modalType: 'CONFIRMATION',
-        header: 'Delete giftvendor',
+    setId(id);
+    dispatch(
+      openModal({
+        modalType: "CONFIRMATION",
+        header: "Delete giftvendor",
         formData: {
-          message: 'Are you sure you want to delete this giftvendor?',
-          giftvendorId: id
+          message: "Are you sure you want to delete this giftvendor?",
+          giftvendorId: id,
         },
         buttons: {
           cancel: {
-            text: 'Cancel'
+            text: "Cancel",
           },
           submit: {
-            text: 'Delete'
-          }
-        }
-      }))
-  
-    }
-     const { mutate: deleteGiftVendor } = useMutation({
-        mutationFn:(id)=> deletegiftvendor(id),
-        onSuccess: (response) => {
-          if (response.message === "Vendor deleted successfully") {
-            const isLastItemOnPage = giftvendorData.length === 1;
-            const isNotFirstPage = currentPage > 1;
-            if (isLastItemOnPage && isNotFirstPage) {
-              setCurrentPage(prev => prev - 1);
-            } else {
-              getAllgiftvendorsMutate({ search: debouncedSearch, page: currentPage, limit:itemsPerPage });
-            }
-          }
-            toast.success(response.message);
-            eventEmitter.off("CONFIRMATION_SUBMIT");
-            setId("");
+            text: "Delete",
           },
-        onError: (error) => {
-          console.error("Error:", error);
-          toast.error("Failed to delete");
         },
-      });
-    
-      useEffect(() => {
-        const handleDelete = (data) => {
-          deleteGiftVendor(data.giftvendorId);
-        };
-    
-        eventEmitter.on("CONFIRMATION_SUBMIT", handleDelete);
-    
-        return () => {
-          eventEmitter.off("CONFIRMATION_SUBMIT", handleDelete);
-        };
-      }, []);
+      })
+    );
+  };
+  const { mutate: deleteGiftVendor } = useMutation({
+    mutationFn: (id) => deletegiftvendor(id),
+    onSuccess: (response) => {
+      if (response.message === "Vendor deleted successfully") {
+        const isLastItemOnPage = giftvendorData.length === 1;
+        const isNotFirstPage = currentPage > 1;
+        if (isLastItemOnPage && isNotFirstPage) {
+          setCurrentPage((prev) => prev - 1);
+        } else {
+          getAllgiftvendorsMutate({
+            search: debouncedSearch,
+            page: currentPage,
+            limit: itemsPerPage,
+          });
+        }
+      }
+      toast.success(response.message);
+      eventEmitter.off("CONFIRMATION_SUBMIT");
+      setId("");
+    },
+    onError: (error) => {
+      console.error("Error:", error);
+      toast.error("Failed to delete");
+    },
+  });
 
-      
+  useEffect(() => {
+    const handleDelete = (data) => {
+      deleteGiftVendor(data.giftvendorId);
+    };
 
+    eventEmitter.on("CONFIRMATION_SUBMIT", handleDelete);
+
+    return () => {
+      eventEmitter.off("CONFIRMATION_SUBMIT", handleDelete);
+    };
+  }, []);
 
   const handleItemsPerPageChange = (value) => {
     setItemsPerPage(value);
@@ -164,54 +177,54 @@ const Giftvendor = () => {
   };
 
   const handlePageChange = (page) => {
-
     const pageNumber = Number(page);
-      if (!pageNumber || isNaN(pageNumber) || pageNumber < 1 || pageNumber > totalPages) {
-        return;
-      }
-      setCurrentPage(pageNumber);
-    
+    if (
+      !pageNumber ||
+      isNaN(pageNumber) ||
+      pageNumber < 1 ||
+      pageNumber > totalPages
+    ) {
+      return;
+    }
+    setCurrentPage(pageNumber);
   };
-
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (activeDropdown && !event.target.closest('.dropdown-container')) {
+      if (activeDropdown && !event.target.closest(".dropdown-container")) {
         setActiveDropdown(null);
       }
     };
 
-    document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
   }, [activeDropdown]);
 
-
   const columns = [
-
     {
-      header: 'S.No',
+      header: "S.No",
       cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
     },
     {
-      header: 'Vendor Name',
-      accessor: 'vendor_name',
-      cell: (row) => row?.vendor_name || 'N/A',
+      header: "Vendor Name",
+      accessor: "vendor_name",
+      cell: (row) => row?.vendor_name || "N/A",
     },
     {
-      header: 'Mobile',
-      cell: (row) => row?.mobile || 'N/A',
+      header: "Mobile",
+      cell: (row) => row?.mobile || "N/A",
     },
     {
-      header: 'Address',
-      cell: (row) => row?.address || 'N/A',
+      header: "Address",
+      cell: (row) => row?.address || "N/A",
     },
     {
-      header: 'Gst',
-      cell: (row) => row?.gst || 'N/A',
+      header: "Gst",
+      cell: (row) => row?.gst || "N/A",
     },
     {
-      header: 'Status',
-      accessor: 'active',
+      header: "Status",
+      accessor: "active",
       cell: (row) => (
         <label className="relative inline-flex items-center cursor-pointer">
           <input
@@ -221,27 +234,35 @@ const Giftvendor = () => {
             onChange={() => handleStatusToggle(row?._id, row?.active)}
           />
           <div
-            className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-black p-[2px] after:duration-300 after:bg-black ${row.active === true
-              ? 'peer-checked:bg-[#61A375] peer-checked:ring-[#61A375]'
-              : 'peer-checked:bg-gray-400 peer-checked:ring-gray-400'
-              } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-white peer-hover:after:scale-95`}
+            className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-[#E7EEF5] p-[2px] after:duration-300 after:bg-[#004181] ${
+              row?.active === true
+                ? "peer-checked:bg-[#E7EEF5] peer-checked:ring-[#E7EEF5]"
+                : "peer-checked:bg-[#E7EEF5] peer-checked:ring-gray-400"
+            } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-[${layout_color}] peer-hover:after:scale-95`}
           ></div>
         </label>
-      )
+      ),
     },
     {
       header: "Actions",
       cell: (row, rowIndex) => (
-        <Action row={row} data={giftvendorData} rowIndex={rowIndex} activeDropdown={activeDropdown} setActive={hanldeActiveDropDown}  handleEdit={handleEdit} handleDelete={handleDelete}/>
+        <Action
+          row={row}
+          data={giftvendorData}
+          rowIndex={rowIndex}
+          activeDropdown={activeDropdown}
+          setActive={hanldeActiveDropDown}
+          handleEdit={handleEdit}
+          handleDelete={handleDelete}
+        />
       ),
       sticky: "right",
     },
-
   ];
 
   const handleSearch = (e) => {
-    setSearchInput(e.target.value)
-  }
+    setSearchInput(e.target.value);
+  };
   const hanldeActiveDropDown = (data) => {
     setActiveDropdown(data);
   };
@@ -249,7 +270,9 @@ const Giftvendor = () => {
   return (
     <div className="flex flex-col p-4 relative">
       {isLoading ? (
-        <div className='flex justify-center items-center mt-[150px]'><Loading /></div>
+        <div className="flex justify-center items-center mt-[150px]">
+          <Loading />
+        </div>
       ) : (
         <>
           <h2 className="text-2xl text-gray-900 font-bold">Gift Vendor</h2>
@@ -268,23 +291,30 @@ const Giftvendor = () => {
               <button
                 className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
                 onClick={handleAddgiftvendor}
-                style={{ backgroundColor: layout_color }} >
+                style={{ backgroundColor: layout_color }}
+              >
                 + Add Gift Vendor
               </button>
             </div>
           </div>
 
           <div className="mt-4">
-          <Table data={giftvendorData} columns={columns} isLoading={isLoading}  currentPage={currentPage} handlePageChange={handlePageChange} itemsPerPage={itemsPerPage} totalItems={totalDocuments} handleItemsPerPageChange={handleItemsPerPageChange} />
-
+            <Table
+              data={giftvendorData}
+              columns={columns}
+              isLoading={isLoading}
+              currentPage={currentPage}
+              handlePageChange={handlePageChange}
+              itemsPerPage={itemsPerPage}
+              totalItems={totalDocuments}
+              handleItemsPerPageChange={handleItemsPerPageChange}
+            />
           </div>
-
-    
         </>
       )}
       <ModelOne
         title={id ? "Edit Gift Vendor" : "Add Gift Vendor"}
-        extraClassName='max-w-lg'
+        extraClassName='w-1/3'
         setIsOpen={setIsviewOpen}
         isOpen={isviewOpen}
         closeModal={closeIncommingModal}

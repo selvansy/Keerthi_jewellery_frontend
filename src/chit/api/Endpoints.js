@@ -2389,11 +2389,11 @@ export const deletemetalrate = async (id) => {
   return response.data;
 };
 
-export const getMetalRateByMetalId = async (metalId, purityId, date) => {
+export const getMetalRateByMetalId = async (metalId, purityId, date,branch) => {
   const response = await Api.get(
     `${
       import.meta.env.VITE_API_URL
-    }/api/client/metalrate/current?metalid=${metalId}&purity=${purityId}&date=${date}`
+    }/api/client/metalrate/current?metalid=${metalId}&purity=${purityId}&date=${date}&branch=${branch}`
   );
   return response.data;
 };

@@ -152,7 +152,6 @@ export const schemeValidationSchema = Yup.object({
   }),
   max_weight: Yup.number().when(["classType", "scheme_type"], {
     is: (classType, scheme_type) =>
-      (classType && [12, 3, 4].includes(Number(scheme_type))) ||
       (!classType && [12, 3, 4].includes(Number(scheme_type))),
     then: (schema) =>
       schema

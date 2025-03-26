@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams,useLocation} from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import Select from "react-select";
 import { toast } from "react-toastify";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import {
   getBranchById,
   getallbranch,
@@ -22,9 +22,9 @@ import SpinLoading from "../../common/spinLoading";
 import ToggleSwitch from "../../common/ToggleSwitch";
 
 const CreateDigiGoldScheme = () => {
-  const dispatch = useDispatch();
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation()
   const roleData = useSelector((state) => state.clientForm.roledata);
   const id_branch = roleData?.id_branch;
   const accessBranch = roleData?.branch;
@@ -35,6 +35,8 @@ const CreateDigiGoldScheme = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
   const [isBonus, setBonus] = useState(false);
+  const [silver,setSilver]= useState(false)
+  const [header,setHeader]= useState('')
 
   // Customisations for react-select
   const customStyles = {
@@ -46,6 +48,22 @@ const CreateDigiGoldScheme = () => {
       borderRadius: "0.375rem",
     }),
   };
+
+  useEffect(()=>{
+    if(location.pathname === "/scheme/digisilver"){
+      setSilver(true)
+      setHeader('Create Digisilver')
+    }else if(location.pathname === "/scheme/digisilver" && id){
+      setSilver(true)
+      setHeader('Edit Digisilver')
+    }else if(!id &&  location.pathname !== "/scheme/digisilver"){
+      setSilver(false)
+      setHeader('Add Digigold')
+    }else{
+      setSilver(false)
+      setHeader('Edit Digigold')
+    }
+  },[location.pathname])
 
   // Formik initialization
   const formik = useFormik({
@@ -66,7 +84,7 @@ const CreateDigiGoldScheme = () => {
       sell_gst: "",
       max_amount: "",
       min_amount: "",
-      scheme_type: 10, // digigold scheme type
+      scheme_type: 10, 
     },
     validationSchema: Yup.object({
       scheme_name: Yup.string().required("Scheme name is required"),
@@ -224,14 +242,25 @@ const CreateDigiGoldScheme = () => {
   }, [branchData, digigoldData, schemeData, id]);
 
   useEffect(() => {
+    console.log(digigoldData)
     if (digigoldData) {
-      setStaticData(digigoldData.data);
-      formik.setFieldValue("id_metal", digigoldData.data.id_metal._id);
-      formik.setFieldValue("id_purity", digigoldData.data._id);
+      if(!silver){
+        setStaticData(digigoldData.data);
+      formik.setFieldValue("id_metal", digigoldData.data.gold.id_metal._id);
+      formik.setFieldValue("id_purity", digigoldData.data.gold._id);
       formik.setFieldValue(
         "id_classification",
         digigoldData.data.id_classification
       );
+      }else{
+        setStaticData(digigoldData.data);
+        formik.setFieldValue("id_metal", digigoldData.data.silver.id_metal._id);
+        formik.setFieldValue("id_purity", digigoldData.data.silver._id);
+      formik.setFieldValue(
+        "id_classification",
+        digigoldData.data.id_classification
+      );
+      }
     }
   }, [digigoldData]);
 
@@ -368,14 +397,11 @@ const CreateDigiGoldScheme = () => {
     formik.validateForm();
   };
 
-  console.log(formik.values);
-  console.log(formik.errors);
-
   return (
     <>
       <div className="flex flex-row justify-between">
         <h2 className="text-2xl text-gray-900 font-bold">
-          {id ? "Edit DigiGoldScheme" : "Create DigiGoldScheme"}
+          {header}
         </h2>
       </div>
       <div className="w-full flex flex-col bg-[#F5F5F5] border-t-2 border-[#023453] mt-3 overflow-y-auto scrollbar-hide h-[calc(100vh-200px)]">
@@ -455,7 +481,7 @@ const CreateDigiGoldScheme = () => {
                 </label>
                 <input
                   disabled
-                  value={staticData?.id_metal?.metal_name}
+                  value={!silver ? staticData?.gold?.id_metal?.metal_name : staticData?.silver?.id_metal?.metal_name}
                   className="w-full border rounded-md px-3 py-2"
                 />
               </div>
@@ -465,7 +491,7 @@ const CreateDigiGoldScheme = () => {
                 </label>
                 <input
                   disabled
-                  value={staticData?.purity_name}
+                  value={silver ? staticData?.silver?.purity_name : staticData?.gold?.purity_name}
                   className="w-full border rounded-md px-3 py-2"
                 />
               </div>
