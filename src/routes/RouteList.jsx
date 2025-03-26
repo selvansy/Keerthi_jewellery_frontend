@@ -171,12 +171,12 @@ const RouteList = [
   //Masters
   {
     name: "Purity",
-    path: 'masters/purity/',
+    path: '/masters/purity/',
     element: <Base renderContent={Purity} />
   },
   {
     name: "Metal",
-    path: 'masters/metal/',
+    path: '/masters/metal/',
     element: <Base renderContent={Metal} />
   },
   {
@@ -196,12 +196,12 @@ const RouteList = [
   },
   {
     name: "User Role",
-    path: 'masters/userrole',
+    path: '/masters/userrole',
     element: <Base renderContent={UserRole} />
   },
   {
     name: "User Access",
-    path: 'masters/useraccess',
+    path: '/masters/useraccess',
     element: <Base renderContent={UserAccess} />
   },
   {
@@ -216,7 +216,7 @@ const RouteList = [
   },
   {
     name: "Topup",
-    path: 'masters/topup',
+    path: '/masters/topup',
     element: <Base renderContent={Topup} />
   },
 
@@ -520,7 +520,7 @@ const RouteList = [
   },
 
 
-
+ 
   //Accounts Report
   {
     name: "Payment Mode Ledger",

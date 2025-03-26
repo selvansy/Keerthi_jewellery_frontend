@@ -422,9 +422,9 @@ const Base = ({ renderContent: RenderContent }) => {
       icon: Settings,
       hasSubmenu: true,
       submenu: [
-        { text: "Payment Mode", action: () => handleClick("Payment Mode") },
+        { text: "Payment Mode", action: () => handleClick("Payment Ledger") },
         { text: "Scheme Type", action: () => handleClick("Scheme Type") },
-        { text: "Employee", action: () => handleClick("Employee") },
+        { text: "Employee", action: () => handleClick("Employee Details") },
         { text: "User Role", action: () => handleClick("User Role") },
         { text: "User Access", action: () => handleClick("User Access") },
         { text: "Staff User", action: () => handleClick("Staff User") },
@@ -588,9 +588,9 @@ const Base = ({ renderContent: RenderContent }) => {
                   icon={menu.icon}
                   text={menu.text}
                   hasSubmenu={menu.hasSubmenu}
-                  isOpen={
-                    openMenus[menu.text.toLowerCase().replace(/\s+/g, "")]
-                  }
+                  // isOpen={
+                  //   openMenus[menu.text.toLowerCase().replace(/\s+/g, "")]
+                  // }
                   onClick={() => {
                     if (menu.hasSubmenu) {
                       setSelectedParentSection(menu.text);

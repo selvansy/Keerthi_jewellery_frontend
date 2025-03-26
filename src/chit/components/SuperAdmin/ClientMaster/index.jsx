@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import Table from '../../common/Table'
 import { toast } from 'react-toastify';
 import { SlidersHorizontal, Search, X } from 'lucide-react'
@@ -12,6 +12,8 @@ import { getallclienttable, deleteclient } from "../../../api/Endpoints"
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom'
 import ProgressSteps from '../../common/ProgressSteps';
+import Action from '../../common/action';
+import { useDebounce } from '../../../hooks/useDebounce';
 
 const ClientMaster = () => {
 
@@ -22,25 +24,20 @@ const ClientMaster = () => {
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [selectedRow, setSelectedRow] = useState(null);
   const [isLoading,setisLoading] = useState(true)
-  const [userroleData, setuserroleData] = useState([]);
+ 
    const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
+    const [entries,Setentries] = useState(0)
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [selectedCountry, setSelectedCountry] = useState('');
-  const [selectedState, setSelectedState] = useState('')
-
-  const [stateData, setStateData] = useState([]);
-  const [cityData, setCityData] = useState([])
-  const [selectedCity, setSelectedCity] = useState('')
   const [clientData, setClientData] = useState([])
-  const [countryData, setCountryData] = useState([])
-
-  let [client, setClient] = useState({});
   const [filters, setFilters] = React.useState({
     metalType: '',
     branch: ''
   });
+   const [search, setSearchInput] = useState('')
+  const debouncedSearch = useDebounce(search, 500)
 
+    const handleSearch = useCallback((e) => setSearchInput(e.target.value), []);
 
   const steps = [
     {
@@ -69,9 +66,8 @@ const ClientMaster = () => {
     },
   ];
 
-  const currentStep = useSelector((state) => state.clientForm.currentStep);
-  const id = useSelector((state) => state.clientForm.id_client);
-  const selectedProject = useSelector((state) => state.clientForm.selectedProject);
+ 
+
   let dispatch = useDispatch();
 
   const [clientTable, setClientTable] = useState([]);
@@ -81,6 +77,9 @@ const ClientMaster = () => {
        getallclienttable(payload),
     onSuccess: (response) => {
       setClientTable(response.data);
+      setTotalPages(response.totalPages)
+      setCurrentPage(response.currentPage)
+      Setentries(response.totalDocuments)
       setisLoading(false)
     },
     onError:()=>{
@@ -92,14 +91,13 @@ const ClientMaster = () => {
   useEffect(() => {
 
     dispatch(setTotalPage(steps.length))
-    getClients();
+    getClients({page: currentPage, limit: itemsPerPage, search: debouncedSearch});
 
-  }, [])
+  }, [currentPage, itemsPerPage,debouncedSearch])
 
   const handleEdit = (clientId) => {
     navigate(`/superadmin/addclient/${clientId}`);
   }
-
 
 
   const handleFilterChange = (e) => {
@@ -115,53 +113,85 @@ const ClientMaster = () => {
     navigate('/superadmin/addclient');
   }
 
+
   const handleDelete = (id) => {
+
+    setActiveDropdown(null);
     dispatch(openModal({
       modalType: 'CONFIRMATION',
       header: 'Delete Clients',
       formData: {
-        message: 'Are you sure you want to delete this client?',
-        clientId: id,
+        message: 'Are you sure you want to delete?',
+        clientId: id
       },
       buttons: {
-        cancel: { text: 'Cancel' },
-        submit: { text: 'Delete' },
-      },
+        cancel: {
+          text: 'Cancel'
+        },
+        submit: {
+          text: 'Delete'
+        }
+      }
     }));
 
-    eventEmitter.on('CONFIRMATION_SUBMIT', async (data) => {
-      try {
-        let response = await deleteclient(data.clientId);
-        toast.success(response.message);
-        getallclienttable();
-      } catch (error) {
-        console.error('Error deleting customer:', error);
-      }
-    });
-  }
 
-
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
   };
 
+   const { mutate: deleteclientMutate } = useMutation({
+      mutationFn:(id)=> deleteclient(id),
+      onSuccess: (response) => {
+          const isLastItemOnPage = clientTable.length === 1;
+          const isNotFirstPage = currentPage > 1;
+          if (isLastItemOnPage && isNotFirstPage) {
+            setCurrentPage(prev => prev - 1);
+          } else {
+            const payload = {
+              page: currentPage,
+              limit: itemsPerPage,
+              search: debouncedSearch,
+          }
+          getallclienttable(payload);
+          
+        }
+          toast.success(response.message);
+          eventEmitter.off("CONFIRMATION_SUBMIT");
+
+        },
+      onError: (error) => {
+        console.error("Error:", error);
+        toast.error(error.message);
+      },
+    });
+  
+    useEffect(() => {
+      const handleDelete = (data) => {
+        deleteclientMutate(data.clientId);
+      };
+  
+      eventEmitter.on("CONFIRMATION_SUBMIT", handleDelete);
+  
+      return () => {
+        eventEmitter.off("CONFIRMATION_SUBMIT", handleDelete);
+      };
+    }, []);
+  
 
   const handleItemsPerPageChange = (value) => {
     setItemsPerPage(value);
     setCurrentPage(1);
   };
-  const paginationButtons = [];
-  for (let i = 1; i <= totalPages; i++) {
-    paginationButtons.push(
-      <button
-        key={i}
-        onClick={() => handlePageChange(i)}
-        className={`p-2 w-10 h-10 rounded-md ${currentPage === i ? ' text-white' : 'bg-gray-300 text-[#023453]'}`}
-        style={{ backgroundColor: layout_color }} >
-        {i}
-      </button>
-    );
-  }
+
+  const handlePageChange = (page) => {
+
+    const pageNumber = Number(page);
+    if (!pageNumber || isNaN(pageNumber) || pageNumber < 1 || pageNumber > totalPages) {
+      return;
+    }
+
+    setCurrentPage(pageNumber);
+
+  };
+
 
 
   useEffect(() => {
@@ -171,93 +201,23 @@ const ClientMaster = () => {
   }, [eventEmitter]);
 
 
-  const columns = [
+  const hanldeActiveDropDown = (data) => {
+    setActiveDropdown(data);
+  };
 
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
+  const columns = [
     {
-      header: 'Actions',
-      cell: (row, rowIndex) => (
-        <div className="dropdown-container relative">
-          <button
-            className="p-1 hover:bg-gray-100 rounded-full"
-            onClick={(e) => {
-              e.stopPropagation();
-              setSelectedRow(row?._id);
-              setActiveDropdown(activeDropdown === row?._id ? null : row?._id);
-            }}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
-              <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
-            </svg>
-          </button>
-    
-          {activeDropdown === row?._id && (
-            <div
-              className="absolute"
-              style={{
-                top: rowIndex >= clientData.length - 2 ? "auto" : "72%",
-                bottom: rowIndex >= clientData.length - 2 ? "-74%" : "auto",
-                // top: 'auto',
-                // bottom: '-440%',
-                zIndex: 9999,
-                marginBottom: "8px",
-                filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.15))",
-              }}
-            >
-              <div className="w-32 rounded-md bg-white ring-1 ring-black ring-opacity-5">
-                <div className="py-1">
-                  {/* Edit Button */}
-                  <button
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                    onClick={() => {
-                      handleEdit(row?._id);
-                      setActiveDropdown(null);
-                    }}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                    Edit
-                  </button>
-    
-                  {/* Delete Button */}
-                  <button
-                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
-                    onClick={() => {
-                      handleDelete(row?._id);
-                      setActiveDropdown(null);
-                    }}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                    Delete
-                  </button>
-                  <button
-                className="px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                onClick={() => setActiveDropdown(null)}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-                Cancel
-              </button>
-                 
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      ),
-      sticky: 'right',
-    },
-    {
-      header: 'S.No',
-      cell: (_, index) => index + 1,
+      header: "S.No",
+      cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
     },
     {
       header: 'Company name',
@@ -285,17 +245,30 @@ const ClientMaster = () => {
     },
     {
       header: 'Sign Date',
-      cell: (row) => `${row?.sign_date || '0000-00-00'}`,
+
+       cell: (row) => formatDate(new Date(row?.sign_date), 'dd/MM/yyyy')
     },
 
     {
       header: 'Launch Date',
-      cell: (row) => `${row?.launch_date || '0000-00-00' }`,
-    }
-
-   
-    
-  ]
+      
+       cell: (row) => formatDate(new Date(row?.launch_date), 'dd/MM/yyyy')
+    },
+    {
+      header: "Actions",
+      cell: (row, rowIndex) => (
+        <Action
+          row={row}
+          data={clientTable}
+          rowIndex={rowIndex}
+          activeDropdown={activeDropdown}
+          setActive={hanldeActiveDropDown}
+          handleEdit={handleEdit}
+          handleDelete={handleDelete}
+        />
+      ),
+      sticky: "right",
+    },]
 
   return (
     <div className="flex flex-col p-4 relative">
@@ -394,12 +367,17 @@ const ClientMaster = () => {
         <Table
           data={clientTable}
           columns={columns}
-          selectedRow={selectedRow}
           isLoading={isLoading}
+          currentPage={currentPage}
+          handleItemsPerPageChange={handleItemsPerPageChange}
+          handlePageChange={handlePageChange}
+          itemsPerPage={itemsPerPage}
+          totalItems={entries}
+          debounceSearch={handleSearch}
         />
 
       </div>
-      {clientTable.length > 0 && (
+      {/* {clientTable.length > 0 && (
         <div className="flex justify-between mt-4 p-2">
           <div className="flex flex-row items-center justify-center gap-2">
             <div className="flex items-center gap-4">
@@ -446,7 +424,7 @@ const ClientMaster = () => {
             <span className="text-gray-500">entries</span>
           </div>
         </div>
-      )}
+      )} */}
       <Modal />
     </div>
 

@@ -38,7 +38,7 @@ const CustomerForm = ({ setCusData, id, setaddCusData, addCusData, id_proof, set
     const id_branch = roledata?.branch;
 
     const [showVerification, setShowVerification] = useState(false);
-    const [isLoading, setisLoading] = useState();
+    const [isLoading, setisLoading] = useState(false);
     const [otpNumber, setOtpNumber] = useState("");
     const [mobile, setMobile] = useState("");
     const [timer, setTimer] = useState(60);

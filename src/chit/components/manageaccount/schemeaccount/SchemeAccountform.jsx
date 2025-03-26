@@ -64,7 +64,7 @@ export function ExistingCustomer({ setCusData }) {
     setLoading(true);
     handlesearchcustomer({
       id_branch: formData.id_branch,
-      search_mobile: formData.mobile,
+      search: formData.mobile,
     });
   };
 
