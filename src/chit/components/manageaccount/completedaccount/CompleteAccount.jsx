@@ -19,6 +19,7 @@ import { ExportToPDF } from '../../common/Dropdown/ExportPdf';
 import { useDebounce } from '../../../hooks/useDebounce';
 import Ledgerdetails from "./ledgerdetails"
 import usePagination from '../../../hooks/usePagination'
+import ExportDropdown from '../../common/Dropdown/Export'
 
 const CompleteAccount = () => {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
@@ -583,8 +584,7 @@ const CompleteAccount = () => {
           </button> */}
           <div className="flex flex-row items-center justify-end gap-2">
 
-            <ExportToExcel apiData={schemeaccount} fileName="SchemeAccount Report" />
-            <ExportToPDF apiData={schaccExp} fileName="scheme account" />
+          <ExportDropdown apiData={CompleteAccount} fileName={`Payment Ledger ${new Date().toLocaleDateString('en-GB')}`}/>
           </div>
 
           {
