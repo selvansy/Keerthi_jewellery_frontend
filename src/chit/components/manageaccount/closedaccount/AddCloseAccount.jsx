@@ -15,6 +15,8 @@ import {
   getallbranch,
   getallpaymentmodes,
   getallpaymentmode,
+  sendOtp,
+  closeBill
 } from "../../../api/Endpoints";
 import Modal from "../../common/Modelone";
 import ModelOne from "../../common/Modelone";

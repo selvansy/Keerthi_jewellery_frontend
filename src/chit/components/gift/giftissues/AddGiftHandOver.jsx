@@ -10,7 +10,7 @@ import Select from "react-select";
 import { customSelectStyles } from "../../../components/Setup/purity/index";
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { emptyToZero, formatNumber } from "../../../utils/commonFunction"
-import { addgiftissues, searchbarcodenumber, giftissuetype, searchcustomermobile, getallgiftInwardByBranch, searchSchAccByMobile, getallbranch, getschemeaccountbyid } from '../../../api/Endpoints'
+import { addgiftissues, searchbarcodenumber, giftissuetype, searchcustomermobile, getallgiftInwardByBranch, searchmobileschemeaccount,searchSchAccByMobile, getallbranch, getschemeaccountbyid } from '../../../api/Endpoints'
 import SpinLoading from '../../common/spinLoading';
 
 const AddGiftIssued = () => {
@@ -24,29 +24,20 @@ const AddGiftIssued = () => {
   const [branchList, setBranchList] = useState([]);
   const [branchId, setIdbranch] = useState("");
   const [schId, setSchId] = useState("")
-  const [giftId, setgiftId] = useState("")
-  const [excessamt, setExcessamt] = useState("")
   const [mobile, setMobile] = useState('');
   const [noOfgifts, setNoGifts] = useState("")
-  const [searcherror, setSearchError] = useState('');
-  const [barcodeerror, setBarcodeError] = useState('');
+ 
+ 
   const [issuetype, setIssuetype] = useState([]);
-  const [quantity, setQuantity] = useState(1);
+
   const [schemeaccount, setSchemeaccount] = useState([]);
   const [customer_name, setCustomername] = useState('');
   const [address, setAddress] = useState('');
-  const [scheme_amount, setSchemeammount] = useState(0);
-  const [gift_percentage, setGiftpercentage] = useState(0);
-  const [allocate_gift_amount, setAllocategiftamt] = useState(0);
-  const [received_gift_amount, setReceivedgiftamt] = useState(0);
-  const [balance_gift_amount, setBalancegiftamt] = useState(0);
+
+  
   const [searchbarcode, setSearchbarcode] = useState('');
   const [barcodeData, setBarcodeData] = useState([]);
   const [formErrors, setFormErrors] = useState({});
-  const [price, setPrice] = useState(0);
-  const [id_giftinward, setIdgiftinward] = useState([]);
-  const [id_gift, setIdgift] = useState([]);
-  const [barcode, setBarcode] = useState([]);
   const [barcodeNums, setBarcodeNums] = useState([]);
   const [excess_amount, setExcessamount] = useState([]);
 
@@ -57,29 +48,60 @@ const AddGiftIssued = () => {
     mobile: null,
     id_branch: "",
     issue_type: null,
-    gift_issues: []
+    gift_issues: [],
+    id_scheme_account:""
   });
 
-  console.log("brnahc",branchId)
+
+  
+  // const handleschemeaccountlist = async (id_scheme_account) => {
+
+  //   if (!id_scheme_account) return;
+  //   const response = await getschemeaccountbyid({ "id": id_scheme_account });
+  //   if (response) {
+  //     if (response.data.id_scheme.scheme_type > 3) {
+  //       setSchemeammount("₹ " + response.data.id_scheme.min_amount + " " + response.data.id_scheme.max_amount);
+  //     } else if (response.data.id_scheme.scheme_type === 3) {
+  //       setSchemeammount("GRM " + response.data.id_scheme.min_weight + " " + response.data.id_scheme.max_weight);
+  //     } else {
+  //       setSchemeammount("₹ " + response.data.id_scheme.amount);
+  //     }
+  //     setGiftpercentage(response.data.gift_percentage);
+  //     setAllocategiftamt(response.data.allocate_gift_amount);
+  //     setReceivedgiftamt(response.data.received_gift_amount);
+  //     setBalancegiftamt(response.data.balance_gift_amount);
+  //   }
+  // };
+
+ 
 
   const { data: giftResponse, isLoading: loadingGifts } = useQuery({
     queryKey: ["barcode", branchId],
     queryFn: () => getallgiftInwardByBranch(branchId),
   });
 
+  
   const { data: branchresponse, isLoading: loadingbranch } = useQuery({
     queryKey: ["branch"],
     queryFn: getallbranch,
+    enabled: id_branch === "0" || id_branch === 0,
   });
+
 
   const { data: giftIssueResponse, isLoading: loadingGiftItems } = useQuery({
     queryKey: ["giftissues",branchId],
     queryFn: giftissuetype,
   });
 
+  // const { data: handleschemeaccountlist, isLoading: loadingSchAcc } = useQuery({
+  //   queryKey: ["SchAcc",schId],
+  //   queryFn:()=> searchmobileschemeaccount(schId),
+  // });
 
+ 
 
   useEffect(() => {
+
     if (giftResponse?.data) {
       const barCodes = giftResponse.data.map((item) => ({
         value: Number(item?.barcode),
@@ -109,7 +131,6 @@ const AddGiftIssued = () => {
       setIssuetype(giftitem);
     }
 
-
   }, [giftResponse, branchresponse,giftIssueResponse]);
 
 
@@ -128,7 +149,7 @@ const AddGiftIssued = () => {
 
 
   const handleSearchmobile = () => {
-    setSearchError('');
+ 
     if (mobile === "") {
       toast.error('Mobile Number is required!');
     }
@@ -154,8 +175,6 @@ const AddGiftIssued = () => {
       if (response) {
         setCustomername(response.data[0].id_customer?.firstname + ' ' + response.data[0]?.id_customer?.lastname);
         setAddress(response.data[0]?.id_customer?.address);
-        setNoGifts(response.data[0]?.id_scheme?.no_of_gifts)
-        // setPrice(response.data[0]?.id_scheme?.no_of_gifts)
         setSchId(response.data[0].id_scheme_account)
         setFormData(prev => ({
           ...prev,
@@ -192,29 +211,25 @@ const AddGiftIssued = () => {
     },
   });
 
+
+
   const handleschemeaccountbyBranch = async (data) => {
-    if (data.length > 0) {
-      let account = [];
+    if (!data?.length) return;
+   console.log("data",data)
+    const account = data.map(({ _id, id_scheme }) => {
+      const { scheme_type, scheme_name, amount, min_weight, max_weight, min_amount, max_amount,no_of_gifts } = id_scheme;
 
-      for (let index in data) {
-        const item = data[index];
-        let scheme_name = '';
-
-        if (item.id_scheme.scheme_type === 0 || item.id_scheme.scheme_type === 1 || item.id_scheme.scheme_type === 2) {
-          scheme_name = "₹. " + item.id_scheme.amount;
-        } else if (item.id_scheme.scheme_type === 3) {
-          scheme_name = `${item.id_scheme.min_weight} Grm ${item.id_scheme.max_weight} Grm`;
-        } else {
-          scheme_name = `₹. ${item.id_scheme.min_amount} ₹. ${item.id_scheme.max_amount}`;
-        }
-
-        account.push({ _id: item._id, scheme_name: item.id_scheme.scheme_name + " (" + scheme_name + ")" });
-      }
-
-      setSchemeaccount(account);
-    }
+      const scheme_name_formatted = [3, 4, 12].includes(scheme_type)
+        ? `${min_weight} Grm - ${max_weight} Grm`
+        : `₹. ${min_amount ?? amount} - ₹. ${max_amount ?? amount}`;
+  
+      return { value: _id, label: `${scheme_name} (${scheme_name_formatted})` ,giftCount: `${no_of_gifts}`};
+    });
+  
+    setSchemeaccount(account);
   };
 
+  
   const inputChange = (e) => {
 
     const { name, value } = e.target;
@@ -222,11 +237,6 @@ const AddGiftIssued = () => {
     if (name === "id_branch") {
       setIdbranch(value);
     }
-
-     if (name === "id_scheme_account") {
-      handleschemeaccountlist(e.target.value);
-    }
-
   };
 
   const handleSchemeAcc = (value)=>{
@@ -241,28 +251,10 @@ const AddGiftIssued = () => {
       }
   }
 
-  const handleschemeaccountlist = async (id_scheme_account) => {
-
-    if (!id_scheme_account) return;
-    const response = await getschemeaccountbyid({ "id": id_scheme_account });
-    if (response) {
-      if (response.data.id_scheme.scheme_type > 3) {
-        setSchemeammount("₹ " + response.data.id_scheme.min_amount + " " + response.data.id_scheme.max_amount);
-      } else if (response.data.id_scheme.scheme_type === 3) {
-        setSchemeammount("GRM " + response.data.id_scheme.min_weight + " " + response.data.id_scheme.max_weight);
-      } else {
-        setSchemeammount("₹ " + response.data.id_scheme.amount);
-      }
-      setGiftpercentage(response.data.gift_percentage);
-      setAllocategiftamt(response.data.allocate_gift_amount);
-      setReceivedgiftamt(response.data.received_gift_amount);
-      setBalancegiftamt(response.data.balance_gift_amount);
-    }
-  };
 
 
   const handleSearchbarcode = () => {
-    setBarcodeError('');
+   
     if (!searchbarcode) {
       toast.error('Barcode Number is required!');
       return;
@@ -404,7 +396,7 @@ const AddGiftIssued = () => {
         setLoading(false)
         return;
       }
-      console.log(formData)
+   
       createGiftissuesMutate(formData);
 
     } catch (error) {
@@ -478,9 +470,7 @@ const AddGiftIssued = () => {
             <div className='flex flex-col mt-2'>
               <label className='text-black mb-1 font-medium'>Gift Issued Type<span className='text-red-400'>*</span></label>
               <div className="relative">
-
-                
-               <Select
+              <Select
                     options={issuetype}
                     value={issuetype.find(item => item.value === formData.issue_type) || ""}
                     onChange={(item) => {
@@ -533,12 +523,26 @@ const AddGiftIssued = () => {
               <div className='flex flex-col mt-2'>
                 <label className='text-black mb-1 font-medium'>Scheme Account<span className='text-red-400'>*</span></label>
                 <div className="relative">
-                  <select onChange={(e) => inputChange(e)} name="id_scheme_account" className='appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2  focus:border-transparent' defaultValue=''>
+                  {/* <select onChange={(e) => inputChange(e)} name="id_scheme_account" className='appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2  focus:border-transparent' defaultValue=''>
                     <option value='' readOnly>--Select--</option>
                     {schemeaccount.map((account) => (
                       <option key={account._id} value={account._id}>{account.scheme_name}</option>
                     ))}
-                  </select>
+                  </select> */}
+                  <Select
+                    options={schemeaccount}
+                    value={schemeaccount.find(item => item.value === formData.id_scheme_account) || ""}
+                    onChange={(item) => {
+                      setFormData((prev) => ({
+                        ...prev,
+                        id_scheme_account: item.value,
+                      }));
+                      setNoGifts(item.giftCount)
+                    }}
+                    customSelectStyles={customSelectStyles}
+                    // isLoading={loadingSchAcc}
+                    placeholder="Select SchemeAccount Type"
+                  />
                   {formErrors.id_scheme_account && <span className="text-red-500 text-sm mt-1">{formErrors.id_scheme_account}</span>}
                   <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
                     <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">

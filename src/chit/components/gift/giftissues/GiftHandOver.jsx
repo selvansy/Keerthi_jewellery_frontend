@@ -349,17 +349,8 @@ const GiftIssued = () => {
           </div>
         </div>
       </div>
-      <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
-        <div className="relative w-full lg:w-1/3 min-w-[200px]">
-          <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-            <Search className="text-gray-500" />
-          </div>
-          <input
-            placeholder="Search..."
-            className="p-3 pl-10 pr-3 border-2 bg-[#F5F5F5] border-gray-500 rounded-md w-full"
-            onChange={handleSearch}
-          />
-        </div>
+      <div className="mt-4">
+        
         <div className="flex flex-row items-center justify-end gap-2">
           {
             filtered ?

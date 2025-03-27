@@ -11,17 +11,18 @@ import { toast } from 'react-toastify';
 import { useParams } from 'react-router-dom';
 
 import { useSelector } from 'react-redux';
+import SpinLoading from '../../common/spinLoading';
+
 const ClientForm = () => {
   const navigate = useNavigate()
   const { id } = useParams();
 
+  const [isLoading, setisLoading] = useState();
   const [errors, setFormErrors] = useState({});
   const [projectData, setProjectData] = useState([]);
   const [id_project, setProjectId] = useState([]);
   const roledata = useSelector((state) => state.clientForm.roledata);
-  const id_role = roledata?.id_role?.id_role;
-  const id_client = roledata?.id_client;
-  const id_branch = roledata?.branch;
+
   const [formData, setFormData] = useState({
     company_name: "",
     shop_contact: "",
@@ -30,6 +31,7 @@ const ClientForm = () => {
     organiz_spocname: "",
     organiz_spoccontact: "",
     id_project: id_project,
+    aupay_active: "",
     sign_date: "",
     launch_date: ""
   });
@@ -99,16 +101,20 @@ const ClientForm = () => {
       }));
       getclientbyidMutate(id);
     }
-    getallprojectMutate();
+
+  }, [id]);
+
+  useEffect(() => {
+  getallprojectMutate(); 
   }, []);
 
+  
 
+  
 
   const { mutate: getallprojectMutate } = useMutation({
     mutationFn: getallprojects,
     onSuccess: (response) => {
-      console.log(response.data)
-
       if (response?.data) {
         setProjectData(response.data);
       }
@@ -139,6 +145,7 @@ const ClientForm = () => {
   };
 
 
+
   const { mutate: updateclientMutate } = useMutation({
     mutationFn: updateclient,
     onSuccess: (response) => {
@@ -151,25 +158,26 @@ const ClientForm = () => {
   });
 
 
-
   const { mutate: addclientMutate } = useMutation({
     mutationFn: (data) => addclient(data),
     onSuccess: (response) => {
-      console.log(response);
+
       if (response) {
         toast.success(response.message);
-        navigate('/superadmin/client');
+        navigate('/superadmin/clientmaster');
       }
     },
     onError: (error) => {
+      toast.error(error.response.data.message)
       console.error('Error adding employee:', error);
     }
   });
 
 
   const handleSubmit = () => {
+
     if (!validateForm()) {
-      alert('Please fill in all required fields');
+      toast.error('Please fill in all required fields');
       return;
     }
     if (id) {
@@ -181,23 +189,11 @@ const ClientForm = () => {
 
   };
 
-  const handleCheckboxChange = (projectId, project_name) => (e) => {
-   
-    setProjectId((prevState) => {
-      let updatedProjectIds = [...prevState];
-      if (e.target.checked) {
-        if (!updatedProjectIds.includes(projectId)) {
-          updatedProjectIds.push(projectId);
-        }
-      } else {
-        updatedProjectIds = updatedProjectIds.filter(id => id !== projectId);
-      }
-      return updatedProjectIds;
-    });
+  const handleCheckboxChange = (e) => {
 
     setFormData((prevState) => ({
       ...prevState,
-      [`${project_name}_active`]: e.target.checked,
+      aupay_active: e.target.checked,
     }));
   };
 
@@ -309,7 +305,7 @@ const ClientForm = () => {
 
             </div>
 
-            <div className="w-full flex flex-col gap-6 mt-4">
+            <div className="w-full flex flex-col gap-6 mt-7">
               <label className="text-black mb-1 text-md font-medium">
                 Project Config<span className="text-red-400"> *</span>
               </label>
@@ -318,83 +314,83 @@ const ClientForm = () => {
                 <table className="w-full table-auto border-collapse">
                   <thead>
                     <tr>
-                      <th className="text-left p-4 border-b-2 border-gray-300">Sno</th>
-                      <th className="text-left p-4 border-b-2 border-gray-300">Project Name</th>
-                      <th className="text-left p-4 border-b-2 border-gray-300">Status</th>
-                      <th className="text-left p-4 border-b-2 border-gray-300">URL</th>
-                      <th className="text-left p-4 border-b-2 border-gray-300">Sign Date</th>
-                      <th className="text-left p-4 border-b-2 border-gray-300">Launch Date</th>
+                      {['Project Name', 'Status', 'URL', 'Sign Date', 'Launch Date'].map((header) => (
+                        <th key={header} className="text-left p-4 border-b-2 border-gray-300">
+                          {header}
+                        </th>
+                      ))}
                     </tr>
                   </thead>
 
                   <tbody>
-                    {projectData.map((proj, index) => (
-                      <tr key={proj._id}>
-                        <td className="p-4 border-b border-gray-200 text-center">{index + 1}</td>
-                        <td className="p-4 border-b border-gray-200">{proj.project_name.toLowerCase()}</td>
+                    <tr>
+                      <td className="p-4 border-b border-gray-200">AU-PAY</td>
 
-                        <td className="p-4 border-b border-gray-200">
-                          <label className="relative inline-flex items-center cursor-pointer">
-                            <input
-                              type="checkbox"
-                              name={`${proj.project_name.toLowerCase()}_active`}
-                              checked={formData[`${proj.project_name.toLowerCase()}_active`]}
-                              onChange={handleCheckboxChange(proj._id, proj.project_name.toLowerCase())}
-                              className="sr-only peer"
-                            />
+                      <td className="p-4 border-b border-gray-200">
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            name="aupay_active"
+                            checked={formData.aupay_active}
+                            onChange={handleCheckboxChange}
+                            className="sr-only peer"
+                          />
+                          <div
+                            className={`w-14 h-6 p-3 bg-white rounded-full border transition-all transform 
+                      ${formData.aupay_active ? 'peer-checked:bg-green-500 border-green-500 shadow-lg' : 'peer-checked:bg-gray-400 border-gray-400 shadow-md'}`}
+                          >
                             <div
-                              className={`w-14 h-6 p-3 bg-white rounded-full border transition-all transform ${formData[`${proj.project_name.toLowerCase()}_active`] ? 'peer-checked:bg-green-500 border-green-500 shadow-lg' : 'peer-checked:bg-gray-400 border-gray-400 shadow-md'}`}
-                            >
-                              <div
-                                className={`absolute top-0.5 left-1.5 bottom-0.5 w-5 h-5 bg-black rounded-full transform transition-transform ${formData[`${proj.project_name.toLowerCase()}_active`] ? 'translate-x-6 bg-white' : ''}`}
-                              ></div>
+                              className={`absolute top-0.5 left-1.5 bottom-0.5 w-5 h-5 rounded-full transform transition-transform 
+                        ${formData.aupay_active ? 'translate-x-6 bg-white' : 'bg-black'}`}
+                            />
+                          </div>
+                        </label>
+                      </td>
+
+                      <td className="p-4 border-b border-gray-200">
+                        <input
+                          type="text"
+                          name="aupay_url"
+                          value={formData.aupay_url}
+                          onChange={handleInputChange}
+                          readOnly={!formData.aupay_active}
+                          placeholder='Enter aupay url'
+                          className={`border-2 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black 
+                              ${formData.aupay_active ? 'border-gray-300 shadow-lg' : 'border-gray-200 bg-gray-100 shadow-md'}`}
+                        />
+                      </td>
+
+
+                      {['sign_date', 'launch_date'].map((field) => (
+                        <td key={field} className="p-4 border-b border-gray-200">
+                         
+
+                          <div className="z-50">
+                            <DatePicker
+                              selected={formData[field] ? new Date(formData[field]) : null}
+                              onChange={(date) => handleInputChange({ target: { name: field, value: date } })}
+                              dateFormat="yyyy-MM-dd"
+                              className={`w-full border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-gray-400 
+                              ${formData.aupay_active ? 'border-gray-300 shadow-lg' : 'border-gray-200 bg-gray-100 shadow-md'}`}
+                              placeholderText="Select Date"
+                              wrapperClassName="w-full"
+                              showMonthDropdown
+                              showYearDropdown
+                              dropdownMode="select"
+                            />
+
+                            <div className='relative'> 
+                            <span className="absolute right-0 top-[-20px] transform -translate-y-1/2 text-gray-500 w-14 h-[43px] justify-center items-center flex rounded-r-md pointer-events-none">
+                              <CalendarDays size={20} />
+                            </span>
                             </div>
-                          </label>
+                          </div>
                         </td>
-
-                        <td className="p-4 border-b border-gray-200">
-                          <input
-                            type="text"
-                            name={`${proj.project_name.toLowerCase()}_url`}
-                            value={formData[`${proj.project_name.toLowerCase()}_url`]}
-                            onChange={handleInputChange}
-                            readOnly={!formData[`${proj.project_name.toLowerCase()}_active`]}
-                            placeholder="Enter the URL"
-                            className={`border-2 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black ${formData[`${proj.project_name.toLowerCase()}_active`] ? 'border-gray-300 shadow-lg' : 'border-gray-200 bg-gray-100 shadow-md'}`}
-                          />
-                        </td>
-
-                        {/* Sign Date Column */}
-                        <td className="p-4 border-b border-gray-200">
-                          <input
-                            type="text"
-                            name={`${proj.sign_date}_url`}
-                            value={formData[`${proj.sign_date}_url`]}
-                            onChange={handleInputChange}
-                            readOnly={!formData[`${proj.project_name.toLowerCase()}_active`]}
-                            placeholder="Enter the sign date"
-                            className={`border-2 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black ${formData[`${proj.project_name.toLowerCase()}_active`] ? 'border-gray-300 shadow-lg' : 'border-gray-200 bg-gray-100 shadow-md'}`}
-                          />
-                        </td>
-
-                        {/* Launch Date Column */}
-                        <td className="p-4 border-b border-gray-200">
-                          <input
-                            type="text"
-                            name={`${proj.launch_date}_url`}
-                            value={formData[`${proj.launch_date}_url`]}
-                            onChange={handleInputChange}
-                            readOnly={!formData[`${proj.project_name.toLowerCase()}_active`]}
-                            placeholder="Enter the launch date"
-                            className={`border-2 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black ${formData[`${proj.project_name.toLowerCase()}_active`] ? 'border-gray-300 shadow-lg' : 'border-gray-200 bg-gray-100 shadow-md'}`}
-                          />
-                        </td>
-                      </tr>
-                    ))}
+                      ))}
+                    </tr>
                   </tbody>
                 </table>
               </div>
-
             </div>
 
           </div>
@@ -413,8 +409,9 @@ const ClientForm = () => {
                   className='bg-[#61A375] mt-4 text-white rounded-md p-3 w-full lg:w-20'
                   type='button'
                   onClick={handleSubmit}
+                  disabled={isLoading}
                 >
-                  Submit
+                 {isLoading ? <SpinLoading /> : id ? "Update" : "Save"}
                 </button>
               </div>
             </div>

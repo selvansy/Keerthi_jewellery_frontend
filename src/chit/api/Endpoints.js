@@ -1482,9 +1482,9 @@ export const getallschemetypes = async () => {
 
 //Client
 
-export const getallclienttable = async () => {
+export const getallclienttable = async (data) => {
   const response = await Api.post(
-    `${import.meta.env.VITE_API_URL}/api/admin/client/table`
+    `${import.meta.env.VITE_API_URL}/api/admin/client/table`,data
   );
   return response.data;
 };
@@ -1888,10 +1888,7 @@ export const searchmobileschemeaccount = async (data) => {
 
 export const getschemeaccountbyid = async (data) => {
   const response = await Api.get(
-    `${import.meta.env.VITE_API_URL}/api/client/schemeaccount/${
-      data.id || data
-    }`
-  );
+    `${import.meta.env.VITE_API_URL}/api/client/schemeaccount/${data}`);
   return response.data;
 };
 
@@ -2713,7 +2710,7 @@ export const getPaymentLedger = async (data) => {
 
 //re check needed for this api section
 export const sendOtp = async(data)=>{
-  console.log("Mobile",data)
+
   const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/schemeaccount/close/${data.mobile}/branch/${data.branchId}`)
   return response.data
 }

@@ -314,7 +314,7 @@ const Giftvendor = () => {
       )}
       <ModelOne
         title={id ? "Edit Gift Vendor" : "Add Gift Vendor"}
-        extraClassName='max-w-lg'
+        extraClassName='w-1/3'
         setIsOpen={setIsviewOpen}
         isOpen={isviewOpen}
         closeModal={closeIncommingModal}
