@@ -92,7 +92,6 @@ const AddCloseAccount = () => {
     validateOnBlur: true,
     validateOnChange: false, 
   });
-  console.log(formik.errors)
 
   const { data: paymentModes } = useQuery({
     queryKey: ["paymentModes"],
