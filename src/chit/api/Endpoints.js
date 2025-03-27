@@ -942,10 +942,11 @@ export const createoffers = async (data) => {
   return response.data;
 };
 
-export const updateoffers = async (data) => {
+export const updateoffers = async (data,id) => {
+  console.log(data)
   const response = await Api.patch(
-    `${import.meta.env.VITE_API_URL}/api/client/offer/${data.id}`,
-    data.data
+    `${import.meta.env.VITE_API_URL}/api/client/offer/${id}`,
+    data
   );
   return response.data;
 };

@@ -39,11 +39,11 @@ const AddProduct = () => {
   const [category, setCategory] = useState([]);
   const [currentRate, setCurrentRate] = useState("0");
   const [purity, setPurity] = useState([]);
+  const [imagePreviews, setImagePreviews] = useState([]);
   const MAX_IMAGES = 3;
   const [product_image, setproductImgPath] = useState([]);
   const [price, setPrice] = useState("");
   const [totalPrice, setTotalPrice] = useState("");
-  const [imagePreviews, setImagePreviews] = useState([]);
   const [errors, setErrors] = useState({});
   const [pathUrl,setPathUrl]=useState('')
   const [isLoading,setIsLoading]=useState(false)

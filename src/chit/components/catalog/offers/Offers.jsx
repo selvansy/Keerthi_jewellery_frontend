@@ -19,6 +19,7 @@ import {
 
 import { useDispatch, useSelector } from 'react-redux'
 import Action from '../../common/action'
+import { useDebounce } from '../../../hooks/useDebounce'
 
 const Offers = () => {
 
@@ -34,6 +35,7 @@ const Offers = () => {
   const navigate = useNavigate()
   const [offerData, setofferData] = useState([])
   const [search, setSearch] = useState('')
+    const debouncedSearch = useDebounce(search, 500);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -80,7 +82,7 @@ const Offers = () => {
       id_branch: id_branch
     };
 
-    getofferData({ page: currentPage, limit: itemsPerPage, search: search,id_branch:id_branch })
+    getofferData({ page: currentPage, limit: itemsPerPage, search: debouncedSearch,id_branch:id_branch })
   }
   useEffect(() => {
     if (id_branch === '0') {
@@ -192,14 +194,15 @@ const Offers = () => {
     },
     onError: (error) => {
       console.error('Error:', error);
+      setofferData([]);
       setisLoading(false)
     }
   });
 
   
   useEffect(() => {
-    getofferData({ page: currentPage, limit: itemsPerPage, search: search,id_branch:id_branch })
-  }, [currentPage, itemsPerPage, search])
+    getofferData({ page: currentPage, limit: itemsPerPage, search: debouncedSearch,id_branch:id_branch })
+  }, [currentPage, itemsPerPage, debouncedSearch])
 
   const handleSearch = (e) => {
     setSearch(e.target.value)
@@ -294,16 +297,13 @@ const Offers = () => {
     },
     {
       header: 'Title',
-      cell: (row) => row?.name,
+      cell: (row) => row?.title?row.title:"---",
     },
-    {
-      header: "Description",
-      cell: (row) => row?.description
-    },
+    
 
     {
       header: "Display Type",
-      cell: (row) => row?.type === 0 ? 'Offers' : row?.type === 0 ? 'Banner' : row?.type === 0 ? 'Popup' : row?.type === 0 ? 'Marquee' : 'Video'
+      cell: (row) => row.type
     },
     {
       header: "Branch",

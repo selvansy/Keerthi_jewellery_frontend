@@ -223,6 +223,7 @@ const Category = () => {
       cell: (row) => {
         const date = new Date(row?.createdAt);
         return date.toLocaleDateString("en-GB"); // 'en-GB' gives the d-m-Y format
+        
       },
     },
     {
@@ -247,6 +248,7 @@ const Category = () => {
           </div>
         </label>
       ),
+      
     },
     {
       header: "Actions",
