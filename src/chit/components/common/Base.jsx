@@ -616,7 +616,7 @@ const Base = ({ renderContent: RenderContent }) => {
         </nav>
       </aside>
 
-      <div className="flex flex-col min-h-screen bg-[#f5f5f5] pt-14 lg:pl-64 pb-10">
+      <div className="flex flex-col min-h-screen bg-[#fffefa] pt-14 lg:pl-64 pb-10">
         {/* SettingsButton  */}
         <div className="settingsButton flex flex-row justify-end items-center">
           {settingsOpen === true && (
@@ -778,14 +778,14 @@ const Base = ({ renderContent: RenderContent }) => {
             />
           )}
         </div>
-        <main className="bg-[#F5F5F5] px-6 pt-4 pb-4 mb-6">
+        <main className="bg-[#fffefa] px-6 pt-4 pb-4 mb-6">
           <div className="h-full">
             <RenderContent />
           </div>
         </main>
       </div>
 
-      <footer className="flex flex-row justify-center items-center w-full h-3 bg-white border-t py-3 px-2 fixed bottom-0 left-0 lg:left-40 z-30">
+      <footer className="flex flex-row justify-center items-center w-full h-10 bg-white border-t py-3 px-2 fixed bottom-0 left-0 lg:left-40 z-30">
         <div className="flex w-3/4 justify-end items-center ">
           <div className="mx-2">Copyright 2024 © Aurumm by Atts </div>
           <div className="mx-2">/</div>

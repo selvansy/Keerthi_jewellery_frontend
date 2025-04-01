@@ -30,7 +30,6 @@ import { customSelectStyles } from "../../Setup/purity/index";
 import SpinLoading from "../../common/spinLoading";
 
 export function ExistingCustomer({ setCusData }) {
-
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const roledata = useSelector((state) => state.clientForm.roledata);
   const id_branch = roledata?.branch;
@@ -42,12 +41,10 @@ export function ExistingCustomer({ setCusData }) {
   const [branch, setBranch] = useState(id_branch);
   const [branchData, setBranchData] = useState([]);
 
- 
   const { data: branchresponse, isLoading: branchloading } = useQuery({
     queryKey: ["branch"],
     queryFn: getallbranch,
-});
- 
+  });
 
   useEffect(() => {
     if (branchresponse) {
@@ -71,7 +68,7 @@ export function ExistingCustomer({ setCusData }) {
   const { mutate: handlesearchcustomer } = useMutation({
     mutationFn: (data) => searchcustomermobile(data),
     onSuccess: (response) => {
-      handleResData(response.data)
+      handleResData(response.data);
       setLoading(false);
     },
     onError: (error) => {
@@ -87,41 +84,39 @@ export function ExistingCustomer({ setCusData }) {
     }));
 
     setCusData({
-      customer_name:
-        data.firstname + " " + data.lastname,
+      customer_name: data.firstname + " " + data.lastname,
       address: data.address,
       id_branch: data.id_branch,
       mobile: data.mobile,
       id_customer: data._id,
-    })
-
-  }
+    });
+  };
 
   return (
     <div className="grid grid-rows-2 md:grid-cols-2 gap-2">
-   
       <div className="flex flex-col">
-      <label className="text-black mb-1 font-normal">
-        Branch<span className="text-red-400">*</span>
-      </label>
-      <Select
-        name="id_branch"
-        options={branchData}
-        value={
-          branchData.find((branch) => branch.value === formData.id_branch) || ""}
-        onChange={(branch) => {
-          setFormData((prev) => ({
-            ...prev,
-            id_branch: branch.value,
-          }));
-          setBranch(branch.value);
-        }}
-        customSelectStyles={customSelectStyles}
-        isLoading={branchloading}
-        placeholder="Select Branch"
-      />
-    </div>
-    
+        <label className="text-black mb-1 font-normal">
+          Branch<span className="text-red-400">*</span>
+        </label>
+        <Select
+          name="id_branch"
+          options={branchData}
+          value={
+            branchData.find((branch) => branch.value === formData.id_branch) ||
+            ""
+          }
+          onChange={(branch) => {
+            setFormData((prev) => ({
+              ...prev,
+              id_branch: branch.value,
+            }));
+            setBranch(branch.value);
+          }}
+          customSelectStyles={customSelectStyles}
+          isLoading={branchloading}
+          placeholder="Select Branch"
+        />
+      </div>
 
       <div className="flex flex-col relative">
         <label className="text-black mb-1 font-normal">
@@ -185,8 +180,7 @@ export function ExistingCustomer({ setCusData }) {
   );
 }
 
-const AddSchemeAccount = ({ cusData,handleClear }) => {
-
+const AddSchemeAccount = ({ cusData, handleClear }) => {
   let dispatch = useDispatch();
 
   const id_branch = cusData?.id_branch;
@@ -196,7 +190,7 @@ const AddSchemeAccount = ({ cusData,handleClear }) => {
   const location = useLocation();
   const todaydate = new Date();
   const { id } = useParams();
-  
+
   const [isLoading, setLoading] = useState(false);
   const [start_date, setStartDate] = useState(todaydate);
   const [maturity_date, setMaturityDate] = useState("");
@@ -238,7 +232,7 @@ const AddSchemeAccount = ({ cusData,handleClear }) => {
     customer_name: cusData.customer_name,
     fixedamount: "",
     amount: 0,
-    weight:0,
+    weight: 0,
     scheme_type: 0,
     min_amount: 0,
     max_amount: 0,
@@ -257,19 +251,18 @@ const AddSchemeAccount = ({ cusData,handleClear }) => {
   const { data: branchresponse, isLoading: branchloading } = useQuery({
     queryKey: ["branch"],
     queryFn: getallbranch,
-});
-
+  });
 
   useEffect(() => {
-          if (branchresponse) {
-              const data = branchresponse.data;
-              const branch = data.map((branch) => ({
-                  value: branch._id,
-                  label: branch.branch_name,
-              }));
-              setBranchData(branch);
-          }
-      }, [branchresponse]);
+    if (branchresponse) {
+      const data = branchresponse.data;
+      const branch = data.map((branch) => ({
+        value: branch._id,
+        label: branch.branch_name,
+      }));
+      setBranchData(branch);
+    }
+  }, [branchresponse]);
 
   useEffect(() => {
     const scheme = async () => {
@@ -402,7 +395,7 @@ const AddSchemeAccount = ({ cusData,handleClear }) => {
   const handleSearchmobile = async () => {
     try {
       if (Number(searchmobile) === Number(cusData.mobile)) {
-        return toast.error("Self referral is not allowed")
+        return toast.error("Self referral is not allowed");
       }
       const matchingRole = referralRoles.find(
         (element) => Number(selectedRole) === element.id
@@ -447,7 +440,7 @@ const AddSchemeAccount = ({ cusData,handleClear }) => {
           customer_name: response.data.firstname + " " + response.data.lastname,
           total_installments: total_installments,
           amount: 0,
-          weight:0,
+          weight: 0,
           scheme_type: 0,
           min_amount: 0,
           max_amount: 0,
@@ -558,22 +551,21 @@ const AddSchemeAccount = ({ cusData,handleClear }) => {
           code: schemeData?.code,
         }));
 
-        // Update min_amount, max_amount, min_weight, max_weight based on scheme type
         if ([12, 3, 4].includes(schemeData.scheme_type)) {
           setFormData((prevData) => ({
             ...prevData,
             min_weight: schemeData?.min_weight,
             max_weight: schemeData?.max_weight,
-            min_amount: 0, // Reset min_amount if not applicable
-            max_amount: 0, // Reset max_amount if not applicable
+            min_amount: 0,
+            max_amount: 0,
           }));
         } else {
           setFormData((prevData) => ({
             ...prevData,
             min_amount: schemeData?.min_amount,
             max_amount: schemeData?.max_amount,
-            min_weight: 0, // Reset min_weight if not applicable
-            max_weight: 0, // Reset max_weight if not applicable
+            min_weight: 0,
+            max_weight: 0,
           }));
         }
       } else {
@@ -780,7 +772,7 @@ const AddSchemeAccount = ({ cusData,handleClear }) => {
 
   const onSubmit = (e) => {
     e.preventDefault();
-    
+
     if (isValidForm()) {
       if (id) {
         setLoading(true);
@@ -825,8 +817,6 @@ const AddSchemeAccount = ({ cusData,handleClear }) => {
     },
   });
 
- 
-
   return (
     <>
       <div className="flex flex-row justify-between">
@@ -837,8 +827,9 @@ const AddSchemeAccount = ({ cusData,handleClear }) => {
         )}
       </div>
       <div
-        className={`w-full flex flex-col bg-white pl-8 pr-8 pb-4  ${!cusData && "border-[#023453] border-t-2 h-[calc(100vh-200px)]"
-          } mt-3 overflow-y-auto scrollbar-hide `}
+        className={`w-full flex flex-col bg-white pl-8 pr-8 pb-4  ${
+          !cusData && "border-[#023453] border-t-2 h-[calc(100vh-200px)]"
+        } mt-3 overflow-y-auto scrollbar-hide `}
       >
         <div className="grid md:grid-cols-2 gap-3 mt-4">
           <div className="flex flex-col">
@@ -850,15 +841,13 @@ const AddSchemeAccount = ({ cusData,handleClear }) => {
               options={branchData}
               value={
                 branchData.find(
-                  (option) => option.value === cusData.id_branch 
+                  (option) => option.value === cusData.id_branch
                 ) || formData.id_branch
               }
               onChange={(option) =>
                 formik.setFieldValue("id_branch", option?.value || "")
               }
-              onKeyDown={(e) =>
-                e.key === "Enter" && e.preventDefault()
-              }
+              onKeyDown={(e) => e.key === "Enter" && e.preventDefault()}
               styles={customSelectStyles}
               isLoading={branchloading}
               isDisabled={id_branch !== "0"}
@@ -866,12 +855,10 @@ const AddSchemeAccount = ({ cusData,handleClear }) => {
             />
 
             {errors?.id_branch && (
-              <div style={{ color: "red" }}>
-                {errors?.id_branch}
-              </div>
+              <div style={{ color: "red" }}>{errors?.id_branch}</div>
             )}
           </div>
-       
+
           <div className="flex flex-col relative">
             <label className="text-black mb-1 font-normal">
               Mobile Number<span className="text-red-400">*</span>
@@ -1031,7 +1018,11 @@ const AddSchemeAccount = ({ cusData,handleClear }) => {
                   </label>
                   <div className="relative">
                     <select
-                      name={[12, 3, 4].includes(formData.scheme_type) ? 'weight' : 'amount'}
+                      name={
+                        [12, 3, 4].includes(formData.scheme_type)
+                          ? "weight"
+                          : "amount"
+                      }
                       value={(() => {
                         if ([12, 3, 4].includes(formData.scheme_type)) {
                           return formData.weight || "";
@@ -1104,28 +1095,28 @@ const AddSchemeAccount = ({ cusData,handleClear }) => {
                   </div>
                 </>
               )}
-
-              <div className="flex flex-col relative">
+              <div className="flex flex-col relative group">
                 <label className="text-black mb-1 font-normal">
                   Account Name<span className="text-red-400">*</span>
                 </label>
-                <input
-                  type="text"
-                  name="account_name"
-                  onChange={(e) => filterInputchange(e)}
-                  value={formData.account_name}
-                  className="border-2 border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                  placeholder="Enter Account Name"
-                />
-                <div
-                  className="text-white absolute flex items-center justify-center cursor-pointer right-[0%] rounded-r-lg top-[68%] -translate-y-1/2 w-10 md:h-[45px] md:top-[50px] h-[62%] sm:right-0 sm:top-[68%] lg:right-[0%]"
-                  style={{ backgroundColor: layout_color }}
-                >
-                  AC{acNumber}
+                <div className="relative w-full">
+                  <input
+                    type="text"
+                    name="account_name"
+                    onChange={(e) => filterInputchange(e)}
+                    value={formData.account_name}
+                    className="border-2 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-1 focus:ring-gray-500 focus:border focus:border-gray-500"
+                    placeholder="Enter Account Name"
+                  />
+                  <div
+                    className="text-black bg-white absolute flex items-center border-2 justify-center cursor-pointer inset-y-1/2 translate-y-[-8px] translate-x-[0px] right-0 rounded-r-lg w-10 md:h-[43px] h-[61%] 
+      border-gray-300 group-focus-within:border group-focus-within:border-gray-500 group-focus-within:ring-1 group-focus-within:ring-gray-500"
+                  >
+                    AC{acNumber}
+                  </div>
                 </div>
                 <p style={{ color: "red" }}>{errors?.account_name}</p>
               </div>
-
               {/* {parseInt(isaccountno) === 1 && (
                 <div className="flex flex-col">
                   <label className="text-black mb-1 font-normal">
@@ -1306,7 +1297,7 @@ const AddSchemeAccount = ({ cusData,handleClear }) => {
                 disabled={isLoading}
                 style={{ backgroundColor: layout_color }}
               >
-                 {isLoading ? <SpinLoading /> : id ? "Update" : "Save"}
+                {isLoading ? <SpinLoading /> : id ? "Update" : "Save"}
               </button>
             </div>
           </div>

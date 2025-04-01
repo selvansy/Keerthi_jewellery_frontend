@@ -357,7 +357,7 @@ const AddSchemePayment = () => {
           setIspayamtreadOnly(true);
         }
       }
-    } else{
+    } else {
       if (weightSchemeTypes.includes(schemeType)) {
         setMinWeight(selectedScheme?.id_scheme?.min_weight || 0);
         setMaxWeight(selectedScheme?.id_scheme?.max_weight || 0);
@@ -371,7 +371,6 @@ const AddSchemePayment = () => {
       }
     }
   }, [selectedScheme, metalRate]);
-
 
   useEffect(() => {
     if (formik.values.metal_weight && metalRate) {
@@ -463,14 +462,14 @@ const AddSchemePayment = () => {
         </h2>
       </div>
       <form onSubmit={formik.handleSubmit}>
-        <div className="w-full flex flex-col bg-[#F5F5F5] border-t-2 border-[#023453] mt-3 overflow-y-auto scrollbar-hide h-[calc(100vh-200px)]">
+        <div className="w-full flex flex-col mt-3 overflow-y-auto scrollbar-hide h-[calc(100vh-200px)]">
           <div className="flex flex-col p-8 bg-white">
             <div className="space-y-6">
               <h2 className="text-xl font-medium mb-4">Customer Details</h2>
               <div className="flex flex-col lg:flex-row w-full justify-between">
                 {/* Left column - form inputs */}
                 <div className="lg:w-1/2 w-full">
-                  <div className="grid grid-cols-1 gap-4 lg:pr-2">
+                  <div className="grid lg:grid-cols-2 grid-cols-1 gap-4 lg:pr-2">
                     {/* Branch selection */}
                     {accessBranch === "0" && branch.length > 0 && !isLoading ? (
                       <div>
@@ -720,6 +719,214 @@ const AddSchemePayment = () => {
                       />
                       <p style={{ color: "red" }}>{errors?.metal_rate}</p>
                     </div>
+                    <div></div>
+                    <div className="lg:col-span-2">
+                      <h2 className="text-xl font-medium mb-4">
+                        Scheme Account Details
+                      </h2>
+                      <div className="grid lg:grid-cols-2 grid-cols-1 gap-4 border-t">
+                        {/* Weight input for weight-based schemes */}
+                        {showWeightInput && (
+                          <div className="flex flex-col mt-4">
+                            <label className="text-black mb-2 font-normal">
+                              Enter Weight
+                              <span className="text-red-400">*</span>
+                              {minWeight > 0 && maxWeight > 0 && (
+                                <span className="text-gray-500 text-sm ml-2">
+                                  (Min: {minWeight}gm, Max: {maxWeight}gm)
+                                </span>
+                              )}
+                            </label>
+                            <div className="relative">
+                              <input
+                                type="number"
+                                name="metal_weight"
+                                value={formik.values.metal_weight}
+                                min={minWeight}
+                                max={maxWeight}
+                                step="0.01"
+                                onChange={(e) => {
+                                  const value =
+                                    parseFloat(e.target.value) || "";
+                                  formik.setFieldValue("metal_weight", value);
+                                }}
+                                onKeyDown={(e) => {
+                                  if (
+                                    e.key === "-" ||
+                                    e.key === "e" ||
+                                    e.key === "E"
+                                  ) {
+                                    e.preventDefault();
+                                  }
+                                }}
+                                className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                                placeholder="Enter weight in grams"
+                              />
+                              <span
+                                className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                                style={{ backgroundColor: layout_color }}
+                              >
+                                GM
+                              </span>
+                            </div>
+                            {formik.touched.metal_weight &&
+                              formik.errors.metal_weight && (
+                                <div className="text-red-500 text-sm mt-1">
+                                  {formik.errors.metal_weight}
+                                </div>
+                              )}
+                          </div>
+                        )}
+
+                        {/* Amount input */}
+                        <div className="flex flex-col mt-4">
+                          <label className="text-black mb-2 font-normal">
+                            {showAmountInput
+                              ? "Enter Amount"
+                              : "Payment Amount"}
+                            <span className="text-red-400">*</span>
+                            {minAmount > 0 &&
+                              maxAmount > 0 &&
+                              showAmountInput && (
+                                <span className="text-gray-500 text-sm ml-2">
+                                  (Min: {minAmount}, Max: {maxAmount})
+                                </span>
+                              )}
+                          </label>
+                          <div className="relative">
+                            <input
+                              type="number"
+                              disabled={ispayamtreadOnly}
+                              name="payment_amount"
+                              value={formik.values.payment_amount}
+                              min={minAmount}
+                              max={maxAmount}
+                              step="0.01"
+                              onChange={formik.handleChange}
+                              onKeyDown={(e) => {
+                                if (
+                                  !/^[0-9\b.]+$/.test(e.key) &&
+                                  e.key !== "Backspace" &&
+                                  e.key !== "ArrowLeft" &&
+                                  e.key !== "ArrowRight" &&
+                                  e.key !== "Delete" &&
+                                  e.key !== "Tab"
+                                ) {
+                                  e.preventDefault();
+                                }
+                              }}
+                              className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                              placeholder="Enter amount"
+                            />
+                            <span
+                              className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                              style={{ backgroundColor: layout_color }}
+                            >
+                              INR
+                            </span>
+                          </div>
+                          {formik.touched.payment_amount &&
+                            formik.errors.payment_amount && (
+                              <div className="text-red-500 text-sm mt-1">
+                                {formik.errors.payment_amount}
+                              </div>
+                            )}
+                        </div>
+
+                        {/* Payment mode */}
+                        <div className="flex flex-col mt-4">
+                          <label className="text-black mb-2 font-normal">
+                            Payment Mode<span className="text-red-400"> *</span>
+                          </label>
+                          <Select
+                            styles={customStyles}
+                            isClearable={true}
+                            options={paymentmode}
+                            placeholder="Select payment mode"
+                            value={paymentmode?.find(
+                              (option) =>
+                                option.value === formik.values.payment_mode
+                            )}
+                            onChange={(option) => {
+                              if (Number(option.mode) === 7) {
+                                setSelectedMode(option.mode);
+                              } else {
+                                setSelectedMode("");
+                              }
+                              formik.setFieldValue(
+                                "payment_mode",
+                                option ? option.value : ""
+                              );
+                            }}
+                          />
+                          {formik.errors.payment_mode && (
+                            <div className="text-red-500 text-sm mt-1">
+                              {formik.errors.payment_mode}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Multi-payment modes */}
+                        {ispaymode && (
+                          <>
+                            {multiplayModes?.data?.map((multipay) => (
+                              <div
+                                key={multipay.parameter}
+                                className="flex flex-col"
+                              >
+                                <label className="text-black mb-2 font-normal">
+                                  {multipay.name}
+                                </label>
+                                <input
+                                  type="number"
+                                  name={multipay.parameter}
+                                  value={
+                                    formik.values[multipay.parameter] || ""
+                                  }
+                                  onChange={(e) => {
+                                    formik.setFieldValue(
+                                      multipay.parameter,
+                                      Number(e.target.value) || ""
+                                    );
+                                  }}
+                                  className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                                  placeholder="Enter amount here"
+                                />
+                              </div>
+                            ))}
+                          </>
+                        )}
+
+                        {/* ITR/UTR ID */}
+                        <div className="flex flex-col">
+                          <label className="text-black mb-2 font-normal">
+                            ITR/UTR ID
+                          </label>
+                          <input
+                            type="text"
+                            name="itr_utr"
+                            value={formik.values.itr_utr}
+                            onChange={formik.handleChange}
+                            className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                            placeholder="Enter ITR/UTR ID"
+                          />
+                        </div>
+
+                        {/* Remarks */}
+                        <div className="col-span-full flex flex-col">
+                          <label className="text-black mb-2 font-normal">
+                            Remarks
+                          </label>
+                          <input
+                            name="remark"
+                            value={formik.values.remark}
+                            onChange={formik.handleChange}
+                            className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                            placeholder="Enter Here"
+                          />
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
@@ -802,201 +1009,6 @@ const AddSchemePayment = () => {
               </div>
 
               {/* Scheme Account Details */}
-              <div>
-                <h2 className="text-xl font-medium mb-4">
-                  Scheme Account Details
-                </h2>
-                <div className="grid md:grid-cols-2 gap-6">
-                  {/* Weight input for weight-based schemes */}
-                  {showWeightInput && (
-                    <div className="flex flex-col">
-                      <label className="text-black mb-2 font-normal">
-                        Enter Weight<span className="text-red-400">*</span>
-                        {minWeight > 0 && maxWeight > 0 && (
-                          <span className="text-gray-500 text-sm ml-2">
-                            (Min: {minWeight}gm, Max: {maxWeight}gm)
-                          </span>
-                        )}
-                      </label>
-                      <div className="relative">
-                        <input
-                          type="number"
-                          name="metal_weight"
-                          value={formik.values.metal_weight}
-                          min={minWeight}
-                          max={maxWeight}
-                          step="0.01"
-                          onChange={(e) => {
-                            const value = parseFloat(e.target.value) || "";
-                            formik.setFieldValue("metal_weight", value);
-                          }}
-                          onKeyDown={(e) => {
-                            if (
-                              e.key === "-" ||
-                              e.key === "e" ||
-                              e.key === "E"
-                            ) {
-                              e.preventDefault();
-                            }
-                          }}
-                          className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                          placeholder="Enter weight in grams"
-                        />
-                        <span
-                          className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
-                          style={{ backgroundColor: layout_color }}
-                        >
-                          GM
-                        </span>
-                      </div>
-                      {formik.touched.metal_weight &&
-                        formik.errors.metal_weight && (
-                          <div className="text-red-500 text-sm mt-1">
-                            {formik.errors.metal_weight}
-                          </div>
-                        )}
-                    </div>
-                  )}
-
-                  {/* Amount input */}
-                  <div className="flex flex-col">
-                    <label className="text-black mb-2 font-normal">
-                      {showAmountInput ? "Enter Amount" : "Total Amount"}
-                      <span className="text-red-400">*</span>
-                      {minAmount > 0 && maxAmount > 0 && showAmountInput && (
-                        <span className="text-gray-500 text-sm ml-2">
-                          (Min: {minAmount}, Max: {maxAmount})
-                        </span>
-                      )}
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="number"
-                        disabled={ispayamtreadOnly}
-                        name="payment_amount"
-                        value={formik.values.payment_amount}
-                        min={minAmount}
-                        max={maxAmount}
-                        step="0.01"
-                        onChange={formik.handleChange}
-                        onKeyDown={(e) => {
-                          if (
-                            !/^[0-9\b.]+$/.test(e.key) &&
-                            e.key !== "Backspace" &&
-                            e.key !== "ArrowLeft" &&
-                            e.key !== "ArrowRight" &&
-                            e.key !== "Delete" &&
-                            e.key !== "Tab"
-                          ) {
-                            e.preventDefault();
-                          }
-                        }}
-                        className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                        placeholder="Enter amount"
-                      />
-                      <span
-                        className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
-                        style={{ backgroundColor: layout_color }}
-                      >
-                        INR
-                      </span>
-                    </div>
-                    {formik.touched.payment_amount &&
-                      formik.errors.payment_amount && (
-                        <div className="text-red-500 text-sm mt-1">
-                          {formik.errors.payment_amount}
-                        </div>
-                      )}
-                  </div>
-
-                  {/* Payment mode */}
-                  <div className="flex flex-col">
-                    <label className="text-black mb-2 font-normal">
-                      Payment Mode<span className="text-red-400"> *</span>
-                    </label>
-                    <Select
-                      styles={customStyles}
-                      isClearable={true}
-                      options={paymentmode}
-                      placeholder="Select payment mode"
-                      value={paymentmode?.find(
-                        (option) => option.value === formik.values.payment_mode
-                      )}
-                      onChange={(option) => {
-                        if (Number(option.mode) === 7) {
-                          setSelectedMode(option.mode);
-                        } else {
-                          setSelectedMode("");
-                        }
-                        formik.setFieldValue(
-                          "payment_mode",
-                          option ? option.value : ""
-                        );
-                      }}
-                    />
-                    {formik.errors.payment_mode && (
-                      <div className="text-red-500 text-sm mt-1">
-                        {formik.errors.payment_mode}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Multi-payment modes */}
-                  {ispaymode && (
-                    <>
-                      {multiplayModes?.data?.map((multipay) => (
-                        <div key={multipay.parameter} className="flex flex-col">
-                          <label className="text-black mb-2 font-normal">
-                            {multipay.name}
-                          </label>
-                          <input
-                            type="number"
-                            name={multipay.parameter}
-                            value={formik.values[multipay.parameter] || ""}
-                            onChange={(e) => {
-                              formik.setFieldValue(
-                                multipay.parameter,
-                                Number(e.target.value) || ""
-                              );
-                            }}
-                            className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                            placeholder="Enter amount here"
-                          />
-                        </div>
-                      ))}
-                    </>
-                  )}
-
-                  {/* ITR/UTR ID */}
-                  <div className="flex flex-col">
-                    <label className="text-black mb-2 font-normal">
-                      ITR/UTR ID
-                    </label>
-                    <input
-                      type="text"
-                      name="itr_utr"
-                      value={formik.values.itr_utr}
-                      onChange={formik.handleChange}
-                      className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                      placeholder="Enter ITR/UTR ID"
-                    />
-                  </div>
-
-                  {/* Remarks */}
-                  <div className="flex flex-col">
-                    <label className="text-black mb-2 font-normal">
-                      Remarks
-                    </label>
-                    <textarea
-                      name="remark"
-                      value={formik.values.remark}
-                      onChange={formik.handleChange}
-                      className="border-2 max-h-2 border-gray-300 rounded-md p-2 min-h-32 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                      placeholder="Enter Here"
-                    />
-                  </div>
-                </div>
-              </div>
             </div>
 
             {/* Form buttons */}

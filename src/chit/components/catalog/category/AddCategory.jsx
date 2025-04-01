@@ -32,11 +32,15 @@ const AddCategory = () => {
   });
 
   useEffect(() => {
-    if(branchAccess==0)getallbranchmuate()
+    
     if(id) getcategoryById(id)
       
     getMetalType();
   }, []);
+
+  useEffect(()=>{
+    if(branchAccess==0)getallbranchmuate()
+  },[roledata])
 
 
   //mutation get all metal types
@@ -93,6 +97,7 @@ const AddCategory = () => {
   const { mutate: getallbranchmuate } = useMutation({
     mutationFn: getallbranch,
     onSuccess: (response) => {
+      console.log(response)
       setBranches(response.data);
     },
     onError: (error) => {
