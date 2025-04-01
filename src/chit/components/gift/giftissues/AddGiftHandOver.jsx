@@ -98,7 +98,6 @@ const AddGiftIssued = () => {
   //   queryFn:()=> searchmobileschemeaccount(schId),
   // });
 
- 
 
   useEffect(() => {
 
@@ -165,8 +164,6 @@ const AddGiftIssued = () => {
       handlesearchcustomer({ search: mobile, id_branch: formData.id_branch });
     }
   };
-
-
 
   const { mutate: handlesearchScheme } = useMutation({
     mutationFn: (data) => searchSchAccByMobile(data),

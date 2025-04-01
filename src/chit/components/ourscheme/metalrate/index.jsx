@@ -204,12 +204,7 @@ const MetalRate = () => {
     navigate(`/masters/metalrate/edit/${id}`);
   };
 
-
-
-
- 
-
-     const dynamicColumns = [];
+ const dynamicColumns = [];
 
   const metalPurityKeys = new Set();
 
@@ -273,8 +268,8 @@ const MetalRate = () => {
 
   return (
     <div className="flex flex-col p-4">
-      <h2 className="text-2xl text-gray-900 font-bold">Metal Rate</h2>
       <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
+      <h2 className="text-2xl text-gray-900 font-bold">Metal Rate</h2>
         <div className="flex flex-row items-center justify-end gap-2">
           <button
             type="button"

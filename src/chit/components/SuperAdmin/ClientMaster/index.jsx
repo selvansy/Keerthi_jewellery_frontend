@@ -25,11 +25,15 @@ const ClientMaster = () => {
   const [selectedRow, setSelectedRow] = useState(null);
   const [isLoading,setisLoading] = useState(true)
  
-   const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-    const [entries,Setentries] = useState(0)
+  const [entries,Setentries] = useState(0)
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [clientData, setClientData] = useState([])
+  
+  let dispatch = useDispatch();
+
+  const [clientTable, setClientTable] = useState([]);
+
   const [filters, setFilters] = React.useState({
     metalType: '',
     branch: ''
@@ -68,9 +72,6 @@ const ClientMaster = () => {
 
  
 
-  let dispatch = useDispatch();
-
-  const [clientTable, setClientTable] = useState([]);
 
   const { mutate: getClients } = useMutation({
     mutationFn: (payload)=>
@@ -90,7 +91,7 @@ const ClientMaster = () => {
 
   useEffect(() => {
 
-    dispatch(setTotalPage(steps.length))
+    // dispatch(setTotalPage(steps.length))
     getClients({page: currentPage, limit: itemsPerPage, search: debouncedSearch});
 
   }, [currentPage, itemsPerPage,debouncedSearch])
@@ -144,15 +145,13 @@ const ClientMaster = () => {
           const isNotFirstPage = currentPage > 1;
           if (isLastItemOnPage && isNotFirstPage) {
             setCurrentPage(prev => prev - 1);
-          } else {
-            const payload = {
-              page: currentPage,
-              limit: itemsPerPage,
-              search: debouncedSearch,
-          }
-          getallclienttable(payload);
-          
-        }
+          } 
+           
+          getClients({
+            page: currentPage,
+            limit: itemsPerPage,
+            search: debouncedSearch,
+      })
           toast.success(response.message);
           eventEmitter.off("CONFIRMATION_SUBMIT");
 
@@ -191,14 +190,6 @@ const ClientMaster = () => {
     setCurrentPage(pageNumber);
 
   };
-
-
-
-  useEffect(() => {
-    return () => {
-      eventEmitter.off('CONFIRMATION_SUBMIT');
-    };
-  }, [eventEmitter]);
 
 
   const hanldeActiveDropDown = (data) => {

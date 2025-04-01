@@ -23,81 +23,43 @@ const PaymentPrint = () => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [weightScheme, setWeightScheme] = useState(false);
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
+  const dropdownRef = useRef(null);
+
 
   useEffect(() => {
-    if(!paymentData) return;
-    
-      if((weightScheme === 3 || weightScheme === 4 || weightScheme === 12)){
-        const totalWeight = paymentData.reduce((acc, row) => acc + (parseFloat(row.metal_weight) || 0), 0);
-        setTotal(prev =>({
-          ...prev,
-          totalWeight:totalWeight
-        }));
-      }else{
-        const totalAMt = paymentData.reduce((acc, row) => acc + (parseFloat(row.paid_installments) || 0), 0);
-        setTotal(prev=>({
-          ...prev,
-          totalAmt:totalAMt,
-        }));
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
       }
-     
-  }, [paymentData]);
-
-
-  const handlePrint = () => {
-    if (selectedRows.length === 0) {
-      toast.error('No rows selected for printing.');
-      return;
     }
 
-    
-    let printContent = `
-      <table cellspacing="0" cellpadding="5" style="width: 100%; border-collapse: collapse;">
-      
-        <tbody>
-    `;
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
 
-    selectedRows.forEach((row, index) => {
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isOpen]);
 
+  useEffect(() => {
+    if (!paymentData) return;
 
-      printContent += `
-        <tr>
-          <td style="padding: 8px;">${row?.payment_receipt || "N/A"}</td>
-          <td style="padding: 8px;">${row?.id_customer?.firstname || ""} ${row?.id_customer?.lastname || ""}</td>
-          <td style="padding: 8px;">${formatDate(row?.createdAt)}</td>
-          <td style="padding: 8px;">${row?.id_scheme?.scheme_name || "N/A"}</td>
-          <td style="padding: 8px;">${row?.id_scheme?._id || "N/A"}</td>
-          <td style="padding: 8px;">${row?.paid_installments || "N/A"} </td>
-          <td style="padding: 8px;">${row?.payment_amount || "N/A"}</td>
-          <td style="padding: 8px;">${row?.id_scheme_account?.total_installments || "N/A"}</td>
-          <td style="padding: 8px;">${row?.weight || "N/A"}</td>
-        </tr>
-      `;
-    });
+    if ([3, 4, 12].includes(weightScheme)) {
+      const totalWeight = paymentData.reduce((acc, row) => acc + (parseFloat(row.metal_weight) || 0), 0);
+      setTotal(prev => ({
+        ...prev,
+        totalWeight: totalWeight
+      }));
+    } else {
+      const totalAMt = paymentData.reduce((acc, row) => acc + (parseFloat(row.paid_installments) || 0), 0);
+      setTotal(prev => ({
+        ...prev,
+        totalAmt: totalAMt,
+      }));
+    }
 
-
-    // Close the table
-    printContent += `
-        </tbody>
-      </table>
-    `;
-
-    // Open a new window and print
-    const newWin = window.open("", "Print-Window");
-    newWin.document.open();
-    newWin.document.write(`
-      <html>
-        <head>
-          <title>Print Selected Rows</title>
-        </head>
-        <body onload="window.print()">
-          ${printContent}
-        </body>
-      </html>
-    `);
-    newWin.document.close();
-  };
-
+  }, [paymentData]);
 
 
 
@@ -172,9 +134,6 @@ const PaymentPrint = () => {
   //   });
   // };
 
-
-
-
   const handleSearchSubmit = () => {
     if (!value.trim()) {
       toast.error('Please enter a valid account number');
@@ -202,7 +161,6 @@ const PaymentPrint = () => {
     }
   };
 
-
   const handleSelectAll = (e) => {
     if (e.target.checked) {
       const allRowIds = paymentData.map(row => row._id);
@@ -212,13 +170,313 @@ const PaymentPrint = () => {
     }
   };
 
+  // const handlePrint = () => {
+  //   if (selectedRows.length === 0) {
+  //     toast.error('No rows selected for printing.');
+  //     return;
+  //   }
+
+  //   // CSS for the print layout
+  //   const stylecss = `
+  //     @media print {
+  //       #customers {
+  //         font-family: Arial, Helvetica, sans-serif;
+  //         border-collapse: collapse;
+  //         width: 100%;
+  //         margin-top: 20px;
+  //       }
+
+  //       @page {
+  //         size: auto;
+  //         margin: 0mm;
+  //       }
+
+  //       #customers td, #customers th {
+  //         border: none;
+  //         padding: 8px;
+  //         text-align: left;
+  //       }
+
+  //       #customers thead {
+  //         display: none;
+  //       }
+
+  //       .tdoneaction, .print-button {
+  //         display: none;
+  //       }
+
+  //       .fixedhgt {
+  //         height: 40px !important;
+  //         position: fixed;
+  //       }
+
+  //       .tdonefirst, .tdonesecond, .tdonethree,
+  //       .tdonefour, .tdonefive, .tdonesix {
+  //         font-size: 14px;
+  //         padding: 8px;
+  //         text-align: center;
+  //       }
+
+  //       #customers tr {
+  //         page-break-inside: avoid;
+  //       }
+  //     }
+  //   `;
+
+  //   let printContent = `
+  //     <table cellspacing="0" cellpadding="5" style="width: 100%; border-collapse: collapse;">
+  //       <tbody>
+  //   `;
+
+  //   selectedRows.forEach((row, index) => {
+  //     printContent += `
+  //       <tr>
+  //         <td style="padding: 8px;">${row?.payment_receipt || "N/A"}</td>
+  //         <td style="padding: 8px;">${row?.id_customer?.firstname || ""} ${row?.id_customer?.lastname || ""}</td>
+  //         <td style="padding: 8px;">${formatDate(row?.createdAt)}</td>
+  //         <td style="padding: 8px;">${row?.id_scheme?.scheme_name || "N/A"}</td>
+  //         <td style="padding: 8px;">${row?.id_scheme?.code || "N/A"}</td>
+  //         <td style="padding: 8px;">${row?.id_scheme_account.paymentcount}/${row?.id_scheme_account.total_installments}</td>
+  //         <td style="padding: 8px;">${row?.payment_amount || "N/A"}</td>
+  //         <td style="padding: 8px;">${row?.id_scheme_account?.total_installments || "N/A"}</td>
+          
+  //       </tr>
+  //     `;
+  //   });
+
+
+
+  //   if ([3, 4, 12].includes(weightScheme)) {
+
+  //     printContent += `
+  //     <td style="padding: 8px;">${row?.metal_weight || "N/A"}</td>
+  // `;
+
+  //   } else {
+  //     printContent += `
+  //     <td style="padding: 8px;">${row?.total_amt || "N/A"}</td`;
+
+  //   }
+
+
+  //   // Close the table
+  //   printContent += `
+  //       </tbody>
+  //     </table>
+  //   `;
+
+  //   // Open a new window and print
+  //   const newWin = window.open("", "Print-Window");
+  //   newWin.document.open();
+  //   newWin.document.write(`
+  //     <html>
+  //       <head>
+  //         <title>Print Selected Rows</title>
+  //         <style>${stylecss}</style>
+  //       </head>
+  //       <body onload="window.print()">
+  //         ${printContent}
+  //       </body>
+  //     </html>
+  //   `);
+  //   newWin.document.close();
+  // };
+
+  const handlePrint = () => {
+    if (selectedRows.length === 0) {
+      toast.error("No rows selected for printing.");
+      return;
+    }
+  
+    // CSS for the print layout
+    const stylecss = `
+      @media print {
+        #customers {
+          font-family: Arial, Helvetica, sans-serif;
+          border-collapse: collapse;
+          width: 100%;
+          margin-top: 20px;
+        }
+  
+        @page {
+          size: auto;
+          margin: 0mm;
+        }
+  
+        #customers td, #customers th {
+          border: none;
+          padding: 8px;
+          text-align: left;
+        }
+  
+        #customers thead {
+          display: none;
+        }
+  
+        .tdoneaction, .print-button {
+          display: none;
+        }
+  
+        .fixedhgt {
+          height: 40px !important;
+          position: fixed;
+        }
+  
+        .tdonefirst, .tdonesecond, .tdonethree,
+        .tdonefour, .tdonefive, .tdonesix {
+          font-size: 14px;
+          padding: 8px;
+          text-align: center;
+        }
+  
+        #customers tr {
+          page-break-inside: avoid;
+        }
+      }
+    `;
+  
+    let printContent = `
+      <table cellspacing="0" cellpadding="5" style="width: 100%; border-collapse: collapse;">
+        <tbody>
+    `;
+  
+    selectedRows.forEach((row) => {
+      printContent += `
+        <tr>
+          <td style="padding: 8px;">${row?.payment_receipt || "N/A"}</td>
+          <td style="padding: 8px;">${row?.id_customer?.firstname || ""} ${row?.id_customer?.lastname || ""}</td>
+          <td style="padding: 8px;">${formatDate(row?.createdAt)}</td>
+          <td style="padding: 8px;">${row?.id_scheme?.scheme_name || "N/A"}</td>
+          <td style="padding: 8px;">${row?.id_scheme?.code || "N/A"}</td>
+          <td style="padding: 8px;">${row?.id_scheme_account?.paymentcount || "N/A"}/${row?.id_scheme_account?.total_installments || "N/A"}</td>
+          <td style="padding: 8px;">${row?.payment_amount || "N/A"}</td>
+          <td style="padding: 8px;">${row?.id_scheme_account?.total_installments || "N/A"}</td>
+      `;
+  
+      // Conditional rendering inside the loop
+      if ([3, 4, 12].includes(weightScheme)) {
+        printContent += `<td style="padding: 8px;">${row?.metal_weight || "N/A"}</td>`;
+      } else {
+        printContent += `<td style="padding: 8px;">${row?.total_amt || "N/A"}</td>`;
+      }
+  
+      printContent += `</tr>`; // Closing the row
+    });
+  
+    // Close the table
+    printContent += `
+        </tbody>
+      </table>
+    `;
+  
+    // Open a new window and print
+    const newWin = window.open("", "Print-Window");
+    newWin.document.open();
+    newWin.document.write(`
+      <html>
+        <head>
+          <title>Print Selected Rows</title>
+          <style>${stylecss}</style>
+        </head>
+        <body onload="window.print()">
+          ${printContent}
+        </body>
+      </html>
+    `);
+    newWin.document.close();
+  };
+
   
   const handleFrontPrint = () => {
     if (paymentData.length === 0) {
       toast.error('No data.');
       return;
     }
-  
+
+    const stylecss = `
+      @media print {
+  @page {
+    size: 450px 600px;
+    margin: 0;
+  }
+
+  .chitreceipt {
+    font-weight: 600;
+    font-size: 22px;
+    text-align: center;
+    font-family: "Times New Roman", Times, serif;
+  }
+
+  .paidamt {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 5px;
+    text-align: center;
+    font-family: "Times New Roman", Times, serif;
+  }
+
+  p {
+    margin: 0px;
+    font-family: "Times New Roman", Times, serif;
+  }
+
+  .main_section {
+    padding: 20px;
+    width: 500px;
+    margin: auto;
+    text-align: center;
+    font-family: "Times New Roman", Times, serif;
+  }
+
+  .meena_name {
+    font-size: 22px;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  .address {
+    font-size: 22px;
+    font-weight: 400;
+    text-align: center;
+  }
+
+  .details_count {
+    font-size: 20px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .details {
+    font-size: 20px;
+    width: 120px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .details_list {
+    font-size: 20px;
+    font-weight: 400;
+    margin-bottom: 5px;
+  }
+
+  .amount_details {
+    font-size: 20px;
+    display: flex;
+    justify-content: space-around;
+    margin-top: 8px;
+  }
+
+  .schemename {
+    width: 120px;
+  }
+
+  .mt-5 {
+    margin-top: 20px;
+  }
+} `;
+
     let printContent = `
       <div style="max-width: 600px; margin: auto; background: white; padding: 20px; border: 1px solid #ccc;">
         <h2>ID: ${paymentData[0]?.id_scheme_account?.scheme_acc_number}</h2>
@@ -228,15 +486,16 @@ const PaymentPrint = () => {
         <p><strong>Scheme:</strong> ${paymentData[0]?.id_scheme?.scheme_name}</p>
       </div>
     `;
-  
+
     const newWin = window.open("", "PrintWindow", "width=800,height=800");
-  
+
     if (newWin) {
       newWin.document.open();
       newWin.document.write(`
         <html>
           <head>
             <title>Print Preview</title>
+                <style>${stylecss}</style>
           </head>
           <body onload="window.print()">
             ${printContent}
@@ -244,7 +503,7 @@ const PaymentPrint = () => {
         </html>
       `);
       newWin.document.close();
-  
+
       // Close window when printing is done
       newWin.onafterprint = () => newWin.close();
       newWin.onbeforeunload = () => newWin.close();
@@ -253,135 +512,132 @@ const PaymentPrint = () => {
 
   const handleReceiptPrint = () => {
 
-  
-    
-    if (selectedRows.length === 0) {
+    if (!selectedRows || selectedRows.length === 0) {
       toast.error('No rows selected for printing.');
       return;
     }
 
-    if (!selectedRows) {
-      toast.error('Selected row data not found.');
-      return;
-    }
-
-    // const complist = selectedRows.branch_details;
-    const scheme_details = selectedRows[0].id_scheme;
-    const city_details = selectedRows.city_details;
-    const customer_details = selectedRows[0].id_customer;
-    const schemeaccount_details = selectedRows[0].id_scheme_account;
-
-    let scheme_name = "";
-    if (weightScheme === 3 || weightScheme === 4 || weightScheme === 12 ) {
-      scheme_name = `${scheme_details?.scheme_name} (${scheme_details?.min_weight} Grm - ${scheme_details?.max_weight} Grm)`;
-    }else{
-      scheme_name = `${scheme_details?.scheme_name} (${scheme_details?.min_amount} AMT - ${scheme_details?.max_amount} AMT)`;
-    }
-
     let printContent = `
-      <div style="max-width: 600px; margin: auto; background: white; padding: 20px; border: 1px solid #ccc;">
-        <h2>Receipt No: RC${selectedRows[0]?.payment_receipt}</h2>
-        <p><strong>Name:</strong> ${customer_details.firstname} ${customer_details.lastname}</p>
-        <p><strong>Receipt Date:</strong>${formatDate(selectedRows[0]?.date_payment)}</p>
-        <p><strong>Address:</strong> ${customer_details.address}</p>
-        <p><strong>Account No:</strong> ${schemeaccount_details?.scheme_acc_number}</p>
-        <p><strong>Scheme Name:</strong>${scheme_name}</p>
-        <p><strong>Paid Amount:</strong> Rs.${selectedRows[0]?.payment_amount} </p>
-        <p><strong>Total Installment:</strong> ${selectedRows[0]?.paid_installments}/${schemeaccount_details?.total_installments}</p>
-        <p><strong>Total:</strong>{${(weightScheme === 3 || weightScheme === 4 || weightScheme === 12 )} ? ${total.totalWeight} : ${total.totalAMt} }</p>
-
+  <div class="thermal-receipt">
+    <div class="receipt-header">
+      <h1>RECEIPT</h1>
+      <p class="receipt-number">Receipt No: RC${selectedRows[0]?.payment_receipt}</p>
+    </div>
+    
+    <div class="receipt-body">
+      <p><span class="label">Name:</span> ${selectedRows[0].id_customer.firstname} ${selectedRows[0].id_customer.lastname}</p>
+      <p><span class="label">Date:</span> ${formatDate(selectedRows[0]?.date_payment)}</p>
+      <p><span class="label">Address:</span> ${selectedRows[0].id_customer.address}</p>
+      <p><span class="label">Account No:</span> ${selectedRows[0].id_scheme_account?.scheme_acc_number}</p>
+      
+      <div class="receipt-details">
+        <p><span class="label">Scheme:</span> ${selectedRows[0].id_scheme?.scheme_name}</p>
       </div>
-    `;
+    </div>
 
-    const str = `
-      <div className="main_section">
-        <div className="mt-5">
-          <p className="chitreceipt">CHIT RECEIPT</p>
-        </div>
-        <div className="mt">
-          <div className="details_count">
-            <div className="details">
-              <p className="details_list">Receipt No</p>
-              <p className="details_list">:</p>
-            </div>
-            <p className="details_list">RC${selectedRows[0]?.payment_receipt} </p>
-          </div>
-          <div className="details_count">
-            <div className="details">
-              <p className="details_list">Receipt Date</p>
-              <p className="details_list">:</p>
-            </div>
-            <p className="details_list">${formatDate(selectedRows?.date_payment)}</p>
-          </div>
-          <div className="details_count">
-            <div className="details">
-              <p className="details_list">Name</p>
-              <p className="details_list">:</p>
-            </div>
-            <p className="details_list">${schemeaccount_details?.account_name}</p>
-          </div>
-          <div className="details_count">
-            <div className="details">
-              <p className="details_list">Account No</p>
-              <p className="details_list">:</p>
-            </div>
-            <p className="details_list">${schemeaccount_details?.scheme_acc_number}</p>
-          </div>
-          <div className="details_count">
-            <div className="details">
-              <p className="details_list">Scheme Name</p>
-              <p className="details_list">:</p>
-            </div>
-            <p className="details_list">${scheme_name}</p>
-          </div>
-          <div className="details_count">
-            <div className="details">
-              <p className="details_list">Paid Amount</p>
-              <p className="details_list">:</p>
-            </div>
-            <p className="details_list">Rs.${selectedRows[0]?.payment_amount}</p>
-          </div>
-        </div>
+    <div class="receipt-details">
+    <p><span class="label">Payments:</span></p>
 
-        <div className="amount_details">
-          <div>
-            <p className="paidamt">Total Installment</p>
-            <p className="paidamt">${schemeaccount_details?.paymentcount}/${schemeaccount_details?.total_installments}</p>
-          </div>
-          <div>
-            <p className="paidamt">Total Amount</p>
-            <p className="paidamt">${total.totalAMt}</p>
-          </div>
-          ${(weightScheme === 3 || weightScheme === 4 || weightScheme === 12 ) && `
-            <div>
-              <p className="paidamt">Total Weight</p>
-              <p className="paidamt">${total.totalWeight}</p>
-            </div> `}
-        </div>
-      </div>
-    `;
+`;
 
-   
+    selectedRows.forEach((row) => {
+      printContent += `
+    <p><span class="label"></span> Rs.${row?.payment_amount}</p>
+  `;
 
-    const newWin = window.open('', '', 'width=600,height=800');
+
+    });
+
+    printContent += `
+    </div>
+    <div class="receipt-total">
+      <p><span class="label">Total Amount:</span> Rs.${selectedRows.reduce((acc, row) => acc + (parseFloat(row.payment_amount) || 0), 0)}</p>
+    </div>
+  </div>
+`;
+
+    const stylecss = `
+@media print {
+  body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: 'Courier New', monospace;
+    background-color: white;
+  }
+
+  .thermal-receipt {
+    width: 58mm;
+    max-width: 58mm;
+    padding: 10px;
+    border: 1px dashed #000;
+    font-size: 12px;
+    line-height: 1.4;
+    text-align: left;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+  }
+
+  .receipt-header {
+    text-align: center;
+    border-bottom: 1px dashed #000;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+  }
+
+  .receipt-header h1 {
+    margin: 0;
+    font-size: 16px;
+    text-transform: uppercase;
+  }
+
+  .receipt-number {
+    font-size: 10px;
+    margin: 5px 0 0;
+  }
+
+  .receipt-body p {
+    margin: 3px 0;
+    display: flex;
+  }
+
+  .receipt-body .label {
+    font-weight: bold;
+    min-width: 80px;
+  }
+
+  .receipt-details {
+    margin: 10px 0;
+    border-top: 1px dashed #000;
+    border-bottom: 1px dashed #000;
+    padding: 5px 0;
+  }
+
+  .receipt-total {
+    text-align: right;
+    font-weight: bold;
+    margin-top: 10px;
+  }
+}
+`;
+
+    const newWin = window.open('', '', 'width=400,height=600');
     newWin.document.open();
     newWin.document.write(`
-      <html>
-        <body onload="window.print()">
-          <head>
-            <title>Chit Receipt</title>
-          </head>
-          ${printContent}
-        </body>
-      </html>
-    `);
+    <html>
+      <head>
+        <title>Receipt</title>
+        <style>${stylecss}</style>
+      </head>
+      <body onload="window.print()">
+        ${printContent}
+      </body>
+    </html>
+  `);
     newWin.document.close();
-
-    setTimeout(() => { newWin.close(); }, 3500);
   };
-
-  
-
 
   const columns = [
     {
@@ -437,7 +693,11 @@ const PaymentPrint = () => {
     },
     {
       header: "Paid Installments",
-      cell: (row) => row?.paid_installments || "N/A",
+      cell: (row) => (
+        <div className="bg-green-500 rounded-full p-1 text-white flex justify-center">
+          {row?.id_scheme_account.paymentcount}/{row?.id_scheme_account.total_installments}
+        </div>
+      ),
     },
     {
       header: "Amount",
@@ -449,7 +709,7 @@ const PaymentPrint = () => {
     },
   ];
 
-  if ((weightScheme === 3 || weightScheme === 4 || weightScheme === 12)) {
+  if ([3, 4, 12].includes(weightScheme)) {
     columns.push({
       header: "Saved Weight",
       cell: (row) => row?.metal_weight || "N/A",
@@ -461,17 +721,9 @@ const PaymentPrint = () => {
     })
   }
 
-
-
   return (
 
     <div className=" my-8">
-      {/* <button 
-        onClick={handlePrint} 
-        className="no-print mb-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-      >
-        Print
-      </button> */}
 
       <div ref={printableAreaRef} className="rounded-lg p-6">
 
@@ -505,15 +757,9 @@ const PaymentPrint = () => {
             </div>
           </div>
 
-          {/* <button
-            onClick={handlePrint}
-            className="no-print mb-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-            style={{ backgroundColor: layout_color }}
-          >
-            <i className="fa fa-print mr-2"></i> Print
-          </button> */}
 
           <button
+         
             id="dropdownDefaultButton"
             data-dropdown-toggle="dropdown"
             className="text-white font-lg rounded-lg text-sm px-5 py-2.5 my-3 text-center inline-flex items-center"
@@ -542,6 +788,7 @@ const PaymentPrint = () => {
 
           {/* Dropdown Menu */}
           <div
+            ref={dropdownRef}
             id="dropdown"
             className={`z-10 my-2 bg-white border border-gray-500 text-gray-900 divide-y divide-gray-100 rounded-lg shadow-sm w-44 ${isOpen ? "block" : "hidden"
               }`}
@@ -559,7 +806,7 @@ const PaymentPrint = () => {
               </li>
               <li className='hover:bg-gray-300'>
                 <button className="text-left block p-2" onClick={handleReceiptPrint}>
-                Receipt Print
+                  Receipt Print
                 </button>
               </li>
             </ul>

@@ -107,6 +107,7 @@ import PaymentLedger from "../chit/components/Report/PaymentLedger";
 import GiftReport from "../chit/components/Report/GiftReport";
 import PaymentPrint from "../chit/components/Print/CardPrint/PaymentPrint";
 import Delist from "../chit/components/ourscheme/delist";
+import MetalRateIndex from "../chit/components/ourscheme/metalrate/MetalRateIndex";
 
 const RouteList = [
 
@@ -194,10 +195,15 @@ const RouteList = [
     path: '/masters/metal/',
     element: <Base renderContent={Metal} />
   },
+  // {
+  //   name: "Metal Rate",
+  //   path: 'masters/metalrate',
+  //   element: <Base renderContent={MetalRate} />
+  // },
   {
     name: "Metal Rate",
-    path: 'masters/metalrate',
-    element: <Base renderContent={MetalRate} />
+    path: '/masters/metalrate',
+    element: <Base renderContent={MetalRateIndex} />
   },
   {
     name: "Create Metal Rate",

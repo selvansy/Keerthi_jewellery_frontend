@@ -13,10 +13,12 @@ const Table = ({
   itemsPerPage,
   handlePageChange,
   handleItemsPerPageChange,
-  debounceSearch
+  debounceSearch,
+  handleSearch
 }) => {
   const [activeDropdown, setActiveDropdown] = useState(null);
   const dropdownRef = useRef(null);
+
 
 
   useEffect(() => {
@@ -41,7 +43,7 @@ const Table = ({
             <div className="relative">
               <input
                 type="text"
-                onChange={(e)=>debounceSearch(e)}
+                onChange={handleSearch}
                 className=" border border-gray-300 text-gray-900 text-sm rounded-lg pl-10 pr-10 p-2.5 w-60"
                 placeholder="Search"
               />
@@ -57,7 +59,7 @@ const Table = ({
           <div className="relative">
             <div className="overflow-x-auto">
               <table className="w-full text-sm text-left">
-                <thead className="text-xs uppercase bg-[#e7eef6]">
+                <thead className="text-xs uppercase bg-[#e7eef6] text-[#6C7086]">
                   <tr>
                     {columns.map((column, index) => (
                       <th
@@ -150,7 +152,7 @@ const Table = ({
                           
                           // For all other columns
                           return (
-                            <td key={columnIndex} className="px-4 py-3 whitespace-nowrap">
+                            <td key={columnIndex} className="px-4 py-3 whitespace-nowrap ">
                               {column.cell ? column.cell(row, rowIndex) : row[column.accessor]}
                             </td>
                           );

@@ -444,7 +444,6 @@ function Dashboard() {
     <>
       <div className="flex flex-col gap-5 px-4 py-6  min-h-screen overflow-y-scroll scrollbar-hide">
         {/* Cards Section */}
-
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="bg-white rounded-[16px] pt-[20px] pb-[25px] px-[12px]">
             <div className="rounded-md">

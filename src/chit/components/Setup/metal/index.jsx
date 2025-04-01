@@ -22,8 +22,11 @@ import { useDebounce } from "../../../hooks/useDebounce";
 import SpinLoading from "../../common/spinLoading";
 import { metadata, tr } from "framer-motion/client";
 import Action from "../../common/action";
+import { closeModal } from '../../../../redux/modalSlice';
+
 
 const Metal = () => {
+
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
   const navigate = useNavigate();
@@ -109,9 +112,9 @@ const Metal = () => {
     dispatch(
       openModal({
         modalType: "CONFIRMATION",
-        header: "Delete Metal",
+        header: "Confirm Delete",
         formData: {
-          message: "Are you sure you want to delete this Metal?",
+          message: "Are you sure you want to delete your row?",
           MetalId: id,
         },
         buttons: {
@@ -255,22 +258,8 @@ const Metal = () => {
   return (
     <div className="flex flex-col p-4 relative">
       <>
-        <h2 className="text-2xl text-gray-900 font-bold">Metal</h2>
         <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
-          <div className="relative w-full lg:w-1/3 min-w-[200px]">
-            <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-              {searchLoading ? (
-                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
-              ) : (
-                <Search className="text-gray-500" />
-              )}
-            </div>
-            <input
-              onChange={handleSearch}
-              placeholder="Search..."
-              className="p-3 pl-10 pr-3 border-2 bg-[#F5F5F5] border-gray-500 rounded-md w-full"
-            />
-          </div>
+        <h2 className="text-2xl text-gray-900 font-bold">Metal</h2>
           <div className="flex flex-row items-center justify-end gap-2">
             <button
               className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
@@ -292,13 +281,14 @@ const Metal = () => {
             itemsPerPage={itemsPerPage}
             totalItems={totalDocument}
             handleItemsPerPageChange={handleItemsPerPageChange}
+            handleSearch={handleSearch}
           />
         </div>
       </>
 
       <ModelOne
-        title={id ? "Edit Metal" : "Add Metal"}
-        extraClassName="w-96"
+        title={id ? "Edit Metal Details" : "Add Metal Details"}
+        extraClassName="w-[450px]"
         setIsOpen={setIsviewOpen}
         isOpen={isviewOpen}
         closeModal={closeIncommingModal}
@@ -313,6 +303,7 @@ const Metal = () => {
 export default Metal;
 
 export const MetalForm = ({ setIsOpen, id, clearId }) => {
+
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
   const [formData, setFormData] = useState({
@@ -321,6 +312,27 @@ export const MetalForm = ({ setIsOpen, id, clearId }) => {
 
   const [formErrors, setFormErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+
+  const [succNot,setSuccNot] = useState(false)
+  let dispatch = useDispatch();
+
+  const handleSuccess = ()=>{
+    setSuccNot(true); 
+    dispatch(
+      openModal({
+        modalType: "SUCCESS",
+        header: "",
+        formData: {
+          message: "The metal was added Successfully",
+        },
+      })
+    );
+    setTimeout(() => {
+      setSuccNot(false);
+      dispatch(closeModal());
+    }, 2500); 
+  }
+
   // getmetalById
   const { mutate: getmetalId } = useMutation({
     mutationFn: getmetalById,
@@ -369,11 +381,17 @@ export const MetalForm = ({ setIsOpen, id, clearId }) => {
   const { mutate: addmetalMutate } = useMutation({
     mutationFn: (data) => addmetal(data),
     onSuccess: (response) => {
-      if (response) {
-        toast.success(response.data.message);
-        setIsOpen(false);
-        setIsLoading(false);
+      try {
+        if (response) {
+          // toast.success(response.data.message);
+          handleSuccess()
+          setIsOpen(false);
+          setIsLoading(false);
+        }
+      } catch (error) {
+        console.log("error",error)
       }
+     
     },
     onError: (error) => {
       setIsLoading(false);
@@ -399,7 +417,7 @@ export const MetalForm = ({ setIsOpen, id, clearId }) => {
     setFormData({
       metal_name: "",
     });
-    setIsOpen(false);
+    // setIsOpen(false);
     clearId();
   };
 
@@ -429,10 +447,11 @@ export const MetalForm = ({ setIsOpen, id, clearId }) => {
   };
 
   return (
+
     <div className="space-y-4">
       <div className="flex flex-col space-y-2">
         <label className="font-medium text-gray-700">
-          Metal Name<span className="text-red-400">*</span>
+          Metal Name<span className="text-red-400"> *</span>
         </label>
         <input
           type="text"
@@ -440,7 +459,7 @@ export const MetalForm = ({ setIsOpen, id, clearId }) => {
           value={formData.metal_name}
           onChange={handleChange}
           placeholder="Enter Metal Name"
-          className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         {formErrors.metal_name && (
           <div className="text-red-500 text-sm">{formErrors.metal_name}</div>
@@ -454,7 +473,7 @@ export const MetalForm = ({ setIsOpen, id, clearId }) => {
             className="bg-[#E2E8F0] text-black rounded-md p-2 w-full lg:w-20"
             onClick={handleCancel}
           >
-            Cancel
+            Clear
           </button>
 
           <button
@@ -464,10 +483,20 @@ export const MetalForm = ({ setIsOpen, id, clearId }) => {
             className=" text-white rounded-md p-2 w-full lg:w-20"
             style={{ backgroundColor: layout_color }}
           >
-            {isLoading ? <SpinLoading /> : id ? "Update" : "Submit"}
+            {isLoading ? <SpinLoading /> : id ? "Update" : "Save"}
           </button>
         </div>
       </div>
+     
+       <Modal/>
+      
+      {/* <ModelOne isOpen={succNot} setIsOpen={setSuccNot} title="Success">
+        <div className="flex flex-col items-center">
+          <img src="/success-icon.png" alt="Success" className="w-16 h-16" />
+          <p className="text-lg font-semibold text-center mt-4">{successMessage}</p>
+        </div>
+      </ModelOne> */}
+     
     </div>
   );
 };

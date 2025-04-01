@@ -216,7 +216,7 @@ const Category = () => {
     },
     {
       header: "Metal Name",
-      cell: (row) => row.id_metal.metal_name,
+      cell: (row) => row.id_metal?.metal_name || "N/A",
     },
     {
       header: "Create Date",

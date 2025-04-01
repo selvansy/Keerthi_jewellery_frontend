@@ -15,9 +15,12 @@ import { setid } from "../../../../redux/clientFormSlice"
 import { openModal } from '../../../../redux/modalSlice';
 import ProjectAccessForm from '../ProjectAccess/ProjectAccessForm';
 import Modal from '../../common/Modal';
+import Action from "../../common/action";
 
 const ProjectAccess = () => {
+
   const dispatch = useDispatch();
+
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
    const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
@@ -47,7 +50,6 @@ const ProjectAccess = () => {
   };
 
 
-
   const { mutate: getallprojectaccesstableMutate,  refetch } = useMutation({
     mutationFn: (data)=>
       getallprojectaccesstable(data),
@@ -61,8 +63,6 @@ const ProjectAccess = () => {
       setisLoading(false)
     }
   });
-
-
 
 
   const { mutate: handleDelete } = useMutation({
@@ -91,13 +91,13 @@ const ProjectAccess = () => {
     });
   }, [currentPage, itemsPerPage, debouncedSearch, isviewOpen]);
 
-  useEffect(() => {
-    getallprojectaccesstableMutate({
-      page: currentPage,
-      limit: itemsPerPage,
-      search: debouncedSearch
-    });
-  }, []);
+  // useEffect(() => {
+  //   getallprojectaccesstableMutate({
+  //     page: currentPage,
+  //     limit: itemsPerPage,
+  //     search: debouncedSearch
+  //   });
+  // }, []);
 
 
   const handleAddEmployeeClick = async () => {
@@ -132,93 +132,14 @@ const ProjectAccess = () => {
     );
   }
 
+  const hanldeActiveDropDown = (data) => {
+    setActiveDropdown(data);
+  };
+
+  console.log("projectAccessData---",projectAccessData)
+
   const columns = [
-    {
-      header: 'Actions',
-      cell: (row, rowIndex) => (
-        <div className="absolute text-center"
-        style={{
-          top: rowIndex >= projectAccessData.length - 2 ? "auto" : "72%",
-          bottom: rowIndex >= projectAccessData.length - 2 ? "-74%" : "auto", 
-          // top: 'auto',
-          // bottom: '-440%',
-          zIndex: 9999,
-          marginBottom: "-15px",
-          filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.15))",
-        }}
-        >
-          {activeDropdown !== row?._id ? (
-
-
-            <button
-              className="p-1 hover:bg-gray-100 rounded-full"
-              onClick={(e) => {
-                e.stopPropagation();
-                setActiveDropdown(activeDropdown === row?._id ? null : row?._id);
-              }}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
-              </svg>
-            </button>
-          ) : (
-            <div
-              className="absolute top-10 right-0 bg-white shadow-lg ring-1 ring-black ring-opacity-5 rounded-lg flex flex-col w-40 z-10 sm:relative sm:top-0 sm:right-0"
-            >
-              <button
-                className="px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                onClick={() => {
-                  handleEdit(row?._id);
-                  setActiveDropdown(null);
-                }}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                  />
-                </svg>
-                Edit
-              </button>
-              <button
-                className="px-4 py-2 text-left text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
-                onClick={() => {
-                  handleDelete(row?._id);
-                  setActiveDropdown(null);
-                }}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                  />
-                </svg>
-                Delete
-              </button>
-              <button
-                className="px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                onClick={() => setActiveDropdown(null)}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-                Cancel
-              </button>
-            </div>
-          )}
-        </div>
-      ),
-      sticky: 'left',
-    },
+   
     {
       header: 'S.No',
       cell: (_, index) => index + 1 + (currentPage - 1) * limit,
@@ -230,7 +151,7 @@ const ProjectAccess = () => {
     },
     {
       header: 'Branch Name',
-      cell: (row) => `${row?.id_branch.branch_name}`,
+      cell: (row) => `${row?.id_branch?.branch_name || "N/A"}`
     },
     {
       header: 'Project Name',
@@ -238,9 +159,22 @@ const ProjectAccess = () => {
         const proj_name = row?.id_project.map((project) => project.project_name).join(', ');
         return proj_name;
       }
-    }
-
-  
+    },
+    {
+      header: "Actions",
+      cell: (row, rowIndex) => (
+        <Action
+          row={row}
+          data={projectAccessData}
+          rowIndex={rowIndex}
+          activeDropdown={activeDropdown}
+          setActive={hanldeActiveDropDown}
+          handleEdit={handleEdit}
+          handleDelete={handleDelete}
+        />
+      ),
+      sticky: "right",
+    },
   ];
 
   const handleSearch = (e) => {
@@ -284,7 +218,7 @@ const ProjectAccess = () => {
           columns={columns}
           isLoading={isLoading}
         />
-        {projectAccessData.length > 0 && (
+        {/* {projectAccessData.length > 0 && (
           <div className="flex justify-between mt-4 p-2">
             <div className="flex flex-row items-center justify-center gap-2">
               <div className="flex items-center gap-4">
@@ -331,7 +265,7 @@ const ProjectAccess = () => {
               <span className="text-gray-500">entries</span>
             </div>
           </div>
-        )}
+        )} */}
 
         <ModelOne
           refetch={refetch}

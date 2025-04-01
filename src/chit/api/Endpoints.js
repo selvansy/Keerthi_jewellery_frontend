@@ -762,6 +762,14 @@ export const schemepaymenttodayrate = async (data) => {
   return response.data;
 };
 
+export const todaymetalrate = async (data) => {
+  console.log("id----",data.id_branch)
+  const response = await Api.get(
+    `${import.meta.env.VITE_API_URL}/api/client/metalrate/today-rate/branchId/${data.id_branch}`
+  );
+  return response.data;
+};
+
 export const schemepaymentdatatable = async (data) => {
   const response = await Api.post(
     `${import.meta.env.VITE_API_URL}/api/client/payment/table`,

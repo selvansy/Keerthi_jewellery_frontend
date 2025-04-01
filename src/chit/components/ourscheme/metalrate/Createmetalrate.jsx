@@ -17,6 +17,7 @@ import Select from "react-select";
 import { date } from "yup";
 
 const CreateMetalRate = () => {
+
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const { id } = useParams();
 
@@ -79,7 +80,7 @@ const CreateMetalRate = () => {
   
     const data = {
       date: new Date(),
-      branchId: id_branch === "0" ? seletedBranch : branchId,
+      id_branch: id_branch === "0" ? seletedBranch : branchId,
     };
   
     getallpuritytableMutate();

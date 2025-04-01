@@ -11,7 +11,11 @@ import { useMutation } from "@tanstack/react-query";
 import { useDebounce } from '../../../hooks/useDebounce';
 import { toast } from "react-toastify";
 
-import { useSelector } from 'react-redux';  
+import { useDispatch, useSelector } from 'react-redux';  
+import Action from "../../common/action";
+import { eventEmitter } from '../../../../utils/EventEmitter';
+import { openModal } from '../../../../redux/modalSlice';
+import Modal from '../../common/Modal';
 
 const Branch = () => {
 
@@ -23,10 +27,11 @@ const Branch = () => {
    const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+   const [entries,Setentries] = useState(0)
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [selectedRow, setSelectedRow] = useState(null);
   const [isLoading,setisLoading] = useState(true)
-
+  let dispatch = useDispatch();
 
   const formatDate = (dateString) => {
     if (!dateString) return "";
@@ -42,8 +47,9 @@ const Branch = () => {
     onSuccess: (response) => {
       if (response) {
         setBranchData(response.data);
-        setTotalPages(response.totalPages);
-       
+        setTotalPages(response.totalPages)
+        setCurrentPage(response.currentPage)
+        Setentries(response.totalDocuments)
       }
       setisLoading(false)
     },
@@ -63,17 +69,7 @@ const Branch = () => {
     });
   }, [currentPage, itemsPerPage, debouncedSearch]);
 
-  useEffect(() => {
-    getallbranchtableMutate({
-      page: currentPage,
-      limit: itemsPerPage,
-      from_date: "",
-      to_date: "",
-      id_client: '',
-      search: debouncedSearch,
-    });
-  }, []);
-
+  
   const handleCreateBranchClick = () => {
     navigate("/setup/branch/add");
   };
@@ -83,9 +79,6 @@ const Branch = () => {
     setCurrentPage(1);
   };
 
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
-  };
 
   const handleStatusToggle = async (id) => {
     let response = await activatebranch(id);
@@ -102,118 +95,105 @@ const Branch = () => {
     }
   };
 
-  const columns = [
-    {
-      header: "Actions",
-      cell: (row, rowIndex) => (
-        <div className="dropdown-container relative">
-          <button
-            className="p-1 hover:bg-gray-100 rounded-full"
-            onClick={(e) => {
-              e.stopPropagation();
-              setSelectedRow(row?._id);
-              setActiveDropdown(activeDropdown === row?._id ? null : row?._id);
-            }}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 text-gray-600"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
-            </svg>
-          </button>
+  
+  const handleItemsPerPageChange = (value) => {
+    setItemsPerPage(value);
+    setCurrentPage(1);
+  };
 
-          {activeDropdown === row?._id && (
-            <div
-              className="absolute"
-              style={{
-                top: rowIndex >= branchData.length - 2 ? "auto" : "72%",
-                bottom: rowIndex >= branchData.length - 2 ? "-74%" : "auto",
-                // top: 'auto',
-                // bottom: '-440%',
-                zIndex: 9999,
-                marginBottom: "8px",
-                filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.15))",
-              }}
-            >
-              <div className="w-32 rounded-md bg-white ring-1 ring-black ring-opacity-5">
-                <div className="py-1">
-                  <button
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                    onClick={() => {
-                      handleEdit(row?._id);
-                      setActiveDropdown(null);
-                    }}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                      />
-                    </svg>
-                    Edit
-                  </button>
-                  <button
-                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
-                    onClick={() => {
-                      handleDelete(row?._id);
-                      setActiveDropdown(null);
-                    }}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                      />
-                    </svg>
-                    Delete
-                  </button>
-                  <button
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                    onClick={() => setActiveDropdown(null)}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      ),
-      sticky: "right",
-    },
+  const handlePageChange = (page) => {
+
+    const pageNumber = Number(page);
+    if (!pageNumber || isNaN(pageNumber) || pageNumber < 1 || pageNumber > totalPages) {
+      return;
+    }
+
+    setCurrentPage(pageNumber);
+
+  };
+
+  const hanldeActiveDropDown = (data) => {
+    setActiveDropdown(data);
+  };
+
+
+  const handleEdit = (id) => {
+    if (id) {
+      navigate(`/setup/branch/edit/${id}`);
+    }
+  };
+
+  // const { mutate: deletebranchMutate } = useMutation({
+  //   mutationFn: deletebranch,
+  //   onSuccess: (response) => {
+  //     if (response) {
+  //       toast.success(response.message);
+  //       getallbranchtableMutate();
+  //     }
+  //   },
+  // });
+
+
+   const handleDelete = (id) => {
+      
+      setActiveDropdown(null);
+      dispatch(openModal({
+        modalType: 'CONFIRMATION',
+        header: 'Delete Branch',
+        formData: {
+          message: 'Are you sure you want to delete?',
+          branchId: id
+        },
+        buttons: {
+          cancel: {
+            text: 'Cancel'
+          },
+          submit: {
+            text: 'Delete'
+          }
+        }
+      }));
+    };
+  
+     const { mutate: deleteMutate } = useMutation({
+        mutationFn:(id)=> deletebranch(id),
+        onSuccess: (response) => {
+            const isLastItemOnPage = branchData.length === 1;
+            const isNotFirstPage = currentPage > 1;
+            if (isLastItemOnPage && isNotFirstPage) {
+              setCurrentPage(prev => prev - 1);
+            } 
+            getallbranchtableMutate({
+              page: currentPage,
+              limit: itemsPerPage,
+              from_date: "",
+              to_date: "",
+              id_client: '',
+              search: debouncedSearch,
+            });
+            toast.success(response.message);
+            eventEmitter.off("CONFIRMATION_SUBMIT");
+          },
+        onError: (error) => {
+          console.error("Error:", error);
+          toast.error(error.message);
+        },
+      });
+    
+      useEffect(() => {
+        const handleDelete = (data) => {
+          deleteMutate(data.branchId);
+        };
+    
+        eventEmitter.on("CONFIRMATION_SUBMIT", handleDelete);
+    
+        return () => {
+          eventEmitter.off("CONFIRMATION_SUBMIT", handleDelete);
+        };
+      }, []);
+
+
+  const columns = [
     {
       header: "S.No",
       cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
@@ -251,52 +231,25 @@ const Branch = () => {
         </label>
       ),
     },
+    {
+      header: "Actions",
+      cell: (row, rowIndex) => (
+        <Action
+          row={row}
+          data={branchData}
+          rowIndex={rowIndex}
+          activeDropdown={activeDropdown}
+          setActive={hanldeActiveDropDown}
+          handleEdit={handleEdit}
+          handleDelete={handleDelete}
+        />
+      ),
+      sticky: "right",
+    },
     
   ];
 
-  const paginationButtons = [];
-  for (let i = 1; i <= totalPages; i++) {
-    paginationButtons.push(
-      <button
-        key={i}
-        onClick={() => handlePageChange(i)}
-        className={`p-2 w-10 h-10 rounded-md ${
-          currentPage === i
-            ? " text-white"
-            : "bg-gray-300 text-gray-900"
-        }`}
-        style={{ backgroundColor: layout_color }} >
-        {i}
-      </button>
-    );
-  }
-
-  const handleItemsPerPageChange = (value) => {
-    setItemsPerPage(value);
-    setCurrentPage(1);
-  };
-
-  const handleEdit = (id) => {
-    if (id) {
-      navigate(`/setup/branch/edit/${id}`);
-    }
-  };
-
-  const { mutate: deletebranchMutate } = useMutation({
-    mutationFn: deletebranch,
-    onSuccess: (response) => {
-      if (response) {
-        toast.success(response.message);
-        getallbranchtableMutate();
-      }
-    },
-  });
-
-  const handleDelete = (id) => {
-    if (id) {
-      deletebranchMutate(id);
-    }
-  };
+  
 
   return (
     <div className="flex flex-col p-4">
@@ -328,56 +281,20 @@ const Branch = () => {
       </div>
 
       <div className="mt-4">
-        <Table data={branchData} columns={columns}  isLoading={isLoading}/>
-        {branchData.length > 0 && (
-          <div className="flex justify-between mt-4 p-2">
-            <div className="flex flex-row items-center justify-center gap-2">
-              <div className="flex items-center gap-4">
-                <button
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  readOnly={currentPage === 1}
-                  className="p-2  text-gray-500 rounded-md"
-                >
-                  Previous
-                </button>
-              </div>
-
-              <div className="flex flex-row items-center justify-center gap-2">
-                {paginationButtons}
-              </div>
-              <div className="flex items-center">
-                <button
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  readOnly={currentPage === totalPages}
-                  className="p-2 text-gray-500 rounded-md"
-                >
-                  Next
-                </button>
-              </div>
-            </div>
-            <div className="mt-4 flex gap-2 justify-center items-center">
-              <span className="text-gray-500">Show</span>
-              <select
-                id="itemsPerPage"
-                value={itemsPerPage}
-                onChange={(e) =>
-                  handleItemsPerPageChange(Number(e.target.value))
-                }
-                className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
-              >
-               <option value={10}>10</option>
-<option value={25}>25</option>
-<option value={50}>50</option>
-<option value={100}>100</option>
-<option value={250}>250</option>
-<option value={500}>500</option>
-<option value={1000}>1000</option>
-              </select>
-              <span className="text-gray-500">entries</span>
-            </div>
-          </div>
-        )}
+      <Table
+          data={branchData}
+          columns={columns}
+          isLoading={isLoading}
+          currentPage={currentPage}
+          handleItemsPerPageChange={handleItemsPerPageChange}
+          handlePageChange={handlePageChange}
+          itemsPerPage={itemsPerPage}
+          totalItems={entries}
+          debounceSearch={handleSearch}
+        />
+       
       </div>
+      <Modal />
     </div>
   );
 };

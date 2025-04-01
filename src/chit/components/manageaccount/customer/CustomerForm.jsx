@@ -21,13 +21,13 @@ import Webcam from "react-webcam";
 import { toast } from "react-toastify";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import SpinLoading from "../../common/spinLoading";
+import SpinLoading from "../../common/spinLoading"; 
 import Select from "react-select";
 import profileplaceholder from "../../../../assets/profileplaceholder.png";
 import { customSelectStyles } from "../../Setup/purity/index";
 import { SetaccExp } from "../../../../redux/clientFormSlice";
 
-const CustomerForm = ({ setCusData, id, setaddCusData, addCusData, id_proof, setIdProof, cus_img, pathurl, setCusImg, setPathurl, handleClear }) => {
+const CustomerForm = ({ setCusData, id, setAddCusData, addCusData, id_proof, setIdProof, cus_img, pathurl, setCusImg, setPathurl, handleClear }) => {
 
 
     const navigate = useNavigate();
@@ -54,8 +54,6 @@ const CustomerForm = ({ setCusData, id, setaddCusData, addCusData, id_proof, set
     const [city, setCity] = useState("");
     const [branchData, setBranchData] = useState([]);
 
-
-
     const validationSchema = Yup.object({
         firstname: Yup.string().required("First name is required"),
         lastname: Yup.string().required("Last name is required"),
@@ -75,8 +73,6 @@ const CustomerForm = ({ setCusData, id, setaddCusData, addCusData, id_proof, set
             .matches(/^\d{6}$/, "Pincode must be 6 digits"),
 
     });
-
-
 
     useEffect(() => {
 
@@ -110,7 +106,8 @@ const CustomerForm = ({ setCusData, id, setaddCusData, addCusData, id_proof, set
                     pincode: res.pincode,
                     authorno: res.authorno,
                 };
-                setaddCusData(formValues);
+               
+                setAddCusData(formValues);
                 setCusImg(response.data.cus_img);
                 const img = `${response.data.pathurl}${response.data.cus_img}`;
                 setPathurl(img);
@@ -201,13 +198,6 @@ const CustomerForm = ({ setCusData, id, setaddCusData, addCusData, id_proof, set
                     ...prev,
                     customerId: response.data,
                 }))
-
-                // dispatch(
-                //     SetaccExp((prev) => ({
-                //         ...prev,
-                //         customerId: response.data,
-                //     }))
-                // );
             }
             setisLoading(false);
         },

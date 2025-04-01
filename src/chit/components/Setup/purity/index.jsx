@@ -55,6 +55,7 @@ export const customSelectStyles = {
 };
 
 const Purity = () => {
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [currentPage, setCurrentPage] = useState(1);
@@ -496,7 +497,7 @@ export const PurityForm = ({ setIsOpen, metals, clearId, id }) => {
     onSuccess: (response) => {
       setIsLoading(false);
       toast.success(response.data.message);
-      clearId();
+      handleCancel();
       setIsOpen(false);
     },
     onError: (error) => {

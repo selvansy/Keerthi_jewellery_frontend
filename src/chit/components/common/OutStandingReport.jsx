@@ -23,8 +23,6 @@ import { useDebounce } from '../../hooks/useDebounce';
 export default function OutStandingReport() {
 
     // OutStandingWeight
-
-
     const [outreport, setoutreport] = useState([])  
 
     const [accExp, setaccExp] = useState([]);
