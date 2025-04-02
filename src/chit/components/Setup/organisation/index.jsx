@@ -5,7 +5,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { toast } from "react-toastify";
-import { X,Trash2  } from "lucide-react";
+import { X, Trash2 } from "lucide-react";
 import Select from "react-select";
 import {
   allcountry,
@@ -178,8 +178,8 @@ const Organisation = () => {
       ...provided,
       minHeight: "40px",
       height: "40px",
-      borderWidth: "1px",
-      borderColor: "#D1D5DB",
+      borderWidth: "2px",
+      borderColor: "#f2f3f8",
       "&:hover": {
         borderColor: "#D1D5DB",
       },
@@ -247,312 +247,321 @@ const Organisation = () => {
     formik.setFieldValue("id_city", selectedOption ? selectedOption.value : "");
   };
 
+  const handleClear = () => {
+    formik.resetForm();
+    setImagePreviews({
+      logo: null,
+    });
+  };
+
   return (
     <>
       <div className="flex flex-row justify-between">
-        <h2 className="text-xl text-gray-900 font-bold">Organisation</h2>
+        <p className="text-sm text-gray-400 mt-4 mb-4">Settings/<span className="text-black">Organisation</span></p>
       </div>
-      <div className="flex flex-col bg-white border-2 border-[#F2F2F9] rounded-[8px] mt-3">
-        <form onSubmit={formik.handleSubmit} className="p-4">
-          <h2 className="text-lg font-semibold mb-4 border-b pb-4">Company Information</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            {/* First Row */}
-            <div className="flex flex-col">
-              <label className="text-black mb-1 text-sm font-medium">
-                Company Name<span className="text-red-400"> *</span>
-              </label>
-              <input
-                type="text"
-                name="company_name"
-                value={formik.values.company_name}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black h-[40px] text-sm"
-                placeholder="Enter company name"
-              />
-              {formik.touched.company_name && formik.errors.company_name && (
-                <span className="text-red-500 text-xs mt-1">
-                  {formik.errors.company_name}
-                </span>
-              )}
-            </div>
-
-            <div className="flex flex-col">
-              <label className="text-black mb-1 text-sm font-medium">
-                Short Code<span className="text-red-400"> *</span>
-              </label>
-              <input
-                type="text"
-                name="short_code"
-                value={formik.values.short_code}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black h-[40px] text-sm"
-                placeholder="Enter short code"
-              />
-              {formik.touched.short_code && formik.errors.short_code && (
-                <span className="text-red-500 text-xs mt-1">
-                  {formik.errors.short_code}
-                </span>
-              )}
-            </div>
-
-            <div className="flex flex-col">
-              <label className="text-black mb-1 text-sm font-medium">
-                Email<span className="text-red-400"> *</span>
-              </label>
-              <input
-                type="email"
-                name="email"
-                value={formik.values.email}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black h-[40px] text-sm"
-                placeholder="Enter email"
-              />
-              {formik.touched.email && formik.errors.email && (
-                <span className="text-red-500 text-xs mt-1">
-                  {formik.errors.email}
-                </span>
-              )}
-            </div>
-
-            {/* Second Row */}
-            <div className="flex flex-col">
-              <label className="text-black mb-1 text-sm font-medium">
-                Mobile<span className="text-red-400"> *</span>
-              </label>
-              <input
-                type="text"
-                name="mobile"
-                value={formik.values.mobile}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black h-[40px] text-sm"
-                placeholder="Enter mobile number"
-              />
-              {formik.touched.mobile && formik.errors.mobile && (
-                <span className="text-red-500 text-xs mt-1">
-                  {formik.errors.mobile}
-                </span>
-              )}
-            </div>
-
-            <div className="flex flex-col">
-              <label className="text-black mb-1 text-sm font-medium">
-                Address<span className="text-red-400"> *</span>
-              </label>
-              <input
-                type="text"
-                name="address"
-                value={formik.values.address}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black h-[40px] text-sm"
-                placeholder="Enter address"
-              />
-              {formik.touched.address && formik.errors.address && (
-                <span className="text-red-500 text-xs mt-1">
-                  {formik.errors.address}
-                </span>
-              )}
-            </div>
-
-            <div className="flex flex-col">
-              <label className="text-black mb-1 text-sm font-medium">
-                Pincode<span className="text-red-400"> *</span>
-              </label>
-              <input
-                type="text"
-                name="pincode"
-                value={formik.values.pincode}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black h-[40px] text-sm"
-                placeholder="Enter pincode"
-              />
-              {formik.touched.pincode && formik.errors.pincode && (
-                <span className="text-red-500 text-xs mt-1">
-                  {formik.errors.pincode}
-                </span>
-              )}
-            </div>
-
-            {/* Third Row */}
-            <div className="flex flex-col">
-              <label className="text-black mb-1 text-sm font-medium">
-                Country<span className="text-red-400"> *</span>
-              </label>
-              <Select
-                options={country}
-                value={country.find(
-                  (option) => option.value === formik.values.id_country
-                )}
-                onChange={handleCountryChange}
-                onBlur={formik.handleBlur}
-                placeholder="Select Country"
-                styles={customSelectStyles}
-                className="react-select-container"
-                classNamePrefix="react-select"
-              />
-              {formik.touched.id_country && formik.errors.id_country && (
-                <span className="text-red-500 text-xs mt-1">
-                  {formik.errors.id_country}
-                </span>
-              )}
-            </div>
-
-            <div className="flex flex-col">
-              <label className="text-black mb-1 text-sm font-medium">
-                State<span className="text-red-400"> *</span>
-              </label>
-              <Select
-                options={states}
-                value={states.find(
-                  (option) => option.value === formik.values.id_state
-                )}
-                onChange={handleStateChange}
-                onBlur={formik.handleBlur}
-                placeholder="Select State"
-                styles={customSelectStyles}
-                className="react-select-container"
-                classNamePrefix="react-select"
-              />
-              {formik.touched.id_state && formik.errors.id_state && (
-                <span className="text-red-500 text-xs mt-1">
-                  {formik.errors.id_state}
-                </span>
-              )}
-            </div>
-
-            <div className="flex flex-col">
-              <label className="text-black mb-1 text-sm font-medium">
-                City<span className="text-red-400"> *</span>
-              </label>
-              <Select
-                options={city}
-                value={city.find(
-                  (option) => option.value === formik.values.id_city
-                )}
-                onChange={handleCityChange}
-                onBlur={formik.handleBlur}
-                placeholder="Select City"
-                styles={customSelectStyles}
-                className="react-select-container"
-                classNamePrefix="react-select"
-              />
-              {formik.touched.id_city && formik.errors.id_city && (
-                <span className="text-red-500 text-xs mt-1">
-                  {formik.errors.id_city}
-                </span>
-              )}
-            </div>
-
-            {/* Fourth Row */}
-            <div className="flex flex-col">
-              <label className="text-black mb-1 text-sm font-medium">
-                Website
-              </label>
-              <input
-                type="text"
-                name="website"
-                value={formik.values.website}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black h-[40px] text-sm"
-                placeholder="Enter website url"
-              />
-              {formik.touched.website && formik.errors.website && (
-                <span className="text-red-500 text-xs mt-1">
-                  {formik.errors.website}
-                </span>
-              )}
-            </div>
-
-            <div className="flex flex-col">
-              <label className="text-black mb-1 text-sm font-medium">
-                Whatsapp No
-              </label>
-              <input
-                type="text"
-                name="whatsapp_no"
-                value={formik.values.whatsapp_no}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black h-[40px] text-sm"
-                placeholder="Enter whatsapp number"
-              />
-              {formik.touched.whatsapp_no && formik.errors.whatsapp_no && (
-                <span className="text-red-500 text-xs mt-1">
-                  {formik.errors.whatsapp_no}
-                </span>
-              )}
-            </div>
-
-            <div className="flex flex-col">
-              <label className="text-black mb-1 text-sm font-medium">
-                Upload Image
-              </label>
-              {!imagePreviews.logo && (
-                <div className="relative flex items-center justify-between border border-gray-300 rounded-md hover:bg-gray-50 cursor-pointer w-full h-[40px]">
-                  <span className="ml-2 text-sm text-gray-900 truncate">
-                    {formik.values.logo ? formik.values.logo.name : "Browse"}
+      <form onSubmit={formik.handleSubmit}>
+        <div className="flex flex-col bg-white border-2 border-[#F2F2F9] rounded-[10px] mt-3 pb-3">
+          <div className="p-4">
+            <h2 className="text-lg font-semibold mb-4 border-b pb-4">Company Information</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* First Row */}
+              <div className="flex flex-col">
+                <label className="text-black mb-1 text-sm font-medium">
+                  Company Name<span className="text-red-400"> *</span>
+                </label>
+                <input
+                  type="text"
+                  name="company_name"
+                  value={formik.values.company_name}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className="border-2 border-[#f2f3f8] rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black h-[50px] text-sm"
+                  placeholder="Enter company name"
+                />
+                {formik.touched.company_name && formik.errors.company_name && (
+                  <span className="text-red-500 text-xs mt-1">
+                    {formik.errors.company_name}
                   </span>
-                  <label
-                    htmlFor="logo"
-                    className="text-white px-3 py-1 rounded-md cursor-pointer h-full flex items-center text-sm"
-                    style={{ backgroundColor: layout_color }}
-                  >
-                    Choose File
-                  </label>
-                  <input
-                    id="logo"
-                    name="logo"
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleFileChange}
-                  />
-                </div>
-              )}
-              {imagePreviews.logo && (
-                <div className="mt-2 relative">
-                  <div className="relative inline-block">
-                    <img
-                      src={imagePreviews.logo.url}
-                      alt="logo preview"
-                      className="w-24 h-20 object-cover rounded-md border border-gray-200"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveImage("logo")}
-                      className="absolute top-1 right-1 bg-white text-red-400 p-1 rounded-md focus:outline-none"
+                )}
+              </div>
+
+              <div className="flex flex-col">
+                <label className="text-black mb-1 text-sm font-medium">
+                  Short Code<span className="text-red-400"> *</span>
+                </label>
+                <input
+                  type="text"
+                  name="short_code"
+                  value={formik.values.short_code}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className="border-2 border-[#f2f3f8] rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black h-[50px] text-sm"
+                  placeholder="Enter short code"
+                />
+                {formik.touched.short_code && formik.errors.short_code && (
+                  <span className="text-red-500 text-xs mt-1">
+                    {formik.errors.short_code}
+                  </span>
+                )}
+              </div>
+
+              <div className="flex flex-col">
+                <label className="text-black mb-1 text-sm font-medium">
+                  Email<span className="text-red-400"> *</span>
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formik.values.email}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className="border-2 border-[#f2f3f8] rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black h-[50px] text-sm"
+                  placeholder="Enter email"
+                />
+                {formik.touched.email && formik.errors.email && (
+                  <span className="text-red-500 text-xs mt-1">
+                    {formik.errors.email}
+                  </span>
+                )}
+              </div>
+
+              {/* Second Row */}
+              <div className="flex flex-col">
+                <label className="text-black mb-1 text-sm font-medium">
+                  Mobile<span className="text-red-400"> *</span>
+                </label>
+                <input
+                  type="text"
+                  name="mobile"
+                  value={formik.values.mobile}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className="border-2 border-[#f2f3f8] rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black h-[50px] text-sm"
+                  placeholder="Enter mobile number"
+                />
+                {formik.touched.mobile && formik.errors.mobile && (
+                  <span className="text-red-500 text-xs mt-1">
+                    {formik.errors.mobile}
+                  </span>
+                )}
+              </div>
+
+              <div className="flex flex-col">
+                <label className="text-black mb-1 text-sm font-medium">
+                  Address<span className="text-red-400"> *</span>
+                </label>
+                <input
+                  type="text"
+                  name="address"
+                  value={formik.values.address}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className="border-2 border-[#f2f3f8] rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black h-[50px] text-sm"
+                  placeholder="Enter address"
+                />
+                {formik.touched.address && formik.errors.address && (
+                  <span className="text-red-500 text-xs mt-1">
+                    {formik.errors.address}
+                  </span>
+                )}
+              </div>
+
+              <div className="flex flex-col">
+                <label className="text-black mb-1 text-sm font-medium">
+                  Pincode<span className="text-red-400"> *</span>
+                </label>
+                <input
+                  type="text"
+                  name="pincode"
+                  value={formik.values.pincode}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className="border-2 border-[#f2f3f8] rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black h-[50px] text-sm"
+                  placeholder="Enter pincode"
+                />
+                {formik.touched.pincode && formik.errors.pincode && (
+                  <span className="text-red-500 text-xs mt-1">
+                    {formik.errors.pincode}
+                  </span>
+                )}
+              </div>
+
+              {/* Third Row */}
+              <div className="flex flex-col">
+                <label className="text-black mb-1 text-sm font-medium">
+                  Country<span className="text-red-400"> *</span>
+                </label>
+                <Select
+                  options={country}
+                  value={country.find(
+                    (option) => option.value === formik.values.id_country
+                  )}
+                  onChange={handleCountryChange}
+                  onBlur={formik.handleBlur}
+                  placeholder="Select Country"
+                  styles={customSelectStyles}
+                  className="react-select-container"
+                  classNamePrefix="react-select"
+                />
+                {formik.touched.id_country && formik.errors.id_country && (
+                  <span className="text-red-500 text-xs mt-1">
+                    {formik.errors.id_country}
+                  </span>
+                )}
+              </div>
+
+              <div className="flex flex-col">
+                <label className="text-black mb-1 text-sm font-medium">
+                  State<span className="text-red-400"> *</span>
+                </label>
+                <Select
+                  options={states}
+                  value={states.find(
+                    (option) => option.value === formik.values.id_state
+                  )}
+                  onChange={handleStateChange}
+                  onBlur={formik.handleBlur}
+                  placeholder="Select State"
+                  styles={customSelectStyles}
+                  className="react-select-container"
+                  classNamePrefix="react-select"
+                />
+                {formik.touched.id_state && formik.errors.id_state && (
+                  <span className="text-red-500 text-xs mt-1">
+                    {formik.errors.id_state}
+                  </span>
+                )}
+              </div>
+
+              <div className="flex flex-col">
+                <label className="text-black mb-1 text-sm font-medium">
+                  City<span className="text-red-400"> *</span>
+                </label>
+                <Select
+                  options={city}
+                  value={city.find(
+                    (option) => option.value === formik.values.id_city
+                  )}
+                  onChange={handleCityChange}
+                  onBlur={formik.handleBlur}
+                  placeholder="Select City"
+                  styles={customSelectStyles}
+                  className="react-select-container"
+                  classNamePrefix="react-select"
+                />
+                {formik.touched.id_city && formik.errors.id_city && (
+                  <span className="text-red-500 text-xs mt-1">
+                    {formik.errors.id_city}
+                  </span>
+                )}
+              </div>
+
+              {/* Fourth Row */}
+              <div className="flex flex-col">
+                <label className="text-black mb-1 text-sm font-medium">
+                  Website
+                </label>
+                <input
+                  type="text"
+                  name="website"
+                  value={formik.values.website}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className="border-2 border-[#f2f3f8] rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black h-[50px] text-sm"
+                  placeholder="Enter website url"
+                />
+                {formik.touched.website && formik.errors.website && (
+                  <span className="text-red-500 text-xs mt-1">
+                    {formik.errors.website}
+                  </span>
+                )}
+              </div>
+
+              <div className="flex flex-col">
+                <label className="text-black mb-1 text-sm font-medium">
+                  Whatsapp No
+                </label>
+                <input
+                  type="text"
+                  name="whatsapp_no"
+                  value={formik.values.whatsapp_no}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className="border-2 border-[#f2f3f8] rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black h-[50px] text-sm"
+                  placeholder="Enter whatsapp number"
+                />
+                {formik.touched.whatsapp_no && formik.errors.whatsapp_no && (
+                  <span className="text-red-500 text-xs mt-1">
+                    {formik.errors.whatsapp_no}
+                  </span>
+                )}
+              </div>
+
+              <div className="flex flex-col">
+                <label className="text-black mb-1 text-sm font-medium">
+                  Upload Image
+                </label>
+                {!imagePreviews.logo && (
+                  <div className="relative flex items-center justify-between border-2 border-[#f2f3f8] rounded-md hover:bg-gray-50 cursor-pointer w-full h-[50px]">
+                    <span className="ml-2 text-sm text-gray-900 truncate">
+                      {formik.values.logo ? formik.values.logo.name : "Browse"}
+                    </span>
+                    <label
+                      htmlFor="logo"
+                      className="text-white px-3 py-1 rounded-md cursor-pointer h-full flex items-center text-sm"
+                      style={{ backgroundColor: layout_color }}
                     >
-                      <Trash2 size={14} />
-                    </button>
+                      Choose File
+                    </label>
+                    <input
+                      id="logo"
+                      name="logo"
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleFileChange}
+                    />
                   </div>
-                </div>
-              )}
+                )}
+                {imagePreviews.logo && (
+                  <div className="mt-2 relative">
+                    <div className="relative inline-block">
+                      <img
+                        src={imagePreviews.logo.url}
+                        alt="logo preview"
+                        className="w-24 h-20 object-cover rounded-md border border-gray-200"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveImage("logo")}
+                        className="absolute top-1 right-1 bg-white text-red-400 p-1 rounded-md focus:outline-none"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-
-          <div className="flex flex-row justify-end mt-4 mb-2 gap-3">
-            <button
-              type="button"
-              className="bg-gray-300 text-gray-700 rounded-md px-4 py-1 text-sm h-[36px]"
-            >
-              Clear
-            </button>
-            <button
-              className="text-white rounded-md px-4 py-1 text-sm h-[36px]"
-              type="submit"
-              style={{ backgroundColor: layout_color }}
-            >
-              Update
-            </button>
-          </div>
-        </form>
-      </div>
+        </div>
+        <div className="flex flex-row justify-end mt-4 mb-2 gap-3">
+          <button
+            type="button"
+            onClick={handleClear}
+            className="bg-gray-300 text-gray-700 rounded-md px-4 py-1 text-sm h-[36px]"
+          >
+            Clear
+          </button>
+          <button
+            type="submit"
+            className="text-white rounded-md px-4 py-1 text-sm h-[36px]"
+            style={{ backgroundColor: layout_color }}
+          >
+            Update
+          </button>
+        </div>
+      </form>
     </>
   );
 };
