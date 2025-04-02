@@ -536,7 +536,7 @@ const RouteList = [
   },
   {
     name: "Organisation",
-    path: '/settings/organisation',
+    path: '/usersettings/organisation',
     element: <Base renderContent={Organisation} />
   },
 
