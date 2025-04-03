@@ -178,7 +178,6 @@ function GiftReport() {
 
       <Table data={GiftStockData} columns={columns} loading={isLoading} currentPage={currentPage} handleItemsPerPageChange={handleItemsPerPageChange} handlePageChange={handlePageChange} itemsPerPage={itemsPerPage} totalItems={totalDocuments}  />
     
-       
     </div>
   </div>
   )

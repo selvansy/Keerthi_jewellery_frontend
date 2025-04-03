@@ -222,7 +222,7 @@ const RouteList = [
   },
   {
     name: "User Access",
-    path: '/masters/useraccess',
+    path: '/usersettings/useraccess/',
     element: <Base renderContent={UserAccess} />
   },
   {
@@ -232,12 +232,12 @@ const RouteList = [
   },
   {
     name: "Department",
-    path: '/masters/department',
+    path: '/usersettings/department',
     element: <Base renderContent={Department} />
   },
   {
     name: "Topup",
-    path: '/masters/topup',
+    path: '/usersettings/topup',
     element: <Base renderContent={Topup} />
   },
 
@@ -536,7 +536,7 @@ const RouteList = [
   },
   {
     name: "Organisation",
-    path: '/settings/organisation',
+    path: '/usersettings/organisation/',
     element: <Base renderContent={Organisation} />
   },
 
