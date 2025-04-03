@@ -1389,11 +1389,12 @@ const SchemeForm = () => {
           value="classification"
           className="border rounded-lg bg-white"
         >
-          <AccordionTrigger className="px-6 py-4">
+          <AccordionTrigger className="px-6">
             Classification Details
           </AccordionTrigger>
-          <AccordionContent value="classification" className="px-6 py-4">
-            <Suspense fallback={<SpinLoading />}>
+          <AccordionContent value="classification" className="px-6">
+          <div className="border-t pt-4">
+           <Suspense fallback={<SpinLoading />}>
               <Classification
                 formik={formik}
                 layout_color={layout_color}
@@ -1404,6 +1405,7 @@ const SchemeForm = () => {
                 desc_img={descriptionImage}
               />
             </Suspense>
+           </div>
           </AccordionContent>
         </AccordionItem>
       </Accordion>
