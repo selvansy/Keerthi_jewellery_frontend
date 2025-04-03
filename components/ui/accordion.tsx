@@ -37,11 +37,11 @@ const AccordionTrigger = React.forwardRef<
         {...props}
       >
         {children}
-        {(isOpen ) ? (
+        {/* {(isOpen ) ? (
           <Minus className="h-4 w-4 transition-transform duration-200 pointer-events-none" />
         ) : (
           <Plus className="h-4 w-4 transition-transform duration-200 pointer-events-none" />
-        )}
+        )} */}
       </AccordionPrimitive.Trigger>
     </AccordionPrimitive.Header>
   );

@@ -237,7 +237,7 @@ const RouteList = [
   },
   {
     name: "Topup",
-    path: '/masters/topup',
+    path: '/usersettings/topup',
     element: <Base renderContent={Topup} />
   },
 

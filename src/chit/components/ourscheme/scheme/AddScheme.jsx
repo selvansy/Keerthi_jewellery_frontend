@@ -216,18 +216,41 @@ const SchemeForm = () => {
       }
     },
   });
-  console.log(formik.errors);
 
   // Customisations for react-select
-  const customStyles = {
+  const customStyles = (isReadOnly) => ({
     control: (base, state) => ({
       ...base,
       minHeight: "42px",
-      border: state.isFocused ? "1px solid black" : "1px solid #e2e8f0",
+      backgroundColor: "white",
+      border: state.isFocused ? "1px solid black" : "2px solid #f2f3f8",
       boxShadow: state.isFocused ? "0 0 0 1px black" : "none",
       borderRadius: "0.375rem",
+      "&:hover": {
+        color: "#e2e8f0",
+      },
+      pointerEvents: !isReadOnly ? "none" : "auto",
+      opacity: !isReadOnly ? 1 : 1,
     }),
-  };
+    indicatorSeparator: () => ({
+      display: "none",
+    }),
+    placeholder: (base) => ({
+      ...base,
+      color: "#858293",
+      fontWeight: "thin",
+      // fontStyle: "bold",
+    }),
+    dropdownIndicator: (provided, state) => ({
+      ...provided,
+      color: "#232323",
+      "&:hover": {
+        color: "#232323",
+      },
+    }),
+  });
+
+  const inputHeight = "42px";
 
   //query and mutations
   const { data: classificationData } = useQuery({
@@ -699,12 +722,10 @@ const SchemeForm = () => {
       onSubmit={formik.handleSubmit}
       className="w-full mx-auto p-6 space-y-6"
     >
-      <div className="bg-white rounded-lg p-6 shadow-sm">
-        <h2 className="text-xl font-semibold mb-6 border-b-2 pb-2">
-          Add Scheme
-        </h2>
+      <div className="bg-[#FFFFFF] rounded-lg p-6 shadow-sm border">
+        <h2 className="text-lg font-semibold mb-4 border-b pb-4">Add Scheme</h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <div>
             <label className="block text-sm font-medium mb-1">
               Scheme Name <span className="text-red-500">*</span>
@@ -712,7 +733,7 @@ const SchemeForm = () => {
             <input
               type="text"
               maxLength={30}
-              className="w-full border rounded-md px-3 py-2"
+              className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
               placeholder="Enter scheme name"
               {...formik.getFieldProps("scheme_name")}
             />
@@ -739,7 +760,7 @@ const SchemeForm = () => {
             <input
               type="text"
               maxLength={15}
-              className="w-full border rounded-md px-3 py-2"
+              className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
               placeholder="Enter scheme code"
               {...formik.getFieldProps("code")}
             />
@@ -781,14 +802,14 @@ const SchemeForm = () => {
             </div>
           ) : (
             <div>
-              <label className="block text-sm text-gray-500 font-medium mb-1">
+              <label className="block text-sm font-medium mb-1">
                 Branch <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
                 disabled
                 value={branch?.branch_name || ""}
-                className="w-full border rounded-md px-3 py-2 text-gray-500"
+                className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2 text-gray-500"
               />
               {formik.errors.id_branch && (
                 <div className="text-red-500 text-sm mt-1">
@@ -797,80 +818,13 @@ const SchemeForm = () => {
               )}
             </div>
           )}
-          <div>
-            <label className="block text-sm font-medium mb-1">
-              Classification <span className="text-red-500">*</span>
-            </label>
-            <Select
-              styles={customStyles}
-              options={classifications}
-              isClearable={true}
-              placeholder="Select Classification"
-              value={classifications.find(
-                (option) =>
-                  option.value === formik.values.id_classification || ""
-              )}
-              onChange={handleClassChange}
-              onBlur={() => formik.setFieldTouched("id_classification", true)}
-            />
-            {formik.touched.id_classification &&
-              formik.errors.id_classification && (
-                <div className="text-red-500 text-sm mt-1">
-                  {formik.errors.id_classification}
-                </div>
-              )}
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">
-              Scheme Type <span className="text-red-500">*</span>
-            </label>
-            {/* <Select
-              styles={customStyles}
-              options={filteredSchemeTypeData}
-              isDisabled={!formik.values.id_classification}
-              placeholder={
-                !formik.values.id_classification
-                  ? "Choose a classification first"
-                  : "Select scheme type"
-              }
-              value={filteredSchemeTypeData?.find(
-                (option) => option.value === formik.values.scheme_type
-              )}
-              onChange={(option) => {
-                formik.setFieldValue("scheme_type", option?.value);
-              }}
-              onBlur={() => formik.setFieldTouched("scheme_type", true)}
-            /> */}
-            <Select
-              styles={customStyles}
-              options={filteredSchemeTypeData}
-              isDisabled={!formik.values.id_classification}
-              placeholder={
-                !formik.values.id_classification
-                  ? "Choose a classification first"
-                  : "Select scheme type"
-              }
-              value={filteredSchemeTypeData?.find(
-                (option) => option.value === formik.values.scheme_type
-              )}
-              onChange={(option) => {
-                formik.setFieldValue("scheme_type", option?.value);
-                formik.validateForm(); // Trigger revalidation
-              }}
-              onBlur={() => formik.setFieldTouched("scheme_type", true)}
-            />
-            {formik.touched.scheme_type && formik.errors.scheme_type && (
-              <div className="text-red-500 text-sm mt-1">
-                {formik.errors.scheme_type}
-              </div>
-            )}
-          </div>
+
           <div>
             <label className="block text-sm font-medium mb-1">
               Metal Type <span className="text-red-500">*</span>
             </label>
             <Select
-              styles={customStyles}
+              styles={customStyles(true)}
               isClearable={true}
               options={metal}
               placeholder="Select metal"
@@ -888,12 +842,13 @@ const SchemeForm = () => {
               </div>
             )}
           </div>
+
           <div>
             <label className="block text-sm font-medium mb-1">
               Purity <span className="text-red-500">*</span>
             </label>
             <Select
-              styles={customStyles}
+              styles={customStyles(formik.values.id_metal)}
               options={purity || []}
               isClearable={true}
               isDisabled={!formik.values.id_metal}
@@ -916,12 +871,66 @@ const SchemeForm = () => {
               </div>
             )}
           </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              Classification <span className="text-red-500">*</span>
+            </label>
+            <Select
+              styles={customStyles(true)}
+              options={classifications}
+              isClearable={true}
+              placeholder="Select Classification"
+              value={classifications.find(
+                (option) =>
+                  option.value === formik.values.id_classification || ""
+              )}
+              onChange={handleClassChange}
+              onBlur={() => formik.setFieldTouched("id_classification", true)}
+            />
+            {formik.touched.id_classification &&
+              formik.errors.id_classification && (
+                <div className="text-red-500 text-sm mt-1">
+                  {formik.errors.id_classification}
+                </div>
+              )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              Scheme Type <span className="text-red-500">*</span>
+            </label>
+            <Select
+              styles={customStyles(formik.values.id_classification)}
+              options={filteredSchemeTypeData}
+              isDisabled={!formik.values.id_classification}
+              placeholder={
+                !formik.values.id_classification
+                  ? "Choose a classification first"
+                  : "Select scheme type"
+              }
+              value={filteredSchemeTypeData?.find(
+                (option) => option.value === formik.values.scheme_type
+              )}
+              onChange={(option) => {
+                formik.setFieldValue("scheme_type", option?.value);
+                formik.validateForm();
+              }}
+              onBlur={() => formik.setFieldTouched("scheme_type", true)}
+            />
+            {formik.touched.scheme_type && formik.errors.scheme_type && (
+              <div className="text-red-500 text-sm mt-1">
+                {formik.errors.scheme_type}
+              </div>
+            )}
+          </div>
+
           <div>
             <label className="block text-sm font-medium mb-1">
               Installment Type <span className="text-red-500">*</span>
             </label>
             <Select
-              styles={customStyles}
+              styles={customStyles(true)}
               options={installment_data}
               placeholder="Select installment type"
               isClearable={true}
@@ -966,7 +975,6 @@ const SchemeForm = () => {
                 onKeyUp={(e) => {
                   const value = e.target.value.trim();
                   const numValue = Number(value);
-                  console.log(validation);
                   if (value.length > validation.maxLength) {
                     formik.setFieldError(
                       "maturity_period",
@@ -986,7 +994,7 @@ const SchemeForm = () => {
                   formik.setFieldError("maturity_period", "");
                   formik.handleChange(e);
                 }}
-                className="w-full border rounded-md px-3 py-2"
+                className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
                 placeholder="Enter Maturity Period"
                 {...formik.getFieldProps("maturity_period")}
               />
@@ -1006,12 +1014,47 @@ const SchemeForm = () => {
                 </div>
               )}
           </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              Installments <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="number"
+              name="total_installments"
+              value={formik.values.total_installments}
+              onWheel={(e) => e.target.blur()}
+              onChange={(e) => {
+                let value = parseInt(e.target.value, 10);
+                if (value > formik.values.maturity_period) {
+                  formik.setFieldError(
+                    "total_installments",
+                    `Installment cannot exceed maturity period`
+                  );
+                } else {
+                  formik.setFieldValue("total_installments", value);
+                  formik.setFieldError("total_installments", "");
+                }
+              }}
+              onBlur={formik.handleBlur}
+              className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+              placeholder="Total installments"
+              style={{ height: inputHeight }}
+            />
+            {formik.touched.total_installments &&
+              formik.errors.total_installments && (
+                <span className="text-red-500 text-sm mt-1">
+                  {formik.errors.total_installments}
+                </span>
+              )}
+          </div>
+
           <div>
             <label className="block text-sm font-medium mb-1">
               Saving Type<span className="text-red-500">*</span>
             </label>
             <Select
-              styles={customStyles}
+              styles={customStyles(true)}
               isClearable={true}
               options={funddata || []}
               placeholder="Select saving type"
@@ -1052,124 +1095,127 @@ const SchemeForm = () => {
               </span>
             </div>
           </div> */}
+          {formik.values.classType && (
+            //   <div className="grid grid-cols-3 gap-4 w-full mt-3">
+
+            // </div>
+            <>
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  {formik.values.classType &&
+                  [12, 3, 4].includes(formik.values.scheme_type)
+                    ? "Total count of weights"
+                    : "Total count of amount"}
+                  <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="number"
+                  min={0}
+                  max={50}
+                  className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                  placeholder="Enter total count"
+                  {...formik.getFieldProps("totalCountAmount")}
+                  onBlur={formik.handleBlur}
+                  onInput={(e) => {
+                    let value = e.target.value;
+                    if (value > "50") {
+                      formik.setFieldError(
+                        "totalCountAmount",
+                        "Max allowed is 50"
+                      );
+                    }
+
+                    if (value.length > 2) {
+                      value = value.slice(0, 2);
+                    }
+                    if (parseInt(value, 10) > 50) {
+                      value = "50";
+                    }
+
+                    e.target.value = value;
+                    formik.setFieldValue("totalCountAmount", value);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.target.value.length >= 2 && e.key !== "Backspace") {
+                      e.preventDefault();
+                    }
+                  }}
+                />
+                {formik.errors.totalCountAmount && (
+                  <div className="text-red-500 text-sm mt-1">
+                    {formik.errors.totalCountAmount}
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium lg:mb-1 md:mb-1 sm:mb-1 mb-6">
+                  {formik.values.classType &&
+                  [12, 3, 4].includes(formik.values.scheme_type)
+                    ? "Starting Weight"
+                    : "Starting Amount"}{" "}
+                  <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="number"
+                  min={1}
+                  max={99999999999}
+                  className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                  placeholder="Enter start amount"
+                  {...formik.getFieldProps("startingAmount")}
+                  onBlur={formik.handleBlur}
+                  onInput={(e) => {
+                    let value = e.target.value;
+                    if (value.length > 11) {
+                      e.target.value = value.slice(0, 11);
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.target.value.length >= 11 && e.key !== "Backspace") {
+                      e.preventDefault();
+                    }
+                  }}
+                />
+                {formik.errors.startingAmount && (
+                  <div className="text-red-500 text-sm mt-1">
+                    {formik.errors.startingAmount}
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Increment Rate <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="number"
+                  min={1}
+                  max={99999999999}
+                  className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                  placeholder="Enter increment rate"
+                  onChange={generateAmounts}
+                  {...formik.getFieldProps("incrementRate")}
+                  onInput={(e) => {
+                    let value = e.target.value;
+                    if (value.length > 11) {
+                      e.target.value = value.slice(0, 11);
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.target.value.length >= 11 && e.key !== "Backspace") {
+                      e.preventDefault();
+                    }
+                  }}
+                />
+                {formik.errors.incrementRate && (
+                  <div className="text-red-500 text-sm mt-1">
+                    {formik.errors.incrementRate}
+                  </div>
+                )}
+              </div>
+            </>
+          )}
         </div>
-        {formik.values.classType && (
-          <div className="grid grid-cols-3 gap-4 w-full mt-3">
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                {formik.values.classType &&
-                [12, 3, 4].includes(formik.values.scheme_type)
-                  ? "Total count of weights"
-                  : "Total count of amount"}
-                <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="number"
-                min={0}
-                max={50}
-                className="w-full border rounded-md px-3 py-2"
-                placeholder="Enter total count"
-                {...formik.getFieldProps("totalCountAmount")}
-                onBlur={formik.handleBlur}
-                onInput={(e) => {
-                  let value = e.target.value;
-                  if (value > "50") {
-                    formik.setFieldError(
-                      "totalCountAmount",
-                      "Max allowed is 50"
-                    );
-                  }
-
-                  if (value.length > 2) {
-                    value = value.slice(0, 2);
-                  }
-                  if (parseInt(value, 10) > 50) {
-                    value = "50";
-                  }
-
-                  e.target.value = value;
-                  formik.setFieldValue("totalCountAmount", value);
-                }}
-                onKeyDown={(e) => {
-                  if (e.target.value.length >= 2 && e.key !== "Backspace") {
-                    e.preventDefault();
-                  }
-                }}
-              />
-              {formik.errors.totalCountAmount && (
-                <div className="text-red-500 text-sm mt-1">
-                  {formik.errors.totalCountAmount}
-                </div>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium lg:mb-1 md:mb-1 sm:mb-1 mb-6">
-                {formik.values.classType &&
-                [12, 3, 4].includes(formik.values.scheme_type)
-                  ? "Starting Weight"
-                  : "Starting Amount"}{" "}
-                <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="number"
-                min={1}
-                max={99999999999}
-                className="w-full border rounded-md px-3 py-2"
-                placeholder="Enter start amount"
-                {...formik.getFieldProps("startingAmount")}
-                onBlur={formik.handleBlur}
-                onInput={(e) => {
-                  let value = e.target.value;
-                  if (value.length > 11) {
-                    e.target.value = value.slice(0, 11);
-                  }
-                }}
-                onKeyDown={(e) => {
-                  if (e.target.value.length >= 11 && e.key !== "Backspace") {
-                    e.preventDefault();
-                  }
-                }}
-              />
-              {formik.errors.startingAmount && (
-                <div className="text-red-500 text-sm mt-1">
-                  {formik.errors.startingAmount}
-                </div>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Increment Rate <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="number"
-                min={1}
-                max={99999999999}
-                className="w-full border rounded-md px-3 py-2"
-                placeholder="Enter increment rate"
-                onChange={generateAmounts}
-                {...formik.getFieldProps("incrementRate")}
-                onInput={(e) => {
-                  let value = e.target.value;
-                  if (value.length > 11) {
-                    e.target.value = value.slice(0, 11);
-                  }
-                }}
-                onKeyDown={(e) => {
-                  if (e.target.value.length >= 11 && e.key !== "Backspace") {
-                    e.preventDefault();
-                  }
-                }}
-              />
-              {formik.errors.incrementRate && (
-                <div className="text-red-500 text-sm mt-1">
-                  {formik.errors.incrementRate}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
 
         {formik.values.classType && (
           <div className="mt-6 bg-[#f5f5f5] p-4 rounded-md">
@@ -1192,7 +1238,7 @@ const SchemeForm = () => {
                     className={isEditMode ? "text-gray-400" : ""}
                   />
                 </button>
-                <button
+                {/* <button
                   type="button"
                   className="p-2 hover:bg-gray-100 rounded-md"
                   onClick={handleReset}
@@ -1202,7 +1248,7 @@ const SchemeForm = () => {
                     size={20}
                     className={isEditMode ? "text-gray-400" : ""}
                   />
-                </button>
+                </button> */}
               </div>
             </div>
             <div className="flex flex-row justify-start">
@@ -1215,17 +1261,17 @@ const SchemeForm = () => {
                       ? "Add weight"
                       : "Add amount"
                   }
-                  className="flex-1 border rounded-md px-3 py-2"
+                  className="flex-1 border-2 border-[#f2f3f8] rounded-md px-3 py-2"
                   value={newAmount}
                   onChange={(e) => setNewAmount(e.target.value)}
                   onKeyDown={handleKeyDown}
                 />
                 <button
                   type="button"
-                  className="p-2 bg-[#d8d8d8] rounded-md hover:bg-gray-200"
+                  className="bg-[#004181] rounded-md w-10 h-10 flex items-center justify-center"
                   onClick={handleAddAmount}
                 >
-                  <Plus size={20} />
+                  <Plus className="text-white" size={20} />
                 </button>
               </div>
             </div>
@@ -1237,7 +1283,7 @@ const SchemeForm = () => {
                     {isEditMode && selectedAmount === index ? (
                       <input
                         type="number"
-                        className="px-4 py-2 border rounded-md w-20"
+                        className="px-4 py-2 border-2 border-[#f2f3f8] rounded-md w-20"
                         value={editAmount}
                         onChange={handleAmountChange}
                         onKeyDown={(e) => handleKeyDown(e, index)}
@@ -1249,7 +1295,7 @@ const SchemeForm = () => {
                         type="button"
                         className={`px-4 py-2 rounded-md ${
                           selectedAmount === index
-                            ? "bg-blue-900 text-white"
+                            ? "bg-[#004181] text-white"
                             : "bg-white border hover:bg-gray-50"
                         }`}
                         onClick={() => handleAmountSelect(index)}
@@ -1279,33 +1325,13 @@ const SchemeForm = () => {
           </AccordionContent>
         </AccordionItem> */}
 
-        <AccordionItem
-          value="classification"
-          className="border rounded-lg bg-white"
-        >
-          <AccordionTrigger className="px-6 py-4">
-            Classification
-          </AccordionTrigger>
-          <AccordionContent value="classification" className="px-6 py-4">
-            <Suspense fallback={<SpinLoading />}>
-              <Classification
-                formik={formik}
-                layout_color={layout_color}
-                setMainImg={setMainImage}
-                setDescImg={setDescriptionImage}
-                pathurl={pathUrl}
-                logo={mainImage}
-                desc_img={descriptionImage}
-              />
-            </Suspense>
-          </AccordionContent>
-        </AccordionItem>
-
         <AccordionItem value="payable" className="border rounded-lg bg-white">
-          <AccordionTrigger className="px-6 py-4">
-            Payable Details
+          <AccordionTrigger className="px-6 py-4 ">
+           {/* <div className="w-full text-start text-lg font-semibold pb-4"> Payable Details</div> */}
+           Payable Details
           </AccordionTrigger>
-          <AccordionContent className="px-6 py-4">
+          <AccordionContent className="px-6">
+            <div className="border-t pt-4">
             <Suspense fallback={<SpinLoading />}>
               <PayableDetails
                 formik={formik}
@@ -1316,8 +1342,10 @@ const SchemeForm = () => {
                 classType={formik.values.classType}
                 maturity_period={formik.values.maturity_period}
                 scheme_type={formik.values.scheme_type}
+                customStyle={customStyles}
               />
             </Suspense>
+            </div>
           </AccordionContent>
         </AccordionItem>
 
@@ -1354,12 +1382,34 @@ const SchemeForm = () => {
             </Suspense>
           </AccordionContent>
         </AccordionItem>
+
+        <AccordionItem
+          value="classification"
+          className="border rounded-lg bg-white"
+        >
+          <AccordionTrigger className="px-6 py-4">
+            Classification Details
+          </AccordionTrigger>
+          <AccordionContent value="classification" className="px-6 py-4">
+            <Suspense fallback={<SpinLoading />}>
+              <Classification
+                formik={formik}
+                layout_color={layout_color}
+                setMainImg={setMainImage}
+                setDescImg={setDescriptionImage}
+                pathurl={pathUrl}
+                logo={mainImage}
+                desc_img={descriptionImage}
+              />
+            </Suspense>
+          </AccordionContent>
+        </AccordionItem>
       </Accordion>
 
       <div className="flex justify-end space-x-4">
         <button
           type="button"
-          className="px-4 py-2 border rounded-md hover:bg-gray-50"
+          className="px-4 py-2 border-2 border-[#f2f3f8] rounded-md hover:bg-gray-50"
           onClick={() => formik.resetForm()}
         >
           Clear
