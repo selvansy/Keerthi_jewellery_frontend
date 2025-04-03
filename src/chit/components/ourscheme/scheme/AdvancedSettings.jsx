@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Select from "react-select";
 import { rewardType } from "../../../../utils/Constants";
 
-// Customisations for react-select
+
 const customStyles = {
   control: (base, state) => ({
     ...base,
@@ -26,11 +26,11 @@ const AdvancedSettings = ({ formik, layout_color, installment_type }) => {
   }, [rewardType]);
 
   return (
-    <div className="grid grid-rows-2 md:grid-cols-2 gap-5">
+    <div className="grid grid-rows-2 md:grid-cols-3 gap-5">
       {/* Monthly Limit Installment */}
       <div className="flex flex-col mt-2">
-        <label className="text-black mb-2 font-normal">
-          {!installment_type ? 'Monthly Installment Limit' : `${header[installment_type]} Limit Installment`}
+      <label className="block text-sm font-medium mb-1">
+          {!installment_type ? 'Monthly Installment Limit' : `${header[installment_type]} Limit Installment`} <span className="text-red-400"> *</span>
         </label>
         <div className="relative">
           <input
@@ -40,7 +40,7 @@ const AdvancedSettings = ({ formik, layout_color, installment_type }) => {
             value={formik.values.limit_installment}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+            className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
             placeholder="Enter Limit Installment"
           />
         </div>
@@ -52,59 +52,10 @@ const AdvancedSettings = ({ formik, layout_color, installment_type }) => {
           )}
       </div>
 
-      {/* Pending Due Limit Installment */}
-      <div className="flex flex-col mt-2">
-        <label className="text-black mb-2 font-normal">
-          Pending Due Limit Installment
-        </label>
-        <div className="relative">
-          <input
-            type="number"
-            name="pending_installment"
-            onWheel={(e) => e.target.blur()}
-            value={formik.values.pending_installment}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-            placeholder="Enter Pending Due Installment"
-          />
-        </div>
-        {formik.touched.pending_installment &&
-          formik.errors.pending_installment && (
-            <span className="text-red-500 text-sm mt-1">
-              {formik.errors.pending_installment}
-            </span>
-          )}
-      </div>
-
-      {/* Paid Installment (greater or equal to) */}
-      <div className="flex flex-col mt-2">
-        <label className="text-black mb-2 font-normal">
-          Minimum Paid Installment (for gift)
-        </label>
-        <div className="relative">
-          <input
-            type="number"
-            name="gift_minimum_paid_installment"
-            onWheel={(e) => e.target.blur()}
-            value={formik.values.gift_minimum_paid_installment}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-            placeholder="Enter Paid Installment"
-          />
-        </div>
-        {formik.touched.gift_minimum_paid_installment && formik.errors.gift_minimum_paid_installment && (
-          <span className="text-red-500 text-sm mt-1">
-            {formik.errors.gift_minimum_paid_installment}
-          </span>
-        )}
-      </div>
-
       {/* Scheme Customer Limit */}
       <div className="flex flex-col mt-2">
-        <label className="text-black mb-2 font-normal">
-          Scheme Customer Limit
+      <label className="block text-sm font-medium mb-1">
+          Scheme Customer Limit <span className="text-red-400"> *</span>
         </label>
         <div className="relative">
           <input
@@ -114,7 +65,7 @@ const AdvancedSettings = ({ formik, layout_color, installment_type }) => {
             value={formik.values.limit_customer}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+            className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
             placeholder="Enter Scheme Customer Limit"
           />
         </div>
@@ -126,9 +77,32 @@ const AdvancedSettings = ({ formik, layout_color, installment_type }) => {
           )}
       </div>
 
+      <div className="flex flex-col mt-2">
+      <label className="block text-sm font-medium mb-1">
+          Minimum Paid Installment (for gift) <span className="text-red-400"> *</span>
+        </label>
+        <div className="relative">
+          <input
+            type="number"
+            name="gift_minimum_paid_installment"
+            onWheel={(e) => e.target.blur()}
+            value={formik.values.gift_minimum_paid_installment}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+            placeholder="Enter Paid Installment"
+          />
+        </div>
+        {formik.touched.gift_minimum_paid_installment && formik.errors.gift_minimum_paid_installment && (
+          <span className="text-red-500 text-sm mt-1">
+            {formik.errors.gift_minimum_paid_installment}
+          </span>
+        )}
+      </div>
+
       {/* Number of Gifts */}
       <div className="flex flex-col mt-2">
-        <label className="text-black mb-2 font-normal">
+        <label className="block text-sm font-medium mb-1">
           Number of Gifts
         </label>
         <div className="relative">
@@ -139,7 +113,7 @@ const AdvancedSettings = ({ formik, layout_color, installment_type }) => {
             value={formik.values.no_of_gifts}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+            className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
             placeholder="Enter Number of Gifts"
           />
         </div>
@@ -150,36 +124,11 @@ const AdvancedSettings = ({ formik, layout_color, installment_type }) => {
         )}
       </div>
 
-      {/* Reward Amount moved to payble details */}
-      
-      {/* Not Paid Limit Installment */}
-      <div className="flex flex-col mt-2">
-        <label className="text-black mb-2 font-normal">
-          Not Paid Limit Installment
-        </label>
-        <div className="relative">
-          <input
-            type="number"
-            name="not_paid_installment"
-            onWheel={(e) => e.target.blur()}
-            value={formik.values.not_paid_installment}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-            placeholder="Enter Not Paid Installment"
-          />
-        </div>
-        {formik.touched.not_paid_installment &&
-          formik.errors.not_paid_installment && (
-            <span className="text-red-500 text-sm mt-1">
-              {formik.errors.not_paid_installment}
-            </span>
-          )}
-      </div>
+     
 
       {/* Convenience Fee */}
       <div className="flex flex-col mt-2">
-        <label className="text-black mb-2 font-normal">
+        <label className="block text-sm font-medium mb-1">
           Convenience Fee
         </label>
         <div className="relative">
@@ -190,7 +139,7 @@ const AdvancedSettings = ({ formik, layout_color, installment_type }) => {
             value={formik.values.convenience_fees}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+            className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
             placeholder="Enter Convenience Fee"
           />
           <span
@@ -207,70 +156,9 @@ const AdvancedSettings = ({ formik, layout_color, installment_type }) => {
         )}
       </div>
 
-      {/* Fine Amount */}
-      <div className="flex flex-col mt-2">
-        <label className="text-black mb-2 font-normal">
-          Fine Amount
-        </label>
-        <div className="relative">
-          <input
-            type="number"
-            name="fine_amount"
-            onWheel={(e) => e.target.blur()}
-            value={formik.values.fine_amount}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-            placeholder="Enter Fine Amount"
-          />
-          <span
-            className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
-            style={{ backgroundColor: layout_color }}
-          >
-            INR
-          </span>
-        </div>
-        {formik.touched.fine_amount && formik.errors.fine_amount && (
-          <span className="text-red-500 text-sm mt-1">
-            {formik.errors.fine_amount}
-          </span>
-        )}
-      </div>
-
-      {/* Cumulative Fine Amount */}
-      {/* <div className="flex flex-col mt-2">
-        <label className="text-black mb-2 font-normal">
-          Cumulative Fine Amount
-        </label>
-        <div className="relative">
-          <input
-            type="number"
-            name="cumulative_fine_amount"
-            onWheel={(e) => e.target.blur()}
-            value={formik.values.cumulative_fine_amount}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-            placeholder="Enter Cumulative Fine Amount"
-          />
-          <span
-            className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
-            style={{ backgroundColor: layout_color }}
-          >
-            INR
-          </span>
-        </div>
-        {formik.touched.cumulative_fine_amount &&
-          formik.errors.cumulative_fine_amount && (
-            <span className="text-red-500 text-sm mt-1">
-              {formik.errors.cumulative_fine_amount}
-            </span>
-          )}
-      </div> */}
-
       {/* Display Referral */}
       <div className="flex flex-col mt-2">
-        <label className="text-black mb-2 font-normal">
+        <label className="block text-sm font-medium mb-1">
           Display Referral
         </label>
         <div className="flex flex-row border border-gray-300 rounded-lg overflow-hidden w-32 h-10 items-center">
@@ -305,9 +193,39 @@ const AdvancedSettings = ({ formik, layout_color, installment_type }) => {
         )}
       </div>
 
+      {/* Cumulative Fine Amount */}
+      {/* <div className="flex flex-col mt-2">
+        <label className="block text-sm font-medium mb-1">
+          Cumulative Fine Amount
+        </label>
+        <div className="relative">
+          <input
+            type="number"
+            name="cumulative_fine_amount"
+            onWheel={(e) => e.target.blur()}
+            value={formik.values.cumulative_fine_amount}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+            placeholder="Enter Cumulative Fine Amount"
+          />
+          <span
+            className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+            style={{ backgroundColor: layout_color }}
+          >
+            INR
+          </span>
+        </div>
+        {formik.touched.cumulative_fine_amount &&
+          formik.errors.cumulative_fine_amount && (
+            <span className="text-red-500 text-sm mt-1">
+              {formik.errors.cumulative_fine_amount}
+            </span>
+          )}
+      </div> */}
       {/* Display Weight In Ledger */}
-      <div className="flex flex-col mt-2">
-        <label className="text-black mb-2 font-normal">
+      {/* <div className="flex flex-col mt-2">
+        <label className="block text-sm font-medium mb-1">
           Display Weight In Ledger
         </label>
         <div className="flex flex-row border border-gray-300 rounded-lg overflow-hidden w-32 h-10 items-center">
@@ -345,9 +263,9 @@ const AdvancedSettings = ({ formik, layout_color, installment_type }) => {
               {formik.errors.display_Weight_in_ledger}
             </span>
           )}
-      </div>
-      <div className="flex flex-col mt-2">
-        <label className="text-black mb-2 font-normal">
+      </div> */}
+      {/* <div className="flex flex-col mt-2">
+        <label className="block text-sm font-medium mb-1">
          Wallet redemption on payment
         </label>
         <div className="flex flex-row border border-gray-300 rounded-lg overflow-hidden w-32 h-10 items-center">
@@ -380,7 +298,86 @@ const AdvancedSettings = ({ formik, layout_color, installment_type }) => {
             {formik.errors.wallet_redemption_onpayment}
           </span>
         )}
-      </div>
+      </div> */}
+      {/* Fine Amount */}
+      {/* <div className="flex flex-col mt-2">
+        <label className="block text-sm font-medium mb-1">
+          Fine Amount
+        </label>
+        <div className="relative">
+          <input
+            type="number"
+            name="fine_amount"
+            onWheel={(e) => e.target.blur()}
+            value={formik.values.fine_amount}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+            placeholder="Enter Fine Amount"
+          />
+          <span
+            className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+            style={{ backgroundColor: layout_color }}
+          >
+            INR
+          </span>
+        </div>
+        {formik.touched.fine_amount && formik.errors.fine_amount && (
+          <span className="text-red-500 text-sm mt-1">
+            {formik.errors.fine_amount}
+          </span>
+        )}
+      </div> */}
+       {/* Reward Amount moved to payble details */}
+      
+      {/* Not Paid Limit Installment */}
+      {/* <div className="flex flex-col mt-2">
+        <label className="block text-sm font-medium mb-1">
+          Not Paid Limit Installment
+        </label>
+        <div className="relative">
+          <input
+            type="number"
+            name="not_paid_installment"
+            onWheel={(e) => e.target.blur()}
+            value={formik.values.not_paid_installment}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+            placeholder="Enter Not Paid Installment"
+          />
+        </div>
+        {formik.touched.not_paid_installment &&
+          formik.errors.not_paid_installment && (
+            <span className="text-red-500 text-sm mt-1">
+              {formik.errors.not_paid_installment}
+            </span>
+          )}
+      </div> */}
+      {/* Pending Due Limit Installment */}
+      {/* <div className="flex flex-col mt-2">
+        <label className="block text-sm font-medium mb-1">
+          Pending Due Limit Installment
+        </label>
+        <div className="relative">
+          <input
+            type="number"
+            name="pending_installment"
+            onWheel={(e) => e.target.blur()}
+            value={formik.values.pending_installment}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+            placeholder="Enter Pending Due Installment"
+          />
+        </div>
+        {formik.touched.pending_installment &&
+          formik.errors.pending_installment && (
+            <span className="text-red-500 text-sm mt-1">
+              {formik.errors.pending_installment}
+            </span>
+          )}
+      </div> */}
     </div>
   );
 };

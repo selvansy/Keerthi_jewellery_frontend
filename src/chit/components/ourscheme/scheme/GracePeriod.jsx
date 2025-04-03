@@ -60,14 +60,11 @@ const Grace = ({ formik, layout_color, maturity_period }) => {
           }
           onChange={(option) => {
             if (option) {
-              console.log(option.value);
               formik.setFieldValue("grace_type", option.value);
               setSpan(option.label);
             } else {
-              // If cleared, set field to null
-              console.log("Selection cleared");
               formik.setFieldValue("grace_type", null);
-              setSpan(""); // Clear span value if needed
+              setSpan("");
             }
           }}
         />

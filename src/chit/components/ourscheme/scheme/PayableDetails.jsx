@@ -43,7 +43,7 @@ const PayableDetails = ({
       {showWeightFields ? (
         <>
           <div className="flex flex-col lg:mt-2">
-            <label className="text-black mb-2 font-normal">
+          <label className="block text-sm font-medium mb-1">
               Min Weight <span className="text-red-400"> *</span>
             </label>
             <div className="relative">
@@ -58,12 +58,6 @@ const PayableDetails = ({
                 placeholder="Enter Min Weight"
                 style={{ height: inputHeight }}
               />
-              {/* <span
-                className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
-                style={{ backgroundColor: layout_color }}
-              >
-                GRM
-              </span> */}
               <span className="absolute right-0 top-0 w-9 h-full px-3 flex items-center justify-center text-black border-l">
                 Gm
               </span>
@@ -75,7 +69,7 @@ const PayableDetails = ({
             )}
           </div>
           <div className="flex flex-col lg:mt-2">
-            <label className="text-black mb-2 font-normal">
+          <label className="block text-sm font-medium mb-1">
               Max Weight <span className="text-red-400"> *</span>
             </label>
             <div className="relative">

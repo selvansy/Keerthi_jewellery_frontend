@@ -1369,10 +1369,11 @@ const SchemeForm = () => {
 
         <AccordionItem value="advanced" className="border rounded-lg bg-white">
           <AccordionTrigger className="px-6 py-4">
-            Advanced Settings
+            Installment
           </AccordionTrigger>
-          <AccordionContent className="px-6 py-4">
-            <Suspense fallback={<SpinLoading />}>
+          <AccordionContent className="px-6">
+           <div className="border-t pt-4">
+           <Suspense fallback={<SpinLoading />}>
               <AdvancedSettings
                 formik={formik}
                 layout_color={layout_color}
@@ -1380,6 +1381,7 @@ const SchemeForm = () => {
                 installment_type={formik.values.installment_type}
               />
             </Suspense>
+           </div>
           </AccordionContent>
         </AccordionItem>
 
