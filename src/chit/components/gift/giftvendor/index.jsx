@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Table from "../../common/Table";
-import { Search } from "lucide-react";
+import { Search ,Plus } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   getallgiftvendor,
@@ -25,6 +25,10 @@ import GiftVendorForm from "./GiftVendorForm";
 import Loading from "../../common/Loading";
 import usePagination from "../../../hooks/usePagination";
 import Action from "../../common/action";
+import ActiveDropdown from "../../common/ActiveDropdown";
+// import { customSelectStyles } from "../../Setup/purity";
+
+
 
 const Giftvendor = () => {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
@@ -32,9 +36,12 @@ const Giftvendor = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [giftvendorData, setgiftvendorData] = useState([]);
+
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [selectedRow, setSelectedRow] = useState(null);
+
+
+  const [activeFilter, setActiveFilter] = useState(null)
   const [totalPages, setTotalPages] = useState(0);
   const [entries, Setentries] = useState(0);
   const [activeDropdown, setActiveDropdown] = useState(null);
@@ -50,21 +57,28 @@ const Giftvendor = () => {
   const [searchInput, setSearchInput] = useState("");
   const debouncedSearch = useDebounce(searchInput, 500);
 
-  const limit = 1;
 
   useEffect(() => {
-    getAllgiftvendorsMutate({
-      search: debouncedSearch,
-      page: currentPage,
-      limit: itemsPerPage,
-    });
-  }, [currentPage, debouncedSearch, itemsPerPage]);
+
+    let payload = { 
+        search: debouncedSearch,
+        page: currentPage,
+        limit: itemsPerPage
+    }
+
+    if(activeFilter !== null){
+      payload.active = activeFilter
+    }
+
+    getAllgiftvendorsMutate(payload);
+
+  }, [currentPage, debouncedSearch, itemsPerPage,activeFilter]);
 
   const refetchTable = () => {
     getAllgiftvendorsMutate({
       search: debouncedSearch,
       page: currentPage,
-      limit: itemsPerPage,
+      limit: itemsPerPage
     });
   };
 
@@ -211,7 +225,7 @@ const Giftvendor = () => {
       cell: (row) => row?.vendor_name || "N/A",
     },
     {
-      header: "Mobile",
+      header: "Mobile Number",
       cell: (row) => row?.mobile || "N/A",
     },
     {
@@ -223,7 +237,7 @@ const Giftvendor = () => {
       cell: (row) => row?.gst || "N/A",
     },
     {
-      header: "Status",
+      header: "Active",
       accessor: "active",
       cell: (row) => (
         <label className="relative inline-flex items-center cursor-pointer">
@@ -234,11 +248,10 @@ const Giftvendor = () => {
             onChange={() => handleStatusToggle(row?._id, row?.active)}
           />
           <div
-            className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-[#E7EEF5] p-[2px] after:duration-300 after:bg-[#004181] ${
-              row?.active === true
-                ? "peer-checked:bg-[#E7EEF5] peer-checked:ring-[#E7EEF5]"
-                : "peer-checked:bg-[#E7EEF5] peer-checked:ring-gray-400"
-            } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-[${layout_color}] peer-hover:after:scale-95`}
+            className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-[#E7EEF5] p-[2px] after:duration-300 after:bg-[#004181] ${row?.active === true
+              ? "peer-checked:bg-[#E7EEF5] peer-checked:ring-[#E7EEF5]"
+              : "peer-checked:bg-[#E7EEF5] peer-checked:ring-gray-400"
+              } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-[${layout_color}] peer-hover:after:scale-95`}
           ></div>
         </label>
       ),
@@ -276,40 +289,60 @@ const Giftvendor = () => {
       ) : (
         <>
           <h2 className="text-2xl text-gray-900 font-bold">Gift Vendor</h2>
-          <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
-            <div className="relative w-full lg:w-1/3 min-w-[200px]">
-              <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                <Search className="text-gray-500" />
+          <div className=" relative shadow-sm rounded-lg overflow-hidden mt-8">
+            <div className="bg-white flex flex-col gap-4 lg:flex-row md:flex-row md:justify-between md:items-center lg:justify-between lg:items-center py-2">
+
+              <ActiveDropdown setActiveFilter={setActiveFilter} />
+
+              <div className="flex flex-row items-center justify-end gap-4">
+                <div className="flex  justify-end">
+                  <div className="relative ">
+                    <input
+                      type="text"
+                      onChange={handleSearch}
+                      className=" border border-gray-300 text-gray-900 text-sm rounded-lg pl-10 pr-10 p-2.5 w-60"
+                      placeholder="Search"
+                    />
+                    <div className="absolute inset-y-0 right-[204px] pl-1 flex items-center pr-3 pointer-events-none">
+                      <svg className="w-4 h-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex flex-row items-center justify-end relative">
+                  
+                  <button
+                    className="rounded-lg p-8  py-2 text-white text-center whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
+                    onClick={handleAddgiftvendor}
+                    style={{ backgroundColor: layout_color }}
+                  >
+                    Add Gift Vendor
+                  </button>
+                  <div className="text-white absolute inset-y-0 left-[1px] pl-2 flex items-center pr-8 pointer-events-none">
+                    <Plus size={20} strokeWidth={2.5}/>
+                    </div>
+
+                </div>
               </div>
-              <input
-                onChange={handleSearch}
-                placeholder="Search..."
-                className="p-3 pl-10 pr-3 border-2 bg-[#F5F5F5] border-gray-500 rounded-md w-full"
-              />
+
             </div>
-            <div className="flex flex-row items-center justify-end gap-2">
-              <button
-                className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
-                onClick={handleAddgiftvendor}
-                style={{ backgroundColor: layout_color }}
-              >
-                + Add Gift Vendor
-              </button>
+            <div className="bg-white py-4">
+              <Table
+                data={giftvendorData}
+                columns={columns}
+                isLoading={isLoading}
+                currentPage={currentPage}
+                handlePageChange={handlePageChange}
+                itemsPerPage={itemsPerPage}
+                totalItems={totalDocuments}
+                handleItemsPerPageChange={handleItemsPerPageChange}
+              />
             </div>
           </div>
 
-          <div className="mt-4">
-            <Table
-              data={giftvendorData}
-              columns={columns}
-              isLoading={isLoading}
-              currentPage={currentPage}
-              handlePageChange={handlePageChange}
-              itemsPerPage={itemsPerPage}
-              totalItems={totalDocuments}
-              handleItemsPerPageChange={handleItemsPerPageChange}
-            />
-          </div>
+
         </>
       )}
       <ModelOne

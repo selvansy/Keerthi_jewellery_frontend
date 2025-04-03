@@ -214,8 +214,8 @@ function GiftVendorForm({ setIsOpen, isviewOpen, id, refetchTable, setId }) {
 
     };
 
-    const handleCancel = () => {
-        setId("")
+    const handleClear = () => {
+        // setId("")
         setFormData({
             vendor_name: '',
             mobile: '',
@@ -223,7 +223,7 @@ function GiftVendorForm({ setIsOpen, isviewOpen, id, refetchTable, setId }) {
             address: '',
             id_branch: '',
         });
-        setIsOpen(false);
+        // setIsOpen(false);
     };
 
     return (
@@ -234,7 +234,7 @@ function GiftVendorForm({ setIsOpen, isviewOpen, id, refetchTable, setId }) {
 
                 <div className='flex flex-col'>
 
-                    <label className='text-black mb-1 font-medium'>Branch<span className='text-red-400'>*</span></label>
+                    <label className='text-gray-900 mb-1 font-medium'>Branch<span className='text-red-400'> *</span></label>
 
                     <Select
                         options={branchData}
@@ -258,8 +258,8 @@ function GiftVendorForm({ setIsOpen, isviewOpen, id, refetchTable, setId }) {
 
                 {/* Gift Vendor Name field */}
                 <div className="flex flex-col ">
-                    <label className="font-medium text-gray-700">
-                        Gift Vendor Name<span className="text-red-400">*</span>
+                    <label className="font-medium text-gray-900">
+                        Vendor Name<span className="text-red-400"> *</span>
                     </label>
                     <input
                         type="text"
@@ -274,8 +274,8 @@ function GiftVendorForm({ setIsOpen, isviewOpen, id, refetchTable, setId }) {
 
 
                 <div className="flex flex-col">
-                    <label className="font-medium text-gray-700">
-                        Mobile<span className='text-red-400'>*</span></label>
+                    <label className="font-medium text-gray-900">
+                        Mobile Number<span className='text-red-400'> *</span></label>
                     <input
                         type='tel'
                         name='mobile'
@@ -283,7 +283,7 @@ function GiftVendorForm({ setIsOpen, isviewOpen, id, refetchTable, setId }) {
                         onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '')}
                         onChange={handleChange}
                         pattern="\d{10}"
-                        placeholder="Enter Mobile"
+                        placeholder="Enter mobile number"
                         className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600"
                         maxLength="10"
                     />
@@ -292,7 +292,7 @@ function GiftVendorForm({ setIsOpen, isviewOpen, id, refetchTable, setId }) {
 
                 {/* Address field */}
                 <div className="flex flex-col">
-                    <label className="font-medium text-gray-700">
+                    <label className="font-medium text-gray-900">
                         Address
                     </label>
                     <textarea
@@ -307,7 +307,7 @@ function GiftVendorForm({ setIsOpen, isviewOpen, id, refetchTable, setId }) {
 
                 {/* GST Number field */}
                 <div className="flex flex-col">
-                    <label className="font-medium text-gray-700">GST Number</label>
+                    <label className="font-medium text-gray-900">GST Number</label>
                     <input
                         type="text"
                         name="gst"
@@ -320,7 +320,7 @@ function GiftVendorForm({ setIsOpen, isviewOpen, id, refetchTable, setId }) {
                             }
                         }}
                         placeholder="Enter GST Number"
-                        className="p-3 border uppercase border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600"
+                        className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600"
                         maxLength="15"
                     />
 
@@ -333,10 +333,10 @@ function GiftVendorForm({ setIsOpen, isviewOpen, id, refetchTable, setId }) {
                     <div className="flex justify-end gap-2 mt-3">
                         <button
                             type="button"
-                            className="bg-[#E2E8F0] text-black rounded-md p-2 w-full lg:w-20"
-                            onClick={handleCancel}
+                            className="bg-[#E2E8F0] text-gray-900 rounded-md p-2 w-full lg:w-20"
+                            onClick={handleClear}
                         >
-                            Cancel
+                            Clear
                         </button>
                         <button
                             type="button"
@@ -344,7 +344,7 @@ function GiftVendorForm({ setIsOpen, isviewOpen, id, refetchTable, setId }) {
                             readOnly={isLoading == true}
                             className=" text-white rounded-md p-2 w-full lg:w-20"
                             style={{ backgroundColor: layout_color }} >
-                            {isLoading ? <SpinLoading /> : id ? 'Update' : 'Submit'}
+                            {isLoading ? <SpinLoading /> : id ? 'Update' : 'Save'}
                         </button>
                     </div>
                 </div>

@@ -24,9 +24,9 @@ function GiftItemForm({ setIsOpen, isviewOpen, id, setId, refetchTable }) {
     const [pathurl, setPathurl] = useState('');
     const [formData, setFormData] = useState({
         gift_name: '',
-        gift_image: '',
         gift_vendorid: '',
         id_branch: '',
+        gift_code:""
     });
     const [errors, setErrors] = useState({});
     const [isLoading, setIsLoading] = useState(false);
@@ -107,6 +107,7 @@ function GiftItemForm({ setIsOpen, isviewOpen, id, setId, refetchTable }) {
     const validateForm = () => {
         const newErrors = {};
         if (!formData.gift_name) newErrors.gift_name = 'Gift name is required';
+        if (!formData.gift_code) newErrors.gift_code = "Gift Code is required"
         if (!formData.gift_vendorid) newErrors.gift_vendorid = 'Gift vendor is required';
         if (!formData.id_branch) newErrors.id_branch = 'Branch is required';
 
@@ -144,21 +145,21 @@ function GiftItemForm({ setIsOpen, isviewOpen, id, setId, refetchTable }) {
         setId("")
     };
 
-    const handlegiftImageChange = (e) => {
-        const file = e.target.files[0];
+    // const handlegiftImageChange = (e) => {
+    //     const file = e.target.files[0];
 
-        if (file) {
-            const validImageTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+    //     if (file) {
+    //         const validImageTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
 
-            if (validImageTypes.includes(file.type) && file.size <= (500 * 1024)) {
-                setGiftImage(file);
-            } else {
-                toast.error("Invalid file type or file size exceeded (Max 500KB)");
-            }
-        } else {
-            toast.error("No file selected");
-        }
-    };
+    //         if (validImageTypes.includes(file.type) && file.size <= (500 * 1024)) {
+    //             setGiftImage(file);
+    //         } else {
+    //             toast.error("Invalid file type or file size exceeded (Max 500KB)");
+    //         }
+    //     } else {
+    //         toast.error("No file selected");
+    //     }
+    // };
 
 
     const handleRemovegiftImage = () => {
@@ -174,17 +175,15 @@ function GiftItemForm({ setIsOpen, isviewOpen, id, setId, refetchTable }) {
 
         if (Object.keys(validationErrors).length === 0) {
             setIsLoading(true)
-            const formDataToSend = new FormData();
-            formDataToSend.append("gift_name", formData.gift_name);
-            if (gift_image !== "" || gift_image !== null) {
-                formDataToSend.append("gift_image", gift_image);
-            }
-            formDataToSend.append("gift_vendorid", formData.gift_vendorid);
-            formDataToSend.append("id_branch", formData.id_branch);
+            // const formDataToSend = new FormData();
+            // formDataToSend.append("gift_name", formData.gift_name);
+            // formDataToSend.append("gift_code", formData.gift_code);
+            // formDataToSend.append("gift_vendorid", formData.gift_vendorid);
+            // formDataToSend.append("id_branch", formData.id_branch);
             if (id) {
-                updategiftitemMutate({ id: id, data: formDataToSend });
+                updategiftitemMutate({ id: id, data: formData });
             } else {
-                addgiftitemMutate(formDataToSend);
+                addgiftitemMutate(formData);
             };
 
         }
@@ -230,53 +229,8 @@ function GiftItemForm({ setIsOpen, isviewOpen, id, setId, refetchTable }) {
     return (
         <div>
             <form className="space-y-4">
-                <div className="flex flex-col space-y-2">
-                    <label className="font-medium text-gray-700">
-                        Gift Item Name<span className="text-red-400">*</span>
-                    </label>
-                    <input
-                        type="text"
-                        name="gift_name"
-                        value={formData.gift_name}
-                        onChange={handleChange}
-                        placeholder="Enter Gift Item Name"
-                        className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                    {errors.gift_name && <div className="text-red-500 text-sm">{errors.gift_name}</div>}
-                </div>
-
-                {/* <div className="flex flex-col space-y-2">
-                    <label className="font-medium text-gray-700">
-                        Branch<span className="text-red-400">*</span>
-                    </label>
-                    <select
-                        name="id_branch"
-                        value={formData.id_branch}
-                        onChange={(e) => {
-                            const branchId = e.target.value;
-                            setFormData({
-                                ...formData,
-                                id_branch: branchId,
-                            });
-                            getgiftvendorbranchByIdmuate({ id_branch: branchId });
-                        }}
-                        className="p-3 border text-gray-800 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                        <option value="">Select Branch</option>
-                        {branch.map((branch) => (
-                            <option key={branch._id} value={branch._id}>
-                                {branch.branch_name}
-                            </option>
-                        ))}
-                    </select>
-                    {errors.id_branch && <div className="text-red-500 text-sm">{errors.id_branch}</div>}
-                </div> */}
-
-
                 <div className='flex flex-col space-y-2'>
-
                     <label className='text-black mb-1 font-medium'>Branch<span className='text-red-400'>*</span></label>
-
                     <Select
                         options={branchData}
                         value={branchData.find(branch => branch.value === formData.id_branch) || branch}
@@ -290,17 +244,47 @@ function GiftItemForm({ setIsOpen, isviewOpen, id, setId, refetchTable }) {
                         }}
                         customSelectStyles={customSelectStyles}
                         isLoading={loadingbranch}
-                        placeholder="Select Branch"
+                        placeholder="Select branch"
                     />
 
                     {errors.id_branch && <div className="text-red-500 text-sm">{errors.id_branch}</div>}
 
                 </div>
 
+                <div className="flex flex-col space-y-2">
+                    <label className="font-medium text-gray-700">
+                        Gift Name<span className="text-red-400"> *</span>
+                    </label>
+                    <input
+                        type="text"
+                        name="gift_name"
+                        value={formData.gift_name}
+                        onChange={handleChange}
+                        placeholder="Enter gift name"
+                        className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    {errors.gift_name && <div className="text-red-500 text-sm">{errors.gift_name}</div>}
+                </div>
 
+                <div className="flex flex-col space-y-2">
+                    <label className="font-medium text-gray-700">
+                        Gift Code<span className="text-red-400"> *</span>
+                    </label>
+                    <input
+                        type="text"
+                        name="gift_code"
+                        value={formData.gift_code}
+                        onChange={handleChange}
+                        placeholder="Enter gift code"
+                        className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+
+                    {errors.gift_code && <div className="text-red-500 text-sm">{errors.gift_code}</div>}
+                </div>
+               
                 <div className='flex flex-col space-y-2'>
 
-                    <label className='text-black mb-1 font-medium'>Gift Vendor<span className='text-red-400'>*</span></label>
+                    <label className='text-black mb-1 font-medium'>Vendor Name<span className='text-red-400'>*</span></label>
 
                     <Select
                         options={vendorfilter}
@@ -313,14 +297,14 @@ function GiftItemForm({ setIsOpen, isviewOpen, id, setId, refetchTable }) {
                         }}
                         customSelectStyles={customSelectStyles}
                         isLoading={loadingVendor}
-                        placeholder="Select Vendor"
+                        placeholder="Select vendor"
                     />
 
                     {errors.gift_vendorid && <div className="text-red-500 text-sm">{errors.gift_vendorid}</div>}
 
                 </div>
 
-
+                {/* 
                 <div className="flex flex-col space-y-2">
                     <div className="flex flex-row " >
                         <label className="text-gray-700 font-medium">Upload Gift Image<span className='text-red-400'>*</span></label>
@@ -373,7 +357,7 @@ function GiftItemForm({ setIsOpen, isviewOpen, id, setId, refetchTable }) {
                             </div>
                         )}
                     </div>
-                </div>
+                </div> */}
 
                 <div className="bg-white p-2 border-t-2 border-gray-300 mt-4">
                     <div className="flex justify-end gap-2 mt-3">

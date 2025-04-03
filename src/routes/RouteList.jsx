@@ -222,7 +222,7 @@ const RouteList = [
   },
   {
     name: "User Access",
-    path: '/masters/useraccess',
+    path: '/usersettings/useraccess/',
     element: <Base renderContent={UserAccess} />
   },
   {
@@ -232,7 +232,7 @@ const RouteList = [
   },
   {
     name: "Department",
-    path: '/masters/department',
+    path: '/usersettings/department',
     element: <Base renderContent={Department} />
   },
   {
