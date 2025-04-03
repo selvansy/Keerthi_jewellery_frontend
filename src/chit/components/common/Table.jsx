@@ -20,6 +20,7 @@ const Table = ({
   const dropdownRef = useRef(null);
 
 
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -35,10 +36,10 @@ const Table = ({
 
   return (
     <div className={`antialiased w-full ${className}`}>
-      <div className="mx-auto">
+      <div className="mx-auto bg-white">
         <div className="bg-white relative shadow-sm rounded-lg overflow-hidden">
           {/* Search Bar */}
-          <div className="flex justify-end p-3">
+          {/* <div className="flex justify-end p-3">
             <div className="relative">
               <input
                 type="text"
@@ -52,7 +53,7 @@ const Table = ({
                 </svg>
               </div>
             </div>
-          </div>
+          </div> */}
           
           {/* Table with fixed container to enable horizontal scrolling while keeping Actions column fixed */}
           <div className="relative">
