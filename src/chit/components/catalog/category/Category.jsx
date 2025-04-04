@@ -23,6 +23,10 @@ import Modal from "../../../components/common/Modal";
 import usePagination from "../../../hooks/usePagination";
 import { useDebounce } from "../../../hooks/useDebounce";
 import Action from "../../common/action";
+import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
+import AddCategory from "./AddCategory";
+import ModelOne from "../../common/Modelone";
+import ActiveDropdown from "../../common/ActiveDropdown";
 
 const Category = () => {
   const limit = 10;
@@ -48,6 +52,17 @@ const Category = () => {
   const [to_date, setTodate] = useState("");
   const [totalDocuments, setTotalDocuments] = useState(0);
 
+  const [id, setId] = useState();
+  const [isviewOpen, setIsviewOpen] = useState(false);
+
+  function closeIncommingModal() {
+    setIsviewOpen(false);
+    setId("");
+  }
+
+  const clearId = () => {
+    setId("");
+  };
   const handleItemsPerPageChange = (value) => {
     setItemsPerPage(value);
     setCurrentPage(1);
@@ -83,7 +98,7 @@ const Category = () => {
       from_date,
       to_date,
     });
-  }, [currentPage, itemsPerPage, debouncedSearch]);
+  }, [currentPage, itemsPerPage, debouncedSearch, isviewOpen]);
 
   useEffect(() => {
     const handleDelete = (id) => {
@@ -138,13 +153,10 @@ const Category = () => {
     },
   });
 
-  const handleClickfilter = () => {
-    setIsFilterOpen(true);
-  };
-
   // edit handler
   const handleEdit = (id) => {
-    navigate(`/catalog/editcategory/${id}`);
+    setIsviewOpen(true);
+    setId(id);
   };
 
   // delete handler
@@ -223,7 +235,6 @@ const Category = () => {
       cell: (row) => {
         const date = new Date(row?.createdAt);
         return date.toLocaleDateString("en-GB"); // 'en-GB' gives the d-m-Y format
-        
       },
     },
     {
@@ -243,17 +254,22 @@ const Category = () => {
                 ? "peer-checked:bg-[#E7EEF5] peer-checked:ring-[#E7EEF5]"
                 : "peer-checked:bg-[#E7EEF5] peer-checked:ring-gray-400"
             } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-[${layout_color}] peer-hover:after:scale-95`}
-          >
-            
-          </div>
+          ></div>
         </label>
       ),
-      
     },
     {
       header: "Actions",
       cell: (row, rowIndex) => (
-        <Action row={row} data={categoryData} rowIndex={rowIndex} activeDropdown={activeDropdown} setActive={hanldeActiveDropDown}  handleEdit={handleEdit} handleDelete={handleDelete}/>
+        <Action
+          row={row}
+          data={categoryData}
+          rowIndex={rowIndex}
+          activeDropdown={activeDropdown}
+          setActive={hanldeActiveDropDown}
+          handleEdit={handleEdit}
+          handleDelete={handleDelete}
+        />
       ),
       sticky: "right",
     },
@@ -261,59 +277,68 @@ const Category = () => {
   const hanldeActiveDropDown = (data) => {
     setActiveDropdown(data);
   };
+
+  const handleaddmetal = () => {
+    setIsviewOpen(true);
+  };
   return (
     <>
-      <div className="flex flex-col p-4">
-        <h2 className="text-2xl text-gray-900 font-bold">Category</h2>
-        <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
-          <div className="relative w-full lg:w-1/3 min-w-[200px]">
+      <Breadcrumb
+        items={[{ label: "Catelogue" }, { label: "Category", active: true }]}
+      />
+
+      <div className="flex flex-col p-4  bg-white border border-[#F2F2F9]  rounded-[16px]">
+        <div className="flex flex-col gap-4 mt-4 sm:flex-row sm:justify-between sm:items-center">
+          {/* Search Input - Full width on mobile, moves to right side on desktop */}
+          <div className="relative w-full  sm:mb-0 sm:order-2 sm:w-auto">
             <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
               {searchLoading ? (
                 <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
               ) : (
-                <Search className="text-gray-500" />
+                <Search className="text-black" />
               )}
             </div>
             <input
-              placeholder="Search..."
-              className="p-3 pl-10 pr-3 border-2 bg-[#F5F5F5] border-gray-500 rounded-md w-full"
               onChange={(e) => {
                 setSearchLoading(true);
                 setSearchInput(e.target.value);
               }}
+              placeholder="Search"
+              className="px-4 py-2 ps-9 border-2 border-[#F2F2F9] rounded-[8px] w-full sm:w-[228px]"
             />
           </div>
-          <div className="flex flex-row items-center justify-end gap-2">
-            <button
-              type="button"
-              className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 transition-colors"
-              onClick={() => navigate("/catalog/addcategory")}
-              style={{ backgroundColor: layout_color }}
-            >
-              + Create category
-            </button>
 
-            <button
-              id="filter"
-              className="text-white w-10 h-10 flex items-center justify-center rounded-md  transition-colors flex-shrink-0"
-              // onClick={() => handleReset()}
-              style={{ backgroundColor: layout_color }}
-            >
-              <RefreshCcw size={20} />
-            </button>
+          {/* Container for ActiveDropdown and Add Category button */}
+          <div className="flex flex-row w-full sm:order-1 sm:w-auto sm:mr-auto">
+            {/* ActiveDropdown - half width on mobile */}
+            <div className="w-1/2 sm:w-auto me-1">
+              <ActiveDropdown />
+            </div>
 
+            {/* Button - half width on mobile, moves to right on desktop */}
+            <div className="w-1/2 sm:hidden">
+              <button
+                className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-full"
+                onClick={handleaddmetal}
+                style={{ backgroundColor: layout_color }}
+              >
+                + Add Category
+              </button>
+            </div>
+          </div>
+
+          {/* Desktop-only button - appears on the right side */}
+          <div className="hidden sm:block sm:order-3">
             <button
-              id="filter"
-              className="text-white w-10 h-10 flex items-center justify-center rounded-md  transition-colors flex-shrink-0"
-              onClick={(e) => {
-                handleClickfilter(e);
-              }}
+              className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-[135px]"
+              onClick={handleaddmetal}
               style={{ backgroundColor: layout_color }}
             >
-              <SlidersHorizontal size={20} />
+              + Add Category
             </button>
           </div>
         </div>
+
         <div
           className={`fixed inset-y-0 right-0 w-80 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-40 
           ${isFilterOpen ? "translate-x-0" : "translate-x-full"}`}
@@ -341,10 +366,17 @@ const Category = () => {
             itemsPerPage={itemsPerPage}
             totalItems={totalDocuments}
             handleItemsPerPageChange={handleItemsPerPageChange}
-            
           />
         </div>
-
+        <ModelOne
+          title={id ? "Edit Category" : "Create Category"}
+          extraClassName="w-[450px]"
+          setIsOpen={setIsviewOpen}
+          isOpen={isviewOpen}
+          closeModal={closeIncommingModal}
+        >
+          <AddCategory setIsOpen={setIsviewOpen} id={id} clearId={clearId} />
+        </ModelOne>
         <Modal />
       </div>
     </>

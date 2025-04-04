@@ -56,7 +56,6 @@ export const customSelectStyles = {
 };
 
 const Purity = () => {
-
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [currentPage, setCurrentPage] = useState(1);
@@ -261,7 +260,7 @@ const Purity = () => {
       header: "S.No",
       cell: (_, index) => index + 1 + (currentPage - 1) * limit,
     },
-    
+
     {
       header: "Purity Name",
       cell: (row) => `${row?.purity_name}`,
@@ -269,13 +268,21 @@ const Purity = () => {
     {
       header: "Metal Name",
       cell: (row) => {
-        return row.id_metal.metal_name
+        return row.id_metal.metal_name;
       },
     },
     {
       header: "Actions",
       cell: (row, rowIndex) => (
-        <Action row={row} data={purityData} rowIndex={rowIndex} activeDropdown={activeDropdown} setActive={hanldeActiveDropDown}  handleEdit={handleEdit} handleDelete={handleDelete}/>
+        <Action
+          row={row}
+          data={purityData}
+          rowIndex={rowIndex}
+          activeDropdown={activeDropdown}
+          setActive={hanldeActiveDropDown}
+          handleEdit={handleEdit}
+          handleDelete={handleDelete}
+        />
       ),
       sticky: "right",
     },
@@ -348,8 +355,6 @@ const Purity = () => {
     setCurrentPage(pageNumber);
   };
 
-  
-
   const paginationData = {
     totalItems: totalPages,
     currentPage: currentPage,
@@ -359,68 +364,74 @@ const Purity = () => {
   const paginationButtons = usePagination(paginationData);
 
   return (
-      <>
-      <Breadcrumb items={
-        [
-          {label:"Masters"},
-          {label:"Purity",active:true}
-        ]
-      } />
+    <>
+      <Breadcrumb
+        items={[{ label: "Masters" }, { label: "Purity", active: true }]}
+      />
       <div className="flex flex-col p-4 relative bg-white border border-[#F2F2F9]  rounded-[16px]">
-        <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
-          <div className="relative w-full lg:w-1/3 min-w-[200px]">
+        <div className="grid gap-4 mt-4 grid-cols-2 lg:items-center">
+          {/* Search Input */}
+          <div className="relative ">
             <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
               {searchLoading ? (
                 <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
               ) : (
-                <Search className="text-gray-500" />
+                <Search className="text-black" />
               )}
             </div>
             <input
               onChange={handleSearch}
               placeholder="Search"
-              className="p-3 pl-10 pr-3 border-2 border-[#F2F2F9] rounded-[8px] w-[228px] "
+              className="px-4 py-2 ps-9 border-2 border-[#F2F2F9] rounded-[8px] w-[228px]"
             />
           </div>
-          <div className="flex flex-row items-center justify-end gap-2 ">
+
+          {/* Add Metal Button */}
+          <div className="w-full flex justify-end">
             <button
-              className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
+              className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-[135px] sm:w-auto"
               onClick={handleAddpurity}
               style={{ backgroundColor: layout_color }}
             >
-              + Add purity
+              + Add Purity
             </button>
           </div>
         </div>
 
         <div className="mt-4">
-        <Table data={purityData} columns={columns} isLoading={isLoading}  currentPage={currentPage} handlePageChange={handlePageChange} itemsPerPage={itemsPerPage} totalItems={totalDocuments} handleItemsPerPageChange={handleItemsPerPageChange} />
-
+          <Table
+            data={purityData}
+            columns={columns}
+            isLoading={isLoading}
+            currentPage={currentPage}
+            handlePageChange={handlePageChange}
+            itemsPerPage={itemsPerPage}
+            totalItems={totalDocuments}
+            handleItemsPerPageChange={handleItemsPerPageChange}
+          />
         </div>
 
-    
-      <ModelOne
-        title={id ? "Edit Purity" : "Add Purity"}
-        extraClassName="w-96"
-        setIsOpen={setIsviewOpen}
-        isOpen={isviewOpen}
-        closeModal={closeIncommingModal}
-        >
-        <PurityForm
-          metals={selectMetal}
+        <ModelOne
+          title={id ? "Edit Purity" : "Add Purity"}
+          extraClassName="w-96"
           setIsOpen={setIsviewOpen}
-          clearId={clearId}
-          id={id}
+          isOpen={isviewOpen}
+          closeModal={closeIncommingModal}
+        >
+          <PurityForm
+            metals={selectMetal}
+            setIsOpen={setIsviewOpen}
+            clearId={clearId}
+            id={id}
           />
-      </ModelOne>
-      <Modal />
-    </div>
-          </>
+        </ModelOne>
+        <Modal />
+      </div>
+    </>
   );
 };
 
 export default Purity;
-
 
 export const PurityForm = ({ setIsOpen, metals, clearId, id }) => {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
@@ -615,4 +626,3 @@ export const PurityForm = ({ setIsOpen, metals, clearId, id }) => {
     </div>
   );
 };
-

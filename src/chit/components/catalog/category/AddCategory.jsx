@@ -14,9 +14,8 @@ import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 import SpinLoading from "../../common/spinLoading";
 
-const AddCategory = () => {
-  const {id} = useParams();
-  
+const AddCategory = ({setIsOpen, id ,clearId}) => {
+    const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const navigate = useNavigate();
   const roledata = useSelector((state) => state.clientForm.roledata);
   const branchAccess = roledata?.branch;
@@ -28,7 +27,8 @@ const AddCategory = () => {
   const [formData, setFormData] = useState({
     category_name: "",
     id_metal: "",
-    id_branch:""
+    id_branch:"",
+    description:null
   });
 
   useEffect(() => {
@@ -54,13 +54,20 @@ const AddCategory = () => {
     },
   });
 
+    useEffect(() => {
+      return () => {
+        clearId();
+      };
+    }, []);
+  
+
   //mutation to create category
   const { mutate: createcategoryMutate } = useMutation({
     mutationFn: createcategory,
     onSuccess: (response) => {
       toast.success(response.message);
       setIsLoading(false);
-      navigate("/catalog/category");
+      setIsOpen(false)
     },
     onError: (error) => {
       setIsLoading(false);
@@ -80,9 +87,8 @@ const AddCategory = () => {
         return
       }
       toast.success(response.message);
-      console.log("hekklo");
-      navigate("/catalog/category");
-
+      setIsOpen(false)
+      clearId()
     },
     onError: (error) => {
       setIsLoading(false);
@@ -158,8 +164,8 @@ const AddCategory = () => {
     setIsLoading(true);
   
     if (id) {
-      const {  category_name, id_metal, id_branch } = formData;
-      updatecategorymutate({id,category_name,id_metal,id_branch});
+      const {  category_name, id_metal, id_branch,description } = formData;
+      updatecategorymutate({id,category_name,id_metal,id_branch,description});
     } else {
       createcategoryMutate(updatedFormData); 
     }
@@ -168,25 +174,16 @@ const AddCategory = () => {
   
 
   const handleCancle = () => {
-    navigate("/catalog/category");
+    setIsOpen(false);
+    clearId()
   };
 
   return (
     <>
-      <div className="flex flex-row justify-between">
-        {id ? (
-          <h2 className="text-2xl text-[#023453] font-bold justify-between">
-            Edit Category
-          </h2>
-        ) : (
-          <h2 className="text-2xl text-[#023453] font-bold justify-between">
-            Create Category
-          </h2>
-        )}
-      </div>
-      <div className="w-full flex flex-col bg-[#F5F5F5] border-t-2 border-[#023453] mt-3 overflow-y-auto scrollbar-hide h-[calc(100vh-200px)]">
+     
+      <div className="w-full flex flex-col bg-[#F5F5F5]  mt-3 overflow-y-auto scrollbar-hide ">
         <div className="flex flex-col p-4 bg-white relative">
-          <div className="grid grid-rows-2 md:grid-cols-2 gap-5 border-gray-300 mb-10">
+          <div className="grid grid-rows-1 md:grid-cols-1 gap-5 border-[#F2F2F9] mb-10">
             {branchAccess == "0" && (
               <div className="flex flex-col lg:mt-2">
                 <label className="text-black mb-2 font-medium">
@@ -195,7 +192,7 @@ const AddCategory = () => {
                 <div className="relative">
                   <select
                     name="id_branch"
-                    className="appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                    className="appearance-none border-2 border-[#F2F2F9] rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                     onChange={handleInputChange}
                     value={formData.id_branch}
                   >
@@ -243,7 +240,7 @@ const AddCategory = () => {
                   name="id_metal"
                   value={formData.id_metal}
                   onChange={handleInputChange}
-                  className="appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                  className="appearance-none border-2 border-[#F2F2F9] rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                 >
                   <option value="">--Select---</option>
                   {metalType.map((type) => (
@@ -286,7 +283,7 @@ const AddCategory = () => {
                 name="category_name"
                 type="text"
                 value={formData.category_name}
-                className="border-2 border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                className="border-2 border-[#F2F2F9] rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                 placeholder="Enter Here"
                 onChange={handleInputChange}
               />
@@ -296,29 +293,47 @@ const AddCategory = () => {
                 </span>
               )}
             </div>
-          </div>
 
-          <div className="bg-white">
-            <div className="flex justify-end gap-4">
-              <button
-                className="bg-[#E2E8F0] text-black rounded-md p-3 w-full lg:w-20"
-                type="button"
-                onClick={isLoading ? undefined : handleCancle}
-              >
-                Cancel
-              </button>
-              <button
-                className="bg-[#61A375] text-white rounded-md p-2 w-full lg:w-20"
-                type="button"
-                onClick={
-                  isLoading ? undefined : handleSubmit
-                }
-              >
-                {/* Submit */}
-                {isLoading ? <SpinLoading /> : id ? "Update" : "Submit"}
-              </button>
+            
+            <div className="flex flex-col mt-2">
+              <label className="text-gray-700 mb-2 font-medium">
+              Description
+              </label>
+              <input
+                name="description"
+                type="text"
+                value={formData.description}
+                className="border-2 border-[#F2F2F9] rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                placeholder="Enter Here"
+                onChange={handleInputChange}
+              />
+              
             </div>
           </div>
+
+          <div className="bg-white ">
+        <div className="flex justify-end gap-2 mt-3">
+          <button
+            type="button"
+            className="bg-[#E2E8F0] text-black rounded-md p-2 w-full lg:w-20"
+            onClick={isLoading ? undefined : handleCancle}
+          >
+            Cancel
+          </button>
+
+          <button
+            type="button"
+            onClick={handleSubmit}
+            disabled={isLoading}
+            className=" text-white rounded-md p-2 w-full lg:w-20"
+            style={{ backgroundColor: layout_color }}
+          >
+            {isLoading ? <SpinLoading /> : id ? "Update" : "Save"}
+          </button>
+        </div>
+      </div>
+
+        
         </div>
       </div>
     </>

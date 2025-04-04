@@ -18,9 +18,9 @@ function ActiveDropdown({setActiveFilter}) {
 
   return (
     <>
-        <div className="relative w-64">
+        <div className="relative sm:w-[175px]">
                 <select
-                  className={`appearance-none border-2 rounded-md p-2 w-full bg-white pr-8  text-gray-700 `}
+                  className={`appearance-none border-2 border-[#F2F2F9] rounded-[8px] p-2 w-full bg-white pr-8  text-gray-700 `}
                   value={selectedValue}
                   onChange={(e) => handleSelect(e.target.value)}
                 >
