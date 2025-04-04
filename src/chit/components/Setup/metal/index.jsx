@@ -260,11 +260,12 @@ const Metal = () => {
         items={[{ label: "Masters" }, { label: "Metal", active: true }]}
       />
       <div className="flex flex-col p-4 relative bg-white border border-[#F2F2F9]  rounded-[16px]">
-        <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
-          <div className="relative w-full lg:w-1/3 ">
+        <div className="grid gap-4 mt-4 grid-cols-2 lg:items-center">
+          {/* Search Input */}
+          <div className="relative ">
             <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
               {searchLoading ? (
-                 <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
               ) : (
                 <Search className="text-black" />
               )}
@@ -272,12 +273,14 @@ const Metal = () => {
             <input
               onChange={handleSearch}
               placeholder="Search"
-              className="p-3 pl-10 pr-3  border-2 border-[#F2F2F9] rounded-[8px] w-[228px] "
+              className="px-4 py-2 ps-9 border-2 border-[#F2F2F9] rounded-[8px] w-[228px]"
             />
           </div>
-          <div className="flex flex-row items-center justify-end gap-2">
+
+          {/* Add Metal Button */}
+          <div className="w-full flex justify-end">
             <button
-              className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
+              className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-[135px] sm:w-auto"
               onClick={handleaddmetal}
               style={{ backgroundColor: layout_color }}
             >

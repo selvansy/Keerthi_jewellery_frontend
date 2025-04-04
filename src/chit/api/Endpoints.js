@@ -1054,10 +1054,10 @@ export const categorybymetalid = async (id) => {
 };
 
 export const updatecategory = async (data) => {
-  const { id, category_name, id_metal, id_branch } = data;
+  const { id, category_name, id_metal, id_branch,description } = data;
   const response = await Api.patch(
     `${import.meta.env.VITE_API_URL}/api/client/category/${id}`,
-    { category_name, id_metal, id_branch }
+    { category_name, id_metal, id_branch ,description}
   );
   return response.data;
 };
