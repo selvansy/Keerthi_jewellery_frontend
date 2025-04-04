@@ -3,7 +3,8 @@ import Select from "react-select";
 import { useFormik } from "formik";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
-import { CalendarDays, Search, ChevronDown, ChevronUp } from "lucide-react";
+import { CalendarDays, ChevronDown, ChevronUp } from "lucide-react";
+import Calender from "../../../../assets/icons/calender.svg";
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import { toast } from "sonner";
@@ -59,38 +60,38 @@ const AddSchemePayment = () => {
   const [showWeightInput, setShowWeightInput] = useState(false);
   const [showAmountInput, setShowAmountInput] = useState(false);
 
- // Customisations for react-select
- const customStyles = (isReadOnly) => ({
-  control: (base, state) => ({
-    ...base,
-    minHeight: "42px",
-    backgroundColor: "white",
-    border: state.isFocused ? "1px solid black" : "2px solid #f2f3f8",
-    boxShadow: state.isFocused ? "0 0 0 1px black" : "none",
-    borderRadius: "0.375rem",
-    "&:hover": {
-      color: "#e2e8f0",
-    },
-    pointerEvents: !isReadOnly ? "none" : "auto",
-    opacity: !isReadOnly ? 1 : 1,
-  }),
-  indicatorSeparator: () => ({
-    display: "none",
-  }),
-  placeholder: (base) => ({
-    ...base,
-    color: "#858293",
-    fontWeight: "thin",
-    // fontStyle: "bold",
-  }),
-  dropdownIndicator: (provided, state) => ({
-    ...provided,
-    color: "#232323",
-    "&:hover": {
+  // Customisations for react-select
+  const customStyles = (isReadOnly) => ({
+    control: (base, state) => ({
+      ...base,
+      minHeight: "42px",
+      backgroundColor: "white",
+      border: state.isFocused ? "1px solid black" : "2px solid #f2f3f8",
+      boxShadow: state.isFocused ? "0 0 0 1px black" : "none",
+      borderRadius: "0.375rem",
+      "&:hover": {
+        color: "#e2e8f0",
+      },
+      pointerEvents: !isReadOnly ? "none" : "auto",
+      opacity: !isReadOnly ? 1 : 1,
+    }),
+    indicatorSeparator: () => ({
+      display: "none",
+    }),
+    placeholder: (base) => ({
+      ...base,
+      color: "#858293",
+      fontWeight: "thin",
+      // fontStyle: "bold",
+    }),
+    dropdownIndicator: (provided, state) => ({
+      ...provided,
       color: "#232323",
-    },
-  }),
-});
+      "&:hover": {
+        color: "#232323",
+      },
+    }),
+  });
 
   const formik = useFormik({
     initialValues: {
@@ -111,6 +112,7 @@ const AddSchemePayment = () => {
       metal_weight: "",
       total_installments: 1,
       id_classification: "",
+      installments: 1,
     },
 
     validationSchema: Yup.object({
@@ -479,16 +481,27 @@ const AddSchemePayment = () => {
 
   return (
     <>
-    <div className="flex flex-row justify-between">
-        <p className="text-sm text-gray-400 mt-4 mb-4">Payment / <span className="text-black">Scheme Payment</span></p>
+      <div className="flex flex-row justify-between">
+        <p className="text-sm text-gray-400 mt-4 mb-4">
+          Payment / <span className="text-black">Scheme Payment</span>
+        </p>
       </div>
-      <form onSubmit={formik.handleSubmit}>
+      <form
+        onSubmit={formik.handleSubmit}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && e.target.type !== "textarea") {
+            e.preventDefault();
+          }
+        }}
+      >
         <div className="">
           {/* <h2 className="text-xl font-medium mb-4">Customer Details</h2> */}
           <div className="flex flex-col lg:flex-row w-full justify-between">
             {/* Left column - form inputs */}
-            <div className="lg:w-1/2 w-full bg-white border pt-[18px] pb-[18px] pr-[18px] pl-[18px]  rounded-md">
-            <h2 className="text-lg font-semibold mb-4 pb-4">Customer Details</h2>
+            <div className="lg:w-1/2 w-full bg-white border px-[18px] py-[20px] rounded-md">
+              <h2 className="text-lg font-semibold mb-4 pb-4">
+                Customer Details
+              </h2>
               <div className="grid lg:grid-cols-2 grid-cols-1 gap-4 lg:pr-2">
                 {/* Branch selection */}
                 {accessBranch === "0" && branch.length > 0 && !isLoading ? (
@@ -534,9 +547,9 @@ const AddSchemePayment = () => {
                 )}
 
                 {/* Mobile number search */}
-                <div className="flex flex-col mt-2 relative">
-                  <label className="text-black mb-1 font-normal">
-                    Search Mobile Number
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                    Search AC No/ Mob No
                     <span className="text-red-400">*</span>
                   </label>
                   <input
@@ -544,123 +557,34 @@ const AddSchemePayment = () => {
                     maxLength={10}
                     value={mobile}
                     onChange={handleautocompletemobile}
-                    className="border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                    placeholder="Enter Here"
+                    className="w-full border-2 border-[#f2f3f8] rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                    placeholder="Enter AC No/ Mob No"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        handleSearchmobile();
+                      }
+                    }}
                   />
-                  <div
-                    onClick={handleSearchmobile}
+                  {/* <div
+                    
                     className="absolute inset-y-1/2 right-0 -translate-y-2 w-10 h-[62%] flex items-center justify-center cursor-pointer rounded-r-md"
                     style={{ backgroundColor: layout_color }}
                   >
                     <Search size={20} className="text-white" />
-                  </div>
-                </div>
-
-                {/* Mobile accordion for scheme details */}
-                <div className="lg:hidden">
-                  <div
-                    className="flex justify-between items-center cursor-pointer"
-                    onClick={toggleAccordion}
-                  >
-                    <label className="text-black mb-2 font-normal">
-                      Scheme Details<span className="text-red-400">*</span>
-                    </label>
-                    {isExpanded ? (
-                      <ChevronUp className="h-5 w-5 text-gray-500" />
-                    ) : (
-                      <ChevronDown className="h-5 w-5 text-gray-500" />
-                    )}
-                  </div>
-                  {isExpanded && (
-                    <div className="lg:w-1/2 w-full items-center justify-center lg:pl-10 lg:pr-10">
-                      <div className="bg-[#F8F9FA] lg:w-full rounded-lg flex flex-col p-4 lg:h-full">
-                        <h2 className="text-xl font-bold text-[#023453] mb-4 text-center">
-                          Scheme Details
-                        </h2>
-                        <div>
-                          {/* Scheme details content */}
-                          <div className="flex justify-between py-1">
-                            <span className="text-gray-600">A/C Name</span>
-                            <span className="text-gray-900">
-                              {selectedScheme?.account_name || "N/A"}
-                            </span>
-                          </div>
-                          <div className="flex justify-between py-1">
-                            <span className="text-gray-600">Address</span>
-                            <span className="text-gray-900">
-                              {selectedScheme?.id_customer?.address || "N/A"}
-                            </span>
-                          </div>
-                          <div className="flex justify-between py-1">
-                            <span className="text-gray-600">Joined On</span>
-                            <span className="text-gray-900">
-                              {selectedScheme?.start_date
-                                ? new Date(
-                                    selectedScheme.start_date
-                                  ).toLocaleDateString("en-GB")
-                                : "N/A"}
-                            </span>
-                          </div>
-                          <div className="flex justify-between py-1">
-                            <span className="text-gray-600">Scheme A/C No</span>
-                            <span className="text-gray-900">
-                              {selectedScheme?.scheme_acc_number || "N/A"}
-                            </span>
-                          </div>
-                          <div className="flex justify-between py-1">
-                            <span className="text-gray-600">
-                              No of Gift Issues
-                            </span>
-                            <span className="text-gray-900">
-                              {selectedScheme?.total_gifts_issued || "0"}
-                            </span>
-                          </div>
-                          <div className="flex justify-between py-1">
-                            <span className="text-gray-600">Scheme Type</span>
-                            <span className="text-gray-900">
-                              {selectedScheme?.scheme_typename}
-                            </span>
-                          </div>
-                          <div className="flex justify-between py-1">
-                            <span className="text-gray-600">
-                              Total Paid Installment
-                            </span>
-                            <span className="text-gray-900">
-                              {selectedScheme?.total_paidinstallments || "0"}
-                            </span>
-                          </div>
-                          <div className="flex justify-between py-1">
-                            <span className="text-gray-600">
-                              Total Paid Amount
-                            </span>
-                            <span className="text-green-500">
-                              {selectedScheme?.total_paidamount || "0.00"}
-                            </span>
-                          </div>
-                          <div className="flex justify-between py-1">
-                            <span className="text-gray-600">
-                              Total Metal Weight
-                            </span>
-                            <span className="text-gray-900">
-                              {selectedScheme?.total_weight || "0.00"}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
+                  </div> */}
                 </div>
 
                 {/* Scheme account selection */}
                 <div className="flex flex-col">
-                  <label className="text-black mb-2 font-normal">
+                  <label className="block text-sm font-medium mb-1">
                     Scheme Account<span className="text-red-400"> *</span>
                   </label>
                   <Select
-                    styles={customStyles}
+                    styles={customStyles(true)}
                     isClearable={true}
                     options={schemedata || []}
-                    placeholder="Select scheme Account"
+                    placeholder="Choose scheme Account"
                     value={schemedata?.find(
                       (option) =>
                         option.value === formik.values.id_scheme_account
@@ -688,33 +612,198 @@ const AddSchemePayment = () => {
                   )}
                 </div>
 
+                {/* Mobile accordion for scheme details */}
+                <div className="lg:hidden">
+                  <div
+                    className="flex justify-between items-center cursor-pointer"
+                    onClick={toggleAccordion}
+                  >
+                    <label className="block text-sm font-medium mb-1">
+                      Scheme Details<span className="text-red-400">*</span>
+                    </label>
+                    {isExpanded ? (
+                      <ChevronUp className="h-5 w-5 text-gray-500" />
+                    ) : (
+                      <ChevronDown className="h-5 w-5 text-gray-500" />
+                    )}
+                  </div>
+                  {isExpanded && (
+                    <div className="lg:w-1/2 w-full items-center justify-center lg:pl-10 lg:pr-10">
+                      <div className="bg-white lg:w-full rounded-lg p-3 shadow-sm border border-gray-200">
+                        <h2 className="text-base font-semibold text-gray-800 mb-2">
+                          Scheme Details
+                        </h2>
+                        <div className="grid grid-cols-2 gap-2 text-sm">
+                          <div className="flex flex-col gap-2">
+                            <div className="flex items-center">
+                              <span className="text-black font-semibold">
+                                A/C Name
+                              </span>
+                            </div>
+                            <div className="flex items-center">
+                              <span className="text-gray-900">
+                                {selectedScheme?.account_name || "-"}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="flex flex-col gap-2">
+                            <div className="flex items-center">
+                              <span className="text-black font-semibold">
+                                Address
+                              </span>
+                            </div>
+                            <div className="flex items-center">
+                              <span className="text-gray-900">
+                                {selectedScheme?.id_customer?.address || "-"}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="flex flex-col gap-2">
+                            <div className="flex items-center">
+                              <span className="text-black font-semibold">
+                                Joined On
+                              </span>
+                            </div>
+                            <div className="flex items-center">
+                              <span className="text-gray-900">
+                                {selectedScheme?.start_date
+                                  ? new Date(
+                                      selectedScheme.start_date
+                                    ).toLocaleDateString("en-GB")
+                                  : "-"}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="flex flex-col gap-2">
+                            <div className="flex items-center">
+                              <span className="text-black font-semibold">
+                                Scheme A/C No
+                              </span>
+                            </div>
+                            <div className="flex items-center">
+                              <span className="text-gray-900">
+                                {selectedScheme?.scheme_acc_number || "-"}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="flex flex-col gap-2">
+                            <div className="flex items-center">
+                              <span className="text-black font-semibold">
+                                No of Gift Issues
+                              </span>
+                            </div>
+                            <div className="flex items-center">
+                              <span className="text-gray-900">
+                                {selectedScheme?.total_gifts_issued || "-"}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="flex flex-col gap-2">
+                            <div className="flex items-center">
+                              <span className="text-black font-semibold">
+                                Scheme Type
+                              </span>
+                            </div>
+                            <div className="flex items-center">
+                              <span className="text-gray-900">
+                                {selectedScheme?.scheme_typename
+                                  ? selectedScheme.scheme_typename
+                                      .charAt(0)
+                                      .toUpperCase() +
+                                    selectedScheme.scheme_typename.slice(1)
+                                  : "-"}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="flex flex-col gap-2">
+                            <div className="flex items-center">
+                              <span className="text-black font-semibold">
+                                Total Paid Installment
+                              </span>
+                            </div>
+                            <div className="flex items-center">
+                              <span className="text-gray-900">
+                                {selectedScheme?.total_paidinstallments || "-"}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="flex flex-col gap-2">
+                            <div className="flex items-center">
+                              <span className="text-black font-semibold">
+                                Total Paid Amount
+                              </span>
+                            </div>
+                            <div className="flex items-center">
+                              <span className="text-gray-900">
+                                {selectedScheme?.total_paidamount || "-"}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="flex flex-col gap-2">
+                            <div className="flex items-center">
+                              <span className="text-black font-semibold">
+                                Total Metal Weight
+                              </span>
+                            </div>
+                            <div className="flex items-center">
+                              <span className="text-gray-900">
+                                {selectedScheme?.total_weight || "-"}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="flex flex-col gap-2">
+                            <div className="flex items-center">
+                              <span className="text-black font-semibold">
+                                Total Overdue
+                              </span>
+                            </div>
+                            <div className="flex items-center">
+                              <span className="text-gray-900">-</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
                 {/* Payment date */}
                 <div className="flex flex-col w-full">
-                  <label className="text-black mb-2 font-normal">
-                    Payment Date<span className="text-red-400">*</span>
+                  <label className="block text-sm font-medium mb-1">
+                    Payment Date<span className="text-red-400"> *</span>
                   </label>
                   <div className="relative">
                     <DatePicker
                       name="date_payment"
-                      disabled
+                      readOnly
                       selected={formik.values.date_payment}
                       dateFormat="dd-MM-yyyy"
                       placeholderText="Select Date"
-                      className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                      className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                       showMonthDropdown
                       showYearDropdown
                       dropdownMode="select"
                       wrapperClassName="w-full"
                     />
                     <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center pointer-events-none">
-                      <CalendarDays size={20} />
+                      {/* <CalendarDays size={20} /> */}
+                      <img src={Calender} className="w-5 h-5" />
                     </span>
                   </div>
                 </div>
 
                 {/* Metal rate */}
                 <div className="flex flex-col">
-                  <label className="text-black mb-2 font-normal">
+                  <label className="block text-sm font-medium mb-1">
                     Today Rate<span className="text-red-400">*</span>
                   </label>
                   <input
@@ -722,11 +811,81 @@ const AddSchemePayment = () => {
                     disabled
                     value={formik.values.metal_rate}
                     type="text"
-                    className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                    className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                     placeholder=""
                   />
                   <p style={{ color: "red" }}>{errors?.metal_rate}</p>
                 </div>
+
+                <div className="flex flex-col">
+                  <label className="block text-sm font-medium mb-1">
+                    Instalments<span className="text-red-400"> *</span>
+                  </label>
+                  <div className="relative flex items-center">
+                    <input
+                      type="number"
+                      name="installments"
+                      value={formik.values.installments}
+                      onChange={formik.handleChange}
+                      className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                      min="1"
+                    />
+                    <div className="absolute right-2 flex flex-col">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          formik.setFieldValue(
+                            "installments",
+                            parseInt(formik.values.installments || 0) + 1
+                          )
+                        }
+                        className="focus:outline-none"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="14"
+                          height="14"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <polyline points="18 15 12 9 6 15"></polyline>
+                        </svg>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          formik.setFieldValue(
+                            "installments",
+                            Math.max(
+                              1,
+                              parseInt(formik.values.installments || 0) - 1
+                            )
+                          )
+                        }
+                        className="focus:outline-none"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="14"
+                          height="14"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
                 <div></div>
                 <div className="lg:col-span-2">
                   <h2 className="text-xl font-medium mb-4">
@@ -736,7 +895,7 @@ const AddSchemePayment = () => {
                     {/* Weight input for weight-based schemes */}
                     {showWeightInput && (
                       <div className="flex flex-col mt-4">
-                        <label className="text-black mb-2 font-normal">
+                        <label className="block text-sm font-medium mb-1">
                           Enter Weight
                           <span className="text-red-400">*</span>
                           {minWeight > 0 && maxWeight > 0 && (
@@ -787,7 +946,7 @@ const AddSchemePayment = () => {
 
                     {/* Amount input */}
                     <div className="flex flex-col mt-4">
-                      <label className="text-black mb-2 font-normal">
+                      <label className="block text-sm font-medium mb-1">
                         {showAmountInput ? "Enter Amount" : "Payment Amount"}
                         <span className="text-red-400">*</span>
                         {minAmount > 0 && maxAmount > 0 && showAmountInput && (
@@ -818,14 +977,11 @@ const AddSchemePayment = () => {
                               e.preventDefault();
                             }
                           }}
-                          className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                          className="border-2 border-[#f2f3f8] pl-10 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                           placeholder="Enter amount"
                         />
-                        <span
-                          className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
-                          style={{ backgroundColor: layout_color }}
-                        >
-                          INR
+                        <span className="absolute left-0 top-0 w-9 h-full px-3 flex items-center justify-center text-black border-r">
+                          ₹
                         </span>
                       </div>
                       {formik.touched.payment_amount &&
@@ -838,11 +994,11 @@ const AddSchemePayment = () => {
 
                     {/* Payment mode */}
                     <div className="flex flex-col mt-4">
-                      <label className="text-black mb-2 font-normal">
+                      <label className="block text-sm font-medium mb-1">
                         Payment Mode<span className="text-red-400"> *</span>
                       </label>
                       <Select
-                        styles={customStyles}
+                        styles={customStyles(true)}
                         isClearable={true}
                         options={paymentmode}
                         placeholder="Select payment mode"
@@ -877,7 +1033,7 @@ const AddSchemePayment = () => {
                             key={multipay.parameter}
                             className="flex flex-col"
                           >
-                            <label className="text-black mb-2 font-normal">
+                            <label className="block text-sm font-medium mb-1">
                               {multipay.name}
                             </label>
                             <input
@@ -900,7 +1056,7 @@ const AddSchemePayment = () => {
 
                     {/* ITR/UTR ID */}
                     <div className="flex flex-col">
-                      <label className="text-black mb-2 font-normal">
+                      <label className="block text-sm font-medium mb-1">
                         ITR/UTR ID
                       </label>
                       <input
@@ -908,22 +1064,22 @@ const AddSchemePayment = () => {
                         name="itr_utr"
                         value={formik.values.itr_utr}
                         onChange={formik.handleChange}
-                        className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                        className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                         placeholder="Enter ITR/UTR ID"
                       />
                     </div>
 
                     {/* Remarks */}
                     <div className="col-span-full flex flex-col">
-                      <label className="text-black mb-2 font-normal">
+                      <label className="block text-sm font-medium mb-1">
                         Remarks
                       </label>
-                      <input
+                      <textarea
                         name="remark"
                         value={formik.values.remark}
                         onChange={formik.handleChange}
-                        className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                        placeholder="Enter Here"
+                        className="border-2 border-[#f2f3f8] rounded-md p-2 max-h-32 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                        placeholder="Enter remarks"
                       />
                     </div>
                   </div>
@@ -949,119 +1105,131 @@ const AddSchemePayment = () => {
                     </div>
                   </div>
 
-                  <div>
-                  <div className="flex items-center">
-                  <span className="text-black font-semibold">Address</span>
-                  </div>
-                  <div className="flex items-center">
-                    <span className="text-gray-900">
-                      {selectedScheme?.id_customer?.address || "-"}
-                    </span>
-                  </div>
-                  </div>
-
-                  <div>
-                  <div className="flex items-center">
-                    <span className="text-black font-semibold">Joined On</span>
-                  </div>
-                  <div className="flex items-center">
-                    <span className="text-gray-900">
-                      {selectedScheme?.start_date
-                        ? new Date(
-                            selectedScheme.start_date
-                          ).toLocaleDateString("en-GB")
-                        : "-"}
-                    </span>
-                  </div>
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center">
+                      <span className="text-black font-semibold">Address</span>
+                    </div>
+                    <div className="flex items-center">
+                      <span className="text-gray-900">
+                        {selectedScheme?.id_customer?.address || "-"}
+                      </span>
+                    </div>
                   </div>
 
-                  <div>
-                  <div className="flex items-center">
-                    <span className="text-black font-semibold">Scheme A/C No</span>
-                  </div>
-                  <div className="flex items-center">
-                    <span className="text-gray-900">
-                      {selectedScheme?.scheme_acc_number || "-"}
-                    </span>
-                  </div>
-                  </div>
-
-                  <div>
-                  <div className="flex items-center">
-                    <span className="text-black font-semibold">No of Gift Issues</span>
-                  </div>
-                  <div className="flex items-center">
-                    <span className="text-gray-900">
-                      {selectedScheme?.total_gifts_issued || "-"}
-                    </span>
-                  </div>
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center">
+                      <span className="text-black font-semibold">
+                        Joined On
+                      </span>
+                    </div>
+                    <div className="flex items-center">
+                      <span className="text-gray-900">
+                        {selectedScheme?.start_date
+                          ? new Date(
+                              selectedScheme.start_date
+                            ).toLocaleDateString("en-GB")
+                          : "-"}
+                      </span>
+                    </div>
                   </div>
 
-                 <div>
-                 <div className="flex items-center">
-                    <span className="text-black font-semibold">Scheme Type</span>
-                  </div>
-                  <div className="flex items-center">
-                    <span className="text-gray-900">
-                      {selectedScheme?.scheme_typename
-                        ? selectedScheme.scheme_typename
-                            .charAt(0)
-                            .toUpperCase() +
-                          selectedScheme.scheme_typename.slice(1)
-                        : "-"}
-                    </span>
-                  </div>
-                 </div>
-
-                  <div>
-                  <div className="flex items-center">
-                    <span className="text-black font-semibold">
-                      Total Paid Installment
-                    </span>
-                  </div>
-                  <div className="flex items-center">
-                    <span className="text-gray-900">
-                      {selectedScheme?.total_paidinstallments || "-"}
-                    </span>
-                  </div>
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center">
+                      <span className="text-black font-semibold">
+                        Scheme A/C No
+                      </span>
+                    </div>
+                    <div className="flex items-center">
+                      <span className="text-gray-900">
+                        {selectedScheme?.scheme_acc_number || "-"}
+                      </span>
+                    </div>
                   </div>
 
-                 <div>
-                 <div className="flex items-center">
-                    <span className="text-black font-semibold">Total Paid Amount</span>
-                  </div>
-                  <div className="flex items-center">
-                    <span className="text-gray-900">
-                      {selectedScheme?.total_paidamount || "-"}
-                    </span>
-                  </div>
-                 </div>
-
-                  <div>
-                  <div className="flex items-center">
-                    <span className="text-black font-semibold">Total Metal Weight</span>
-                  </div>
-                  <div className="flex items-center">
-                    <span className="text-gray-900">
-                      {selectedScheme?.total_weight || "-"}
-                    </span>
-                  </div>
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center">
+                      <span className="text-black font-semibold">
+                        No of Gift Issues
+                      </span>
+                    </div>
+                    <div className="flex items-center">
+                      <span className="text-gray-900">
+                        {selectedScheme?.total_gifts_issued || "-"}
+                      </span>
+                    </div>
                   </div>
 
-                  <div>
-                  <div className="flex items-center">
-                    <span className="text-black font-semibold">Total Overdue</span>
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center">
+                      <span className="text-black font-semibold">
+                        Scheme Type
+                      </span>
+                    </div>
+                    <div className="flex items-center">
+                      <span className="text-gray-900">
+                        {selectedScheme?.scheme_typename
+                          ? selectedScheme.scheme_typename
+                              .charAt(0)
+                              .toUpperCase() +
+                            selectedScheme.scheme_typename.slice(1)
+                          : "-"}
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex items-center">
-                    <span className="text-gray-900">-</span>
+
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center">
+                      <span className="text-black font-semibold">
+                        Total Paid Installment
+                      </span>
+                    </div>
+                    <div className="flex items-center">
+                      <span className="text-gray-900">
+                        {selectedScheme?.total_paidinstallments || "-"}
+                      </span>
+                    </div>
                   </div>
+
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center">
+                      <span className="text-black font-semibold">
+                        Total Paid Amount
+                      </span>
+                    </div>
+                    <div className="flex items-center">
+                      <span className="text-gray-900">
+                        {selectedScheme?.total_paidamount || "-"}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center">
+                      <span className="text-black font-semibold">
+                        Total Metal Weight
+                      </span>
+                    </div>
+                    <div className="flex items-center">
+                      <span className="text-gray-900">
+                        {selectedScheme?.total_weight || "-"}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center">
+                      <span className="text-black font-semibold">
+                        Total Overdue
+                      </span>
+                    </div>
+                    <div className="flex items-center">
+                      <span className="text-gray-900">-</span>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-
-          {/* Scheme Account Details */}
         </div>
 
         {/* Form buttons */}
