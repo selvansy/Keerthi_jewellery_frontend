@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 import Webcam from "react-webcam";
 import { useSelector } from "react-redux";
 import profileplaceholder from "../../../../assets/profileplaceholder.png";
+import cameraIcon from "../../../../assets/icons/cameraIcon.svg";
 import {
   allcountry,
   allstate,
@@ -31,6 +32,9 @@ const AddEmployee = () => {
   const branch = roledata?.branch;
   const branchId = roledata?.id_branch;
 
+  const descImageInputRef = useRef(null);
+  const resumeInputRef = useRef(null);
+
   const REQUIRED_FIELDS = [
     "firstname",
     "lastname",
@@ -43,33 +47,41 @@ const AddEmployee = () => {
     "date_of_birth",
     "pincode",
     "id_branch",
+    "pan",
+    "aadharNumber",
   ];
 
-  const customSelectStyles = {
-    control: (provided) => ({
-      ...provided,
-      minHeight: "50px",
-      height: "50px",
-      borderWidth: "2px",
-      borderColor: "#d1d5db",
+  const customStyles = (isReadOnly) => ({
+    control: (base, state) => ({
+      ...base,
+      minHeight: "42px",
+      backgroundColor: "white",
+      border: state.isFocused ? "1px solid black" : "2px solid #f2f3f8",
+      boxShadow: state.isFocused ? "0 0 0 1px black" : "none",
+      borderRadius: "0.375rem",
       "&:hover": {
-        borderColor: "#d1d5db",
+        color: "#e2e8f0",
+      },
+      pointerEvents: !isReadOnly ? "none" : "auto",
+      opacity: !isReadOnly ? 1 : 1,
+    }),
+    indicatorSeparator: () => ({
+      display: "none",
+    }),
+    placeholder: (base) => ({
+      ...base,
+      color: "#858293",
+      fontWeight: "thin",
+      // fontStyle: "bold",
+    }),
+    dropdownIndicator: (provided, state) => ({
+      ...provided,
+      color: "#232323",
+      "&:hover": {
+        color: "#232323",
       },
     }),
-    valueContainer: (provided) => ({
-      ...provided,
-      height: "50px",
-      padding: "0 12px",
-    }),
-    input: (provided) => ({
-      ...provided,
-      margin: "0px",
-    }),
-    indicatorsContainer: (provided) => ({
-      ...provided,
-      height: "50px",
-    }),
-  };
+  });
 
   // State Management
   const [showWebcam, setShowWebcam] = useState(false);
@@ -88,41 +100,65 @@ const AddEmployee = () => {
     initialValues: {
       firstname: "",
       lastname: "",
+      id_branch: "",
       mobile: "",
-      phone: "",
-      address: "",
-      pincode: "",
+      whatsappNumber: "",
+      gender: "",
+      id_country: "",
       id_state: "",
       id_city: "",
-      id_branch: "",
-      gender: "",
-      date_of_join: null,
+      address: "",
+      pincode: "",
+      pan: "",
       date_of_birth: null,
-      aadhar_number: "",
-      id_country: "",
+      date_of_join: null,
+      aadharNumber: "",
+      // phone: "",
     },
     validationSchema: Yup.object({
-      firstname: Yup.string().required("First name is required"),
-      lastname: Yup.string().required("Last name is required"),
+      firstname: Yup.string()
+        .required("First name is required")
+        .matches(/^[A-Za-z]+$/, "First name should only contain letters"),
+      lastname: Yup.string()
+        .required("Last name is required")
+        .matches(/^[A-Za-z]+$/, "Last name should only contain letters"),
       mobile: Yup.string()
         .matches(/^[0-9]{10}$/, "Mobile number must be 10 digits")
         .required("Mobile number is required"),
+      whatsappNumber: Yup.string()
+        .matches(/^[0-9]{10}$/, "WhatsApp number must be 10 digits")
+        .nullable(),
       phone: Yup.string()
         .matches(/^[0-9]{10}$/, "Phone number must be 10 digits")
         .nullable(),
-      address: Yup.string().required("Address is required"),
+      address: Yup.string()
+        .required("Address is required")
+        .min(10, "Address should be at least 10 characters"),
       pincode: Yup.string()
-        .matches(/^[0-9]{6}$/, "Pincode  must be 6 digits")
+        .matches(/^[0-9]{6}$/, "Pincode must be 6 digits")
         .required("Pincode is required"),
       id_state: Yup.string().required("State is required"),
       id_city: Yup.string().required("City is required"),
       id_country: Yup.string().required("Country is required"),
       gender: Yup.number().required("Gender is required"),
-      date_of_join: Yup.date().required("Joining date is required"),
-      date_of_birth: Yup.date().required("Birth date is required"),
-      aadhar_number: Yup.string()
+      date_of_join: Yup.date()
+        .required("Joining date is required")
+        .max(new Date(), "Joining date cannot be in the future"),
+      date_of_birth: Yup.date()
+        .required("Birth date is required")
+        .max(
+          new Date(new Date().setFullYear(new Date().getFullYear() - 18)),
+          "Employee must be at least 18 years old"
+        ),
+      aadharNumber: Yup.string()
         .matches(/^\d{12}$/, "Aadhar number must be 12 digits")
-        .nullable(),
+        .required("Aadhar number is required"),
+      pan: Yup.string()
+        .matches(
+          /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/,
+          "PAN must be in valid format (e.g., ABCDE1234F)"
+        )
+        .required("PAN number is required"),
       id_branch: Yup.string().when("$branch", {
         is: (branchValue) => branchValue === "0",
         then: () => Yup.string().required("Branch is required"),
@@ -237,7 +273,7 @@ const AddEmployee = () => {
         date_of_birth: employee.date_of_birth
           ? new Date(employee.date_of_birth)
           : null,
-        aadhar_number: employee.aadhar_number || "",
+        aadharNumber: employee.aadhar_number || "",
         id_country: employee.id_country._id || country._id,
       });
 
@@ -256,7 +292,7 @@ const AddEmployee = () => {
       navigate("/employee/details/");
     },
     onError: (error) => {
-      console.log(error)
+      console.log(error);
       setIsLoading(false);
       toast.error(error.response.data.message);
     },
@@ -275,15 +311,34 @@ const AddEmployee = () => {
     },
   });
 
+  // const handleFileChange = (event) => {
+  //   const file = event.target.files[0];
+  //   const name = event.target.name;
+
+  //   if (file && file.size <= 500 * 1024) {
+  //     const previewUrl = URL.createObjectURL(file);
+  //     setImagePreviews((prev) => ({
+  //       ...prev,
+  //       [name]: { file, previewUrl },
+  //     }));
+  //     formik.setFieldValue(name, file);
+  //   } else {
+  //     toast.error("File size exceeded or file not found");
+  //   }
+  // };
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     const name = event.target.name;
-
+  
     if (file && file.size <= 500 * 1024) {
       const previewUrl = URL.createObjectURL(file);
       setImagePreviews((prev) => ({
         ...prev,
-        [name]: { file, previewUrl },
+        [name]: { 
+          file, 
+          previewUrl,
+          name: file.name
+        },
       }));
       formik.setFieldValue(name, file);
     } else {
@@ -291,20 +346,43 @@ const AddEmployee = () => {
     }
   };
 
+  // const handleCapture = () => {
+  //   const imageSrc = webcamRef.current.getScreenshot();
+  //   setImagePreviews((prev) => ({
+  //     ...prev,
+  //     profile: imageSrc,
+  //   }));
+  //   fetch(imageSrc)
+  //     .then((res) => res.blob())
+  //     .then((blob) => {
+  //       const file = new File([blob], "webcam-photo.jpg", {
+  //         type: "image/jpeg",
+  //       });
+  //       formik.setFieldValue("profile_image", file);
+  //     });
+  //   setShowWebcam(false);
+  // };
   const handleCapture = () => {
     const imageSrc = webcamRef.current.getScreenshot();
+    const fileName = `webcam-capture-${new Date().getTime()}.jpg`;
+
     setImagePreviews((prev) => ({
       ...prev,
-      profile: imageSrc,
+      image: {
+        previewUrl: imageSrc,
+        name: fileName,
+      },
     }));
+
     fetch(imageSrc)
       .then((res) => res.blob())
       .then((blob) => {
-        const file = new File([blob], "webcam-photo.jpg", {
+        const file = new File([blob], fileName, {
           type: "image/jpeg",
         });
-        formik.setFieldValue("profile_image", file);
+        formik.setFieldValue("image", file);
       });
+
     setShowWebcam(false);
   };
 
@@ -378,46 +456,32 @@ const AddEmployee = () => {
     return Object.keys(formik.initialValues).map((field) => {
       if (field === "gender") {
         return (
-          <div key={field} className="flex flex-col">
-            <label className="text-gray-700 mb-1 font-medium">
-              Gender
-              {REQUIRED_FIELDS.includes(field) && (
-                <span className="text-red-400"> *</span>
-              )}
+          <div key={field}>
+            <label className="block text-sm font-medium mb-1">
+              Gender <span className="text-red-500">*</span>
             </label>
-            <div className="flex flex-row gap-6 justify-start">
+            <div className="flex flex-row gap-3">
               <button
                 type="button"
                 name="gender"
                 onClick={() => handleGenderSelect(1)}
-                className={`rounded-full w-20 h-10 flex items-center justify-center border-2 border-black transition-colors duration-200 ${
+                className={`px-4 py-2 rounded-md text-sm border ${
                   formik.values.gender === 1
-                    ? "text-white"
-                    : "bg-white text-black"
+                    ? "bg-white text-[#004181] border-[#004181]"
+                    : "bg-white text-[#6C7086] border hover:bg-gray-50"
                 }`}
-                style={
-                  formik.values.gender === 1
-                    ? { backgroundColor: layout_color }
-                    : {}
-                }
               >
                 Male
               </button>
-
               <button
                 type="button"
                 name="gender"
                 onClick={() => handleGenderSelect(2)}
-                className={`rounded-full w-20 h-10 flex items-center justify-center border-2 border-black transition-colors duration-200 ${
+                className={`px-4 py-2 rounded-md text-sm border ${
                   formik.values.gender === 2
-                    ? "text-white"
-                    : "bg-white text-black"
+                    ? "bg-white text-[#004181] border-[#004181]"
+                    : "bg-white text-[#6C7086] border hover:bg-gray-50"
                 }`}
-                style={
-                  formik.values.gender === 2
-                    ? { backgroundColor: layout_color }
-                    : {}
-                }
               >
                 Female
               </button>
@@ -426,56 +490,57 @@ const AddEmployee = () => {
                 type="button"
                 name="gender"
                 onClick={() => handleGenderSelect(3)}
-                className={`rounded-full w-20 h-10 flex items-center justify-center border-2 border-black transition-colors duration-200 ${
+                className={`px-4 py-2 rounded-md text-sm border ${
                   formik.values.gender === 3
-                    ? "text-white"
-                    : "bg-white text-black"
+                    ? "bg-white text-[#004181] border-[#004181]"
+                    : "bg-white text-[#6C7086] border hover:bg-gray-50"
                 }`}
-                style={
-                  formik.values.gender === 3
-                    ? { backgroundColor: layout_color }
-                    : {}
-                }
               >
                 Other
               </button>
             </div>
             {formik.touched.gender && formik.errors.gender && (
-              <span className="text-red-500 text-sm mt-1">
+              <div className="text-red-500 text-sm mt-1">
                 {formik.errors.gender}
-              </span>
+              </div>
             )}
           </div>
         );
       }
 
       return (
+        // field !== "id_country" &&
         field !== "resume" &&
         field !== "profile_image" &&
         field !== "date_of_join" &&
         field !== "date_of_birth" &&
-        field !== "id_country" &&
         (field !== "id_branch" ||
           (field === "id_branch" && branch === "0")) && (
-          <div key={field} className="flex flex-col">
-            <label className="text-gray-700 mb-1 font-medium">
+          <div key={field}>
+            <label className="block text-sm font-medium mb-1">
               {field === "id_state"
                 ? "State"
                 : field === "id_branch"
                 ? "Branch"
+                : field === "whatsappNumber"
+                ? "Whatsapp Number"
                 : field === "id_city"
                 ? "City"
                 : field === "firstname"
                 ? "First Name"
                 : field === "lastname"
                 ? "Last Name"
-                : field === "aadhar_number"
-                ? "Aadhar Number"
+                : field === "id_country"
+                ? "Country"
+                : field === "pan"
+                ? "Pan Number"
+                : field === "aadharNumber"
+                ? "Aadhar card number"
                 : field
                     .replace(/_/g, " ")
                     .replace(/\b\w/g, (char) => char.toUpperCase())}
               {REQUIRED_FIELDS.includes(field) && (
-                <span className="text-red-400"> *</span>
+                <span className="text-red-500"> *</span>
               )}
             </label>
 
@@ -488,9 +553,7 @@ const AddEmployee = () => {
                 onChange={handleStateChange}
                 onBlur={formik.handleBlur}
                 placeholder="Select State"
-                styles={customSelectStyles}
-                className="react-select-container"
-                classNamePrefix="react-select"
+                styles={customStyles(true)}
               />
             ) : field === "id_city" ? (
               <Select
@@ -501,9 +564,7 @@ const AddEmployee = () => {
                 onChange={handleCityChange}
                 onBlur={formik.handleBlur}
                 placeholder="Select City"
-                styles={customSelectStyles}
-                className="react-select-container"
-                classNamePrefix="react-select"
+                styles={customStyles(true)}
               />
             ) : field === "id_branch" ? (
               <Select
@@ -513,10 +574,39 @@ const AddEmployee = () => {
                 )}
                 onChange={handleBranchChange}
                 onBlur={formik.handleBlur}
-                placeholder="Select City"
-                styles={customSelectStyles}
-                className="react-select-container"
-                classNamePrefix="react-select"
+                placeholder="Select Branch"
+                styles={customStyles(true)}
+              />
+            ) : field === "id_country" ? (
+              <Select
+                options={country}
+                value={branchData.find(
+                  (option) => option.value === formik.values.id_branch
+                )}
+                onChange={handleBranchChange}
+                onBlur={formik.handleBlur}
+                placeholder="Select Country"
+                styles={customStyles(true)}
+              />
+            ) : field === "whatsappNumber" ? (
+              <input
+                type="text"
+                name={field}
+                value={formik.values[field]}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                placeholder={`Enter whatsapp number`}
+              />
+            ) : field === "pan" ? (
+              <input
+                type="text"
+                name={field}
+                value={formik.values[field]}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                placeholder={`Enter pancard number`}
               />
             ) : (
               <input
@@ -525,14 +615,14 @@ const AddEmployee = () => {
                 value={formik.values[field]}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                className="border-2 border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black h-[50px]"
-                placeholder="Enter Here"
+                className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                placeholder={`Enter ${field.replace(/_/g, " ")}`}
               />
             )}
             {formik.touched[field] && formik.errors[field] && (
-              <span className="text-red-500 text-sm mt-1">
+              <div className="text-red-500 text-sm mt-1">
                 {formik.errors[field]}
-              </span>
+              </div>
             )}
           </div>
         )
@@ -541,173 +631,148 @@ const AddEmployee = () => {
   };
 
   return (
-    <>
-      <div className="flex flex-row justify-between">
-        <h2 className="text-2xl text-gray-900 font-bold justify-between">
+    <form onSubmit={formik.handleSubmit} className="w-full mx-auto space-y-6">
+      <div className="flex flex-row justify-between items-center mb-4">
+        <p className="text-sm text-gray-400 mt-4 mb-3">
+          Employee / <span className="text-black">Employee Creation</span>
+        </p>
+      </div>
+
+      <div className="bg-[#FFFFFF] rounded-lg p-6 shadow-sm border">
+        <h2 className="text-lg font-semibold mb-4 border-b pb-4">
           {id ? "Edit Employee" : "Add Employee"}
         </h2>
-      </div>
 
-      <div className="flex flex-col bg-white border-t-2 border-[#023453] mt-3 overflow-y-auto scrollbar-hide h-[calc(100vh-200px)]">
-        <form onSubmit={formik.handleSubmit} className="p-4">
-          <section className="mb-8">
-            <h2 className="text-1xl font-semibold mb-4 mt-4 border-b-2 pb-2">
-              Basic Information
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {renderFormFields()}
-            </div>
-          </section>
-          <section className="mb-8">
-            <h3 className="text-1xl font-semibold mb-4 mt-4 border-b-2 pb-2">
-              Official Information
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {["date_of_join", "date_of_birth"].map((field) => (
-                <div key={field} className="flex flex-col">
-                  <label className="text-gray-700 mb-1 font-medium">
-                    {field === "date_of_join"
-                      ? "Date of Joining"
-                      : "Date of Birth"}
-                    <span className="text-red-400"> *</span>
-                  </label>
-                  <div className="relative w-full">
-                    <DatePicker
-                      selected={formik.values[field]}
-                      onChange={(date) => formik.setFieldValue(field, date)}
-                      onBlur={formik.handleBlur}
-                      dateFormat="yyyy-MM-dd"
-                      className="w-full border-2 border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black h-[50px]"
-                      placeholderText="Select Date"
-                      wrapperClassName="w-full"
-                    />
-                    <CalendarDays
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none"
-                      size={20}
-                    />
-                  </div>
-                  {formik.touched[field] && formik.errors[field] && (
-                    <span className="text-red-500 text-sm mt-1">
-                      {formik.errors[field]}
-                    </span>
-                  )}
-                </div>
-              ))}
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {["image", "resume"].map((field) => (
-                <div key={field} className="flex flex-col">
-                  <label className="text-gray-700 mb-1 font-medium mt-2">
-                    {field === "image"
-                      ? "Upload Profile Image"
-                      : "Upload Resume"}
-                  </label>
-                  {field === "image" ? (
-                    <div
-                      key={field}
-                      className="flex flex-col sm:flex-row gap-4"
-                    >
-                      <div className="w-full">
-                        <label
-                          htmlFor={field}
-                          className="flex justify-center items-center w-full h-12 border-2 border-dashed border-gray-300 text-black cursor-pointer px-4 rounded-md hover:bg-gray-50"
-                        >
-                          <p className="text-gray-900 truncate">
-                            {formik.values[field]
-                              ? formik.values[field].name
-                              : "Browse"}
-                          </p>
-                        </label>
-                        <input
-                          className="hidden"
-                          id={field}
-                          name={field}
-                          type="file"
-                          accept="image/*"
-                          onChange={handleFileChange}
-                        />
-                      </div>
-                      <div className="flex items-start justify-center">
-                        <div className="relative w-20 h-20 bg-gray-200 rounded-md overflow-hidden">
-                          <img
-                            src={
-                              imagePreviews.image?.previewUrl
-                                ? imagePreviews.image.previewUrl
-                                : imagePreviews.image
-                                ? `${employeeData?.data?.pathurl}${imagePreviews.image}`
-                                : profileplaceholder
-                            }
-                            alt="Profile Preview"
-                            className={`w-full h-full ${
-                              imagePreviews.image
-                                ? "object-cover"
-                                : "object-contain"
-                            }`}
-                          />
-                          {imagePreviews.image && (
-                            <button
-                              type="button"
-                              onClick={(e) => handleClearImage(e, "image")}
-                              className="absolute top-1 right-1 bg-white rounded-full p-1 shadow-md hover:bg-gray-100"
-                            >
-                              <X size={14} />
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ) : field === "resume" ? (
-                    <div key={field} className="flex flex-col">
-                      <div className="flex flex-col">
-                        <label
-                          htmlFor={field}
-                          className="flex justify-center items-center w-full h-12 border-2 border-dashed border-gray-300 text-black cursor-pointer px-4 rounded-md hover:bg-gray-50"
-                        >
-                          <p className="text-gray-900 truncate">
-                            {formik.values[field]
-                              ? formik.values[field].name
-                              : "Choose file"}
-                          </p>
-                        </label>
-                        <input
-                          className="hidden"
-                          id={field}
-                          name={field}
-                          type="file"
-                          accept=".pdf,.doc,.docx,.xls,.xlsx,.txt"
-                          onChange={handleFileChange}
-                        />
-                      </div>
-                    </div>
-                  ) : null}
-                  {formik.touched[field] && formik.errors[field] && (
-                    <span className="text-red-500 text-sm mt-1">
-                      {formik.errors[field]}
-                    </span>
-                  )}
-                </div>
-              ))}
-            </div>
-          </section>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {renderFormFields()}
 
-          <div className="flex justify-end gap-4 mt-6">
-            <button
-              type="button"
-              onClick={() => navigate("/employee/details/")}
-              className="bg-gray-200 text-black px-6 py-2 rounded-md"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="bg-[#61A375] text-white px-6 py-2 rounded-md"
-            >
-              {isLoading ? <SpinLoading /> : id ? "Update" : "Submit"}
-            </button>
+          {["date_of_join", "date_of_birth"].map((field) => (
+            <div key={field}>
+              <label className="block text-sm font-medium mb-1">
+                {field === "date_of_join" ? "Date of Joining" : "Date of Birth"}
+                <span className="text-red-500"> *</span>
+              </label>
+              <div className="relative">
+                <DatePicker
+                  selected={formik.values[field]}
+                  onChange={(date) => formik.setFieldValue(field, date)}
+                  onBlur={formik.handleBlur}
+                  dateFormat="yyyy-MM-dd"
+                  placeholderText="Select Date"
+                  className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                  wrapperClassName="w-full"
+                />
+                <span className="absolute right-0 top-0 h-full w-10 flex items-center justify-center pointer-events-none">
+                  <CalendarDays size={20} className="text-gray-400" />
+                </span>
+              </div>
+              {formik.touched[field] && formik.errors[field] && (
+                <div className="text-red-500 text-sm mt-1">
+                  {formik.errors[field]}
+                </div>
+              )}
+            </div>
+          ))}
+
+          {/* Resume Upload Field */}
+          <div>
+            <label className="block text-sm font-medium mb-1">Resume</label>
+            <div className="flex items-center gap-3 relative">
+              <label
+                htmlFor="resume"
+                className="flex-1 border-2 border-[#f2f3f8] rounded-md px-3 py-2 cursor-pointer hover:bg-gray-50"
+              >
+                <p className="truncate text-[#b5b5b5]">
+                  {formik.values.resume ? formik.values.resume.name : "Browse"}
+                </p>
+              </label>
+              <div className="absolute right-0 top-0 bottom-0 h-full flex flex-row gap-2">
+                <label
+                  htmlFor="resume"
+                  className="bg-blue-600 text-white px-4 flex items-center justify-center rounded-md cursor-pointer text-sm"
+                  style={{ backgroundColor: layout_color }}
+                >
+                  Choose File
+                </label>
+              </div>
+              <input
+                className="hidden"
+                id="resume"
+                name="resume"
+                type="file"
+                accept=".pdf,.doc,.docx"
+                onChange={handleFileChange}
+                ref={resumeInputRef}
+              />
+            </div>
           </div>
-        </form>
+
+          {/* Image Upload Field */}
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              Upload Profile Image{" "}
+              <span className="font-normal">(Maximum file size: 500KB)</span>
+            </label>
+            <div className="flex items-center gap-3 relative">
+              <label
+                htmlFor="image"
+                className="flex-1 border-2 border-[#f2f3f8] rounded-md px-3 py-2 cursor-pointer hover:bg-gray-50"
+              >
+                <p className="truncate text-[#b5b5b5]">
+                  {imagePreviews.image?.name ||
+                    (formik.values.image ? formik.values.image.name : "Browse")}
+                </p>
+              </label>
+              <div className="absolute right-0 top-0 bottom-0 h-full flex flex-row gap-2">
+                <label
+                  htmlFor="image"
+                  className="bg-blue-600 text-white px-4 flex items-center justify-center rounded-md cursor-pointer text-sm"
+                  style={{ backgroundColor: layout_color }}
+                >
+                  Choose File
+                </label>
+                <div
+                  className="w-11 h-11 flex items-center justify-center rounded-md cursor-pointer"
+                  style={{ backgroundColor: layout_color }}
+                  onClick={() => setShowWebcam(true)}
+                >
+                  <img
+                    src={cameraIcon}
+                    alt="Camera Icon"
+                    className="w-6 h-6 object-contain"
+                  />
+                </div>
+              </div>
+              <input
+                className="hidden"
+                id="image"
+                name="image"
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                ref={descImageInputRef}
+              />
+            </div>
+          </div>
+        </div>
+        <div className="flex justify-end space-x-4 mt-4">
+          <button
+            type="button"
+            onClick={() => navigate("/employee/details/")}
+            className="w-20 h-9 border-2 bg-[#F6F7F9] border-[#f2f3f8] rounded-md hover:bg-gray-50 flex justify-center items-center text-[#6C7086]"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-20 h-9 bg-blue-900 text-white rounded-md hover:bg-blue-800 flex justify-center items-center"
+          >
+            {isLoading ? <SpinLoading /> : id ? "Update" : "Save"}
+          </button>
+        </div>
       </div>
+
       {showWebcam && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-4 rounded-lg">
@@ -733,7 +798,7 @@ const AddEmployee = () => {
           </div>
         </div>
       )}
-    </>
+    </form>
   );
 };
 
