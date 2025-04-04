@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useCallback} from "react";
 import Select from "react-select";
 import { useFormik } from "formik";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -21,6 +21,7 @@ import {
   getMetalRateByMetalId,
 } from "../../../api/Endpoints";
 import { useDispatch, useSelector } from "react-redux";
+import SpinLoading from "../../common/spinLoading";
 
 const AddSchemePayment = () => {
   const navigate = useNavigate();
@@ -96,7 +97,7 @@ const AddSchemePayment = () => {
   const formik = useFormik({
     initialValues: {
       id_customer: "",
-      mobile: 0,
+      mobile: null,
       date_payment: formattedDate,
       payment_mode: "",
       itr_utr: "",
@@ -441,35 +442,41 @@ const AddSchemePayment = () => {
     }
   }, [mobile]);
 
-  const handleSearchmobile = () => {
-    if (mobile === "") {
+  const handleSearchmobile = useCallback(() => {
+    if (!formik.values.mobile) {
       return toast.error("Mobile Number is required!");
     }
-
-    if (mobile !== "" && schemedata.length > 0 && fullData.length > 0) {
-      return toast.error("Scheme accounts already fetched");
-    }
-
+  
+    if (schemedata.length > 0) return;
+  
     const searchData = {
       id_branch: formik.values.id_branch || id_branch,
-      search_mobile: mobile,
+      search_mobile: formik.values.mobile,
     };
-
+  
     handlesearchschemeaccount(searchData);
-  };
+  }, [formik.values.mobile, formik.values.id_branch, schemedata]);
 
+  // const handleautocompletemobile = (e) => {
+  //   let value = e.target.value;
+  //   if (!/^(\+)?\d*$/.test(value)) return;
+
+  //   if (value.length <= 13) {
+  //     setMobile(value);
+  //   }
+
+  //   if (formik.values.id_branch === "") {
+  //     toast.error("Branch Id is required!");
+  //   }
+  // };
   const handleautocompletemobile = (e) => {
-    let value = e.target.value;
-    if (!/^(\+)?\d*$/.test(value)) return;
-
-    if (value.length <= 13) {
-      setMobile(value);
-    }
-
-    if (formik.values.id_branch === "") {
-      toast.error("Branch Id is required!");
+    const value = e.target.value;
+    if (/^[0-9+]*$/.test(value)) {
+      formik.setFieldValue("mobile", value);
+      // setMobile(value);
     }
   };
+  
 
   const handleCancel = () => {
     navigate("/payment/schemepayment");
@@ -481,12 +488,7 @@ const AddSchemePayment = () => {
 
   return (
     <>
-      <div className="flex flex-row justify-between">
-        <p className="text-sm text-gray-400 mt-4 mb-4">
-          Payment / <span className="text-black">Scheme Payment</span>
-        </p>
-      </div>
-      <form
+    <form
         onSubmit={formik.handleSubmit}
         onKeyDown={(e) => {
           if (e.key === "Enter" && e.target.type !== "textarea") {
@@ -494,8 +496,37 @@ const AddSchemePayment = () => {
           }
         }}
       >
-        <div className="">
-          {/* <h2 className="text-xl font-medium mb-4">Customer Details</h2> */}
+      <div className="flex flex-row justify-between items-center mb-4">
+        <p className="text-sm text-gray-400 mt-4 mb-4">
+          Payment / <span className="text-black">Scheme Payment</span>
+        </p>
+
+        <div className="flex flec-row gap-2">
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="w-20 h-9 bg-blue-900 text-white rounded-md hover:bg-blue-800 flex justify-center items-center"
+        >
+          Print
+        </button>
+        <button
+          type="button"
+          className="w-20 h-9 border-2 bg-[#F6F7F9] border-[#f2f3f8] rounded-md hover:bg-gray-50 flex justify-center items-center text-[#6C7086]"
+          onClick={() => formik.resetForm()}
+        >
+          Clear
+        </button>
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="w-20 h-9 bg-blue-900 text-white rounded-md hover:bg-blue-800 flex justify-center items-center"
+        >
+          {isLoading ? <SpinLoading /> : id ? "Update" : "Save"}
+        </button>
+        </div>
+      </div>
+      
+        <div>
           <div className="flex flex-col lg:flex-row w-full justify-between">
             {/* Left column - form inputs */}
             <div className="lg:w-1/2 w-full bg-white border px-[18px] py-[20px] rounded-md">
@@ -553,9 +584,9 @@ const AddSchemePayment = () => {
                     <span className="text-red-400">*</span>
                   </label>
                   <input
-                    type="text"
+                    type="numeric"
                     maxLength={10}
-                    value={mobile}
+                    value={formik.values.mobile}
                     onChange={handleautocompletemobile}
                     className="w-full border-2 border-[#f2f3f8] rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                     placeholder="Enter AC No/ Mob No"
@@ -1233,7 +1264,7 @@ const AddSchemePayment = () => {
         </div>
 
         {/* Form buttons */}
-        <div className="mt-6 pt-4">
+        {/* <div className="mt-6 pt-4">
           <div className="flex justify-end gap-4">
             <button
               className="bg-[#E2E8F0] text-black rounded-md px-6 py-2"
@@ -1249,7 +1280,7 @@ const AddSchemePayment = () => {
               Submit
             </button>
           </div>
-        </div>
+        </div> */}
       </form>
     </>
   );
