@@ -27,6 +27,7 @@ import Select from "react-select";
 import usePagination from "../../../hooks/usePagination";
 import SpinLoading from "../../common/spinLoading";
 import Action from "../../common/action";
+import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
 
 export const customSelectStyles = {
   control: (provided) => ({
@@ -358,9 +359,14 @@ const Purity = () => {
   const paginationButtons = usePagination(paginationData);
 
   return (
-    <div className="flex flex-col p-4 relative">
       <>
-        <h2 className="text-2xl text-gray-900 font-bold">Purity</h2>
+      <Breadcrumb items={
+        [
+          {label:"Masters"},
+          {label:"Purity",active:true}
+        ]
+      } />
+      <div className="flex flex-col p-4 relative bg-white border border-[#F2F2F9]  rounded-[16px]">
         <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
           <div className="relative w-full lg:w-1/3 min-w-[200px]">
             <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
@@ -372,11 +378,11 @@ const Purity = () => {
             </div>
             <input
               onChange={handleSearch}
-              placeholder="Search..."
-              className="p-3 pl-10 pr-3 border-2 bg-[#F5F5F5] border-gray-500 rounded-md w-full"
+              placeholder="Search"
+              className="p-3 pl-10 pr-3 border-2 border-[#F2F2F9] rounded-[8px] w-[228px] "
             />
           </div>
-          <div className="flex flex-row items-center justify-end gap-2">
+          <div className="flex flex-row items-center justify-end gap-2 ">
             <button
               className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
               onClick={handleAddpurity}
@@ -393,23 +399,23 @@ const Purity = () => {
         </div>
 
     
-      </>
       <ModelOne
         title={id ? "Edit Purity" : "Add Purity"}
         extraClassName="w-96"
         setIsOpen={setIsviewOpen}
         isOpen={isviewOpen}
         closeModal={closeIncommingModal}
-      >
+        >
         <PurityForm
           metals={selectMetal}
           setIsOpen={setIsviewOpen}
           clearId={clearId}
           id={id}
-        />
+          />
       </ModelOne>
       <Modal />
     </div>
+          </>
   );
 };
 

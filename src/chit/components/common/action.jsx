@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import More from "../../../assets/more.svg"
 
 function Action({ row, data, rowIndex, activeDropdown, setActive, handleEdit, handleDelete, handleView = null, showEdit = true }) {
   const dropdownRef = useRef(null);
@@ -29,22 +30,15 @@ function Action({ row, data, rowIndex, activeDropdown, setActive, handleEdit, ha
 
   return (
     <>
-      <div ref={dropdownRef} className="dropdown-container relative flex items-center">
+      <div ref={dropdownRef} className="dropdown-container relative flex items-center ">
         <button
-          className="p-2 border-2 border-[#F2F2F9] hover:bg-gray-100 rounded-full text-center"
+          className="p-2 border hover:bg-gray-100 rounded-full flex justify-center"
           onClick={(e) => {
             e.stopPropagation();
             setActive(activeDropdown === row?._id ? null : row?._id);
           }}
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5 text-gray-600"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path d="M10 4a2 2 0 11-4 0 2 2 0 014 0zM10 10a2 2 0 11-4 0 2 2 0 014 0zM10 16a2 2 0 11-4 0 2 2 0 014 0z" />
-          </svg>
+         <img src={More} alt="" className='w-[20px] h-[20px]' />
 
         </button>
       </div>
@@ -60,7 +54,7 @@ function Action({ row, data, rowIndex, activeDropdown, setActive, handleEdit, ha
               filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.15))",
             }}
           >
-            <div className="w-32 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+            <div className="w-32 rounded-md shadow-lg  bg-white ring-1 ring-black ring-opacity-5">
               <div className="py-1">
                 {handleView && (
 

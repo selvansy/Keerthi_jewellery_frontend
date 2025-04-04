@@ -20,13 +20,12 @@ import Modal from "../../common/Modal";
 import ModelOne from "../../common/Modelone";
 import { useDebounce } from "../../../hooks/useDebounce";
 import SpinLoading from "../../common/spinLoading";
-import { metadata, tr } from "framer-motion/client";
+import { label, metadata, tr } from "framer-motion/client";
 import Action from "../../common/action";
-import { closeModal } from '../../../../redux/modalSlice';
-
+import { closeModal } from "../../../../redux/modalSlice";
+import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
 
 const Metal = () => {
-
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
   const navigate = useNavigate();
@@ -256,10 +255,26 @@ const Metal = () => {
   };
 
   return (
-    <div className="flex flex-col p-4 relative">
-      <>
+    <>
+      <Breadcrumb
+        items={[{ label: "Masters" }, { label: "Metal", active: true }]}
+      />
+      <div className="flex flex-col p-4 relative bg-white border border-[#F2F2F9]  rounded-[16px]">
         <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
-        <h2 className="text-2xl text-gray-900 font-bold">Metal</h2>
+          <div className="relative w-full lg:w-1/3 ">
+            <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
+              {searchLoading ? (
+                 <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
+              ) : (
+                <Search className="text-black" />
+              )}
+            </div>
+            <input
+              onChange={handleSearch}
+              placeholder="Search"
+              className="p-3 pl-10 pr-3  border-2 border-[#F2F2F9] rounded-[8px] w-[228px] "
+            />
+          </div>
           <div className="flex flex-row items-center justify-end gap-2">
             <button
               className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
@@ -284,26 +299,25 @@ const Metal = () => {
             handleSearch={handleSearch}
           />
         </div>
-      </>
 
-      <ModelOne
-        title={id ? "Edit Metal Details" : "Add Metal Details"}
-        extraClassName="w-[450px]"
-        setIsOpen={setIsviewOpen}
-        isOpen={isviewOpen}
-        closeModal={closeIncommingModal}
-      >
-        <MetalForm setIsOpen={setIsviewOpen} id={id} clearId={clearId} />
-      </ModelOne>
-      <Modal />
-    </div>
+        <ModelOne
+          title={id ? "Edit Metal Details" : "Add Metal Details"}
+          extraClassName="w-[450px]"
+          setIsOpen={setIsviewOpen}
+          isOpen={isviewOpen}
+          closeModal={closeIncommingModal}
+        >
+          <MetalForm setIsOpen={setIsviewOpen} id={id} clearId={clearId} />
+        </ModelOne>
+        <Modal />
+      </div>
+    </>
   );
 };
 
 export default Metal;
 
 export const MetalForm = ({ setIsOpen, id, clearId }) => {
-
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
   const [formData, setFormData] = useState({
@@ -313,11 +327,11 @@ export const MetalForm = ({ setIsOpen, id, clearId }) => {
   const [formErrors, setFormErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
 
-  const [succNot,setSuccNot] = useState(false)
+  const [succNot, setSuccNot] = useState(false);
   let dispatch = useDispatch();
 
-  const handleSuccess = ()=>{
-    setSuccNot(true); 
+  const handleSuccess = () => {
+    setSuccNot(true);
     dispatch(
       openModal({
         modalType: "SUCCESS",
@@ -330,8 +344,8 @@ export const MetalForm = ({ setIsOpen, id, clearId }) => {
     setTimeout(() => {
       setSuccNot(false);
       dispatch(closeModal());
-    }, 2500); 
-  }
+    }, 2500);
+  };
 
   // getmetalById
   const { mutate: getmetalId } = useMutation({
@@ -384,14 +398,13 @@ export const MetalForm = ({ setIsOpen, id, clearId }) => {
       try {
         if (response) {
           // toast.success(response.data.message);
-          handleSuccess()
+          handleSuccess();
           setIsOpen(false);
           setIsLoading(false);
         }
       } catch (error) {
-        console.log("error",error)
+        console.log("error", error);
       }
-     
     },
     onError: (error) => {
       setIsLoading(false);
@@ -417,7 +430,7 @@ export const MetalForm = ({ setIsOpen, id, clearId }) => {
     setFormData({
       metal_name: "",
     });
-    // setIsOpen(false);
+    setIsOpen(false);
     clearId();
   };
 
@@ -447,7 +460,6 @@ export const MetalForm = ({ setIsOpen, id, clearId }) => {
   };
 
   return (
-
     <div className="space-y-4">
       <div className="flex flex-col space-y-2">
         <label className="font-medium text-gray-700">
@@ -473,7 +485,7 @@ export const MetalForm = ({ setIsOpen, id, clearId }) => {
             className="bg-[#E2E8F0] text-black rounded-md p-2 w-full lg:w-20"
             onClick={handleCancel}
           >
-            Clear
+            Cancel
           </button>
 
           <button
@@ -487,16 +499,15 @@ export const MetalForm = ({ setIsOpen, id, clearId }) => {
           </button>
         </div>
       </div>
-     
-       <Modal/>
-      
+
+      <Modal />
+
       {/* <ModelOne isOpen={succNot} setIsOpen={setSuccNot} title="Success">
         <div className="flex flex-col items-center">
           <img src="/success-icon.png" alt="Success" className="w-16 h-16" />
           <p className="text-lg font-semibold text-center mt-4">{successMessage}</p>
         </div>
       </ModelOne> */}
-     
     </div>
   );
 };

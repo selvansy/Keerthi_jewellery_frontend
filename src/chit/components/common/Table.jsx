@@ -37,7 +37,7 @@ const Table = ({
   return (
     <div className={`antialiased w-full ${className}`}>
       <div className="mx-auto bg-white">
-        <div className="bg-white relative shadow-sm rounded-lg overflow-hidden">
+        <div className="bg-white relative  rounded-lg overflow-hidden">
           {/* Search Bar */}
           {/* <div className="flex justify-end p-3">
             <div className="relative">
@@ -108,7 +108,7 @@ const Table = ({
                             return (
                               <td
                                 key={columnIndex}
-                                className="sticky right-0 bg-white px-4 py-3 z-10"
+                                className={`sticky right-0  px-4 py-3 z-10 ${columns.length>=7?"bg-white":""}`}
                                 style={{ right: 0 }}
                               >
                                 {column.cell 
