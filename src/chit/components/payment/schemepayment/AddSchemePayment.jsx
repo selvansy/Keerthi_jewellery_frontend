@@ -503,13 +503,6 @@ const AddSchemePayment = () => {
 
         <div className="flex flec-row gap-2">
         <button
-          type="submit"
-          disabled={isLoading}
-          className="w-20 h-9 bg-blue-900 text-white rounded-md hover:bg-blue-800 flex justify-center items-center"
-        >
-          Print
-        </button>
-        <button
           type="button"
           className="w-20 h-9 border-2 bg-[#F6F7F9] border-[#f2f3f8] rounded-md hover:bg-gray-50 flex justify-center items-center text-[#6C7086]"
           onClick={() => formik.resetForm()}
