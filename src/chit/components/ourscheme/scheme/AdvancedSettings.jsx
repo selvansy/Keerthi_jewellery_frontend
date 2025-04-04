@@ -26,6 +26,7 @@ const AdvancedSettings = ({ formik, layout_color, installment_type }) => {
   }, [rewardType]);
 
   return (
+    <>
     <div className="grid grid-rows-2 md:grid-cols-3 gap-5">
       {/* Monthly Limit Installment */}
       <div className="flex flex-col mt-2">
@@ -142,12 +143,9 @@ const AdvancedSettings = ({ formik, layout_color, installment_type }) => {
             className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
             placeholder="Enter Convenience Fee"
           />
-          <span
-            className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
-            style={{ backgroundColor: layout_color }}
-          >
-            %
-          </span>
+          <span className="absolute right-0 top-0 w-9 h-full px-3 flex items-center justify-center text-black border-l">
+                %
+              </span>
         </div>
         {formik.touched.convenience_fees && formik.errors.convenience_fees && (
           <span className="text-red-500 text-sm mt-1">
@@ -155,8 +153,34 @@ const AdvancedSettings = ({ formik, layout_color, installment_type }) => {
           </span>
         )}
       </div>
-
-      {/* Display Referral */}
+    </div>
+    <div className="grid md:grid-cols-3 w-full mt-3 gap-x-5">
+    <p className="text-md  mb-4 border-b pb-2 mt-3 font-medium col-span-3">Referral</p>
+    <div className="flex flex-col mt-2">
+        <label className="block text-sm font-medium mb-1">
+        Referral Percentage (Monthly) <span className="text-red-400">*</span>
+        </label>
+        <div className="relative">
+          <input
+            type="number"
+            name="convenience_fees"
+            onWheel={(e) => e.target.blur()}
+            value={formik.values.convenience_fees}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+            placeholder="Enter Convenience Fee"
+          />
+          <span className="absolute right-0 top-0 w-9 h-full px-3 flex items-center justify-center text-black border-l">
+                %
+              </span>
+        </div>
+        {formik.touched.convenience_fees && formik.errors.convenience_fees && (
+          <span className="text-red-500 text-sm mt-1">
+            {formik.errors.convenience_fees}
+          </span>
+        )}
+      </div>
       <div className="flex flex-col mt-2">
         <label className="block text-sm font-medium mb-1">
           Display Referral
@@ -192,193 +216,8 @@ const AdvancedSettings = ({ formik, layout_color, installment_type }) => {
           </span>
         )}
       </div>
-
-      {/* Cumulative Fine Amount */}
-      {/* <div className="flex flex-col mt-2">
-        <label className="block text-sm font-medium mb-1">
-          Cumulative Fine Amount
-        </label>
-        <div className="relative">
-          <input
-            type="number"
-            name="cumulative_fine_amount"
-            onWheel={(e) => e.target.blur()}
-            value={formik.values.cumulative_fine_amount}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-            placeholder="Enter Cumulative Fine Amount"
-          />
-          <span
-            className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
-            style={{ backgroundColor: layout_color }}
-          >
-            INR
-          </span>
-        </div>
-        {formik.touched.cumulative_fine_amount &&
-          formik.errors.cumulative_fine_amount && (
-            <span className="text-red-500 text-sm mt-1">
-              {formik.errors.cumulative_fine_amount}
-            </span>
-          )}
-      </div> */}
-      {/* Display Weight In Ledger */}
-      {/* <div className="flex flex-col mt-2">
-        <label className="block text-sm font-medium mb-1">
-          Display Weight In Ledger
-        </label>
-        <div className="flex flex-row border border-gray-300 rounded-lg overflow-hidden w-32 h-10 items-center">
-          <div
-            onClick={() =>
-              formik.setFieldValue("display_Weight_in_ledger", true)
-            }
-            className={`${
-              formik.values.display_Weight_in_ledger
-                ? "text-white"
-                : "bg-white text-[#888888]"
-            } p-3 w-full cursor-pointer transition-colors duration-200 text-center font-medium`}
-            style={{ backgroundColor: layout_color }}
-          >
-            Yes
-          </div>
-          <div className="w-px bg-gray-300" />
-          <div
-            onClick={() =>
-              formik.setFieldValue("display_Weight_in_ledger", false)
-            }
-            className={`${
-              !formik.values.display_Weight_in_ledger
-                ? "text-white"
-                : "bg-white text-[#888888]"
-            } p-3 w-full cursor-pointer transition-colors duration-200 text-center font-medium`}
-            style={{ backgroundColor: layout_color }}
-          >
-            No
-          </div>
-        </div>
-        {formik.touched.display_Weight_in_ledger &&
-          formik.errors.display_Weight_in_ledger && (
-            <span className="text-red-500 text-sm mt-1">
-              {formik.errors.display_Weight_in_ledger}
-            </span>
-          )}
-      </div> */}
-      {/* <div className="flex flex-col mt-2">
-        <label className="block text-sm font-medium mb-1">
-         Wallet redemption on payment
-        </label>
-        <div className="flex flex-row border border-gray-300 rounded-lg overflow-hidden w-32 h-10 items-center">
-          <div
-            onClick={() => formik.setFieldValue("wallet_redemption_onpayment", true)}
-            className={`${
-              formik.values.wallet_redemption_onpayment
-                ? "text-white"
-                : "bg-white text-[#888888]"
-            } p-3 w-full cursor-pointer transition-colors duration-200 text-center font-medium`}
-            style={{ backgroundColor: layout_color }}
-          >
-            Yes
-          </div>
-          <div className="w-px bg-gray-300" />
-          <div
-            onClick={() => formik.setFieldValue("wallet_redemption_onpayment", false)}
-            className={`${
-              !formik.values.wallet_redemption_onpayment
-                ? "text-white"
-                : "bg-white text-[#888888]"
-            } p-3 w-full cursor-pointer transition-colors duration-200 text-center font-medium`}
-            style={{ backgroundColor: layout_color }}
-          >
-            No
-          </div>
-        </div>
-        {formik.touched.wallet_redemption_onpayment && formik.errors.wallet_redemption_onpayment && (
-          <span className="text-red-500 text-sm mt-1">
-            {formik.errors.wallet_redemption_onpayment}
-          </span>
-        )}
-      </div> */}
-      {/* Fine Amount */}
-      {/* <div className="flex flex-col mt-2">
-        <label className="block text-sm font-medium mb-1">
-          Fine Amount
-        </label>
-        <div className="relative">
-          <input
-            type="number"
-            name="fine_amount"
-            onWheel={(e) => e.target.blur()}
-            value={formik.values.fine_amount}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-            placeholder="Enter Fine Amount"
-          />
-          <span
-            className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
-            style={{ backgroundColor: layout_color }}
-          >
-            INR
-          </span>
-        </div>
-        {formik.touched.fine_amount && formik.errors.fine_amount && (
-          <span className="text-red-500 text-sm mt-1">
-            {formik.errors.fine_amount}
-          </span>
-        )}
-      </div> */}
-       {/* Reward Amount moved to payble details */}
-      
-      {/* Not Paid Limit Installment */}
-      {/* <div className="flex flex-col mt-2">
-        <label className="block text-sm font-medium mb-1">
-          Not Paid Limit Installment
-        </label>
-        <div className="relative">
-          <input
-            type="number"
-            name="not_paid_installment"
-            onWheel={(e) => e.target.blur()}
-            value={formik.values.not_paid_installment}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-            placeholder="Enter Not Paid Installment"
-          />
-        </div>
-        {formik.touched.not_paid_installment &&
-          formik.errors.not_paid_installment && (
-            <span className="text-red-500 text-sm mt-1">
-              {formik.errors.not_paid_installment}
-            </span>
-          )}
-      </div> */}
-      {/* Pending Due Limit Installment */}
-      {/* <div className="flex flex-col mt-2">
-        <label className="block text-sm font-medium mb-1">
-          Pending Due Limit Installment
-        </label>
-        <div className="relative">
-          <input
-            type="number"
-            name="pending_installment"
-            onWheel={(e) => e.target.blur()}
-            value={formik.values.pending_installment}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-            placeholder="Enter Pending Due Installment"
-          />
-        </div>
-        {formik.touched.pending_installment &&
-          formik.errors.pending_installment && (
-            <span className="text-red-500 text-sm mt-1">
-              {formik.errors.pending_installment}
-            </span>
-          )}
-      </div> */}
-    </div>
+   </div>
+    </>
   );
 };
 

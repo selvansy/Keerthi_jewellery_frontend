@@ -89,12 +89,10 @@ const SchemeForm = () => {
       totalCountAmount: "",
       incrementRate: "",
       id_branch: "",
-      // start: "",
       startingAmount: "",
-      // fixed_amounts: "",
       saving_type: "",
       final_join_date: "",
-
+      
       // PayableDetails fields
       amount: "", // no need to pass
       min_amount: "",
@@ -102,28 +100,29 @@ const SchemeForm = () => {
       min_weight: "",
       max_weight: "",
       total_installments: "",
-      buygsttype: "",
-      buy_gst: "",
       benefit_min_installment_wst_mkg: "",
       wastagebenefit: "",
       benefit_making: "",
-
+      
+      
+      //classification
+      description: "",
+      term_desc: "",
+      classification_order: "",
+      
+      // buy_gst: "",
+      //customer referral
+      // customer_referral_per: "",
+      // customer_incentive_per: "",
+      // customer_ref_remarks: "",
       //grce
       // grace_type: "",
       // grace_period: "",
       // grace_fine_amount: false,
       // grace_fine: 0,
-
-      //classification
-      description: "",
-      term_desc: "",
-      classification_order: "",
-
-      //customer referral
-      // customer_referral_per: "",
-      // customer_incentive_per: "",
-      // customer_ref_remarks: "",
-
+      
+      // start: "",
+      // fixed_amounts: "",
       //agent referral
       // agent_referral_percentage: "",
       // agent_incentive: "",
@@ -131,9 +130,12 @@ const SchemeForm = () => {
       // agent_remark: "",
       // agent_target_per: "",
       // agent_partial_per: "",
-
+      // buygsttype: "",
+      // fine_amount: 0,
+      // cumulative_fine_amount: "",
+      
       wastagetype: "", // no need to pass
-
+      
       // AdvancedSettings fields
       limit_installment: "",
       pending_installment: "",
@@ -150,8 +152,6 @@ const SchemeForm = () => {
       bonus_percent: "",
       not_paid_installment: "",
       convenience_fees: "",
-      // fine_amount: 0,
-      // cumulative_fine_amount: "",
       display_referral: false,
       display_Weight_in_ledger: false,
       wallet_redemption_onpayment: false,
@@ -294,7 +294,6 @@ const SchemeForm = () => {
     queries: [
       { queryKey: ["installment_type"], queryFn: allinstallmenttype },
       { queryKey: ["fund_type"], queryFn: allFundtype },
-      { queryKey: ["buygsttype"], queryFn: buygsttype },
       { queryKey: ["wastagetype"], queryFn: wastagetype },
       { queryKey: ["schemeTypeApi"], queryFn: getallschemetypes },
     ],
@@ -303,7 +302,6 @@ const SchemeForm = () => {
   const [
     installment_type,
     fund_type,
-    buy_gst,
     wastage_type,
     scheme_typeResponse,
     giftIssueResponse,
@@ -368,12 +366,12 @@ const SchemeForm = () => {
         startingAmount: schemeData.data.startingAmount || "",
 
         // PayableDetails fields
-        min_amount: schemeData.data.min_amount || "",
-        max_amount: schemeData.data.max_amount || "",
-        min_weight: schemeData.data.min_weight || "",
-        max_weight: schemeData.data.max_weight || "",
-        buy_gst: schemeData.data.buy_gst || 0,
-        buygsttype: schemeData?.data?.buygsttype || 1,
+        min_amount: schemeData.data.min_amount || 0,
+        max_amount: schemeData.data.max_amount || 0,
+        min_weight: schemeData.data.min_weight || 0,
+        max_weight: schemeData.data.max_weight || 0,
+        // buy_gst: schemeData.data.buy_gst || 0,
+        // buygsttype: schemeData?.data?.buygsttype || 1,
         wastagebenefit: schemeData.data.wastagebenefit || "",
         total_installments: schemeData.data.total_installments || "",
         benefit_making: schemeData.data.makingcharge || "",
@@ -470,13 +468,13 @@ const SchemeForm = () => {
       setFundType(fund_data);
     }
 
-    if (buy_gst?.data) {
-      const buy_gst_data = buy_gst.data.map((item) => ({
-        value: item.id,
-        label: item.name,
-      }));
-      setBuyGst(buy_gst_data);
-    }
+    // if (buy_gst?.data) {
+    //   const buy_gst_data = buy_gst.data.map((item) => ({
+    //     value: item.id,
+    //     label: item.name,
+    //   }));
+    //   setBuyGst(buy_gst_data);
+    // }
 
     if (wastage_type?.data) {
       const wastage_data = wastage_type.data.map((item) => ({
@@ -501,7 +499,7 @@ const SchemeForm = () => {
       }));
       setGiftType(data);
     }
-  }, [installment_type, fund_type, buy_gst, wastage_type, scheme_typeResponse]);
+  }, [installment_type, fund_type, wastage_type, scheme_typeResponse]);
 
   useEffect(() => {
     if (classificationData) {
@@ -716,6 +714,7 @@ const SchemeForm = () => {
       }));
     }
   };
+
 
   return (
     <form
@@ -1349,24 +1348,6 @@ const SchemeForm = () => {
           </AccordionContent>
         </AccordionItem>
 
-        {/* <AccordionItem value="customer" className="border rounded-lg bg-white">
-          <AccordionTrigger className="px-6 py-4">
-            Customer Details
-          </AccordionTrigger>
-          <AccordionContent className="px-6 py-4">
-            <CustomerDetails formik={formik} layout_color={layout_color} />
-          </AccordionContent>
-        </AccordionItem> */}
-
-        {/* <AccordionItem value="agent" className="border rounded-lg bg-white">
-          <AccordionTrigger className="px-6 py-4">
-            Agent Details
-          </AccordionTrigger>
-          <AccordionContent className="px-6 py-4">
-            <AgentDetails formik={formik} layout_color={layout_color} />
-          </AccordionContent>
-        </AccordionItem> */}
-
         <AccordionItem value="advanced" className="border rounded-lg bg-white">
           <AccordionTrigger className="px-6 py-4">
             Installment
@@ -1389,11 +1370,12 @@ const SchemeForm = () => {
           value="classification"
           className="border rounded-lg bg-white"
         >
-          <AccordionTrigger className="px-6 py-4">
+          <AccordionTrigger className="px-6">
             Classification Details
           </AccordionTrigger>
-          <AccordionContent value="classification" className="px-6 py-4">
-            <Suspense fallback={<SpinLoading />}>
+          <AccordionContent value="classification" className="px-6">
+          <div className="border-t pt-4">
+           <Suspense fallback={<SpinLoading />}>
               <Classification
                 formik={formik}
                 layout_color={layout_color}
@@ -1404,6 +1386,7 @@ const SchemeForm = () => {
                 desc_img={descriptionImage}
               />
             </Suspense>
+           </div>
           </AccordionContent>
         </AccordionItem>
       </Accordion>
@@ -1411,7 +1394,7 @@ const SchemeForm = () => {
       <div className="flex justify-end space-x-4">
         <button
           type="button"
-          className="px-4 py-2 border-2 border-[#f2f3f8] rounded-md hover:bg-gray-50"
+          className="w-20 h-9 border-2 bg-[#F6F7F9] border-[#f2f3f8] rounded-md hover:bg-gray-50 flex justify-center items-center text-[#6C7086]"
           onClick={() => formik.resetForm()}
         >
           Clear
@@ -1419,9 +1402,9 @@ const SchemeForm = () => {
         <button
           type="submit"
           disabled={isLoading}
-          className="px-4 py-2 bg-blue-900 text-white rounded-md hover:bg-blue-800"
+          className="w-20 h-9 bg-blue-900 text-white rounded-md hover:bg-blue-800 flex justify-center items-center"
         >
-          {isLoading ? <SpinLoading /> : "submit"}
+          {isLoading ? <SpinLoading /> : id ? "Update" : "Save"}
         </button>
       </div>
     </form>
