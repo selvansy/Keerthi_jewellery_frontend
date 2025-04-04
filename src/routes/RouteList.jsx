@@ -108,6 +108,8 @@ import GiftReport from "../chit/components/Report/GiftReport";
 import PaymentPrint from "../chit/components/Print/CardPrint/PaymentPrint";
 import Delist from "../chit/components/ourscheme/delist";
 import MetalRateIndex from "../chit/components/ourscheme/metalrate/MetalRateIndex";
+import GiftPurchase from "../chit/components/gift/giftPurchase/GiftPurchase";
+import GiftPurchaseForm from "../chit/components/gift/giftPurchase/GiftPurchaseForm";
 
 const RouteList = [
 
@@ -403,12 +405,12 @@ const RouteList = [
   {
     name: "Gift Purchase",
     path: '/gift/addgiftinwards',
-    element: <Base renderContent={AddGiftPurchase} />
+    element: <Base renderContent={GiftPurchaseForm} />
   },
   {
     name: "Edit Gift Purchase",
     path: '/gift/addgiftinwards/:id',
-    element: <Base renderContent={AddGiftPurchase} />
+    element: <Base renderContent={GiftPurchaseForm} />
   },
   {
     name: "Gift HandOver",

@@ -20,8 +20,7 @@ function GiftItemForm({ setIsOpen, isviewOpen, id, setId, refetchTable }) {
     const [branchData, setBranch] = useState([]);
     const [branch, setbranch] = useState("")
     const [vendorfilter, setVendor] = useState([]);
-    const [gift_image, setGiftImage] = useState(null);
-    const [pathurl, setPathurl] = useState('');
+   
     const [formData, setFormData] = useState({
         gift_name: '',
         gift_vendorid: '',
@@ -30,10 +29,6 @@ function GiftItemForm({ setIsOpen, isviewOpen, id, setId, refetchTable }) {
     });
     const [errors, setErrors] = useState({});
     const [isLoading, setIsLoading] = useState(false);
-
-
-
-    let dispatch = useDispatch();
 
     useEffect(() => {
 
@@ -50,19 +45,19 @@ function GiftItemForm({ setIsOpen, isviewOpen, id, setId, refetchTable }) {
     }, [])
 
     const { data: branchresponse, isLoading: loadingbranch } = useQuery({
-        queryKey: ["branch", branch],
+        queryKey: ["branch"],
         queryFn: getallbranch,
     });
 
     const { data: Vendorresponse, isLoading: loadingVendor } = useQuery({
         queryKey: ["vendor", branch],
         queryFn:()=> getgiftvendorbranchById(branch),
+        enabled: !!branch
     });
 
     useEffect(() => {
         if (branchresponse) {
             const data = branchresponse.data
-
             const branch = data.map((branch) => ({
                 value: branch._id,
                 label: branch.branch_name,
@@ -72,6 +67,7 @@ function GiftItemForm({ setIsOpen, isviewOpen, id, setId, refetchTable }) {
 
         if (Vendorresponse) {
             const data = Vendorresponse.data
+            
             const vendor = data.map((vendor) => ({
                 value: vendor._id,
                 label: vendor.vendor_name,
@@ -89,14 +85,13 @@ function GiftItemForm({ setIsOpen, isviewOpen, id, setId, refetchTable }) {
         mutationFn: getgiftitemById,
         onSuccess: (response) => {
             if (response) {
-
                 setFormData({
-                    ...response.data,
-                    gift_image: response.data.gift_image,
+                    gift_name: response.data.gift_name,
+                    gift_vendorid: response.data.gift_vendorid,
+                    id_branch:response.data.id_branch,
+                    gift_code:response.data.gift_code
                 });
                 setbranch(response.data.id_branch);
-                setGiftImage(response.data.gift_image);
-                setPathurl(response.data.pathurl);
             }
         },
     });
@@ -111,7 +106,7 @@ function GiftItemForm({ setIsOpen, isviewOpen, id, setId, refetchTable }) {
         if (!formData.gift_vendorid) newErrors.gift_vendorid = 'Gift vendor is required';
         if (!formData.id_branch) newErrors.id_branch = 'Branch is required';
 
-
+         
         if (Object.keys(newErrors).length > 0) {
             setErrors((prev) => ({
                 ...prev,
@@ -145,29 +140,6 @@ function GiftItemForm({ setIsOpen, isviewOpen, id, setId, refetchTable }) {
         setId("")
     };
 
-    // const handlegiftImageChange = (e) => {
-    //     const file = e.target.files[0];
-
-    //     if (file) {
-    //         const validImageTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
-
-    //         if (validImageTypes.includes(file.type) && file.size <= (500 * 1024)) {
-    //             setGiftImage(file);
-    //         } else {
-    //             toast.error("Invalid file type or file size exceeded (Max 500KB)");
-    //         }
-    //     } else {
-    //         toast.error("No file selected");
-    //     }
-    // };
-
-
-    const handleRemovegiftImage = () => {
-        setGiftImage(null);
-        const input = document.getElementById('gift_image');
-        if (input) input.value = '';
-    };
-
     const handleSubmit = (e) => {
         e.preventDefault();
         const validationErrors = validateForm();
@@ -175,11 +147,7 @@ function GiftItemForm({ setIsOpen, isviewOpen, id, setId, refetchTable }) {
 
         if (Object.keys(validationErrors).length === 0) {
             setIsLoading(true)
-            // const formDataToSend = new FormData();
-            // formDataToSend.append("gift_name", formData.gift_name);
-            // formDataToSend.append("gift_code", formData.gift_code);
-            // formDataToSend.append("gift_vendorid", formData.gift_vendorid);
-            // formDataToSend.append("id_branch", formData.id_branch);
+   
             if (id) {
                 updategiftitemMutate({ id: id, data: formData });
             } else {
@@ -297,6 +265,7 @@ function GiftItemForm({ setIsOpen, isviewOpen, id, setId, refetchTable }) {
                         }}
                         customSelectStyles={customSelectStyles}
                         isLoading={loadingVendor}
+                        menuPlacement="top" 
                         placeholder="Select vendor"
                     />
 
@@ -304,60 +273,7 @@ function GiftItemForm({ setIsOpen, isviewOpen, id, setId, refetchTable }) {
 
                 </div>
 
-                {/* 
-                <div className="flex flex-col space-y-2">
-                    <div className="flex flex-row " >
-                        <label className="text-gray-700 font-medium">Upload Gift Image<span className='text-red-400'>*</span></label>
-                        <p className='text-gray-900 text-[12px] truncate text-start mt-1 mx-2'>
-                            (Maximum file size(500KB))
-                        </p>
-                    </div>
-
-                    <div className="flex gap-4">
-                        <div className="flex-1">
-                            <label
-                                htmlFor="gift_image"
-                                className="flex flex-col justify-center items-center w-full h-20 border-2 border-dashed border-gray-300 text-gray-700 cursor-pointer p-5 text-center"
-                            >
-                                <p> {
-                                    (gift_image && typeof gift_image === 'string')
-                                        ? gift_image
-                                        : (gift_image && typeof gift_image === 'object' && gift_image)
-                                            ? gift_image.name
-                                            : 'Browse to find or drag image here'
-                                }</p>
-                            </label>
-                            <input
-                                onChange={handlegiftImageChange}
-                                className="hidden max-w-[190px]"
-                                name="gift_image"
-                                id="gift_image"
-                                type="file"
-                                accept="image/*"
-                            />
-
-                        </div>
-
-                        {gift_image && (
-                            <div className="w-20 h-20 border border-gray-300 rounded-md overflow-hidden relative">
-                                <button
-                                    onClick={handleRemovegiftImage}
-                                    className="absolute top-1 right-1 w-5 h-5 flex items-center justify-center bg-red-500 text-white rounded-full hover:bg-red-600"
-                                    type="button"
-                                >
-                                    ×
-                                </button>
-
-                                <img
-                                    src={typeof gift_image === 'string' ? `${pathurl}${gift_image}` : URL.createObjectURL(gift_image)}
-                                    alt="Gift image preview"
-                                    className="w-full h-full object-cover"
-                                />
-
-                            </div>
-                        )}
-                    </div>
-                </div> */}
+           
 
                 <div className="bg-white p-2 border-t-2 border-gray-300 mt-4">
                     <div className="flex justify-end gap-2 mt-3">
@@ -374,7 +290,7 @@ function GiftItemForm({ setIsOpen, isviewOpen, id, setId, refetchTable }) {
                             readOnly={isLoading == true}
                             className=" text-white rounded-md p-2 w-full lg:w-20"
                             style={{ backgroundColor: layout_color }} >
-                            {isLoading ? <SpinLoading /> : id ? 'Update' : 'Submit'}
+                            {isLoading ? <SpinLoading /> : id ? 'Update' : 'Save'}
                         </button>
                     </div>
                 </div>
