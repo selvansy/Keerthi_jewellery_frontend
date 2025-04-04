@@ -121,7 +121,6 @@ function GiftVendorForm({ setIsOpen, isviewOpen, id, refetchTable, setId }) {
         },
     });
 
-
     const handleChange = (e) => {
         const { name, value } = e.target;
 
@@ -214,8 +213,8 @@ function GiftVendorForm({ setIsOpen, isviewOpen, id, refetchTable, setId }) {
 
     };
 
-    const handleClear = () => {
-        // setId("")
+    const handleCancel = () => {
+        setId("")
         setFormData({
             vendor_name: '',
             mobile: '',
@@ -223,7 +222,7 @@ function GiftVendorForm({ setIsOpen, isviewOpen, id, refetchTable, setId }) {
             address: '',
             id_branch: '',
         });
-        // setIsOpen(false);
+        setIsOpen(false);
     };
 
     return (
@@ -231,9 +230,7 @@ function GiftVendorForm({ setIsOpen, isviewOpen, id, refetchTable, setId }) {
             <form className="space-y-4">
                 {/* Branch field */}
 
-
                 <div className='flex flex-col'>
-
                     <label className='text-gray-900 mb-1 font-medium'>Branch<span className='text-red-400'> *</span></label>
 
                     <Select
@@ -302,7 +299,6 @@ function GiftVendorForm({ setIsOpen, isviewOpen, id, refetchTable, setId }) {
                         placeholder="Enter Address"
                         className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600"
                     />
-
                 </div>
 
                 {/* GST Number field */}
@@ -334,9 +330,9 @@ function GiftVendorForm({ setIsOpen, isviewOpen, id, refetchTable, setId }) {
                         <button
                             type="button"
                             className="bg-[#E2E8F0] text-gray-900 rounded-md p-2 w-full lg:w-20"
-                            onClick={handleClear}
+                            onClick={handleCancel}
                         >
-                            Clear
+                            Cancel
                         </button>
                         <button
                             type="button"

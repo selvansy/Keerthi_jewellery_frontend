@@ -350,7 +350,6 @@ const GiftIssued = () => {
         </div>
       </div>
       <div className="mt-4">
-        
         <div className="flex flex-row items-center justify-end gap-2">
           {
             filtered ?
