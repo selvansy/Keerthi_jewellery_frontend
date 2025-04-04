@@ -365,6 +365,7 @@ const AddEmployee = () => {
   const handleCapture = () => {
     const imageSrc = webcamRef.current.getScreenshot();
     const fileName = `webcam-capture-${new Date().getTime()}.jpg`;
+    
 
     setImagePreviews((prev) => ({
       ...prev,
