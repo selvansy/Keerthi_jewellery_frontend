@@ -59,15 +59,38 @@ const AddSchemePayment = () => {
   const [showWeightInput, setShowWeightInput] = useState(false);
   const [showAmountInput, setShowAmountInput] = useState(false);
 
-  const customStyles = {
-    control: (base, state) => ({
-      ...base,
-      minHeight: "42px",
-      border: state.isFocused ? "1px solid black" : "1px solid #e2e8f0",
-      boxShadow: state.isFocused ? "0 0 0 1px black" : "none",
-      borderRadius: "0.375rem",
-    }),
-  };
+ // Customisations for react-select
+ const customStyles = (isReadOnly) => ({
+  control: (base, state) => ({
+    ...base,
+    minHeight: "42px",
+    backgroundColor: "white",
+    border: state.isFocused ? "1px solid black" : "2px solid #f2f3f8",
+    boxShadow: state.isFocused ? "0 0 0 1px black" : "none",
+    borderRadius: "0.375rem",
+    "&:hover": {
+      color: "#e2e8f0",
+    },
+    pointerEvents: !isReadOnly ? "none" : "auto",
+    opacity: !isReadOnly ? 1 : 1,
+  }),
+  indicatorSeparator: () => ({
+    display: "none",
+  }),
+  placeholder: (base) => ({
+    ...base,
+    color: "#858293",
+    fontWeight: "thin",
+    // fontStyle: "bold",
+  }),
+  dropdownIndicator: (provided, state) => ({
+    ...provided,
+    color: "#232323",
+    "&:hover": {
+      color: "#232323",
+    },
+  }),
+});
 
   const formik = useFormik({
     initialValues: {
@@ -456,579 +479,607 @@ const AddSchemePayment = () => {
 
   return (
     <>
-      <div className="flex flex-row justify-between">
-        <h2 className="text-2xl text-[#023453] font-bold justify-between">
-          Scheme Payment
-        </h2>
+    <div className="flex flex-row justify-between">
+        <p className="text-sm text-gray-400 mt-4 mb-4">Payment / <span className="text-black">Scheme Payment</span></p>
       </div>
       <form onSubmit={formik.handleSubmit}>
-        <div className="w-full flex flex-col mt-3 overflow-y-auto scrollbar-hide h-[calc(100vh-200px)]">
-          <div className="flex flex-col p-8 bg-white">
-            <div className="space-y-6">
-              <h2 className="text-xl font-medium mb-4">Customer Details</h2>
-              <div className="flex flex-col lg:flex-row w-full justify-between">
-                {/* Left column - form inputs */}
-                <div className="lg:w-1/2 w-full">
-                  <div className="grid lg:grid-cols-2 grid-cols-1 gap-4 lg:pr-2">
-                    {/* Branch selection */}
-                    {accessBranch === "0" && branch.length > 0 && !isLoading ? (
-                      <div>
-                        <label className="block text-sm font-medium mb-1">
-                          Branches <span className="text-red-500">*</span>
-                        </label>
-                        <Select
-                          styles={customStyles}
-                          isClearable={true}
-                          options={branch || []}
-                          placeholder="Select Branch"
-                          value={branch?.find(
-                            (option) => option.value === formik.values.id_branch
-                          )}
-                          onChange={(option) =>
-                            formik.setFieldValue(
-                              "id_branch",
-                              option.value || ""
-                            )
-                          }
-                        />
-                        {formik.errors.id_branch && (
-                          <div className="text-red-500 text-sm mt-1">
-                            {formik.errors.id_branch}
-                          </div>
-                        )}
+        <div className="">
+          {/* <h2 className="text-xl font-medium mb-4">Customer Details</h2> */}
+          <div className="flex flex-col lg:flex-row w-full justify-between">
+            {/* Left column - form inputs */}
+            <div className="lg:w-1/2 w-full bg-white border pt-[18px] pb-[18px] pr-[18px] pl-[18px]  rounded-md">
+            <h2 className="text-lg font-semibold mb-4 pb-4">Customer Details</h2>
+              <div className="grid lg:grid-cols-2 grid-cols-1 gap-4 lg:pr-2">
+                {/* Branch selection */}
+                {accessBranch === "0" && branch.length > 0 && !isLoading ? (
+                  <div>
+                    <label className="block text-sm font-medium mb-1">
+                      Branches <span className="text-red-500">*</span>
+                    </label>
+                    <Select
+                      styles={customStyles(true)}
+                      isClearable={true}
+                      options={branch || []}
+                      placeholder="Select Branch"
+                      value={branch?.find(
+                        (option) => option.value === formik.values.id_branch
+                      )}
+                      onChange={(option) =>
+                        formik.setFieldValue("id_branch", option.value || "")
+                      }
+                    />
+                    {formik.errors.id_branch && (
+                      <div className="text-red-500 text-sm mt-1">
+                        {formik.errors.id_branch}
                       </div>
+                    )}
+                  </div>
+                ) : (
+                  <div>
+                    <label className="block text-sm font-medium mb-1">
+                      Branch <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      disabled
+                      value={branch?.branch_name || ""}
+                      className="w-full border rounded-md px-3 py-2 text-gray-500"
+                    />
+                    {formik.errors.id_branch && (
+                      <div className="text-red-500 text-sm mt-1">
+                        {formik.errors.id_branch}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Mobile number search */}
+                <div className="flex flex-col mt-2 relative">
+                  <label className="text-black mb-1 font-normal">
+                    Search Mobile Number
+                    <span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    maxLength={10}
+                    value={mobile}
+                    onChange={handleautocompletemobile}
+                    className="border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                    placeholder="Enter Here"
+                  />
+                  <div
+                    onClick={handleSearchmobile}
+                    className="absolute inset-y-1/2 right-0 -translate-y-2 w-10 h-[62%] flex items-center justify-center cursor-pointer rounded-r-md"
+                    style={{ backgroundColor: layout_color }}
+                  >
+                    <Search size={20} className="text-white" />
+                  </div>
+                </div>
+
+                {/* Mobile accordion for scheme details */}
+                <div className="lg:hidden">
+                  <div
+                    className="flex justify-between items-center cursor-pointer"
+                    onClick={toggleAccordion}
+                  >
+                    <label className="text-black mb-2 font-normal">
+                      Scheme Details<span className="text-red-400">*</span>
+                    </label>
+                    {isExpanded ? (
+                      <ChevronUp className="h-5 w-5 text-gray-500" />
                     ) : (
-                      <div>
-                        <label className="block text-sm text-gray-500 font-medium mb-1">
-                          Branch <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                          type="text"
-                          disabled
-                          value={branch?.branch_name || ""}
-                          className="w-full border rounded-md px-3 py-2 text-gray-500"
-                        />
-                        {formik.errors.id_branch && (
-                          <div className="text-red-500 text-sm mt-1">
-                            {formik.errors.id_branch}
+                      <ChevronDown className="h-5 w-5 text-gray-500" />
+                    )}
+                  </div>
+                  {isExpanded && (
+                    <div className="lg:w-1/2 w-full items-center justify-center lg:pl-10 lg:pr-10">
+                      <div className="bg-[#F8F9FA] lg:w-full rounded-lg flex flex-col p-4 lg:h-full">
+                        <h2 className="text-xl font-bold text-[#023453] mb-4 text-center">
+                          Scheme Details
+                        </h2>
+                        <div>
+                          {/* Scheme details content */}
+                          <div className="flex justify-between py-1">
+                            <span className="text-gray-600">A/C Name</span>
+                            <span className="text-gray-900">
+                              {selectedScheme?.account_name || "N/A"}
+                            </span>
                           </div>
-                        )}
+                          <div className="flex justify-between py-1">
+                            <span className="text-gray-600">Address</span>
+                            <span className="text-gray-900">
+                              {selectedScheme?.id_customer?.address || "N/A"}
+                            </span>
+                          </div>
+                          <div className="flex justify-between py-1">
+                            <span className="text-gray-600">Joined On</span>
+                            <span className="text-gray-900">
+                              {selectedScheme?.start_date
+                                ? new Date(
+                                    selectedScheme.start_date
+                                  ).toLocaleDateString("en-GB")
+                                : "N/A"}
+                            </span>
+                          </div>
+                          <div className="flex justify-between py-1">
+                            <span className="text-gray-600">Scheme A/C No</span>
+                            <span className="text-gray-900">
+                              {selectedScheme?.scheme_acc_number || "N/A"}
+                            </span>
+                          </div>
+                          <div className="flex justify-between py-1">
+                            <span className="text-gray-600">
+                              No of Gift Issues
+                            </span>
+                            <span className="text-gray-900">
+                              {selectedScheme?.total_gifts_issued || "0"}
+                            </span>
+                          </div>
+                          <div className="flex justify-between py-1">
+                            <span className="text-gray-600">Scheme Type</span>
+                            <span className="text-gray-900">
+                              {selectedScheme?.scheme_typename}
+                            </span>
+                          </div>
+                          <div className="flex justify-between py-1">
+                            <span className="text-gray-600">
+                              Total Paid Installment
+                            </span>
+                            <span className="text-gray-900">
+                              {selectedScheme?.total_paidinstallments || "0"}
+                            </span>
+                          </div>
+                          <div className="flex justify-between py-1">
+                            <span className="text-gray-600">
+                              Total Paid Amount
+                            </span>
+                            <span className="text-green-500">
+                              {selectedScheme?.total_paidamount || "0.00"}
+                            </span>
+                          </div>
+                          <div className="flex justify-between py-1">
+                            <span className="text-gray-600">
+                              Total Metal Weight
+                            </span>
+                            <span className="text-gray-900">
+                              {selectedScheme?.total_weight || "0.00"}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Scheme account selection */}
+                <div className="flex flex-col">
+                  <label className="text-black mb-2 font-normal">
+                    Scheme Account<span className="text-red-400"> *</span>
+                  </label>
+                  <Select
+                    styles={customStyles}
+                    isClearable={true}
+                    options={schemedata || []}
+                    placeholder="Select scheme Account"
+                    value={schemedata?.find(
+                      (option) =>
+                        option.value === formik.values.id_scheme_account
+                    )}
+                    onChange={(option) => {
+                      formik.setFieldValue("payment_amount", "");
+                      formik.setFieldValue("metal_weight", "");
+
+                      if (option?.value) {
+                        formik.setFieldValue("id_scheme_account", option.value);
+                        const selected = fullData.find(
+                          (item) => item._id === option.value
+                        );
+                        setSelectedScheme(selected || {});
+                      } else {
+                        formik.setFieldValue("id_scheme_account", "");
+                        setSelectedScheme({});
+                      }
+                    }}
+                  />
+                  {formik.errors.id_scheme_account && (
+                    <div className="text-red-500 text-sm mt-1">
+                      {formik.errors.id_scheme_account}
+                    </div>
+                  )}
+                </div>
+
+                {/* Payment date */}
+                <div className="flex flex-col w-full">
+                  <label className="text-black mb-2 font-normal">
+                    Payment Date<span className="text-red-400">*</span>
+                  </label>
+                  <div className="relative">
+                    <DatePicker
+                      name="date_payment"
+                      disabled
+                      selected={formik.values.date_payment}
+                      dateFormat="dd-MM-yyyy"
+                      placeholderText="Select Date"
+                      className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                      showMonthDropdown
+                      showYearDropdown
+                      dropdownMode="select"
+                      wrapperClassName="w-full"
+                    />
+                    <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center pointer-events-none">
+                      <CalendarDays size={20} />
+                    </span>
+                  </div>
+                </div>
+
+                {/* Metal rate */}
+                <div className="flex flex-col">
+                  <label className="text-black mb-2 font-normal">
+                    Today Rate<span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    name="metal_rate"
+                    disabled
+                    value={formik.values.metal_rate}
+                    type="text"
+                    className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                    placeholder=""
+                  />
+                  <p style={{ color: "red" }}>{errors?.metal_rate}</p>
+                </div>
+                <div></div>
+                <div className="lg:col-span-2">
+                  <h2 className="text-xl font-medium mb-4">
+                    Scheme Account Details
+                  </h2>
+                  <div className="grid lg:grid-cols-2 grid-cols-1 gap-4 border-t">
+                    {/* Weight input for weight-based schemes */}
+                    {showWeightInput && (
+                      <div className="flex flex-col mt-4">
+                        <label className="text-black mb-2 font-normal">
+                          Enter Weight
+                          <span className="text-red-400">*</span>
+                          {minWeight > 0 && maxWeight > 0 && (
+                            <span className="text-gray-500 text-sm ml-2">
+                              (Min: {minWeight}gm, Max: {maxWeight}gm)
+                            </span>
+                          )}
+                        </label>
+                        <div className="relative">
+                          <input
+                            type="number"
+                            name="metal_weight"
+                            value={formik.values.metal_weight}
+                            min={minWeight}
+                            max={maxWeight}
+                            step="0.01"
+                            onChange={(e) => {
+                              const value = parseFloat(e.target.value) || "";
+                              formik.setFieldValue("metal_weight", value);
+                            }}
+                            onKeyDown={(e) => {
+                              if (
+                                e.key === "-" ||
+                                e.key === "e" ||
+                                e.key === "E"
+                              ) {
+                                e.preventDefault();
+                              }
+                            }}
+                            className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                            placeholder="Enter weight in grams"
+                          />
+                          <span
+                            className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                            style={{ backgroundColor: layout_color }}
+                          >
+                            GM
+                          </span>
+                        </div>
+                        {formik.touched.metal_weight &&
+                          formik.errors.metal_weight && (
+                            <div className="text-red-500 text-sm mt-1">
+                              {formik.errors.metal_weight}
+                            </div>
+                          )}
                       </div>
                     )}
 
-                    {/* Mobile number search */}
-                    <div className="flex flex-col mt-2 relative">
-                      <label className="text-black mb-1 font-normal">
-                        Search Mobile Number
-                        <span className="text-red-400">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        maxLength={10}
-                        value={mobile}
-                        onChange={handleautocompletemobile}
-                        className="border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                        placeholder="Enter Here"
-                      />
-                      <div
-                        onClick={handleSearchmobile}
-                        className="absolute inset-y-1/2 right-0 -translate-y-2 w-10 h-[62%] flex items-center justify-center cursor-pointer rounded-r-md"
-                        style={{ backgroundColor: layout_color }}
-                      >
-                        <Search size={20} className="text-white" />
-                      </div>
-                    </div>
-
-                    {/* Mobile accordion for scheme details */}
-                    <div className="lg:hidden">
-                      <div
-                        className="flex justify-between items-center cursor-pointer"
-                        onClick={toggleAccordion}
-                      >
-                        <label className="text-black mb-2 font-normal">
-                          Scheme Details<span className="text-red-400">*</span>
-                        </label>
-                        {isExpanded ? (
-                          <ChevronUp className="h-5 w-5 text-gray-500" />
-                        ) : (
-                          <ChevronDown className="h-5 w-5 text-gray-500" />
-                        )}
-                      </div>
-                      {isExpanded && (
-                        <div className="lg:w-1/2 w-full items-center justify-center lg:pl-10 lg:pr-10">
-                          <div className="bg-[#F8F9FA] lg:w-full rounded-lg flex flex-col p-4 lg:h-full">
-                            <h2 className="text-xl font-bold text-[#023453] mb-4 text-center">
-                              Scheme Details
-                            </h2>
-                            <div>
-                              {/* Scheme details content */}
-                              <div className="flex justify-between py-1">
-                                <span className="text-gray-600">A/C Name</span>
-                                <span className="text-gray-900">
-                                  {selectedScheme?.account_name || "N/A"}
-                                </span>
-                              </div>
-                              <div className="flex justify-between py-1">
-                                <span className="text-gray-600">Address</span>
-                                <span className="text-gray-900">
-                                  {selectedScheme?.id_customer?.address ||
-                                    "N/A"}
-                                </span>
-                              </div>
-                              <div className="flex justify-between py-1">
-                                <span className="text-gray-600">Joined On</span>
-                                <span className="text-gray-900">
-                                  {selectedScheme?.start_date
-                                    ? new Date(
-                                        selectedScheme.start_date
-                                      ).toLocaleDateString("en-GB")
-                                    : "N/A"}
-                                </span>
-                              </div>
-                              <div className="flex justify-between py-1">
-                                <span className="text-gray-600">
-                                  Scheme A/C No
-                                </span>
-                                <span className="text-gray-900">
-                                  {selectedScheme?.scheme_acc_number || "N/A"}
-                                </span>
-                              </div>
-                              <div className="flex justify-between py-1">
-                                <span className="text-gray-600">
-                                  No of Gift Issues
-                                </span>
-                                <span className="text-gray-900">
-                                  {selectedScheme?.total_gifts_issued || "0"}
-                                </span>
-                              </div>
-                              <div className="flex justify-between py-1">
-                                <span className="text-gray-600">
-                                  Scheme Type
-                                </span>
-                                <span className="text-gray-900">
-                                  {selectedScheme?.scheme_typename}
-                                </span>
-                              </div>
-                              <div className="flex justify-between py-1">
-                                <span className="text-gray-600">
-                                  Total Paid Installment
-                                </span>
-                                <span className="text-gray-900">
-                                  {selectedScheme?.total_paidinstallments ||
-                                    "0"}
-                                </span>
-                              </div>
-                              <div className="flex justify-between py-1">
-                                <span className="text-gray-600">
-                                  Total Paid Amount
-                                </span>
-                                <span className="text-green-500">
-                                  {selectedScheme?.total_paidamount || "0.00"}
-                                </span>
-                              </div>
-                              <div className="flex justify-between py-1">
-                                <span className="text-gray-600">
-                                  Total Metal Weight
-                                </span>
-                                <span className="text-gray-900">
-                                  {selectedScheme?.total_weight || "0.00"}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Scheme account selection */}
-                    <div className="flex flex-col">
+                    {/* Amount input */}
+                    <div className="flex flex-col mt-4">
                       <label className="text-black mb-2 font-normal">
-                        Scheme Account<span className="text-red-400"> *</span>
+                        {showAmountInput ? "Enter Amount" : "Payment Amount"}
+                        <span className="text-red-400">*</span>
+                        {minAmount > 0 && maxAmount > 0 && showAmountInput && (
+                          <span className="text-gray-500 text-sm ml-2">
+                            (Min: {minAmount}, Max: {maxAmount})
+                          </span>
+                        )}
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="number"
+                          disabled={ispayamtreadOnly}
+                          name="payment_amount"
+                          value={formik.values.payment_amount}
+                          min={minAmount}
+                          max={maxAmount}
+                          step="0.01"
+                          onChange={formik.handleChange}
+                          onKeyDown={(e) => {
+                            if (
+                              !/^[0-9\b.]+$/.test(e.key) &&
+                              e.key !== "Backspace" &&
+                              e.key !== "ArrowLeft" &&
+                              e.key !== "ArrowRight" &&
+                              e.key !== "Delete" &&
+                              e.key !== "Tab"
+                            ) {
+                              e.preventDefault();
+                            }
+                          }}
+                          className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                          placeholder="Enter amount"
+                        />
+                        <span
+                          className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+                          style={{ backgroundColor: layout_color }}
+                        >
+                          INR
+                        </span>
+                      </div>
+                      {formik.touched.payment_amount &&
+                        formik.errors.payment_amount && (
+                          <div className="text-red-500 text-sm mt-1">
+                            {formik.errors.payment_amount}
+                          </div>
+                        )}
+                    </div>
+
+                    {/* Payment mode */}
+                    <div className="flex flex-col mt-4">
+                      <label className="text-black mb-2 font-normal">
+                        Payment Mode<span className="text-red-400"> *</span>
                       </label>
                       <Select
                         styles={customStyles}
                         isClearable={true}
-                        options={schemedata || []}
-                        placeholder="Select scheme Account"
-                        value={schemedata?.find(
+                        options={paymentmode}
+                        placeholder="Select payment mode"
+                        value={paymentmode?.find(
                           (option) =>
-                            option.value === formik.values.id_scheme_account
+                            option.value === formik.values.payment_mode
                         )}
                         onChange={(option) => {
-                          formik.setFieldValue("payment_amount", "");
-                          formik.setFieldValue("metal_weight", "");
-
-                          if (option?.value) {
-                            formik.setFieldValue(
-                              "id_scheme_account",
-                              option.value
-                            );
-                            const selected = fullData.find(
-                              (item) => item._id === option.value
-                            );
-                            setSelectedScheme(selected || {});
+                          if (Number(option.mode) === 7) {
+                            setSelectedMode(option.mode);
                           } else {
-                            formik.setFieldValue("id_scheme_account", "");
-                            setSelectedScheme({});
+                            setSelectedMode("");
                           }
+                          formik.setFieldValue(
+                            "payment_mode",
+                            option ? option.value : ""
+                          );
                         }}
                       />
-                      {formik.errors.id_scheme_account && (
+                      {formik.errors.payment_mode && (
                         <div className="text-red-500 text-sm mt-1">
-                          {formik.errors.id_scheme_account}
+                          {formik.errors.payment_mode}
                         </div>
                       )}
                     </div>
 
-                    {/* Payment date */}
-                    <div className="flex flex-col w-full">
-                      <label className="text-black mb-2 font-normal">
-                        Payment Date<span className="text-red-400">*</span>
-                      </label>
-                      <div className="relative">
-                        <DatePicker
-                          name="date_payment"
-                          disabled
-                          selected={formik.values.date_payment}
-                          dateFormat="dd-MM-yyyy"
-                          placeholderText="Select Date"
-                          className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                          showMonthDropdown
-                          showYearDropdown
-                          dropdownMode="select"
-                          wrapperClassName="w-full"
-                        />
-                        <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center pointer-events-none">
-                          <CalendarDays size={20} />
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Metal rate */}
-                    <div className="flex flex-col">
-                      <label className="text-black mb-2 font-normal">
-                        Today Rate<span className="text-red-400">*</span>
-                      </label>
-                      <input
-                        name="metal_rate"
-                        disabled
-                        value={formik.values.metal_rate}
-                        type="text"
-                        className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                        placeholder=""
-                      />
-                      <p style={{ color: "red" }}>{errors?.metal_rate}</p>
-                    </div>
-                    <div></div>
-                    <div className="lg:col-span-2">
-                      <h2 className="text-xl font-medium mb-4">
-                        Scheme Account Details
-                      </h2>
-                      <div className="grid lg:grid-cols-2 grid-cols-1 gap-4 border-t">
-                        {/* Weight input for weight-based schemes */}
-                        {showWeightInput && (
-                          <div className="flex flex-col mt-4">
+                    {/* Multi-payment modes */}
+                    {ispaymode && (
+                      <>
+                        {multiplayModes?.data?.map((multipay) => (
+                          <div
+                            key={multipay.parameter}
+                            className="flex flex-col"
+                          >
                             <label className="text-black mb-2 font-normal">
-                              Enter Weight
-                              <span className="text-red-400">*</span>
-                              {minWeight > 0 && maxWeight > 0 && (
-                                <span className="text-gray-500 text-sm ml-2">
-                                  (Min: {minWeight}gm, Max: {maxWeight}gm)
-                                </span>
-                              )}
+                              {multipay.name}
                             </label>
-                            <div className="relative">
-                              <input
-                                type="number"
-                                name="metal_weight"
-                                value={formik.values.metal_weight}
-                                min={minWeight}
-                                max={maxWeight}
-                                step="0.01"
-                                onChange={(e) => {
-                                  const value =
-                                    parseFloat(e.target.value) || "";
-                                  formik.setFieldValue("metal_weight", value);
-                                }}
-                                onKeyDown={(e) => {
-                                  if (
-                                    e.key === "-" ||
-                                    e.key === "e" ||
-                                    e.key === "E"
-                                  ) {
-                                    e.preventDefault();
-                                  }
-                                }}
-                                className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                                placeholder="Enter weight in grams"
-                              />
-                              <span
-                                className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
-                                style={{ backgroundColor: layout_color }}
-                              >
-                                GM
-                              </span>
-                            </div>
-                            {formik.touched.metal_weight &&
-                              formik.errors.metal_weight && (
-                                <div className="text-red-500 text-sm mt-1">
-                                  {formik.errors.metal_weight}
-                                </div>
-                              )}
-                          </div>
-                        )}
-
-                        {/* Amount input */}
-                        <div className="flex flex-col mt-4">
-                          <label className="text-black mb-2 font-normal">
-                            {showAmountInput
-                              ? "Enter Amount"
-                              : "Payment Amount"}
-                            <span className="text-red-400">*</span>
-                            {minAmount > 0 &&
-                              maxAmount > 0 &&
-                              showAmountInput && (
-                                <span className="text-gray-500 text-sm ml-2">
-                                  (Min: {minAmount}, Max: {maxAmount})
-                                </span>
-                              )}
-                          </label>
-                          <div className="relative">
                             <input
                               type="number"
-                              disabled={ispayamtreadOnly}
-                              name="payment_amount"
-                              value={formik.values.payment_amount}
-                              min={minAmount}
-                              max={maxAmount}
-                              step="0.01"
-                              onChange={formik.handleChange}
-                              onKeyDown={(e) => {
-                                if (
-                                  !/^[0-9\b.]+$/.test(e.key) &&
-                                  e.key !== "Backspace" &&
-                                  e.key !== "ArrowLeft" &&
-                                  e.key !== "ArrowRight" &&
-                                  e.key !== "Delete" &&
-                                  e.key !== "Tab"
-                                ) {
-                                  e.preventDefault();
-                                }
+                              name={multipay.parameter}
+                              value={formik.values[multipay.parameter] || ""}
+                              onChange={(e) => {
+                                formik.setFieldValue(
+                                  multipay.parameter,
+                                  Number(e.target.value) || ""
+                                );
                               }}
                               className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                              placeholder="Enter amount"
+                              placeholder="Enter amount here"
                             />
-                            <span
-                              className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
-                              style={{ backgroundColor: layout_color }}
-                            >
-                              INR
-                            </span>
                           </div>
-                          {formik.touched.payment_amount &&
-                            formik.errors.payment_amount && (
-                              <div className="text-red-500 text-sm mt-1">
-                                {formik.errors.payment_amount}
-                              </div>
-                            )}
-                        </div>
+                        ))}
+                      </>
+                    )}
 
-                        {/* Payment mode */}
-                        <div className="flex flex-col mt-4">
-                          <label className="text-black mb-2 font-normal">
-                            Payment Mode<span className="text-red-400"> *</span>
-                          </label>
-                          <Select
-                            styles={customStyles}
-                            isClearable={true}
-                            options={paymentmode}
-                            placeholder="Select payment mode"
-                            value={paymentmode?.find(
-                              (option) =>
-                                option.value === formik.values.payment_mode
-                            )}
-                            onChange={(option) => {
-                              if (Number(option.mode) === 7) {
-                                setSelectedMode(option.mode);
-                              } else {
-                                setSelectedMode("");
-                              }
-                              formik.setFieldValue(
-                                "payment_mode",
-                                option ? option.value : ""
-                              );
-                            }}
-                          />
-                          {formik.errors.payment_mode && (
-                            <div className="text-red-500 text-sm mt-1">
-                              {formik.errors.payment_mode}
-                            </div>
-                          )}
-                        </div>
+                    {/* ITR/UTR ID */}
+                    <div className="flex flex-col">
+                      <label className="text-black mb-2 font-normal">
+                        ITR/UTR ID
+                      </label>
+                      <input
+                        type="text"
+                        name="itr_utr"
+                        value={formik.values.itr_utr}
+                        onChange={formik.handleChange}
+                        className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                        placeholder="Enter ITR/UTR ID"
+                      />
+                    </div>
 
-                        {/* Multi-payment modes */}
-                        {ispaymode && (
-                          <>
-                            {multiplayModes?.data?.map((multipay) => (
-                              <div
-                                key={multipay.parameter}
-                                className="flex flex-col"
-                              >
-                                <label className="text-black mb-2 font-normal">
-                                  {multipay.name}
-                                </label>
-                                <input
-                                  type="number"
-                                  name={multipay.parameter}
-                                  value={
-                                    formik.values[multipay.parameter] || ""
-                                  }
-                                  onChange={(e) => {
-                                    formik.setFieldValue(
-                                      multipay.parameter,
-                                      Number(e.target.value) || ""
-                                    );
-                                  }}
-                                  className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                                  placeholder="Enter amount here"
-                                />
-                              </div>
-                            ))}
-                          </>
-                        )}
-
-                        {/* ITR/UTR ID */}
-                        <div className="flex flex-col">
-                          <label className="text-black mb-2 font-normal">
-                            ITR/UTR ID
-                          </label>
-                          <input
-                            type="text"
-                            name="itr_utr"
-                            value={formik.values.itr_utr}
-                            onChange={formik.handleChange}
-                            className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                            placeholder="Enter ITR/UTR ID"
-                          />
-                        </div>
-
-                        {/* Remarks */}
-                        <div className="col-span-full flex flex-col">
-                          <label className="text-black mb-2 font-normal">
-                            Remarks
-                          </label>
-                          <input
-                            name="remark"
-                            value={formik.values.remark}
-                            onChange={formik.handleChange}
-                            className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                            placeholder="Enter Here"
-                          />
-                        </div>
-                      </div>
+                    {/* Remarks */}
+                    <div className="col-span-full flex flex-col">
+                      <label className="text-black mb-2 font-normal">
+                        Remarks
+                      </label>
+                      <input
+                        name="remark"
+                        value={formik.values.remark}
+                        onChange={formik.handleChange}
+                        className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                        placeholder="Enter Here"
+                      />
                     </div>
                   </div>
                 </div>
+              </div>
+            </div>
 
-                {/* Right column - scheme details (desktop) */}
-                <div className="lg:w-1/2 w-full items-center justify-center lg:pl-10 lg:pr-10 hidden lg:block">
-                  <div className="bg-[#F8F9FA] lg:w-full rounded-lg flex-col p-4 lg:h-full shadow-md">
-                    <h2 className="text-xl font-bold text-[#023453] text-center mt-5">
-                      Scheme Details
-                    </h2>
-                    <div>
-                      {/* Scheme details content */}
-                      <div className="flex justify-between py-1">
-                        <span className="text-gray-600">A/C Name</span>
-                        <span className="text-gray-900">
-                          {selectedScheme?.account_name || "N/A"}
-                        </span>
-                      </div>
-                      <div className="flex justify-between py-1">
-                        <span className="text-gray-600">Address</span>
-                        <span className="text-gray-900">
-                          {selectedScheme?.id_customer?.address || "N/A"}
-                        </span>
-                      </div>
-                      <div className="flex justify-between py-1">
-                        <span className="text-gray-600">Joined On</span>
-                        <span className="text-gray-900">
-                          {selectedScheme?.start_date
-                            ? new Date(
-                                selectedScheme.start_date
-                              ).toLocaleDateString("en-GB")
-                            : "N/A"}
-                        </span>
-                      </div>
-                      <div className="flex justify-between py-1">
-                        <span className="text-gray-600">Scheme A/C No</span>
-                        <span className="text-gray-900">
-                          {selectedScheme?.scheme_acc_number || "N/A"}
-                        </span>
-                      </div>
-                      <div className="flex justify-between py-1">
-                        <span className="text-gray-600">No of Gift Issues</span>
-                        <span className="text-gray-900">
-                          {selectedScheme?.total_gifts_issued || "0"}
-                        </span>
-                      </div>
-                      <div className="flex justify-between py-1">
-                        <span className="text-gray-600">Scheme Type</span>
-                        <span className="text-gray-900">
-                          {selectedScheme?.scheme_typename
-                            ?.charAt(0)
+            {/* Right column - scheme details (desktop) */}
+            <div className="lg:w-1/2 w-full items-center justify-center lg:pl-10 lg:pr-10 hidden lg:block">
+              <div className="bg-white lg:w-full rounded-lg p-3 shadow-sm border border-gray-200">
+                <h2 className="text-base font-semibold text-gray-800 mb-2">
+                  Scheme Details
+                </h2>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center">
+                      <span className="text-black font-semibold">A/C Name</span>
+                    </div>
+                    <div className="flex items-center">
+                      <span className="text-gray-900">
+                        {selectedScheme?.account_name || "-"}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div>
+                  <div className="flex items-center">
+                  <span className="text-black font-semibold">Address</span>
+                  </div>
+                  <div className="flex items-center">
+                    <span className="text-gray-900">
+                      {selectedScheme?.id_customer?.address || "-"}
+                    </span>
+                  </div>
+                  </div>
+
+                  <div>
+                  <div className="flex items-center">
+                    <span className="text-black font-semibold">Joined On</span>
+                  </div>
+                  <div className="flex items-center">
+                    <span className="text-gray-900">
+                      {selectedScheme?.start_date
+                        ? new Date(
+                            selectedScheme.start_date
+                          ).toLocaleDateString("en-GB")
+                        : "-"}
+                    </span>
+                  </div>
+                  </div>
+
+                  <div>
+                  <div className="flex items-center">
+                    <span className="text-black font-semibold">Scheme A/C No</span>
+                  </div>
+                  <div className="flex items-center">
+                    <span className="text-gray-900">
+                      {selectedScheme?.scheme_acc_number || "-"}
+                    </span>
+                  </div>
+                  </div>
+
+                  <div>
+                  <div className="flex items-center">
+                    <span className="text-black font-semibold">No of Gift Issues</span>
+                  </div>
+                  <div className="flex items-center">
+                    <span className="text-gray-900">
+                      {selectedScheme?.total_gifts_issued || "-"}
+                    </span>
+                  </div>
+                  </div>
+
+                 <div>
+                 <div className="flex items-center">
+                    <span className="text-black font-semibold">Scheme Type</span>
+                  </div>
+                  <div className="flex items-center">
+                    <span className="text-gray-900">
+                      {selectedScheme?.scheme_typename
+                        ? selectedScheme.scheme_typename
+                            .charAt(0)
                             .toUpperCase() +
-                            selectedScheme?.scheme_typename?.slice(1) || "N/A"}
-                        </span>
-                      </div>
-                      <div className="flex justify-between py-1">
-                        <span className="text-gray-600">
-                          Total Paid Installment
-                        </span>
-                        <span className="text-gray-900">
-                          {selectedScheme?.total_paidinstallments || "0"}
-                        </span>
-                      </div>
-                      <div className="flex justify-between py-1">
-                        <span className="text-gray-600">Total Paid Amount</span>
-                        <span className="text-green-500">
-                          {selectedScheme?.total_paidamount || "0.00"}
-                        </span>
-                      </div>
-                      <div className="flex justify-between py-1">
-                        <span className="text-gray-600">
-                          Total Metal Weight
-                        </span>
-                        <span className="text-gray-900">
-                          {selectedScheme?.total_weight || "0.00"}
-                        </span>
-                      </div>
-                    </div>
+                          selectedScheme.scheme_typename.slice(1)
+                        : "-"}
+                    </span>
+                  </div>
+                 </div>
+
+                  <div>
+                  <div className="flex items-center">
+                    <span className="text-black font-semibold">
+                      Total Paid Installment
+                    </span>
+                  </div>
+                  <div className="flex items-center">
+                    <span className="text-gray-900">
+                      {selectedScheme?.total_paidinstallments || "-"}
+                    </span>
+                  </div>
+                  </div>
+
+                 <div>
+                 <div className="flex items-center">
+                    <span className="text-black font-semibold">Total Paid Amount</span>
+                  </div>
+                  <div className="flex items-center">
+                    <span className="text-gray-900">
+                      {selectedScheme?.total_paidamount || "-"}
+                    </span>
+                  </div>
+                 </div>
+
+                  <div>
+                  <div className="flex items-center">
+                    <span className="text-black font-semibold">Total Metal Weight</span>
+                  </div>
+                  <div className="flex items-center">
+                    <span className="text-gray-900">
+                      {selectedScheme?.total_weight || "-"}
+                    </span>
+                  </div>
+                  </div>
+
+                  <div>
+                  <div className="flex items-center">
+                    <span className="text-black font-semibold">Total Overdue</span>
+                  </div>
+                  <div className="flex items-center">
+                    <span className="text-gray-900">-</span>
+                  </div>
                   </div>
                 </div>
               </div>
-
-              {/* Scheme Account Details */}
             </div>
+          </div>
 
-            {/* Form buttons */}
-            <div className="border-t-2 border-gray-300 mt-6 pt-4">
-              <div className="flex justify-end gap-4">
-                <button
-                  className="bg-[#E2E8F0] text-black rounded-md px-6 py-2"
-                  type="button"
-                  onClick={handleCancel}
-                >
-                  Cancel
-                </button>
-                <button
-                  className="bg-[#61A375] text-white rounded-md px-6 py-2"
-                  type="submit"
-                >
-                  Submit
-                </button>
-              </div>
-            </div>
+          {/* Scheme Account Details */}
+        </div>
+
+        {/* Form buttons */}
+        <div className="mt-6 pt-4">
+          <div className="flex justify-end gap-4">
+            <button
+              className="bg-[#E2E8F0] text-black rounded-md px-6 py-2"
+              type="button"
+              onClick={handleCancel}
+            >
+              Cancel
+            </button>
+            <button
+              className="bg-[#61A375] text-white rounded-md px-6 py-2"
+              type="submit"
+            >
+              Submit
+            </button>
           </div>
         </div>
       </form>

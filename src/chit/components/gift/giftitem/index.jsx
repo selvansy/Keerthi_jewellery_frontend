@@ -308,35 +308,34 @@ const GiftItem = () => {
       ) : (
         <>
           <h2 className="text-2xl text-gray-900 font-bold">Gift Item</h2>
+
           <div className=" relative shadow-sm rounded-lg overflow-hidden mt-8">
-            <div className="bg-white flex flex-col gap-4 lg:flex-row md:flex-row md:justify-between md:items-center lg:justify-between lg:items-center py-2">
-
-              <ActiveDropdown setActiveFilter={setActiveFilter} />
+            <div className="bg-white flex flex-col  items-center gap-4 lg:flex-row md:flex-row lg:justify-between lg:items-center p-2">
               
-                <div className="flex flex-row items-center justify-end gap-4">
+                <div className="mt-4">
+                <ActiveDropdown setActiveFilter={setActiveFilter} />
+                </div>
 
-                  <div className="flex flex-row items-center justify-end gap-4">
-                    <div className="flex  justify-end">
-                      <div className="relative ">
-                        <input
-                          type="text"
-                          onChange={handleSearch}
-                          className=" border border-gray-300 text-gray-900 text-sm rounded-lg pl-10 pr-10 p-2.5 w-60"
-                          placeholder="Search"
-                        />
-                        <div className="absolute inset-y-0 right-[204px] pl-1 flex items-center pr-3 pointer-events-none">
-                          <svg className="w-4 h-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
-                          </svg>
-                        </div>
+                <div className="flex flex-row items-center justify-end gap-4 mt-3">
+                  <div className="flex justify-end">
+                    <div className="relative ">
+                      <input
+                        type="text"
+                        onChange={handleSearch}
+                        className=" border border-gray-300 text-gray-900 text-sm rounded-lg pl-10 pr-10 p-2.5 w-60"
+                        placeholder="Search"
+                      />
+                      <div className="absolute inset-y-0 right-[204px] pl-1 flex items-center pr-3 pointer-events-none">
+                        <svg className="w-4 h-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                          <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                        </svg>
                       </div>
                     </div>
-
                   </div>
 
-                  <div className="flex flex-row items-center justify-end relative">
-
-                    <button
+                  <div className="flex flex-row items-center justify-end relative mr-2">
+                     
+                <button
                       className="rounded-lg p-8  py-2 text-white text-center whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
                       onClick={handleAddgiftitem}
                       style={{ backgroundColor: layout_color }}
@@ -348,11 +347,8 @@ const GiftItem = () => {
                     </div>
                   </div>
                 </div>
-              </div>
-
             </div>
-          
-          <div className="mt-4">
+            <div className="bg-white p-3">
             <Table
               data={giftitemData}
               columns={columns}
@@ -363,7 +359,9 @@ const GiftItem = () => {
               totalItems={totalDocuments}
               handleItemsPerPageChange={handleItemsPerPageChange}
             />
+            </div>
           </div>
+        
         </>
       )}
       <ModelOne

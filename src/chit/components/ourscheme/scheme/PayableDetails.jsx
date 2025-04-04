@@ -329,7 +329,7 @@ const PayableDetails = ({
       {formik.values.bonus_type !== 2 ? (
         <div className="">
        <label className="block text-sm font-medium mb-1 mt-2">
-         Benefit Bonus Amount
+         Benefit Bonus Amount <span className="text-red-500">*</span>
         </label>
         <div className="relative">
         <span className="absolute left-0 top-0 w-9 h-full px-3 flex items-center justify-center text-black border-r">
@@ -342,7 +342,7 @@ const PayableDetails = ({
             value={formik.values.bonus_amount}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+            className="w-full border-2 border-[#f2f3f8] pl-10 rounded-md px-3 py-2"
             placeholder="Enter Reward Amount"
           />
         </div>

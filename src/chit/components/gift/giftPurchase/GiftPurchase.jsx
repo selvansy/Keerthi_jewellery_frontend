@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import Table from '../../common/Table'
 import { useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
-import { SlidersHorizontal, Search, X } from 'lucide-react'
+import { SlidersHorizontal, Search, Plus } from 'lucide-react'
 import { getgiftvendorbranchById, getgiftitemvendorById, getallbranch, getallgiftinwardtable, changegiftinwardStatus, deletegiftinward } from '../../../api/Endpoints'
 import { toast } from 'react-toastify'
 import { CalendarDays, RefreshCcw } from 'lucide-react'
@@ -15,6 +15,7 @@ import usePagination from '../../../hooks/usePagination'
 import { useDebounce } from '../../../hooks/useDebounce';
 import { eventEmitter } from '../../../../utils/EventEmitter';
 import Action from '../../common/action'
+import ActiveDropdown from '../../common/ActiveDropdown'
 
 
 
@@ -40,8 +41,9 @@ const GiftPurchase = () => {
   const [vendorfilter, setVendor] = useState([]);
   const [branchfilter, setBranch] = useState([]);
   const [filtered, SetFiltered] = useState(false)
-  const [totalDocuments,setTotalDocuments]=useState(0)
+  const [totalDocuments, setTotalDocuments] = useState(0)
   const [giftitemfilter, setGiftitem] = useState([]);
+  const [activeFilter, setActiveFilter] = useState(null)
 
   const roledata = useSelector((state) => state.clientForm.roledata);
 
@@ -299,7 +301,7 @@ const GiftPurchase = () => {
   const paginationData = { totalItems: totalPages, currentPage: currentPage, itemsPerPage: itemsPerPage, handlePageChange: handlePageChange }
   const paginationButtons = usePagination(paginationData)
 
-  
+
   const formatDate = (dateString) => {
     if (!dateString) return '';
     const date = new Date(dateString);
@@ -315,12 +317,16 @@ const GiftPurchase = () => {
       cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
     },
     {
+      header: "Branch Name",
+      cell: (row) => row?.id_branch.branch_name
+    },
+    {
       header: 'Invoice No',
       cell: (row) => row?.invoice_no,
     },
     {
-      header: "Barcode",
-      cell: (row) => row?.barcode
+      header: "Gift Code",
+      cell: (row) => row?.id_gift?.gift_code
     },
     {
       header: "Gift Name",
@@ -339,24 +345,12 @@ const GiftPurchase = () => {
       cell: (row) => row?.price
     },
     {
-      header: "Gst",
+      header: "Gst(%)",
       cell: (row) => row?.gst_percenty
     },
     {
       header: "Total",
       cell: (row) => row?.price
-    },
-    {
-      header: "Sell Price",
-      cell: (row) => row?.cus_sellprice
-    },
-    {
-      header: "Branch Name",
-      cell: (row) => row?.id_branch.branch_name
-    },
-    {
-      header: "Create Date",
-      cell: (row) => formatDate(row?.gift_vendorid.createdAt)
     },
     {
       header: 'Active',
@@ -369,19 +363,18 @@ const GiftPurchase = () => {
             checked={row?.active === true}
             onChange={() => handleStatusToggle(row?._id)}
           />
-                   <div
- className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-[#E7EEF5] p-[2px] after:duration-300 after:bg-[#004181] ${
-              row?.active === true
+          <div
+            className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-[#E7EEF5] p-[2px] after:duration-300 after:bg-[#004181] ${row?.active === true
                 ? "peer-checked:bg-[#E7EEF5] peer-checked:ring-[#E7EEF5]"
                 : "peer-checked:bg-[#E7EEF5] peer-checked:ring-gray-400"
-            } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-[${layout_color}] peer-hover:after:scale-95`}          ></div>
+              } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-[${layout_color}] peer-hover:after:scale-95`}          ></div>
         </label>
       )
     },
     {
       header: "Actions",
       cell: (row, rowIndex) => (
-        <Action row={row} data={giftinward} rowIndex={rowIndex} activeDropdown={activeDropdown} setActive={hanldeActiveDropDown}  handleEdit={handleEdit} handleDelete={handleDelete}/>
+        <Action row={row} data={giftinward} rowIndex={rowIndex} activeDropdown={activeDropdown} setActive={hanldeActiveDropDown} handleEdit={handleEdit} handleDelete={handleDelete} />
       ),
       sticky: "right",
     },
@@ -394,209 +387,49 @@ const GiftPurchase = () => {
   return (
     <div className="flex flex-col p-4">
       <h2 className="text-2xl text-gray-900 font-bold">Gift Purchase</h2>
-      <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
-        <div className="relative w-full lg:w-1/3 min-w-[200px]">
-          <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-            <Search className="text-gray-500" />
-          </div>
-          <input
-            placeholder="Search..."
-            className="p-3 pl-10 pr-3 border-2 bg-[#F5F5F5] border-gray-500 rounded-md w-full"
-            onChange={handleSearch}
-          />
-        </div>
 
-        <div className="flex flex-row items-center justify-end gap-2">
-          {
-            filtered ?
-              <>
-                <button
-                  id="filter"
-                  className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
-                  onClick={() => handleReset()}
-                  style={{ backgroundColor: layout_color }} >
-                  <RefreshCcw size={20} />
-                </button>
-              </>
-              :
-              <>
+      <div className=" relative shadow-sm rounded-lg overflow-hidden mt-8">
+        <div className="bg-white flex flex-col  items-center gap-4 lg:flex-row md:flex-row lg:justify-between lg:items-center p-2">
 
-                <button
-                  id="filter"
-                  className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
-                  onClick={handleFilter}
-                  style={{ backgroundColor: layout_color }}>
-                  <SlidersHorizontal size={20} />
-                </button>
-              </>
-
-          }
-
-
-          <button
-            className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
-            onClick={handleClick}
-            style={{ backgroundColor: layout_color }} >
-            + Add Purchase
-          </button>
-        </div>
-      </div>
-      <div
-        className={`fixed inset-y-0 right-0 w-80 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-40 
-          ${isFilterOpen ? 'translate-x-0' : 'translate-x-full'}`}
-      >
-        <div className="flex flex-col h-full">
-          <div className="flex justify-between items-center p-3">
-            <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
-            <button
-              onClick={() => setIsFilterOpen(false)}
-              className="text-gray-500 hover:text-gray-700"
-            >
-              <X size={20} />
-            </button>
+          <div className="mt-4">
+            <ActiveDropdown setActiveFilter={setActiveFilter} />
           </div>
 
-          <form>
-            <div className="p-3 space-y-4 flex-1 overflow-y-auto">
-              <div className="flex flex-col border-t"></div>
-              <div className="space-y-2">
-                <label className='text-gray-700 text-sm font-medium'>From Date<span className='text-red-400'>*</span></label>
-                <div className="relative">
-                  <DatePicker
-                    selected={from_date}
-                    onChange={(date) => setFromdate(date)}
-                    dateFormat="dd-MM-yyyy"
-                    placeholderText="Select Date"
-                    className="border border-gray-300 rounded-md p-3 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                    showMonthDropdown
-                    showYearDropdown
-                    dropdownMode="select"
-                    wrapperClassName="w-full"
-                  />
-                  <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-gray-500 w-14 h-[43px] justify-center items-center flex rounded-r-md pointer-events-none">
-                    <CalendarDays size={20} />
-                  </span>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <label className='text-gray-700 text-sm font-medium'>To Date<span className='text-red-400'>*</span></label>
-                <div className="relative">
-                  <DatePicker
-                    selected={to_date}
-                    onChange={(date) => setTodate(date)}
-                    dateFormat="dd-MM-yyyy"
-                    placeholderText="Select Date"
-                    className="border border-gray-300 rounded-md p-3 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                    showMonthDropdown
-                    showYearDropdown
-                    dropdownMode="select"
-                    wrapperClassName="w-full"
-                  />
-                  <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-gray-500 w-14 h-[43px] justify-center items-center flex rounded-r-md pointer-events-none">
-                    <CalendarDays size={20} />
-                  </span>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
-                  Branch Name
-                </label>
-                <div className="relative">
-                  <select
-                    name="id_branch"
-                    onChange={(e) => {
-
-                      filterInputchange(e)
-                      handleVendorChange(e.target.value)
-                    }}
-                    className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
-                    <option value='' >--Select--</option>
-                    {branchfilter.map((branch) => (
-                      <option key={branch._id} value={branch._id}>{branch.branch_name}</option>
-                    ))
-                    }
-                  </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                    <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
-                      <path d="M19 9l-7 7-7-7"></path>
-                    </svg>
-                  </div>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
-                  Gift Vendor
-                </label>
-                <div className="relative">
-                  <select name="gift_vendorid" onChange={
-                    (e) => {
-                      e.preventDefault()
-                      filterInputchange(e)
-                      handleGiftChange(e.target.value)
-                    }} className='appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent' defaultValue=''>
-                    <option value='' >--Select--</option>
-                    {vendorfilter.map((vendor) => (
-                      <option key={vendor._id} value={vendor._id}>{vendor.vendor_name}</option>
-                    ))
-                    }
-                  </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                    <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
-                      <path d="M19 9l-7 7-7-7"></path>
-                    </svg>
-                  </div>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
-                  Gift Item
-                </label>
-                <div className="relative">
-                  <select name="id_gift" onChange={
-                    (e) => {
-                      e.preventDefault()
-                      filterInputchange(e)
-                    }}
-                    className={`appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent ${giftitemfilter.length === 0 ? "cursor-not-allowed" : "cursor-pointer"}`}
-                    defaultValue=''>
-                    <option value='' >--Select--</option>
-                    {giftitemfilter.map((giftitem) => (
-                      <option key={giftitem._id} value={giftitem._id}>{giftitem.gift_name}</option>
-                    ))
-                    }
-                  </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                    <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
-                      <path d="M19 9l-7 7-7-7"></path>
-                    </svg>
-                  </div>
-                </div>
-              </div>
-              <div className="p-4 border">
-                <div className="bg-yellow-300 flex justify-center gap-3">
-                  <button
-                    onClick={(e) => applyfilterdatatable(e)}
-                    className="flex-1 px-4 py-2 bg-[#61A375] text-white rounded-md"
-                  >
-                    Apply
-                  </button>
+          <div className="flex flex-row items-center justify-end gap-4 mt-3">
+            <div className="flex justify-end">
+              <div className="relative ">
+                <input
+                  type="text"
+                  onChange={handleSearch}
+                  className=" border border-gray-300 text-gray-900 text-sm rounded-lg pl-10 pr-10 p-2.5 w-60"
+                  placeholder="Search"
+                />
+                <div className="absolute inset-y-0 right-[204px] pl-1 flex items-center pr-3 pointer-events-none">
+                  <svg className="w-4 h-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                  </svg>
                 </div>
               </div>
             </div>
-          </form>
+
+            <div className="flex flex-row items-center justify-end relative mr-2">
+              <button className="rounded-lg p-8  py-2 text-white text-center whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
+
+                onClick={handleClick}
+                style={{ backgroundColor: layout_color }} >
+                Add Purchase
+              </button>
+              <div className="text-white absolute inset-y-0 left-[1px] pl-2 flex items-center pr-8 pointer-events-none">
+                <Plus size={20} strokeWidth={2.5} />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="bg-white p-3">
+          <Table data={giftinward} columns={columns} isLoading={isLoading} currentPage={currentPage} handlePageChange={handlePageChange} itemsPerPage={itemsPerPage} totalItems={totalDocuments} handleItemsPerPageChange={handleItemsPerPageChange} />
         </div>
       </div>
-      {isFilterOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-30"
-          onClick={() => setIsFilterOpen(false)}
-        />
-      )}
-      <div className="mt-4">
-      <Table data={giftinward} columns={columns} isLoading={isLoading}  currentPage={currentPage} handlePageChange={handlePageChange} itemsPerPage={itemsPerPage} totalItems={totalDocuments} handleItemsPerPageChange={handleItemsPerPageChange} />
 
-      </div>
-  
     </div>
   )
 }
