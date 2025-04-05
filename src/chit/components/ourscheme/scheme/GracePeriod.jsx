@@ -5,6 +5,7 @@ import { useState } from "react";
 
 const Grace = ({ formik, layout_color, maturity_period }) => {
   const [spanText, setSpan] = useState("");
+  const [validation, setValidation] = useState({});
 
   const graceData = graceType.map((item) => ({
     value: item.id,
@@ -49,17 +50,26 @@ const Grace = ({ formik, layout_color, maturity_period }) => {
         <Select
           styles={customStyles}
           options={graceData}
-          isClearable={true}
+          isClearable={true} // Allows clearing selection
           menuPortalTarget={document.body}
           placeholder="Select grace type"
-          value={graceData.find(
-            (option) => option.value === formik.values.grace_type
-          )}
+          value={
+            graceData.find(
+              (option) => option.value === formik.values.grace_type
+            ) || null
+          }
           onChange={(option) => {
-            formik.setFieldValue("grace_type", option ? option.value : "");
-            setSpan(option?.label);
+            if (option) {
+              console.log(option.value);
+              formik.setFieldValue("grace_type", option.value);
+              setSpan(option.label);
+            } else {
+              // If cleared, set field to null
+              console.log("Selection cleared");
+              formik.setFieldValue("grace_type", null);
+              setSpan(""); // Clear span value if needed
+            }
           }}
-          // onBlur={() => formik.setFieldTouched("grace_type", true)}
         />
         {formik.touched.grace_type && formik.errors.grace_type && (
           <div className="text-red-500 text-sm mt-1">
@@ -80,6 +90,12 @@ const Grace = ({ formik, layout_color, maturity_period }) => {
             value={formik.values.grace_period}
             onChange={(e) => {
               let value = e.target.value;
+              if (value > Number(maturity_period)) {
+                formik.setFieldError(
+                  "grace_period",
+                  "Grace period cannot be greater than maturity period"
+                );
+              }
               if (value.length > 3) {
                 value = value.slice(0, 3);
               }

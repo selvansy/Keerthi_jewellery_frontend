@@ -19,6 +19,12 @@ export const staffLofgin=  async(data)=>{
 }
 
 
+//scheme
+export const getallSchemes = async () => {
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/scheme`);
+    return response.data;
+}
+
 
 
 //add employee
@@ -86,11 +92,24 @@ export const walletHistory = async (data) => {
     return response.data;
 }
 
-// 
+
 export const redeemHistory = async (data) => {
     const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/wallet/redeemtable`,data);
     return response.data;
 }
+
+// Promotions 
+export const PromotionsHistory = async (data) => {
+    const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/notify/pormotion-table`,data);
+    return response.data;
+}
+
+//Notification History
+export const NotifcationsHistory = async (data) => {
+    const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/notify/push-notify-table`,data);
+    return response.data;
+}
+
 
  
 /*Metal*/
@@ -392,12 +411,14 @@ export const giftaccountcount = async (data) => {
 
 
 export const getgiftvendorbranchById = async (data) => {
-    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/giftvendor/branch/${data.id_branch}`);
+    const {id_branch} = data
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/giftvendor/branch/${id_branch}`);
     return response.data;
 }
 
 
 export const getgiftitemvendorById = async (data) => {
+ 
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/giftitem/vendor/${data}`);
     return response.data;
 }
@@ -448,6 +469,12 @@ export const getgiftinwardById = async (data) => {
 
 export const getallgiftinward = async () => {
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/giftinwards`);
+    return response.data;
+}
+
+export const getallgiftInwardByBranch = async (branch) => {
+    console.log("id",branch)
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/giftinwards/branch/${branch}`);
     return response.data;
 }
 
@@ -541,6 +568,11 @@ export const schemepaymentdatatable = async (data) => {
     return response.data;
 }
 
+export const schemePayment = async (data) => {
+    const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/reports/paymentsummary`);
+    return response.data;
+}
+
  
 //Department
 
@@ -573,6 +605,25 @@ export const deleteDept = async(id)=>{
     const response= await Api.delete(`${import.meta.env.VITE_API_URL}/api/client/department/${id}`)
     return response.data
 }
+
+//Topup
+
+export const addTopup= async(data)=>{
+    const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/topup/add`,data)
+    return response.data
+}
+
+export const topupTable = async(data)=>{
+    const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/topup/table`,data)
+    return response.data
+}
+
+export const updateStatus = async(payload)=>{
+    const {id,data} = payload;
+    const response= await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/topup/${id}`,data)
+    return response.data
+}
+
 
 //Campaign
 
@@ -688,8 +739,8 @@ export const deletenewarrivals= async(id)=>{
 
 
 export const updateproduct= async(data)=>{
- 
-    const response= await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/product/${data.id}`,data.data)
+    console.log(data)
+    const response= await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/product/${data.id}`,data.formDataToSend)
     return response.data
 }
  
@@ -704,14 +755,14 @@ export const activateproduct= async(id)=>{
     return response.data
 }
 
-export const productbyid= async(data)=>{
-    const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/admin/productbyid`,data)
+export const productbyid= async(id)=>{
+    const response= await Api.get(`${import.meta.env.VITE_API_URL}/api/client/product/${id}`,)
     return response.data
 }
  
 
 export const categorybymetalid= async(id)=>{
-    console.log(id)
+  
     const response= await Api.get(`${import.meta.env.VITE_API_URL}/api/client/category/metal/${id}`)
     return response.data
 }
@@ -794,7 +845,7 @@ export const getactivemenuaccess = async (data) => {
 }
 
 export const getaccountSummaryReport = async (data) => {
-    const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/admin/accountsummaryreport`,data);
+    const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/reports/accountsummary`);
     return response.data;
 }
 
@@ -1045,6 +1096,7 @@ export const getallschemetypes = async () => {
 
 
 
+
 //Client
 
 
@@ -1280,7 +1332,13 @@ export const getallcustomer = async (data) => {
     return response.data;
 }
 
- 
+export const getcustomerByBranchId = async (id) => {
+    
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/customer/branch/${id}`);
+    return response.data;
+}
+
+
 
 export const getcustomerById = async (id) => {
 
@@ -1339,7 +1397,7 @@ export const searchmobileschemeaccount = async (data) => {
 }
 
 export const getschemeaccountbyid = async (data) => {
-    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/schemeaccount/${data.id}`);
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/schemeaccount/${data.id || data}`);
     return response.data;       
 }
 
@@ -1359,8 +1417,8 @@ export const addcloseSchemeAccount = async (data) => {
     const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/addcloseSchemeAccount`,data);
     return response.data;
 }
-export const revertschemeAccount = async (data) => {
-    const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/revertschemeAccount`,data);
+export const revertschemeAccount = async (id) => {
+    const response = await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/schemeAccount/${id}/revert`);
     return response.data;
 }
 
@@ -1370,13 +1428,18 @@ export const getcustomerschemeaccount = async (data) => {
 }
 
 export const searchbarcodenumber = async (data) => {
-
+   
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/giftissues/branch/${data.id_branch}/barcode?search=${data.barcode}`);
     return response.data;
 }
 
 export const getSchemeAccountCount = async (mobile,schemeId)=>{
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/schemeaccount/accountcount?mobile=${mobile}&schemeid=${schemeId}`)
+    return response.data;
+}
+
+export const schemeAccByCusIdSchmeId = async (cusId,schemeAccNum)=>{
+    const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/schemeaccount/revert?cusid=${cusId}&schemenum=${schemeAccNum}`)
     return response.data;
 }
 
@@ -1791,3 +1854,106 @@ export const addTicketRaise=async (formData)=>{
    return response.data
 }
 
+export const getallContent=async ()=>{
+    const response=await Api.get(`${import.meta.env.VITE_API_URL}/api/client/common/content-type`)
+    return response.data
+ }
+
+
+ export const addContent=async (data)=>{
+    const response=await Api.post(`${import.meta.env.VITE_API_URL}/api/client/content/add`,data)
+    return response.data
+ }
+
+ export const getContentById=async (id)=>{
+   
+    const response=await Api.get(`${import.meta.env.VITE_API_URL}/api/client/content/${id}`)
+   
+    return response.data
+ }
+ 
+ export const deleteContent=async (id)=>{
+    const response=await Api.delete(`${import.meta.env.VITE_API_URL}/api/client/content/${id}`)
+    return response.data
+ }
+
+
+export const getfaqCat = async ()=>{
+    const response=await Api.get(`${import.meta.env.VITE_API_URL}/api/client/common/faq-category`)
+    return response.data
+ }
+
+ 
+export const getAllfaq = async (data)=>{
+    const response=await Api.post(`${import.meta.env.VITE_API_URL}/api/client/faq/all/`,data)
+    return response.data
+ }
+ 
+ export const addFaq = async (data)=>{
+    const response=await Api.post(`${import.meta.env.VITE_API_URL}/api/client/faq/add/`,data)
+    return response.data
+ }
+
+ export const deleteFaq = async (data)=>{
+    const response=await Api.delete(`${import.meta.env.VITE_API_URL}/api/client/faq/${data}`)
+    return response.data
+ }
+
+ 
+ export const getfaqTable = async (data)=>{
+    const response=await Api.post(`${import.meta.env.VITE_API_URL}/api/client/faq/all/`,data)
+    return response.data
+ }
+
+
+export const getContentTable = async (data)=>{
+    const response=await Api.post(`${import.meta.env.VITE_API_URL}/api/client/content/all/`,data)
+    return response.data
+ }
+
+ export const getFaqId =async (id)=>{
+    const response=await Api.get(`${import.meta.env.VITE_API_URL}/api/client/faq/${id}`)
+    return response.data
+ }
+
+  
+export const updateFaq = async (data) => {
+    const response = await Api.patch(`${import.meta.env.VITE_API_URL}/api/client/faq/update/${data.id}`,data.values);
+    return response.data;
+}
+
+
+export const addPromotions = async (data)=>{
+    const response=await Api.post(`${import.meta.env.VITE_API_URL}/api/client/notify/promotion`,data)
+    return response.data
+ }
+
+ export const getContentTypes = async (data)=>{
+     console.log(data)
+    const response=await Api.post(`${import.meta.env.VITE_API_URL}/api/client/content/all/type/${data.type}`,data.data)
+    return response.data
+ }
+
+
+// 
+export const dueReportSummary = async (data)=>{
+    const response=await Api.post(`${import.meta.env.VITE_API_URL}/api/client/reports/overdue`)
+    return response.data
+ }
+
+export const preCloseSummary = async (data)=>{
+    const response=await Api.post(`${import.meta.env.VITE_API_URL}/api/client/reports/preclosesummary`)
+    return response.data
+ }
+export const Redeemptionsummary = async (data)=>{
+    const response=await Api.post(`${import.meta.env.VITE_API_URL}/api/client/reports/redeemptionsummary`)
+    return response.data
+ }
+export const refundSummary = async (data)=>{
+    const response=await Api.post(`${import.meta.env.VITE_API_URL}/api/client/reports/refundsummary`)
+    return response.data
+ }
+export const getOverAllSummary = async (data)=>{
+    const response=await Api.post(`${import.meta.env.VITE_API_URL}/api/client/reports/overallreport`)
+    return response.data
+ }

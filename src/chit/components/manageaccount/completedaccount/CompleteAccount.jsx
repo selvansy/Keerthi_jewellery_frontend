@@ -471,14 +471,14 @@ const CompleteAccount = () => {
       ),
     },
     {
-      header: 'Account Name',
-      cell: (row) => row?.account_name,
-    },
-    {
-      header: "Mobile",
-      cell: (row) => row?.mobile
-    },
-
+      header: "Account Name",
+      cell: (row) => (
+        <div className="flex flex-col gap-2">
+          <h6 className='text-nowrap'>{row?.account_name}</h6>
+          <span>{row?.mobile}</span>
+        </div>
+      ),
+    }, 
     {
       header: 'Scheme',
       cell: (row) => {
@@ -491,27 +491,27 @@ const CompleteAccount = () => {
         }
       }
     },
-    {
-      header: 'Metal Name',
-      cell: (row) => {
-        return row?.id_metal === 1 ? 'Gold' :
-          row?.id_metal === 2 ? 'Silver' :
-            row?.id_metal === 3 ? 'Diamond' :
-              row?.id_metal === 4 ? 'Platinum' : 'Gold Coins';
-      }
-    },
-    {
-      header: 'Purity Name',
-      cell: (row) => {
-        return row?.id_purity === 1 ? '24CT' :
-          row?.id_purity === 2 ? '22CT' :
-            row?.id_purity === 3 ? '20CT' :
-              row?.id_purity === 4 ? '18CT' :
-                row?.id_purity === 5 ? 'Gold coin' :
-                  row?.id_purity === 6 ? 'Platinum' :
-                    row?.id_purity === 7 ? 'Diamond' : 'Silver'
-      }
-    },
+    // {
+    //   header: 'Metal Name',
+    //   cell: (row) => {
+    //     return row?.id_metal === 1 ? 'Gold' :
+    //       row?.id_metal === 2 ? 'Silver' :
+    //         row?.id_metal === 3 ? 'Diamond' :
+    //           row?.id_metal === 4 ? 'Platinum' : 'Gold Coins';
+    //   }
+    // },
+    // {
+    //   header: 'Purity Name',
+    //   cell: (row) => {
+    //     return row?.id_purity === 1 ? '24CT' :
+    //       row?.id_purity === 2 ? '22CT' :
+    //         row?.id_purity === 3 ? '20CT' :
+    //           row?.id_purity === 4 ? '18CT' :
+    //             row?.id_purity === 5 ? 'Gold coin' :
+    //               row?.id_purity === 6 ? 'Platinum' :
+    //                 row?.id_purity === 7 ? 'Diamond' : 'Silver'
+    //   }
+    // },
     {
       header: "A/c No",
       cell: (row) => row?.scheme_acc_number === "" ? 'Not Allocated' : row?.scheme_acc_number
@@ -525,68 +525,40 @@ const CompleteAccount = () => {
     },
     {
       header: "Maturity Date",
-      cell: (row) => {
-        const date = new Date(row?.maturity_date);
-        return date.toLocaleDateString('en-GB'); // 'en-GB' gives the d-m-Y format
-      }
+      cell: (row) => row?.maturity_date
     },
-
-    {
-      header: "Total Ins",
-      cell: (row) => row?.total_installments
-    },
-    {
-      header: "Paid Ins",
-      cell: (row) => row?.total_paidinstallments
-    },
-    {
-      header: "Paid Amt",
-      cell: (row) => row?.total_paidamount
-    },
-    {
-      header: "Paid Wgt",
-      cell: (row) => row?.total_weight
-    },
+    // {
+    //   header: "Total Ins",
+    //   cell: (row) => row?.total_installments
+    // },
+    // {
+    //   header: "Paid Ins",
+    //   cell: (row) => row?.total_paidinstallments
+    // },
+    // {
+    //   header: "Paid Amt",
+    //   cell: (row) => row?.total_paidamount
+    // },
+    // {
+    //   header: "Paid Wgt",
+    //   cell: (row) => row?.total_weight
+    // },
     {
       header: 'Scheme Type',
-      cell: (row) => {
-        if (row?.scheme_type === 1) {
-          return `Amount End Weight`;
-        } else if (row?.scheme_type === 2) {
-          return `Amount To Weight`;
-        } else if (row?.scheme_type === 3) {
-          return `Weight`;
-        } else if (row?.scheme_type === 4) {
-          return `Flexible Amount To Bonus`;
-        } else if (row?.scheme_type === 5) {
-          return `Flexiable Amount To Weight`;
-        } else if (row?.scheme_type === 6) {
-          return `Fixed Amount To Weight`;
-        } else if (row?.scheme_type === 7) {
-          return `Fixed Amount End Weight`;
-        } else if (row?.scheme_type === 8) {
-          return `Fixed Amount To Bonus`;
-        } else if (row?.scheme_type === 9) {
-          return `Flexible Amount End Weight`;
-        } else if (row?.scheme_type === 10) {
-          return `Digi Gold`;
-        } else {
-          return `Amount To Bonus`;
-        }
-      }
+      cell: (row) => row?.scheme_typename
     },
     {
-      header: "Classification Name",
-      cell: (row) => row?.classification_name
+      header: "Classification",
+      cell: (row) => row?.id_classification.name
     },
-    {
-      header: "Branch Name",
-      cell: (row) => row?.branch_name
-    },
-    {
-      header: "Added By",
-      cell: (row) => row?.created_through
-    },
+    // {
+    //   header: "Branch Name",
+    //   cell: (row) => row?.branch_name
+    // },
+    // {
+    //   header: "Added By",
+    //   cell: (row) => row?.created_through
+    // },
     {
       header: "Create Date",
       cell: (row) => {
@@ -616,12 +588,12 @@ const CompleteAccount = () => {
 
 
 
-          <button
+          {/* <button
             className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
             onClick={handleClick}
             style={{ backgroundColor: layout_color }} >
             + Add Account
-          </button>
+          </button> */}
           <div className="flex flex-row items-center justify-end gap-2">
 
             <ExportToExcel apiData={schemeaccount} fileName="SchemeAccount Report" />

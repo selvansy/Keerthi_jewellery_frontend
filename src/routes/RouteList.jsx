@@ -55,7 +55,7 @@ import MenuComp from "../chit/components/Setup/menu/index";
 import Login from "../chit/components/Login";
 import ClientMaster from '../chit/components/SuperAdmin/ClientMaster/index';
 import ClientForm from '../chit/components/SuperAdmin/ClientMaster/ClientForm';
-import AupayConfigure from "../chit/components/SuperAdmin/Configure/aupay/index";
+import AupayConfigure from "../chit/components/SuperAdmin/Configure/Aupay/index";
 import AdminMaster from "../chit/components/SuperAdmin/Accounts/AdminMaster";
 import Dashboard from "../chit/components/SuperAdmin/Dashboard/Dashboard"
 import AddNotfication from "../chit/components/notification/pushnotification/AddNotfication";
@@ -85,9 +85,26 @@ import PrecloseAccount from "../chit/components/manageaccount/preclose/PrecloseA
 import { path } from "framer-motion/client";
 import TicketSubmissionForm from "../chit/components/help/Addticket";
 import Ticket from "../chit/components/help/ticket";
+import TopUp from "../chit/components/SuperAdmin/topupApprovals/index"
+import ContentManagement from "../chit/components/contentManagement/ContentManagement";
+import ContentForm from "../chit/components/contentManagement/ContentForm";
+import CustomerSchemes from "../../src/chit/components/manageaccount/schemeaccount/index"
+import FaqTable from "../chit/components/faq";
+import FaqCreation from "../chit/components/SuperAdmin/faq/FaqCreation"
+import FaqIndex from "../chit/components/SuperAdmin/faq";
+import PromotionSummary from "../chit/components/notification/promotions";
+import AddPromotion from "../chit/components/notification/promotions/AddPromotion";
+import NotificationHistory from "../chit/components/notification/notificationhistory/NotificationHistory";
+import ContentView from "../chit/components/contentManagement/ContentView";
+import PolicyView from "../chit/components/contentManagement/PolicyView";
+import OverDueReport from "../chit/components/Report/overDueReport";
+import PreClose from "../chit/components/Report/preclose";
+import PreCloseReport from "../chit/components/Report/preclose";
+import RedemptionReport from "../chit/components/Report/Redemptionsummary";
+import RefundReport from "../chit/components/Report/RefundSummary";
+import overallReport from "../chit/components/Report/overallReport";
 
 const RouteList = [
-
 
   {
     name: 'Login',
@@ -193,6 +210,7 @@ const RouteList = [
     path: 'masters/topup',
     element: <Base renderContent={Topup} />
   },
+
   {
     name: "Campaign Type",
     path: '/masters/campaign',
@@ -295,11 +313,15 @@ const RouteList = [
     path: '/managecustomers/editcustomer/:id',
     element: <Base renderContent={Customers} />
   },
-
   {
     name: "Completed Account",
     path: '/managecustomers/completedaccount',
     element: <Base renderContent={CompleteAccount} />
+  },
+  {
+    name:"Customer Schemes",
+    path:"/managecustomers/customerschemes",
+    element:<Base renderContent={CustomerSchemes}/>
   },
 
   //Wallet
@@ -410,7 +432,7 @@ const RouteList = [
   },
   {
     name: "Account Summary Report",
-    path: '/reports/accountsummaryreport',
+    path: '/reports/accountsummary',
     element: <Base renderContent={AccountSummaryReport} />
   },
   {
@@ -447,7 +469,7 @@ const RouteList = [
   },
   {
     name: "Employee Creation",
-    path: '/employee/creation/:id',
+    path: '/employee/edit/:id',
     element: <Base renderContent={AddEmployee} />
   },
 
@@ -495,6 +517,16 @@ const RouteList = [
     name: "Payment Mode Ledger",
     path: '/reports/paymentmodeledger',
     element: <Base renderContent={ModeWisePayment} />
+  },
+  {
+    name: "preclose summary",
+    path: '/reports/preclosesummary',
+    element: <Base renderContent={PreCloseReport} />
+  },
+  {
+    name: "redemption summary",
+    path: '/report/redemptionsummary/',
+    element: <Base renderContent={RedemptionReport} />
   },
 
   //Whatsapp 
@@ -615,6 +647,14 @@ const RouteList = [
     element: <Base renderContent={Schemetype} />
   },
   // super admin routes
+
+  
+  {
+    name: "Topup Summary",
+    path: '/schemereport/topupsummary',
+    element: <Base renderContent={TopUp} />
+  },
+
   {
     name: "Client Master",
     path: '/superadmin/clientmaster',
@@ -625,8 +665,6 @@ const RouteList = [
     path: "/superadmin/addclient",
     element: <Base renderContent={ClientForm} />
   },
-
-
 
   {
     name: "edit client",
@@ -666,9 +704,84 @@ const RouteList = [
   /// help
   {
     name:"ticket raise",
-    path:'/help/raiseticket/',
+    path:'/help/raiseticket',
     element:<Base renderContent={Ticket} />
-  }
+  },
+
+  {
+    name:"Terms and Conditions",
+    path:'/help/policy',
+    element:<Base renderContent={ContentManagement} />
+  },
+  {
+    name:"Policies",
+    path:'/help/policy/add',
+    element:<Base renderContent={ContentForm} />
+  },
+  {
+    name:"Policies",
+    path:'/help/policy/view/:id',
+    element:<Base renderContent={ContentView} />
+  },
+  {
+    name:"FAQ",
+    path:'/help/faq',
+    element:<Base renderContent={FaqTable} />
+  },
+  {
+    name:"FaqCreation",
+    path:'/help/faq/add',
+    element:<Base renderContent={FaqCreation} />
+  },
+  {
+    name:"FaqCreation",
+    path:"/help/faq/view/:id",
+    element:<Base renderContent={FaqCreation} />
+  },
+  {
+    name:"FaqIndex",
+    path:'/help/faq/table',
+    element:<Base renderContent={FaqIndex} />
+  },
+  {
+    name:"Promotions Summary",
+    path:'/schemereport/promosummary/',
+    element:<Base renderContent={PromotionSummary} />
+  },
+  {
+    name:"Notifications Summary",
+    path:'/schemereport/notification/',
+    element:<Base renderContent={NotificationHistory} />
+  },
+
+  {
+    name:"Promotions Creation",
+    path:'/promotions/promotioncreations',
+    element:<Base renderContent={AddPromotion} />
+  },
+  {
+    name:"Policy View",
+    path:'/help/policy/',
+    element:<Base renderContent={PolicyView} />
+  },
+
+  {
+    name:"Over Due",
+    path:'/report/overdue',
+    element:<Base renderContent={OverDueReport} />
+  },
+
+  {
+    name:"Refund",
+    path:'/report/refund',
+    element:<Base renderContent={RefundReport} />
+  },
+  {
+    name:"over all",
+    path:'/report/overallreport',
+    element:<Base renderContent={overallReport} />
+  },
+
 
 ];
 

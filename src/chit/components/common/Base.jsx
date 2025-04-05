@@ -88,7 +88,9 @@ const Base = ({ renderContent: RenderContent }) => {
   }, []);
 
   const location = useLocation();
-  const sectionName = location.pathname.split("/")[1]?.replace(/^./, (c) => c.toUpperCase()) || "";
+  const sectionName =
+    location.pathname.split("/")[1]?.replace(/^./, (c) => c.toUpperCase()) ||
+    "";
 
   const { info } = useSelector((state) => state.auth);
   const decoded = jwtDecode(info);
@@ -127,10 +129,15 @@ const Base = ({ renderContent: RenderContent }) => {
               <SubMenuItem
                 key={submenu.id_submenu}
                 text={submenu.submenu_name}
+                pathUrl={submenu.pathurl}
                 onClick={() => {
                   console.log("Submenu", submenu.submenu_name);
                   handleClick(submenu.submenu_name);
-                  navigate(submenu.pathurl.startsWith("/") ? submenu.pathurl : `/${submenu.pathurl}`);
+                  navigate(
+                    submenu.pathurl.startsWith("/")
+                      ? submenu.pathurl
+                      : `/${submenu.pathurl}`
+                  );
                 }}
                 isLast={index === menu.menu_list.length - 1}
                 parentSection={menu.menu_name}
@@ -284,36 +291,76 @@ const Base = ({ renderContent: RenderContent }) => {
     }));
   };
 
-  const SubMenuItem = ({ text, onClick, isLast, parentSection }) => (
-    <div className="relative">
-      {!isLast && (
-        <div className="absolute left-6 top-1/2 w-[1px] h-full bg-white -translate-x-1/2" />
-      )}
-      <div className="relative flex items-center">
-        <div
-          className={`absolute left-6 w-3 h-3 rounded-full border-2 border-white -translate-x-1/2 z-10 ${
-            selectedSubSection === text ? "" : "bg-gray-400"
-          }`}
-        />
-        <div
-          className={`w-full flex items-center px-4 rounded-md py-2 pl-12 transition-colors cursor-pointer text-sm font-semibold
-            ${
-              selectedSubSection === text
-                ? "bg-white text-[#033453]"
-                : "text-white hover:bg-[#005073]"
+  // const SubMenuItem = ({ text, onClick, isLast, parentSection }) => (
+  //   <div className="relative">
+  //     {!isLast && (
+  //       <div className="absolute left-6 top-1/2 w-[1px] h-full bg-white -translate-x-1/2" />
+  //     )}
+  //     <div className="relative flex items-center">
+  //       <div
+  //         className={`absolute left-6 w-3 h-3 rounded-full border-2 border-white -translate-x-1/2 z-10 ${
+  //           selectedSubSection === text ? "" : "bg-gray-400"
+  //         }`}
+  //       />
+  //       <div
+  //         className={`w-full flex items-center px-4 rounded-md py-2 pl-12 transition-colors cursor-pointer text-sm font-semibold
+  //           ${
+  //             selectedSubSection === text
+  //               ? "bg-white text-[#033453]"
+  //               : "text-white hover:bg-[#005073]"
+  //           }`}
+  //         onClick={() => {
+  //           setSelectedSubSection(text);
+  //           setSelectedSection(text);
+  //           setSelectedParentSection(parentSection);
+  //           onClick && onClick();
+  //         }}
+  //       >
+  //         {text}
+  //       </div>
+  //     </div>
+  //   </div>
+  // );
+  const SubMenuItem = ({ text, onClick, isLast, parentSection, pathUrl }) => {
+    // Extract the URL from the pathUrl prop
+    const url = pathUrl?.startsWith("/") ? pathUrl : `/${pathUrl}`;
+
+    const handleLeftClick = (e) => {
+      // For left clicks, use your normal click handler with router navigation
+      e.preventDefault();
+      setSelectedSubSection(text);
+      setSelectedSection(text);
+      setSelectedParentSection(parentSection);
+      onClick && onClick();
+    };
+
+    return (
+      <div className="relative">
+        {!isLast && (
+          <div className="absolute left-6 top-1/2 w-[1px] h-full bg-white -translate-x-1/2" />
+        )}
+        <div className="relative flex items-center">
+          <div
+            className={`absolute left-6 w-3 h-3 rounded-full border-2 border-white -translate-x-1/2 z-10 ${
+              selectedSubSection === text ? "" : "bg-gray-400"
             }`}
-          onClick={() => {
-            setSelectedSubSection(text);
-            setSelectedSection(text);
-            setSelectedParentSection(parentSection);
-            onClick && onClick();
-          }}
-        >
-          {text}
+          />
+          <a
+            href={url}
+            className={`w-full flex items-center px-4 rounded-md py-2 pl-12 transition-colors cursor-pointer text-sm font-semibold
+              ${
+                selectedSubSection === text
+                  ? "bg-white text-[#033453]"
+                  : "text-white hover:bg-[#005073]"
+              }`}
+            onClick={handleLeftClick}
+          >
+            {text}
+          </a>
         </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   const MenuItem = ({
     text,
@@ -481,36 +528,36 @@ const Base = ({ renderContent: RenderContent }) => {
         <div className="flex justify-between items-center h-full px-4">
           {/* Left side of header with burger menu and section title */}
           <div className="flex flex-row gap-4">
-          <div className="flex items-center">
-            {/* Burger menu button - positioned on the left for mobile */}
-            <button
-              className="lg:hidden p-2 mr-3"
-              data-testid="toggle-sidebar"
-              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            >
-              <Menu className="w-6 h-6" />
-            </button>
-            
-            {/* Section title - hidden on mobile */}
-            <div className="title lg:flex justify-center items-center hidden">
-              <h1 className="text-lg font-semibold">{sectionName}</h1>
-            </div>
-          </div>
-          
-          {/* Search component */}
-          <div 
-            className="se flex justify-center items-center w-[120px] h-[50px] gap-5 border text-[#F2F2F9] rounded-[8px]"
-            onClick={() => setIsModalOpen(true)}
-          >
-            <div className="search">
-              <img src={Search} alt="" className="w-7 h-7" />
+            <div className="flex items-center">
+              {/* Burger menu button - positioned on the left for mobile */}
+              <button
+                className="lg:hidden p-2 mr-3"
+                data-testid="toggle-sidebar"
+                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              >
+                <Menu className="w-6 h-6" />
+              </button>
+
+              {/* Section title - hidden on mobile */}
+              <div className="title lg:flex justify-center items-center hidden">
+                <h1 className="text-lg font-semibold">{sectionName}</h1>
+              </div>
             </div>
 
-            <div className="command flex ps-2">
-              <img src={Command} alt="" className="w-7 h-7" />
-              <span className="text-black ms-1">F</span>
+            {/* Search component */}
+            <div
+              className="se flex justify-center items-center w-[120px] h-[50px] gap-5 border text-[#F2F2F9] rounded-[8px]"
+              onClick={() => setIsModalOpen(true)}
+            >
+              <div className="search">
+                <img src={Search} alt="" className="w-7 h-7" />
+              </div>
+
+              <div className="command flex ps-2">
+                <img src={Command} alt="" className="w-7 h-7" />
+                <span className="text-black ms-1">F</span>
+              </div>
             </div>
-          </div>
           </div>
 
           {/* Right side with settings, notifications and user menu */}
@@ -790,8 +837,12 @@ const Base = ({ renderContent: RenderContent }) => {
         </main>
       </div>
 
-      <footer className="flex flex-row justify-center bg-white border-t p-2 fixed bottom-0 left-0 lg:left-40 w-full z-30">
-        <div>Copyright 2024 © Aurumm by Atts</div>
+      <footer className="flex flex-row justify-center items-center w-full h-3 bg-white border-t py-3 px-2 fixed bottom-0 left-0 lg:left-40 z-30">
+       <div className="flex w-3/4 justify-end items-center ">
+       <div className="mx-2">Copyright 2024 © Aurumm by Atts </div>
+       <div className="mx-2">/</div>
+       <div className="mx-2 cursor-pointer" onClick={()=>navigate("/help/policy")}> <span className="text-blue-700">Legal Policies</span></div>
+       </div>
       </footer>
     </div>
   );

@@ -13,20 +13,24 @@ import { useDispatch } from "react-redux";
 import { openModal } from "../../../../redux/modalSlice";
 import { eventEmitter } from "../../../../utils/EventEmitter";
 import Modal from "../../common/Modal";
+
 const UserAccessForm = () => {
   const [activeProfile, setActiveProfile] = useState(1);
   const [userRolesList, setUserRoleList] = useState([]);
   const [selectRoleData, setSelectRoleData] = useState([]);
   const [menuPermissionList, setMenuPermissionList] = useState([]);
+  const [filteredMenuPermissionList, setFilteredMenuPermissionList] = useState([]);
   const [id_role, setidrole] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [updateData, setUpdateData] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
   const dispatch = useDispatch();
 
   const showAccess = (selectedRole) => {
     setIsLoading(true);
     setActiveProfile(selectedRole.value);
     setidrole(selectedRole.value);
+    setSearchTerm(""); // Reset search when changing role
     getuserpermissionmutate({ id_role: selectedRole.value });
   };
 
@@ -53,6 +57,15 @@ const UserAccessForm = () => {
     onSuccess: (response) => {
       if (response) {
         setMenuPermissionList(response.data);
+        // Apply existing search filter to new data if search term exists
+        if (searchTerm.trim() !== "") {
+          const filtered = response.data.filter(menu => 
+            menu.menu_name.toLowerCase().includes(searchTerm.toLowerCase())
+          );
+          setFilteredMenuPermissionList(filtered);
+        } else {
+          setFilteredMenuPermissionList(response.data);
+        }
       }
       setIsLoading(false);
     },
@@ -104,11 +117,63 @@ const UserAccessForm = () => {
     mutationFn: updatemenupermission,
     onSuccess: (response) => {
       if (response !== null) {
-        getuserpermissionmutate({ id_role: id_role });
+        // Update the permission locally in both menuPermissionList and filteredMenuPermissionList
+        // to avoid full refetch when possible
+        if (updateData) {
+          const updatedMenuList = menuPermissionList.map(menu => {
+            if (menu.menu_id === updateData.id_submenu) {
+              return {
+                ...menu,
+                view_permit: updateData.view_permit !== undefined ? updateData.view_permit : menu.view_permit,
+                add_permit: updateData.add_permit !== undefined ? updateData.add_permit : menu.add_permit,
+                edit_permit: updateData.edit_permit !== undefined ? updateData.edit_permit : menu.edit_permit,
+                delete_permit: updateData.delete_permit !== undefined ? updateData.delete_permit : menu.delete_permit
+              };
+            }
+            return menu;
+          });
+          
+          setMenuPermissionList(updatedMenuList);
+          
+          // Also update the filtered list
+          const updatedFilteredList = filteredMenuPermissionList.map(menu => {
+            if (menu.menu_id === updateData.id_submenu) {
+              return {
+                ...menu,
+                view_permit: updateData.view_permit !== undefined ? updateData.view_permit : menu.view_permit,
+                add_permit: updateData.add_permit !== undefined ? updateData.add_permit : menu.add_permit,
+                edit_permit: updateData.edit_permit !== undefined ? updateData.edit_permit : menu.edit_permit,
+                delete_permit: updateData.delete_permit !== undefined ? updateData.delete_permit : menu.delete_permit
+              };
+            }
+            return menu;
+          });
+          
+          setFilteredMenuPermissionList(updatedFilteredList);
+        }
+        
         toast.success(response.message);
       }
     },
+    onError: () => {
+      // Fallback to full refetch if optimistic update fails
+      getuserpermissionmutate({ id_role: id_role });
+    }
   });
+
+  const handleSearch = (e) => {
+    const term = e.target.value.toLowerCase();
+    setSearchTerm(term);
+    
+    if (term.trim() === "") {
+      setFilteredMenuPermissionList(menuPermissionList);
+    } else {
+      const filtered = menuPermissionList.filter(menu => 
+        menu.menu_name.toLowerCase().includes(term)
+      );
+      setFilteredMenuPermissionList(filtered);
+    }
+  };
 
   useEffect(() => {
     const handleUpdate = () => {
@@ -130,7 +195,32 @@ const UserAccessForm = () => {
 
   return (
     <div className="w-full p-4">
-      <div className="flex justify-end py-5">
+      <div className="flex justify-between py-5">
+        <div className="w-1/3">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search menu..."
+              value={searchTerm}
+              onChange={handleSearch}
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <span className="absolute right-3 top-2.5 text-gray-400">
+              {/* You can add a search icon here if needed */}
+              {searchTerm && (
+                <button 
+                  onClick={() => {
+                    setSearchTerm("");
+                    setFilteredMenuPermissionList(menuPermissionList);
+                  }}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  ✕
+                </button>
+              )}
+            </span>
+          </div>
+        </div>
         <div className="w-1/4">
           <Select
             name="id_role"
@@ -161,85 +251,93 @@ const UserAccessForm = () => {
                 </thead>
                 <tbody>
                   {!isLoading ? (
-                    menuPermissionList.map((menu,index) => (
-                      <tr key={menu.menu_id}>
-                        <td className="border px-4 py-2">{index+1}</td>
-                        <td className="border px-4 py-2">{menu.menu_name}</td>
-                        <td className="border px-2 py-2 text-center">
-                          <input
-                            type="checkbox"
-                            checked={
-                              menu.view_permit &&
-                              menu.add_permit &&
-                              menu.edit_permit &&
-                              menu.delete_permit
-                            }
-                            onChange={(e) =>
-                              confirmUpdatePermission(
-                                e.target.checked,
-                                "all",
-                                menu.menu_id
-                              )
-                            }
-                          />
-                        </td>
-                        <td className="border px-4 py-2 text-center">
-                          <input
-                            type="checkbox"
-                            checked={menu.view_permit}
-                            onChange={(e) =>
-                              confirmUpdatePermission(
-                                e.target.checked,
-                                "view",
-                                menu.menu_id
-                              )
-                            }
-                          />
-                        </td>
-                        <td className="border px-4 py-2 text-center">
-                          <input
-                            type="checkbox"
-                            checked={menu.add_permit}
-                            onChange={(e) =>
-                              confirmUpdatePermission(
-                                e.target.checked,
-                                "add",
-                                menu.menu_id
-                              )
-                            }
-                          />
-                        </td>
-                        <td className="border px-4 py-2 text-center">
-                          <input
-                            type="checkbox"
-                            checked={menu.edit_permit}
-                            onChange={(e) =>
-                              confirmUpdatePermission(
-                                e.target.checked,
-                                "edit",
-                                menu.menu_id
-                              )
-                            }
-                          />
-                        </td>
-                        <td className="border px-4 py-2 text-center">
-                          <input
-                            type="checkbox"
-                            checked={menu.delete_permit}
-                            onChange={(e) =>
-                              confirmUpdatePermission(
-                                e.target.checked,
-                                "delete",
-                                menu.menu_id
-                              )
-                            }
-                          />
+                    filteredMenuPermissionList.length > 0 ? (
+                      filteredMenuPermissionList.map((menu, index) => (
+                        <tr key={menu.menu_id}>
+                          <td className="border px-4 py-2">{index+1}</td>
+                          <td className="border px-4 py-2">{menu.menu_name}</td>
+                          <td className="border px-2 py-2 text-center">
+                            <input
+                              type="checkbox"
+                              checked={
+                                menu.view_permit &&
+                                menu.add_permit &&
+                                menu.edit_permit &&
+                                menu.delete_permit
+                              }
+                              onChange={(e) =>
+                                confirmUpdatePermission(
+                                  e.target.checked,
+                                  "all",
+                                  menu.menu_id
+                                )
+                              }
+                            />
+                          </td>
+                          <td className="border px-4 py-2 text-center">
+                            <input
+                              type="checkbox"
+                              checked={menu.view_permit}
+                              onChange={(e) =>
+                                confirmUpdatePermission(
+                                  e.target.checked,
+                                  "view",
+                                  menu.menu_id
+                                )
+                              }
+                            />
+                          </td>
+                          <td className="border px-4 py-2 text-center">
+                            <input
+                              type="checkbox"
+                              checked={menu.add_permit}
+                              onChange={(e) =>
+                                confirmUpdatePermission(
+                                  e.target.checked,
+                                  "add",
+                                  menu.menu_id
+                                )
+                              }
+                            />
+                          </td>
+                          <td className="border px-4 py-2 text-center">
+                            <input
+                              type="checkbox"
+                              checked={menu.edit_permit}
+                              onChange={(e) =>
+                                confirmUpdatePermission(
+                                  e.target.checked,
+                                  "edit",
+                                  menu.menu_id
+                                )
+                              }
+                            />
+                          </td>
+                          <td className="border px-4 py-2 text-center">
+                            <input
+                              type="checkbox"
+                              checked={menu.delete_permit}
+                              onChange={(e) =>
+                                confirmUpdatePermission(
+                                  e.target.checked,
+                                  "delete",
+                                  menu.menu_id
+                                )
+                              }
+                            />
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="7" className="text-center py-4">
+                          No menus found matching "{searchTerm}"
                         </td>
                       </tr>
-                    ))
+                    )
                   ) : (
                     <tr>
-                      <td colSpan="6" className="text-center py-4">
+                      <td colSpan="7" className="text-center py-4">
                         <Loading />
                       </td>
                     </tr>

@@ -98,9 +98,7 @@ const GeneralDetails = ({setIsAddClient, onPageChange, isLoading = false }) => {
   }
 
 
-  
 
-  
   const validate = (data) => {
     const errors = {};
     if (!data.id_branch) errors.id_branch = 'Branch Id is required';
@@ -279,8 +277,7 @@ const GeneralDetails = ({setIsAddClient, onPageChange, isLoading = false }) => {
         console.log(response);
         toast.success(response.message)
         setFormData(formData);
-        dispatch(pagehandler(currentStep + 1));
-        console.log(currentStep);
+        dispatch(pagehandler(currentStep + 1));  
       },
       onError: (error) => {
         toast.error(error.response.data.message)
@@ -305,9 +302,6 @@ const GeneralDetails = ({setIsAddClient, onPageChange, isLoading = false }) => {
             <div className="mb-8">
               <h2 className="text-1xl font-bold mb-4 mt-4">General Details</h2>
               <div className="grid grid-rows-2 md:grid-cols-2 gap-4">
-
-                
-
                 <div className='flex flex-col gap-2'>
                   <label className='text-gray-700 font-medium'>Print Type<span className='text-red-400'>*</span></label>
                   <div className="relative">

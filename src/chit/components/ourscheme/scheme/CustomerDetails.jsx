@@ -11,8 +11,8 @@ const CustomerDetails = ({ formik, layout_color}) => {
           <div className="relative">
             <input
               type="number"
-              name="referral_rate"
-              value={formik.values.referral_rate}
+              name="customer_referral_per"
+              value={formik.values.customer_referral_per}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               onWheel={(e) => e.target.blur()}
@@ -26,8 +26,8 @@ const CustomerDetails = ({ formik, layout_color}) => {
               %
             </span>
           </div>
-          {formik.touched.referral_rate && formik.errors.referral_rate && (
-            <span className="text-red-500 text-sm mt-1">{formik.errors.referral_rate}</span>
+          {formik.touched.customer_referral_per && formik.errors.customer_referral_per && (
+            <span className="text-red-500 text-sm mt-1">{formik.errors.customer_referral_per}</span>
           )}
         </div>
         <div className="flex flex-col lg:mt-2">
@@ -37,8 +37,8 @@ const CustomerDetails = ({ formik, layout_color}) => {
           <div className="relative">
             <input
               type="number"
-              name="incentive_rate"
-              value={formik.values.incentive_rate}
+              name="customer_incentive_per"
+              value={formik.values.customer_incentive_per}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               onWheel={(e) => e.target.blur()}
@@ -52,8 +52,8 @@ const CustomerDetails = ({ formik, layout_color}) => {
                %
             </span>
           </div>
-          {formik.touched.incentive_rate && formik.errors.incentive_rate && (
-            <span className="text-red-500 text-sm mt-1">{formik.errors.incentive_rate}</span>
+          {formik.touched.customer_incentive_per && formik.errors.customer_incentive_per && (
+            <span className="text-red-500 text-sm mt-1">{formik.errors.customer_incentive_per}</span>
           )}
         </div>
         <div className="flex flex-col lg:mt-2">
@@ -63,8 +63,8 @@ const CustomerDetails = ({ formik, layout_color}) => {
           <div className="relative">
             <input
               type="text"
-              name="cus_remarks"
-              value={formik.values.cus_remarks}
+              name="customer_ref_remarks"
+              value={formik.values.customer_ref_remarks}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               onWheel={(e) => e.target.blur()}
@@ -72,8 +72,8 @@ const CustomerDetails = ({ formik, layout_color}) => {
               placeholder="Enter Remark"
             />
           </div>
-          {formik.touched.cus_remarks && formik.errors.cus_remarks && (
-            <span className="text-red-500 text-sm mt-1">{formik.errors.cus_remarks}</span>
+          {formik.touched.customer_ref_remarks && formik.errors.customer_ref_remarks && (
+            <span className="text-red-500 text-sm mt-1">{formik.errors.customer_ref_remarks}</span>
           )}
         </div>
     </div>

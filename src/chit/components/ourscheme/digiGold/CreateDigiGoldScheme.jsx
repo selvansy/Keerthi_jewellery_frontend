@@ -48,7 +48,7 @@ const CreateDigiGoldScheme = () => {
       scheme_name: "",
       description: "",
       term_desc: "",
-      id_branch: id_branch || "",
+      id_branch: accessBranch !== "0" ? accessBranch : id_branch || "",
       id_metal:'',
       id_purity:"",
       id_classification:"",
@@ -145,7 +145,7 @@ const CreateDigiGoldScheme = () => {
     onSuccess: (response) => {
       setIsLoading(false);
       toast.success(response.message);
-      navigate("/scheme/digigold/");
+      navigate("/scheme/scheme/")
     },
     onError: (error) => {
       setIsLoading(false);
@@ -169,6 +169,9 @@ const CreateDigiGoldScheme = () => {
   });
 
   //useEffect
+  useEffect(()=>{
+    formik.setFieldValue('id_branch',id_branch || accessBranch)
+  },[id_branch,accessBranch])
   useEffect(() => {
     if (!branchData) return;
   
@@ -248,6 +251,7 @@ const CreateDigiGoldScheme = () => {
                 value={formik.values.values[i]?.min || ""}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
+                onWheel={(e) => e.target.blur()}
                 placeholder="Min Value"
                 className="w-full border rounded-md px-3 py-2"
               />
@@ -258,6 +262,7 @@ const CreateDigiGoldScheme = () => {
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 placeholder="Max Value"
+                onWheel={(e) => e.target.blur()}
                 className="w-full border rounded-md px-3 py-2"
               />
             </div>
@@ -429,6 +434,7 @@ const CreateDigiGoldScheme = () => {
                   value={formik.values.buy_gst}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
+                  onWheel={(e) => e.target.blur()}
                   className="w-full border rounded-md px-3 py-2"
                   placeholder="Enter Here"
                 />
@@ -451,15 +457,24 @@ const CreateDigiGoldScheme = () => {
                 <label className="block text-sm font-medium mb-1">
                   Sell GST<span className="text-red-400">*</span>
                 </label>
+                <div className="relative">
                 <input
                   name="sell_gst"
                   type="number"
                   value={formik.values.sell_gst}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
+                  onWheel={(e) => e.target.blur()}
                   className="w-full border rounded-md px-3 py-2"
                   placeholder="Enter Here"
                 />
+                <span
+              className="absolute right-0 top-0 h-full w-10 flex items-center justify-center text-md text-white rounded-r-md whitespace-nowrap overflow-hidden text-ellipsis"
+              style={{ backgroundColor: layout_color }}
+            >
+              %
+            </span>
+                </div>
                 {formik.touched.sell_gst && formik.errors.sell_gst && (
                   <div className="text-red-500 text-sm mt-1">
                     {formik.errors.sell_gst}
@@ -478,6 +493,7 @@ const CreateDigiGoldScheme = () => {
                   value={formik.values.max_amount}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
+                  onWheel={(e) => e.target.blur()}
                   className="w-full border rounded-md px-3 py-2"
                   placeholder="Enter Here"
                 />
@@ -499,6 +515,7 @@ const CreateDigiGoldScheme = () => {
                   value={formik.values.min_amount}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
+                  onWheel={(e) => e.target.blur()}
                   className="w-full border rounded-md px-3 py-2"
                   placeholder="Enter Here"
                 />
@@ -557,6 +574,7 @@ const CreateDigiGoldScheme = () => {
                     formik.setFieldValue("bonuses", Array(newCount).fill(0));
                   }}
                   onBlur={formik.handleBlur}
+                  onWheel={(e) => e.target.blur()}
                   min="1"
                   className="w-full border rounded-md px-3 py-2"
                 />

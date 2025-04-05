@@ -19,7 +19,7 @@ function StaffuserForm({ setIsOpen}) {
      const [clientData, setClientData] = useState([])
     const { extraData } = useSelector((state) => state.modal);
     const decodedata = useSelector((state) => state.clientForm.roledata);
-
+  const layout_color = useSelector((state) => state.clientForm.layoutColor);
     const id_role = decodedata?.id_role?.id_role;
     const id_client = decodedata?.id_client;
     const id_branch = decodedata?.branch;

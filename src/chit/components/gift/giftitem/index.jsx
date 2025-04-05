@@ -74,7 +74,6 @@ const GiftHandOver = () => {
         setTotalPages(response.totalPages)
         setCurrentPage(response.currentPage)
         Setentries(response.totalDocument)
-     
       }
       setisLoading(false)
     },

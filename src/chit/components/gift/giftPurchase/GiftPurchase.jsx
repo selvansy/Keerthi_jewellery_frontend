@@ -701,7 +701,7 @@ const GiftPurchase = () => {
               <option value={500}>500</option>
               <option value={1000}>1000</option>
             </select>
-            <span className="text-gray-500">entries</span>
+            <span className="text-gray-500">{entries} entries</span>
           </div>
           <Modal />
         </div>

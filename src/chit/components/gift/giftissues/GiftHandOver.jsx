@@ -391,9 +391,7 @@ const GiftIssued = () => {
               </>
 
           }
-
-
-
+          
           <button
             className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
             onClick={handleClick}

@@ -21,8 +21,9 @@ const AgentDetails = ({ formik,layout_color}) => {
           <div className="relative">
             <input
               type="number"
-              name="agent_referral"
-              value={formik.values.agent_referral}
+              max={100}
+              name="agent_referral_percentage"
+              value={formik.values.agent_referral_percentage}
               onWheel={(e) => e.target.blur()}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
@@ -36,8 +37,8 @@ const AgentDetails = ({ formik,layout_color}) => {
               %
             </span>
           </div>
-          {formik.touched.agent_referral && formik.errors.agent_referral && (
-            <span className="text-red-500 text-sm mt-1">{formik.errors.agent_referral}</span>
+          {formik.touched.agent_referral_percentage && formik.errors.agent_referral_percentage && (
+            <span className="text-red-500 text-sm mt-1">{formik.errors.agent_referral_percentage}</span>
           )}
         </div>
         <div className="flex flex-col lg:mt-2">
@@ -83,7 +84,7 @@ const AgentDetails = ({ formik,layout_color}) => {
           <div className="relative">
             <input
               type="text"
-              name="cus_remarks"
+              name="agent_remark"
               value={formik.values.agent_remark}
               onChange={formik.handleChange}
               onWheel={(e) => e.target.blur()}
@@ -105,11 +106,10 @@ const AgentDetails = ({ formik,layout_color}) => {
           <div className="relative">
             <input
               type="number"
-              name="agent_target"
-              value={formik.values.agent_target}
+              name="agent_target_per"
+              value={formik.values.agent_target_per}
               onChange={formik.handleChange}
               onWheel={(e) => e.target.blur()}
-              onBlur={formik.handleBlur}
               className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
               placeholder="Enter Agent Target"
             />
@@ -120,8 +120,8 @@ const AgentDetails = ({ formik,layout_color}) => {
               %
             </span>
           </div>
-          {formik.touched.agent_target && formik.errors.agent_target && (
-            <span className="text-red-500 text-sm mt-1">{formik.errors.agent_target}</span>
+          {formik.touched.agent_target_per && formik.errors.agent_target_per && (
+            <span className="text-red-500 text-sm mt-1">{formik.errors.agent_target_per}</span>
           )}
         </div>
         <div className="flex flex-col lg:mt-2">
@@ -131,8 +131,8 @@ const AgentDetails = ({ formik,layout_color}) => {
           <div className="relative">
             <input
               type="number"
-              name="partial_commission"
-              value={formik.values.partial_commission}
+              name="agent_partial_per"
+              value={formik.values.agent_partial_per}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               onWheel={(e) => e.target.blur()}
@@ -146,8 +146,8 @@ const AgentDetails = ({ formik,layout_color}) => {
               %
             </span>
           </div>
-          {formik.touched.partial_commission && formik.errors.partial_commission && (
-            <span className="text-red-500 text-sm mt-1">{formik.errors.partial_commission}</span>
+          {formik.touched.agent_partial_per && formik.errors.agent_partial_per && (
+            <span className="text-red-500 text-sm mt-1">{formik.errors.agent_partial_per}</span>
           )}
         </div>
             </>

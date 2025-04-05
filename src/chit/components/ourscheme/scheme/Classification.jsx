@@ -3,10 +3,10 @@ import { X } from "lucide-react";
 import { toast } from "react-toastify";
 import banner_placeholder from '../../../../assets/banner_placeholder.webp'
 
-const Classification = ({ formik, layout_color, setMainImg, setDescImg }) => {
+const Classification = ({ formik, layout_color, setMainImg, setDescImg,pathurl,logo,desc_img}) => {
   const mainImageInputRef = useRef(null);
   const descImageInputRef = useRef(null);
-
+  
   const [mainImageName, setMainImageName] = useState("");
   const [descImageName, setDescImageName] = useState("");
 
@@ -49,13 +49,13 @@ const Classification = ({ formik, layout_color, setMainImg, setDescImg }) => {
   return (
     <div className="p-6 mb-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
-        <div className="mb-4">
+      <div className="mb-4">
           <label className="block mb-2">Upload Main Image <span className="text-red-500">*</span></label>
           <div className="flex">
             <input
               type="text"
               readOnly
-              value={mainImageName}
+              value={mainImageName || logo}
               className="border rounded-l-md p-2 w-full bg-gray-50"
             />
             <button
@@ -71,29 +71,16 @@ const Classification = ({ formik, layout_color, setMainImg, setDescImg }) => {
               className="hidden"
               accept="image/*"
               onChange={(e) =>
-                handleFileChange(
-                  e,
-                  setMainImageName,
-                  setMainImg,
-                  setMainImagePreview
-                )
+                handleFileChange(e, setMainImageName, setMainImg, setMainImagePreview)
               }
             />
           </div>
           <div className="mt-2 relative">
-            {mainImagePreview ? (
-              <img
-                src={mainImagePreview}
-                alt="Main Image Preview"
-                className="w-full h-52 rounded object-cover"
-              />
-            ) : (
-              <img
-                src={banner_placeholder}
-                alt="Placeholder"
-                className="w-full h-52 rounded object-cover"
-              />
-            )}
+            <img
+              src={mainImagePreview || (typeof logo === "string" ? `${pathurl}${logo}` : banner_placeholder)}
+              alt="Main Image Preview"
+              className="w-full h-52 rounded object-cover"
+            />
             {mainImagePreview && (
               <button
                 type="button"
@@ -104,11 +91,9 @@ const Classification = ({ formik, layout_color, setMainImg, setDescImg }) => {
               </button>
             )}
           </div>
-          <div className="mt-2 mb-2">
           {formik?.errors?.main_image && (
             <div className="text-red-500 text-sm mt-1">{formik.errors.main_image}</div>
           )}
-          </div>
         </div>
 
         {/* Upload Description Image */}
@@ -118,7 +103,7 @@ const Classification = ({ formik, layout_color, setMainImg, setDescImg }) => {
             <input
               type="text"
               readOnly
-              value={descImageName}
+              value={descImageName || desc_img}
               className="border rounded-l-md p-2 w-full bg-gray-50"
             />
             <button
@@ -134,29 +119,16 @@ const Classification = ({ formik, layout_color, setMainImg, setDescImg }) => {
               className="hidden"
               accept="image/*"
               onChange={(e) =>
-                handleFileChange(
-                  e,
-                  setDescImageName,
-                  setDescImg,
-                  setDescImagePreview
-                )
+                handleFileChange(e, setDescImageName, setDescImg, setDescImagePreview)
               }
             />
           </div>
           <div className="mt-2 relative">
-            {descImagePreview ? (
-              <img
-                src={descImagePreview}
-                alt="Description Image Preview"
-                className="w-full h-52 rounded object-cover"
-              />
-            ) : (
-              <img
-                src={banner_placeholder}
-                alt="Placeholder"
-                className="w-full h-52 rounded object-cover"
-              />
-            )}
+            <img
+              src={descImagePreview || (typeof desc_img === "string" ? `${pathurl}${desc_img}` : banner_placeholder)}
+              alt="Description Image Preview"
+              className="w-full h-52 rounded object-cover"
+            />
             {descImagePreview && (
               <button
                 type="button"
@@ -212,9 +184,15 @@ const Classification = ({ formik, layout_color, setMainImg, setDescImg }) => {
           <input
             type="number"
             name="classification_order"
-            value={formik?.values?.classification_order || "0"}
+            value={formik?.values?.classification_order}
             onWheel={(e)=>e.target.blur()}
-            onChange={formik?.handleChange}
+            onChange={(e) => {
+              if (e.target.value < 50) {
+                formik.handleChange(e);
+              }else{
+                formik.setFieldError("classification_order", "Value must be less than 50");
+              }
+            }}            
             onBlur={formik?.handleBlur}
             className="border rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
           />
@@ -234,6 +212,9 @@ const Classification = ({ formik, layout_color, setMainImg, setDescImg }) => {
             </svg>
           </div>
         </div>
+        {formik?.touched?.classification_order && formik?.errors?.classification_order && (
+            <div className="text-red-500 text-sm mt-1">{formik.errors.classification_order}</div>
+          )}
       </div>
     </div>
   );

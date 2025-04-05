@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { useFormik } from "formik";
+import { useFormik, useFormikContext } from "formik";
 import Select from "react-select";
-import { Plus, Trash2, SquarePen } from "lucide-react";
+import { Plus, Trash2, SquarePen,CalendarDays} from "lucide-react";
 import {
   getSchemeClassifications,
   allinstallmenttype,
@@ -18,7 +18,6 @@ import {
   getBranchById,
 } from "../../../api/Endpoints";
 import { useQuery, useQueries, useMutation } from "@tanstack/react-query";
-import "react-datepicker/dist/react-datepicker.css";
 import PayableDetails from "./PayableDetails";
 import AdvancedSettings from "./AdvancedSettings";
 import CustomerDetails from "./CustomerDetails";
@@ -36,8 +35,11 @@ import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { schemeValidationSchema } from "../../../../utils/validations/schemeValidationSchema";
 import SpinLoading from "../../common/spinLoading";
+import "react-datepicker/dist/react-datepicker.css";
+import DatePicker from "react-datepicker";
 
 const SchemeForm = () => {
+  // const { setFieldValue, validateForm, values } = useFormikContext();
   const navigate = useNavigate();
 
   let { id } = useParams();
@@ -69,7 +71,8 @@ const SchemeForm = () => {
   const [giftType, setGiftType] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [spanText, setSpanText] = useState("");
-  const [validation,setValidation]= useState({})
+  const [validation, setValidation] = useState({});
+  const[pathUrl,setPathUrl] = useState('')
 
   const formik = useFormik({
     initialValues: {
@@ -89,6 +92,7 @@ const SchemeForm = () => {
       startingAmount: "",
       // fixed_amounts: "",
       saving_type: "",
+      final_join_date:'',
 
       // PayableDetails fields
       amount: "", // no need to pass
@@ -97,14 +101,14 @@ const SchemeForm = () => {
       min_weight: "",
       max_weight: "",
       total_installments: "",
-      buygsttype:1,
+      buygsttype: 1,
       buy_gst: "",
       benefit_min_installment_wst_mkg: "",
       wastagebenefit: "",
       benefit_making: "",
 
       //grce
-      grace_type: "",
+      grace_type:"",
       grace_period: "",
       grace_fine_amount: false,
       grace_fine: 0,
@@ -115,40 +119,40 @@ const SchemeForm = () => {
       classification_order: "",
 
       //customer referral
-      referral_rate: "",
-      incentive_rate: "",
-      cus_remarks: "",
+      customer_referral_per: "",
+      customer_incentive_per: "",
+      customer_ref_remarks: "",
 
       //agent referral
-      agent_referral: "",
+      agent_referral_percentage: "",
       agent_incentive: "",
-      agent_restriction: true,
+      agent_restriction: false,
       agent_remark: "",
-      agent_target: "",
-      partial_commission: "",
+      agent_target_per: "",
+      agent_partial_per: "",
 
       wastagetype: "", // no need to pass
 
       // AdvancedSettings fields
       limit_installment: "",
-      pending_due_installment: "",
+      pending_installment: "",
       paid_installment: "",
-      scheme_customer_limit: "",
+      limit_customer: "",
       gift_minimum_paid_installment: "",
 
       //gift
       gift_type: 1,
-      number_of_gifts: 0,
+      no_of_gifts: 0,
 
       bonus_type: "",
       bonus_amount: "",
       bonus_percent: "",
       not_paid_installment: "",
-      convenience_fee: "",
+      convenience_fees: "",
       fine_amount: 0,
       cumulative_fine_amount: "",
       display_referral: false,
-      display_weight_in_ledger: false,
+      display_Weight_in_ledger: false,
       wallet_redemption_onpayment: false,
     },
     validationSchema: schemeValidationSchema,
@@ -156,7 +160,6 @@ const SchemeForm = () => {
       const formData = new FormData();
 
       if (formik.values.classType) {
-        console.log(amounts);
         amounts.forEach((amount) => {
           if (amount !== "") {
             formData.append("fixed_amounts[]", amount);
@@ -212,7 +215,8 @@ const SchemeForm = () => {
       }
     },
   });
-
+  console.log(formik.errors);
+  console.log(formik.values)
   // Customisations for react-select
   const customStyles = {
     control: (base, state) => ({
@@ -247,8 +251,6 @@ const SchemeForm = () => {
     queryKey: ["scheme", id],
     queryFn: async () => await getschemeById(id),
     enabled: Boolean(id),
-    staleTime: 5 * 60 * 1000,
-    cacheTime: 10 * 60 * 1000,
   });
 
   const { data: metalResponse } = useQuery({
@@ -300,6 +302,7 @@ const SchemeForm = () => {
       if (response.status === 200) {
         setIsLoading(false);
         toast.success(response.message);
+        formik.resetForm();
         navigate("/scheme/scheme/");
       }
     },
@@ -351,59 +354,78 @@ const SchemeForm = () => {
 
         // Grace period
         grace_type: schemeData.data.grace_type || "",
-        grace_period: schemeData.data.gracePeriod || "",
-        grace_fine: schemeData.data.graceFineAmount || "",
+        grace_period: schemeData.data.grace_period || "",
+        grace_fine: schemeData.data.grace_fine || "",
 
         // Classification
         description: schemeData.data.description || "",
         term_desc: schemeData.data.term_desc || "",
 
         // Customer referral
-        referral_rate: schemeData.data.customer_referral_per || "",
-        incentive_rate: schemeData.data.customer_incentive_per || "",
-        cus_remarks: schemeData.data.cus_remark || "",
+        customer_referral_per: schemeData.data.customer_referral_per || "",
+        customer_incentive_per: schemeData.data.customer_incentive_per || "",
+        customer_ref_remarks: schemeData.data.customer_ref_remarks || "",
 
         // Agent referral
-        agent_referral: schemeData.data.agent_referral_percentage || "",
-        agent_incentive: schemeData.data.agent_percentage || "",
-        agent_target: schemeData.data.agent_target_per || "",
-        partial_commission: schemeData.data.agent_partial_per || "",
+        agent_referral_percentage:
+          schemeData.data.agent_referral_percentage || "",
+        agent_incentive: schemeData.data.agent_incentive || "",
+        agent_target_per: schemeData.data.agent_target_per || "",
+        agent_partial_per: schemeData.data.agent_partial_per || "",
         agent_remark: schemeData.data.agent_remark || false,
 
         // AdvancedSettings
         limit_installment: schemeData.data.limit_installment || "",
-        pending_due_installment: schemeData.data.pending_installment || "",
+        pending_installment: schemeData.data.pending_installment || "",
         paid_installment: schemeData.data.allowed_minpaid || "",
-        scheme_customer_limit: schemeData.data.limit_customer || "",
+        limit_customer: schemeData.data.limit_customer || "",
         gift_type: schemeData.data.gift_type || 1,
-        number_of_gifts: schemeData.data.number_of_gifts || 0,
-        convenience_fee: schemeData.data.convenience_fees || "",
+        no_of_gifts: schemeData.data.no_of_gifts || 0,
+        convenience_fees: schemeData.data.convenience_fees || "",
         fine_amount: schemeData.data.fine_amount || 0,
         cumulative_fine_amount: schemeData.data.cumulative_fine_amount || "",
         display_referral: schemeData.data.display_referral || false,
-        display_weight_in_ledger:
-          schemeData.data.display_Weight_in_ledger || false,
-        wallet_redemption_onpayment: schemeData.data.wallet_redemption || false,
+        display_Weight_in_ledger:
+          schemeData?.data?.display_Weight_in_ledger || false,
+        wallet_redemption_onpayment:
+          schemeData.data.wallet_redemption_onpayment || false,
         gift_minimum_paid_installment:
           schemeData.data.gift_minimum_paid_installment || "",
+        bonus_type: schemeData.data.bonus_type || "",
+        bonus_amount: schemeData?.data?.bonus_amount || "",
+        bonus_percent: schemeData?.data?.bonus_percent || "",
+        not_paid_installment: schemeData?.data?.not_paid_installment || "",
+        benefit_min_installment_wst_mkg:
+          schemeData?.data?.benefit_min_installment_wst_mkg || "",
+        classification_order: schemeData?.data?.classification_order,
+        grace_fine_amount: schemeData?.data?.grace_fine_amount || false,
+        final_join_date: schemeData?.data?.final_join_date || "",
+        setMainImage:schemeData?.data?.logo || null,
+        setDescriptionImage: schemeData?.data?.desc_img || null
       });
+      if(schemeData?.data?.logo){
+        setMainImage(schemeData?.data?.logo)
+      }
+      if(schemeData?.data?.desc_img){
+        setDescriptionImage(schemeData?.data?.desc_img)
+      }
       if (schemeData?.data?.fixed_amounts.length > 0) {
         formik.setFieldValue("classType", true);
       }
       if (schemeData?.data) {
         formik.setFieldValue("scheme_type", schemeData.data.scheme_type);
       }
-      
+      if(schemeData?.data?.pathUrl){
+        setPathUrl(schemeData?.data?.pathUrl)
+      }
     }
   }, [id, schemeData]);
-  console.log(formik.values)
 
   useEffect(() => {
     if (schemeData?.data && Array.isArray(schemeData.data.fixed_amounts)) {
       setAmounts(schemeData.data.fixed_amounts);
     }
   }, [schemeData?.data]);
-  
 
   useEffect(() => {
     if (installment_type?.data) {
@@ -471,7 +493,11 @@ const SchemeForm = () => {
       const incrementRate = formik.values.incrementRate;
       const startingAmount = formik.values.startingAmount;
       const totalCountAmount = formik.values.totalCountAmount;
-      if (incrementRate === "" || startingAmount === "" || totalCountAmount === "") {
+      if (
+        incrementRate === "" ||
+        startingAmount === "" ||
+        totalCountAmount === ""
+      ) {
         setAmounts([]);
       } else {
         generateAmounts(totalCountAmount, startingAmount, incrementRate);
@@ -634,7 +660,17 @@ const SchemeForm = () => {
   }, [schemeTypeData, formik.values.classType, selectedClass]);
 
   const handleReset = () => {
-    setAmounts([]);
+    if(selectedAmount && editAmount){
+      const handleRemoveAmount = (index) => {
+        const updatedAmounts = amounts.filter((_, i) => i !== index);
+        setAmounts(updatedAmounts);
+        formik.setFieldValue("totalCountAmount", updatedAmounts.length);
+        setSelectedAmount('')
+        setEditAmount('');
+      };
+      handleRemoveAmount(selectedAmount)
+    }else{
+      setAmounts([]);
 
     formik.setFieldValue("totalCountAmount", "");
     formik.setFieldValue("incrementRate", "");
@@ -650,7 +686,10 @@ const SchemeForm = () => {
       incrementRate: undefined,
       startingAmount: undefined,
     }));
+    }
   };
+
+  console.log(selectedAmount,editAmount)
 
   return (
     <form
@@ -722,10 +761,13 @@ const SchemeForm = () => {
                 isClearable={true}
                 options={branch || []}
                 placeholder="Select Branch"
-                value={branch || [].find(
-                  (option) => option.value === formik.values.id_branch
-                )}
-                onChange={(option) => formik.setFieldValue("id_branch", option.value || "")}
+                value={
+                  branch ||
+                  [].find((option) => option.value === formik.values.id_branch)
+                }
+                onChange={(option) =>
+                  formik.setFieldValue("id_branch", option.value || "")
+                }
               />
               {formik.errors.id_branch && (
                 <div className="text-red-500 text-sm mt-1">
@@ -778,6 +820,23 @@ const SchemeForm = () => {
             <label className="block text-sm font-medium mb-1">
               Scheme Type <span className="text-red-500">*</span>
             </label>
+            {/* <Select
+              styles={customStyles}
+              options={filteredSchemeTypeData}
+              isDisabled={!formik.values.id_classification}
+              placeholder={
+                !formik.values.id_classification
+                  ? "Choose a classification first"
+                  : "Select scheme type"
+              }
+              value={filteredSchemeTypeData?.find(
+                (option) => option.value === formik.values.scheme_type
+              )}
+              onChange={(option) => {
+                formik.setFieldValue("scheme_type", option?.value);
+              }}
+              onBlur={() => formik.setFieldTouched("scheme_type", true)}
+            /> */}
             <Select
               styles={customStyles}
               options={filteredSchemeTypeData}
@@ -792,6 +851,7 @@ const SchemeForm = () => {
               )}
               onChange={(option) => {
                 formik.setFieldValue("scheme_type", option?.value);
+                formik.validateForm(); // Trigger revalidation
               }}
               onBlur={() => formik.setFieldTouched("scheme_type", true)}
             />
@@ -865,19 +925,20 @@ const SchemeForm = () => {
                 (option) => option.value === formik.values.installment_type
               )}
               onChange={(option) => {
+                formik.setFieldValue("maturity_period", "");
                 formik.setFieldValue(
                   "installment_type",
                   option ? option.value : null
                 );
                 setSpanText(option.label);
-                if(option.value === 1){
-                  setValidation({max: 12, maxLength: 2})
-                }else if(option.value ==2){
-                  setValidation({max: 52, maxLength: 2})
-                }else if(option.value === 3){
-                  setValidation({max: 336, maxLength: 3})
-                }else{
-                  setValidation({max: 9, maxLength: 1})
+                if (option.value === 1) {
+                  setValidation({ max: 12, maxLength: 2, val: "month" });
+                } else if (option.value == 2) {
+                  setValidation({ max: 52, maxLength: 2, val: "weeks" });
+                } else if (option.value === 3) {
+                  setValidation({ max: 336, maxLength: 3, val: "Days" });
+                } else {
+                  setValidation({ max: 1, maxLength: 1, val: "year" });
                 }
               }}
               onBlur={() => formik.setFieldTouched("installment_type", true)}
@@ -895,14 +956,31 @@ const SchemeForm = () => {
             </label>
             <div className="relative">
               <input
-                type="text"
+                type="number"
                 name="maturity_period"
                 onWheel={(e) => e.target.blur()}
-                onInput={(e) => {
-                  if (e.target.value.length <= validation.maxLength) {
-                    console.log('kd')
-                    formik.handleChange(e);
+                onKeyUp={(e) => {
+                  const value = e.target.value.trim();
+                  const numValue = Number(value);
+                  console.log(validation)
+                  if (value.length > validation.maxLength) {
+                    formik.setFieldError(
+                      "maturity_period",
+                      `Maturity period should be under ${validation.maxLength} characters`
+                    );
+                    return;
                   }
+
+                  if (numValue > validation.max) {
+                    formik.setFieldError(
+                      "maturity_period",
+                      `Maturity period should be under ${validation.max} ${validation.val}`
+                    );
+                    return;
+                  }
+
+                  formik.setFieldError("maturity_period", "");
+                  formik.handleChange(e);
                 }}
                 className="w-full border rounded-md px-3 py-2"
                 placeholder="Enter Maturity Period"
@@ -947,6 +1025,27 @@ const SchemeForm = () => {
               </div>
             )}
           </div>
+          <div>
+          <label className="block text-sm font-medium mb-1">
+              Final Join Date
+            </label>
+            <div className="relative">
+              <DatePicker
+                selected={formik.values.final_join_date}
+                onChange={(date) => formik.setFieldValue('final_join_date',date)}
+                // dateFormat="dd-MM-yyyy"
+                placeholderText="Select Date"
+                className="border border-gray-300 rounded-md p-3 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                showMonthDropdown
+                showYearDropdown
+                dropdownMode="select"
+                wrapperClassName="w-full"
+              />
+              <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-gray-500 w-14 h-[43px] justify-center items-center flex rounded-r-md pointer-events-none">
+                <CalendarDays size={20} />
+              </span>
+            </div>
+          </div>
         </div>
         {formik.values.classType && (
           <div className="grid grid-cols-3 gap-4 w-full mt-3">
@@ -969,7 +1068,10 @@ const SchemeForm = () => {
                 onInput={(e) => {
                   let value = e.target.value;
                   if (value > "50") {
-                    formik.setFieldError("totalCountAmount", "Max allowed is 50");
+                    formik.setFieldError(
+                      "totalCountAmount",
+                      "Max allowed is 50"
+                    );
                   }
 
                   if (value.length > 2) {
@@ -1184,6 +1286,9 @@ const SchemeForm = () => {
               layout_color={layout_color}
               setMainImg={setMainImage}
               setDescImg={setDescriptionImage}
+              pathurl={pathUrl}
+              logo= {mainImage}
+              desc_img= {descriptionImage}
             />
           </AccordionContent>
         </AccordionItem>

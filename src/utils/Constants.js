@@ -49,3 +49,10 @@ export const entryTypeOptions = [
     { id:1, value: "individual", label: "Individual" },
     { id:2, value: "range", label: "Range" },
   ];
+
+
+export const sections = [
+      { id: 1, name: "Terms & Conditions" },
+      { id: 2, name: "Privacy Policy" },
+      { id: 4, name: "Refund Policy" }
+  ];

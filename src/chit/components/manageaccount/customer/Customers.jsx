@@ -26,23 +26,27 @@ function Customers() {
 
     return (
         <div className='flex flex-col'>
-            <div className="flex items-center bg-gray-200 my-6 border border-black rounded-xxl w-fit mt-3">
-                <button
-                    onClick={() => setIsCustomer(false)}
-                    className={`px-4 py-1 transition-all ${!isCustomer ? `bg-[${layout_color}] text-white` : "rounded-l-lg bg-gray-300 text-gray-700 dark:bg-white dark:text-black"
-                        }`}
-                >
-                    Customer
-                </button>
-                <button
-                    onClick={() => setIsCustomer(true)}
-                    className={`px-4 py-1 transition-all ${isCustomer ? `bg-[${layout_color}] text-white` : "rounded-r-lg  bg-gray-300 text-gray-700 dark:bg-white dark:text-black"
-                        }`}
-                >
-                    Existing Customer
-                </button>
-            </div>
-
+            {
+                !id && (
+                    <div className="flex items-center bg-gray-200 my-6 border border-black rounded-xxl w-fit mt-3">
+                    <button
+                        onClick={() => setIsCustomer(false)}
+                        className={`px-4 py-1 transition-all ${!isCustomer ? `bg-[${layout_color}] text-white` : "rounded-l-lg bg-gray-300 text-gray-700 dark:bg-white dark:text-black"
+                            }`}
+                    >
+                        Customer
+                    </button>
+                    <button
+                        onClick={() => setIsCustomer(true)}
+                        className={`px-4 py-1 transition-all ${isCustomer ? `bg-[${layout_color}] text-white` : "rounded-r-lg  bg-gray-300 text-gray-700 dark:bg-white dark:text-black"
+                            }`}
+                    >
+                        Existing Customer
+                    </button>
+                </div>
+                )
+            }
+        
             <Accordion
                 type="multiple"
                 className="space-y-4"
@@ -58,7 +62,7 @@ function Customers() {
                         >
                             <AccordionItem value="add-customer" className="border rounded-lg bg-white">
                                 <AccordionTrigger className="px-6 py-4 text-[18px]">
-                                    Add Customer
+                                   {id ? "Edit Customer" : " Add Customer"}
                                 </AccordionTrigger>
                                 <AccordionContent className="px-6 py-4 text-[16px]">
                                     <CustomerForm />

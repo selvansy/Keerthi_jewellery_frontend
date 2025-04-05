@@ -24,7 +24,6 @@ import {
 } from "../../../api/Endpoints";
 import { useDispatch, useSelector } from "react-redux";
 const AddSchemePayment = () => {
-  let dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
   const { id } = useParams();
@@ -44,7 +43,6 @@ const AddSchemePayment = () => {
   const [date_payment, setDatePayment] = useState(formattedDate);
   const [searchmobile, setSearchMobile] = useState("");
   const [mobile, setMobile] = useState("");
-  const [suggestions, setSuggestions] = useState([]);
   const [paymentmode, setPaymentmode] = useState([]);
   const [errors, setErrors] = useState([]);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -60,10 +58,6 @@ const AddSchemePayment = () => {
   const [fullData, setFullData] = useState([]);
   const [selectedScheme, setSelectedScheme] = useState({});
   const [weight, setWeight] = useState([12, 3, 4]);
-  const [minWeight, setMinWeight] = useState(0);
-  const [maxWeight, setMaxWeight] = useState(0);
-  const [minAmount, setMinAmount] = useState(0);
-  const [maxAmount, setMaxAmount] = useState(0);
   const [selectedMode,setSelectedMode]= useState(0)
   const [formData, setFormData] = React.useState({
     id_customer: "",
@@ -109,7 +103,7 @@ const AddSchemePayment = () => {
       remark: "",
       scheme_acc_number: "",
       id_scheme: "",
-      id_branch: "",
+      id_branch: id_branch || '',
       id_scheme_account: "",
       scheme_type: 0,
       buy_gst: 0,
@@ -201,7 +195,7 @@ const AddSchemePayment = () => {
     mutationFn: updateschemepayment,
     onSuccess: (response) => {
       toast.success(response.message);
-      navigate("/payment/schemepayment");
+      navigate("/reports/schemepayment");
     },
     onError: (error) => {
       toast.error(error.response.data.message);
@@ -314,10 +308,6 @@ const AddSchemePayment = () => {
       // formik.setFieldValue('fine_amount',selectedScheme?.id_scheme?.fine_amount)
 
       let payment_amount = 0;
-      console.log(
-        selectedScheme?.scheme_type,
-        selectedScheme?.id_classification?.order
-      );
       if (
         weight.includes(selectedScheme?.id_scheme?.scheme_type) &&
         selectedScheme?.id_classification?.order === 2
@@ -475,7 +465,7 @@ const AddSchemePayment = () => {
       toast.error("Mobile Number is required!");
     }
     const searchData = {
-      id_branch: formik.values.id_branch,
+      id_branch: formik.values.id_branch || id_branch,
       search_mobile: mobile,
     };
 
@@ -859,11 +849,6 @@ const AddSchemePayment = () => {
     }
   };
 
-  const handleSelectNumber = (number) => {
-    setMobile(number);
-    setSuggestions([]); //
-  };
-
   useEffect(() => {
     if (location.pathname === "/payment/schemepayment/add") {
       setHeader("Add Scheme Account");
@@ -1180,39 +1165,7 @@ const AddSchemePayment = () => {
                                   Scheme Type
                                 </span>
                                 <span className="text-gray-900">
-                                  {selectedScheme?.id_scheme?.scheme_type === 0
-                                    ? "Amount To Bonus"
-                                    : selectedScheme?.id_scheme?.scheme_type ===
-                                      1
-                                    ? "Amount End Weight"
-                                    : selectedScheme?.id_scheme?.scheme_type ===
-                                      2
-                                    ? "Amount To Weight"
-                                    : selectedScheme?.id_scheme?.scheme_type ===
-                                      3
-                                    ? "Weight"
-                                    : selectedScheme?.id_scheme?.scheme_type ===
-                                      4
-                                    ? "Flexible Amount Scheme"
-                                    : selectedScheme?.id_scheme?.scheme_type ===
-                                      5
-                                    ? "Flexible Amount to Weight"
-                                    : selectedScheme?.id_scheme?.scheme_type ===
-                                      6
-                                    ? "Fixed Amount to Weight"
-                                    : selectedScheme?.id_scheme?.scheme_type ===
-                                      7
-                                    ? "Fixed Amount end Weight"
-                                    : selectedScheme?.id_scheme?.scheme_type ===
-                                      8
-                                    ? "Fixed Amount to bonus"
-                                    : selectedScheme?.id_scheme?.scheme_type ===
-                                      9
-                                    ? "Flexible Amount End Weight"
-                                    : selectedScheme?.id_scheme?.scheme_type ===
-                                      10
-                                    ? "Digital Gold"
-                                    : "N/A"}
+                                  {selectedScheme?.scheme_typename}
                                 </span>
                               </div>
 
@@ -1323,7 +1276,7 @@ const AddSchemePayment = () => {
                       <p style={{ color: "red" }}>{errors?.metal_rate}</p>
                     </div>
 
-                    {issetreceipt === 1 && (
+                    {/* {issetreceipt === 1 && (
                       <div className="flex flex-col">
                         <label className="text-black mb-2 font-normal">
                           Receipt<span className="text-red-400">*</span>
@@ -1343,7 +1296,7 @@ const AddSchemePayment = () => {
                           {errors?.payment_receipt}
                         </p>
                       </div>
-                    )}
+                    )} */}
                   </div>
                 </div>
                 <div className="lg:w-1/2 w-full items-center justify-center lg:pl-10 lg:pr-10">
