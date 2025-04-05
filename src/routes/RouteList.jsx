@@ -24,7 +24,7 @@ import ExistingCusTable from "../chit/components/manageaccount/customer/index";
 import Customers from "../chit/components/manageaccount/customer/Customers";
 import OutStandingWeight from "../chit/components/Report/OutStandingWeight";
 import ModeWisePayment from "../chit/components/Report/PaymentModeLedger";
-import GiftStock from "../chit/components/Report/GiftStock";
+
 import Branch from "../chit/components/Setup/branch/Branch";
 import AddBranch from "../chit/components/Setup/branch/AddBranch";
 import OurEmployee from "../chit/components/Setup/employee/OurEmployee";
@@ -66,8 +66,8 @@ import SchemeAccountReport from "../chit/components/Report/SchemeAccountReport";
 import AccountSummaryReport from "../chit/components/Report/AccountSummary";
 import OutStandingReport from "../chit/components/common/OutStandingReport";
 import OutStandingAmount from "../chit/components/Report/OutStandingAmout";
-import CardPrint from "../chit/components/print/CardPrint/printone";
-import ReceiptPrint from "../chit/components/print/ReceiptPrint/printone";
+import CardPrint from "../chit/components/Print/CardPrint/CardPrint";
+import AccountSearchAndPrint from "../chit/components/Print/ReceiptPrint/AccountSearchAndPrint";
 import NewArrivalsWhatsapp from "../chit/components/whatsapp/newarrivals/index";
 import ProductWhatsapp from "../chit/components/whatsapp/product/index";
 import OffersWhatsapp from "../chit/components/whatsapp/offers/index";
@@ -103,6 +103,13 @@ import PreCloseReport from "../chit/components/Report/preclose";
 import RedemptionReport from "../chit/components/Report/Redemptionsummary";
 import RefundReport from "../chit/components/Report/RefundSummary";
 import overallReport from "../chit/components/Report/overallReport";
+import PaymentLedger from "../chit/components/Report/PaymentLedger";
+import GiftReport from "../chit/components/Report/GiftReport";
+import PaymentPrint from "../chit/components/Print/CardPrint/PaymentPrint";
+import Delist from "../chit/components/ourscheme/delist";
+import MetalRateIndex from "../chit/components/ourscheme/metalrate/MetalRateIndex";
+import GiftPurchase from "../chit/components/gift/giftPurchase/GiftPurchase";
+import GiftPurchaseForm from "../chit/components/gift/giftPurchase/GiftPurchaseForm";
 
 const RouteList = [
 
@@ -134,6 +141,26 @@ const RouteList = [
     path: "/scheme/addscheme/:id",
     element: <Base renderContent={AddScheme} />,
   },
+  {
+    name: "Delist",
+    path: "/scheme/delist",
+    element: <Base renderContent={Delist} />,
+  },
+  {
+    name: "Add DigiGold",
+    path: '/scheme/adddigigold',
+    element: <Base renderContent={CreateDigiGoldScheme} />
+  },
+  {
+    name: "Add DigiGold",
+    path: '/scheme/editdigigold/:id',
+    element: <Base renderContent={CreateDigiGoldScheme} />
+  },
+  {
+    name: "Add DigiGold",
+    path: '/scheme/digisilver',
+    element: <Base renderContent={CreateDigiGoldScheme} />
+  },
 
   //ManageAccount
 
@@ -162,18 +189,23 @@ const RouteList = [
   //Masters
   {
     name: "Purity",
-    path: 'masters/purity/',
+    path: '/masters/purity/',
     element: <Base renderContent={Purity} />
   },
   {
     name: "Metal",
-    path: 'masters/metal/',
+    path: '/masters/metal/',
     element: <Base renderContent={Metal} />
   },
+  // {
+  //   name: "Metal Rate",
+  //   path: 'masters/metalrate',
+  //   element: <Base renderContent={MetalRate} />
+  // },
   {
     name: "Metal Rate",
-    path: 'masters/metalrate',
-    element: <Base renderContent={MetalRate} />
+    path: '/masters/metalrate',
+    element: <Base renderContent={MetalRateIndex} />
   },
   {
     name: "Create Metal Rate",
@@ -187,12 +219,12 @@ const RouteList = [
   },
   {
     name: "User Role",
-    path: 'masters/userrole',
+    path: '/masters/userrole',
     element: <Base renderContent={UserRole} />
   },
   {
     name: "User Access",
-    path: 'masters/useraccess',
+    path: '/usersettings/useraccess/',
     element: <Base renderContent={UserAccess} />
   },
   {
@@ -202,12 +234,12 @@ const RouteList = [
   },
   {
     name: "Department",
-    path: '/masters/department',
+    path: '/usersettings/department',
     element: <Base renderContent={Department} />
   },
   {
     name: "Topup",
-    path: 'masters/topup',
+    path: '/usersettings/topup',
     element: <Base renderContent={Topup} />
   },
 
@@ -292,7 +324,7 @@ const RouteList = [
   },
   {
     name: "Update New Arrivals",
-    path: '/catalog/addnewarrivals/:id',
+    path: '/catalog/editnewarrivals/:id',
     element: <Base renderContent={AddNewArrival} />
   },
 
@@ -373,12 +405,12 @@ const RouteList = [
   {
     name: "Gift Purchase",
     path: '/gift/addgiftinwards',
-    element: <Base renderContent={AddGiftPurchase} />
+    element: <Base renderContent={GiftPurchaseForm} />
   },
   {
     name: "Edit Gift Purchase",
     path: '/gift/addgiftinwards/:id',
-    element: <Base renderContent={AddGiftPurchase} />
+    element: <Base renderContent={GiftPurchaseForm} />
   },
   {
     name: "Gift HandOver",
@@ -393,7 +425,7 @@ const RouteList = [
   {
     name: "Gift Stock Report",
     path: '/gift/stockreport/',
-    element: <Base renderContent={GiftStock} />
+    element: <Base renderContent={GiftReport} />
   },
 
   //Notifications
@@ -506,12 +538,12 @@ const RouteList = [
   },
   {
     name: "Organisation",
-    path: '/settings/organisation',
+    path: '/usersettings/organisation',
     element: <Base renderContent={Organisation} />
   },
 
 
-
+ 
   //Accounts Report
   {
     name: "Payment Mode Ledger",
@@ -545,57 +577,37 @@ const RouteList = [
     path: '/whatsapp/newarrivals',
     element: <Base renderContent={NewArrivalsWhatsapp} />
   },
-
-
   {
     name: "Card Print",
     path: '/cardprint/printone',
-    element: <Base renderContent={CardPrint} />
+    element: <Base renderContent={PaymentPrint} />
   },
   {
     name: "Receipt Print",
     path: '/receiptprint/printone',
-    element: <Base renderContent={ReceiptPrint} />
+    element: <Base renderContent={AccountSearchAndPrint} />
   },
-
-  {
-    name: "Card Print",
-    path: '/cardprint/printone',
-    element: <Base renderContent={CardPrint} />
-  },
-
-
-
   {
     name: "Classification",
     path: '/ourscheme/classification',
     element: <Base renderContent={SchemeClassification} />
   },
-  {
-    name: "Digi Gold",
-    path: 'scheme/digigold',
-    element: <Base renderContent={DigiGoldScheme} />
-  },
-  {
-    name: "Add DigiGold",
-    path: '/scheme/adddigigold',
-    element: <Base renderContent={CreateDigiGoldScheme} />
-  },
-  {
-    name: "Add DigiGold",
-    path: '/scheme/editdigigold/:id',
-    element: <Base renderContent={CreateDigiGoldScheme} />
-  },
-  {
-    name: "Add Classification",
-    path: '/classification/addclassification',
-    element: <Base renderContent={CreateSchemeClassificaton} />
-  },
-  {
-    name: "Add Classification",
-    path: '/classification/addclassification/:id',
-    element: <Base renderContent={CreateSchemeClassificaton} />
-  },
+  // {
+  //   name: "Digi Gold",
+  //   path: 'scheme/digigold',
+  //   element: <Base renderContent={DigiGoldScheme} />
+  // },
+ 
+  // {
+  //   name: "Add Classification",
+  //   path: '/classification/addclassification',
+  //   element: <Base renderContent={CreateSchemeClassificaton} />
+  // },
+  // {
+  //   name: "Add Classification",
+  //   path: '/classification/addclassification/:id',
+  //   element: <Base renderContent={CreateSchemeClassificaton} />
+  // },
   {
     name: "Closed Account",
     path: '/managecustomers/accountredemption',
@@ -735,7 +747,7 @@ const RouteList = [
   },
   {
     name:"FaqCreation",
-    path:"/help/faq/view/:id",
+    path:"/help/policy/edit/:id",
     element:<Base renderContent={FaqCreation} />
   },
   {
@@ -781,7 +793,12 @@ const RouteList = [
     path:'/report/overallreport',
     element:<Base renderContent={overallReport} />
   },
-
+  {
+    name:"Payment Ledger",
+    path:'/report/paymentmodeledger',
+    element:<Base renderContent={PaymentLedger} />
+  },
+ 
 
 ];
 

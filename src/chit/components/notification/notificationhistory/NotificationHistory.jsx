@@ -42,7 +42,6 @@ function NotificationHistory() {
   
     const limit = 10;
 
-
     const { mutate: getallNotificationsTable } = useMutation({
       mutationFn: (payload) => NotifcationsHistory(payload),
       onSuccess: (response) => {
@@ -166,6 +165,14 @@ function NotificationHistory() {
         cell: (_, index) => index + 1 + (currentPage - 1) * limit,
       },
       {
+        header: "Notification ID",
+        cell: (row) => row?.pushCount,
+      },
+      {
+        header: "Notification Title",
+        cell: (row) => row?.pushCount,
+      },
+      {
         header: "Push Count",
         cell: (row) => row?.pushCount,
       },
@@ -174,7 +181,15 @@ function NotificationHistory() {
         cell: (row) => row?.pushFailCount,
       },
       {
-        header: "Created Date",
+        header: "Notification Content",
+        cell: (row) => row?.pushFailCount,
+      },
+      {
+        header: "Target Audience (All Users/Specific Group) ",
+        cell: (row) => row?.pushFailCount,
+      },
+      {
+        header: "Sent Date",
         cell: (row) =>{
           const date = new Date(row?.createdAt);
           return date.toLocaleDateString("en-GB") || "-"; 
@@ -188,7 +203,7 @@ function NotificationHistory() {
         },
       },
       {
-        header: "Actions",
+        header: "Delivery Status",
         cell: (row, rowIndex) => (
           (row.status === "pending") ? 
           <div className="dropdown-container relative">
@@ -215,7 +230,7 @@ function NotificationHistory() {
                 className={`lg:w-20 text-center p-2 text-sm text-gray-700 font-semibold flex items-center gap-2`}
                 disabled={branchAccess !== 0}
               >
-                Approved
+                Sent
               </button>
             
             </div>
@@ -312,7 +327,7 @@ function NotificationHistory() {
             />
           </div>
   
-        {
+        {/* {
             notiData.length > 0 &&(
                 <div className="flex justify-between mt-4 p-2">
                 <div className={`flex flex-row items-center justify-center gap-2  `}>
@@ -363,7 +378,7 @@ function NotificationHistory() {
                 </div>
               </div>
             )
-        }
+        } */}
         </>
         <Modal />
       </div>

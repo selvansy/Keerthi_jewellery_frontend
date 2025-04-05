@@ -1,28 +1,27 @@
 import React, { useEffect, useState } from "react";
 import Select from "react-select";
-import { benefiMakingCharge } from "../../../../utils/Constants";
+import { benefiMakingCharge, rewardType } from "../../../../utils/Constants";
 
 const PayableDetails = ({
   formik,
   layout_color,
-  gstTypeData,
   wastagedata,
   classType,
-  maturity_period,
   scheme_type,
+  customStyle,
 }) => {
   const [benefitMaking, setMaking] = useState([]);
 
-  // Customisations for react-select
-  const customStyles = {
-    control: (base, state) => ({
-      ...base,
-      minHeight: "42px",
-      border: state.isFocused ? "1px solid black" : "1px solid #e2e8f0",
-      boxShadow: state.isFocused ? "0 0 0 1px black" : "none",
-      borderRadius: "0.375rem",
-    }),
-  };
+  const header = ["0", "Monthly", "Weekly", "Daily", "Yearly"];
+  const [reward, setReward] = useState([]);
+
+  useEffect(() => {
+    const data = rewardType.map((item) => ({
+      value: item.id,
+      label: item.name,
+    }));
+    setReward(data);
+  }, [rewardType]);
 
   useEffect(() => {
     const data = benefiMakingCharge.map((item) => ({
@@ -32,23 +31,19 @@ const PayableDetails = ({
     setMaking(data);
   }, [benefiMakingCharge]);
 
-  // Common height for all input fields
   const inputHeight = "42px";
 
-  // Check if scheme_type is one of 12, 3, 4
-  const isSpecialSchemeType = [12, 3, 4,2,5,6].includes(scheme_type);
+  const isSpecialSchemeType = [12, 3, 4].includes(scheme_type);
 
-  // Determine which fields to show based on the conditions
-  //(classType && isSpecialSchemeType) ||
   const showWeightFields = !classType && isSpecialSchemeType;
   const showAmountFields = !classType && !isSpecialSchemeType;
 
   return (
-    <div className="grid grid-rows-2 md:grid-cols-2 gap-5">
+    <div className="grid grid-rows-2 md:grid-cols-3 lg:grid-col-3 gap-5">
       {showWeightFields ? (
         <>
           <div className="flex flex-col lg:mt-2">
-            <label className="text-black mb-2 font-normal">
+          <label className="block text-sm font-medium mb-1">
               Min Weight <span className="text-red-400"> *</span>
             </label>
             <div className="relative">
@@ -59,15 +54,12 @@ const PayableDetails = ({
                 onChange={formik.handleChange}
                 onWheel={(e) => e.target.blur()}
                 onBlur={formik.handleBlur}
-                className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                 placeholder="Enter Min Weight"
                 style={{ height: inputHeight }}
               />
-              <span
-                className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
-                style={{ backgroundColor: layout_color }}
-              >
-                GRM
+              <span className="absolute right-0 top-0 w-9 h-full px-3 flex items-center justify-center text-black border-l">
+                Gm
               </span>
             </div>
             {formik.touched.min_weight && formik.errors.min_weight && (
@@ -77,7 +69,7 @@ const PayableDetails = ({
             )}
           </div>
           <div className="flex flex-col lg:mt-2">
-            <label className="text-black mb-2 font-normal">
+          <label className="block text-sm font-medium mb-1">
               Max Weight <span className="text-red-400"> *</span>
             </label>
             <div className="relative">
@@ -88,16 +80,19 @@ const PayableDetails = ({
                 onWheel={(e) => e.target.blur()}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                 placeholder="Enter Max Weight"
                 style={{ height: inputHeight }}
               />
-              <span
+               <span className="absolute right-0 top-0 w-9 h-full px-3 flex items-center justify-center text-black border-l">
+                Gm
+              </span>
+              {/* <span
                 className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
                 style={{ backgroundColor: layout_color }}
               >
                 GRM
-              </span>
+              </span> */}
             </div>
             {formik.touched.max_weight && formik.errors.max_weight && (
               <span className="text-red-500 text-sm mt-1">
@@ -109,10 +104,13 @@ const PayableDetails = ({
       ) : showAmountFields ? (
         <>
           <div className="flex flex-col lg:mt-2">
-            <label className="text-black mb-2 font-normal">
+            <label className="block text-sm font-medium mb-1">
               Min Amount <span className="text-red-400"> *</span>
             </label>
             <div className="relative">
+              <span className="absolute left-0 top-0 w-9 h-full px-3 flex items-center justify-center text-black border-r">
+                ₹
+              </span>
               <input
                 type="number"
                 name="min_amount"
@@ -124,17 +122,10 @@ const PayableDetails = ({
                 }}
                 onWheel={(e) => e.target.blur()}
                 onBlur={formik.handleBlur}
-                className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                className="border-2 border-[#f2f3f8] rounded-md p-2 w-full text-start pl-10 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                 placeholder="Enter Min Amount"
                 style={{ height: inputHeight }}
               />
-
-              <span
-                className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
-                style={{ backgroundColor: layout_color }}
-              >
-                INR
-              </span>
             </div>
             {formik.touched.min_amount && formik.errors.min_amount && (
               <span className="text-red-500 text-sm mt-1">
@@ -143,10 +134,13 @@ const PayableDetails = ({
             )}
           </div>
           <div className="flex flex-col lg:mt-2">
-            <label className="text-black mb-2 font-normal">
+            <label className="block text-sm font-medium mb-1">
               Max Amount <span className="text-red-400"> *</span>
             </label>
             <div className="relative">
+              <span className="absolute left-0 top-0 w-9 h-full px-3 flex items-center justify-center text-black border-r">
+                ₹
+              </span>
               <input
                 type="number"
                 name="max_amount"
@@ -158,16 +152,10 @@ const PayableDetails = ({
                   }
                 }}
                 onBlur={formik.handleBlur}
-                className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                className="border-2 border-[#f2f3f8] rounded-md p-2 w-full pl-10 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                 placeholder="Enter Max Amount"
                 style={{ height: inputHeight }}
               />
-              <span
-                className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
-                style={{ backgroundColor: layout_color }}
-              >
-                INR
-              </span>
             </div>
             {formik.touched.max_amount && formik.errors.max_amount && (
               <span className="text-red-500 text-sm mt-1">
@@ -183,43 +171,10 @@ const PayableDetails = ({
         <div></div> */}
         </>
       )}
-      <div className="flex flex-col lg:mt-2">
-        <label className="block text-sm font-medium mb-1">
-          Installments <span className="text-red-500">*</span>
-        </label>
-        <input
-          type="number"
-          name="total_installments"
-          value={formik.values.total_installments}
-          onWheel={(e) => e.target.blur()}
-          onChange={(e) => {
-            let value = parseInt(e.target.value, 10);
-            if (value > maturity_period) {
-              formik.setFieldError(
-                "total_installments",
-                `Installment cannot exceed maturity period`
-              );
-            } else {
-              formik.setFieldValue("total_installments", value);
-              formik.setFieldError("total_installments", "");
-            }
-          }}
-          onBlur={formik.handleBlur}
-          className="w-full border rounded-md px-3 py-2"
-          placeholder="Total installments"
-          style={{ height: inputHeight }}
-        />
-        {formik.touched.total_installments &&
-          formik.errors.total_installments && (
-            <span className="text-red-500 text-sm mt-1">
-              {formik.errors.total_installments}
-            </span>
-          )}
-      </div>
 
-      <div>
+      {/* <div>
         <label className="block text-sm font-medium mb-1 mt-2">
-          Buy GST Type<span className="text-red-500">*</span>
+          Buy GST Type
         </label>
         <Select
           styles={customStyles}
@@ -229,7 +184,7 @@ const PayableDetails = ({
           value={
             gstTypeData?.find(
               (option) => option.value === formik.values.buygsttype
-            ) || 1
+            )
           }
           onChange={(option) =>
             formik.setFieldValue("buygsttype", option ? option.value : null)
@@ -242,8 +197,8 @@ const PayableDetails = ({
             {formik.errors.buygsttype}
           </div>
         )}
-      </div>
-      <div className="flex flex-col lg:mt-2">
+      </div> */}
+      {/* <div className="flex flex-col lg:mt-2">
         <label className="block text-sm font-medium mb-1">
           Buy GST <span className="text-red-500">*</span>
         </label>
@@ -271,29 +226,7 @@ const PayableDetails = ({
             {formik.errors.buy_gst}
           </span>
         )}
-      </div>
-      <div className="flex flex-col lg:mt-2">
-        <label className="text-black mb-2 font-normal">
-          Benefit Minimum Installment
-        </label>
-        <input
-          type="number"
-          name="benefit_min_installment_wst_mkg"
-          value={formik.values.benefit_min_installment_wst_mkg}
-          onWheel={(e) => e.target.blur()}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-          placeholder="Enter Min Installments"
-          style={{ height: inputHeight }}
-        />
-        {formik.touched.benefit_min_installment_wst_mkg &&
-          formik.errors.benefit_min_installment_wst_mkg && (
-            <span className="text-red-500 text-sm mt-1">
-              {formik.errors.benefit_min_installment_wst_mkg}
-            </span>
-          )}
-      </div>
+      </div> */}
 
       <div>
         <label className="block text-sm font-medium mb-1 mt-2">
@@ -301,7 +234,7 @@ const PayableDetails = ({
         </label>
         <Select
           styles={{
-            ...customStyles,
+            ...customStyle(true),
             menuPortal: (base) => ({ ...base, zIndex: 9999 }),
           }}
           options={wastagedata || []}
@@ -317,10 +250,10 @@ const PayableDetails = ({
               "wastagebenefit",
               option ? option.value : null
             );
-            formik.setFieldTouched("wastagebenefit", true, false); // Ensure Formik marks it as touched
+            formik.setFieldTouched("wastagebenefit", true, false);
           }}
           onBlur={() => formik.setFieldTouched("wastagebenefit", true)}
-          onMenuClose={() => formik.setFieldTouched("wastagebenefit", true)} // Ensure touch on menu close
+          onMenuClose={() => formik.setFieldTouched("wastagebenefit", true)}
           menuPortalTarget={document.body}
           menuPosition="fixed"
         />
@@ -330,13 +263,14 @@ const PayableDetails = ({
           </div>
         )}
       </div>
+
       <div>
         <label className="block text-sm font-medium mb-1 mt-2">
           Benefit Making Charge<span className="text-red-500">*</span>
         </label>
         <Select
           styles={{
-            ...customStyles,
+            ...customStyle(true),
             menuPortal: (base) => ({ ...base, zIndex: 9999 }),
           }}
           options={benefitMaking || []}
@@ -360,6 +294,117 @@ const PayableDetails = ({
             {formik.errors.benefit_making}
           </div>
         )}
+      </div>
+
+      <div>
+      <label className="block text-sm font-medium mb-1 mt-2">
+          Bonus Type
+        </label>
+        <Select
+          styles={{
+            ...(typeof customStyle === "function" ? customStyle(true) : {}),
+            menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+          }}
+          menuPortalTarget={document.body}
+          isClearable
+          options={reward ?? []} 
+          placeholder="Select bonus type"
+          value={
+            reward?.find(
+              (option) => option.value === formik.values.bonus_type
+            ) || null
+          }
+          onChange={(option) =>
+            formik.setFieldValue("bonus_type", option?.value ?? null)
+          }
+          onBlur={() => formik.setFieldTouched("bonus_type", true)}
+        />
+        {formik.touched.bonus_type && formik.errors.bonus_type && (
+          <div className="text-red-500 text-sm mt-1">
+            {formik.errors.bonus_type}
+          </div>
+        )}
+      </div>
+
+      {formik.values.bonus_type !== 2 ? (
+        <div className="">
+       <label className="block text-sm font-medium mb-1 mt-2">
+         Benefit Bonus Amount <span className="text-red-500">*</span>
+        </label>
+        <div className="relative">
+        <span className="absolute left-0 top-0 w-9 h-full px-3 flex items-center justify-center text-black border-r">
+                ₹
+              </span>
+          <input
+            type="number"
+            name="bonus_amount"
+            onWheel={(e) => e.target.blur()}
+            value={formik.values.bonus_amount}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            className="w-full border-2 border-[#f2f3f8] pl-10 rounded-md px-3 py-2"
+            placeholder="Enter Reward Amount"
+          />
+        </div>
+        {formik.touched.bonus_amount && formik.errors.bonus_amount && (
+          <span className="text-red-500 text-sm mt-1">
+            {formik.errors.bonus_amount}
+          </span>
+        )}
+      </div>
+      ):(
+        <div className="">
+         <label className="block text-sm font-medium mb-1 mt-2">
+        Benefit  Bonus Percentage
+        </label>
+        <div className="relative">
+          <input
+            type="number"
+            max={100}
+            name="bonus_percent"
+            onWheel={(e) => e.target.blur()}
+            value={formik.values.bonus_percent}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+            placeholder="Enter Reward Percent"
+          />
+          <span
+            className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
+            style={{ backgroundColor: layout_color }}
+          >
+            %
+          </span>
+        </div>
+        {formik.touched.bonus_percent && formik.errors.bonus_percent && (
+          <span className="text-red-500 text-sm mt-1">
+            {formik.errors.bonus_percent}
+          </span>
+        )}
+      </div>
+      )}
+
+      <div className="flex flex-col lg:mt-2">
+        <label className="block text-sm font-medium mb-1">
+          Benefit Minimum Installment
+        </label>
+        <input
+          type="number"
+          name="benefit_min_installment_wst_mkg"
+          value={formik.values.benefit_min_installment_wst_mkg}
+          onWheel={(e) => e.target.blur()}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+          placeholder="Enter Min Installments"
+          style={{ height: inputHeight }}
+        />
+        {formik.touched.benefit_min_installment_wst_mkg &&
+          formik.errors.benefit_min_installment_wst_mkg && (
+            <span className="text-red-500 text-sm mt-1">
+              {formik.errors.benefit_min_installment_wst_mkg}
+            </span>
+          )}
       </div>
     </div>
   );

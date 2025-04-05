@@ -41,7 +41,7 @@ const GiftIssued = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [entries,Setentries] = useState(0)
-
+  const [totalDocument,setTotalDocuments]=useState(0)
   const [isFilterOpen, setIsFilterOpen] = React.useState(false);
   const [from_date, setFromdate] = useState('');
   const [to_date, setTodate] = useState('');
@@ -249,17 +249,7 @@ const GiftIssued = () => {
   };
 
 
-  const nextPage = () => {
-    setCurrentPage((prevPage) => (prevPage < totalPages ? prevPage + 1 : prevPage));
-  };
 
-  const prevPage = () => {
-    setCurrentPage((prevPage) => (prevPage > 1 ? prevPage - 1 : prevPage));
-  };
-
-
-  const paginationData = { totalItems: totalPages, currentPage: currentPage, itemsPerPage: itemsPerPage, handlePageChange: handlePageChange }
-  const paginationButtons = usePagination(paginationData)
 
 
   const columns = [
@@ -284,7 +274,10 @@ const GiftIssued = () => {
     },
     {
       header: "No.Of Gifts",
-      cell: (row) => row?.gifts?.length
+      cell: (row) => {
+       const gifts = row?.gifts?.reduce((acc, curr) => acc + curr.qty, 0);
+        return gifts;
+      }
     },
     {
       header: "Issue Type",
@@ -356,17 +349,7 @@ const GiftIssued = () => {
           </div>
         </div>
       </div>
-      <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
-        <div className="relative w-full lg:w-1/3 min-w-[200px]">
-          <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-            <Search className="text-gray-500" />
-          </div>
-          <input
-            placeholder="Search..."
-            className="p-3 pl-10 pr-3 border-2 bg-[#F5F5F5] border-gray-500 rounded-md w-full"
-            onChange={handleSearch}
-          />
-        </div>
+      <div className="mt-4">
         <div className="flex flex-row items-center justify-end gap-2">
           {
             filtered ?
@@ -561,62 +544,13 @@ const GiftIssued = () => {
           data={giftissues}
           columns={columns}
           isLoading={isLoading}
+          currentPage={currentPage}
+          handleItemsPerPageChange={handleItemsPerPageChange}
+          handlePageChange={handlePageChange}
+          itemsPerPage={itemsPerPage}
+          totalItems={entries}
         />
       </div>
-      {
-        giftissues.length > 0
-        && (
-          <>
-             <div className="flex justify-between mt-4 p-2">
-
-             <div className="mt-4 flex gap-2 justify-center items-center">
-              <span className="text-gray-500">Show</span>
-              <select
-                id="itemsPerPage"
-                value={itemsPerPage}
-                onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
-                className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
-              >
-                 <option value={10}>10</option>
-                      <option value={25}>25</option>
-                      <option value={50}>50</option>
-                      <option value={100}>100</option>
-                      <option value={250}>250</option>
-                      <option value={500}>500</option>
-                      <option value={1000}>1000</option>
-              </select>
-              <span className="text-gray-500">of entries {entries}</span>
-            </div>
-
-            <div className="flex flex-row items-center justify-center gap-2">
-              <div className="flex items-center gap-4">
-                <button
-                  onClick={prevPage}
-                  readOnly={currentPage === 1}
-                  className={`p-2 text-gray-500 rounded-md ${currentPage === 1 ? "cursor-not-allowed" : "cursor-pointer"}`}
-                >
-                  Previous
-                </button>
-              </div>
-    
-              <div className="flex flex-row items-center justify-center gap-2">
-                {paginationButtons}
-              </div>
-    
-              <div className="flex items-center">
-                <button
-                  onClick={nextPage}
-                  readOnly={currentPage === totalPages}
-                  className={`p-2 text-gray-500 rounded-md ${currentPage === totalPages ? "cursor-not-allowed" : "cursor-pointer"}`}
-                >
-                  Next
-                </button>
-              </div>
-            </div>
-            <Modal/>
-          </div>
-          </>
-        )}
     </div>
   )
 }

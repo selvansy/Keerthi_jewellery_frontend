@@ -12,9 +12,7 @@ import {  todayMetalRate } from "../SuperAdmin/Dashboard/dasApi"
 import { useDispatch, useSelector } from 'react-redux';
 
 export default function OutStandingWeight() { 
-
- 
-   
+  
   const roledata = useSelector((state) => state.clientForm.roledata);
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
 

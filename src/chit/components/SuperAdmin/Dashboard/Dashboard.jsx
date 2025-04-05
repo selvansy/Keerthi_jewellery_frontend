@@ -9,7 +9,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 import {
-  getpaymentDashboard,
+  dashboardCardsData,
   getpaymentmodesummary,
   getallbranch,
   schemepaymentdatatable,
@@ -90,13 +90,13 @@ function Dashboard() {
 
   const id_role = roledata?.id_role;
   const id_client = roledata?.id_client;
-  const id_branch = roledata?.branch;
+  const id_branch = roledata?.branch || roledata?.id_branch;
 
   let [data, setData] = useState([]);
 
   let [paymentData, setPaymentData] = useState([]);
   let [cardData, setCardData] = useState(null);
-  let [metalRate, setMetalRate] = useState({});
+  let [metalRate, setMetalRate] = useState([]);
 
   const [branchList, setBranchList] = useState([]);
 
@@ -134,6 +134,7 @@ function Dashboard() {
     let payload = {
       from_date: "",
       to_date: "",
+      limit:"",
       id_branch: id_branch,
     };
     PaymentMode(payload);
@@ -141,13 +142,14 @@ function Dashboard() {
     getschemePaymentMutate(payload);
   };
 
+
+
   useEffect(() => {
     if (!roledata) return;
 
     if (id_branch === "0") {
       getTodaysMetalRate({ id_branch: roledata.id_branch, date: todayDate });
     } else {
-      console.log(roledata);
       getTodaysMetalRate({ id_branch: roledata?.branch, date: todayDate });
     }
 
@@ -172,32 +174,32 @@ function Dashboard() {
     setFilters((prev) => ({ ...prev, [name]: value }));
   };
 
-  const applyfilterdatatable = (e) => {
-    e.preventDefault();
-    setData([]);
-    setpaymentMode([]);
-    setCardData(null);
-    const filterTosend = {
-      from_date: from_date,
-      to_date: to_date,
-      limit: itemsPerPage,
-      id_branch: filters.id_branch,
-      type: filters.type,
-    };
+  // const applyfilterdatatable = (e) => {
+  //   e.preventDefault();
+  //   setData([]);
+  //   setpaymentMode([]);
+  //   setCardData(null);
+  //   const filterTosend = {
+  //     from_date: from_date,
+  //     to_date: to_date,
+  //     limit: itemsPerPage,
+  //     id_branch: filters.id_branch,
+  //     type: filters.type,
+  //   };
 
-    getschemePaymentMutate(filterTosend);
-    PaymentMode(filterTosend);
-    CardSummary(filterTosend);
-    setIsFilterOpen(false);
-    setFromdate("");
-    setTodate("");
-    setFilters({
-      from_date: null,
-      to_date: null,
-      limit: itemsPerPage,
-      id_branch: id_branch,
-    });
-  };
+  //   getschemePaymentMutate(filterTosend);
+  //   PaymentMode(filterTosend);
+  //   CardSummary(filterTosend);
+  //   setIsFilterOpen(false);
+  //   setFromdate("");
+  //   setTodate("");
+  //   setFilters({
+  //     from_date: null,
+  //     to_date: null,
+  //     limit: itemsPerPage,
+  //     id_branch: id_branch,
+  //   });
+  // };
 
   const { mutate: PaymentMode } = useMutation({
     mutationFn: (payload) => getpaymentmodesummary(payload),
@@ -212,7 +214,7 @@ function Dashboard() {
   });
 
   const { mutate: CardSummary } = useMutation({
-    mutationFn: getpaymentDashboard,
+    mutationFn: dashboardCardsData,
     onSuccess: (response) => {
       setCardData(response.data);
     },
@@ -232,30 +234,44 @@ function Dashboard() {
   });
 
   const { mutate: getTodaysMetalRate } = useMutation({
-    mutationFn: schemepaymenttodayrate,
+    mutationFn: ({id_branch,date})=>schemepaymenttodayrate({id_branch,date}),
     onSuccess: (response) => {
       setMetalRate(response.data);
     },
     onError: (error) => {},
   });
 
-  useEffect(() => {
-    const parsedData = {
-      page: 1,
-      limit: 10,
-      added_by: "",
-      from_date: from_date,
-      to_date: to_date,
-      id_branch: id_branch,
-      id_scheme: "",
-      id_classification: "",
-      collectionuserid: "",
-      search: "",
-    };
-    handleallbranch();
+  // useEffect(() => {
+  //   const parsedData = {
+  //     page: 1,
+  //     limit: 10,
+  //     added_by: "",
+  //     from_date: from_date,
+  //     to_date: to_date,
+  //     id_branch: id_branch,
+  //     id_scheme: "",
+  //     id_classification: "",
+  //     collectionuserid: "",
+  //     search: "",
+  //   };
+  //   handleallbranch();
 
-    getschemePaymentMutate(parsedData);
-  }, [currentPage, itemsPerPage, search]);
+  //   getschemePaymentMutate(parsedData);
+  // }, [currentPage, itemsPerPage, search]);
+
+  //useEffects
+  useEffect(()=>{
+    let payload = {
+      from_date: "",
+      to_date: "",
+      limit:"",
+      id_branch: id_branch,
+    };
+    PaymentMode(payload);
+    CardSummary(payload);
+    getschemePaymentMutate(payload);
+    getTodaysMetalRate({ id_branch: id_branch, date: todayDate });
+  },[id_branch])
 
   const PaymentColumns = [
     {
@@ -395,13 +411,22 @@ function Dashboard() {
     }
   }, [chartData]);
 
+  // const metals = [
+  //   { name: metalRate., key: "goldrate_24ct", img: gold24 },
+  //   { name: "Gold (22CT)", key: "goldrate_22ct", img: gold },
+  //   { name: "Gold (18CT)", key: "goldrate_18ct", img: gold18 },
+  //   { name: "Silver", key: "silverrate_1gm", img: silver },
+  //   { name: "Platinum", key: "platinumrate_1gm", img: platinum },
+  //   { name: "Diamond", key: "diamondrate_1gm", img: diamond },
+  // ];
   const metals = [
-    { name: "Gold (24CT)", key: "goldrate_24ct", img: gold24 },
-    { name: "Gold (22CT)", key: "goldrate_22ct", img: gold },
-    { name: "Gold (18CT)", key: "goldrate_18ct", img: gold18 },
-    { name: "Silver", key: "silverrate_1gm", img: silver },
-    { name: "Platinum", key: "platinumrate_1gm", img: platinum },
-    { name: "Diamond", key: "diamondrate_1gm", img: diamond },
+    0,
+   gold24,
+   silver,
+   diamond,
+   platinum,
+     gold,
+    gold18,
   ];
 
   const statusData = [
@@ -419,7 +444,6 @@ function Dashboard() {
     <>
       <div className="flex flex-col gap-5 px-4 py-6  min-h-screen overflow-y-scroll scrollbar-hide">
         {/* Cards Section */}
-
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="bg-white rounded-[16px] pt-[20px] pb-[25px] px-[12px]">
             <div className="rounded-md">
@@ -504,20 +528,20 @@ function Dashboard() {
               </div>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {metals.map((metal, index) => (
+              {metalRate.map((metal, index) => (
                 <div
                   key={index}
                   className="p-3 rounded-lg border border-gray-200 "
                 >
                   <img
-                    src={metal.img}
+                    src={metals[metal.material_type_id.id_metal]}
                     alt={metal.name}
                     className="h-12 w-20 mb-2 "
                   />
                   <h3 className="text-2xl font-medium text-[#090909] mt-6">
-                    ₹{metalRate?.[metal.key]?.$numberDecimal || 0.0}
+                    ₹{metal.rate}
                   </h3>
-                  <p className="text-sm text-gray-600">{metal.name}</p>
+                  <p className="text-sm text-gray-600">{metal?.material_type_id?.metal_name} ({metal?.purity_id?.purity_name})</p>
                 </div>
               ))}
             </div>

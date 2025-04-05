@@ -10,7 +10,6 @@ import diamond from "../../../assets/Dimond 1.svg";
 
 function Card({metalRate}) {
 
-
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
   return (

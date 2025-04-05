@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { CalendarDays, Search } from "lucide-react";
@@ -22,13 +22,14 @@ import {
   getemployeebybranch,
   getallbranch,
   getSchemeAccountCount,
-  getCustomerByMobile, //use insted of searchcustomermobile
+  getCustomerByMobile,
   getEmployeeByMobile,
 } from "../../../api/Endpoints";
 import { useSelector, useDispatch } from "react-redux";
 import { customSelectStyles } from "../../Setup/purity/index";
+import SpinLoading from "../../common/spinLoading";
 
-export function ExistingCustomer() {
+export function ExistingCustomer({ setCusData }) {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const roledata = useSelector((state) => state.clientForm.roledata);
   const id_branch = roledata?.branch;
@@ -40,8 +41,8 @@ export function ExistingCustomer() {
   const [branch, setBranch] = useState(id_branch);
   const [branchData, setBranchData] = useState([]);
 
-  const { data: branchresponse, isLoading: loadingbranch } = useQuery({
-    queryKey: ["branch", branch],
+  const { data: branchresponse, isLoading: branchloading } = useQuery({
+    queryKey: ["branch"],
     queryFn: getallbranch,
   });
 
@@ -60,30 +61,14 @@ export function ExistingCustomer() {
     setLoading(true);
     handlesearchcustomer({
       id_branch: formData.id_branch,
-      search_mobile: formData.mobile,
+      search: formData.mobile,
     });
   };
 
   const { mutate: handlesearchcustomer } = useMutation({
-    mutationFn: searchcustomermobile,
+    mutationFn: (data) => searchcustomermobile(data),
     onSuccess: (response) => {
-      if (response) {
-        dispatch(
-          SetaccExp({
-            customer_name:
-              response.data.firstname + " " + response.data.lastname,
-            address: response.data.address,
-            id_branch: response.data.id_branch,
-            mobile: response.data.mobile,
-            id_customer: response.data._id,
-          })
-        );
-        setFormData((prev) => ({
-          ...prev,
-          customer_name: response.data.firstname + " " + response.data.lastname,
-        }));
-      }
-
+      handleResData(response.data);
       setLoading(false);
     },
     onError: (error) => {
@@ -91,6 +76,21 @@ export function ExistingCustomer() {
       setLoading(false);
     },
   });
+
+  const handleResData = (data) => {
+    setFormData((prev) => ({
+      ...prev,
+      customer_name: data.firstname + " " + data.lastname,
+    }));
+
+    setCusData({
+      customer_name: data.firstname + " " + data.lastname,
+      address: data.address,
+      id_branch: data.id_branch,
+      mobile: data.mobile,
+      id_customer: data._id,
+    });
+  };
 
   return (
     <div className="grid grid-rows-2 md:grid-cols-2 gap-2">
@@ -113,7 +113,7 @@ export function ExistingCustomer() {
             setBranch(branch.value);
           }}
           customSelectStyles={customSelectStyles}
-          isLoading={loadingbranch}
+          isLoading={branchloading}
           placeholder="Select Branch"
         />
       </div>
@@ -180,11 +180,9 @@ export function ExistingCustomer() {
   );
 }
 
-const AddSchemeAccount = () => {
+const AddSchemeAccount = ({ cusData, handleClear }) => {
   let dispatch = useDispatch();
 
-  const cusData = useSelector((state) => state.clientForm.accExp);
-  console.log(cusData)
   const id_branch = cusData?.id_branch;
 
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
@@ -192,6 +190,8 @@ const AddSchemeAccount = () => {
   const location = useLocation();
   const todaydate = new Date();
   const { id } = useParams();
+
+  const [isLoading, setLoading] = useState(false);
   const [start_date, setStartDate] = useState(todaydate);
   const [maturity_date, setMaturityDate] = useState("");
   const [maturity_period, setMaturityPeriod] = useState(0);
@@ -232,6 +232,7 @@ const AddSchemeAccount = () => {
     customer_name: cusData.customer_name,
     fixedamount: "",
     amount: 0,
+    weight: 0,
     scheme_type: 0,
     min_amount: 0,
     max_amount: 0,
@@ -245,23 +246,21 @@ const AddSchemeAccount = () => {
     installment_type: "",
     code: 0,
     scheme_count_number: "",
-    customer_name: "",
   });
 
-  const { data: branchresponse } = useQuery({
-    queryKey: ["branch", branch],
+  const { data: branchresponse, isLoading: branchloading } = useQuery({
+    queryKey: ["branch"],
     queryFn: getallbranch,
   });
 
-  // useEffect(() => {
-  //   return () => {
-  //     dispatch(SetaccExp({}));
-  //   };
-  // }, []);
-
   useEffect(() => {
     if (branchresponse) {
-      setBranchData(branchresponse.data);
+      const data = branchresponse.data;
+      const branch = data.map((branch) => ({
+        value: branch._id,
+        label: branch.branch_name,
+      }));
+      setBranchData(branch);
     }
   }, [branchresponse]);
 
@@ -292,10 +291,10 @@ const AddSchemeAccount = () => {
           collectionuserid: schemeData.data.collectionuserid,
           id_branch: schemeData.data.id_branch._id,
           account_name: schemeData.data.account_name,
-          customer_name:
-            schemeData.data.id_customer.firstname +
-            " " +
-            schemeData.data.id_customer.lastname,
+          // customer_name:
+          //   schemeData.data.id_customer.firstname +
+          //   " " +
+          //   schemeData.data.id_customer.lastname,
           mobile: schemeData.data.id_customer.mobile,
           address: schemeData.data.id_customer.address,
           amount: schemeData.data.amount,
@@ -395,9 +394,9 @@ const AddSchemeAccount = () => {
 
   const handleSearchmobile = async () => {
     try {
-      if(Number(searchmobile) === Number(cusData.mobile)){
-        return toast.error("Self referral is not allowed")
-       }
+      if (Number(searchmobile) === Number(cusData.mobile)) {
+        return toast.error("Self referral is not allowed");
+      }
       const matchingRole = referralRoles.find(
         (element) => Number(selectedRole) === element.id
       );
@@ -441,6 +440,7 @@ const AddSchemeAccount = () => {
           customer_name: response.data.firstname + " " + response.data.lastname,
           total_installments: total_installments,
           amount: 0,
+          weight: 0,
           scheme_type: 0,
           min_amount: 0,
           max_amount: 0,
@@ -535,12 +535,12 @@ const AddSchemeAccount = () => {
     try {
       const countData = await getSchemeAccountCount(formData.mobile, id);
       const newAcNumber = countData.data !== 0 ? Number(countData.data) + 1 : 1;
-  
+
       setAcNumber(newAcNumber);
       const schemeData = schemefilter.find(
         (item) => String(item._id) === String(id)
       );
-  
+
       if (schemeData) {
         setFormData((prevState) => ({
           ...prevState,
@@ -550,23 +550,22 @@ const AddSchemeAccount = () => {
           installment_type: schemeData?.installment_type,
           code: schemeData?.code,
         }));
-  
-        // Update min_amount, max_amount, min_weight, max_weight based on scheme type
-        if ([12, 3, 4, 2, 5, 6].includes(schemeData.scheme_type)) {
+
+        if ([12, 3, 4].includes(schemeData.scheme_type)) {
           setFormData((prevData) => ({
             ...prevData,
             min_weight: schemeData?.min_weight,
             max_weight: schemeData?.max_weight,
-            min_amount: 0, // Reset min_amount if not applicable
-            max_amount: 0, // Reset max_amount if not applicable
+            min_amount: 0,
+            max_amount: 0,
           }));
         } else {
           setFormData((prevData) => ({
             ...prevData,
             min_amount: schemeData?.min_amount,
             max_amount: schemeData?.max_amount,
-            min_weight: 0, // Reset min_weight if not applicable
-            max_weight: 0, // Reset max_weight if not applicable
+            min_weight: 0,
+            max_weight: 0,
           }));
         }
       } else {
@@ -776,12 +775,14 @@ const AddSchemeAccount = () => {
 
     if (isValidForm()) {
       if (id) {
+        setLoading(true);
         updateSchemeaccount(formData);
       } else {
         setFormData((prev) => ({
           ...prev,
           scheme_count_number: acNumber,
         }));
+        setLoading(true);
         createSchemeaccount(formData);
       }
     } else {
@@ -793,9 +794,12 @@ const AddSchemeAccount = () => {
     mutationFn: addschemeaccount,
     onSuccess: (response) => {
       toast.success(response.message);
+      setLoading(false);
+      handleClear();
       navigate("/managecustomers/customer/");
     },
     onError: (error) => {
+      setLoading(false);
       toast.error(error.response.data.message);
     },
   });
@@ -804,9 +808,11 @@ const AddSchemeAccount = () => {
     mutationFn: updateschemeaccount,
     onSuccess: (response) => {
       toast.success(response.message);
+      setLoading(false);
       navigate("/managecustomers/customer/");
     },
     onError: (error) => {
+      setLoading(false);
       toast.error(error.response.data.message);
     },
   });
@@ -827,43 +833,30 @@ const AddSchemeAccount = () => {
       >
         <div className="grid md:grid-cols-2 gap-3 mt-4">
           <div className="flex flex-col">
-            <label className="text-black mb-1 font-normal">
+            <label className="text-black mb-1 font-medium">
               Branch<span className="text-red-400">*</span>
             </label>
-            <div className="relative">
-              <select
-                name="id_branch"
-                value={cusData.id_branch || formData.id_branch}
-                onChange={(e) => {
-                  filterInputchange(e);
-                }}
-                disabled
-                className="appearance-none border bg-[#e5e7eb] border-gray-300 cursor-not-allowed rounded-md p-2 w-full pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-              >
-                <option value="">-- Select --</option>
-                {branchData.map((branch) => (
-                  <>
-                    <option key={branch._id} value={branch._id}>
-                      {branch.branch_name}
-                    </option>
-                  </>
-                ))}
-              </select>
-              <p style={{ color: "red" }}>{errors?.id_branch}</p>
-              <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                <svg
-                  className="h-4 w-4 text-gray-400"
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="3"
-                  viewBox="0 0 24 24"
-                  stroke="black"
-                >
-                  <path d="M19 9l-7 7-7-7"></path>
-                </svg>
-              </div>
-            </div>
+
+            <Select
+              options={branchData}
+              value={
+                branchData.find(
+                  (option) => option.value === cusData.id_branch
+                ) || formData.id_branch
+              }
+              onChange={(option) =>
+                formik.setFieldValue("id_branch", option?.value || "")
+              }
+              onKeyDown={(e) => e.key === "Enter" && e.preventDefault()}
+              styles={customSelectStyles}
+              isLoading={branchloading}
+              isDisabled={id_branch !== "0"}
+              placeholder="Select Branch"
+            />
+
+            {errors?.id_branch && (
+              <div style={{ color: "red" }}>{errors?.id_branch}</div>
+            )}
           </div>
 
           <div className="flex flex-col relative">
@@ -977,7 +970,7 @@ const AddSchemeAccount = () => {
                       let displayValue = scheme.scheme_name;
 
                       if (
-                        [2, 3, 4, 6, 12].includes(scheme.scheme_type) &&
+                        [3, 4, 12].includes(scheme.scheme_type) &&
                         scheme.min_weight !== 0 &&
                         scheme.max_weight !== 0
                       ) {
@@ -1018,18 +1011,25 @@ const AddSchemeAccount = () => {
                 <div className="flex flex-col">
                   <label className="text-black mb-1 font-normal">
                     Scheme{" "}
-                    {[12, 3, 4,2,5,6].includes(formData.scheme_type)
+                    {[12, 3, 4].includes(formData.scheme_type)
                       ? "Weights"
                       : "Amounts"}
                     <span className="text-red-400">*</span>
                   </label>
                   <div className="relative">
                     <select
-                      name="amount"
-                      value={formData.amount}
-                      onChange={(e) => {
-                        filterInputchange(e);
-                      }}
+                      name={
+                        [12, 3, 4].includes(formData.scheme_type)
+                          ? "weight"
+                          : "amount"
+                      }
+                      value={(() => {
+                        if ([12, 3, 4].includes(formData.scheme_type)) {
+                          return formData.weight || "";
+                        }
+                        return formData.amount || "";
+                      })()}
+                      onChange={(e) => filterInputchange(e)}
                       className="appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                       defaultValue=""
                     >
@@ -1061,7 +1061,7 @@ const AddSchemeAccount = () => {
                 <>
                   <div className="flex flex-col">
                     <label className="text-black mb-1 font-normal">
-                      {[12, 3, 4, 2, 5, 6].includes(formData.scheme_type)
+                      {[12, 3, 4].includes(formData.scheme_type)
                         ? "Min weight"
                         : "Min amount"}{" "}
                       <span className="text-red-400">*</span>
@@ -1078,7 +1078,7 @@ const AddSchemeAccount = () => {
                   </div>
                   <div className="flex flex-col">
                     <label className="text-black mb-1 font-normal">
-                      {[12, 3, 4, 2, 5, 6].includes(formData.scheme_type)
+                      {[12, 3, 4].includes(formData.scheme_type)
                         ? "Max weight"
                         : "Max amount"}
                       <span className="text-red-400">*</span>
@@ -1095,24 +1095,25 @@ const AddSchemeAccount = () => {
                   </div>
                 </>
               )}
-
-              <div className="flex flex-col relative">
+              <div className="flex flex-col relative group">
                 <label className="text-black mb-1 font-normal">
                   Account Name<span className="text-red-400">*</span>
                 </label>
-                <input
-                  type="text"
-                  name="account_name"
-                  onChange={(e) => filterInputchange(e)}
-                  value={formData.account_name}
-                  className="border-2 border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                  placeholder="Enter Account Name"
-                />
-                <div
-                  className="text-white absolute flex items-center justify-center cursor-pointer right-[0%] rounded-r-lg top-[68%] -translate-y-1/2 w-10 md:h-[45px] md:top-[50px] h-[62%] sm:right-0 sm:top-[68%] lg:right-[0%]"
-                  style={{ backgroundColor: layout_color }}
-                >
-                  AC{acNumber}
+                <div className="relative w-full">
+                  <input
+                    type="text"
+                    name="account_name"
+                    onChange={(e) => filterInputchange(e)}
+                    value={formData.account_name}
+                    className="border-2 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-1 focus:ring-gray-500 focus:border focus:border-gray-500"
+                    placeholder="Enter Account Name"
+                  />
+                  <div
+                    className="text-black bg-white absolute flex items-center border-2 justify-center cursor-pointer inset-y-1/2 translate-y-[-8px] translate-x-[0px] right-0 rounded-r-lg w-10 md:h-[43px] h-[61%] 
+      border-gray-300 group-focus-within:border group-focus-within:border-gray-500 group-focus-within:ring-1 group-focus-within:ring-gray-500"
+                  >
+                    AC{acNumber}
+                  </div>
                 </div>
                 <p style={{ color: "red" }}>{errors?.account_name}</p>
               </div>
@@ -1251,12 +1252,12 @@ const AddSchemeAccount = () => {
                       maxLength={10}
                       value={searchmobile}
                       onChange={(e) => {
-                        if (Number(e.target.value) || e.target.value == "") {               
-                            setSearchMobile(e.target.value);
+                        if (Number(e.target.value) || e.target.value == "") {
+                          setSearchMobile(e.target.value);
                         }
                       }}
                       className="border-2 border-gray-300 rounded-md p-2  focus:border-transparent"
-                      placeholder="Enter mobile number here"
+                      placeholder="Enter mobile number or referral code"
                     />
 
                     {/* Search Icon */}
@@ -1293,9 +1294,10 @@ const AddSchemeAccount = () => {
               <button
                 className=" text-white rounded-md p-2 w-full lg:w-20"
                 type="submit"
+                disabled={isLoading}
                 style={{ backgroundColor: layout_color }}
               >
-                {!id ? "Submit" : "Update"}
+                {isLoading ? <SpinLoading /> : id ? "Update" : "Save"}
               </button>
             </div>
           </div>

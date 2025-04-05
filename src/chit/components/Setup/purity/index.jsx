@@ -26,6 +26,8 @@ import { setid } from "../../../../redux/clientFormSlice";
 import Select from "react-select";
 import usePagination from "../../../hooks/usePagination";
 import SpinLoading from "../../common/spinLoading";
+import Action from "../../common/action";
+import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
 
 export const customSelectStyles = {
   control: (provided) => ({
@@ -196,6 +198,11 @@ const Purity = () => {
       })
     );
   };
+
+  const hanldeActiveDropDown = (data) => {
+    setActiveDropdown(data);
+  };
+
   const { mutate: deletePurity } = useMutation({
     mutationFn: (id) => deletepurity(id),
     onSuccess: (response) => {
@@ -253,116 +260,7 @@ const Purity = () => {
       header: "S.No",
       cell: (_, index) => index + 1 + (currentPage - 1) * limit,
     },
-    {
-      header: "Actions",
-      cell: (row, rowIndex) => (
-        <div className="dropdown-container relative">
-          <button
-            className="p-1 hover:bg-gray-100 rounded-full"
-            onClick={(e) => {
-              e.stopPropagation();
-              setActiveDropdown(activeDropdown === row?._id ? null : row?._id);
-            }}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 text-gray-600"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
-            </svg>
-          </button>
 
-          {activeDropdown === row?._id && (
-            <div
-              className="absolute"
-              style={{
-                top: rowIndex >= purityData.length - 2 ? "auto" : "72%",
-                bottom: rowIndex >= purityData.length - 2 ? "-74%" : "auto",
-                // top: 'auto',
-                // bottom: '-440%',
-                zIndex: 9999,
-                marginBottom: "8px",
-                filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.15))",
-              }}
-            >
-              <div className="w-32 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
-                <div className="py-1">
-                  <button
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                    onClick={() => {
-                      handleEdit(row?._id);
-                      setActiveDropdown(null);
-                    }}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                      />
-                    </svg>
-                    Edit
-                  </button>
-                  <button
-                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
-                    onClick={() => {
-                      handleDelete(row?._id);
-                      setActiveDropdown(null);
-                    }}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                      />
-                    </svg>
-                    Delete
-                  </button>
-                  <button
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                    onClick={() => setActiveDropdown(null)}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      ),
-      sticky: "right",
-    },
     {
       header: "Purity Name",
       cell: (row) => `${row?.purity_name}`,
@@ -370,52 +268,67 @@ const Purity = () => {
     {
       header: "Metal Name",
       cell: (row) => {
-        return row.id_metal.metal_name
+        return row.id_metal.metal_name;
       },
     },
+    {
+      header: "Actions",
+      cell: (row, rowIndex) => (
+        <Action
+          row={row}
+          data={purityData}
+          rowIndex={rowIndex}
+          activeDropdown={activeDropdown}
+          setActive={hanldeActiveDropDown}
+          handleEdit={handleEdit}
+          handleDelete={handleDelete}
+        />
+      ),
+      sticky: "right",
+    },
 
-    {
-      header: "Display App",
-      accessor: "display_app",
-      cell: (row) => (
-        <label className="relative inline-flex items-center cursor-pointer">
-          <input
-            type="checkbox"
-            className="sr-only peer"
-            checked={row?.display_app === true}
-            onChange={() => handleDisplayappToggle(row?._id, row?.display_app)}
-          />
-          <div
-            className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-black p-[2px] after:duration-300 after:bg-black ${
-              row.active === true
-                ? "peer-checked:bg-[#61A375] peer-checked:ring-[#61A375]"
-                : "peer-checked:bg-gray-400 peer-checked:ring-gray-400"
-            } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-white peer-hover:after:scale-95`}
-          ></div>
-        </label>
-      ),
-    },
-    {
-      header: "Status",
-      accessor: "active",
-      cell: (row) => (
-        <label className="relative inline-flex items-center cursor-pointer">
-          <input
-            type="checkbox"
-            className="sr-only peer"
-            checked={row?.active === true}
-            onChange={() => handleStatusToggle(row?._id, row?.active)}
-          />
-          <div
-            className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-black p-[2px] after:duration-300 after:bg-black ${
-              row.active === true
-                ? "peer-checked:bg-[#61A375] peer-checked:ring-[#61A375]"
-                : "peer-checked:bg-gray-400 peer-checked:ring-gray-400"
-            } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-white peer-hover:after:scale-95`}
-          ></div>
-        </label>
-      ),
-    },
+    // {
+    //   header: "Display App",
+    //   accessor: "display_app",
+    //   cell: (row) => (
+    //     <label className="relative inline-flex items-center cursor-pointer">
+    //       <input
+    //         type="checkbox"
+    //         className="sr-only peer"
+    //         checked={row?.display_app === true}
+    //         onChange={() => handleDisplayappToggle(row?._id, row?.display_app)}
+    //       />
+    //       <div
+    //         className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-black p-[2px] after:duration-300 after:bg-black ${
+    //           row.active === true
+    //             ? "peer-checked:bg-[#61A375] peer-checked:ring-[#61A375]"
+    //             : "peer-checked:bg-gray-400 peer-checked:ring-gray-400"
+    //         } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-white peer-hover:after:scale-95`}
+    //       ></div>
+    //     </label>
+    //   ),
+    // },
+    // {
+    //   header: "Status",
+    //   accessor: "active",
+    //   cell: (row) => (
+    //     <label className="relative inline-flex items-center cursor-pointer">
+    //       <input
+    //         type="checkbox"
+    //         className="sr-only peer"
+    //         checked={row?.active === true}
+    //         onChange={() => handleStatusToggle(row?._id, row?.active)}
+    //       />
+    //       <div
+    //         className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-black p-[2px] after:duration-300 after:bg-black ${
+    //           row.active === true
+    //             ? "peer-checked:bg-[#61A375] peer-checked:ring-[#61A375]"
+    //             : "peer-checked:bg-gray-400 peer-checked:ring-gray-400"
+    //         } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-white peer-hover:after:scale-95`}
+    //       ></div>
+    //     </label>
+    //   ),
+    // },
   ];
 
   const handleSearch = (e) => {
@@ -442,8 +355,6 @@ const Purity = () => {
     setCurrentPage(pageNumber);
   };
 
-  console.log(currentPage);
-
   const paginationData = {
     totalItems: totalPages,
     currentPage: currentPage,
@@ -453,31 +364,36 @@ const Purity = () => {
   const paginationButtons = usePagination(paginationData);
 
   return (
-    <div className="flex flex-col p-4 relative">
-      <>
-        <h2 className="text-2xl text-gray-900 font-bold">Purity</h2>
-        <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
-          <div className="relative w-full lg:w-1/3 min-w-[200px]">
+    <>
+      <Breadcrumb
+        items={[{ label: "Masters" }, { label: "Purity", active: true }]}
+      />
+      <div className="flex flex-col p-4 relative bg-white border border-[#F2F2F9]  rounded-[16px]">
+        <div className="grid gap-4 mt-4 grid-cols-2 lg:items-center">
+          {/* Search Input */}
+          <div className="relative ">
             <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
               {searchLoading ? (
                 <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
               ) : (
-                <Search className="text-gray-500" />
+                <Search className="text-black" />
               )}
             </div>
             <input
               onChange={handleSearch}
-              placeholder="Search..."
-              className="p-3 pl-10 pr-3 border-2 bg-[#F5F5F5] border-gray-500 rounded-md w-full"
+              placeholder="Search"
+              className="px-4 py-2 ps-9 border-2 border-[#F2F2F9] rounded-[8px] w-[228px]"
             />
           </div>
-          <div className="flex flex-row items-center justify-end gap-2">
+
+          {/* Add Metal Button */}
+          <div className="w-full flex justify-end">
             <button
-              className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
+              className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-[135px] sm:w-auto"
               onClick={handleAddpurity}
               style={{ backgroundColor: layout_color }}
             >
-              + Add purity
+              + Add Purity
             </button>
           </div>
         </div>
@@ -486,88 +402,36 @@ const Purity = () => {
           <Table
             data={purityData}
             columns={columns}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-            pageSize={limit}
             isLoading={isLoading}
+            currentPage={currentPage}
+            handlePageChange={handlePageChange}
+            itemsPerPage={itemsPerPage}
+            totalItems={totalDocuments}
+            handleItemsPerPageChange={handleItemsPerPageChange}
           />
         </div>
 
-        <div className="flex  justify-between mt-4 p-2">
-          <div className="mt-4 flex gap-2 justify-center items-center">
-            <span className="text-gray-500">Show</span>
-            <select
-              id="itemsPerPage"
-              value={itemsPerPage}
-              onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
-              className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
-            >
-              <option value={10}>10</option>
-              <option value={25}>25</option>
-              <option value={50}>50</option>
-              <option value={100}>100</option>
-              <option value={250}>250</option>
-              <option value={500}>500</option>
-              <option value={1000}>1000</option>
-            </select>
-            <span className="text-gray-500">entries {totalDocuments} </span>
-          </div>
-          <div className="flex flex-row items-center justify-center gap-2">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-                x
-                className={`p-2 text-gray-500 rounded-md ${
-                  currentPage == 1 ? "cursor-not-allowed" : "cursor-pointer"
-                }`}
-              >
-                Previous
-              </button>
-            </div>
-
-            <div className="flex flex-row items-center justify-center gap-2">
-              {paginationButtons}
-            </div>
-
-            <div className="flex items-center">
-              <button
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                className={`p-2 text-gray-500 rounded-md ${
-                  currentPage === totalPages
-                    ? "cursor-not-allowed"
-                    : "cursor-pointer"
-                }`}
-              >
-                Next
-              </button>
-            </div>
-          </div>
-        </div>
-      </>
-      <ModelOne
-        title={id ? "Edit Purity" : "Add Purity"}
-        extraClassName="max-w-[75%] "
-        setIsOpen={setIsviewOpen}
-        isOpen={isviewOpen}
-        closeModal={closeIncommingModal}
-      >
-        <PurityForm
-          metals={selectMetal}
+        <ModelOne
+          title={id ? "Edit Purity" : "Add Purity"}
+          extraClassName="w-96"
           setIsOpen={setIsviewOpen}
-          clearId={clearId}
-          id={id}
-        />
-      </ModelOne>
-      <Modal />
-    </div>
+          isOpen={isviewOpen}
+          closeModal={closeIncommingModal}
+        >
+          <PurityForm
+            metals={selectMetal}
+            setIsOpen={setIsviewOpen}
+            clearId={clearId}
+            id={id}
+          />
+        </ModelOne>
+        <Modal />
+      </div>
+    </>
   );
 };
 
 export default Purity;
-
 
 export const PurityForm = ({ setIsOpen, metals, clearId, id }) => {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
@@ -650,7 +514,7 @@ export const PurityForm = ({ setIsOpen, metals, clearId, id }) => {
     onSuccess: (response) => {
       setIsLoading(false);
       toast.success(response.data.message);
-      clearId();
+      handleCancel();
       setIsOpen(false);
     },
     onError: (error) => {
@@ -762,4 +626,3 @@ export const PurityForm = ({ setIsOpen, metals, clearId, id }) => {
     </div>
   );
 };
-

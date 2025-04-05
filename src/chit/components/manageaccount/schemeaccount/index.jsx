@@ -19,9 +19,14 @@ import { ExportToPDF } from '../../common/Dropdown/ExportPdf';
 import { useDebounce } from '../../../hooks/useDebounce';
 import Ledgerdetails from "./ledgerdetails"
 import usePagination from '../../../hooks/usePagination'
+import Action from '../../common/action'
 
 const Schemeaccount = () => {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
+  const roledata = useSelector((state) => state.clientForm.roledata);
+  let id_client = roledata?.id_client;
+  const branch = roledata?.branch;
+  const id_branch = roledata?.id_branch
 
   const dispatch = useDispatch();
   const [isLoading, setisLoading] = useState(true)
@@ -36,6 +41,7 @@ const Schemeaccount = () => {
   const [schaccExp, setschaccExp] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
+  const [totalDocument,setTotalDocument]=useState(0)
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedRow, setSelectedRow] = useState(null)
   const [activeDropdown, setActiveDropdown] = useState(null)
@@ -52,11 +58,7 @@ const Schemeaccount = () => {
   const [displaysetting, setDiplaySetting] = useState(0);
   const [ispayable, setIspayable] = useState(false);
   const [isviewOpen, setIsviewOpen] = useState(false);
-  const roledata = useSelector((state) => state.clientForm.roledata);
-  let id_client = roledata?.id_client;
-  const id_branch = roledata?.branch;
   const [branchList, setBranchList] = useState([]);
-  let [branch, setbranch] = useState("");
   const [filters, setFilters] = React.useState({
 
     from_date: from_date,
@@ -240,6 +242,7 @@ const Schemeaccount = () => {
 
       setschemeaccount(response.data)
       setTotalPages(response.totalPages);
+      setTotalDocument(response.totalDocument)
 
       let arrayData = [];
       if (response.data.length !== 0) {
@@ -384,103 +387,18 @@ const Schemeaccount = () => {
     setCurrentPage(pageNumber);
 
   };
-
-
-  const nextPage = () => {
-    setCurrentPage((prevPage) => (prevPage < totalPages ? prevPage + 1 : prevPage));
+  
+  const hanldeActiveDropDown = (data) => {
+    setActiveDropdown(data);
   };
-
-  const prevPage = () => {
-    setCurrentPage((prevPage) => (prevPage > 1 ? prevPage - 1 : prevPage));
-  };
-
-
-  const paginationData = { totalItems: totalPages, currentPage: currentPage, itemsPerPage: itemsPerPage, handlePageChange: handlePageChange }
-  const paginationButtons = usePagination(paginationData)
-
+ 
 
   const columns = [
     {
       header: 'S.No',
       cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
     },
-    {
-      header: 'Actions',
-      cell: (row, rowIndex) => (
-        <div className="dropdown-container relative group  right-0 z-20 bg-white">
-          <button
-            className="p-1 hover:bg-gray-100 rounded-full"
-            onClick={(e) => {
-              e.stopPropagation();
-              setSelectedRow(row?._id);
-              setActiveDropdown(activeDropdown === row?._id ? null : row?._id);
-            }}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
-              <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
-            </svg>
-          </button>
-
-          {/* Use group-hover to show the dropdown on hover */}
-          <div
-            className={`absolute transform z-50 ${activeDropdown === row?._id ? '' : 'hidden'} `}
-            style={{
-              top: rowIndex >= schemeaccount.length - 2 ? 'auto' : '72%',
-              bottom: rowIndex >= schemeaccount.length - 2 ? '-74%' : 'auto',
-            }}
-          >
-            <div className="w-32 rounded-md bg-white ring-1 ring-black ring-opacity-5">
-              <div className="py-1">
-                  {row.total_paidinstallments === 0 && (
-                    <button
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                    onClick={() => {
-                      handleEdit(row?._id);
-                      setActiveDropdown(null);
-                    }}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                    Edit
-                  </button>
-                  )}
-                <button
-                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                  onClick={() => {
-                    handleOpenLedger(row?._id);
-                  }}
-                >
-                 <Eye className='w-4 h-4'/>
-                  View
-                </button>
-                <button
-                  className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
-                  onClick={() => {
-                    handleDelete(row?._id);
-                    setActiveDropdown(null);
-                  }}
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
-                  Delete
-                </button>
-                <button
-                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                  onClick={() => setActiveDropdown(null)}
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      ),
-    },
+   
     {
       header: "Account Name",
       cell: (row) => (
@@ -490,10 +408,6 @@ const Schemeaccount = () => {
         </div>
       ),
     },    
-    // {
-    //   header: "Mobile",
-    //   cell: (row) => row?.mobile
-    // },
     {
       header: 'Scheme',
       cell: (row) => {
@@ -506,10 +420,6 @@ const Schemeaccount = () => {
         }
       }
     },
-    // {
-    //   header: 'Metal',
-    //   cell: (row) => `${row?.metal_name}(${row.purity_name})`
-    // },
     {
       header: "A/c No",
       cell: (row) => row?.scheme_acc_number === "" ? 'Not Allocated' : row?.scheme_acc_number
@@ -533,18 +443,6 @@ const Schemeaccount = () => {
       header: "Maturity Date",
       cell: (row) => row?.maturity_date
     },  
-    // {
-    //   header: "Total Ins",
-    //   cell: (row) => row?.total_installments
-    // },
-    // {
-    //   header: "Paid Amt",
-    //   cell: (row) => row?.total_paidamount
-    // },
-    // {
-    //   header: "Paid Wgt",
-    //   cell: (row) => row?.total_weight
-    // },
     {
       header: 'Scheme Type',
       cell: (row) => row?.scheme_typename
@@ -553,23 +451,18 @@ const Schemeaccount = () => {
       header: "Classification",
       cell: (row) => row?.id_classification.name
     },
-    {
+    branch === '0' && {
       header: "Branch Name",
       cell: (row) => row?.branch_name
     },
-    // {
-    //   header: "Added By",
-    //   cell: (row) => row?.created_through
-    // },
-    // {
-    //   header: "Create Date",
-    //   cell: (row) => {
-    //     const date = new Date(row?.createdAt);
-    //     return date.toLocaleDateString('en-GB'); // 'en-GB' gives the d-m-Y format
-    //   }
-    // }
-
-  ];
+    {
+      header: "Actions",
+      cell: (row, rowIndex) => (
+        <Action row={row} data={schemeaccount} rowIndex={rowIndex} activeDropdown={activeDropdown} setActive={hanldeActiveDropDown}  handleEdit={handleEdit} handleDelete={handleDelete} handleView={handleOpenLedger}/>
+      ),
+      sticky: "right",
+    }
+  ].filter(Boolean); ;
 
   return (
     <div className="flex flex-col p-4">
@@ -838,71 +731,27 @@ const Schemeaccount = () => {
       </div>
       {isFilterOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-30"
+          className="fixed inset-0 bg-black bg-opacity-50 z-30 w-3/4"
           onClick={() => setIsFilterOpen(false)}
         />
       )}
       <div className="mt-4 overflow-x-auto">
-        <Table
-          data={schemeaccount}
-          columns={columns}
-          isLoading={isLoading}
-        />
-      </div>
-      {schemeaccount.length > 0 && (
-      <div className="flex justify-between mt-4 p-2">
-      <div className={`flex flex-row items-center justify-center gap-2  `}>
-        <div className="flex items-center gap-4">
-          <button
-            onClick={prevPage}
-            readOnly={currentPage === 1}
-           
-            className={`p-2 text-gray-500 rounded-md ${currentPage === 1 ? "cursor-not-allowed" : "cursor-pointer"} `}
-          >
-            Previous
-          </button>
-        </div>
-
-        <div className="flex flex-row items-center justify-center gap-2">
-          {paginationButtons}
-        </div>
-
-        <div className="flex items-center">
-          <button
-            onClick={nextPage}
-            readOnly={currentPage === totalPages}
-            
-            className={`p-2 text-gray-500 rounded-md  ${currentPage === totalPages ? "cursor-not-allowed" : "cursor-pointer"}`}
-          >
-            Next
-          </button>
-        </div>
+      <Table
+            data={schemeaccount}
+            columns={columns}
+            isLoading={isLoading}
+            currentPage={currentPage}
+            handlePageChange={handlePageChange}
+            itemsPerPage={itemsPerPage}
+            totalItems={totalDocument}
+            handleItemsPerPageChange={handleItemsPerPageChange}
+          />
       </div>
 
-      <div className="mt-4 flex gap-2 justify-center items-center">
-        <span className="text-gray-500">Show</span>
-        <select
-          id="itemsPerPage"
-          value={itemsPerPage}
-          onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
-          className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
-        >
-          <option value={10}>10</option>
-          <option value={25}>25</option>
-          <option value={50}>50</option>
-          <option value={100}>100</option>
-          <option value={250}>250</option>
-          <option value={500}>500</option>
-          <option value={1000}>1000</option>
-        </select>
-        <span className="text-gray-500">entries</span>
-      </div>
-    </div>
-      )}
       {displaysetting === 1 && (
         <ModelOne
           title={popuptitle}
-          extraClassName='max-w-5xl w-full '
+          extraClassName='w-2/3 max-h-[90vh] overflow-y-auto'
           setIsOpen={setIsviewOpen}
           isOpen={isviewOpen}
           closeModal={closeIncommingModal}

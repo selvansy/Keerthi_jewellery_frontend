@@ -30,16 +30,17 @@ function overallReport() {
   const [overAllData, setOverAllData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-
+  const [totalDocuments,setTotalDocuments]=useState(0)
   useEffect(() => {
     getOverAllReport();
   }, []);
 
   const { mutate: getOverAllReport } = useMutation({
     mutationFn: getOverAllSummary,
-    onSuccess: (response) => {    
-     setOverAllData(response);
+    onSuccess: (response) => {
+      setOverAllData(response);
       setisLoading(false);
+      // setTotalDocuments(response.)
     },
     onError: (error) => {
       setisLoading(false);
@@ -87,15 +88,12 @@ function overallReport() {
     {
       header: "Total Refund Amount",
       cell: (row) => row?.totalRefundAmount,
-    }
-      
+    },
   ];
 
   return (
     <div className="flex flex-col p-4">
-      <h2 className="text-2xl text-gray-900 font-bold">
-        Over All Report
-      </h2>
+      <h2 className="text-2xl text-gray-900 font-bold">Over All Report</h2>
       <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
         <div className="relative w-full lg:w-1/3 min-w-[200px]">
           <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
@@ -108,7 +106,17 @@ function overallReport() {
         </div>
       </div>
       <div className="mt-4">
-        <Table data={overAllData} columns={columns} isLoading={isLoading} />
+        <Table
+          data={overAllData}
+          columns={columns}
+          loading={isLoading}
+          // currentPage={currentPage}
+          // handleItemsPerPageChange={handleItemsPerPageChange}
+          // handlePageChange={handlePageChange}
+          // itemsPerPage={itemsPerPage}
+          // totalItems={totalDocuments}
+
+        />
       </div>
     </div>
   );

@@ -1,55 +1,57 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { toast } from "react-toastify";
-import { X } from "lucide-react";
+import { X, Trash2 } from "lucide-react";
 import Select from "react-select";
-import { allcountry, allstate, allcity,organisation,getOrganisation} from "../../../api/Endpoints";
+import {
+  allcountry,
+  allstate,
+  allcity,
+  organisation,
+  getOrganisation,
+} from "../../../api/Endpoints";
 
 const Organisation = () => {
-
   const [imagePreviews, setImagePreviews] = useState({
     logo: null,
-    small_logo: null,
-    favicon: null,
-    login: null,
-    background: null,
-    bottom_logo: null,
   });
-  
-  const REQUIRED_FIELDS = ["company_name", "mobile", "pincode", "short_code", "address", "id_city", "id_state", "id_country", "email"];
-  const [orgData,setOrgData] = useState({})
+  const layout_color = useSelector((state) => state.clientForm.layoutColor);
+
+  const REQUIRED_FIELDS = [
+    "company_name",
+    "short_code",
+    "mobile",
+    "pincode",
+    "address",
+    "id_city",
+    "id_state",
+    "id_country",
+    "email",
+  ];
+  const [orgData, setOrgData] = useState({});
   const [country, setCountry] = useState([]);
   const [states, setStates] = useState([]);
   const [city, setCity] = useState([]);
 
   const formik = useFormik({
     initialValues: {
-        company_name: orgData?.company_name || "",
-        mobile: orgData?.mobile || "",
-        pincode: orgData?.pincode || "",
-        short_code: orgData?.short_code || "",
-        address: orgData?.address || "",
-        id_country: orgData?.id_country || "",
-        id_state: orgData?.id_state || "",
-        id_city: orgData?.id_city || "",
-        email: orgData?.email || "",
-        website: orgData?.website || "",
-        color: orgData?.color || "",
-        primary_color: orgData?.primary_color || "",
-        secondary_color: orgData?.secondary_color || "",
-        background_color: orgData?.background_color || "",
-        whatsapp_no: orgData?.whatsapp_no || "",
-        toll_free: orgData?.toll_free || "",
-        logo: orgData?.logo || null,
-        small_logo: orgData?.small_logo || null,
-        favicon: orgData?.favicon || null,
-        login: orgData?.login || null,
-        background: orgData?.background || null,
-        bottom_logo: orgData?.bottom_logo || null,
-      },
+      company_name: orgData?.company_name || "",
+      short_code: orgData?.short_code || "",
+      email: orgData?.email || "",
+      mobile: orgData?.mobile || "",
+      address: orgData?.address || "",
+      pincode: orgData?.pincode || "",
+      id_country: orgData?.id_country || "",
+      id_state: orgData?.id_state || "",
+      id_city: orgData?.id_city || "",
+      website: orgData?.website || "",
+      whatsapp_no: orgData?.whatsapp_no || "",
+      logo: orgData?.logo || null,
+    },
     validationSchema: Yup.object({
       company_name: Yup.string().required("Company name is required"),
       mobile: Yup.string()
@@ -65,34 +67,26 @@ const Organisation = () => {
         .email("Invalid email format")
         .required("Email is required"),
       website: Yup.string().url("Invalid URL format"),
-      background_color: Yup.string(),
-      whatsapp_no: Yup.string()
-        .matches(/^[0-9]{10}$/, "Whatsapp number must be 10 digits"),
-      toll_free: Yup.string(),
+      whatsapp_no: Yup.string().matches(
+        /^[0-9]{10}$/,
+        "Whatsapp number must be 10 digits"
+      ),
     }),
     onSubmit: (values) => {
-        const formData = new FormData();
-      
-        Object.keys(values).forEach((key) => {
-          if (values[key] && typeof values[key] !== "object") {
-            formData.append(key, values[key]);
-          }
-        });
-      
-        const fileFields = ["logo", "small_logo", "favicon", "login", "background", "bottom_logo"];
-        
-        fileFields.forEach((field) => {
-          if (values[field]) {
-            formData.append(field, values[field]);
-          }
-        });
-      
-        for (let [key, value] of formData.entries()) {
-          console.log(key, value);
+      const formData = new FormData();
+
+      Object.keys(values).forEach((key) => {
+        if (values[key] && typeof values[key] !== "object") {
+          formData.append(key, values[key]);
         }
-        orgDetails(formData);
-      },
-      
+      });
+
+      if (values.logo) {
+        formData.append("logo", values.logo);
+      }
+
+      orgDetails(formData);
+    },
   });
 
   //api call
@@ -150,36 +144,25 @@ const Organisation = () => {
     if (fetchedData && fetchedData.data.length > 0) {
       const newData = fetchedData.data;
       setOrgData(newData);
-  
+
       formik.setValues((prevValues) => ({
         ...prevValues,
         ...newData,
         logo: null,
-        small_logo: null,
-        favicon: null,
-        login: null,
-        background: null,
-        bottom_logo: null,
       }));
-  
-      const previewUpdates = {};
-      ["logo", "small_logo", "favicon", "login", "background", "bottom_logo"].forEach((field) => {
-        if (newData[field]) {
-          previewUpdates[field] = {
-            url: newData.pathurl + newData[field],
+
+      if (newData.logo) {
+        setImagePreviews((prev) => ({
+          ...prev,
+          logo: {
+            url: newData.pathurl + newData.logo,
             isPopulated: true,
-          };
-        }
-      });
-  
-      setImagePreviews((prev) => ({
-        ...prev,
-        ...previewUpdates,
-      }));
+          },
+        }));
+      }
     }
   }, [fetchedData]);
-  
-  
+
   //mutation to add/update orgnisation details
   const { mutate: orgDetails } = useMutation({
     mutationFn: organisation,
@@ -193,17 +176,17 @@ const Organisation = () => {
   const customSelectStyles = {
     control: (provided) => ({
       ...provided,
-      minHeight: "50px",
-      height: "50px",
+      minHeight: "40px",
+      height: "40px",
       borderWidth: "2px",
-      borderColor: "#D1D5DB",
+      borderColor: "#f2f3f8",
       "&:hover": {
         borderColor: "#D1D5DB",
       },
     }),
     valueContainer: (provided) => ({
       ...provided,
-      height: "50px",
+      height: "40px",
       padding: "0 12px",
     }),
     input: (provided) => ({
@@ -212,7 +195,7 @@ const Organisation = () => {
     }),
     indicatorsContainer: (provided) => ({
       ...provided,
-      height: "50px",
+      height: "40px",
     }),
   };
 
@@ -220,21 +203,21 @@ const Organisation = () => {
     const { name, files } = event.target;
     if (files && files[0]) {
       const file = files[0];
-      setImagePreviews(prev => ({
+      setImagePreviews((prev) => ({
         ...prev,
         [name]: {
           url: URL.createObjectURL(file),
-          isPopulated: false
-        }
+          isPopulated: false,
+        },
       }));
       formik.setFieldValue(name, file);
     }
   };
 
   const handleRemoveImage = (fieldName) => {
-    setImagePreviews(prev => ({
+    setImagePreviews((prev) => ({
       ...prev,
-      [fieldName]: null
+      [fieldName]: null,
     }));
     formik.setFieldValue(fieldName, null);
     const fileInput = document.getElementById(fieldName);
@@ -248,6 +231,8 @@ const Organisation = () => {
       "id_country",
       selectedOption ? selectedOption.value : ""
     );
+    formik.setFieldValue("id_state", "");
+    formik.setFieldValue("id_city", "");
   };
 
   const handleStateChange = (selectedOption) => {
@@ -255,160 +240,328 @@ const Organisation = () => {
       "id_state",
       selectedOption ? selectedOption.value : ""
     );
+    formik.setFieldValue("id_city", "");
   };
 
   const handleCityChange = (selectedOption) => {
     formik.setFieldValue("id_city", selectedOption ? selectedOption.value : "");
   };
 
+  const handleClear = () => {
+    formik.resetForm();
+    setImagePreviews({
+      logo: null,
+    });
+  };
+
   return (
     <>
       <div className="flex flex-row justify-between">
-        <h2 className="text-2xl text-gray-900 font-bold justify-between">
-          Organisation
-        </h2>
+        <p className="text-sm text-gray-400 mt-4 mb-4">Settings/<span className="text-black">Organisation</span></p>
       </div>
-      <div className="flex flex-col bg-white border-t-2 border-[#023453] mt-3 overflow-y-auto scrollbar-hide h-[calc(100vh-200px)]">
-        <form onSubmit={formik.handleSubmit} className="p-4">
-          <h2 className="text-1xl font-semibold mb-4 mt-4">
-            Company Information
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {Object.keys(formik.initialValues).map((field) =>
-              field !== "logo" &&
-              field !== "small_logo" &&
-              field !== "favicon" &&
-              field !== "login" &&
-              field !== "background" &&
-              field !== "bottom_logo" ? (
-                <div key={field} className="flex flex-col">
-                  <label className="text-gray-700 mb-1 font-medium">
-                    {field === "id_country"
-                      ? "Country"
-                      : field === "id_state"
-                      ? "State"
-                      : field === "id_city"
-                      ? "City"
-                      : field
-                          .replace(/_/g, " ")
-                          .replace(/\b\w/g, (char) => char.toUpperCase())}
-                          {REQUIRED_FIELDS.includes(field) && <span className="text-red-400"> *</span>}
-                  </label>
-                  {field === "id_country" ? (
-                    <Select
-                      options={country}
-                      value={country.find(
-                        (option) => option.value === formik.values.id_country
-                      )}
-                      onChange={handleCountryChange}
-                      onBlur={formik.handleBlur}
-                      placeholder="Select Country"
-                      styles={customSelectStyles}
-                      className="react-select-container"
-                      classNamePrefix="react-select"
-                    />
-                  ) : field === "id_state" ? (
-                    <Select
-                      options={states}
-                      value={states.find(
-                        (option) => option.value === formik.values.id_state
-                      )}
-                      onChange={handleStateChange}
-                      onBlur={formik.handleBlur}
-                      placeholder="Select State"
-                      styles={customSelectStyles}
-                      className="react-select-container"
-                      classNamePrefix="react-select"
-                    />
-                  ) : field === "id_city" ? (
-                    <Select
-                      options={city}
-                      value={city.find(
-                        (option) => option.value === formik.values.id_city
-                      )}
-                      onChange={handleCityChange}
-                      onBlur={formik.handleBlur}
-                      placeholder="Select City"
-                      styles={customSelectStyles}
-                      className="react-select-container"
-                      classNamePrefix="react-select"
-                    />
-                  ) : (
-                    <input
-                      type="text"
-                      name={field}
-                      value={formik.values[field]}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      className="border-2 border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black h-[50px]"
-                      placeholder="Enter Here"
-                    />
+      <form onSubmit={formik.handleSubmit}>
+        <div className="flex flex-col bg-white border-2 border-[#F2F2F9] rounded-[10px] mt-3 pb-3">
+          <div className="p-4">
+            <h2 className="text-lg font-semibold mb-4 border-b pb-4">Company Information</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* First Row */}
+              <div className="flex flex-col">
+                <label className="text-black mb-1 text-sm font-medium">
+                  Company Name<span className="text-red-400"> *</span>
+                </label>
+                <input
+                  type="text"
+                  name="company_name"
+                  value={formik.values.company_name}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className="border-2 border-[#f2f3f8] rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black h-[50px] text-sm"
+                  placeholder="Enter company name"
+                />
+                {formik.touched.company_name && formik.errors.company_name && (
+                  <span className="text-red-500 text-xs mt-1">
+                    {formik.errors.company_name}
+                  </span>
+                )}
+              </div>
+
+              <div className="flex flex-col">
+                <label className="text-black mb-1 text-sm font-medium">
+                  Short Code<span className="text-red-400"> *</span>
+                </label>
+                <input
+                  type="text"
+                  name="short_code"
+                  value={formik.values.short_code}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className="border-2 border-[#f2f3f8] rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black h-[50px] text-sm"
+                  placeholder="Enter short code"
+                />
+                {formik.touched.short_code && formik.errors.short_code && (
+                  <span className="text-red-500 text-xs mt-1">
+                    {formik.errors.short_code}
+                  </span>
+                )}
+              </div>
+
+              <div className="flex flex-col">
+                <label className="text-black mb-1 text-sm font-medium">
+                  Email<span className="text-red-400"> *</span>
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formik.values.email}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className="border-2 border-[#f2f3f8] rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black h-[50px] text-sm"
+                  placeholder="Enter email"
+                />
+                {formik.touched.email && formik.errors.email && (
+                  <span className="text-red-500 text-xs mt-1">
+                    {formik.errors.email}
+                  </span>
+                )}
+              </div>
+
+              {/* Second Row */}
+              <div className="flex flex-col">
+                <label className="text-black mb-1 text-sm font-medium">
+                  Mobile<span className="text-red-400"> *</span>
+                </label>
+                <input
+                  type="text"
+                  name="mobile"
+                  value={formik.values.mobile}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className="border-2 border-[#f2f3f8] rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black h-[50px] text-sm"
+                  placeholder="Enter mobile number"
+                />
+                {formik.touched.mobile && formik.errors.mobile && (
+                  <span className="text-red-500 text-xs mt-1">
+                    {formik.errors.mobile}
+                  </span>
+                )}
+              </div>
+
+              <div className="flex flex-col">
+                <label className="text-black mb-1 text-sm font-medium">
+                  Address<span className="text-red-400"> *</span>
+                </label>
+                <input
+                  type="text"
+                  name="address"
+                  value={formik.values.address}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className="border-2 border-[#f2f3f8] rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black h-[50px] text-sm"
+                  placeholder="Enter address"
+                />
+                {formik.touched.address && formik.errors.address && (
+                  <span className="text-red-500 text-xs mt-1">
+                    {formik.errors.address}
+                  </span>
+                )}
+              </div>
+
+              <div className="flex flex-col">
+                <label className="text-black mb-1 text-sm font-medium">
+                  Pincode<span className="text-red-400"> *</span>
+                </label>
+                <input
+                  type="text"
+                  name="pincode"
+                  value={formik.values.pincode}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className="border-2 border-[#f2f3f8] rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black h-[50px] text-sm"
+                  placeholder="Enter pincode"
+                />
+                {formik.touched.pincode && formik.errors.pincode && (
+                  <span className="text-red-500 text-xs mt-1">
+                    {formik.errors.pincode}
+                  </span>
+                )}
+              </div>
+
+              {/* Third Row */}
+              <div className="flex flex-col">
+                <label className="text-black mb-1 text-sm font-medium">
+                  Country<span className="text-red-400"> *</span>
+                </label>
+                <Select
+                  options={country}
+                  value={country.find(
+                    (option) => option.value === formik.values.id_country
                   )}
-                  {formik.touched[field] && formik.errors[field] && (
-                    <span className="text-red-500 text-sm mt-1">
-                      {formik.errors[field]}
+                  onChange={handleCountryChange}
+                  onBlur={formik.handleBlur}
+                  placeholder="Select Country"
+                  styles={customSelectStyles}
+                  className="react-select-container"
+                  classNamePrefix="react-select"
+                />
+                {formik.touched.id_country && formik.errors.id_country && (
+                  <span className="text-red-500 text-xs mt-1">
+                    {formik.errors.id_country}
+                  </span>
+                )}
+              </div>
+
+              <div className="flex flex-col">
+                <label className="text-black mb-1 text-sm font-medium">
+                  State<span className="text-red-400"> *</span>
+                </label>
+                <Select
+                  options={states}
+                  value={states.find(
+                    (option) => option.value === formik.values.id_state
+                  )}
+                  onChange={handleStateChange}
+                  onBlur={formik.handleBlur}
+                  placeholder="Select State"
+                  styles={customSelectStyles}
+                  className="react-select-container"
+                  classNamePrefix="react-select"
+                />
+                {formik.touched.id_state && formik.errors.id_state && (
+                  <span className="text-red-500 text-xs mt-1">
+                    {formik.errors.id_state}
+                  </span>
+                )}
+              </div>
+
+              <div className="flex flex-col">
+                <label className="text-black mb-1 text-sm font-medium">
+                  City<span className="text-red-400"> *</span>
+                </label>
+                <Select
+                  options={city}
+                  value={city.find(
+                    (option) => option.value === formik.values.id_city
+                  )}
+                  onChange={handleCityChange}
+                  onBlur={formik.handleBlur}
+                  placeholder="Select City"
+                  styles={customSelectStyles}
+                  className="react-select-container"
+                  classNamePrefix="react-select"
+                />
+                {formik.touched.id_city && formik.errors.id_city && (
+                  <span className="text-red-500 text-xs mt-1">
+                    {formik.errors.id_city}
+                  </span>
+                )}
+              </div>
+
+              {/* Fourth Row */}
+              <div className="flex flex-col">
+                <label className="text-black mb-1 text-sm font-medium">
+                  Website
+                </label>
+                <input
+                  type="text"
+                  name="website"
+                  value={formik.values.website}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className="border-2 border-[#f2f3f8] rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black h-[50px] text-sm"
+                  placeholder="Enter website url"
+                />
+                {formik.touched.website && formik.errors.website && (
+                  <span className="text-red-500 text-xs mt-1">
+                    {formik.errors.website}
+                  </span>
+                )}
+              </div>
+
+              <div className="flex flex-col">
+                <label className="text-black mb-1 text-sm font-medium">
+                  Whatsapp No
+                </label>
+                <input
+                  type="text"
+                  name="whatsapp_no"
+                  value={formik.values.whatsapp_no}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className="border-2 border-[#f2f3f8] rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black h-[50px] text-sm"
+                  placeholder="Enter whatsapp number"
+                />
+                {formik.touched.whatsapp_no && formik.errors.whatsapp_no && (
+                  <span className="text-red-500 text-xs mt-1">
+                    {formik.errors.whatsapp_no}
+                  </span>
+                )}
+              </div>
+
+              <div className="flex flex-col">
+                <label className="text-black mb-1 text-sm font-medium">
+                  Upload Image
+                </label>
+                {!imagePreviews.logo && (
+                  <div className="relative flex items-center justify-between border-2 border-[#f2f3f8] rounded-md hover:bg-gray-50 cursor-pointer w-full h-[50px]">
+                    <span className="ml-2 text-sm text-gray-900 truncate">
+                      {formik.values.logo ? formik.values.logo.name : "Browse"}
                     </span>
-                  )}
-                </div>
-              ) : (
-                <div key={field} className="flex flex-col">
-                  <label className="text-gray-700 mb-1 font-medium">
-                    {field
-                      .replace(/_/g, " ")
-                      .replace(/\b\w/g, (char) => char.toUpperCase())}
-                  </label>
-                  <div className="flex flex-col">
                     <label
-                      htmlFor={field}
-                      className="flex justify-center items-center w-full h-12 border-2 border-dashed border-gray-300 text-black cursor-pointer px-4 rounded-md hover:bg-gray-50"
+                      htmlFor="logo"
+                      className="text-white px-3 py-1 rounded-md cursor-pointer h-full flex items-center text-sm"
+                      style={{ backgroundColor: layout_color }}
                     >
-                      <p className="text-gray-900 truncate">
-                        {formik.values[field]
-                          ? formik.values[field].name
-                          : "Choose file"}
-                      </p>
+                      Choose File
                     </label>
                     <input
-                      className="hidden"
-                      id={field}
-                      name={field}
+                      id="logo"
+                      name="logo"
                       type="file"
                       accept="image/*"
+                      className="hidden"
                       onChange={handleFileChange}
                     />
-                    {imagePreviews[field] && (
-                      <div className="mt-2 relative flex flex-row justify-center">
-                        <img
-                          src={imagePreviews[field].url}
-                          alt={`${field} preview`}
-                          className="w-32 h-32 object-cover rounded-md border-2 border-gray-200"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveImage(field)}
-                          className="absolute top-1 right-[35%] lg:right-[39%] bg-red-500 text-white rounded-full p-1 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-                        >
-                          <X size={16} />
-                        </button>
-                      </div>
-                    )}
                   </div>
-                </div>
-              )
-            )}
+                )}
+                {imagePreviews.logo && (
+                  <div className="mt-2 relative">
+                    <div className="relative inline-block">
+                      <img
+                        src={imagePreviews.logo.url}
+                        alt="logo preview"
+                        className="w-24 h-20 object-cover rounded-md border border-gray-200"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveImage("logo")}
+                        className="absolute top-1 right-1 bg-white text-red-400 p-1 rounded-md focus:outline-none"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
-          <div className="flex flex-row justify-end mt-4 mb-2">
-            <button
-              className="bg-[#61A375] text-white rounded-md p-2 w-full lg:w-20"
-              type="submit"
-            >
-              {orgData ? ("Edit"): (
-                "Submit"
-              )}
-            </button>
-          </div>
-        </form>
-      </div>
+        </div>
+        <div className="flex flex-row justify-end mt-4 mb-2 gap-3">
+          <button
+            type="button"
+            onClick={handleClear}
+            className="bg-gray-300 text-gray-700 rounded-md px-4 py-1 text-sm h-[36px]"
+          >
+            Clear
+          </button>
+          <button
+            type="submit"
+            className="text-white rounded-md px-4 py-1 text-sm h-[36px]"
+            style={{ backgroundColor: layout_color }}
+          >
+            Update
+          </button>
+        </div>
+      </form>
     </>
   );
 };

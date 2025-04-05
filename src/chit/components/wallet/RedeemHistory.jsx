@@ -10,6 +10,7 @@ import { Search } from "lucide-react";
 import { useMutation } from '@tanstack/react-query';
 import {formatNumber} from "../../utils/commonFunction"
 
+
 function RedeemHistory() {
     
   
@@ -24,7 +25,6 @@ function RedeemHistory() {
     const debouncedSearch = useDebounce(searchInput, 500);
   
     const limit = 10;
-  
   
     const [isLoading, setisLoading] = useState(false);
     const [searchLoading, setSearchLoading] = useState(false);
@@ -110,16 +110,16 @@ function RedeemHistory() {
           header: "mobile",
           cell: (row) => `${row?.id_customer?.mobile || "-"}`,
         },
-        {
-          header: "Wallet Points",
-          cell: (row) => {
-            return row?.credited_point !== undefined ? Math.abs(row.credited_point) : "-";
-          }
-        },
+        // {
+        //   header: "Wallet Points",
+        //   cell: (row) => {
+        //     return row?.credited_point !== undefined ? Math.abs(row.credited_point) : "-";
+        //   }
+        // },
         {
           header: "Amount",
           cell: (row) => {
-            return row?.credited_amount !== undefined ? Math.abs(row.credited_amount) : "-";
+            return row?.credited_amount !== undefined ? formatNumber({value:  Math.abs(row.credited_amount)}) : "-";
           }
         },             
         {
@@ -159,8 +159,8 @@ function RedeemHistory() {
           </div>
   
           <div className="flex justify-end">
-    <div className="grid grid-cols-3 sm:grid-cols-2 gap-2 w-full max-w-md">
-      {[{ label: "Total Redeemed Points", value:redeemedPoint }, { label: "Total Redeemed Amount", value: formatNumber({value: redeemedAmt}) }].map((item, index) => (
+    <div className="flex justify-end gap-2 w-full max-w-md">
+      {[ { label: "Total Redeemed Amount", value: formatNumber({value: redeemedAmt}) }].map((item, index) => (
         <div key={index} className="flex flex-row items-center justify-between bg-white rounded-lg p-2 h-16 shadow-md text-sm">
           <div className="flex flex-col justify-center">
             <h5 className="text-[#67748E]">{item.label}</h5>

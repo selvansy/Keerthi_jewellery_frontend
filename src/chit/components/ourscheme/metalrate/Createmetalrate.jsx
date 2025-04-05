@@ -6,7 +6,7 @@ import { X } from "lucide-react";
 import {
   createmetalrate,
   getallpurity,
-  todaycurrentratebybranch,
+  schemepaymenttodayrate,
 } from "../../../api/Endpoints";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
@@ -17,6 +17,7 @@ import Select from "react-select";
 import { date } from "yup";
 
 const CreateMetalRate = () => {
+
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const { id } = useParams();
 
@@ -48,7 +49,7 @@ const CreateMetalRate = () => {
 
   // mutation for geting current metal rate
   const { mutate: getMetalRate } = useMutation({
-    mutationFn: (data) => todaycurrentratebybranch(data),
+    mutationFn: (data) => schemepaymenttodayrate(data),
     onSuccess: (response) => {
       setFormData(response.data)
     },
@@ -79,7 +80,7 @@ const CreateMetalRate = () => {
   
     const data = {
       date: new Date(),
-      branchId: id_branch === "0" ? seletedBranch : branchId,
+      id_branch: id_branch === "0" ? seletedBranch : branchId,
     };
   
     getallpuritytableMutate();

@@ -9,13 +9,14 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import Select from "react-select";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { sendOtp, closeBill } from "../../../api/BackendUrl";
 import {
   searchmobileschemeaccount,
   allschemestatus,
   getallbranch,
   getallpaymentmodes,
   getallpaymentmode,
+  sendOtp,
+  closeBill
 } from "../../../api/Endpoints";
 import Modal from "../../common/Modelone";
 import ModelOne from "../../common/Modelone";
@@ -91,7 +92,6 @@ const AddCloseAccount = () => {
     validateOnBlur: true,
     validateOnChange: false, 
   });
-  console.log(formik.errors)
 
   const { data: paymentModes } = useQuery({
     queryKey: ["paymentModes"],
@@ -405,7 +405,7 @@ const AddCloseAccount = () => {
     <>
       <div className="flex flex-row justify-between">
         <h2 className="text-2xl text-[#023453] font-bold justify-between">
-          {dynamic ? "Preclose" : "Account Redemption"}
+          {dynamic ? "Preclose" : "Closed Account"}
         </h2>
         {!dynamic && (
           <div className="flex flex-row items-center justify-end gap-2">
@@ -759,7 +759,7 @@ const AddCloseAccount = () => {
               </div>
 
               {/* Add wallet point */}
-              {!dynamic && (
+              {/* {!dynamic && (
                 <div className="flex flex-col">
                   <label className="text-black mb-1 font-normal">
                     Add wallet point
@@ -779,7 +779,7 @@ const AddCloseAccount = () => {
                     />
                   </div>
                 </div>
-              )}
+              )} */}
 
               {/* Remarks */}
               <div className="flex flex-col">
@@ -905,7 +905,7 @@ const AddCloseAccount = () => {
         </form>
         <ModelOne
           title={"Revert close account"}
-          extraClassName="max-w-[75%] "
+          extraClassName="max-w-lg"
           setIsOpen={setIsviewOpen}
           isOpen={isviewOpen}
           closeModal={closeIncommingModal}

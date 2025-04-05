@@ -1,28 +1,20 @@
 import React, { useState, useEffect, useRef } from "react";
-import { IoSettingsOutline } from "react-icons/io5";
-import { FaBell } from "react-icons/fa";
 import {
   ChevronDown,
   ChevronUp,
   LayoutGrid,
   Settings,
   CreditCard,
-  Gift,
-  FileText,
-  BarChart2,
-  Home,
   User,
-  Settings2,
-  MessageCircle,
   Bell,
   X,
   Star,
   RefreshCcw,
   LucidePrinter,
   PawPrintIcon,
-  CircleUserRound,
   UserRoundCheck,
-  Menu, // Added Menu icon for better burger menu
+  ChevronRight,
+  Menu,
 } from "lucide-react";
 
 import logo from "../../../assets/logo1.png";
@@ -30,13 +22,10 @@ import RouteList from "../../../routes/RouteList";
 import { useLocation, useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { useSelector, useDispatch } from "react-redux";
-import { setRoleData } from "../../../redux/clientFormSlice";
 import { useMutation } from "@tanstack/react-query";
-import { getactivemenuaccess, updatelayoutcolor } from "../../api/Endpoints";
-import { GiConsoleController } from "react-icons/gi";
+import {updatelayoutcolor } from "../../api/Endpoints";
 import { setLayoutColor } from "../../../redux/clientFormSlice";
 import { logout, SetMenu } from "../../../redux/authSlice";
-import * as Icons from "lucide-react";
 import Command from "../../../assets/command.svg";
 import Search from "../../../assets/search.svg";
 import CustomerModal from "./customerModal";
@@ -44,7 +33,6 @@ import CustomerModal from "./customerModal";
 const Base = ({ renderContent: RenderContent }) => {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const settingsRef = useRef(null);
-  const [menuLayout, setMenuLayout] = useState("left");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isHeaderMenuOpen, setIsHeaderMenuOpen] = useState(false);
   const [selectedSection, setSelectedSection] = useState("");
@@ -58,26 +46,18 @@ const Base = ({ renderContent: RenderContent }) => {
 
   const [isOpen, setIsOpen] = useState(false);
 
-  const [openMenus, setOpenMenus] = useState({
-    schemes: false,
-    manageAccount: false,
-    gifts: false,
-    catalog: false,
-    payment: false,
-    report: false,
-    setup: false,
-  });
+  const [activeMenu, setActiveMenu] = useState(null);
 
   const sidebarRef = useRef(null);
   const headerMenuRef = useRef(null);
   const navigate = useNavigate();
   let dispatch = useDispatch();
+
   useEffect(() => {
     const handleKeyDown = (event) => {
-      // Detect Ctrl + F (Windows) or Cmd + F (Mac)
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "f") {
-        event.preventDefault(); // Prevent browser's search box
-        setIsModalOpen((prev) => !prev); // Toggle state
+        event.preventDefault();
+        setIsModalOpen((prev) => !prev);
       }
     };
 
@@ -100,18 +80,17 @@ const Base = ({ renderContent: RenderContent }) => {
 
   const renderMenuItems = () => {
     if (!menus) return null;
-
+  
     return menus.map((menu) => {
       const menuKey = menu.menu_name.toLowerCase().replace(/\s+/g, "");
       const hasSubmenu = menu.menu_list && menu.menu_list.length > 0;
-
+  
       return (
         <MenuItem
           key={menu._id}
           text={menu.menu_name}
           menuIcon={menu.menu_icon}
           hasSubmenu={hasSubmenu}
-          isOpen={openMenus[menuKey]}
           onClick={() => {
             if (hasSubmenu) {
               setSelectedParentSection(menu.menu_name);
@@ -131,7 +110,6 @@ const Base = ({ renderContent: RenderContent }) => {
                 text={submenu.submenu_name}
                 pathUrl={submenu.pathurl}
                 onClick={() => {
-                  console.log("Submenu", submenu.submenu_name);
                   handleClick(submenu.submenu_name);
                   navigate(
                     submenu.pathurl.startsWith("/")
@@ -150,6 +128,7 @@ const Base = ({ renderContent: RenderContent }) => {
 
   const roledata = useSelector((state) => state.clientForm.roledata);
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
+  const sidebar_color = useSelector((state)=>state.clientForm.sideBarColor)
 
   const getRoleCharacter = (id) => {
     switch (id) {
@@ -285,53 +264,21 @@ const Base = ({ renderContent: RenderContent }) => {
   });
 
   const toggleMenu = (menu) => {
-    setOpenMenus((prev) => ({
-      ...prev,
-      [menu]: !prev[menu],
-    }));
+    setActiveMenu(prevActiveMenu => prevActiveMenu === menu ? null : menu);
   };
 
-  // const SubMenuItem = ({ text, onClick, isLast, parentSection }) => (
-  //   <div className="relative">
-  //     {!isLast && (
-  //       <div className="absolute left-6 top-1/2 w-[1px] h-full bg-white -translate-x-1/2" />
-  //     )}
-  //     <div className="relative flex items-center">
-  //       <div
-  //         className={`absolute left-6 w-3 h-3 rounded-full border-2 border-white -translate-x-1/2 z-10 ${
-  //           selectedSubSection === text ? "" : "bg-gray-400"
-  //         }`}
-  //       />
-  //       <div
-  //         className={`w-full flex items-center px-4 rounded-md py-2 pl-12 transition-colors cursor-pointer text-sm font-semibold
-  //           ${
-  //             selectedSubSection === text
-  //               ? "bg-white text-[#033453]"
-  //               : "text-white hover:bg-[#005073]"
-  //           }`}
-  //         onClick={() => {
-  //           setSelectedSubSection(text);
-  //           setSelectedSection(text);
-  //           setSelectedParentSection(parentSection);
-  //           onClick && onClick();
-  //         }}
-  //       >
-  //         {text}
-  //       </div>
-  //     </div>
-  //   </div>
-  // );
   const SubMenuItem = ({ text, onClick, isLast, parentSection, pathUrl }) => {
-    // Extract the URL from the pathUrl prop
     const url = pathUrl?.startsWith("/") ? pathUrl : `/${pathUrl}`;
 
-    const handleLeftClick = (e) => {
-      // For left clicks, use your normal click handler with router navigation
-      e.preventDefault();
-      setSelectedSubSection(text);
-      setSelectedSection(text);
-      setSelectedParentSection(parentSection);
-      onClick && onClick();
+    const handleLeftClick = (event) => {
+      if (event.ctrlKey || event.metaKey) {
+        window.open(url, "_blank");
+      } else {
+        setSelectedSubSection(text);
+        setSelectedSection(text);
+        setSelectedParentSection(parentSection);
+        onClick && onClick();
+      }
     };
 
     return (
@@ -339,24 +286,23 @@ const Base = ({ renderContent: RenderContent }) => {
         {!isLast && (
           <div className="absolute left-6 top-1/2 w-[1px] h-full bg-white -translate-x-1/2" />
         )}
-        <div className="relative flex items-center">
+        <div className="relative flex items-center pl-12">
           <div
-            className={`absolute left-6 w-3 h-3 rounded-full border-2 border-white -translate-x-1/2 z-10 ${
-              selectedSubSection === text ? "" : "bg-gray-400"
+            className={`absolute left-6 w-3 h-3 rounded-full border-2 -translate-x-1/2 z-10 ${
+              selectedSubSection !== text ? "border-white" : "bg-white border-[#004181]"
             }`}
           />
-          <a
-            href={url}
-            className={`w-full flex items-center px-4 rounded-md py-2 pl-12 transition-colors cursor-pointer text-sm font-semibold
-              ${
-                selectedSubSection === text
-                  ? "bg-white text-[#033453]"
-                  : "text-white hover:bg-[#005073]"
-              }`}
+          <div
+            className={`w-full flex items-start px-4 rounded-md py-2  transition-colors cursor-pointer my-1 text-sm font-semibold
+                    ${
+                      selectedSubSection === text
+                        ? "bg-[#004181] text-white"
+                        : "text-[#6C7086] hover:bg-[#004181] hover:text-white"
+                    }`}
             onClick={handleLeftClick}
           >
             {text}
-          </a>
+          </div>
         </div>
       </div>
     );
@@ -366,36 +312,28 @@ const Base = ({ renderContent: RenderContent }) => {
     text,
     menuIcon,
     hasSubmenu = false,
-    isOpen = false,
     onClick,
     children,
   }) => {
+    const menuKey = text.toLowerCase().replace(/\s+/g, "");
+    const isOpen = activeMenu === menuKey;
     const isSelected = hasSubmenu
       ? selectedParentSection === text
       : selectedSection === text && selectedParentSection === text;
-
-    const DynamicIcon = ({ name, size = 24, color = "currentColor" }) => {
-      const IconComponent = Icons[name];
-      return IconComponent ? (
-        <IconComponent size={size} color={color} />
-      ) : (
-        <Icons.AlertCircle size={size} color={color} />
-      );
-    };
-
+  
     return (
       <div className="w-full px-3 py-1 relative">
         <div
-          className={`w-full flex items-center px-4 py-3 cursor-pointer rounded-md text-gray-300 transition-colors
+          className={`w-full flex items-center px-4 py-3 cursor-pointer rounded-md transition-colors
             ${
               isSelected
-                ? "border-2 border-white"
-                : "hover:bg-[#005070] border-2 border-transparent"
+                ? "border-2 border-[#004181] bg-[#004181] text-white"
+                : "hover:bg-[#004181] hover:text-white border-2 border-transparent text-[#6b7086]"
             }`}
           onClick={() => {
             if (hasSubmenu) {
               setSelectedParentSection(text);
-              toggleMenu(text.toLowerCase().replace(/\s+/g, ""));
+              toggleMenu(menuKey);
             } else {
               setSelectedSection(text);
               setSelectedParentSection(text);
@@ -404,19 +342,29 @@ const Base = ({ renderContent: RenderContent }) => {
             }
           }}
         >
-          <span className="flex-1 text-left">{text}</span>
-
+          <img
+          className={`w-6 h-6 ${isSelected ? "fill-white" : "fill-current"} hover:fill-white`}
+          src={`${import.meta.env.VITE_API_URL}/${menuIcon}`}
+          alt="Menu Icon"
+          style={{
+            filter: isSelected ? "brightness(0) invert(1)" : "none",
+          }}
+        />
+  
+          <span className={`flex-1 text-left ml-2`}>
+            {text}
+          </span>
           {hasSubmenu && (
             <span className="ml-auto transition-transform duration-300">
               {isOpen ? (
-                <ChevronUp className="w-4 h-4" />
-              ) : (
                 <ChevronDown className="w-4 h-4" />
+              ) : (
+                <ChevronRight className="w-4 h-4" />
               )}
             </span>
           )}
         </div>
-
+  
         <div
           className={`relative overflow-y-auto overflow-hidden transition-all scrollbar-hide duration-300 ease-in-out
           ${isOpen ? "max-h-[60vh] opacity-100 mt-2" : "max-h-0 opacity-0"}`}
@@ -474,9 +422,9 @@ const Base = ({ renderContent: RenderContent }) => {
       icon: Settings,
       hasSubmenu: true,
       submenu: [
-        { text: "Payment Mode", action: () => handleClick("Payment Mode") },
+        { text: "Payment Mode", action: () => handleClick("Payment Ledger") },
         { text: "Scheme Type", action: () => handleClick("Scheme Type") },
-        { text: "Employee", action: () => handleClick("Employee") },
+        { text: "Employee", action: () => handleClick("Employee Details") },
         { text: "User Role", action: () => handleClick("User Role") },
         { text: "User Access", action: () => handleClick("User Access") },
         { text: "Staff User", action: () => handleClick("Staff User") },
@@ -616,10 +564,10 @@ const Base = ({ renderContent: RenderContent }) => {
         className={`fixed top-0 left-0 h-full w-64 lg:w-64 scrollbar-hide transform transition-transform duration-300 ease-in-out ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         } lg:translate-x-0 z-50 pt-16 lg:pt-4 overflow-auto flex flex-col`}
-        style={{ backgroundColor: layout_color }}
+        style={{ backgroundColor: sidebar_color }}
       >
         <div className="flex justify-center items-center mb-10">
-          <img src={logo} alt="Logo" className="h-50 w-50 object-fill" />
+          <img src={logo} alt="Logo" className="h-28 w-52 object-fill" />
         </div>
 
         <nav className="flex-1 text-white scrollbar-hide overflow-y-auto">
@@ -640,9 +588,9 @@ const Base = ({ renderContent: RenderContent }) => {
                   icon={menu.icon}
                   text={menu.text}
                   hasSubmenu={menu.hasSubmenu}
-                  isOpen={
-                    openMenus[menu.text.toLowerCase().replace(/\s+/g, "")]
-                  }
+                  // isOpen={
+                  //   openMenus[menu.text.toLowerCase().replace(/\s+/g, "")]
+                  // }
                   onClick={() => {
                     if (menu.hasSubmenu) {
                       setSelectedParentSection(menu.text);
@@ -668,7 +616,7 @@ const Base = ({ renderContent: RenderContent }) => {
         </nav>
       </aside>
 
-      <div className="flex flex-col min-h-screen bg-[#f5f5f5] pt-14 lg:pl-64 pb-10">
+      <div className="flex flex-col min-h-screen bg-[#fffefa] pt-14 lg:pl-64 pb-10">
         {/* SettingsButton  */}
         <div className="settingsButton flex flex-row justify-end items-center">
           {settingsOpen === true && (
@@ -830,19 +778,25 @@ const Base = ({ renderContent: RenderContent }) => {
             />
           )}
         </div>
-        <main className="bg-[#F5F5F5] px-6 pt-4 pb-4 mb-6">
+        <main className="bg-[#fffefa] px-6 pt-4 pb-4 mb-6">
           <div className="h-full">
             <RenderContent />
           </div>
         </main>
       </div>
 
-      <footer className="flex flex-row justify-center items-center w-full h-3 bg-white border-t py-3 px-2 fixed bottom-0 left-0 lg:left-40 z-30">
-       <div className="flex w-3/4 justify-end items-center ">
-       <div className="mx-2">Copyright 2024 © Aurumm by Atts </div>
-       <div className="mx-2">/</div>
-       <div className="mx-2 cursor-pointer" onClick={()=>navigate("/help/policy")}> <span className="text-blue-700">Legal Policies</span></div>
-       </div>
+      <footer className="flex flex-row justify-center items-center w-full h-10 bg-white border-t py-3 px-2 fixed bottom-0 left-0 lg:left-40 z-30">
+        <div className="flex w-3/4 justify-center items-center ">
+          <div className="text-sm lg:text-lg md:text-md flex text-nowrap">ATTS Technologies Private Limited © 2025. All rights reserved.</div>
+          {/* <div className="mx-2">/</div>
+          <div
+            className="mx-2 cursor-pointer"
+            onClick={() => navigate("/help/policy")}
+          >
+            {" "}
+            <span className="text-blue-700">Legal Policies</span>
+          </div> */}
+        </div>
       </footer>
     </div>
   );

@@ -11,7 +11,7 @@ import DatePicker from "react-datepicker";
 import { ExportToExcel } from '../common/Dropdown/Excelexport';
 import { ExportToPDF } from '../common/Dropdown/ExportPdf';
 import { useSelector } from 'react-redux';
-import { getpaymentmodesummary } from "../../api/BackendUrl"
+import { getpaymentmodesummary } from "../../api/Endpoints"
 import { toast } from 'react-toastify';
 
 function ModeWisePayment() {

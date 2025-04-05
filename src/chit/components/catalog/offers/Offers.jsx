@@ -18,6 +18,8 @@ import {
 } from "../../../api/Endpoints";
 
 import { useDispatch, useSelector } from 'react-redux'
+import Action from '../../common/action'
+import { useDebounce } from '../../../hooks/useDebounce'
 
 const Offers = () => {
 
@@ -33,6 +35,7 @@ const Offers = () => {
   const navigate = useNavigate()
   const [offerData, setofferData] = useState([])
   const [search, setSearch] = useState('')
+    const debouncedSearch = useDebounce(search, 500);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -41,7 +44,7 @@ const Offers = () => {
   const [deleteId,setDeleteId]=useState(null)
   const [branchList, setBranchList] = useState([]);
   let [branch, setbranch] = useState("")
-
+  const [totalDocument,setTotalDocuments]=useState(0)
   const [filtertype, setOfferstype] = useState([]);
   const [filtermetaltype, setMetaltype] = useState([]);
 
@@ -79,7 +82,7 @@ const Offers = () => {
       id_branch: id_branch
     };
 
-    getofferData({ page: currentPage, limit: itemsPerPage, search: search,id_branch:id_branch })
+    getofferData({ page: currentPage, limit: itemsPerPage, search: debouncedSearch,id_branch:id_branch })
   }
   useEffect(() => {
     if (id_branch === '0') {
@@ -187,17 +190,19 @@ const Offers = () => {
       setisLoading(false)
       setofferData(response.data)
       setTotalPages(response.data.totalPages)
+      setTotalDocuments(response.totalDocuments)
     },
     onError: (error) => {
       console.error('Error:', error);
+      setofferData([]);
       setisLoading(false)
     }
   });
 
   
   useEffect(() => {
-    getofferData({ page: currentPage, limit: itemsPerPage, search: search,id_branch:id_branch })
-  }, [currentPage, itemsPerPage, search])
+    getofferData({ page: currentPage, limit: itemsPerPage, search: debouncedSearch,id_branch:id_branch })
+  }, [currentPage, itemsPerPage, debouncedSearch])
 
   const handleSearch = (e) => {
     setSearch(e.target.value)
@@ -287,94 +292,18 @@ const Offers = () => {
 
   const columns = [
     {
-      header: 'Actions',
-      cell: (row, rowIndex) => (
-        <div className="dropdown-container relative">
-          <button
-            className="p-1 hover:bg-gray-100 rounded-full"
-            onClick={(e) => {
-              e.stopPropagation();
-              setSelectedRow(row?._id);
-              setActiveDropdown(activeDropdown === row?._id ? null : row?._id);
-            }}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
-              <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
-            </svg>
-          </button>
-
-          {activeDropdown === row?._id && (
-            <div
-              className="absolute"
-              style={{
-                top: rowIndex >= offerData.length - 2 ? 'auto' : '72%',
-                bottom: rowIndex >= offerData.length - 2 ? '-74%' : 'auto',
-                // top: 'auto',
-                // bottom: '-440%',
-                zIndex: 9999,
-                marginBottom: '8px',
-                filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.15))'
-              }}
-            >
-              <div className="w-32 rounded-md bg-white ring-1 ring-black ring-opacity-5">
-                <div className="py-1">
-                  <button
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                    onClick={() => {
-                      handleEdit(row?._id);
-                      setActiveDropdown(null);
-                    }}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                    Edit
-                  </button>
-                  <button
-                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
-                    onClick={() => {
-                      handleDelete(row?._id);
-                      setActiveDropdown(null);
-                    }}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                    Delete
-                  </button>
-                  <button
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                    onClick={() => setActiveDropdown(null)}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      ),
-
-    },
-    {
       header: 'S.No',
       cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
     },
     {
       header: 'Title',
-      cell: (row) => row?.name,
+      cell: (row) => row?.title?row.title:"---",
     },
-    {
-      header: "Description",
-      cell: (row) => row?.description
-    },
+    
 
     {
       header: "Display Type",
-      cell: (row) => row?.type === 0 ? 'Offers' : row?.type === 0 ? 'Banner' : row?.type === 0 ? 'Popup' : row?.type === 0 ? 'Marquee' : 'Video'
+      cell: (row) => row.type
     },
     {
       header: "Branch",
@@ -398,30 +327,28 @@ const Offers = () => {
             checked={row?.active === true}
             onChange={() => handleStatusToggle(row?._id)}
           />
-          <div
-            className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-black p-[2px] after:duration-300 after:bg-black ${row?.active === true
-              ? 'peer-checked:bg-[#61A375] peer-checked:ring-[#61A375]'
-              : 'peer-checked:bg-gray-400 peer-checked:ring-gray-400'
-              } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-white peer-hover:after:scale-95`}
-          ></div>
+                      <div
+ className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-[#E7EEF5] p-[2px] after:duration-300 after:bg-[#004181] ${
+              row?.active === true
+                ? "peer-checked:bg-[#E7EEF5] peer-checked:ring-[#E7EEF5]"
+                : "peer-checked:bg-[#E7EEF5] peer-checked:ring-gray-400"
+            } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-[${layout_color}] peer-hover:after:scale-95`}          ></div>
         </label>
       )
-    }
+    },
+    {
+      header: "Actions",
+      cell: (row, rowIndex) => (
+        <Action row={row} data={offerData} rowIndex={rowIndex} activeDropdown={activeDropdown} setActive={hanldeActiveDropDown}  handleEdit={handleEdit} handleDelete={handleDelete}/>
+      ),
+      sticky: "right",
+    },
    
   ];
 
-  const paginationButtons = [];
-  for (let i = 1; i <= totalPages; i++) {
-    paginationButtons.push(
-      <button
-        key={i}
-        onClick={() => handlePageChange(i)}
-        className={`p-2 w-10 h-10 rounded-md  ${currentPage === i ? ' text-white' : 'text-slate-400'}`}
-        style={{ backgroundColor: layout_color }} >
-        {i}
-      </button>
-    );
-  }
+  const hanldeActiveDropDown = (data) => {
+    setActiveDropdown(data);
+  };
 
   const handleItemsPerPageChange = (value) => {
 
@@ -657,57 +584,15 @@ const Offers = () => {
         <Table
           data={offerData}
           columns={columns}
-          isLoading={isLoading}
+          loading={isLoading}
+          currentPage={currentPage}
+          handleItemsPerPageChange={handleItemsPerPageChange}
+          handlePageChange={handlePageChange}
+          itemsPerPage={itemsPerPage}
+          totalItems={totalDocument}
         />
       </div>
-      {offerData.length > 0 && (
-        <div className="flex justify-between mt-4 p-2">
-          <div className="flex flex-row items-center justify-center gap-2">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => handlePageChange(currentPage - 1)}
-                readOnly={currentPage === 1}
-                className="p-2 text-gray-500 rounded-md"
-              >
-                Previous
-              </button>
-            </div>
-
-            <div className="flex flex-row items-center justify-center gap-2">
-              {paginationButtons}
-            </div>
-
-            <div className="flex items-center">
-              <button
-                onClick={() => handlePageChange(currentPage + 1)}
-                readOnly={currentPage === totalPages}
-                className="p-2 text-gray-500 rounded-md"
-              >
-                Next
-              </button>
-            </div>
-          </div>
-
-          <div className="mt-4 flex gap-2 justify-center items-center">
-            <span className="text-gray-500">Show</span>
-            <select
-              id="itemsPerPage"
-              value={itemsPerPage}
-              onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
-              className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
-            >
-              <option value={10}>10</option>
-              <option value={25}>25</option>
-              <option value={50}>50</option>
-              <option value={100}>100</option>
-              <option value={250}>250</option>
-              <option value={500}>500</option>
-              <option value={1000}>1000</option>
-            </select>
-            <span className="text-gray-500">entries</span>
-          </div>
-        </div>
-      )}
+     
       <Modal />
     </div>
   )

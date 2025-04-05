@@ -8,14 +8,14 @@ import SpinLoading from "../../common/spinLoading";
 const ConfigNotification = () => {
 
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
-  const avl = ["pushNotification", "sms", "whatsapp", "email"];
+  const avl = ["pushNotification", "sms", "whatsapp"];
   const [activeTab, setActiveTab] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState({
-    pushNotification: { schemeWise: {}, wishes: {}, product: {} },
-    sms: { schemeWise: {}, wishes: {}, product: {} },
-    whatsapp: { schemeWise: {}, wishes: {}, product: {} },
-    email: { schemeWise: {}, wishes: {}, product: {} },
+    pushNotification: { schemeWise: {}, wishes: {} },
+    sms: { schemeWise: {}, wishes: {}  },
+    whatsapp: { schemeWise: {}, wishes: {}},
+    // email: { schemeWise: {}, wishes: {}},
   });
 
   const { data: configurationData, isLoading: loadingConfig } = useQuery({
@@ -37,9 +37,9 @@ const ConfigNotification = () => {
       birthday: "Birthday",
       weddingAnniversary: "Wedding Anniversary",
     },
-    product: {
-      newArrival: "New Arrival",
-    },
+    // product: {
+    //   newArrival: "New Arrival",
+    // },
   };
 
   // Function to transform API data
@@ -62,7 +62,7 @@ const ConfigNotification = () => {
         updatedOptions[key] = {
           schemeWise: transformData(configData.schemeWise, mappings.schemeWise),
           wishes: transformData(configData.wishes, mappings.wishes),
-          product: transformData(configData.product, mappings.product),
+          // product: transformData(configData.product, mappings.product),
         };
       });
 
@@ -106,12 +106,12 @@ const ConfigNotification = () => {
     avl.forEach((key) => {
       payload[key] = {
         enabled: Object.values(selectedOptions[key].schemeWise).some(Boolean) ||
-                  Object.values(selectedOptions[key].wishes).some(Boolean) ||
-                  Object.values(selectedOptions[key].product).some(Boolean),
+                  Object.values(selectedOptions[key].wishes).some(Boolean),
+                  // Object.values(selectedOptions[key].product).some(Boolean),
         settings: {
           schemeWise: buildSettings(key, "schemeWise"),
           wishes: buildSettings(key, "wishes"),
-          product: buildSettings(key, "product"),
+          // product: buildSettings(key, "product"),
         },
       };
     });
@@ -133,7 +133,7 @@ const ConfigNotification = () => {
             updatedOptions[key] = {
               schemeWise: transformData(configData.schemeWise, mappings.schemeWise),
               wishes: transformData(configData.wishes, mappings.wishes),
-              product: transformData(configData.product, mappings.product),
+              // product: transformData(configData.product, mappings.product),
             };
           });
 
@@ -218,8 +218,9 @@ const ConfigNotification = () => {
               ))}
             </div>
           </div>
+          
           {/* Product Section */}
-          <div className="mb-6">
+          {/* <div className="mb-6">
             <h2 className="text-sm font-medium mb-2">
               Product<span className="text-red-500">*</span>
             </h2>
@@ -237,7 +238,7 @@ const ConfigNotification = () => {
                 </label>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* Buttons */}
           <div className="flex flex-row justify-end border-t-2 p-3 mt-8">

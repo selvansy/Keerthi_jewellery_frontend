@@ -28,11 +28,10 @@ function PromotionSummary() {
     const layout_color = useSelector((state) => state.clientForm.layoutColor);
     const roledata = useSelector((state) => state.clientForm.roledata); 
     const branchAccess = roledata?.branch;
-  
+    
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const [deptData, setdeptData] = useState([]);
-    const [isviewOpen, setIsviewOpen] = useState(false);
-    const [id, setId] = useState("");
     const [isLoading, setisLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
@@ -45,24 +44,6 @@ function PromotionSummary() {
   
     const limit = 10;
 
-    function closeIncommingModal() {
-      setIsviewOpen(false);
-      setId("");
-    }
-
-
-    const clearId = () => {
-        setId("");
-      };
-    
-      const handleEdit = (id) => {
-        setIsviewOpen(true);
-        setId(id);
-      };
-    
-      const handleaddDept = () => {
-        setIsviewOpen(true);
-      };
 
   
     const { mutate: getallPromotionsTable } = useMutation({
@@ -83,23 +64,7 @@ function PromotionSummary() {
       },
     });
   
-    // const handleStatusToggle = async (id, currentStatus) => {
-    //   try {
-    //     let response = await changedeptstatus(id);
-    //     toast.success(response.message);
-  
-    //     setdeptData((prevData) =>
-    //       prevData.map((dept) =>
-    //         dept._id === id
-    //           ? { ...dept, active: currentStatus === true ? false : true }
-    //           : dept
-    //       )
-    //     );
-    //   } catch (error) {
-    //     console.error("Error updating status:", error);
-    //   }
-    // };
-  
+   
     useEffect(() => {
       getallPromotionsTable({
         search: debouncedSearch,
@@ -107,80 +72,8 @@ function PromotionSummary() {
         limit: itemsPerPage,
         currentPage,
       });
-    }, [currentPage, itemsPerPage, debouncedSearch, isviewOpen]);
+    }, [currentPage, itemsPerPage, debouncedSearch]);
   
-  
-    // const handleDelete = (id) => {
-    //   setId(id);
-    //   dispatch(
-    //     openModal({
-    //       modalType: "CONFIRMATION",
-    //       header: "Delete Promotions",
-    //       formData: {
-    //         message: "Are you sure you want to delete this Promotions?",
-    //         deptId: id,
-    //       },
-    //       buttons: {
-    //         cancel: {
-    //           text: "Clear",
-    //         },
-    //         submit: {
-    //           text: "Delete",
-    //         },
-    //       },
-    //     })
-    //   );
-    // };
-  
-    // const { mutate: deleteDepartment } = useMutation({
-    //   mutationFn: (id)=> deleteDept(id),
-    //   onSuccess: (response) => {
-        
-    //       const isLastItemOnPage = deptData.length === 1;
-    //       const isNotFirstPage = currentPage > 1;
-    //       if (isLastItemOnPage && isNotFirstPage) {
-    //         setCurrentPage(prev => prev - 1);
-    //       } else {
-           
-    //         getallPromotionsTable({
-    //           search: debouncedSearch,
-    //           page: currentPage,
-    //           limit: itemsPerPage,
-    //         });
-          
-    //       toast.success(response.message);
-    //       eventEmitter.off("CONFIRMATION_SUBMIT");
-    //       setId("");
-    //     }
-    //   },
-    //   onError: (error) => {
-    //     console.error("Error:", error);
-    //     toast.error("Failed to delete dept");
-    //   },
-    // });
-  
-    // useEffect(() => {
-    //   const handleDelete = (deptId) => {
-    //     deleteDepartment(deptId.deptId);
-    //   };
-  
-    //   eventEmitter.on("CONFIRMATION_SUBMIT", handleDelete);
-  
-    //   return () => {
-    //     eventEmitter.off("CONFIRMATION_SUBMIT", handleDelete);
-    //   };
-    // }, []);
-  
-    // useEffect(() => {
-    //   const handleClickOutside = (event) => {
-    //     if (activeDropdown && !event.target.closest(".dropdown-container")) {
-    //       setActiveDropdown(null);
-    //     }
-    //   };
-  
-    //   document.addEventListener("click", handleClickOutside);
-    //   return () => document.removeEventListener("click", handleClickOutside);
-    // }, [activeDropdown]);
   
     const columns = [
       {
@@ -192,7 +85,7 @@ function PromotionSummary() {
         cell: (row) =>{
           const date = new Date(row?.createdAt);
           return date.toLocaleDateString("en-GB") || "-"; 
-        },
+        }, 
       },
       {
         header: "Promotion Name",
@@ -219,33 +112,15 @@ function PromotionSummary() {
         cell: (row, rowIndex) => (
           (row.status !== "sent") ? 
           <div className="dropdown-container relative">
-                <div className={`${branchAccess !== 0 ? "cursor-not-allowed" : "cursor-pointer"} lg:w-20  rounded-md shadow-lg bg-[#d7b56d] ring-1 ring-black ring-opacity-5`}>
-                  <div>
-                    <button
-                      className={`${branchAccess !== 0 ? "cursor-not-allowed" : "cursor-pointer"} lg:w-20  text-center p-2 text-sm text-white font-semibold flex items-center gap-2`}
-                      disabled={branchAccess !== 0}
-                      onClick={() => {
-                        handleEdit(row);
-                      }}
-                    >
-                      Pending
-                    </button>
-                  
-                  </div>
+                <div className={`${branchAccess !== 0 ? "cursor-not-allowed" : "cursor-pointer"} rounded-md`}>
+                <span className="bg-yellow-100 text-yellow-800 text-xs font-medium me-2 px-2.5 py-1 rounded-md dark:bg-yellow-900 dark:text-yellow-300">pending</span>
                 </div>
           </div>
           :
           <div className="dropdown-container relative">
-          <div className={`${branchAccess !== 0 ? "cursor-not-allowed" : "cursor-pointer"} lg:w-20 rounded-md shadow-lg bg-[#61a375] ring-1 ring-black ring-opacity-5`}>
-            <div>
-              <button
-                className={`lg:w-20 text-center p-2 text-sm text-gray-700 font-semibold flex items-center gap-2`}
-                disabled={branchAccess !== 0}
-              >
-                Approved
-              </button>
-            
-            </div>
+             
+       <div className={`${branchAccess !== 0 ? "cursor-not-allowed" : "cursor-pointer"}  rounded-md `}>
+           <span className="bg-green-100 text-green-800 text-sm font-medium me-2 px-2.5 py-1 rounded-md dark:bg-green-900 dark:text-green-300" disabled={branchAccess !== 0}>sent</span>
           </div>
     </div>
         ),
@@ -324,7 +199,7 @@ function PromotionSummary() {
             <div className="flex flex-row items-center justify-end gap-2">
               <button
                 className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
-                onClick={handleaddDept}
+                onClick={()=>navigate("/promotions/promotioncreations")}
                 style={{ backgroundColor: layout_color }}
               >
                 + Add Promotions
@@ -344,7 +219,7 @@ function PromotionSummary() {
             />
           </div>
   
-        {
+        {/* {
             deptData.length > 0 &&(
                 <div className="flex justify-between mt-4 p-2">
                 <div className={`flex flex-row items-center justify-center gap-2  `}>
@@ -395,7 +270,7 @@ function PromotionSummary() {
                 </div>
               </div>
             )
-        }
+        } */}
         </>
         <Modal />
       </div>

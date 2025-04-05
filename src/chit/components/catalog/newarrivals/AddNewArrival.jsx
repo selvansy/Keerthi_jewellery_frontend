@@ -1,549 +1,507 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { useMutation } from "@tanstack/react-query";
-import { CalendarDays, Search } from "lucide-react";
-import "react-datepicker/dist/react-datepicker.css";
+import { customSelectStyles } from "../../Setup/purity";
+import { useSelector } from "react-redux";
 import Select from "react-select";
 import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import {
-  getallbranch,
-  getBranchById,
   createnewarrivals,
+  getAllBranch,
+  getbranchbyid,
+  getNewArrivalsById,
+  getProductByBranch,
   updatenewarrivals,
-  newarrivalsbyid,
-  getproductTable,
 } from "../../../api/Endpoints";
-import { setid } from "../../../../redux/clientFormSlice";
+import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
-import { useSelector, useDispatch } from "react-redux";
-import { customSelectStyles } from "../../Setup/purity";
+import Loading from "../../common/Loading";
+import SpinLoading from "../../common/spinLoading";
+import { useNavigate, useParams } from "react-router-dom";
 
-const AddNewArrival = () => {
+function AddNewArrival() {
+  const { id } = useParams();
+  const roleData = useSelector((state) => state.clientForm.roledata);
+  const accessBranch = roleData?.branch;
+
+  // State for date pickers
   const navigate = useNavigate();
-  let dispatch = useDispatch();
-  const roledata = useSelector((state) => state.clientForm.roledata);
-  const id_branch = roledata?.branch;
-  const {id}=useParams()
-
-  const MAX_IMAGES = 1;
-
-  const [products, setAllProducts] = useState([]);
-  
-  const [branchList, setBranchList] = useState([]);
-  let [branch, setbranch] = useState("");
-  const [new_arrivals_img, setNewarrivalsImgPath] = useState([]);
-  const todaydate = new Date();
-  const [expiry_date, setExpriyDate] = useState(todaydate);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const [branch, setBranch] = useState(() => (accessBranch === "0" ? [] : {}));
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [buttonLoading, setButtonLoading] = useState(false);
   const [formData, setFormData] = useState({
+    title: "",
     id_product: "",
-    description: "",
-    id_branch: id_branch,
-    price: "",
+    id_branch: "",
     start_date: new Date(),
     end_date: null,
+    description: "",
   });
-  const [formErrors, setFormErrors] = useState({});
-
   useEffect(() => {
-    getAllProducts();
-  }, []);
+    if (!roleData) return;
+    if (id) {
+      setLoading(true);
+      getNewArrivalById(id);
+      // If there's an existing image, set it for preview
+    }
+    if (accessBranch !== "0") {
+      getBranchData({ id: accessBranch });
+      getAllProduct(accessBranch);
+    } else if (accessBranch == "0") {
+      getAllBranches();
+    }
+  }, [roleData]);
 
+  // Add another useEffect to handle setting the image preview when formData changes
   useEffect(() => {
-    if (id_branch === "0") {
-      getallbranchmuate();
+    if (formData && formData.new_arrivals_img) {
+      setPreviewUrl(formData.new_arrivals_img);
     }
+  }, [formData]);
 
-    if (id_branch !== "0") {
-      setFormData({ ...formData, id_branch: id_branch });
-    }
-  }, [id_branch]);
-
-  //mutation to get newarrivals type
-  const { mutate: getAllProducts } = useMutation({
-    mutationFn: getproductTable,
+  //mutation to get all branches
+  const { mutate: getAllBranches } = useMutation({
+    mutationFn: () => getAllBranch(),
     onSuccess: (response) => {
-      setAllProducts(
-        response.data.map((item) => ({
-          value: item._id,
-          label: item.product_name,
+      setBranch(
+        response.data.map((branch) => ({
+          value: branch._id,
+          label: branch.branch_name,
         }))
       );
     },
     onError: (error) => {
-      console.error("Error fetching products:", error);
+      console.error("Error fetching branches:", error);
     },
   });
 
-  //get branches
-  const { mutate: branchbyId } = useMutation({
-    mutationFn: getBranchById,
+  // get product by BranchId
+  const { mutate: getAllProduct } = useMutation({
+    mutationFn: (id) => getProductByBranch(id),
     onSuccess: (response) => {
-      setbranch(response.data);
-    },
-    onError: (error) => {
-      console.error("Error:", error);
-    },
-  });
-
-  const { mutate: getallbranchmuate } = useMutation({
-    mutationFn: getallbranch,
-    onSuccess: (response) => {
-      setBranchList(response.data);
-    },
-    onError: (error) => {
-      console.error("Error:", error);
-    },
-  });
-
-  // input change handler
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-    setFormErrors((prev) => ({
-      ...prev,
-      [name]: "",
-    }));
-  };
-
-  const handleDescriptionImageChange = (e) => {
-    const files = e.target.files;
-    if (files.length > 0) {
-      const existingImages = new_arrivals_img.filter(
-        (img) => typeof img === "string"
+      setProducts(
+        response.data.map((product) => ({
+          value: product._id,
+          label: product.product_name,
+        }))
       );
-      const totalImages = existingImages.length + files.length;
+    },
+    onError: (error) => {
+      console.error("Error fetching Product:", error);
+    },
+  });
 
-      if (totalImages > MAX_IMAGES) {
-        toast.error(`Maximum ${MAX_IMAGES} images allowed`);
-        return;
-      }
-
-      setNewarrivalsImgPath((prevState) => [
-        ...prevState,
-        ...Array.from(files),
-      ]);
-    }
-  };
-
-  // Validation function
-  const validateForm = () => {
-    const errors = {};
-    if (!formData.name) errors.name = "Product is required";
-    if (!formData.start_date) errors.startDate = "Start Date is required";
-    if (!formData.end_date) errors.endDate = "End Date is required";
-    if (!formData.description) errors.description = "End Date is required";
-
-    setFormErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
-
-  //mutation to create newarrivals
-  const { mutate: createnewarrivalsMutate } = useMutation({
-    mutationFn: createnewarrivals,
+  //mutation to get branch by id
+  const { mutate: getBranchData } = useMutation({
+    mutationFn: (data) => getbranchbyid(data),
     onSuccess: (response) => {
-      dispatch(setid(null));
+      const { data } = response;
+      setBranch({
+        _id: data._id,
+        branch_name: data.branch_name,
+      });
+      setFormData((prev) => ({
+        ...prev,
+        id_branch: data._id,
+      }));
+    },
+    onError: (error) => {
+      console.error("Error fetching branches:", error);
+    },
+  });
+
+  //mutation to addNewArrivals
+  const { mutate: addNewArrivals } = useMutation({
+    mutationFn: (data) => createnewarrivals(data),
+    onSuccess: (response) => {
+      setButtonLoading(false);
       toast.success(response.message);
       navigate("/catalog/newarrivals");
     },
     onError: (error) => {
       toast.error(error.response.data.message);
+      toast.error(error.response.data);
+      setButtonLoading(false);
+      console.error("Error fetching branches:", error);
+    },
+  });
+  //mutation to get editNewArrivals
+  const { mutate: editNewArrivals } = useMutation({
+    mutationFn: ({ id, data }) => updatenewarrivals(id, data),
+    onSuccess: (response) => {
+      setButtonLoading(false);
+      toast.success(response.message);
+      navigate("/catalog/newarrivals");
+    },
+    onError: (error) => {
+      setButtonLoading(false);
+      toast.error(error.response.data.message);
+      console.error("Error fetching branches:", error);
     },
   });
 
-  //handle submit
-  const handleSubmit = () => {
-    // if (!validateForm()) {
-    //   return;
-    // }
+  const { mutate: getNewArrivalById } = useMutation({
+    mutationFn: (id) => getNewArrivalsById(id),
+    onSuccess: (response) => {
+      setLoading(false);
+      const data = response.data;
+      setFormData(data);
+      // Handle the image preview for existing record
+      if (data.images_Url && data.images_Url.length > 0 && data.pathurl) {
+        const fullImageUrl = `${data.pathurl}${data.images_Url[0]}`;
+        setSelectedImage(data.images_Url[0]);
+        setPreviewUrl(fullImageUrl);
+      }
+
+      // Handle branch selection
+      if (accessBranch === "0") {
+        setBranch((prevBranches) => {
+          const exists = prevBranches.some((b) => b.value === data.id_branch);
+          if (!exists) {
+            return [
+              ...prevBranches,
+              {
+                value: data.id_branch,
+                label: data.branch_name,
+              },
+            ];
+          }
+          return prevBranches;
+        });
+      }
+
+      // Get products for the selected branch
+      getAllProduct(data.id_branch);
+
+      // Handle product selection
+      setProducts((prevProducts) => {
+        const exists = prevProducts.some((p) => p.value === data.id_product);
+        if (!exists) {
+          return [
+            ...prevProducts,
+            {
+              value: data.id_product,
+              label: data.product_name,
+            },
+          ];
+        }
+        return prevProducts;
+      });
+    },
+    onError: (error) => {
+      setLoading(false);
+      console.error("Error fetching new arrivals:", error);
+    },
+  });
+
+  // Image selection handler
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+
+    if (file) {
+      const allowedTypes = [
+        "image/jpeg",
+        "image/jpg",
+        "image/png",
+        "image/webp",
+      ];
+
+      if (!allowedTypes.includes(file.type)) {
+        toast.error("Only JPG, JPEG, PNG, or WEBP files are allowed.");
+        return;
+      }
+
+      if (file.size > 500 * 1024) {
+        toast.error("Image size should be less than 500 KB.");
+        return;
+      }
+
+      setSelectedImage(file);
+
+      const fileReader = new FileReader();
+      fileReader.onload = () => {
+        setPreviewUrl(fileReader.result);
+      };
+      fileReader.readAsDataURL(file);
+    }
+  };
+
+  const handleBranchChange = (selectedOption) => {
+    setProducts([]);
+    setFormData((prev) => ({
+      ...prev,
+      id_branch: selectedOption.value,
+    }));
+    getAllProduct(selectedOption.value);
+  };
+
+  const validator = () => {};
+
+  const hanldeSubmit = () => {
+    setButtonLoading(true);
 
     const formDataToSend = new FormData();
+    formDataToSend.append("title",formData.title)
     formDataToSend.append("id_product", formData.id_product);
     formDataToSend.append("description", formData.description);
     formDataToSend.append("id_branch", formData.id_branch);
     formDataToSend.append("start_date", formData.start_date);
     formDataToSend.append("end_date", formData.end_date);
-    if (new_arrivals_img && new_arrivals_img.length > 0) {
-      new_arrivals_img.forEach((image, index) => {
-        if (image instanceof File) {
-          formDataToSend.append("new_arrivals_img", image);
-        } else if (typeof image === "string") {
-          formDataToSend.append("new_arrivals_img", image);
-        }
-      });
+    if (selectedImage) {
+      if (selectedImage instanceof File) {
+        formDataToSend.append("new_arrivals_img", selectedImage);
+      } else if (typeof selectedImage === "string") {
+        formDataToSend.append("new_arrivals_img", selectedImage);
+      }
     }
-    createnewarrivalsMutate(formDataToSend);
-  };
 
-  const handleCancle = () => {
-    dispatch(setid(null));
-    navigate("/catalog/newarrivals");
-  };
-
-  //Edit form --------------------------
-
-  //get newarrivals by id
-  const { mutate: fetchnewarrivalsById } = useMutation({
-    mutationFn: newarrivalsbyid,
-    onSuccess: (response) => {
-      setFormData({
-        id_branch: response.data.id_branch,
-        description: response.data.description,
-        name: response.data.name,
-        images_Url: response.data.images_Url,
-        price: response.data.price,
-        expiry_date: response.data.expiry_date,
-        show_rate: response.data.show_rate,
-        pathurl: response.data.pathurl,
-      });
-
-      setNewarrivalsImgPath(response.data.images_Url);
-      // handletypeChange("type", response.data.show_rate);
-    },
-    onError: (error) => {
-      console.error("Error fetching countries:", error);
-    },
-  });
-
-  console.log(id, "kdid");
-
-  //update newarrivals
-  const { mutate: updateNewarrivalsmutate } = useMutation({
-    mutationFn: ({ id, data }) => updatenewarrivals(id, data),
-    onSuccess: (response) => {
-      toast.success(response.message);
-      dispatch(setid(null));
-      navigate("/catalog/newarrivals");
-    },
-    onError: (error) => {
-      toast.error(error.response.data.message);
-    },
-  });
-
-  useEffect(() => {
     if (id) {
-      fetchnewarrivalsById({ id: id });
+      editNewArrivals({ id, data: formDataToSend });
+    } else {
+      addNewArrivals(formDataToSend);
     }
-  }, [id]);
-
-  const handleUpdate = () => {
-    if (!validateForm()) return;
-
-    const formDataToSend = new FormData();
-    formDataToSend.append("name", formData.name);
-    formDataToSend.append("description", formData.description);
-    formDataToSend.append("id_branch", formData.id_branch);
-    formDataToSend.append("expiry_date", formData.expiry_date);
-    if (new_arrivals_img && new_arrivals_img.length > 0) {
-      new_arrivals_img.forEach((image, index) => {
-        if (image instanceof File) {
-          formDataToSend.append("new_arrivals_img", image);
-        } else if (typeof image === "string") {
-          formDataToSend.append("new_arrivals_img", image);
-        }
-      });
-    }
-
-    updateNewarrivalsmutate({ id, data: formDataToSend });
-  };
-
-  const handleRemoveDescriptionImage = (index) => {
-    setNewarrivalsImgPath((prevState) =>
-      prevState.filter((_, i) => i !== index)
-    );
-  };
-  const handleDateChange = (date, field) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: date, // Dynamically update start_date or end_date
-    }));
-
-    // Reset error message when user selects a date
-    setFormErrors((prev) => ({
-      ...prev,
-      [field]: "",
-    }));
-  };
-
-  const handleSelect = (selectedOption) => {
-    setFormData((prev) => ({
-      ...prev,
-      id_product: selectedOption ? selectedOption.value : "",
-    }));
-
-    setFormErrors((prev) => ({
-      ...prev,
-      id_product: "",
-    }));
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-    setFormErrors((prev) => ({
-      ...prev,
-      [name]: "",
-    }));
   };
 
   return (
     <>
-      <div className="flex flex-row justify-between">
-        {id ? (
-          <h2 className="text-2xl text-[#023453] font-bold justify-between">
-            Edit newarrivals
-          </h2>
-        ) : (
-          <h2 className="text-2xl text-[#023453] font-bold justify-between">
-            Create newarrivals
-          </h2>
-        )}
-      </div>
-      <div className="w-full flex flex-col bg-[#F5F5F5] border-t-2 border-[#023453] mt-3 overflow-y-auto scrollbar-hide h-[calc(100vh-200px)]">
-        <div className="flex flex-col p-4 bg-white relative">
-          <div className="grid grid-rows-2 md:grid-cols-2 gap-5 border-gray-300 mb-10">
-            <div className="flex flex-col">
-              {id_branch === "0" && (
-                <div className="flex flex-col lg:mt-2">
-                  <label className="text-black mb-1 font-medium">
-                    Branch<span className="text-red-400">*</span>
-                  </label>
-                  <div className="relative">
-                    <select
-                      name="id_branch"
-                      className={`appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 ${
-                        !id_branch !== "0"
-                          ? "cursor-not-allowed bg-gray-100"
-                          : ""
-                      }`}
-                      value={formData.id_branch || id_branch}
-                    >
-                      <option value="" className="text-gray-700">
-                        --Select--
-                      </option>
-                      {branchList.map((branch) => (
-                        <option
-                          className="text-gray-700"
-                          key={branch._id}
-                          value={branch._id}
-                        >
-                          {branch.branch_name}
-                        </option>
-                      ))}
-                    </select>
-                    <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                      <svg
-                        className="h-4 w-4 text-gray-400"
-                        fill="none"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="3"
-                        viewBox="0 0 24 24"
-                        stroke="black"
-                      >
-                        <path d="M19 9l-7 7-7-7"></path>
-                      </svg>
-                    </div>
-                  </div>
-                  {formErrors.branch && (
-                    <span className="text-red-500 text-sm mt-1">
-                      {formErrors.branch}
-                    </span>
-                  )}
-                </div>
-              )}
-            </div>
+      {loading ? (
+        <Loading />
+      ) : (
+        <>
+          <div className="flex flex-row justify-between">
+            {id ? (
+              <h2 className="text-2xl text-[#023453] font-bold justify-between">
+                Edit newarrivals
+              </h2>
+            ) : (
+              <h2 className="text-2xl text-[#023453] font-bold justify-between">
+                Create newarrivals
+              </h2>
+            )}
           </div>
-          <div className="grid grid-rows-2 md:grid-cols-2 gap-5 border-gray-300 mb-10">
-            <div className="flex flex-col">
-              <label className="text-gray-700 mb-2 mt-2 font-medium">
-                Select Product<span className="text-red-400">*</span>
-              </label>
-              <Select
-                name="id_producr"
-                options={products}
-                value={products.find(
-                  (option) => option.value === formData.id_product
-                )}
-                onChange={handleSelect}
-                placeholder="Select Metal"
-                styles={customSelectStyles}
-                className="react-select-container"
-                classNamePrefix="react-select"
-              />
-              {formErrors.show_rate && (
-                <span className="text-red-500 text-sm mt-1">
-                  {formErrors.show_rate}
-                </span>
-              )}
-            </div>
 
-            <div className="flex flex-col">
-              <label className="text-gray-700 mb-2 mt-2 font-medium">
-                Upload Image<span className="text-red-400">*</span>
-              </label>
-              <div className="flex gap-4 flex-row justify-center">
-                {new_arrivals_img.length < MAX_IMAGES && (
-                  <div className="flex-1">
-                    <label
-                      htmlFor="new_arrivals_img"
-                      className="flex flex-col justify-center items-center w-full h-20 border-2 border-dashed border-gray-300 text-gray-700 cursor-pointer p-5 text-center"
-                    >
-                      {new_arrivals_img.length > 0
-                        ? `${new_arrivals_img.length} file(s) selected`
-                        : "Browse to find or drag image(s) here"}
+          <div className="w-full flex flex-col bg-[#F5F5F5] border-t-2 border-[#023453] mt-3 overflow-y-auto scrollbar-hide h-[calc(100vh-200px)]">
+            <div className="flex flex-col p-4 bg-white relative">
+              <div className="grid grid-rows-2 md:grid-cols-2 gap-5 border-gray-300 mb-5">
+                {accessBranch == "0" ? (
+                  <div>
+                    <label className="block text-sm font-medium mb-1 mt-5">
+                      Branches <span className="text-red-500">*</span>
+                    </label>
+                    <Select
+                      options={Array.isArray(branch) ? branch : [branch]} // Ensures 'branch' is treated as an array
+                      styles={customSelectStyles}
+                      placeholder="Select Branch"
+                      onChange={handleBranchChange}
+                      value={
+                        Array.isArray(branch)
+                          ? branch.find((b) => b.value === formData.id_branch)
+                          : { value: branch._id, label: branch.branch_name } // Handle single branch object case
+                      }
+                    />
+                  </div>
+                ) : (
+                  <div>
+                    <label className="block text-sm text-gray-500 font-medium mb-1 mt-5">
+                      Branch <span className="text-red-500">*</span>
                     </label>
                     <input
-                      onChange={handleDescriptionImageChange}
-                      className="hidden max-w-[190px]"
-                      name="new_arrivals_img"
-                      id="new_arrivals_img"
-                      type="file"
-                      accept="image/*"
-                      multiple
+                      type="text"
+                      value={branch.branch_name}
+                      disabled
+                      className="w-full border rounded-md px-3 py-2 text-gray-500"
                     />
                   </div>
                 )}
+                <div className="flex flex-col mt-2">
+                  <label className="text-gray-700 mb-2 font-medium">
+                    Title<span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.title}
+                    className="border-2 border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                    placeholder="Enter Title"
+                    onChange={(e)=>{
+                      setFormData((prev)=>({
+                        ...prev,
+                        title:e.target.value
+                      }))
+                    }}
+                  />
+                  <span className="text-red-500 text-sm mt-1">
+                    {/* {errors.product_name} */}
+                  </span>
+                </div>
 
-                {new_arrivals_img.length > 0 && (
-                  <div className="flex gap-4 w-full justify-evenly">
-                    {new_arrivals_img.map((file, index) => (
-                      <div
-                        key={index}
-                        className="w-20 h-20 border border-gray-300 rounded-md overflow-hidden relative"
+                <div className="flex flex-col">
+                  <label className="text-gray-700 mb-2 mt-2 font-medium">
+                    Product<span className="text-red-400">*</span>
+                  </label>
+                  <Select
+                    options={products}
+                    styles={customSelectStyles}
+                    placeholder="Select Product"
+                    onChange={(data) => {
+                      setFormData((prev) => ({
+                        ...prev,
+                        id_product: data.value,
+                      }));
+                    }}
+                    value={products.find(
+                      (p) => p.value === formData.id_product
+                    )} // Show existing product
+                  />
+                </div>
+
+                {/* Date Range Section */}
+                <div className="flex flex-col">
+                  <label className="text-gray-700 mb-2 mt-2 font-medium">
+                    Start Date<span className="text-red-400">*</span>
+                  </label>
+                  <DatePicker
+                    minDate={new Date()}
+                    selected={formData.start_date}
+                    onChange={(date) => {
+                      setFormData((prev) => ({
+                        ...prev,
+                        start_date: date,
+                      }));
+                    }}
+                    className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                    placeholderText="Select start date"
+                    dateFormat="yyyy-MM-dd"
+                  />
+                </div>
+
+                <div className="flex flex-col">
+                  <label className="text-gray-700 mb-2 mt-2 font-medium">
+                    End Date<span className="text-red-400">*</span>
+                  </label>
+                  <DatePicker
+                    selected={formData.end_date}
+                    onChange={(date) => {
+                      setFormData((prev) => ({
+                        ...prev,
+                        end_date: date,
+                      }));
+                    }}
+                    className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                    placeholderText="Select end date"
+                    dateFormat="yyyy-MM-dd"
+                    minDate={formData.start_date}
+                  />
+                </div>
+
+                <div className="flex flex-col mt-2">
+                  <label className="text-gray-700 mb-2 font-medium">
+                    Description <span className="text-red-400">*</span>
+                  </label>
+                  <textarea
+                    id="message"
+                    rows="4"
+                    name="description"
+                    value={formData.description}
+                    className="border-2 border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent h-[70px] min-h-[70px] max-h-[120px]"
+                    placeholder="Description"
+                    onChange={(e) => {
+                      setFormData((prev) => ({
+                        ...prev,
+                        description: e.target.value,
+                      }));
+                    }}
+                  ></textarea>
+                </div>
+
+                {/* Image Upload Section */}
+                {!selectedImage && (
+                  <div className="flex flex-col mt-2">
+                    <label className="text-gray-700 mb-2 font-medium">
+                      Image <span className="text-red-400">*</span>
+                    </label>
+
+                    <div className="border-2 border-dashed border-gray-300 rounded-md p-4 text-center">
+                      <input
+                        type="file"
+                        id="productImage"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleImageChange}
+                      />
+                      <label
+                        htmlFor="productImage"
+                        className="cursor-pointer flex flex-col items-center justify-center"
                       >
-                        <button
-                          onClick={() => handleRemoveDescriptionImage(index)}
-                          className="absolute top-1 right-1 w-5 h-5 flex items-center justify-center bg-red-500 text-white rounded-full hover:bg-red-600"
-                          type="button"
-                        >
-                          ×
-                        </button>
-                        <img
-                          src={
-                            typeof file === "string"
-                              ? `${formData.pathurl}${file}`
-                              : URL.createObjectURL(file)
-                          }
-                          alt="Description image preview"
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    ))}
+                        <>
+                          <p className="text-sm text-gray-500">
+                            Click to upload or drag and drop
+                          </p>
+                          <p className="text-xs text-gray-400 mt-1">
+                            PNG, JPG, GIF up to 500 KB
+                          </p>
+                        </>
+                      </label>
+                    </div>
+                  </div>
+                )}
+                {/* Image Preview Section */}
+                {previewUrl && (
+                  <div className="mt-2 border rounded-md p-3">
+                    <h3 className="text-gray-700 font-medium mb-2">
+                      Image Preview
+                    </h3>
+                    <div className="relative w-full">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setSelectedImage(null);
+                          setPreviewUrl(null);
+                        }}
+                        className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
+                      >
+                        ×
+                      </button>
+                    </div>
+                    <div className="flex justify-center">
+                      <img
+                        src={previewUrl}
+                        alt="Preview"
+                        className="max-h-48 max-w-full object-contain"
+                      />
+                    </div>
                   </div>
                 )}
               </div>
-              {formErrors.new_arrivals_img && (
-                <span className="text-red-500 text-sm mt-1">
-                  {formErrors.new_arrivals_img}
-                </span>
-              )}
-            </div>
 
-            <div className="flex flex-col ">
-              <label className="font-medium text-gray-700">
-                Description<span className="text-red-400">*</span>
-              </label>
-              <input
-                type="text"
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                placeholder="Enter Purity Name"
-                className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              {formErrors.purity_name && (
-                <div className="text-red-500 text-sm">
-                  {formErrors.purity_name}
+              <div className="bg-white mt-8">
+                <div className="flex justify-end gap-4">
+                  <button
+                    className="bg-[#E2E8F0] text-black rounded-md p-3 w-full lg:w-20"
+                    type="button"
+                    disabled={loading}
+                    onClick={()=>navigate('/catalog/newarrivals')}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="bg-[#61A375] text-white rounded-md p-2 w-full lg:w-20"
+                    type="button"
+                    disabled={buttonLoading}
+                    onClick={hanldeSubmit}
+                  >
+                    {buttonLoading ? <SpinLoading /> : "Submit"}
+                  </button>
                 </div>
-              )}
-            </div>
-
-            <div className="flex flex-col">
-              <label className="text-gray-700 mb-1 font-normal">
-                Start Date<span className="text-red-400">*</span>
-              </label>
-              <div className="relative">
-                <DatePicker
-                  name="start_date"
-                  selected={formData.start_date}
-                  onChange={(date) => handleDateChange(date, "start_date")}
-                  dateFormat="dd-MM-yyyy"
-                  placeholderText="Select Date"
-                  className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                  showMonthDropdown
-                  showYearDropdown
-                  dropdownMode="select"
-                  wrapperClassName="w-full"
-                />
-                <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-gray-500 w-14 h-[43px] justify-center items-center flex rounded-r-md pointer-events-none">
-                  <CalendarDays size={20} />
-                </span>
               </div>
-              {formErrors.startDate && (
-                <span className="text-red-500 text-sm mt-1">
-                  {formErrors.startDate}
-                </span>
-              )}
-            </div>
-
-            <div className="flex flex-col">
-              <label className="text-gray-700 mb-1 font-normal">
-                End Date<span className="text-red-400">*</span>
-              </label>
-              <div className="relative">
-                <DatePicker
-                  name="end_date"
-                  selected={formData.end_date}
-                  onChange={(date) => handleDateChange(date, "end_date")}
-                  dateFormat="dd-MM-yyyy"
-                  placeholderText="Select Date"
-                  className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                  showMonthDropdown
-                  showYearDropdown
-                  dropdownMode="select"
-                  wrapperClassName="w-full"
-                />
-                <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-gray-500 w-14 h-[43px] justify-center items-center flex rounded-r-md pointer-events-none">
-                  <CalendarDays size={20} />
-                </span>
-              </div>
-              {formErrors.endDate && (
-                <span className="text-red-500 text-sm mt-1">
-                  {formErrors.endDate}
-                </span>
-              )}
-            </div>
-            
-          </div>
-          <hr className="absolute border-gray-300 mt-3 mb-3 right-0 top-[90%] md:top-[85%] lg:top-[84%] w-[100%]"></hr>
-          <div className="bg-white">
-            <div className="flex justify-end gap-4">
-              <button
-                className="bg-[#E2E8F0] text-black rounded-md p-3 w-full lg:w-20"
-                type="button"
-                onClick={handleCancle}
-              >
-                Cancel
-              </button>
-              <button
-                className="bg-[#61A375] text-white rounded-md p-2 w-full lg:w-20"
-                type="button"
-                onClick={id ? handleUpdate : handleSubmit}
-              >
-                {id ? "Update" : "Submit"}
-              </button>
             </div>
           </div>
-        </div>
-      </div>
+        </>
+      )}
     </>
   );
-};
+}
 
 export default AddNewArrival;

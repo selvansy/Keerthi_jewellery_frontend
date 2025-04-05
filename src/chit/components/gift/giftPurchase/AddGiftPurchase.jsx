@@ -20,8 +20,7 @@ const AddGiftPurchase = () => {
   const roledata = useSelector((state) => state.clientForm.roledata);
 
   const id_branch = roledata?.branch;
-
-
+  const branchAccess = roledata?.id_branch
 
   const [isLoading, setisLoading] = useState(false)
   const [total, setTotal] = useState("")
@@ -47,25 +46,21 @@ const AddGiftPurchase = () => {
 
 
   useEffect(() => {
-
+    if(!roledata) return
     if (id_branch !== "0") {
       setFormData(prev => ({
         ...prev,
-        id_branch: id_branch
+        id_branch: branchAccess
       }))
-
     }
-  }, [id_branch]);
+  }, [roledata]);
 
 
-  const branchRe = formData.id_branch;
+  const branchRe = formData.id_branch || branchAccess;
 
   const { data: giftVendorRes, isLoading: loadingGiftVendor } = useQuery({
     queryKey: ["vendor", branchRe],
-    queryFn: ({ queryKey }) => {
-      const [, branchId] = queryKey;
-      return getgiftvendorbranchById(branchId);
-    },
+    queryFn: ()=> getgiftvendorbranchById(branchRe),
     enabled: !!branchRe,
   });
 
@@ -80,7 +75,6 @@ const AddGiftPurchase = () => {
     enabled: !!vendorId,
 
   });
-
 
 
   const { data: branchresponse, isLoading: loadingbranch } = useQuery({
@@ -416,7 +410,7 @@ const AddGiftPurchase = () => {
                   customSelectStyles={customSelectStyles}
                   isLoading={loadingbranch}
                   isDisabled={id_branch !== "0"}
-                  placeholder="Select Branch"
+                  placeholder="Select"
                 />
 
 
@@ -541,7 +535,7 @@ const AddGiftPurchase = () => {
                   customSelectStyles={customSelectStyles}
                   isLoading={loadingGiftVendor}
                   isDisabled={vendorfilter.length === 0}
-                  placeholder={vendorfilter.length === 0 ? "No Records Found" : "Select Branch"}
+                  placeholder={vendorfilter.length === 0 ? "No Records Found" : "Select"}
                 />
 
 
@@ -549,8 +543,6 @@ const AddGiftPurchase = () => {
                   <span className="text-red-500 text-sm">{formErrors.gift_vendorid}</span>
                 )}
               </div>
-
-
 
               {/* Quantity */}
               <div className="flex flex-col gap-2 mt-2">

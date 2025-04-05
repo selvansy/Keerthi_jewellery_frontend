@@ -596,7 +596,7 @@ const Pushnotification = () => {
           isLoading={isLoading}
         />
       </div>
-      {notifyData.length > 0 && (
+      {/* {notifyData.length > 0 && (
         <div className="flex justify-between mt-4 p-2">
           <div className="flex flex-row items-center justify-center gap-2">
             <div className="flex items-center gap-4">
@@ -643,7 +643,7 @@ const Pushnotification = () => {
             <span className="text-gray-500">entries</span>
           </div>
         </div>
-      )}
+      )} */}
       <ModelOne
         title={"View Details"}
         extraClassName='max-w-[75%] '
