@@ -42,6 +42,7 @@ const SchemeForm = () => {
   const navigate = useNavigate();
 
   let { id } = useParams();
+
   //reduux
   const roleData = useSelector((state) => state.clientForm.roledata);
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
@@ -142,6 +143,7 @@ const SchemeForm = () => {
       paid_installment: "",
       limit_customer: "",
       gift_minimum_paid_installment: "",
+      referralPercentage:"",
 
       //gift
       gift_type: 1,
@@ -216,6 +218,16 @@ const SchemeForm = () => {
       }
     },
   });
+
+  useEffect(() => {
+    if (!id) {
+      formik.resetForm();
+      setAmounts([]);
+      setMainImage(null);
+      setDescriptionImage(null);
+      setSelectedClass(null);
+    }
+  }, [id]);
 
   // Customisations for react-select
   const customStyles = (isReadOnly) => ({
@@ -780,7 +792,7 @@ const SchemeForm = () => {
                 Branches <span className="text-red-500">*</span>
               </label>
               <Select
-                styles={customStyles}
+                styles={customStyles(true)}
                 isClearable={true}
                 options={branch}
                 placeholder="Select Branch"
