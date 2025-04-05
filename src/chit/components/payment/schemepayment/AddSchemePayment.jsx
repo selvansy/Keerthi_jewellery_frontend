@@ -522,7 +522,7 @@ const AddSchemePayment = () => {
         <div>
           <div className="flex flex-col lg:flex-row w-full justify-between">
             {/* Left column - form inputs */}
-            <div className="lg:w-1/2 w-full bg-white border px-[18px] py-[20px] rounded-md">
+            <div className="lg:w-1/2 w-full bg-white border px-[18px] py-[20px] rounded-3xl">
               <h2 className="text-lg font-semibold mb-4 pb-4">
                 Customer Details
               </h2>
@@ -1113,7 +1113,7 @@ const AddSchemePayment = () => {
 
             {/* Right column - scheme details (desktop) */}
             <div className="lg:w-1/2 w-full items-center justify-center lg:pl-10 lg:pr-10 hidden lg:block">
-              <div className="bg-white lg:w-full rounded-lg p-3 shadow-sm border border-gray-200">
+              <div className="bg-white lg:w-full rounded-2xl py-3 pl-4 shadow-sm border border-gray-200">
                 <h2 className="text-base font-semibold text-gray-800 mb-2">
                   Scheme Details
                 </h2>

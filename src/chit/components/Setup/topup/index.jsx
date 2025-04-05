@@ -48,33 +48,31 @@ function Topup() {
 
   useEffect(() => {
     if (formData?.SMS) {
-        setFormData((prev) => ({
-            ...prev,
-            limitRequest: 0,
-            requestedAmount: 0,
-            actualAmount: topData?.SMS || 0,
-            limitRate: topData?.limitRate,
-        }));
+      setFormData((prev) => ({
+        ...prev,
+        limitRequest: 0,
+        requestedAmount: 0,
+        actualAmount: topData?.SMS || 0,
+        limitRate: topData?.limitRate,
+      }));
     } else if (formData?.WhatsApp) {
-        setFormData((prev) => ({
-            ...prev,
-            limitRequest: 0,
-            requestedAmount: 0,
-            actualAmount: topData?.WhatsApp || 0,
-            limitRate: topData?.limitRate,
-        }));
+      setFormData((prev) => ({
+        ...prev,
+        limitRequest: 0,
+        requestedAmount: 0,
+        actualAmount: topData?.WhatsApp || 0,
+        limitRate: topData?.limitRate,
+      }));
     } else if (formData?.Email) {
-        setFormData((prev) => ({
-            ...prev,
-            limitRequest: 0,
-            requestedAmount: 0,
-            actualAmount: topData?.Email || 0,
-            limitRate: topData?.limitRate,
-        }));
+      setFormData((prev) => ({
+        ...prev,
+        limitRequest: 0,
+        requestedAmount: 0,
+        actualAmount: topData?.Email || 0,
+        limitRate: topData?.limitRate,
+      }));
     }
-}, [topData, formData.SMS, formData.WhatsApp, formData.Email]);
-
-
+  }, [topData, formData.SMS, formData.WhatsApp, formData.Email]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -159,20 +157,26 @@ function Topup() {
 
   return (
     <>
-      <div className="flex flex-col p-4 relative">
-        <>
-          <h2 className="text-2xl text-gray-900 font-bold">Add Top-Up</h2>
-          <div className="w-full flex flex-col bg-[#F5F5F5] border-t-2 border-[#023453]  overflow-y-auto scrollbar-hide h-[calc(100vh-200px)]">
-            <div className="flex flex-col p-4 bg-white relative mb-3">
+      {/* <div className="flex flex-col p-4"> */}
+      <>
+        <div className="flex flex-row justify-between items-center mb-4">
+          <p className="text-sm text-gray-400 mt-4 mb-3">
+            Settings / <span className="text-black">Top-Up</span>
+          </p>
+        </div>
+        <div className="w-full flex flex-col bg-white border rounded-3xl p-4">
+          <div className="flex flex-col p-4">
+            <h2 className="text-lg font-medium ">Add Top-Up</h2>
+            <div className="grid grid-rows-2 md:grid-cols-2 gap-5 border-gray-300 mb-10 mt-4">
               <div className="flex flex-col space-y-2 my-2">
-                <label className="font-medium text-gray-700">
+                <label className="text-black mb-1 text-sm font-medium">
                   Notifications Type<span className="text-red-400">*</span>
                 </label>
                 <div className="flex flex-row gap-6 justify-start">
                   {[
                     { label: "SMS", key: "SMS" },
                     { label: "WhatsApp", key: "WhatsApp" },
-                    { label: "Email", key: "Email" },
+                    // { label: "Email", key: "Email" },
                   ].map((notify_type) => (
                     <label
                       key={notify_type.key}
@@ -186,86 +190,102 @@ function Topup() {
                           setFormData({
                             SMS: false,
                             WhatsApp: false,
-                            Email: false,
+                            // Email: false,
                             [notify_type.key]: true,
                           });
                         }}
                         className="hidden"
                       />
 
-                      <div
-                        className={`w-5 h-5 border-2 rounded-full flex items-center justify-center transition-colors duration-200 ${
+                      {/* <div
+                        className={`w-5 h-5 border rounded-full flex items-center justify-center transition-colors duration-200 ${
                           formData[notify_type.key]
-                            ? "bg-[#023453] border-[#023453]"
+                            ? "bg-white border-[#023453]"
                             : "border-gray-400"
                         }`}
                       >
-                        {formData[notify_type.key] && (
-                          <div className="w-2.5 h-2.5 bg-white rounded-full"></div>
+                        {formData[notify_type.key] ? (
+                          <div className="w-[10px] h-[10px] bg-[#1e5d9a] border-[#F2F2F9] rounded-full"></div>
+                        ):
+                        (
+                          <div className="w-[10px] h-[10px] border border-gray-400 rounded-full"></div>
                         )}
+                      </div> */}
+                      <div
+                        className={`w-5 h-5 border rounded-full flex items-center justify-center transition-colors duration-200 ${
+                          formData[notify_type.key]
+                            ? "bg-white border-[#023453]"
+                            : "border-gray-400"
+                        }`}
+                      >
+                        <div
+                          className={`w-[10px] h-[10px] rounded-full ${
+                            formData[notify_type.key]
+                              ? "bg-[#1e5d9a] border border-[#F2F2F9]"
+                              : "border border-gray-400"
+                          }`}
+                        ></div>
                       </div>
                       <span className="text-gray-700">{notify_type.label}</span>
                     </label>
                   ))}
                 </div>
               </div>
+              <div className="flex flex-col space-y-2">
+                <label className="text-black mb-1 text-sm font-medium">
+                  Purchase Limit<span className="text-red-400"> *</span>
+                </label>
+                <input
+                  type="text"
+                  name="limitRequest"
+                  value={formData.limitRequest}
+                  onChange={handleChange}
+                  placeholder="Enter purchase limit"
+                  maxLength={10}
+                  className="p-3 border-2 border-[#f2f3f8] rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
 
-              <div className="grid grid-rows-2 md:grid-cols-2 gap-5 border-gray-300 mb-10 mt-10">
-                <div className="flex flex-col space-y-2">
-                  <label className="font-medium text-gray-700">
-                    Purchase Credits<span className="text-red-400"> *</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="limitRequest"
-                    value={formData.limitRequest}
-                    onChange={handleChange}
-                    placeholder="Enter purchase limit"
-                    maxLength={10}
-                    className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
+                {formErrors.limitRequest && (
+                  <div className="text-red-500 text-sm">
+                    {formErrors.limitRequest}
+                  </div>
+                )}
+              </div>
 
-                  {formErrors.limitRequest && (
-                    <div className="text-red-500 text-sm">
-                      {formErrors.limitRequest}
-                    </div>
-                  )}
-                </div>
+              <div className="flex flex-col space-y-2">
+                <label className="text-black mb-1 text-sm font-medium">
+                  Availabe Limit
+                  <span className="text-red-400"> *</span>
+                </label>
+                <input
+                  type="text"
+                  name="actualAmount"
+                  value={formData.actualAmount}
+                  onChange={handleChange}
+                  minLength={"2"}
+                  readOnly
+                  placeholder="Enter available limit"
+                  className="p-3 border-2 border-[#f2f3f8] rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
 
-                <div className="flex flex-col space-y-2">
-                  <label className="font-medium text-gray-700">
-                    Availabe notification credits
-                    <span className="text-red-400"> *</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="actualAmount"
-                    value={formData.actualAmount}
-                    onChange={handleChange}
-                    minLength={"2"}
-                    readOnly
-                    placeholder="Enter available limit"
-                    className="p-3 border bg-[#e5e7eb] border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
+              <div className="flex flex-col space-y-2">
+                <label className="text-black mb-1 text-sm font-medium">
+                  Limit Rate<span className="text-red-400"> *</span>
+                </label>
+                <input
+                  type="text"
+                  name="limit_rate"
+                  value={formData.limitRate}
+                  onChange={handleChange}
+                  minLength={"2"}
+                  readOnly
+                  placeholder="Enter limit rate"
+                  className="p-3 border-2 border-[#f2f3f8] rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
 
-                <div className="flex flex-col space-y-2">
-                  <label className="font-medium text-gray-700">
-                    Credits Rate<span className="text-red-400"> *</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="limit_rate"
-                    value={formData.limitRate}
-                    onChange={handleChange}
-                    minLength={"2"}
-                    readOnly
-                    placeholder="Enter limit rate"
-                    className="p-3 border bg-[#e5e7eb] border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-
-                <div className="flex flex-col space-y-2">
+              {/* <div className="flex flex-col space-y-2">
                   <label className="font-medium text-gray-700">
                     Payable Amount<span className="text-red-400"> *</span>
                   </label>
@@ -283,33 +303,33 @@ function Topup() {
                       {formErrors.requestedAmount}
                     </div>
                   )}
-                </div>
-              </div>
-              <div className="bg-white">
-                <div className="flex items-center justify-end gap-4">
-                  <button
-                    type="button"
-                    className="bg-[#E2E8F0] text-black rounded-md p-2 w-full lg:w-20"
-                    onClick={handleCancel}
-                  >
-                    Clear
-                  </button>
+                </div> */}
+            </div>
+            <div className="bg-white">
+              <div className="flex items-center justify-end gap-4">
+                <button
+                  type="button"
+                  className="bg-[#E2E8F0] text-black rounded-md p-2 w-full lg:w-20"
+                  onClick={handleCancel}
+                >
+                  Clear
+                </button>
 
-                  <button
-                    type="button"
-                    onClick={handleSubmit}
-                    disabled={isLoading}
-                    className=" text-white rounded-md p-2 w-full lg:w-20"
-                    style={{ backgroundColor: layout_color }}
-                  >
-                    {isLoading ? <SpinLoading /> : id ? "Update" : "Save"}
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  onClick={handleSubmit}
+                  disabled={isLoading}
+                  className=" text-white rounded-md p-2 w-full lg:w-20"
+                  style={{ backgroundColor: layout_color }}
+                >
+                  {isLoading ? <SpinLoading /> : id ? "Update" : "Save"}
+                </button>
               </div>
             </div>
           </div>
-        </>
-      </div>
+        </div>
+      </>
+      {/* </div> */}
     </>
   );
 }
