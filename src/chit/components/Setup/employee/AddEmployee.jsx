@@ -650,7 +650,7 @@ const AddEmployee = () => {
         </p>
       </div>
 
-      <div className="bg-[#FFFFFF] rounded-xl p-6 shadow-sm border">
+      <div className="bg-[#FFFFFF] rounded-3xl p-6 shadow-sm border">
         <h2 className="text-lg font-semibold mb-4 border-b pb-4">
           {id ? "Edit Employee" : "Add Employee"}
         </h2>
