@@ -625,20 +625,15 @@ const ViewScheme = () => {
     return schemeTypeData;
   }, [schemeTypeData, formik.values.classType, selectedClass]);
 
-  //   <div className="flex flex-row w-full bg-yellow-300 justify-between">
-  //       <p className="text-sm text-gray-400 mt-4 mb-3">
-  //             Settings / <span className="text-black">Top-Up</span>
-  //           </p>
-  // <div className="flex justify-end space-x-4">
-  //         <button
-  //           type="submit"
-  //           disabled={isLoading}
-  //           className="w-20 h-9 bg-blue-900 text-white rounded-md hover:bg-blue-800 flex justify-center items-center"
-  //         >
-  //           Edit
-  //         </button>
-  //       </div>
-  //       </div>
+  useEffect(() => {
+    if (classificationData?.data?.length > 0) {
+      const value = classificationData?.data?.find((item)=> item._id === formik.values.id_classification)
+      if(value?.order === 2){
+        formik.setFieldValue("classType", true);
+      }
+    }
+  }, [classificationData]);
+  
 
   return (
     <>
@@ -797,20 +792,57 @@ const ViewScheme = () => {
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Scheme Name
-              </label>
-              <p className="text-[#72737e] pb-2">{formik.values.scheme_name}</p>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Scheme Code
-              </label>
-              <p className="text-[#72737e] pb-2">{formik.values.code}</p>
-            </div>
-
+            {![12, 3, 4].includes(formik.values.scheme_type) ? (
+              <>
+                {formik.values.classType ? (
+                    <div> need to add</div>
+                ):(
+                    <>
+                    <div>
+                  <label className="block text-sm font-medium mb-1">
+                    Min Amount
+                  </label>
+                  <p className="text-[#72737e] pb-2">
+                    {formik.values.min_amount}
+                  </p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                    Max Amount
+                  </label>
+                  <p className="text-[#72737e] pb-2">{formik.values.max_amount}</p>
+                </div>
+                </>
+                )}
+              </>
+            ) : (
+              <>
+                {formik.values.classType ? (
+                    <>
+                    <di>
+                        need to add
+                    </di>
+                    </>
+                ):(
+                    <>
+                    <div>
+                  <label className="block text-sm font-medium mb-1">
+                    Min Weight
+                  </label>
+                  <p className="text-[#72737e] pb-2">
+                    {formik.values.min_weight}
+                  </p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                   Max Weight
+                  </label>
+                  <p className="text-[#72737e] pb-2">{formik.values.max_weight}</p>
+                </div>
+                    </>
+                )}
+              </>
+            )}
             <div>
               <label className="block text-sm font-medium mb-1">
                 Benefit Wastage
@@ -966,7 +998,9 @@ const ViewScheme = () => {
                 Description
               </label>
               <div className="text-[#72737e] overflow-auto max-h-[200px]">
-              <p className="text-[#72737e] pb-2">{formik.values.description}</p>
+                <p className="text-[#72737e] pb-2">
+                  {formik.values.description}
+                </p>
               </div>
             </div>
 

@@ -110,31 +110,7 @@ const SchemeForm = () => {
       description: "",
       term_desc: "",
       classification_order: "",
-      
-      // buy_gst: "",
-      //customer referral
-      // customer_referral_per: "",
-      // customer_incentive_per: "",
-      // customer_ref_remarks: "",
-      //grce
-      // grace_type: "",
-      // grace_period: "",
-      // grace_fine_amount: false,
-      // grace_fine: 0,
-      
-      // start: "",
-      // fixed_amounts: "",
-      //agent referral
-      // agent_referral_percentage: "",
-      // agent_incentive: "",
-      // agent_restriction: false,
-      // agent_remark: "",
-      // agent_target_per: "",
-      // agent_partial_per: "",
-      // buygsttype: "",
-      // fine_amount: 0,
-      // cumulative_fine_amount: "",
-      
+    
       wastagetype: "", // no need to pass
       
       // AdvancedSettings fields
@@ -382,8 +358,6 @@ const SchemeForm = () => {
         max_amount: schemeData.data.max_amount || 0,
         min_weight: schemeData.data.min_weight || 0,
         max_weight: schemeData.data.max_weight || 0,
-        // buy_gst: schemeData.data.buy_gst || 0,
-        // buygsttype: schemeData?.data?.buygsttype || 1,
         wastagebenefit: schemeData.data.wastagebenefit || "",
         total_installments: schemeData.data.total_installments || "",
         benefit_making: schemeData.data.makingcharge || "",
@@ -479,14 +453,6 @@ const SchemeForm = () => {
       }));
       setFundType(fund_data);
     }
-
-    // if (buy_gst?.data) {
-    //   const buy_gst_data = buy_gst.data.map((item) => ({
-    //     value: item.id,
-    //     label: item.name,
-    //   }));
-    //   setBuyGst(buy_gst_data);
-    // }
 
     if (wastage_type?.data) {
       const wastage_data = wastage_type.data.map((item) => ({
