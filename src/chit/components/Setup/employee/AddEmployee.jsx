@@ -86,7 +86,7 @@ const AddEmployee = () => {
   // State Management
   const [showWebcam, setShowWebcam] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [country, setSelectedCountry] = useState("");
+  const [country, setSelectedCountry] = useState([]);
   const [states, setStates] = useState([]);
   const [city, setCity] = useState([]);
   const [branchData, setBranchData] = useState([]);
@@ -228,10 +228,23 @@ const AddEmployee = () => {
     enabled: branch === "0",
   });
 
+  const { data: employeeData } = useQuery({
+    queryKey: ["employee", id],
+    queryFn: () => getemployeebyid(id),
+    enabled: !!id,
+    staleTime: 1000 * 60 * 5,
+    cacheTime: 1000 * 60 * 10,
+  });
+
   // Effects
   useEffect(() => {
     if (countryResponse) {
-      const countryId = countryResponse.data[0]._id;
+      // const countryId = countryResponse.data[0]._id;
+      console.log("kd");
+      const countryId = countryResponse.data.map((state) => ({
+        value: state._id,
+        label: state.country_name,
+      }));
       setSelectedCountry(countryId);
       formik.setFieldValue("id_country", countryId);
     }
@@ -243,14 +256,6 @@ const AddEmployee = () => {
       setBranchData(branchData);
     }
   }, [countryResponse, branchResponse]);
-
-  const { data: employeeData } = useQuery({
-    queryKey: ["employee", id],
-    queryFn: () => getemployeebyid(id),
-    enabled: !!id,
-    staleTime: 1000 * 60 * 5,
-    cacheTime: 1000 * 60 * 10,
-  });
 
   useEffect(() => {
     if (employeeData?.data) {
@@ -329,15 +334,15 @@ const AddEmployee = () => {
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     const name = event.target.name;
-  
+
     if (file && file.size <= 500 * 1024) {
       const previewUrl = URL.createObjectURL(file);
       setImagePreviews((prev) => ({
         ...prev,
-        [name]: { 
-          file, 
+        [name]: {
+          file,
           previewUrl,
-          name: file.name
+          name: file.name,
         },
       }));
       formik.setFieldValue(name, file);
@@ -365,7 +370,6 @@ const AddEmployee = () => {
   const handleCapture = () => {
     const imageSrc = webcamRef.current.getScreenshot();
     const fileName = `webcam-capture-${new Date().getTime()}.jpg`;
-    
 
     setImagePreviews((prev) => ({
       ...prev,
@@ -445,6 +449,13 @@ const AddEmployee = () => {
   const handleBranchChange = (selectedOption) => {
     formik.setFieldValue(
       "id_branch",
+      selectedOption ? selectedOption.value : ""
+    );
+  };
+
+  const handleCountryChange = (selectedOption) => {
+    formik.setFieldValue(
+      "id_country",
       selectedOption ? selectedOption.value : ""
     );
   };
@@ -581,10 +592,10 @@ const AddEmployee = () => {
             ) : field === "id_country" ? (
               <Select
                 options={country}
-                value={branchData.find(
-                  (option) => option.value === formik.values.id_branch
+                value={country.find(
+                  (option) => option.value === formik.values.id_country
                 )}
-                onChange={handleBranchChange}
+                onChange={handleCountryChange}
                 onBlur={formik.handleBlur}
                 placeholder="Select Country"
                 styles={customStyles(true)}
@@ -639,7 +650,7 @@ const AddEmployee = () => {
         </p>
       </div>
 
-      <div className="bg-[#FFFFFF] rounded-lg p-6 shadow-sm border">
+      <div className="bg-[#FFFFFF] rounded-xl p-6 shadow-sm border">
         <h2 className="text-lg font-semibold mb-4 border-b pb-4">
           {id ? "Edit Employee" : "Add Employee"}
         </h2>
