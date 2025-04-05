@@ -10,12 +10,14 @@ import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import { openModal } from '../../../../redux/modalSlice';
 import Modal from '../../common/Modal';
+import ModelOne from "../../../components/common/Modelone";
 import { useDispatch, useSelector } from 'react-redux';
 import usePagination from '../../../hooks/usePagination'
 import { useDebounce } from '../../../hooks/useDebounce';
 import { eventEmitter } from '../../../../utils/EventEmitter';
 import Action from '../../common/action'
 import ActiveDropdown from '../../common/ActiveDropdown'
+import GiftPurchaseForm from './GiftPurchaseForm'
 
 
 
@@ -35,6 +37,7 @@ const GiftPurchase = () => {
   const [selectedRow, setSelectedRow] = useState(null)
   const [activeDropdown, setActiveDropdown] = useState(null)
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isviewOpen, setIsviewOpen] = useState(false);
 
   const [from_date, setFromdate] = useState('');
   const [to_date, setTodate] = useState('');
@@ -44,111 +47,24 @@ const GiftPurchase = () => {
   const [totalDocuments, setTotalDocuments] = useState(0)
   const [giftitemfilter, setGiftitem] = useState([]);
   const [activeFilter, setActiveFilter] = useState(null)
+  const [id, setId] = useState("");
 
   const roledata = useSelector((state) => state.clientForm.roledata);
 
   const id_branch = roledata?.branch;
 
-  const [filters, setFilters] = React.useState({
-    from_date: from_date,
-    to_date: to_date,
-    id_branch: id_branch,
-    gift_vendorid: '',
-    id_gift: ''
-  });
 
-
-  const filterInputchange = (e) => {
-    const { name, value } = e.target;
-    setFilters(prev => ({ ...prev, [name]: value }));
-  };
-
-
-
-  const handleReset = () => {
-    setFromdate("");
-    setTodate("");
-    setFilters(prev => ({
-      ...prev,
-      id_branch: id_branch,
-      gift_vendorid: "",
-      id_gift: ""
-    }));
-    SetFiltered(false)
-    toast.success("Filter is cleared");
-    const filterTosend = {
-      page: currentPage,
-      from_date: from_date,
-      to_date: to_date,
-      limit: itemsPerPage,
-      search: debouncedSearch,
-      id_branch: filters.id_branch,
-      gift_vendorid: filters.gift_vendorid,
-      id_gift: filters.id_gift
-    };
-    getgiftinwardMutate(filterTosend);
+  function closeIncommingModal() {
+    setIsviewOpen(false);
   }
 
-
-  const applyfilterdatatable = (e) => {
-    e.preventDefault()
-    const filterTosend = {
-      page: currentPage,
-      from_date: from_date,
-      to_date: to_date,
-      limit: itemsPerPage,
-      search: debouncedSearch,
-      id_branch: filters.id_branch,
-      gift_vendorid: filters.gift_vendorid,
-      id_gift: filters.id_gift
-    };
-
-
-    setIsFilterOpen(false)
-    SetFiltered(true)
-    getgiftinwardMutate(filterTosend);
-
+ 
+  const handleEdit = (id) => {
+    setIsviewOpen(true);
+    setId(id);
   };
 
-  useEffect(() => {
-    if (isFilterOpen == true) {
-      getallbranchMutate();
-    }
-
-    if (id_branch !== "0") {
-      handleVendorChange(id_branch);
-    }
-
-  }, [isFilterOpen]);
-
-  const { mutate: getallbranchMutate } = useMutation({
-    mutationFn: getallbranch,
-    onSuccess: (response) => {
-      if (response) {
-        setBranch(response.data);
-      }
-    },
-  });
-
-
-  const handleVendorChange = async (selectedBranchId) => {
-
-    if (!selectedBranchId) return;
-    const response = await getgiftvendorbranchById({ "id_branch": selectedBranchId });
-    if (response) {
-      setVendor(response.data);
-    }
-  };
-
-  const handleGiftChange = async (gift_vendorid) => {
-    console.log("GiftVendorId", gift_vendorid)
-    if (!gift_vendorid) return;
-    const response = await getgiftitemvendorById({ "gift_vendorid": gift_vendorid });
-    if (response) {
-      setGiftitem(response.data);
-    }
-  };
-
+  
   //mutation to get scheme type
   const { mutate: getgiftinwardMutate } = useMutation({
     mutationFn: (payload) => getallgiftinwardtable(payload),
@@ -170,13 +86,8 @@ const GiftPurchase = () => {
 
   const filterTosend = {
     page: currentPage,
-    from_date: from_date,
-    to_date: to_date,
     limit: itemsPerPage,
-    search: debouncedSearch,
-    id_branch: filters.id_branch,
-    gift_vendorid: filters.gift_vendorid,
-    id_gift: filters.id_gift
+    search: debouncedSearch
   };
 
 
@@ -185,21 +96,22 @@ const GiftPurchase = () => {
   }, [currentPage, itemsPerPage, debouncedSearch])
 
   const refetchTable = () => {
-    getgiftinwardMutate(filterTosend)
+    setIsviewOpen(false);
+    getgiftinwardMutate( {
+      page: currentPage,
+      limit: itemsPerPage,
+      search: debouncedSearch
+    })
   }
 
-  const handleFilter = () => {
-
-    setIsFilterOpen(true)
-  }
 
   const handleSearch = (e) => {
     setSearch(e.target.value)
   }
 
   const handleClick = (e) => {
+    setIsviewOpen(true);
     e.preventDefault();
-    navigate('/gift/addgiftinwards');
   }
 
   const handleStatusToggle = async (id) => {
@@ -259,7 +171,11 @@ const GiftPurchase = () => {
       if (isLastItemOnPage && isNotFirstPage) {
         setCurrentPage(prev => prev - 1);
       } else {
-        refetchTable()
+        getgiftinwardMutate( {
+          page: currentPage,
+          limit: itemsPerPage,
+          search: debouncedSearch
+        })
       }
       toast.success(response.message);
       eventEmitter.off('CONFIRMATION_SUBMIT');
@@ -270,9 +186,6 @@ const GiftPurchase = () => {
     },
   });
 
-  const handleEdit = (id) => {
-    navigate(`/gift/addgiftinwards/${id}`);
-  };
 
   const handleItemsPerPageChange = (value) => {
     setItemsPerPage(value);
@@ -289,27 +202,8 @@ const GiftPurchase = () => {
   };
 
 
-  const nextPage = () => {
-    setCurrentPage((prevPage) => (prevPage < totalPages ? prevPage + 1 : prevPage));
-  };
-
-  const prevPage = () => {
-    setCurrentPage((prevPage) => (prevPage > 1 ? prevPage - 1 : prevPage));
-  };
 
 
-  const paginationData = { totalItems: totalPages, currentPage: currentPage, itemsPerPage: itemsPerPage, handlePageChange: handlePageChange }
-  const paginationButtons = usePagination(paginationData)
-
-
-  const formatDate = (dateString) => {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
-  };
 
   const columns = [
     {
@@ -428,8 +322,25 @@ const GiftPurchase = () => {
         <div className="bg-white p-3">
           <Table data={giftinward} columns={columns} isLoading={isLoading} currentPage={currentPage} handlePageChange={handlePageChange} itemsPerPage={itemsPerPage} totalItems={totalDocuments} handleItemsPerPageChange={handleItemsPerPageChange} />
         </div>
-      </div>
 
+        <ModelOne
+        title={id ? "Edit GiftPurchase" : "Add GiftPurchase"}
+        extraClassName='p-7 w-[601px] xs:w-[50px] max-h-[90vh] overflow-y-auto'
+        setIsOpen={setIsviewOpen}
+        isOpen={isviewOpen}
+        closeModal={closeIncommingModal}
+      >
+        <GiftPurchaseForm
+          isviewOpen={isviewOpen}
+          setIsviewOpen={setIsviewOpen}
+          id={id}
+          setId={setId}
+          refetchTable={refetchTable}
+        />
+      </ModelOne>
+
+      </div>
+     <Modal/>
     </div>
   )
 }

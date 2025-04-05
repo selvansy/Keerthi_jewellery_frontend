@@ -10,7 +10,6 @@ import CreateDigiGoldScheme from "../chit/components/ourscheme/digiGold/CreateDi
 import GiftVendor from "../chit/components/gift/giftvendor/index";
 import GiftItem from "../chit/components/gift/giftitem/index";
 import GiftInwards from "../chit/components/gift/giftPurchase/GiftPurchase";
-import AddGiftPurchase from "../chit/components/gift/giftPurchase/AddGiftPurchase";
 import Category from "../chit/components/catalog/category/Category";
 import AddCategory from "../chit/components/catalog/category/AddCategory";
 import Product from "../chit/components/catalog/product/Product";

@@ -31,6 +31,7 @@ import ActiveDropdown from "../../common/ActiveDropdown";
 
 
 const Giftvendor = () => {
+  
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
   const navigate = useNavigate();
