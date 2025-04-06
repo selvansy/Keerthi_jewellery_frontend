@@ -163,21 +163,21 @@ const AdvancedSettings = ({ formik, layout_color, installment_type }) => {
         <div className="relative">
           <input
             type="number"
-            name="convenience_fees"
+            name="referralPercentage"
             onWheel={(e) => e.target.blur()}
-            value={formik.values.convenience_fees}
+            value={formik.values.referralPercentage}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-            placeholder="Enter Convenience Fee"
+            placeholder="Enter Referral Percentage"
           />
           <span className="absolute right-0 top-0 w-9 h-full px-3 flex items-center justify-center text-black border-l">
                 %
               </span>
         </div>
-        {formik.touched.convenience_fees && formik.errors.convenience_fees && (
+        {formik.touched.referralPercentage && formik.errors.referralPercentage && (
           <span className="text-red-500 text-sm mt-1">
-            {formik.errors.convenience_fees}
+            {formik.errors.referralPercentage}
           </span>
         )}
       </div>

@@ -109,6 +109,8 @@ import Delist from "../chit/components/ourscheme/delist";
 import MetalRateIndex from "../chit/components/ourscheme/metalrate/MetalRateIndex";
 import GiftPurchase from "../chit/components/gift/giftPurchase/GiftPurchase";
 import GiftPurchaseForm from "../chit/components/gift/giftPurchase/GiftPurchaseForm";
+import ViewScheme from "../chit/components/ourscheme/scheme/ViewScheme";
+
 
 const RouteList = [
 
@@ -139,6 +141,11 @@ const RouteList = [
     name: "Add Scheme",
     path: "/scheme/addscheme/:id",
     element: <Base renderContent={AddScheme} />,
+  },
+  {
+    name: "View Scheme",
+    path: "/scheme/view/:id",
+    element: <Base renderContent={ViewScheme} />,
   },
   {
     name: "Delist",
