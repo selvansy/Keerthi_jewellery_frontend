@@ -28,11 +28,12 @@ import {
 } from "../../../../../components/ui/accordion";
 import MakingChargesForm from "./makingCharge";
 import WastageChargeForm from "./wastageCharge";
+import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
 const AddProduct = () => {
   const roleData = useSelector((state) => state.clientForm.roledata);
   const accessBranch = roleData?.branch;
   const naviagte = useNavigate();
-  const {id}=useParams()
+  const { id } = useParams();
   const [branch, setBranch] = useState(() => (accessBranch === "0" ? [] : {}));
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const [metals, setMetals] = useState([]);
@@ -45,8 +46,9 @@ const AddProduct = () => {
   const [price, setPrice] = useState("");
   const [totalPrice, setTotalPrice] = useState("");
   const [errors, setErrors] = useState({});
-  const [pathUrl,setPathUrl]=useState('')
-  const [isLoading,setIsLoading]=useState(false)
+  const [pathUrl, setPathUrl] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [makingCharge,setMakingCharge]=useState({})
   const [formData, setFormData] = useState({
     product_name: "",
     code: "",
@@ -75,10 +77,11 @@ const AddProduct = () => {
       wastageView: false,
     },
   });
-  
-  useEffect(()=>{
-    getProdcutById(id)
-  },[id])
+
+  useEffect(() => {
+    if (!id) return;
+    getProdcutById(id);
+  }, [id]);
 
   useEffect(() => {
     if (!roleData) return;
@@ -123,22 +126,22 @@ const AddProduct = () => {
   useEffect(() => {
     let makingCharge = 0;
     let wastageCharge = 0;
-  
+
     if (formData.makingCharges.mode === "weight") {
       makingCharge = currentRate * formData.wastageCharges.discountedValue;
     } else {
       makingCharge = Number(formData.makingCharges.discountedValue) || 0;
     }
-  
+
     if (formData.wastageCharges.mode === "weight") {
       wastageCharge = currentRate * formData.wastageCharges.discountedValue;
     } else {
       wastageCharge = Number(formData.wastageCharges.discountedValue) || 0;
     }
-  
+
     let total = price + makingCharge + wastageCharge;
-    let totalWithGST = total + ( formData.gst / 100); 
-  
+    let totalWithGST = total + formData.gst / 100;
+
     setTotalPrice(totalWithGST);
   }, [
     price,
@@ -150,7 +153,6 @@ const AddProduct = () => {
     formData.wastageCharges.mode,
     formData.wastageCharges.discountedValue,
   ]);
-  
 
   const { mutate: getTodayMetalRate } = useMutation({
     mutationFn: ({ id_metal, id_purity, date }) =>
@@ -198,9 +200,10 @@ const AddProduct = () => {
   const { mutate: getProdcutById } = useMutation({
     mutationFn: (id) => productbyid(id),
     onSuccess: (response) => {
+      setMakingCharge(response.data)
       setFormData(response.data);
-      setproductImgPath(response.data.product_image)
-      setPathUrl(response.data.pathurl)
+      setproductImgPath(response.data.product_image);
+      setPathUrl(response.data.pathurl);
     },
     onError: (error) => {
       console.error("Error fetching getProdcutById:", error);
@@ -242,13 +245,13 @@ const AddProduct = () => {
     mutationFn: (formData) => createproduct(formData),
     onSuccess: (response) => {
       if (response.message) {
-        setIsLoading(false)
+        setIsLoading(false);
         toast.success(response.message);
         naviagte("/catalog/product/");
       }
     },
     onError: (error) => {
-      setIsLoading(false)
+      setIsLoading(false);
       toast.error(error.response.data.message);
       console.error("Error fetching product:", error);
     },
@@ -260,10 +263,10 @@ const AddProduct = () => {
         toast.success(response.message);
         naviagte("/catalog/product/");
       }
-      setIsLoading(false)
+      setIsLoading(false);
     },
     onError: (error) => {
-      setIsLoading(false)
+      setIsLoading(false);
       toast.error(error.response.data.message);
       console.error("Error fetching product:", error);
     },
@@ -305,7 +308,6 @@ const AddProduct = () => {
     }));
   };
 
-  
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
     if (product_image.length == 3) {
@@ -316,13 +318,13 @@ const AddProduct = () => {
         (img) => typeof img === "string"
       );
       let totalImages = existingImages.length;
-      
+
       const validFiles = [];
-      
+
       for (const file of files) {
         // Allowed image formats
         const allowedFormats = ["image/jpeg", "image/png", "image/webp"];
-        
+
         if (!allowedFormats.includes(file.type)) {
           toast.error(
             "Invalid image format. Only JPEG, PNG, and WEBP are allowed."
@@ -335,7 +337,7 @@ const AddProduct = () => {
           e.target.value = "";
           return;
         }
-        
+
         if (file.size > 500 * 1024) {
           toast.error(`${file.name} exceeds the 500 KB limit`);
         } else {
@@ -343,19 +345,19 @@ const AddProduct = () => {
           totalImages++; // Increment count only when adding a valid image
         }
       }
-      
-      if (validFiles.length > 0) {        
+
+      if (validFiles.length > 0) {
         setproductImgPath((prevState) => [...prevState, ...validFiles]);
       }
     }
-    
+
     e.target.value = "";
   };
-  
+
   useEffect(() => {
     const newPreviews = product_image.map((img) =>
       typeof img === "string" ? img : URL.createObjectURL(img)
-  );
+    );
     setImagePreviews(newPreviews);
 
     return () => {
@@ -371,7 +373,7 @@ const AddProduct = () => {
     const updatedImages = product_image.filter((_, i) => i !== index);
     setproductImgPath(updatedImages);
   };
-  
+
   const handleMakingCharge = (data) => {
     setFormData((prev) => ({
       ...prev,
@@ -381,7 +383,7 @@ const AddProduct = () => {
       },
     }));
   };
-  
+
   const handleWastageCharge = (data) => {
     setFormData((prev) => ({
       ...prev,
@@ -391,75 +393,82 @@ const AddProduct = () => {
       },
     }));
   };
-  
+
   const validateFormData = () => {
     const errors = {};
-  
+
     if (!formData.product_name.trim()) {
       errors.product_name = "Product name is required.";
     }
-  
+
     if (!formData.code.trim()) {
       errors.code = "Product code is required.";
     }
-  
+
     if (!formData.id_category) {
       errors.id_category = "Category is required.";
     }
-  
+
     if (!formData.id_branch) {
       errors.id_branch = "Branch is required.";
     }
-  
+
     if (!formData.id_metal) {
       errors.id_metal = "Metal type is required.";
     }
-  
+
     if (!formData.id_purity) {
       errors.id_purity = "Purity is required.";
     }
     if (!formData.description) {
       errors.description = "description is required.";
     }
-  
-    if (isNaN(formData.weight) || Number(formData.weight) <=0) {
+
+    if (isNaN(formData.weight) || Number(formData.weight) <= 0) {
       errors.weight = "Weight is required.";
     }
-  
-    if (isNaN(formData.gst) || Number(formData.gst) <=0) {
+
+    if (isNaN(formData.gst) || Number(formData.gst) <= 0) {
       errors.gst = "GST is required.";
     }
     if (!formData.showprice) {
       errors.showprice = "Price Type is required.";
     }
 
-    if(product_image.length==0){
+    if (product_image.length == 0) {
       errors.product_image = "Atleast one image is required";
     }
-    
+
     return errors;
   };
-  
+
   const handleSubmit = () => {
     const validationErrors = validateFormData();
     if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors); 
+      setErrors(validationErrors);
       console.log(errors);
       return;
-      
     }
-    setIsLoading(true)
-    setErrors({}); 
+    setIsLoading(true);
+    setErrors({});
     const formDataToSend = new FormData();
 
     Object.entries(formData).forEach(([key, value]) => {
-      if (key === "wastageCharges[_id]" || key === "makingCharges[_id]" ||key=="_id"||key=="pathurl") {
+      if (
+        key === "wastageCharges[_id]" ||
+        key === "makingCharges[_id]" ||
+        key == "_id" ||
+        key == "pathurl"
+      ) {
         return; // Skip these keys
       }
-    
+
       if (typeof value === "object" && value !== null) {
         Object.entries(value).forEach(([subKey, subValue]) => {
-          if (subKey === "_id" && (key === "wastageCharges" || key === "makingCharges")) {
+          if (
+            subKey === "_id" &&
+            (key === "wastageCharges" || key === "makingCharges")
+          ) {
             return; // Skip subKey "_id" under wastageCharges and makingCharges
           }
           formDataToSend.append(`${key}[${subKey}]`, subValue);
@@ -468,7 +477,7 @@ const AddProduct = () => {
         formDataToSend.append(key, value);
       }
     });
-    
+
     if (product_image && product_image.length > 0) {
       product_image.forEach((image, index) => {
         if (image instanceof File) {
@@ -478,36 +487,37 @@ const AddProduct = () => {
         }
       });
     }
-    if(id){
-      editProduct({formDataToSend,id})
-    }else{
+    if (id) {
+      editProduct({ formDataToSend, id });
+    } else {
       addProduct(formDataToSend);
     }
   };
-  
+
   return (
     <>
-      <div className="flex flex-row justify-between">
-        {id ? (
-          <h2 className="text-2xl text-[#023453] font-bold justify-between">
-            Edit product
-          </h2>
-        ) : (
-          <h2 className="text-2xl text-[#023453] font-bold justify-between">
-            Create product
-          </h2>
-        )}
-      </div>
-      <div className="w-full flex flex-col bg-[#F5F5F5] border-t-2 border-[#023453] mt-3 overflow-y-auto scrollbar-hide h-[calc(100vh-200px)]">
-        <div className="flex flex-col p-4 bg-white relative">
-          <div className="grid grid-rows-2 md:grid-cols-2 gap-5 border-gray-300 mb-5">
-            {accessBranch == "0" ? (
+      <Breadcrumb
+        items={[{ label: "Catelogue" }, { label: "Product", active: true }]}
+      />
+
+      <div className="w-full flex flex-col bg-white mt-3 overflow-y-auto scrollbar-hide rounded-[16px] px-4 border border-[#F2F2F9]">
+        <div className="flex flex-col p-4  relative">
+          <div className="flex items-center gap-4">
+            <h2 className="text-2xl font-bold whitespace-nowrap">
+              {id ? "Edit product" : "Create product"}
+            </h2>
+          </div>
+          <div className="border-b-2 border-[#F2F2F9] w-full py-2"></div>
+
+          <div className="grid grid-rows-2 md:grid-cols-3 gap-5 border-[#F2F2F9] mb-5 mt-2 ">
+            {accessBranch == "0" && branch.length > 0 ? (
               <div>
-                <label className="block text-sm font-medium mb-1 mt-5">
+                <label className="block text-sm  mt-3 font-medium ">
                   Branches <span className="text-red-500">*</span>
                 </label>
                 <Select
-                  styles={customSelectStyles}
+                  className="mt-2"
+                  styles={customSelectStyles(true)}
                   options={branch || []}
                   placeholder="Select Branch"
                   value={branch.find(
@@ -526,7 +536,7 @@ const AddProduct = () => {
               </div>
             ) : (
               <div>
-                <label className="block text-sm text-gray-500 font-medium mb-1 mt-5">
+                <label className="block text-sm text-gray-500 font-medium mb-1 mt-3">
                   Branch <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -543,7 +553,7 @@ const AddProduct = () => {
                 Metal<span className="text-red-400">*</span>
               </label>
               <Select
-                styles={customSelectStyles}
+                styles={customSelectStyles(true)}
                 options={metals}
                 placeholder="Select Metal"
                 value={metals.find(
@@ -559,8 +569,8 @@ const AddProduct = () => {
                 }}
               />
               <span className="text-red-500 text-sm mt-1">
-                  {errors.id_metal}
-                </span>
+                {errors.id_metal}
+              </span>
             </div>
 
             <div className="flex flex-col">
@@ -568,7 +578,7 @@ const AddProduct = () => {
                 Category<span className="text-red-400">*</span>
               </label>
               <Select
-                styles={customSelectStyles}
+                styles={customSelectStyles(metals)}
                 options={category}
                 placeholder={
                   category.length > 0
@@ -592,8 +602,8 @@ const AddProduct = () => {
                 }
               />
               <span className="text-red-500 text-sm mt-1">
-                  {errors.id_category}
-                </span>
+                {errors.id_category}
+              </span>
             </div>
 
             <div className="flex flex-col">
@@ -601,7 +611,7 @@ const AddProduct = () => {
                 purity<span className="text-red-400">*</span>
               </label>
               <Select
-                styles={customSelectStyles}
+                styles={customSelectStyles(metals)}
                 options={purity}
                 placeholder={
                   purity.length > 0 ? "Select purity" : "No purities available"
@@ -622,8 +632,8 @@ const AddProduct = () => {
                 noOptionsMessage={() => "No purities available for this metal"}
               />
               <span className="text-red-500 text-sm mt-1">
-                  {errors.id_purity}
-                </span>
+                {errors.id_purity}
+              </span>
             </div>
 
             <div className="flex flex-col mt-2">
@@ -634,13 +644,13 @@ const AddProduct = () => {
                 name="product_name"
                 type="text"
                 value={formData.product_name}
-                className="border-2 border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                className="border-2 border-[#F2F2F9] rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent h-[42px]"
                 placeholder="Enter Product Name"
                 onChange={handleInputChange}
               />
               <span className="text-red-500 text-sm mt-1">
-                  {errors.product_name}
-                </span>
+                {errors.product_name}
+              </span>
             </div>
 
             <div className="flex flex-col mt-2">
@@ -651,13 +661,11 @@ const AddProduct = () => {
                 name="code"
                 type="text"
                 value={formData.code}
-                className="border-2 border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                className="border-2 border-[#F2F2F9] rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent h-[42px]"
                 placeholder="Enter Product Code"
                 onChange={handleInputChange}
               />
-              <span className="text-red-500 text-sm mt-1">
-                  {errors.code}
-                </span>
+              <span className="text-red-500 text-sm mt-1">{errors.code}</span>
             </div>
 
             <div className="flex flex-col mt-2">
@@ -670,12 +678,13 @@ const AddProduct = () => {
                 name="description"
                 value={formData.description}
                 onChange={handleInputChange}
-                class="border-2 border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent h-[70px] min-h-[70px] max-h-[120px]"
-                placeholder="Write your thoughts here..."
+                className="border-2 border-[#F2F2F9] rounded-[8px] focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent h-[42px] min-h-[42px] max-h-[120px] px-4 pt-[10px] placeholder-gray-400 text-sm"
+                placeholder="Enter product description"
               ></textarea>
+
               <span className="text-red-500 text-sm mt-1">
-                  {errors.description}
-                </span>
+                {errors.description}
+              </span>
             </div>
 
             <div className="flex flex-col">
@@ -683,7 +692,7 @@ const AddProduct = () => {
                 Show Price<span className="text-red-400">*</span>
               </label>
               <Select
-                styles={customSelectStyles}
+                styles={customSelectStyles(true)}
                 options={[
                   { value: true, label: "Show" },
                   { value: false, label: "Hide" },
@@ -708,8 +717,8 @@ const AddProduct = () => {
                 isDisabled={purity.length <= 0}
               />
               <span className="text-red-500 text-sm mt-1">
-                  {errors.showprice}
-                </span>
+                {errors.showprice}
+              </span>
             </div>
             <div className="flex flex-col mt-2">
               <label className="text-gray-700 mb-2 font-medium">
@@ -720,209 +729,218 @@ const AddProduct = () => {
                   name="gst"
                   type="string"
                   value={formData.gst}
-                  className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                  className="border-2 border-[#F2F2F9] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent h-[42px]"
                   placeholder="Enter Here"
                   onChange={handleInputChange}
                   onWheel={(e) => e.target.blur()}
                 />
                 <span
-                  className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
-                  style={{ backgroundColor: layout_color }}
+                  className="absolute right-0 top-0 h-full w-14 flex items-center justify-center border-s-2 border-[#F2F2F9] rounded-r-md"
+                  // style={{ backgroundColor: layout_color }}
                 >
                   %
                 </span>
               </div>
-              <span className="text-red-500 text-sm mt-1">
-                  {errors.gst}
-                </span>
+              <span className="text-red-500 text-sm mt-1">{errors.gst}</span>
             </div>
 
-            <div className="flex flex-col mt-2">
+            <div className="flex flex-col mt-2 ">
               <label className="text-gray-700 mb-2 font-medium">
                 Current Metal Rate<span className="text-red-400">*</span>
               </label>
-              <div className="relative">
+              <div className="flex items-center border-2 border-[#F2F2F9] rounded-[8px] h-[44px]">
+                <div className="h-[44px] border-e-2 border-[#F2F2F9] flex items-center">
+                  <span className="px-[14px] flex items-center justify-center h-full">
+                    ₹
+                  </span>
+                </div>
+
                 <input
                   name="metalrate"
                   type="string"
                   value={currentRate}
-                  className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none  bg-[#ebebeb]"
+                  className="w-full focus:outline-none ml-2"
                   placeholder="Current Metal Rate"
                   readOnly
                 />
-                <span
-                  className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
-                  style={{ backgroundColor: layout_color }}
-                >
-                  INR
-                </span>
               </div>
             </div>
-
             <div className="flex flex-col mt-2">
-              <div>
-                <label className="text-gray-700 mb-2 font-medium">
-                  Weight<span className="text-red-400">*</span>
-                </label>
-                <div className="relative">
-                  <input
-                    name="weight"
-                    type="string"
-                    value={formData.weight}
-                    className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                    placeholder="Enter Here"
-                    onChange={handleInputChange}
-                    onWheel={(e) => e.target.blur()}
-                  />
-                  <span
-                    className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
-                    style={{ backgroundColor: layout_color }}
-                  >
-                    GMS
+              <label className="text-gray-700 mb-2 font-medium">
+                Weight<span className="text-red-400">*</span>
+              </label>
+              <div className="flex border-2 border-[#F2F2F9] h-[44px] rounded-[8px]">
+                <input
+                  name="weight"
+                  type="string"
+                  value={formData.weight}
+                  className=" rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent "
+                  placeholder="Enter Here"
+                  onChange={handleInputChange}
+                  onWheel={(e) => e.target.blur()}
+                />
+                <div className="h-[43px] border-s-2 border-[#F2F2F9] flex items-center">
+                  <span className="px-[14px] flex items-center justify-center h-full">
+                    g
                   </span>
-                  <span className="text-red-500 text-sm mt-1">
-                  {errors.weight}
-                </span>
-                </div>
-
-                <div className="flex flex-col">
-                  <label className="text-gray-700 mb-2 mt-2 font-medium">
-                    Upload Image<span className="text-red-400">*</span>
-                  </label>
-                  <div className=" gap-4">
-                    {product_image.length < 3 && (
-                      <div className="flex-1">
-                        <label
-                          htmlFor="product_image"
-                          className="flex flex-col justify-center items-center w-full h-20 border-2 border-dashed border-gray-300 text-gray-700 cursor-pointer p-5 text-center"
-                        >
-                          {product_image.length > 0
-                            ? `${product_image.length} file(s) selected`
-                            : "Browse to find or drag image(s) here"}
-                        </label>
-                        <input
-                          onChange={handleImageChange}
-                          className="hidden max-w-[190px]"
-                          name="product_image"
-                          id="product_image"
-                          type="file"
-                          accept="image/*"
-                          multiple
-                        />
-                      </div>
-                    )}
-
-                    {imagePreviews.length > 0 && (
-                      <div className="flex gap-4 flex-wrap mt-5">
-                        {imagePreviews.map((preview, index) => (
-                          <div
-                            key={index}
-                            className="w-32 h-20 border border-gray-300 rounded-md overflow-hidden relative"
-                          >
-                            <button
-                              onClick={() => handleRemoveImage(index)}
-                              className="absolute top-1 right-1 w-5 h-5 flex items-center justify-center bg-red-500 text-white rounded-full hover:bg-red-600"
-                              type="button"
-                            >
-                              ×
-                            </button>
-                            <img
-                              src={preview.startsWith('blob:')?preview:`${pathUrl}${preview}`}
-                              alt="Selected preview"
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
                 </div>
               </div>
-              <span className="text-red-500 text-sm mt-1">
-                  {errors.product_image}
-                </span>
+              <span className="text-red-500 text-sm mt-1">{errors.weight}</span>
             </div>
 
-            <div className="flex flex-col mt-2">
+            <div className="flex flex-col mt-2 ">
               <label className="text-gray-700 mb-2 font-medium">
                 Price<span className="text-red-400">*</span>
               </label>
-              <div className="relative">
+              <div className="flex items-center border-2 border-[#F2F2F9] rounded-[8px] h-[44px] bg-[#F4F4F4]">
+                <div className="h-[44px] border-e-2 border-[#DEDEDE] flex items-center">
+                  <span className="px-[14px] flex items-center justify-center h-full">
+                    ₹
+                  </span>
+                </div>
+
                 <input
+                  name="price"
                   type="string"
                   value={price}
-                  className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none  bg-[#ebebeb]"
-                  placeholder="Enter Here"
+                  className="w-full focus:outline-none ml-2  bg-[#F4F4F4]"
+                  placeholder="Price"
                   readOnly
                 />
-                <span
-                  className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
-                  style={{ backgroundColor: layout_color }}
-                >
-                  INR
-                </span>
               </div>
+            </div>
 
-              <label className="text-gray-700 mb-2 font-medium mt-9">
+            <div className="flex flex-col mt-2 ">
+              <label className="text-gray-700 mb-2 font-medium">
                 Total Price<span className="text-red-400">*</span>
               </label>
-              <div className="relative">
+              <div className="flex items-center border-2 border-[#F2F2F9] rounded-[8px] h-[44px] bg-[#F4F4F4]">
+                <div className="h-[44px] border-e-2 border-[#DEDEDE] flex items-center">
+                  <span className="px-[14px] flex items-center justify-center h-full">
+                    ₹
+                  </span>
+                </div>
+
                 <input
                   type="string"
                   value={totalPrice}
-                  className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none  bg-[#ebebeb]"
+                  className="w-full focus:outline-none ml-2  bg-[#F4F4F4]"
+                  placeholder="Price"
                   readOnly
                 />
-                <span
-                  className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
-                  style={{ backgroundColor: layout_color }}
-                >
-                  INR
-                </span>
               </div>
             </div>
-          </div>
 
-          <Accordion type="multiple" collapsible className="space-y-4">
-            <AccordionItem value="grace" className="border rounded-lg bg-white">
-              <AccordionTrigger className="px-6 py-4">Charges</AccordionTrigger>
-              <AccordionContent value="Charges" className="px-6 py-4">
-                <MakingChargesForm
-                  onChange={handleMakingCharge}
-                  initialState={formData.makingCharges}
-                />
-                <div className="mt-6">
-                  <WastageChargeForm
-                    onChange={handleWastageCharge}
-                    initialState={formData.wastageCharges}
-                    error={errors}
-                  />
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
+            <div className="flex flex-col mt-2 w-full">
+              <label className="text-gray-700 mb-2 font-medium">
+                Upload Image<span className="text-red-400">*</span>{" "}
+                <span className="text-sm font-normal">
+                  (File size must be at least 500KB)
+                </span>
+              </label>
 
-          <div className="bg-white mt-8">
-            <div className="flex justify-end gap-4">
-              <button
-                className="bg-[#E2E8F0] text-black rounded-md p-3 w-full lg:w-20"
-                type="button"
-                onClick={isLoading?undefined:()=>naviagte('/catalog/product')}
-              >
-                Cancel
-              </button>
-              <button
-                className="bg-[#61A375] text-white rounded-md p-2 w-full lg:w-20"
-                type="button"
-                disabled={isLoading}
-                onClick={handleSubmit}
-              >
-                {isLoading?
-              <SpinLoading/>:
-              id ? "Update" : "Submit"
-              }
-              </button>
+              <div className="flex gap-4 items-start">
+                {/* File input box */}
+                {product_image.length < 3 && (
+                  <div className="flex items-center border border-[#F2F2F9] bg-white rounded h-[44px] overflow-hidden relative w-full max-w-xs">
+                    <input
+                      onChange={handleImageChange}
+                      className="w-full h-full opacity-0 absolute top-0 left-0 cursor-pointer"
+                      name="product_image"
+                      id="product_image"
+                      type="file"
+                      accept="image/*"
+                      disabled={product_image.length >= 3}
+                      multiple
+                    />
+
+                    <div className="px-3 text-sm text-gray-500 w-full">
+                      {product_image.length > 0
+                        ? `${product_image.length} file(s) selected`
+                        : "Browse"}
+                    </div>
+
+                    <label
+                      htmlFor="product_image"
+                      className="bg-[#004181] h-full px-4 rounded-[8px] text-white text-sm flex items-center justify-center cursor-pointer whitespace-nowrap"
+                    >
+                      Choose File
+                    </label>
+                  </div>
+                )}
+
+                {/* Multiple image previews */}
+                {imagePreviews.length > 0 && (
+                  <div className="flex gap-2  ">
+                    {imagePreviews.map((preview, index) => (
+                      <div
+                        key={index}
+                        className="w-16 h-16 border border-[#F2F2F9] rounded-md overflow-hidden relative shrink-0"
+                      >
+                        <button
+                          onClick={() => handleRemoveImage(index)}
+                          className="absolute top-1 right-1 w-4 h-4 flex items-center justify-center bg-red-500 text-white text-xs rounded-full hover:bg-red-600 z-10"
+                          type="button"
+                        >
+                          ×
+                        </button>
+                        <img
+                          src={
+                            preview.startsWith("blob:")
+                              ? preview
+                              : `${pathUrl}${preview}`
+                          }
+                          alt="Preview"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {errors.product_image && (
+                <span className="text-red-500 text-sm mt-1">
+                  {errors.product_image}
+                </span>
+              )}
             </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white mt-6 px-4 p-3 rounded-[16px] border border-[#F2F2F9]">
+        <MakingChargesForm
+          onChange={handleMakingCharge}
+          initialState={formData.makingCharges}
+        />
+        <div className="mt-6">
+          <WastageChargeForm
+            onChange={handleWastageCharge}
+            initialState={formData.wastageCharges}
+            error={errors}
+          />
+        </div>
+
+        <div className="bg-white mt-8">
+          <div className="flex justify-end gap-4">
+            <button
+              className="bg-[#E2E8F0] text-black rounded-md p-3 w-full lg:w-20"
+              type="button"
+              onClick={
+                isLoading ? undefined : () => naviagte("/catalog/product")
+              }
+            >
+              Cancel
+            </button>
+            <button
+              className="bg-[#004181] text-white rounded-md p-2 w-full lg:w-20"
+              type="button"
+              disabled={isLoading}
+              onClick={handleSubmit}
+            >
+              {isLoading ? <SpinLoading /> : id ? "Update" : "Submit"}
+            </button>
           </div>
         </div>
       </div>

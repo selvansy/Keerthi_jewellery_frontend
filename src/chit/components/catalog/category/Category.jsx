@@ -54,6 +54,7 @@ const Category = () => {
 
   const [id, setId] = useState();
   const [isviewOpen, setIsviewOpen] = useState(false);
+  const [activeFilter, setActiveFilter] = useState(null)
 
   function closeIncommingModal() {
     setIsviewOpen(false);
@@ -91,14 +92,16 @@ const Category = () => {
   const paginationButtons = usePagination(paginationData);
 
   useEffect(() => {
+   
     getCategory({
       search: debouncedSearch,
       page: currentPage,
       limit: itemsPerPage,
       from_date,
       to_date,
+      active:activeFilter??""
     });
-  }, [currentPage, itemsPerPage, debouncedSearch, isviewOpen]);
+  }, [currentPage, itemsPerPage, debouncedSearch, isviewOpen,activeFilter]);
 
   useEffect(() => {
     const handleDelete = (id) => {
@@ -141,6 +144,7 @@ const Category = () => {
         search: debouncedSearch,
         page: currentPage,
         limit: itemsPerPage,
+        active:activeFilter
       });
 
       setDeleteId(null);
@@ -195,6 +199,7 @@ const Category = () => {
         search: debouncedSearch,
         page: currentPage,
         limit: itemsPerPage,
+        active:activeFilter
       });
       toast.success(response.message);
     }
@@ -288,6 +293,7 @@ const Category = () => {
       />
 
       <div className="flex flex-col p-4  bg-white border border-[#F2F2F9]  rounded-[16px]">
+
         <div className="flex flex-col gap-4 mt-4 sm:flex-row sm:justify-between sm:items-center">
           {/* Search Input - Full width on mobile, moves to right side on desktop */}
           <div className="relative w-full  sm:mb-0 sm:order-2 sm:w-auto">
@@ -312,7 +318,7 @@ const Category = () => {
           <div className="flex flex-row w-full sm:order-1 sm:w-auto sm:mr-auto">
             {/* ActiveDropdown - half width on mobile */}
             <div className="w-1/2 sm:w-auto me-1">
-              <ActiveDropdown />
+              <ActiveDropdown setActiveFilter={setActiveFilter} />
             </div>
 
             {/* Button - half width on mobile, moves to right on desktop */}

@@ -124,6 +124,7 @@ const TicketSubmissionForm = ({ isOpen, onClose }) => {
               onChange={(e) => setCategory(e.target.value)}
             >
               <option value="Other">Other</option>
+              <option value="Other">Other</option>
             </select>
           </div>
 
@@ -191,15 +192,15 @@ const TicketSubmissionForm = ({ isOpen, onClose }) => {
         </div>
 
         <div className="p-4 border-t mt-auto">
-          <div className="flex justify-end space-x-2">
+          <div className="flex justify-end space-x-2 rounded-[8px]">
             <button
-              className="px-4 py-1.5 border border-gray-300 rounded text-sm"
+              className="px-4 py-1.5 border border-[#F6F7F9] rounded text-sm bg-[#F6F7F9]"
               onClick={onClose}
             >
               Clear
             </button>
             <button
-              className="px-4 py-1.5 bg-blue-600 text-white rounded text-sm"
+              className="px-4 py-1.5 bg-[#004181] text-white rounded text-sm"
               onClick={handleSubmit}
               disabled={loading}
             >
