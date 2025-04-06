@@ -119,8 +119,9 @@ const CreateDigiGoldScheme = () => {
       sell_gst: "",
       max_amount: "",
       min_amount: "",
-      scheme_type: silver ? 11 : 10,
+      scheme_type: 10,
       noOfDays: null,
+      maxLimit:null,
     },
     validationSchema: Yup.object({
       scheme_name: Yup.string().required("Scheme name is required"),
@@ -181,13 +182,51 @@ const CreateDigiGoldScheme = () => {
       max_amount: Yup.number().required("Max Amount is required"),
       min_amount: Yup.number().required("Min Amount is required"),
       scheme_type: Yup.number().required("Scheme type is required"),
+      noOfDays:Yup.number().required("Maturity days required")
     }),
-    context: { isBonus }, // Pass the isBonus state to the validation schema
+    context: { isBonus }, 
     onSubmit: (values) => {
+      const formData = new FormData();
+    
+      // Append all form values except files
+      Object.keys(values).forEach((key) => {
+        // Skip arrays and objects - handle them specially if needed
+        if (typeof values[key] !== 'object' || values[key] === null) {
+          formData.append(key, values[key]);
+        } else if (Array.isArray(values[key])) {
+          // Handle arrays (like values and bonuses)
+          values[key].forEach((item, index) => {
+            if (typeof item === 'object') {
+              // Handle object items in array (like values array)
+              Object.keys(item).forEach(subKey => {
+                formData.append(`${key}[${index}].${subKey}`, item[subKey]);
+              });
+            } else {
+              // Handle primitive items in array (like bonuses array)
+              formData.append(`${key}[${index}]`, item);
+            }
+          });
+        }
+      });
+    
+      // Properly handle image files
+      if (mainImage instanceof File) {
+        formData.append("logo", mainImage);
+      } else if (typeof mainImage === 'string' && !id) {
+        // If it's a string (existing image path) and we're creating new, we need the file
+        // You might need to fetch the file or handle this case differently
+      }
+    
+      if (descriptionImage instanceof File) {
+        formData.append("desc_img", descriptionImage);
+      } else if (typeof descriptionImage === 'string' && !id) {
+        // Same handling as above
+      }
+    
       if (id) {
-        updateSchemeData({ id, values });
+        updateSchemeData({ id, formData });
       } else {
-        addNewScheme(values);
+        addNewScheme(formData); // Make sure you're passing formData, not values
       }
     },
   });
@@ -289,7 +328,7 @@ const CreateDigiGoldScheme = () => {
         setPurity(data);
         formik.setFieldValue(
           "id_classification",
-          digigoldData.data.id_classification
+          digigoldData.data.classification
         );
       } else {
         setStaticData(digigoldData.data);
@@ -301,7 +340,7 @@ const CreateDigiGoldScheme = () => {
         setPurity(data);
         formik.setFieldValue(
           "id_classification",
-          digigoldData.data.id_classification
+          digigoldData.data.classification
         );
       }
     }
@@ -314,9 +353,9 @@ const CreateDigiGoldScheme = () => {
       description: schemeData?.data?.description || "",
       term_desc: schemeData?.data?.term_desc || "",
       id_branch: schemeData?.data?.id_branch || "",
-      id_metal: schemeData?.data?.id_metal || "",
-      id_purity: schemeData?.data?._id || "",
-      id_classification: schemeData?.data?.id_classification._id,
+      id_metal: schemeData?.data?.id_metal._id || "",
+      id_purity: schemeData?.data?.id_purity._id || "",
+      id_classification: schemeData?.data?.id_classification,
       bonus_type: schemeData?.data?.bonus_type || 0,
       count: schemeData?.data?.count || "",
       entry_type: schemeData?.data?.entry_type || 0,
@@ -326,11 +365,21 @@ const CreateDigiGoldScheme = () => {
       sell_gst: schemeData?.data?.sell_gst || "",
       max_amount: schemeData?.data?.max_amount || "",
       min_amount: schemeData?.data?.min_amount || "",
-      scheme_type: schemeData?.data?.scheme_type,
-      noOfDays: schemeData?.data?.noOfDays,
+      scheme_type: schemeData?.data?.scheme_type ?? (silver ? 11 : 10),
+      noOfDays: schemeData?.data?.noOfDays || "",
+      maxLimit: schemeData?.data?.maxLimit || 0
     });
     if (schemeData?.data?.bonus_type) {
       setBonus(true);
+    }
+    if (schemeData?.data?.logo) {
+      setMainImage(schemeData?.data?.logo);
+    }
+    if (schemeData?.data?.desc_img) {
+      setDescriptionImage(schemeData?.data?.desc_img);
+    }
+    if (schemeData?.data?.pathUrl) {
+      setPathUrl(schemeData?.data?.pathUrl);
     }
   }, [schemeData]);
 
@@ -342,6 +391,9 @@ const CreateDigiGoldScheme = () => {
     }
   };
 
+  console.log(schemeData)
+  console.log(formik.values)
+  console.log(formik.errors)
   // Function to generate dynamic fields
   // const generateFields = () => {
   //   const count = formik.values.count;
@@ -530,6 +582,10 @@ const CreateDigiGoldScheme = () => {
           <label className="block text-sm font-medium mb-1">
             Bonus {i + 1} (%) <span className="text-red-400">*</span>
           </label>
+          <div className="relative">
+          <span className="absolute right-0 top-0 w-9 h-full px-3 flex items-center justify-center text-black border-l">
+                %
+              </span>
           <input
             type="number"
             name={`bonuses[${i}]`}
@@ -540,6 +596,7 @@ const CreateDigiGoldScheme = () => {
             placeholder="Enter bonus"
             className="w-full border rounded-md px-3 py-2"
           />
+          </div>
           {formik.touched.bonuses?.[i] && formik.errors.bonuses?.[i] ? (
             <div className="text-red-500 text-sm mt-1">
               {formik.errors.bonuses[i]}
@@ -823,7 +880,7 @@ const CreateDigiGoldScheme = () => {
                 onWheel={(e) => e.target.blur()}
                 onBlur={formik.handleBlur}
                 className="border-2 border-[#f2f3f8] rounded-md p-2 w-full text-start focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                placeholder="Enter max amount"
+                placeholder="Enter no of days"
                 style={{ height: inputHeight }}
               />
             </div>
