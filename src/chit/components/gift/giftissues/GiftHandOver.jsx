@@ -7,13 +7,13 @@ import { giftaccountcount,  giftissuesdatatable } from '../../../api/Endpoints'
 import "react-datepicker/dist/react-datepicker.css";
 import { useSelector } from 'react-redux'
 import { useDebounce } from '../../../hooks/useDebounce';
-import totalGift from "../../../../../../neehar/src/public/uploads/icons/totalgift.svg"
-import nonchitReceived from "../../../../../../neehar/src/public/uploads/icons/nonchitReceived.svg"
-import chitReceivedGift from "../../../../../../neehar/src/public/uploads/icons/chitReceivedGift.svg"
-import totalbal from "../../../../../../neehar/src/public/uploads/icons/totalbal.svg"
+import totalGift from "../../../../../src/assets/icons/totalgift.svg"
+import nonchitReceived from "../../../../../src/assets/icons/nonchitReceived.svg"
+import chitReceivedGift from "../../../../../src/assets/icons/chitReceivedGift.svg"
+import totalbal from "../../../../../src/assets/icons/totalbal.svg"
 import { Breadcrumb } from '../../common/breadCumbs/breadCumbs';
 
-
+// \src\assets\totalbal.svg
 const GiftIssued = () => {
 
   const navigate = useNavigate()
