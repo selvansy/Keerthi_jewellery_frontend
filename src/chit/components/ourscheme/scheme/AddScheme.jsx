@@ -602,6 +602,7 @@ const SchemeForm = () => {
   };
 
   const handleAmountSelect = (index) => {
+    console.log(index)
     setSelectedAmount(index);
     setEditAmount(amounts[index]);
   };
@@ -663,19 +664,19 @@ const SchemeForm = () => {
     return schemeTypeData;
   }, [schemeTypeData, formik.values.classType, selectedClass]);
 
+  const handleRemoveAmount = (index) => {
+    const updatedAmounts = amounts.filter((_, i) => i !== index);
+    setAmounts(updatedAmounts);
+    formik.setFieldValue("totalCountAmount", updatedAmounts.length);
+    setSelectedAmount("");
+    setEditAmount("");
+  };
+
   const handleReset = () => {
     if (selectedAmount && editAmount) {
-      const handleRemoveAmount = (index) => {
-        const updatedAmounts = amounts.filter((_, i) => i !== index);
-        setAmounts(updatedAmounts);
-        formik.setFieldValue("totalCountAmount", updatedAmounts.length);
-        setSelectedAmount("");
-        setEditAmount("");
-      };
       handleRemoveAmount(selectedAmount);
     } else {
       setAmounts([]);
-
       formik.setFieldValue("totalCountAmount", "");
       formik.setFieldValue("incrementRate", "");
       formik.setFieldValue("startingAmount", "");
@@ -1215,7 +1216,7 @@ const SchemeForm = () => {
                     className={isEditMode ? "text-gray-400" : ""}
                   />
                 </button>
-                {/* <button
+                <button
                   type="button"
                   className="p-2 hover:bg-gray-100 rounded-md"
                   onClick={handleReset}
@@ -1225,7 +1226,7 @@ const SchemeForm = () => {
                     size={20}
                     className={isEditMode ? "text-gray-400" : ""}
                   />
-                </button> */}
+                </button>
               </div>
             </div>
             <div className="flex flex-row justify-start">
