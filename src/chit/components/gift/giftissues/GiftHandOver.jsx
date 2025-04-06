@@ -118,7 +118,7 @@ const GiftIssued = () => {
 
 
 
-  const formatDate = (dateString) => {
+  const format = (dateString) => {
     if (!dateString) return '';
     const date = new Date(dateString);
     const day = String(date.getDate()).padStart(2, '0');
