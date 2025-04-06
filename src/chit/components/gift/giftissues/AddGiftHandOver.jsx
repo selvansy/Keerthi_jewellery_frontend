@@ -384,7 +384,6 @@ const AddGiftIssued = () => {
   };
 
   const handleSubmit = () => {
-
     try {
 
       setLoading(true)

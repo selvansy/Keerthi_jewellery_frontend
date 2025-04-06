@@ -288,6 +288,7 @@ const Category = () => {
       />
 
       <div className="flex flex-col p-4  bg-white border border-[#F2F2F9]  rounded-[16px]">
+        
         <div className="flex flex-col gap-4 mt-4 sm:flex-row sm:justify-between sm:items-center">
           {/* Search Input - Full width on mobile, moves to right side on desktop */}
           <div className="relative w-full  sm:mb-0 sm:order-2 sm:w-auto">

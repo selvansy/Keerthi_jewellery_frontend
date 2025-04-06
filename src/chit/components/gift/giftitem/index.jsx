@@ -42,11 +42,11 @@ const GiftItem = () => {
   const [giftitemData, setgiftitemData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  const [entries, Setentries] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [totalDocuments, setTotalDocuments] = useState(0);
-  const [searchInput, setSearchInput] = useState("");
+  const [searchInput, setSearch] = useState("");
+  const [searchLoading, setSearchLoading] = useState(false);
 
   const debouncedSearch = useDebounce(searchInput, 500);
   const limit = 10;
@@ -91,7 +91,7 @@ const GiftItem = () => {
         setTotalPages(response.totalPages);
         setCurrentPage(response.currentPage);
         setTotalDocuments(response.totalDocument);
-        Setentries(response.totalDocument);
+   
       }
       setisLoading(false);
     },
@@ -206,23 +206,6 @@ const GiftItem = () => {
     setCurrentPage(pageNumber);
   };
 
-  const nextPage = () => {
-    setCurrentPage((prevPage) =>
-      prevPage < totalPages ? prevPage + 1 : prevPage
-    );
-  };
-
-  const prevPage = () => {
-    setCurrentPage((prevPage) => (prevPage > 1 ? prevPage - 1 : prevPage));
-  };
-
-  const paginationData = {
-    totalItems: totalPages,
-    currentPage: currentPage,
-    itemsPerPage: itemsPerPage,
-    handlePageChange: handlePageChange,
-  };
-  const paginationButtons = usePagination(paginationData);
 
   const formatDate = (dateString) => {
     if (!dateString) return "";
@@ -296,7 +279,7 @@ const GiftItem = () => {
   };
 
   const handleSearch = (e) => {
-    setSearchInput(e.target.value);
+    setSearch(e.target.value);
   };
 
   return (
@@ -310,44 +293,58 @@ const GiftItem = () => {
           <h2 className="text-2xl text-gray-900 font-bold">Gift Item</h2>
 
           <div className=" relative shadow-sm rounded-lg overflow-hidden mt-8">
-            <div className="bg-white flex flex-col  items-center gap-4 lg:flex-row md:flex-row lg:justify-between lg:items-center p-2">
-              
-                <div className="mt-4">
-                <ActiveDropdown setActiveFilter={setActiveFilter} />
-                </div>
+          <div className="flex flex-col gap-4 mt-4 sm:flex-row sm:justify-between sm:items-center">
+            {/* Search Input - Full width on mobile, moves to right side on desktop */}
+            <div className="relative w-full sm:mb-0 sm:order-2 sm:w-auto">
+              <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
+                {searchLoading ? (
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
+                ) : (
+                  <Search className="text-black" />
+                )}
+              </div>
+              <input
+                onChange={(e) => {
+                  setSearchLoading(true);
+                  setSearch(e.target.value);
+                }}
+                placeholder="Search"
+                className="px-4 py-2 ps-9 border-2 border-[#F2F2F9] rounded-[8px] w-full sm:w-[228px]"
+              />
+            </div>
 
-                <div className="flex flex-row items-center justify-end gap-4 mt-3">
-                  <div className="flex justify-end">
-                    <div className="relative ">
-                      <input
-                        type="text"
-                        onChange={handleSearch}
-                        className=" border border-gray-300 text-gray-900 text-sm rounded-lg pl-10 pr-10 p-2.5 w-60"
-                        placeholder="Search"
-                      />
-                      <div className="absolute inset-y-0 right-[204px] pl-1 flex items-center pr-3 pointer-events-none">
-                        <svg className="w-4 h-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                          <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
+            {/* Container for ActiveDropdown and Add Category button */}
+            <div className="flex flex-row w-full sm:order-1 sm:w-auto sm:mr-auto md:order-1 md:w-auto md:mr-auto">
+              {/* ActiveDropdown - half width on mobile */}
 
-                  <div className="flex flex-row items-center justify-end relative mr-2">
-                     
-                <button
-                      className="rounded-lg p-8  py-2 text-white text-center whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
+              <div className="w-1/2 sm:w-auto me-1">
+              <ActiveDropdown setActiveFilter={setActiveFilter}/>
+            </div>
+
+              {/* Button - half width on mobile, moves to right on desktop */}
+              <div className="w-1/2 sm:hidden">
+                   <button
+                      className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-full"
                       onClick={handleAddgiftitem}
                       style={{ backgroundColor: layout_color }}
                     >
                       Add Gift Item
                     </button>
-                    <div className="text-white absolute inset-y-0 left-[1px] pl-2 flex items-center pr-8 pointer-events-none">
-                      <Plus size={20} strokeWidth={2.5} />
-                    </div>
-                  </div>
-                </div>
+              </div>
             </div>
+
+            {/* Desktop-only button - appears on the right side */}
+            <div className="hidden sm:block sm:order-3">
+
+             <button
+                     className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-full"
+                      onClick={handleAddgiftitem}
+                      style={{ backgroundColor: layout_color }}
+                    >
+                      Add Gift Item
+                    </button>
+            </div>
+          </div>
             <div className="bg-white p-3">
             <Table
               data={giftitemData}
@@ -361,6 +358,8 @@ const GiftItem = () => {
             />
             </div>
           </div>
+
+          
         
         </>
       )}

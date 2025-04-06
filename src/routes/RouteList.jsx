@@ -111,6 +111,7 @@ import GiftPurchase from "../chit/components/gift/giftPurchase/GiftPurchase";
 import GiftPurchaseForm from "../chit/components/gift/giftPurchase/GiftPurchaseForm";
 import ViewScheme from "../chit/components/ourscheme/scheme/ViewScheme";
 
+import GiftHandOverForm from "../chit/components/gift/giftissues/GiftHandOverForm";
 
 const RouteList = [
 
@@ -426,7 +427,7 @@ const RouteList = [
   {
     name: "Gift Issued Creation",
     path: '/gift/giftissues/creategiftissue',
-    element: <Base renderContent={AddGiftHandOver} />
+    element: <Base renderContent={GiftHandOverForm} />
   },
   {
     name: "Gift Stock Report",
