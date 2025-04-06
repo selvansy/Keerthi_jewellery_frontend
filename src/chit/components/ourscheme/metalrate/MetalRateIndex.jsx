@@ -220,26 +220,29 @@ function MetalRateIndex() {
 
     setFormData((prevData) => {
       const purityItem = purityData.find((item) => item._id === name);
-
       if (!purityItem) return prevData;
 
       const existingIndex = prevData.findIndex(
         (item) => item.purity_id._id === name
       );
-
       if (existingIndex !== -1) {
         const updatedData = [...prevData];
         updatedData[existingIndex].rate = Number(value);
-
         return updatedData;
       } else {
+        console.log( {
+          id_branch: id_branch === "0" ? branchId : branch,
+          purity_id: name,
+          material_type_id: purityItem.id_metal,
+          rate:  Number(value),
+        },)
         return [
           ...prevData,
           {
             id_branch: id_branch === "0" ? branchId : branch,
-            purity_id: name,
-            material_type_id: purityItem.id_metal._id,
-            rate: value,
+            purity_id: purityItem,
+            material_type_id: purityItem.id_metal,
+            rate:  Number(value),
           },
         ];
       }
@@ -263,7 +266,7 @@ function MetalRateIndex() {
     </div>
       <div className="flex flex-col p-4">
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {metalValue?.map((e) => (
+          {metalValue?.slice(0,4).map((e) => (
             <div className="bg-white rounded-[16px] py-2 px-[10px] border border-[#F2F2F9]">
               {/* <div className="flex justify-end">
                 <span className="min-w-[54px] bg-[#DCFDEC] me-2 px-2.5 py-2 font-semibold rounded-[40px] text-[#159B5A] flex items-center">
@@ -323,7 +326,7 @@ function MetalRateIndex() {
                         ) || branch
                       }
                       onChange={handleChange}
-                      customSelectStyles={customSelectStyles}
+                      styles={customSelectStyles(true)}
                       isLoading={loadingbranch}
                       placeholder="Select Branch"
                       className="border-1 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent border-[#F2F2F9]"

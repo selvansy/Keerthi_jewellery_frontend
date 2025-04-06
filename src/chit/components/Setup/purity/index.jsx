@@ -29,31 +29,37 @@ import SpinLoading from "../../common/spinLoading";
 import Action from "../../common/action";
 import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
 
-export const customSelectStyles = {
-  control: (provided) => ({
-    ...provided,
-    minHeight: "50px",
-    height: "50px",
-    borderWidth: "2px",
-    borderColor: "#D1D5DB",
+export const customSelectStyles = (isReadOnly) => ({
+  control: (base, state) => ({
+    ...base,
+    minHeight: "42px",
+    backgroundColor: "white",
+    border: state.isFocused ? "1px solid black" : "2px solid #f2f3f8",
+    boxShadow: state.isFocused ? "0 0 0 1px black" : "none",
+    borderRadius: "0.375rem",
     "&:hover": {
-      borderColor: "#D1D5DB",
+      color: "#e2e8f0",
+    },
+    pointerEvents: !isReadOnly ? "none" : "auto",
+    opacity: !isReadOnly ? 1 : 1,
+  }),
+  indicatorSeparator: () => ({
+    display: "none",
+  }),
+  placeholder: (base) => ({
+    ...base,
+    color: "#858293",
+    fontWeight: "thin",
+    // fontStyle: "bold",
+  }),
+  dropdownIndicator: (provided, state) => ({
+    ...provided,
+    color: "#232323",
+    "&:hover": {
+      color: "#232323",
     },
   }),
-  valueContainer: (provided) => ({
-    ...provided,
-    height: "50px",
-    padding: "0 12px",
-  }),
-  input: (provided) => ({
-    ...provided,
-    margin: "0px",
-  }),
-  indicatorsContainer: (provided) => ({
-    ...provided,
-    height: "50px",
-  }),
-};
+});
 
 const Purity = () => {
   const navigate = useNavigate();
