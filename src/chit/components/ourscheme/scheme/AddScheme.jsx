@@ -42,6 +42,7 @@ const SchemeForm = () => {
   const navigate = useNavigate();
 
   let { id } = useParams();
+
   //reduux
   const roleData = useSelector((state) => state.clientForm.roledata);
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
@@ -109,31 +110,7 @@ const SchemeForm = () => {
       description: "",
       term_desc: "",
       classification_order: "",
-      
-      // buy_gst: "",
-      //customer referral
-      // customer_referral_per: "",
-      // customer_incentive_per: "",
-      // customer_ref_remarks: "",
-      //grce
-      // grace_type: "",
-      // grace_period: "",
-      // grace_fine_amount: false,
-      // grace_fine: 0,
-      
-      // start: "",
-      // fixed_amounts: "",
-      //agent referral
-      // agent_referral_percentage: "",
-      // agent_incentive: "",
-      // agent_restriction: false,
-      // agent_remark: "",
-      // agent_target_per: "",
-      // agent_partial_per: "",
-      // buygsttype: "",
-      // fine_amount: 0,
-      // cumulative_fine_amount: "",
-      
+    
       wastagetype: "", // no need to pass
       
       // AdvancedSettings fields
@@ -142,6 +119,7 @@ const SchemeForm = () => {
       paid_installment: "",
       limit_customer: "",
       gift_minimum_paid_installment: "",
+      referralPercentage:"",
 
       //gift
       gift_type: 1,
@@ -216,6 +194,16 @@ const SchemeForm = () => {
       }
     },
   });
+
+  useEffect(() => {
+    if (!id) {
+      formik.resetForm();
+      setAmounts([]);
+      setMainImage(null);
+      setDescriptionImage(null);
+      setSelectedClass(null);
+    }
+  }, [id]);
 
   // Customisations for react-select
   const customStyles = (isReadOnly) => ({
@@ -370,8 +358,6 @@ const SchemeForm = () => {
         max_amount: schemeData.data.max_amount || 0,
         min_weight: schemeData.data.min_weight || 0,
         max_weight: schemeData.data.max_weight || 0,
-        // buy_gst: schemeData.data.buy_gst || 0,
-        // buygsttype: schemeData?.data?.buygsttype || 1,
         wastagebenefit: schemeData.data.wastagebenefit || "",
         total_installments: schemeData.data.total_installments || "",
         benefit_making: schemeData.data.makingcharge || "",
@@ -467,14 +453,6 @@ const SchemeForm = () => {
       }));
       setFundType(fund_data);
     }
-
-    // if (buy_gst?.data) {
-    //   const buy_gst_data = buy_gst.data.map((item) => ({
-    //     value: item.id,
-    //     label: item.name,
-    //   }));
-    //   setBuyGst(buy_gst_data);
-    // }
 
     if (wastage_type?.data) {
       const wastage_data = wastage_type.data.map((item) => ({
@@ -624,6 +602,7 @@ const SchemeForm = () => {
   };
 
   const handleAmountSelect = (index) => {
+    console.log(index)
     setSelectedAmount(index);
     setEditAmount(amounts[index]);
   };
@@ -685,19 +664,19 @@ const SchemeForm = () => {
     return schemeTypeData;
   }, [schemeTypeData, formik.values.classType, selectedClass]);
 
+  const handleRemoveAmount = (index) => {
+    const updatedAmounts = amounts.filter((_, i) => i !== index);
+    setAmounts(updatedAmounts);
+    formik.setFieldValue("totalCountAmount", updatedAmounts.length);
+    setSelectedAmount("");
+    setEditAmount("");
+  };
+
   const handleReset = () => {
     if (selectedAmount && editAmount) {
-      const handleRemoveAmount = (index) => {
-        const updatedAmounts = amounts.filter((_, i) => i !== index);
-        setAmounts(updatedAmounts);
-        formik.setFieldValue("totalCountAmount", updatedAmounts.length);
-        setSelectedAmount("");
-        setEditAmount("");
-      };
       handleRemoveAmount(selectedAmount);
     } else {
       setAmounts([]);
-
       formik.setFieldValue("totalCountAmount", "");
       formik.setFieldValue("incrementRate", "");
       formik.setFieldValue("startingAmount", "");
@@ -780,7 +759,7 @@ const SchemeForm = () => {
                 Branches <span className="text-red-500">*</span>
               </label>
               <Select
-                styles={customStyles}
+                styles={customStyles(true)}
                 isClearable={true}
                 options={branch}
                 placeholder="Select Branch"
@@ -1237,7 +1216,7 @@ const SchemeForm = () => {
                     className={isEditMode ? "text-gray-400" : ""}
                   />
                 </button>
-                {/* <button
+                <button
                   type="button"
                   className="p-2 hover:bg-gray-100 rounded-md"
                   onClick={handleReset}
@@ -1247,7 +1226,7 @@ const SchemeForm = () => {
                     size={20}
                     className={isEditMode ? "text-gray-400" : ""}
                   />
-                </button> */}
+                </button>
               </div>
             </div>
             <div className="flex flex-row justify-start">
