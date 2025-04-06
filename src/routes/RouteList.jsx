@@ -109,6 +109,7 @@ import Delist from "../chit/components/ourscheme/delist";
 import MetalRateIndex from "../chit/components/ourscheme/metalrate/MetalRateIndex";
 import GiftPurchase from "../chit/components/gift/giftPurchase/GiftPurchase";
 import GiftPurchaseForm from "../chit/components/gift/giftPurchase/GiftPurchaseForm";
+import GiftHandOverForm from "../chit/components/gift/giftissues/GiftHandOverForm";
 
 const RouteList = [
 
@@ -419,7 +420,7 @@ const RouteList = [
   {
     name: "Gift Issued Creation",
     path: '/gift/giftissues/creategiftissue',
-    element: <Base renderContent={AddGiftHandOver} />
+    element: <Base renderContent={GiftHandOverForm} />
   },
   {
     name: "Gift Stock Report",

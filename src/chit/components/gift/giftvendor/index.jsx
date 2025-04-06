@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Table from "../../common/Table";
-import { Search, Plus } from "lucide-react";
+import { Search} from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   getallgiftvendor,
@@ -31,7 +31,7 @@ import ActiveDropdown from "../../common/ActiveDropdown";
 
 
 const Giftvendor = () => {
-  
+
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
   const navigate = useNavigate();
@@ -50,12 +50,13 @@ const Giftvendor = () => {
   const [isLoading, setisLoading] = useState(true);
   const [id, setId] = useState("");
   const [totalDocuments, setTotalDocuments] = useState(0);
+  const [searchLoading, setSearchLoading] = useState(false);
 
   function closeIncommingModal() {
     setIsviewOpen(false);
   }
 
-  const [searchInput, setSearchInput] = useState("");
+  const [searchInput, setSearch] = useState("");
   const debouncedSearch = useDebounce(searchInput, 500);
 
 
@@ -79,7 +80,8 @@ const Giftvendor = () => {
     getAllgiftvendorsMutate({
       search: debouncedSearch,
       page: currentPage,
-      limit: itemsPerPage
+      limit: itemsPerPage,
+      active:activeFilter
     });
   };
 
@@ -92,11 +94,13 @@ const Giftvendor = () => {
         setCurrentPage(response.currentPage);
         setTotalDocuments(response.totalDocument);
         Setentries(response.totalDocument);
+        setSearchLoading(false)
       }
       setisLoading(false);
     },
     onError: () => {
       setgiftvendorData([]);
+      setSearchLoading(false)
       setisLoading(false);
     },
   });
@@ -161,6 +165,7 @@ const Giftvendor = () => {
             search: debouncedSearch,
             page: currentPage,
             limit: itemsPerPage,
+            active:activeFilter
           });
         }
       }
@@ -274,10 +279,8 @@ const Giftvendor = () => {
     },
   ];
 
-  const handleSearch = (e) => {
-    setSearchInput(e.target.value);
-  };
-  
+ 
+
   const hanldeActiveDropDown = (data) => {
     setActiveDropdown(data);
   };
@@ -293,50 +296,60 @@ const Giftvendor = () => {
           <h2 className="text-2xl text-gray-900 font-bold">Gift Vendor</h2>
           <div className="relative shadow-sm rounded-lg overflow-hidden mt-8">
 
-            <div className="bg-white p-4 lg:justify-between  grid grid-cols-12 gap-4 items-center">
-
-              {/* Dropdown - full width on small, 3 cols on lg */}
-              <div className=" col-span-12 lg:col-span-4 md:col-span-6">
-                <ActiveDropdown setActiveFilter={setActiveFilter} />
+          <div className="flex flex-col gap-4 mt-4 sm:flex-row sm:justify-between sm:items-center">
+              {/* Search Input - Full width on mobile, moves to right side on desktop */}
+              <div className="relative w-full sm:mb-0 sm:order-2 sm:w-auto">
+                <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
+                  {searchLoading ? (
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
+                  ) : (
+                    <Search className="text-black" />
+                  )}
+                </div>
+                <input
+                  onChange={(e) => {
+                    setSearchLoading(true);
+                    setSearch(e.target.value);
+                  }}
+                  placeholder="Search"
+                  className="px-4 py-2 ps-9 border-2 border-[#F2F2F9] rounded-[8px] w-full sm:w-[228px]"
+                />
               </div>
 
-              {/* Search + Button */}
-              <div className=" col-span-12 lg:col-span-8 md:col-span-6 flex flex-col lg:flex-row justify-end items-center lg:items-center gap-2">
+              {/* Container for ActiveDropdown and Add Category button */}
+              <div className="flex flex-row w-full sm:order-1 sm:w-auto sm:mr-auto md:order-1 md:w-auto md:mr-auto">
+                {/* ActiveDropdown - half width on mobile */}
 
-                {/* Search Input */}
-                <div className="relative w-full lg:w-auto">
-                  <input
-                    type="text"
-                    onChange={handleSearch}
-                    className="w-full min-w-[220px] max-w-[300px] border border-gray-300 text-gray-900 text-sm rounded-lg pl-10 pr-10 p-2.5"
-                    placeholder="Search"
-                  />
-                  <div className="absolute inset-y-0 left-2 flex items-center pointer-events-none">
-                    <svg className="w-4 h-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                      <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
-                    </svg>
-                  </div>
+                <div className="w-1/2 sm:w-auto me-1">
+                  <ActiveDropdown setActiveFilter={setActiveFilter} />
                 </div>
 
-                {/* Add Gift Vendor Button */}
-                <div className="w-full lg:w-auto">
+                {/* Button - half width on mobile, moves to right on desktop */}
+                <div className="w-1/2 sm:hidden">
                   <button
                     type="button"
-                    className="w-full lg:w-[179px] text-[14px] font-medium text-white rounded-lg px-5 py-[12px] inline-flex items-center justify-center"
+                     className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-full"
                     style={{ backgroundColor: layout_color }}
                     onClick={handleAddgiftvendor}
                   >
-                    <Plus size={20} strokeWidth={2.5} className="me-2" />
-                    Add Gift Vendor
+                   + Add Gift Vendor
                   </button>
-                </div>
 
+                </div>
+              </div>
+
+              {/* Desktop-only button - appears on the right side */}
+              <div className="hidden sm:block sm:order-3">
+                <button
+                    type="button"
+                     className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-full"
+                    style={{ backgroundColor: layout_color }}
+                    onClick={handleAddgiftvendor}
+                  >
+                  + Add Gift Vendor
+                  </button>
               </div>
             </div>
-
-
-
-
             <div className="bg-white p-3">
               <Table
                 data={giftvendorData}
@@ -349,6 +362,7 @@ const Giftvendor = () => {
                 handleItemsPerPageChange={handleItemsPerPageChange}
               />
             </div>
+
           </div>
 
 

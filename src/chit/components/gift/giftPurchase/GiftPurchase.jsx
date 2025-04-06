@@ -1,18 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import Table from '../../common/Table'
-import { useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
-import { SlidersHorizontal, Search, Plus } from 'lucide-react'
-import { getgiftvendorbranchById, getgiftitemvendorById, getallbranch, getallgiftinwardtable, changegiftinwardStatus, deletegiftinward } from '../../../api/Endpoints'
+import { Search } from 'lucide-react'
+import {getallgiftinwardtable, changegiftinwardStatus, deletegiftinward } from '../../../api/Endpoints'
 import { toast } from 'react-toastify'
-import { CalendarDays, RefreshCcw } from 'lucide-react'
 import "react-datepicker/dist/react-datepicker.css";
-import DatePicker from "react-datepicker";
 import { openModal } from '../../../../redux/modalSlice';
 import Modal from '../../common/Modal';
 import ModelOne from "../../../components/common/Modelone";
 import { useDispatch, useSelector } from 'react-redux';
-import usePagination from '../../../hooks/usePagination'
 import { useDebounce } from '../../../hooks/useDebounce';
 import { eventEmitter } from '../../../../utils/EventEmitter';
 import Action from '../../common/action'
@@ -25,7 +21,8 @@ const GiftPurchase = () => {
 
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const dispatch = useDispatch();
-  const navigate = useNavigate()
+
+
   const [search, setSearch] = useState('')
   const debouncedSearch = useDebounce(search, 600)
   const [isLoading, setisLoading] = useState(true)
@@ -33,38 +30,29 @@ const GiftPurchase = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [entries, Setentries] = useState(0)
-  const [selectedRow, setSelectedRow] = useState(null)
   const [activeDropdown, setActiveDropdown] = useState(null)
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isviewOpen, setIsviewOpen] = useState(false);
-
-  const [from_date, setFromdate] = useState('');
-  const [to_date, setTodate] = useState('');
-  const [vendorfilter, setVendor] = useState([]);
-  const [branchfilter, setBranch] = useState([]);
-  const [filtered, SetFiltered] = useState(false)
   const [totalDocuments, setTotalDocuments] = useState(0)
-  const [giftitemfilter, setGiftitem] = useState([]);
+  const [searchLoading, setSearchLoading] = useState(false);
   const [activeFilter, setActiveFilter] = useState(null)
+
   const [id, setId] = useState("");
 
   const roledata = useSelector((state) => state.clientForm.roledata);
 
-  const id_branch = roledata?.branch;
 
 
   function closeIncommingModal() {
     setIsviewOpen(false);
   }
 
- 
+
   const handleEdit = (id) => {
     setIsviewOpen(true);
     setId(id);
   };
 
-  
+
   //mutation to get scheme type
   const { mutate: getgiftinwardMutate } = useMutation({
     mutationFn: (payload) => getallgiftinwardtable(payload),
@@ -72,14 +60,14 @@ const GiftPurchase = () => {
       setGiftinward(response.data)
       setTotalPages(response.totalPages)
       setCurrentPage(response.currentPage)
-      Setentries(response.totalDocument)
       setisLoading(false)
       setTotalDocuments(response.totalDocument)
-      SetFiltered(false)
+      setSearchLoading(false)
+
     },
     onError: (error) => {
       console.error('Error:', error);
-      SetFiltered(false)
+      setSearchLoading(false)
       setisLoading(false)
     }
   });
@@ -87,27 +75,25 @@ const GiftPurchase = () => {
   const filterTosend = {
     page: currentPage,
     limit: itemsPerPage,
-    search: debouncedSearch
+    search: debouncedSearch,
+    active:activeFilter
   };
 
 
   useEffect(() => {
     getgiftinwardMutate(filterTosend)
-  }, [currentPage, itemsPerPage, debouncedSearch])
+  }, [currentPage, itemsPerPage, debouncedSearch,activeFilter])
 
   const refetchTable = () => {
     setIsviewOpen(false);
-    getgiftinwardMutate( {
+    getgiftinwardMutate({
       page: currentPage,
       limit: itemsPerPage,
-      search: debouncedSearch
+      search: debouncedSearch,
+      active:activeFilter
     })
   }
 
-
-  const handleSearch = (e) => {
-    setSearch(e.target.value)
-  }
 
   const handleClick = (e) => {
     setIsviewOpen(true);
@@ -118,7 +104,7 @@ const GiftPurchase = () => {
     let response = await changegiftinwardStatus(id);
     if (response) {
       toast.success(response.message);
-      getgiftinwardMutate({ page: currentPage, limit: itemsPerPage, search: debouncedSearch })
+      getgiftinwardMutate({ page: currentPage, limit: itemsPerPage, search: debouncedSearch,active:activeFilter })
     }
   };
 
@@ -171,10 +157,11 @@ const GiftPurchase = () => {
       if (isLastItemOnPage && isNotFirstPage) {
         setCurrentPage(prev => prev - 1);
       } else {
-        getgiftinwardMutate( {
+        getgiftinwardMutate({
           page: currentPage,
           limit: itemsPerPage,
-          search: debouncedSearch
+          search: debouncedSearch,
+          active:activeFilter
         })
       }
       toast.success(response.message);
@@ -202,6 +189,14 @@ const GiftPurchase = () => {
   };
 
 
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
 
 
 
@@ -247,6 +242,14 @@ const GiftPurchase = () => {
       cell: (row) => row?.price
     },
     {
+      header: "Sell price",
+      cell: (row) => row?.cus_sellprice
+    },
+    {
+      header: "Created Date",
+      cell: (row) =>formatDate(row?.gift_vendorid?.createdAt)
+    },
+    {
       header: 'Active',
       accessor: 'active',
       cell: (row) => (
@@ -259,8 +262,8 @@ const GiftPurchase = () => {
           />
           <div
             className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-[#E7EEF5] p-[2px] after:duration-300 after:bg-[#004181] ${row?.active === true
-                ? "peer-checked:bg-[#E7EEF5] peer-checked:ring-[#E7EEF5]"
-                : "peer-checked:bg-[#E7EEF5] peer-checked:ring-gray-400"
+              ? "peer-checked:bg-[#E7EEF5] peer-checked:ring-[#E7EEF5]"
+              : "peer-checked:bg-[#E7EEF5] peer-checked:ring-gray-400"
               } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-[${layout_color}] peer-hover:after:scale-95`}          ></div>
         </label>
       )
@@ -281,66 +284,80 @@ const GiftPurchase = () => {
   return (
     <div className="flex flex-col p-4">
       <h2 className="text-2xl text-gray-900 font-bold">Gift Purchase</h2>
-
-      <div className=" relative shadow-sm rounded-lg overflow-hidden mt-8">
-        <div className="bg-white flex flex-col  items-center gap-4 lg:flex-row md:flex-row lg:justify-between lg:items-center p-2">
-
-          <div className="mt-4">
-            <ActiveDropdown setActiveFilter={setActiveFilter} />
+        <div className="flex flex-col gap-4 mt-4 sm:flex-row sm:justify-between sm:items-center">
+          {/* Search Input - Full width on mobile, moves to right side on desktop */}
+          <div className="relative w-full sm:mb-0 sm:order-2 sm:w-auto">
+            <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
+              {searchLoading ? (
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
+              ) : (
+                <Search className="text-black" />
+              )}
+            </div>
+            <input
+              onChange={(e) => {
+                setSearchLoading(true);
+                setSearch(e.target.value);
+              }}
+              placeholder="Search"
+              className="px-4 py-2 ps-9 border-2 border-[#F2F2F9] rounded-[8px] w-full sm:w-[228px]"
+            />
           </div>
 
-          <div className="flex flex-row items-center justify-end gap-4 mt-3">
-            <div className="flex justify-end">
-              <div className="relative ">
-                <input
-                  type="text"
-                  onChange={handleSearch}
-                  className=" border border-gray-300 text-gray-900 text-sm rounded-lg pl-10 pr-10 p-2.5 w-60"
-                  placeholder="Search"
-                />
-                <div className="absolute inset-y-0 right-[204px] pl-1 flex items-center pr-3 pointer-events-none">
-                  <svg className="w-4 h-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
-                  </svg>
-                </div>
-              </div>
+          {/* Container for ActiveDropdown and Add Category button */}
+          <div className="flex flex-row w-full sm:order-1 sm:w-auto sm:mr-auto md:order-1 md:w-auto md:mr-auto">
+            {/* ActiveDropdown - half width on mobile */}
+
+            <div className="w-1/2 sm:w-auto me-1">
+              <ActiveDropdown setActiveFilter={setActiveFilter} />
             </div>
 
-            <div className="flex flex-row items-center justify-end relative mr-2">
-              <button className="rounded-lg p-8  py-2 text-white text-center whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
+            {/* Button - half width on mobile, moves to right on desktop */}
+            <div className="w-1/2 sm:hidden">
 
+              <button className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-full"
                 onClick={handleClick}
                 style={{ backgroundColor: layout_color }} >
                 Add Purchase
               </button>
-              <div className="text-white absolute inset-y-0 left-[1px] pl-2 flex items-center pr-8 pointer-events-none">
-                <Plus size={20} strokeWidth={2.5} />
-              </div>
+
+
             </div>
           </div>
+
+          {/* Desktop-only button - appears on the right side */}
+          <div className="hidden sm:block sm:order-3">
+            <button className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-full"
+
+              onClick={handleClick}
+              style={{ backgroundColor: layout_color }} >
+              Add Purchase
+            </button>
+          </div>
         </div>
+
         <div className="bg-white p-3">
           <Table data={giftinward} columns={columns} isLoading={isLoading} currentPage={currentPage} handlePageChange={handlePageChange} itemsPerPage={itemsPerPage} totalItems={totalDocuments} handleItemsPerPageChange={handleItemsPerPageChange} />
         </div>
 
         <ModelOne
-        title={id ? "Edit GiftPurchase" : "Add GiftPurchase"}
-        extraClassName='p-7 w-[601px] xs:w-[50px] max-h-[90vh] overflow-y-auto'
-        setIsOpen={setIsviewOpen}
-        isOpen={isviewOpen}
-        closeModal={closeIncommingModal}
-      >
-        <GiftPurchaseForm
-          isviewOpen={isviewOpen}
-          setIsviewOpen={setIsviewOpen}
-          id={id}
-          setId={setId}
-          refetchTable={refetchTable}
-        />
-      </ModelOne>
+          title={id ? "Edit GiftPurchase" : "Add GiftPurchase"}
+          extraClassName='p-7 w-[601px] xs:w-[50px] max-h-[90vh] overflow-y-auto'
+          setIsOpen={setIsviewOpen}
+          isOpen={isviewOpen}
+          closeModal={closeIncommingModal}
+        >
+          <GiftPurchaseForm
+            isviewOpen={isviewOpen}
+            setIsviewOpen={setIsviewOpen}
+            id={id}
+            setId={setId}
+            refetchTable={refetchTable}
+          />
+        </ModelOne>
 
-      </div>
-     <Modal/>
+  
+      <Modal />
     </div>
   )
 }
