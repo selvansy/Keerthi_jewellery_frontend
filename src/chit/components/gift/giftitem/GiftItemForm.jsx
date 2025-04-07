@@ -121,13 +121,23 @@ function GiftItemForm({ setIsOpen, isviewOpen, id, setId, refetchTable }) {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value,
-        });
 
+        const newValue = Number(value)
 
-    };
+        if(name === "gift_code"){
+            setFormData(prev=>({
+                ...prev,
+                gift_code:newValue
+            }))
+        }
+    
+            setFormData({
+                ...formData,
+                [name] : value,
+              });
+      
+      };
+      
 
     const handleCancel = () => {
         setFormData({
@@ -135,6 +145,7 @@ function GiftItemForm({ setIsOpen, isviewOpen, id, setId, refetchTable }) {
             gift_image: '',
             gift_vendorid: '',
             id_branch: '',
+            gift_code:""
         });
         setIsOpen(false);
         setId("")
@@ -147,7 +158,7 @@ function GiftItemForm({ setIsOpen, isviewOpen, id, setId, refetchTable }) {
 
         if (Object.keys(validationErrors).length === 0) {
             setIsLoading(true)
-   
+            console.log("formData---",formData)
             if (id) {
                 updategiftitemMutate({ id: id, data: formData });
             } else {
@@ -241,8 +252,15 @@ function GiftItemForm({ setIsOpen, isviewOpen, id, setId, refetchTable }) {
                     <input
                         type="text"
                         name="gift_code"
-                        value={formData.gift_code}
-                        onChange={handleChange}
+                        value={formData?.gift_code}
+                        pattern="[0-9A-Z]*"
+                        onChange={(e) => {
+                            const value = e.target.value.toUpperCase();
+                            if (/^[0-9A-Z]*$/.test(value)) {
+                                handleChange(e);
+                            }
+                        }}
+                      
                         placeholder="Enter gift code"
                         className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />

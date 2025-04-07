@@ -26,10 +26,11 @@ import Loading from "../../common/Loading";
 import usePagination from "../../../hooks/usePagination";
 import Action from "../../common/action";
 import ActiveDropdown from "../../common/ActiveDropdown";
+import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
 
 const GiftItem = () => {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
- 
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -56,15 +57,16 @@ const GiftItem = () => {
       search: debouncedSearch,
       page: currentPage,
       limit: itemsPerPage,
-      active:activeFilter,
+      active: activeFilter,
     });
-  }, [currentPage, debouncedSearch, itemsPerPage,activeFilter]);
+  }, [currentPage, debouncedSearch, itemsPerPage, activeFilter]);
 
   const refetchTable = () => {
     getallgiftitemtableMutate({
       search: debouncedSearch,
       page: currentPage,
       limit: itemsPerPage,
+      active: activeFilter,
     });
   };
 
@@ -91,11 +93,13 @@ const GiftItem = () => {
         setTotalPages(response.totalPages);
         setCurrentPage(response.currentPage);
         setTotalDocuments(response.totalDocument);
-   
+ 
       }
+      setSearchLoading(false);
       setisLoading(false);
     },
     onError: () => {
+      setSearchLoading(false);
       setisLoading(false);
       setgiftitemData([]);
     },
@@ -162,6 +166,7 @@ const GiftItem = () => {
             search: debouncedSearch,
             page: currentPage,
             limit: itemsPerPage,
+            active: activeFilter,
           });
         }
       }
@@ -283,70 +288,69 @@ const GiftItem = () => {
   };
 
   return (
-    <div className="flex flex-col p-4 relative">
-      {isLoading ? (
-        <div className="flex justify-center items-center mt-[150px]">
-          <Loading />
-        </div>
-      ) : (
-        <>
-          <h2 className="text-2xl text-gray-900 font-bold">Gift Item</h2>
+    <>
+      <Breadcrumb
+        items={[{ label: "Gift" }, { label: "GiftItem", active: true }]}
+      />
 
-          <div className=" relative shadow-sm rounded-lg overflow-hidden mt-8">
-          <div className="flex flex-col gap-4 mt-4 sm:flex-row sm:justify-between sm:items-center">
-            {/* Search Input - Full width on mobile, moves to right side on desktop */}
-            <div className="relative w-full sm:mb-0 sm:order-2 sm:w-auto">
-              <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                {searchLoading ? (
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
-                ) : (
-                  <Search className="text-black" />
-                )}
-              </div>
-              <input
-                onChange={(e) => {
-                  setSearchLoading(true);
-                  setSearch(e.target.value);
-                }}
-                placeholder="Search"
-                className="px-4 py-2 ps-9 border-2 border-[#F2F2F9] rounded-[8px] w-full sm:w-[228px]"
-              />
+      <div className="flex flex-col p-4  bg-white border border-[#F2F2F9]  rounded-[16px]">
+
+        <div className="flex flex-col gap-4 mt-4 sm:flex-row sm:justify-between sm:items-center">
+          {/* Search Input - Full width on mobile, moves to right side on desktop */}
+          <div className="relative w-full  sm:mb-0 sm:order-2 sm:w-auto">
+            <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
+              {searchLoading ? (
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
+              ) : (
+                <Search className="text-black" />
+              )}
+            </div>
+            <input
+              onChange={(e) => {
+                setSearchLoading(true);
+                setSearch(e.target.value);
+              }}
+              placeholder="Search"
+              className="px-4 py-2 ps-9 border-2 border-[#F2F2F9] rounded-[8px] w-full sm:w-[228px]"
+            />
+          </div>
+
+          {/* Container for ActiveDropdown and Add Category button */}
+          <div className="flex flex-row w-full sm:order-1 sm:w-auto sm:mr-auto">
+            {/* ActiveDropdown - half width on mobile */}
+            <div className="w-1/2 sm:w-auto me-1">
+              <ActiveDropdown setActiveFilter={setActiveFilter} />
             </div>
 
-            {/* Container for ActiveDropdown and Add Category button */}
-            <div className="flex flex-row w-full sm:order-1 sm:w-auto sm:mr-auto md:order-1 md:w-auto md:mr-auto">
-              {/* ActiveDropdown - half width on mobile */}
+            {/* Button - half width on mobile, moves to right on desktop */}
+            <div className="w-1/2 sm:hidden">
+              <button
+                className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-full"
 
-              <div className="w-1/2 sm:w-auto me-1">
-              <ActiveDropdown setActiveFilter={setActiveFilter}/>
-            </div>
-
-              {/* Button - half width on mobile, moves to right on desktop */}
-              <div className="w-1/2 sm:hidden">
-                   <button
-                      className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-full"
-                      onClick={handleAddgiftitem}
-                      style={{ backgroundColor: layout_color }}
-                    >
-                      Add Gift Item
-                    </button>
-              </div>
-            </div>
-
-            {/* Desktop-only button - appears on the right side */}
-            <div className="hidden sm:block sm:order-3">
-
-             <button
-                     className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-full"
-                      onClick={handleAddgiftitem}
-                      style={{ backgroundColor: layout_color }}
-                    >
-                      Add Gift Item
-                    </button>
+                onClick={handleAddgiftitem}
+                style={{ backgroundColor: layout_color }}
+              >
+                Add Gift Item
+              </button>
             </div>
           </div>
-            <div className="bg-white p-3">
-            <Table
+
+          {/* Desktop-only button - appears on the right side */}
+          <div className="hidden sm:block sm:order-3">
+            <button
+              className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-[135px]"
+              onClick={handleAddgiftitem}
+              style={{ backgroundColor: layout_color }}
+            >
+              Add Gift Item
+            </button>
+          </div>
+        </div>
+
+   
+
+        <div className="mt-4">
+        <Table
               data={giftitemData}
               columns={columns}
               isLoading={isLoading}
@@ -356,14 +360,8 @@ const GiftItem = () => {
               totalItems={totalDocuments}
               handleItemsPerPageChange={handleItemsPerPageChange}
             />
-            </div>
-          </div>
-
-          
-        
-        </>
-      )}
-      <ModelOne
+        </div>
+        <ModelOne
         title={id ? "Edit GiftItem" : "Add GiftItem"}
         extraClassName="w-1/3"
         setIsOpen={setIsviewOpen}
@@ -379,7 +377,8 @@ const GiftItem = () => {
         />
       </ModelOne>
       <Modal />
-    </div>
+      </div>
+    </>
   );
 };
 

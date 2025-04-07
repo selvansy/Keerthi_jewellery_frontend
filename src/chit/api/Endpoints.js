@@ -572,6 +572,15 @@ export const giftaccountcount = async (data) => {
   return response.data;
 };
 
+export const giftIssueBySchId = async (value) => {
+    const {id,data} = value
+  const response = await Api.post(
+    `${import.meta.env.VITE_API_URL}/api/client/giftissues/schemeaccount/${id}`,
+    data
+  );
+  return response.data;
+};
+
 export const getgiftvendorbranchById = async (data) => {
 
   const response = await Api.get(
@@ -1943,11 +1952,11 @@ export const getcustomerschemeaccount = async (data) => {
   return response.data;
 };
 
-export const searchbarcodenumber = async (data) => {
-  const response = await Api.get(
-    `${import.meta.env.VITE_API_URL}/api/client/giftissues/branch/${
-      data.id_branch
-    }/barcode?search=${data.barcode}`
+export const searchGiftCodenumber = async (data) => {
+  console.log("data---",data)
+  const response = await Api.post(
+    `${import.meta.env.VITE_API_URL}/api/client/giftissues/branch/${data.id_branch}/barcode`,
+    data.GiftCode
   );
   return response.data;
 };
@@ -2744,3 +2753,5 @@ export const getDelistedSchemes = async(data)=>{
   const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/scheme/delist`,data)
   return response.data
 }
+
+
