@@ -763,7 +763,7 @@ const Schemeaccount = () => {
 
         </ModelOne>
       )}
-      <Modal />
+      {/* <Modal /> */}
     </div>
   )
 }

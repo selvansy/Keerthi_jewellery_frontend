@@ -172,62 +172,6 @@ const PayableDetails = ({
         </>
       )}
 
-      {/* <div>
-        <label className="block text-sm font-medium mb-1 mt-2">
-          Buy GST Type
-        </label>
-        <Select
-          styles={customStyles}
-          options={gstTypeData}
-          isClearable={true}
-          placeholder="Select gst type"
-          value={
-            gstTypeData?.find(
-              (option) => option.value === formik.values.buygsttype
-            )
-          }
-          onChange={(option) =>
-            formik.setFieldValue("buygsttype", option ? option.value : null)
-          }
-          onBlur={() => formik.setFieldTouched("buygsttype", true)}
-        />
-
-        {formik.touched.buygsttype && formik.errors.buygsttype && (
-          <div className="text-red-500 text-sm mt-1">
-            {formik.errors.buygsttype}
-          </div>
-        )}
-      </div> */}
-      {/* <div className="flex flex-col lg:mt-2">
-        <label className="block text-sm font-medium mb-1">
-          Buy GST <span className="text-red-500">*</span>
-        </label>
-        <div className="relative">
-          <input
-            type="number"
-            name="buy_gst"
-            value={formik.values.buy_gst}
-            onChange={formik.handleChange}
-            onWheel={(e) => e.target.blur()}
-            onBlur={formik.handleBlur}
-            className="w-full border rounded-md px-3 py-2"
-            placeholder="Enter Buy GST"
-            style={{ height: inputHeight }}
-          />
-          <span
-            className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
-            style={{ backgroundColor: layout_color }}
-          >
-            %
-          </span>
-        </div>
-        {formik.touched.buy_gst && formik.errors.buy_gst && (
-          <span className="text-red-500 text-sm mt-1">
-            {formik.errors.buy_gst}
-          </span>
-        )}
-      </div> */}
-
       <div>
         <label className="block text-sm font-medium mb-1 mt-2">
           Benefit Wastage<span className="text-red-500">*</span>
