@@ -773,7 +773,6 @@ export const schemepaymenttodayrate = async (data) => {
 };
 
 export const todaymetalrate = async (data) => {
-  console.log("id----",data.id_branch)
   const response = await Api.get(
     `${import.meta.env.VITE_API_URL}/api/client/metalrate/today-rate/branchId/${data.id_branch}`
   );
@@ -952,7 +951,6 @@ export const offersbyid = async (id) => {
 };
 
 export const createoffers = async (data) => {
-  console.log(data);
   const response = await Api.post(
     `${import.meta.env.VITE_API_URL}/api/client/offer/`,
     data
@@ -961,7 +959,6 @@ export const createoffers = async (data) => {
 };
 
 export const updateoffers = async (data,id) => {
-  console.log(data)
   const response = await Api.patch(
     `${import.meta.env.VITE_API_URL}/api/client/offer/${id}`,
     data
@@ -995,7 +992,6 @@ export const createnewarrivals = async (data) => {
 };
 
 export const updatenewarrivals = async (id, data) => {
-  console.log(data);
   const response = await Api.patch(
     `${import.meta.env.VITE_API_URL}/api/client/newarrivals/${id}`,
     data
@@ -1018,7 +1014,6 @@ export const newarrivalsbyid = async (data) => {
 };
 
 export const deletenewarrivals = async (id) => {
-  console.log(id);
   const response = await Api.delete(
     `${import.meta.env.VITE_API_URL}/api/client/newarrivals/${id}`
   );
@@ -1026,7 +1021,6 @@ export const deletenewarrivals = async (id) => {
 };
 
 export const updateproduct = async (data) => {
-  console.log(data);
   const response = await Api.patch(
     `${import.meta.env.VITE_API_URL}/api/client/product/${data.id}`,
     data.formDataToSend
@@ -1132,7 +1126,6 @@ export const createweddingbirth = async (data) => {
 };
 
 export const getuserpermission = async (data) => {
-  console.log(data);
   const response = await Api.get(
     `${import.meta.env.VITE_API_URL}/api/client/useraccess/permissions/${
       data.id_role
@@ -1142,7 +1135,6 @@ export const getuserpermission = async (data) => {
 };
 
 export const updatemenupermission = async (data) => {
-  console.log(data);
   const response = await Api.patch(
     `${import.meta.env.VITE_API_URL}/api/client/useraccess/${data.id_role}`,
     data
@@ -1279,7 +1271,6 @@ export const getsubmenuById = async (id) => {
 };
 
 export const updatesubmenu = async (id, data) => {
-  console.log(id, data);
   const response = await Api.patch(
     `${import.meta.env.VITE_API_URL}/api/client/submenusetting/${id}`,
     data
@@ -1430,7 +1421,6 @@ export const getuserroleById = async (id) => {
 };
 
 export const updateuserrole = async (id, data) => {
-  console.log(id, data);
 
   const response = await Api.patch(
     `${import.meta.env.VITE_API_URL}/api/client/userrole/${id}`,
@@ -2193,7 +2183,6 @@ export const createcategory = async (data) => {
 };
 
 export const getcategoryTable = async (data) => {
-  console.log(data);
   const response = await Api.post(
     `${import.meta.env.VITE_API_URL}/api/client/category/table`,
     data
@@ -2227,7 +2216,6 @@ export const createproduct = async (data) => {
 
 //Scheme
 export const getSchemeTable = async (data) => {
-  console.log(data)
   const response = await Api.post(
     `${import.meta.env.VITE_API_URL}/api/client/scheme/table`,
     data
@@ -2532,7 +2520,6 @@ export const getCustomerByMobile = async (number) => {
 };
 
 export const getEmployeeByMobile = async (number) => {
-  console.log(number);
   const response = await Api.get(
     `${
       import.meta.env.VITE_API_URL

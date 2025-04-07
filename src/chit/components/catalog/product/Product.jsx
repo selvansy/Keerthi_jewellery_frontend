@@ -17,6 +17,8 @@ import Modal from "../../../components/common/Modal";
 import { useDispatch, useSelector } from "react-redux";
 import { useDebounce } from "../../../hooks/useDebounce";
 import Action from "../../common/action";
+import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
+import ActiveDropdown from "../../common/ActiveDropdown";
 
 const Product = () => {
   const navigate = useNavigate();
@@ -38,6 +40,7 @@ const Product = () => {
   const [searchLoading, setSearchLoading] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [totalDocuments,setTotalDocuments]=useState(0)
+  const [activeFilter,setActiveFilter]=useState(null)
 
   //mutation to get getproductData
   const { mutate: getproductData } = useMutation({
@@ -63,8 +66,9 @@ const Product = () => {
       limit: itemsPerPage,
       search: debouncedSearch,
       id_branch: id_branch,
+      active:activeFilter
     });
-  }, [currentPage, itemsPerPage, debouncedSearch]);
+  }, [currentPage, itemsPerPage, debouncedSearch,activeFilter]);
 
   const handleSearch = (e) => {
     setSearchLoading(true);
@@ -110,33 +114,42 @@ const Product = () => {
     );
   };
 
-  useEffect(() => {
-    eventEmitter.on("CONFIRMATION_SUBMIT", async (data) => {
-      try {
-        let response = await deleteproduct(data.productId);
-        console.log(response);
-        if (response.message == "Product deleted successfully") {
-          toast.success(response.message);
-          setproductData((prev) =>
-            prev.filter((pro) => pro._id !== data.productId)
-          );
-        } else {
-          toast.error(
-            "Something went wrong while deleting the product. Please try again later."
-          );
-        }
-      } catch (error) {
-        toast.error(
-          "Something went wrong while deleting the product. Please try again later."
-        );
 
-        console.error("Error:", error);
-      }
-    });
-    return () => {
-      eventEmitter.off("CONFIRMATION_SUBMIT");
+
+ useEffect(() => {
+    const handleDelete = (id) => {
+      deleteProduct(id);
     };
-  }, [eventEmitter]);
+
+    eventEmitter.on("CONFIRMATION_SUBMIT", handleDelete);
+
+    return () => {
+      eventEmitter.off("CONFIRMATION_SUBMIT", handleDelete);
+    };
+  }, []);
+
+
+    const { mutate: deleteProduct } = useMutation({
+      mutationFn: ({ productId }) => deleteproduct(productId),
+      onSuccess: (response) => {
+        toast.success(response.message);
+        getproductData({
+          search: debouncedSearch,
+          page: currentPage,
+          limit: itemsPerPage,
+        });
+  
+        setDeleteId(null);
+        eventEmitter.off("CONFIRMATION_SUBMIT");
+      },
+      onError: (error) => {
+        setDeleteId(null);
+        eventEmitter.off("CONFIRMATION_SUBMIT");
+      },
+    });
+  
+
+
 
   const handleEdit = (id) => {
     navigate(`/catalog/editproduct/${id}`);
@@ -154,22 +167,34 @@ const Product = () => {
     {
       header: "Metal Name",
       cell: (row) => {
-        return row.id_metal.metal_name;
+        return row.metalName;
       },
     },
     {
       header: "Purity Name",
       cell: (row) => {
-        return row.id_purity.purity_name;
+        return row.purityName;
       },
-    },
-    {
-      header: "Description",
-      cell: (row) => row?.description,
     },
     {
       header: "Weight",
       cell: (row) => row?.weight,
+    },
+    {
+      header: "Branch",
+      cell: (row) => row?.branchName,
+    },
+    {
+      header: "Image",
+      cell: (row) => (
+        <div className="w-12 h-12 rounded overflow-hidden">
+          <img 
+            src={`${row.pathurl}${row.product_image[0]}`} 
+            alt={row?.branchName || "Preview"}
+            className="w-full h-full object-cover"
+          />
+        </div>
+      ),
     },
     {
       header: "Create Date",
@@ -178,10 +203,7 @@ const Product = () => {
         return date.toLocaleDateString("en-GB");
       },
     },
-    {
-      header: "Branch",
-      cell: (row) => row?.id_branch.branch_name,
-    },
+   
     {
       header: "Active",
       accessor: "active",
@@ -226,34 +248,64 @@ const Product = () => {
   };
 
   return (
-    <div className="flex flex-col p-4">
-      <h2 className="text-2xl text-[#023453] font-bold">Product</h2>
-      <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
-        <div className="relative w-full lg:w-1/3 min-w-[200px]">
-          <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-            {searchLoading ? (
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
-            ) : (
-              <Search className="text-gray-500" />
-            )}
+    <>
+    <Breadcrumb items={[
+      {label:"Catelogue"},
+      {label:"Product",active:true}
+    ]} />
+    <div className="flex flex-col p-4 bg-white border border-[#F2F2F9]  rounded-[16px] ">
+
+
+    <div className="flex flex-col gap-4 mt-4 sm:flex-row sm:justify-between sm:items-center">
+          {/* Search Input - Full width on mobile, moves to right side on desktop */}
+          <div className="relative w-full  sm:mb-0 sm:order-2 sm:w-auto">
+            <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
+              {searchLoading ? (
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
+              ) : (
+                <Search className="text-black" />
+              )}
+            </div>
+            <input
+              onChange={handleSearch}
+              placeholder="Search"
+              className="px-4 py-2 ps-9 border-2 border-[#F2F2F9] rounded-[8px] w-full sm:w-[228px]"
+            />
           </div>
-          <input
-            placeholder="Search..."
-            className="p-3 pl-10 pr-3 border-2 bg-[#F5F5F5] border-gray-500 rounded-md w-full"
-            onChange={handleSearch}
-          />
+
+          {/* Container for ActiveDropdown and Add Category button */}
+          <div className="flex flex-row w-full sm:order-1 sm:w-auto sm:mr-auto">
+            {/* ActiveDropdown - half width on mobile */}
+            <div className="w-1/2 sm:w-auto me-1">
+              <ActiveDropdown setActiveFilter={setActiveFilter}/>
+            </div>
+
+            {/* Button - half width on mobile, moves to right on desktop */}
+            <div className="w-1/2 sm:hidden">
+              <button
+                className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-full"
+                onClick={handleClick}
+                style={{ backgroundColor: layout_color }}
+              >
+                + Add Category
+              </button>
+            </div>
+          </div>
+
+          {/* Desktop-only button - appears on the right side */}
+          <div className="hidden sm:block sm:order-3">
+            <button
+              className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-[135px]"
+              onClick={handleClick}
+              style={{ backgroundColor: layout_color }}
+            >
+              + Add Category
+            </button>
+          </div>
         </div>
-        <div className="flex flex-row items-center justify-end gap-2">
-          <button
-            type="button"
-            className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
-            onClick={handleClick}
-            style={{ backgroundColor: layout_color }}
-          >
-            + Create product
-          </button>
-        </div>
-      </div>
+
+
+
 
       <div className="mt-4">
         <Table data={productData} currentPage={currentPage} handleItemsPerPageChange={handleItemsPerPageChange} handlePageChange={handlePageChange}  itemsPerPage={itemsPerPage} totalItems={totalDocuments} columns={columns} loading={isLoading} />
@@ -262,6 +314,7 @@ const Product = () => {
 
       <Modal />
     </div>
+    </>
   );
 };
 
