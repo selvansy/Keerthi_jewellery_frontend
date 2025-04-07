@@ -235,39 +235,6 @@ const Classification = ({
           </h5>
         </div>
       </div>
-
-      {/* Classification Order */}
-      <div className="mt-4">
-        <label className="block mb-2">
-          Display Order (App) <span className="text-red-500">*</span>
-        </label>
-        <div className="relative w-full md:w-1/4">
-          <input
-            type="number"
-            name="classification_order"
-            value={formik?.values?.classification_order}
-            onWheel={(e) => e.target.blur()}
-            onChange={(e) => {
-              if (e.target.value < 50) {
-                formik.handleChange(e);
-              } else {
-                formik.setFieldError(
-                  "classification_order",
-                  "Value must be less than 50"
-                );
-              }
-            }}
-            onBlur={formik?.handleBlur}
-            className="border rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-          />
-        </div>
-        {formik?.touched?.classification_order &&
-          formik?.errors?.classification_order && (
-            <div className="text-red-500 text-sm mt-1">
-              {formik.errors.classification_order}
-            </div>
-          )}
-      </div>
     </div>
   );
 };

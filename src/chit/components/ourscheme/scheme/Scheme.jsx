@@ -311,6 +311,12 @@ const Scheme = () => {
     (id) => navigate(`/scheme/addscheme/${id}`),
     [navigate]
   );
+
+  const handleView = useCallback(
+    (id) => navigate(`/scheme/view/${id}`),
+    [navigate]
+  );
+
   const handleDigiGold = useCallback(
     (id) => navigate(`/scheme/editdigigold/${id}`),
     [navigate]
@@ -463,7 +469,7 @@ const Scheme = () => {
       {
         header: "Actions",
         cell: (row, rowIndex) => (
-          <Action row={row} data={purityData} rowIndex={rowIndex} activeDropdown={activeDropdown} setActive={hanldeActiveDropDown}  handleEdit={row.scheme_type !== 10?handleEdit:handleDigiGold} handleDelete={handleDelete}/>
+          <Action row={row} data={purityData} rowIndex={rowIndex} activeDropdown={activeDropdown} setActive={hanldeActiveDropDown}   handleEdit={row.scheme_type !== 10?handleEdit:handleDigiGold} handleView={handleView} handleDelete={handleDelete}/>
         ),
         sticky: "right",
       },

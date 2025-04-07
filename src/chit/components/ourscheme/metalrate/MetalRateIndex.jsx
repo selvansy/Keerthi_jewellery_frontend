@@ -57,6 +57,7 @@ function MetalRateIndex() {
     getMetalRate(data);
     
   }, [roledata, branchId]);
+  
   useEffect(()=>{
     getallpuritytableMutate();
   },[])
