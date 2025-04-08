@@ -1892,8 +1892,14 @@ export const searchmobileschemeaccount = async (data) => {
   const response = await Api.get(
     `${import.meta.env.VITE_API_URL}/api/client/schemeaccount/branch/${
       data.id_branch
-    }/customer/search?mobile=${data.search_mobile}`
+    }/customer/search?mobile=${data.search_mobile}/`
   );
+  return response.data;
+};
+
+export const customSearchScheme = async (data) => {
+  const response = await Api.post(
+    `${import.meta.env.VITE_API_URL}/api/client/schemeaccount/search`,data);
   return response.data;
 };
 

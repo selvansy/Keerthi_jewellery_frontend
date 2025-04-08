@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { getallbranch, getCustomerByMobile,schemeAccByCusIdSchmeId,revertschemeAccount,searchmobileschemeaccount} from "../../../api/Endpoints";
+import { getallbranch, getCustomerByMobile,schemeAccByCusIdSchmeId,revertschemeAccount,searchmobileschemeaccount,customSearchScheme} from "../../../api/Endpoints";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
@@ -91,7 +91,7 @@ function RevertForm({ setIsOpen, isviewOpen }) {
     queryKey: ["branch"],
     queryFn: getallbranch,
   });
-console.log(isviewOpen)
+
   const { mutate: revertAccount } = useMutation({
     mutationFn: ({id})=>revertschemeAccount(id),
     onSuccess: (response) => {
@@ -125,9 +125,12 @@ console.log(isviewOpen)
     setName("");
     const data = {
       search_mobile: formik.values.mobile,
-      id_branch:formik.values.id_branch
+      id_branch:formik.values.id_branch,
+      status:[3,1,4]
     }
-    const customerData = await searchmobileschemeaccount(data);
+
+    const status = ['','Closed','',"Pre-closed","Refund"]
+    const customerData = await customSearchScheme(data);
 
     if (customerData.data && customerData.data.length > 0) {
       formik.setFieldValue('id_customer',customerData?.data[0]?.id_customer?._id)
@@ -140,12 +143,19 @@ console.log(isviewOpen)
       .map(item => ({
         value: item.scheme_acc_number,
         label: item.scheme_name,
-      }));    
+        // status: status[item.status]
+      }));
+    
+      if(data.length <=0 ){
+        return toast.error('No closed accounts found')
+      }    
       setSchemeData(data);
       setFullData(output);
-    } else {
-      toast.error(customerData.message);
-    }
+    } 
+    // else {
+
+    //   toast.error(customerData.message);
+    // }
   };
 
   useEffect(()=>{
@@ -223,38 +233,6 @@ console.log(isviewOpen)
           )}
         </div>
 
-        {/* Scheme Account Number Field */}
-        {/* <div className="flex flex-col">
-          <label className="font-medium text-gray-700">
-            Scheme Account Number<span className="text-red-400"> *</span>
-          </label>
-          <div className="relative w-full">
-          <input
-            type="text"
-            name="scheme_account"
-            value={formik.values.scheme_account}
-            onChange={(e) => {
-              const upperCaseValue = e.target.value.toUpperCase();
-              formik.setFieldValue("scheme_account", upperCaseValue);
-            }}
-            onBlur={formik.handleBlur}
-            placeholder="Enter Scheme Account Number"
-            className="p-3 border-2 border-[#f2f3f8] rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600 w-full"
-          />
-           <div
-              onClick={handleClosedSchemeAcc}
-              className="absolute inset-y-0 right-0 flex items-center justify-center cursor-pointer w-10 rounded-r-md"
-              style={{ backgroundColor: layout_color }}
-            >
-              <Search size={22} className="text-white" />
-            </div>
-          </div>
-          {formik.touched.scheme_account && formik.errors.scheme_account && (
-            <span className="text-red-500 text-sm mt-1">
-              {formik.errors.scheme_account}
-            </span>
-          )}
-        </div> */}
         <div className="flex flex-col">
           <label className="text-black mb-1 font-medium">
           Scheme Account Number
