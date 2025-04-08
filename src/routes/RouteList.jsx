@@ -10,7 +10,6 @@ import CreateDigiGoldScheme from "../chit/components/ourscheme/digiGold/CreateDi
 import GiftVendor from "../chit/components/gift/giftvendor/index";
 import GiftItem from "../chit/components/gift/giftitem/index";
 import GiftInwards from "../chit/components/gift/giftPurchase/GiftPurchase";
-import AddGiftPurchase from "../chit/components/gift/giftPurchase/AddGiftPurchase";
 import Category from "../chit/components/catalog/category/Category";
 import AddCategory from "../chit/components/catalog/category/AddCategory";
 import Product from "../chit/components/catalog/product/Product";
@@ -110,6 +109,9 @@ import Delist from "../chit/components/ourscheme/delist";
 import MetalRateIndex from "../chit/components/ourscheme/metalrate/MetalRateIndex";
 import GiftPurchase from "../chit/components/gift/giftPurchase/GiftPurchase";
 import GiftPurchaseForm from "../chit/components/gift/giftPurchase/GiftPurchaseForm";
+import ViewScheme from "../chit/components/ourscheme/scheme/ViewScheme";
+
+import GiftHandOverForm from "../chit/components/gift/giftissues/GiftHandOverForm";
 
 const RouteList = [
 
@@ -140,6 +142,11 @@ const RouteList = [
     name: "Add Scheme",
     path: "/scheme/addscheme/:id",
     element: <Base renderContent={AddScheme} />,
+  },
+  {
+    name: "View Scheme",
+    path: "/scheme/view/:id",
+    element: <Base renderContent={ViewScheme} />,
   },
   {
     name: "Delist",
@@ -420,7 +427,7 @@ const RouteList = [
   {
     name: "Gift Issued Creation",
     path: '/gift/giftissues/creategiftissue',
-    element: <Base renderContent={AddGiftHandOver} />
+    element: <Base renderContent={GiftHandOverForm} />
   },
   {
     name: "Gift Stock Report",

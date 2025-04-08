@@ -17,6 +17,8 @@ import { toast } from "react-toastify";
 import Loading from "../../common/Loading";
 import SpinLoading from "../../common/spinLoading";
 import { useNavigate, useParams } from "react-router-dom";
+import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
+import { CalendarDays } from "lucide-react";
 
 function AddNewArrival() {
   const { id } = useParams();
@@ -243,7 +245,6 @@ function AddNewArrival() {
     setButtonLoading(true);
 
     const formDataToSend = new FormData();
-    formDataToSend.append("title",formData.title)
     formDataToSend.append("id_product", formData.id_product);
     formDataToSend.append("description", formData.description);
     formDataToSend.append("id_branch", formData.id_branch);
@@ -266,25 +267,25 @@ function AddNewArrival() {
 
   return (
     <>
+      <Breadcrumb
+        items={[
+          { label: "Catelogue" },
+          { label: "New Arrivals", active: true },
+        ]}
+      />
       {loading ? (
         <Loading />
       ) : (
         <>
-          <div className="flex flex-row justify-between">
-            {id ? (
-              <h2 className="text-2xl text-[#023453] font-bold justify-between">
-                Edit newarrivals
-              </h2>
-            ) : (
-              <h2 className="text-2xl text-[#023453] font-bold justify-between">
-                Create newarrivals
-              </h2>
-            )}
-          </div>
-
-          <div className="w-full flex flex-col bg-[#F5F5F5] border-t-2 border-[#023453] mt-3 overflow-y-auto scrollbar-hide h-[calc(100vh-200px)]">
+          <div className="w-full flex flex-col bg-white mt-3 overflow-y-auto scrollbar-hide rounded-[16px] px-4 border-2 border-[#F2F2F9] min-h-[550px]">
             <div className="flex flex-col p-4 bg-white relative">
-              <div className="grid grid-rows-2 md:grid-cols-2 gap-5 border-gray-300 mb-5">
+              <div className="flex items-center gap-4">
+                <h2 className="text-2xl font-bold whitespace-nowrap">
+                  {id ? "Edit New Arrivals" : "Add New Arrivals"}
+                </h2>
+              </div>
+              <div className="border-b-2 border-[#F2F2F9] w-full py-2"></div>
+              <div className="grid grid-rows-2 md:grid-cols-3 gap-5 border-gray-300 mb-5">
                 {accessBranch == "0" ? (
                   <div>
                     <label className="block text-sm font-medium mb-1 mt-5">
@@ -292,7 +293,7 @@ function AddNewArrival() {
                     </label>
                     <Select
                       options={Array.isArray(branch) ? branch : [branch]} // Ensures 'branch' is treated as an array
-                      styles={customSelectStyles}
+                      styles={customSelectStyles(true)}
                       placeholder="Select Branch"
                       onChange={handleBranchChange}
                       value={
@@ -315,26 +316,6 @@ function AddNewArrival() {
                     />
                   </div>
                 )}
-                <div className="flex flex-col mt-2">
-                  <label className="text-gray-700 mb-2 font-medium">
-                    Title<span className="text-red-400">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.title}
-                    className="border-2 border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                    placeholder="Enter Title"
-                    onChange={(e)=>{
-                      setFormData((prev)=>({
-                        ...prev,
-                        title:e.target.value
-                      }))
-                    }}
-                  />
-                  <span className="text-red-500 text-sm mt-1">
-                    {/* {errors.product_name} */}
-                  </span>
-                </div>
 
                 <div className="flex flex-col">
                   <label className="text-gray-700 mb-2 mt-2 font-medium">
@@ -342,7 +323,7 @@ function AddNewArrival() {
                   </label>
                   <Select
                     options={products}
-                    styles={customSelectStyles}
+                    styles={customSelectStyles(true)}
                     placeholder="Select Product"
                     onChange={(data) => {
                       setFormData((prev) => ({
@@ -357,7 +338,7 @@ function AddNewArrival() {
                 </div>
 
                 {/* Date Range Section */}
-                <div className="flex flex-col">
+                <div className="flex flex-col relative">
                   <label className="text-gray-700 mb-2 mt-2 font-medium">
                     Start Date<span className="text-red-400">*</span>
                   </label>
@@ -374,9 +355,12 @@ function AddNewArrival() {
                     placeholderText="Select start date"
                     dateFormat="yyyy-MM-dd"
                   />
+                  <span className="absolute right-0 top-5 h-full w-14 flex items-center justify-center cursor-pointer">
+                      <CalendarDays size={20} />
+                    </span>
                 </div>
 
-                <div className="flex flex-col">
+                <div className="flex flex-col relative">
                   <label className="text-gray-700 mb-2 mt-2 font-medium">
                     End Date<span className="text-red-400">*</span>
                   </label>
@@ -388,11 +372,14 @@ function AddNewArrival() {
                         end_date: date,
                       }));
                     }}
-                    className="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                    className="w-full border rounded-md px-3 py-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                     placeholderText="Select end date"
                     dateFormat="yyyy-MM-dd"
                     minDate={formData.start_date}
                   />
+                  <span className="absolute right-0 top-5 h-full w-14 flex items-center justify-center cursor-pointer">
+                      <CalendarDays size={20} />
+                    </span>
                 </div>
 
                 <div className="flex flex-col mt-2">
@@ -404,7 +391,7 @@ function AddNewArrival() {
                     rows="4"
                     name="description"
                     value={formData.description}
-                    className="border-2 border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent h-[70px] min-h-[70px] max-h-[120px]"
+                    className="border-2 border-[#F2F2F9] rounded-[8px] focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent h-[42px] min-h-[42px] max-h-[70px] px-4 pt-[10px] placeholder-gray-400 text-sm"
                     placeholder="Description"
                     onChange={(e) => {
                       setFormData((prev) => ({
@@ -422,56 +409,52 @@ function AddNewArrival() {
                       Image <span className="text-red-400">*</span>
                     </label>
 
-                    <div className="border-2 border-dashed border-gray-300 rounded-md p-4 text-center">
+                    <div className="flex items-center border border-[#F2F2F9] bg-white rounded h-[44px] overflow-hidden relative w-full max-w-xs">
                       <input
-                        type="file"
-                        id="productImage"
-                        accept="image/*"
-                        className="hidden"
                         onChange={handleImageChange}
+                        className="w-full h-full opacity-0 absolute top-0 left-0 cursor-pointer"
+                        name="selectedImage"
+                        id="selectedImage"
+                        type="file"
+                        accept="image/*"
+                        disabled={selectedImage}
+                        multiple
                       />
+
+                      <div className="px-3 text-sm text-gray-500 w-full">
+                        {selectedImage
+                          ? `${selectedImage} file(s) selected`
+                          : "Browse"}
+                      </div>
+
                       <label
-                        htmlFor="productImage"
-                        className="cursor-pointer flex flex-col items-center justify-center"
+                        htmlFor="selectedImage"
+                        className="bg-[#004181] h-full px-4 rounded-[8px] text-white text-sm flex items-center justify-center cursor-pointer whitespace-nowrap"
                       >
-                        <>
-                          <p className="text-sm text-gray-500">
-                            Click to upload or drag and drop
-                          </p>
-                          <p className="text-xs text-gray-400 mt-1">
-                            PNG, JPG, GIF up to 500 KB
-                          </p>
-                        </>
+                        Choose File
                       </label>
                     </div>
                   </div>
                 )}
                 {/* Image Preview Section */}
                 {previewUrl && (
-                  <div className="mt-2 border rounded-md p-3">
-                    <h3 className="text-gray-700 font-medium mb-2">
-                      Image Preview
-                    </h3>
-                    <div className="relative w-full">
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          setSelectedImage(null);
-                          setPreviewUrl(null);
-                        }}
-                        className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
-                      >
-                        ×
-                      </button>
-                    </div>
-                    <div className="flex justify-center">
-                      <img
-                        src={previewUrl}
-                        alt="Preview"
-                        className="max-h-48 max-w-full object-contain"
-                      />
-                    </div>
+                  <div className="w-16 h-16 border border-[#F2F2F9] rounded-md overflow-hidden relative shrink-0 mt-4">
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setSelectedImage(null);
+                        setPreviewUrl(null);
+                      }}
+                      className="absolute top-1 right-1 w-4 h-4 flex items-center justify-center bg-red-500 text-white text-xs rounded-full hover:bg-red-600 z-10"
+                      type="button"
+                    >
+                      ×
+                    </button>
+                    <img
+                      src={previewUrl}
+                      alt="Preview"
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                 )}
               </div>
@@ -479,15 +462,15 @@ function AddNewArrival() {
               <div className="bg-white mt-8">
                 <div className="flex justify-end gap-4">
                   <button
-                    className="bg-[#E2E8F0] text-black rounded-md p-3 w-full lg:w-20"
+                    className="bg-[#E2E8F0] text-black rounded-md px-3 py-2 w-full lg:w-20"
                     type="button"
                     disabled={loading}
-                    onClick={()=>navigate('/catalog/newarrivals')}
+                    onClick={() => navigate("/catalog/newarrivals")}
                   >
                     Cancel
                   </button>
                   <button
-                    className="bg-[#61A375] text-white rounded-md p-2 w-full lg:w-20"
+                    className="bg-[#004181] text-white rounded-md px-3 py-2  w-full lg:w-20"
                     type="button"
                     disabled={buttonLoading}
                     onClick={hanldeSubmit}

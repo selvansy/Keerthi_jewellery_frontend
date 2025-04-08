@@ -18,6 +18,7 @@ import Select from "react-select";
 import { customSelectStyles } from "../../Setup/purity";
 import { title } from "framer-motion/client";
 import SpinLoading from "../../common/spinLoading";
+import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
 
 const AddOffers = () => {
   const { id } = useParams();
@@ -27,10 +28,9 @@ const AddOffers = () => {
   const [offersType, setOfferstype] = useState([]);
   const [branch, setBranch] = useState(() => (accessBranch === "0" ? [] : {}));
   const [imagePreviews, setImagePreviews] = useState([]);
-  const [offer_img_path, setOfferImgPath] = useState([]);
   const [loading, setLoading] = useState();
   const MAX_IMAGES = 1;
-  const [product_image, setproductImgPath] = useState([]);
+  const [offer_img_path, setOfferImgPath] = useState([]);
   const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
     id_branch: "",
@@ -96,8 +96,20 @@ const AddOffers = () => {
     mutationFn: offersbyid,
     onSuccess: (response) => {
       setFormData(response.data);
-
+      const {data}=response
+      console.log(data)
       // setIOffersImage(`${response.data.pathUrl}/${response.data.desc_img}`);
+      if (data.offer_image && data.offer_image.length > 0 && data.pathurl) {
+        const fullImageUrl = `${data.pathurl}${data.offer_image[0]}`;
+        console.log(fullImageUrl)
+        // setSelectedImage(data.offer_image[0]);
+        setImagePreviews((prev) => [
+          ...prev,
+          fullImageUrl
+        ]);
+        
+      }
+
     },
     onError: (error) => {
       console.error("Error fetching countries:", error);
@@ -121,11 +133,11 @@ const AddOffers = () => {
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
-    if (product_image.length == 3) {
+    if (offer_img_path.length == 3) {
       return toast.error(`Maximum ${MAX_IMAGES} images allowed`);
     }
     if (files.length > 0) {
-      const existingImages = product_image.filter(
+      const existingImages = offer_img_path.filter(
         (img) => typeof img === "string"
       );
       let totalImages = existingImages.length;
@@ -156,9 +168,8 @@ const AddOffers = () => {
           totalImages++; // Increment count only when adding a valid image
         }
       }
-
-      if (validFiles.length > 0) {
-        setproductImgPath((prevState) => [...prevState, ...validFiles]);
+      if (validFiles.length >= 0) {
+        setOfferImgPath((prevState) => [...prevState, ...validFiles]);
       }
     }
 
@@ -166,7 +177,7 @@ const AddOffers = () => {
   };
 
   useEffect(() => {
-    const newPreviews = product_image.map((img) =>
+    const newPreviews = offer_img_path.map((img) =>
       typeof img === "string" ? img : URL.createObjectURL(img)
     );
     setImagePreviews(newPreviews);
@@ -178,11 +189,11 @@ const AddOffers = () => {
         }
       });
     };
-  }, [product_image]);
+  }, [offer_img_path]);
 
   const handleRemoveImage = (index) => {
-    const updatedImages = product_image.filter((_, i) => i !== index);
-    setproductImgPath(updatedImages);
+    const updatedImages = offer_img_path.filter((_, i) => i !== index);
+    setOfferImgPath(updatedImages);
   };
 
   const validateForm = () => {
@@ -204,13 +215,13 @@ const AddOffers = () => {
         if (!formData.title) newErrors.title = "Title is required";
         if (!formData.description)
           newErrors.description = "Description is required";
-        if (product_image.length === 0) newErrors.image = "Image is required";
+        if (offer_img_path.length === 0) newErrors.image = "Image is required";
         break;
       case "Banner":
-        if (product_image.length === 0) newErrors.image = "Image is required";
+        if (offer_img_path.length === 0) newErrors.image = "Image is required";
         break;
       case "Popup":
-        if (product_image.length === 0) newErrors.image = "Image is required";
+        if (offer_img_path.length === 0) newErrors.image = "Image is required";
         break;
       case "Marquee":
         if (!formData.description)
@@ -244,14 +255,14 @@ const AddOffers = () => {
             formDataToSend.append(key, value);
           }
         });
-
+        console.log(imagePreviews)
         if (offer_img_path && offer_img_path.length > 0) {
           offer_img_path.forEach((image) => {
             if (image instanceof File || typeof image === "string") {
               formDataToSend.append("offer_image", image);
             }
           });
-          setOfferImgPath([]);
+          
         }
 
         if (id) {
@@ -259,6 +270,7 @@ const AddOffers = () => {
         } else {
           createoffersMutate(formDataToSend);
         }
+        
       }
     } catch (err) {
       console.log(err);
@@ -271,6 +283,7 @@ const AddOffers = () => {
       toast.success(response.message);
       navigate("/catalog/offers");
       setLoading(false);
+      setOfferImgPath([]);
     },
     onError: (error) => {
       toast.error(error.response.data.message);
@@ -284,6 +297,7 @@ const AddOffers = () => {
       toast.success(response.message);
       navigate("/catalog/offers");
       setLoading(false);
+      setOfferImgPath([]);
     },
     onError: (error) => {
       setLoading(false);
@@ -293,15 +307,20 @@ const AddOffers = () => {
 
   return (
     <>
-      <div className="flex flex-row justify-between">
+      
+      <Breadcrumb items={[
+            {label:"Catelogue"},
+            {label:"Offers",active:true}
+          ]}/>
+      <div className="w-full flex flex-col bg-white mt-3 overflow-y-auto scrollbar-hide rounded-[16px] px-4 border border-[#F2F2F9] min-h-[400px]">
+        
+        <div className="flex flex-col p-4 bg-white relative">
+          <div className="flex flex-row justify-between">
         <h2 className="text-2xl text-[#023453] font-bold">
           {id ? "Edit Offers" : "Create Offers"}
         </h2>
       </div>
-
-      <div className="w-full flex flex-col bg-[#F5F5F5] border-t-2 border-[#023453] mt-3 overflow-y-auto scrollbar-hide h-[calc(100vh-200px)]">
-        <div className="flex flex-col p-4 bg-white relative">
-          <div className="grid grid-rows-2 md:grid-cols-2 gap-5 border-gray-300 mb-10">
+          <div className="grid grid-rows-2 md:grid-cols-3 gap-5 border-gray-300 mb-5 mt-2">
             {/* Branch Selection */}
             {accessBranch === "0" ? (
               <div>
@@ -309,7 +328,7 @@ const AddOffers = () => {
                   Branches <span className="text-red-500">*</span>
                 </label>
                 <Select
-                  styles={customSelectStyles}
+                  styles={customSelectStyles(true)}
                   options={Array.isArray(branch) ? branch : []}
                   placeholder="Select Branch"
                   value={
@@ -356,7 +375,8 @@ const AddOffers = () => {
               <div className="relative">
                 <Select
                   options={offersType}
-                  styles={customSelectStyles}
+                  className="z-30"
+                  styles={customSelectStyles(true)}
                   placeholder="Select Type"
                   onChange={(data) => {
                     setFormData((prev) => ({
@@ -364,8 +384,8 @@ const AddOffers = () => {
                       type: data.label,
                      
                     }));
-                    // Reset image
-                    setImagePreviews([]);
+                    
+                    // setImagePreviews([]);
                     // Clear type error
                     setErrors((prev) => ({ ...prev, type: "" }));
                   }}
@@ -382,7 +402,7 @@ const AddOffers = () => {
             {/* Conditional Rendering Based on Type */}
             {formData.type === "Offers" && (
               <>
-                <div className="flex flex-col mt-2">
+                <div className="flex flex-col mt-3">
                   <label className="text-gray-700 mb-2 font-medium">
                     Title<span className="text-red-400">*</span>
                   </label>
@@ -390,9 +410,8 @@ const AddOffers = () => {
                     name="title"
                     type="text"
                     value={formData.title}
-                    className={`border-2 ${
-                      errors.title ? "border-red-500" : "border-gray-300"
-                    } rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent`}
+                    className="border-2 border-[#F2F2F9] rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent h-[42px]"
+
                     placeholder="Enter Title"
                     onChange={(e) =>
                       setFormData((prev) => ({
@@ -408,7 +427,7 @@ const AddOffers = () => {
                   )}
                 </div>
 
-                <div className="flex flex-col mt-2">
+                <div className="flex flex-col mt-3">
                   <label className="text-gray-700 mb-2 font-medium">
                     Description<span className="text-red-400">*</span>
                   </label>
@@ -416,9 +435,8 @@ const AddOffers = () => {
                     name="description"
                     type="text"
                     value={formData.description}
-                    className={`border-2 ${
-                      errors.description ? "border-red-500" : "border-gray-300"
-                    } rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent`}
+                    className="border-2 border-[#F2F2F9] rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent h-[42px]"
+
                     placeholder="Enter Description"
                     onChange={(e) =>
                       setFormData((prev) => ({
@@ -445,9 +463,8 @@ const AddOffers = () => {
                   name="description"
                   type="text"
                   value={formData.description}
-                  className={`border-2 ${
-                    errors.description ? "border-red-500" : "border-gray-300"
-                  } rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent`}
+                  className="border-2 border-[#F2F2F9] rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent h-[42px]"
+
                   placeholder="Enter Description"
                   onChange={(e) =>
                     setFormData((prev) => ({
@@ -473,9 +490,8 @@ const AddOffers = () => {
                   name="videoId"
                   type="text"
                   value={formData.videoId}
-                  className={`border-2 ${
-                    errors.videoId ? "border-red-500" : "border-gray-300"
-                  } rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent`}
+                  className="border-2 border-[#F2F2F9] rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent h-[42px]"
+
                   placeholder="Enter Video ID"
                   onChange={(e) =>
                     setFormData((prev) => ({
@@ -494,69 +510,80 @@ const AddOffers = () => {
 
             {/* Image Upload for Applicable Types */}
             {["Offers", "Banner", "Popup"].includes(formData.type) && (
-              <div className="flex flex-col col-span-2">
-                <label className="text-gray-700 mb-2 mt-2 font-medium">
-                  Upload Image<span className="text-red-400">*</span>
-                </label>
-                <div className="gap-4">
-                  {product_image.length < 1 && (
-                    <div className="flex-1 max-w-[50%]">
-                      <label
-                        htmlFor="product_image"
-                        className={`flex flex-col justify-center items-center w-full h-20 border-2 ${
-                          errors.image
-                            ? "border-red-500"
-                            : "border-dashed border-gray-300"
-                        } text-gray-700 cursor-pointer p-5 text-center`}
+              <div className="flex flex-col mt-3 w-full">
+              <label className="text-gray-700 mb-2 font-medium">
+                Upload Image<span className="text-red-400">*</span>{" "}
+                <span className="text-sm font-normal">
+                  (File size must be at least 500KB)
+                </span>
+              </label>
+            
+              <div className="flex gap-4 items-start">
+                {/* File input box */}
+                
+                <div className="flex rounded-[8px] items-center border-2 border-[#F2F2F9] bg-white  h-[44px] overflow-hidden relative w-full max-w-xs">
+                  
+                    <input
+                      onChange={handleImageChange}
+                      className="w-full h-full opacity-0 absolute top-0 left-0 cursor-pointer"
+                      name="offer_img_path"
+                      id="offer_img_path"
+                      type="file"
+                      accept="image/*"
+                      disabled={offer_img_path.length >=1}
+                      multiple
+                    />
+               
+                    <div className="px-3 text-sm text-gray-500 w-full">
+                      {offer_img_path.length > 0
+                        ? `${offer_img_path.length} file(s) selected`
+                        : "Browse"}
+                    </div>
+            
+                    <label
+                      htmlFor="offer_img_path"
+                      className="bg-[#004181] h-full px-4 rounded-[8px] text-white text-sm flex items-center justify-center cursor-pointer whitespace-nowrap"
+                    >
+                      Choose File
+                    </label>
+                  </div>
+               
+            
+                {/* Multiple image previews */}
+                {imagePreviews.length > 0 && (
+                  <div className="flex gap-2 flex-wrap">
+                    {imagePreviews.map((preview, index) => (
+                      <div
+                        key={index}
+                        className="w-16 h-16 border border-[#F2F2F9] rounded-md overflow-hidden relative shrink-0"
                       >
-                        Browse to find or drag image(s) here
-                      </label>
-                      <input
-                        onChange={handleImageChange}
-                        className="hidden max-w-[190px]"
-                        name="product_image"
-                        id="product_image"
-                        type="file"
-                        accept="image/*"
-                        multiple
-                      />
-                    </div>
-                  )}
-
-                  {imagePreviews.length > 0 && (
-                    <div className="flex gap-4 flex-wrap mt-5 max-w-[50%]">
-                      {imagePreviews.map((preview, index) => (
-                        <div
-                          key={index}
-                          className="h-60 border border-gray-300 rounded-md overflow-hidden relative"
+                        <button
+                          onClick={() => handleRemoveImage(index)}
+                          className="absolute top-1 right-1 w-4 h-4 flex items-center justify-center bg-red-500 text-white text-xs rounded-full hover:bg-red-600 "
+                          type="button"
                         >
-                          <button
-                            onClick={() => handleRemoveImage(index)}
-                            className="absolute top-1 right-1 w-5 h-5 flex items-center justify-center bg-red-500 text-white rounded-full hover:bg-red-600"
-                            type="button"
-                          >
-                            ×
-                          </button>
-                          <img
-                            src={
-                              preview.startsWith("blob:")
-                                ? preview
-                                : `${pathUrl}${preview}`
-                            }
-                            alt="Selected preview"
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  {errors.image && (
-                    <span className="text-red-500 text-sm mt-1">
-                      {errors.image}
-                    </span>
-                  )}
-                </div>
+                          ×
+                        </button>
+                        <img
+                          src={
+                            preview
+                          }
+                          alt="Preview"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
+            
+              {errors.offer_img_path && (
+                <span className="text-red-500 text-sm mt-1">
+                  {errors.offer_img_path}
+                </span>
+              )}
+            </div>
+            
             )}
           </div>
 
@@ -572,7 +599,7 @@ const AddOffers = () => {
                 Cancel
               </button>
               <button
-                className="bg-[#61A375] text-white rounded-md p-2 w-full lg:w-20"
+                className="bg-[#004181] text-white rounded-md p-2 w-full lg:w-20"
                 type="button"
                 disabled={loading}
                 onClick={handleFormSubmit}
