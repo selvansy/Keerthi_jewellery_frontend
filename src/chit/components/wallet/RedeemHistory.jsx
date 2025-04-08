@@ -3,43 +3,119 @@ import usePagination from "../../../chit/hooks/usePagination";
 import SpinLoading from "../../components/common/spinLoading";
 import { eventEmitter } from "../../../utils/EventEmitter";
 import { useSelector, useDispatch } from "react-redux";
-import {redeemHistory} from "../../api/Endpoints"
+import { redeemHistory, getallbranch } from "../../api/Endpoints"
 import { useDebounce } from "../../../chit/hooks/useDebounce"
 import Table from "../../components/common/Table";
-import { Search } from "lucide-react";
-import { useMutation } from '@tanstack/react-query';
-import {formatNumber} from "../../utils/commonFunction"
+import { Search,CalendarDays } from "lucide-react";
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { formatNumber } from "../../utils/commonFunction"
+import { Breadcrumb } from '../common/breadCumbs/breadCumbs';
+import ExportDropdown from '../common/Dropdown/Export';
+import Select from "react-select";
+import "react-datepicker/dist/react-datepicker.css";
+import DatePicker from "react-datepicker";
+
+
+
+const customSelectStyles = (isReadOnly) => ({
+  control: (base, state) => ({
+    ...base,
+    minHeight: "42px",
+    backgroundColor: "white",
+    border: state.isFocused ? "1px solid black" : "2px solid #f2f3f8",
+    boxShadow: state.isFocused ? "0 0 0 1px black" : "none",
+    borderRadius: "0.375rem",
+    "&:hover": {
+      color: "#e2e8f0",
+    },
+    pointerEvents: !isReadOnly ? "none" : "auto",
+    opacity: !isReadOnly ? 1 : 1,
+  }),
+  indicatorSeparator: () => ({
+    display: "none",
+  }),
+  placeholder: (base) => ({
+    ...base,
+    color: "#858293",
+    fontWeight: "thin",
+    // fontStyle: "bold",
+  }),
+  dropdownIndicator: (provided, state) => ({
+    ...provided,
+    color: "#232323",
+    "&:hover": {
+      color: "#232323",
+    },
+  }),
+});
 
 
 function RedeemHistory() {
-    
-  
-    const [redeemData, setRedeemData] = useState([]);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(0);
-    const [itemsPerPage, setItemsPerPage] = useState(10);
-    const [redeemedPoint,setRedeemPoint] = useState(0)
-    const [redeemedAmt,setRedeemAmt] = useState(0)
-  
-    const [searchInput, setSearchInput] = useState("");
-    const debouncedSearch = useDebounce(searchInput, 500);
-  
-    const limit = 10;
-  
-    const [isLoading, setisLoading] = useState(false);
-    const [searchLoading, setSearchLoading] = useState(false);
-    const [totalDocuments, setTotalDocuments] = useState(0)
-       
-       
- 
-   useEffect(() => {
+
+
+  const [redeemData, setRedeemData] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [redeemedPoint, setRedeemPoint] = useState(0)
+  const [redeemedAmt, setRedeemAmt] = useState(0)
+  const [branchOptions, setBranchOptions] = useState([]);
+  const [branch, setBranch] = useState("")
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
+
+  const [searchInput, setSearchInput] = useState("");
+  const debouncedSearch = useDebounce(searchInput, 500);
+
+  const limit = 10;
+
+  const [isLoading, setisLoading] = useState(false);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [totalDocuments, setTotalDocuments] = useState(0)
+
+  const roleData = useSelector((state) => state.clientForm.roledata);
+  const id_role = roleData?.id_role?.id_role;
+  const id_client = roleData?.id_client;
+  const layout_color = useSelector((state) => state.clientForm.layoutColor);
+  const id_branch = roleData?.branch;
+
+  useEffect(() => {
     getallRedeemData({ search: debouncedSearch, page: currentPage, limit: itemsPerPage });
   }, [currentPage, debouncedSearch, itemsPerPage]);
+
+  useEffect(() => {
+    if (!roleData) return
+    if (id_branch !== "0") {
+      setBranch(id_branch)
+    }
+  }, [roleData]);
+
+
+
+  const { data: branchresponse, isLoading: loadingbranch } = useQuery({
+    queryKey: ["branch"],
+    queryFn: getallbranch,
+  });
+
+
+  useEffect(() => {
+    if (branchresponse) {
+      const data = branchresponse.data
+      const branch = data.map((branch) => ({
+        value: branch._id,
+        label: branch.branch_name,
+      }));
+      setBranchOptions(branch);
+    }
+
+  }, [branchresponse])
+
+
 
   const { mutate: getallRedeemData } = useMutation({
     mutationFn: (payload) => redeemHistory(payload),
     onSuccess: (response) => {
-      
+
       setRedeemData(response.data)
       setRedeemPoint(response.totalRedeemedPoint)
       setRedeemAmt(response.totalRedeemedAmt)
@@ -55,189 +131,185 @@ function RedeemHistory() {
     }
   });
 
-       const handleSearch = (e) => {
-        setSearchLoading(true);
-        setSearchInput(e.target.value);
-      };
-    
-      const handleItemsPerPageChange = (value) => {
-        setItemsPerPage(value);
-        setCurrentPage(1);
-      };
-    
-      const handlePageChange = (page) => {
-        const pageNumber = Number(page);
-        if (
-          !pageNumber ||
-          isNaN(pageNumber) ||
-          pageNumber < 1 ||
-          pageNumber > totalPages
-        ) {
-          return;
-        }
-    
-        setCurrentPage(pageNumber);
-      };
-    
+  const handleSearch = (e) => {
+    setSearchLoading(true);
+    setSearchInput(e.target.value);
+  };
 
-    
-      const paginationData = {
-        totalItems: totalPages,
-        currentPage: currentPage,
-        itemsPerPage: itemsPerPage,
-        handlePageChange: handlePageChange,
-      };
-      const paginationButtons = usePagination(paginationData);
+  const handleItemsPerPageChange = (value) => {
+    setItemsPerPage(value);
+    setCurrentPage(1);
+  };
 
-      const redeemTypes = {
-        "1": "Direct",
-        "2": "Purchase",
-        "3": "Referral",
-        "4": "Incentives",
-      };
-    
+  const handlePageChange = (page) => {
+    const pageNumber = Number(page);
+    if (
+      !pageNumber ||
+      isNaN(pageNumber) ||
+      pageNumber < 1 ||
+      pageNumber > totalPages
+    ) {
+      return;
+    }
 
-      const columns = [
-        {
-          header: "S.No",
-          cell: (_, index) => index + 1 + (currentPage - 1) * limit,
-        },
-        {
-          header: "Customer name",
-          cell: (row) => `${row?.id_customer?.firstname || ""} ${row?.id_customer?.lastname || ""}`.trim() || "-",
-        },
-        {
-          header: "mobile",
-          cell: (row) => `${row?.id_customer?.mobile || "-"}`,
-        },
-        // {
-        //   header: "Wallet Points",
-        //   cell: (row) => {
-        //     return row?.credited_point !== undefined ? Math.abs(row.credited_point) : "-";
-        //   }
-        // },
-        {
-          header: "Amount",
-          cell: (row) => {
-            return row?.credited_amount !== undefined ? formatNumber({value:  Math.abs(row.credited_amount)}) : "-";
-          }
-        },             
-        {
-          header: "Type",
-          cell: (row) => redeemTypes[row?.redeem_type] || "-",
-        },
-        {
-          header: "Date",
-          cell: (row) => {
-            if (!row?.createdAt) return "-";
-            const date = new Date(row?.createdAt);
-            const formattedDate = date.toISOString().split("T")[0];
-            return formattedDate;
-          }
-        },
-      ];
-      
+    setCurrentPage(pageNumber);
+  };
+
+
+
+  const paginationData = {
+    totalItems: totalPages,
+    currentPage: currentPage,
+    itemsPerPage: itemsPerPage,
+    handlePageChange: handlePageChange,
+  };
+  const paginationButtons = usePagination(paginationData);
+
+  const redeemTypes = {
+    "1": "Direct",
+    "2": "Purchase",
+    "3": "Referral",
+    "4": "Incentives",
+  };
+
+
+  const columns = [
+    {
+      header: "S.No",
+      cell: (_, index) => index + 1 + (currentPage - 1) * limit,
+    },
+    {
+      header: "Customer name",
+      cell: (row) => `${row?.id_customer?.firstname || ""} ${row?.id_customer?.lastname || ""}`.trim() || "-",
+    },
+    {
+      header: "mobile",
+      cell: (row) => `${row?.id_customer?.mobile || "-"}`,
+    },
+    // {
+    //   header: "Wallet Points",
+    //   cell: (row) => {
+    //     return row?.credited_point !== undefined ? Math.abs(row.credited_point) : "-";
+    //   }
+    // },
+    {
+      header: "Amount",
+      cell: (row) => {
+        return row?.credited_amount !== undefined ? formatNumber({ value: Math.abs(row.credited_amount) }) : "-";
+      }
+    },
+    {
+      header: "Type",
+      cell: (row) => redeemTypes[row?.redeem_type] || "-",
+    },
+    {
+      header: "Date",
+      cell: (row) => {
+        if (!row?.createdAt) return "-";
+        const date = new Date(row?.createdAt);
+        const formattedDate = date.toISOString().split("T")[0];
+        return formattedDate;
+      }
+    },
+  ];
+
   return (
-    <div>
-         <div className="flex flex-col p-4 relative">
-      <>
-        <h2 className="text-2xl text-gray-900 font-bold">Redeem History</h2>
-        <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
-          <div className="relative w-full lg:w-1/3 min-w-[200px]">
-            <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
+    <>
+     <Breadcrumb
+        items={[{ label: "Wallet" }, { label: "Redeem History", active: true }]}
+      />
+      <div className="p-4 bg-white border border-[#F2F2F9] rounded-[16px] shadow-sm">
+        {/* Header Controls */}
+        <div className="flex flex-wrap gap-4 justify-between items-center">
+          {/* Left Side Controls */}
+          <div className="flex flex-wrap gap-2 items-center">
+            <Select
+              options={branchOptions}
+              value={
+                id_branch !== '0'
+                  ? branchOptions.find((b) => b.value === id_branch) || ''
+                  : branchOptions.find((b) => b.value === branch) || ''
+              }
+              onChange={(selected) => setBranch(selected.value)}
+              className="min-w-[250px]"
+              styles={customSelectStyles(true)}
+              isLoading={loadingbranch}
+              isDisabled={id_branch !== '0'}
+              placeholder="Select"
+            />
+
+            <div className="relative">
               {searchLoading ? (
-                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
+                <div className="absolute left-3 top-1/2 transform -translate-y-1/2 animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
               ) : (
-                <Search className="text-gray-500" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-black" />
               )}
+              <input
+                onChange={(e) => {
+                  setSearchLoading(true);
+                  setSearchInput(e.target.value);
+                }}
+                placeholder="Search"
+                className="pl-9 pr-4 py-2 border-2 border-[#F2F2F9] rounded-[8px] w-[200px]"
+              />
             </div>
-            <input
-              onChange={handleSearch}
-              placeholder="Search..."
-              className="p-3 pl-10 pr-3 border-2 bg-[#F5F5F5] border-gray-500 rounded-md w-full"
+
+
+          </div>
+
+          {/* Export Button */}
+          <div className="ml-auto flex justify-between items-center">
+            
+          <div className="relative flex items-center gap-2">
+              <CalendarDays className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+              <div className="flex items-center pl-8 border border-[#F2F2F9] rounded-[8px] px-3 py-2 bg-white text-sm">
+                <DatePicker
+                  selected={startDate}
+                  onChange={(date) => setStartDate(date)}
+                  selectsStart
+                  startDate={startDate}
+                  endDate={endDate}
+                  dateFormat="dd/MM/yyyy"
+                  className="outline-none w-[100px]"
+                  placeholderText="From"
+                />
+                <span className="mx-2 text-gray-500">to</span>
+                <DatePicker
+                  selected={endDate}
+                  onChange={(date) => setEndDate(date)}
+                  selectsEnd
+                  startDate={startDate}
+                  endDate={endDate}
+                  minDate={startDate}
+                  dateFormat="dd/MM/yyyy"
+                  className="outline-none w-[100px]"
+                  placeholderText="To"
+                />
+              </div>
+            </div>
+
+            <ExportDropdown
+              apiData={redeemData}
+              fileName={`Redeem Data ${new Date().toLocaleDateString('en-GB')}`}
             />
           </div>
-  
-          <div className="flex justify-end">
-    <div className="flex justify-end gap-2 w-full max-w-md">
-      {[ { label: "Total Redeemed Amount", value: formatNumber({value: redeemedAmt}) }].map((item, index) => (
-        <div key={index} className="flex flex-row items-center justify-between bg-white rounded-lg p-2 h-16 shadow-md text-sm">
-          <div className="flex flex-col justify-center">
-            <h5 className="text-[#67748E]">{item.label}</h5>
-            <h5 className="text-lg font-semibold">{item.value}</h5>
-          </div>
-          
-        </div>
-      ))}
-    </div>
-  </div>
-
         </div>
 
-       
+        {/* Table */}
         <div className="mt-4">
           <Table
             data={redeemData}
             columns={columns}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-            pageSize={limit}
             isLoading={isLoading}
+            currentPage={currentPage}
+            handlePageChange={handlePageChange}
+            itemsPerPage={itemsPerPage}
+            totalItems={totalDocuments}
+            handleItemsPerPageChange={handleItemsPerPageChange}
           />
         </div>
-
-        <div className="flex  justify-between mt-4 p-2">
-          <div className="mt-4 flex gap-2 justify-center items-center">
-            <span className="text-gray-500">Show</span>
-            <select
-              id="itemsPerPage"
-              value={itemsPerPage}
-              onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
-              className="p-2 h-10 border-gray-500 rounded-md text-black bg-gray-300"
-            >
-              <option value={10}>10</option>
-              <option value={25}>25</option>
-              <option value={50}>50</option>
-              <option value={100}>100</option>
-              <option value={250}>250</option>
-              <option value={500}>500</option>
-              <option value={1000}>1000</option>
-            </select>
-            <span className="text-gray-500">entries {totalDocuments} </span>
-          </div>
-          <div className="flex flex-row items-center justify-center gap-2">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-                className={`p-2 text-gray-500 rounded-md ${currentPage==1?'cursor-not-allowed':'cursor-pointer'}`}
-              >
-                Previous
-              </button>
-            </div>
-
-            <div className="flex flex-row items-center justify-center gap-2">
-              {paginationButtons}
-            </div>
-
-            <div className="flex items-center">
-              <button
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                className={`p-2 text-gray-500 rounded-md ${currentPage === totalPages?'cursor-not-allowed':'cursor-pointer'}`}
-              >
-                Next
-              </button>
-            </div>
-          </div>
-        </div>
-
-
-      </>
- 
-    </div>
-    </div>
+      </div>
+    </>
   )
 }
 

@@ -106,13 +106,16 @@ export const redeemType = async () => {
 };
 
 export const mobilesearch = async (mobile) => {
+  console.log("mobile--",mobile)
   const response = await Api.get(
     `${
       import.meta.env.VITE_API_URL
-    }/api/client/wallet/customer-details?mobileNumber=${mobile}`
+    }/api/client/wallet/mobile?mobile=${mobile}`
   );
   return response.data;
 };
+
+
 
 export const walletHistory = async (data) => {
   const response = await Api.post(

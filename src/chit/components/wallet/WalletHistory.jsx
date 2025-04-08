@@ -3,21 +3,63 @@ import usePagination from "../../../chit/hooks/usePagination";
 import SpinLoading from "../../components/common/spinLoading";
 import { eventEmitter } from "../../../utils/EventEmitter";
 import { useSelector, useDispatch } from "react-redux";
-import {walletHistory} from "../../api/Endpoints"
+import {walletHistory,getallbranch } from "../../api/Endpoints"
 import { useDebounce } from "../../../chit/hooks/useDebounce"
 import Table from "../../components/common/Table";
-import { Search } from "lucide-react";
-import { useMutation } from '@tanstack/react-query';
+import { Search,CalendarDays  } from "lucide-react";
+import Select from "react-select";
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { Breadcrumb } from '../common/breadCumbs/breadCumbs';
+import "react-datepicker/dist/react-datepicker.css";
+import DatePicker from "react-datepicker";
+import ExportDropdown from '../common/Dropdown/Export';
+
+const customSelectStyles = (isReadOnly) => ({
+  control: (base, state) => ({
+    ...base,
+    minHeight: "42px",
+    backgroundColor: "white",
+    border: state.isFocused ? "1px solid black" : "2px solid #f2f3f8",
+    boxShadow: state.isFocused ? "0 0 0 1px black" : "none",
+    borderRadius: "0.375rem",
+    "&:hover": {
+      color: "#e2e8f0",
+    },
+    pointerEvents: !isReadOnly ? "none" : "auto",
+    opacity: !isReadOnly ? 1 : 1,
+  }),
+  indicatorSeparator: () => ({
+    display: "none",
+  }),
+  placeholder: (base) => ({
+    ...base,
+    color: "#858293",
+    fontWeight: "thin",
+    // fontStyle: "bold",
+  }),
+  dropdownIndicator: (provided, state) => ({
+    ...provided,
+    color: "#232323",
+    "&:hover": {
+      color: "#232323",
+    },
+  }),
+});
+
 
 function WalletHistory() {
 
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const [walletData, setwalletData] = useState([]);
+  const [branchOptions, setBranchOptions] = useState([]);
+  const [branch, setBranch] = useState("")
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [redeemedAmt,setRedeemAmt] = useState(0)
   const [balAmt,setbalAmt] = useState(0)
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
   
 
   const [searchInput, setSearchInput] = useState(""); 
@@ -25,10 +67,42 @@ function WalletHistory() {
 
   const limit = 10;
 
-
   const [isLoading, setisLoading] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
   const [totalDocuments, setTotalDocuments] = useState(0)
+
+    const roleData = useSelector((state) => state.clientForm.roledata);
+    const id_role = roleData?.id_role?.id_role;
+    const id_client = roleData?.id_client;
+    const id_branch = roleData?.branch;
+
+
+  useEffect(() => {
+    if (!roleData) return
+    if (id_branch !== "0") {
+      setBranch(id_branch)
+    }
+  }, [roleData]);
+
+
+
+  const { data: branchresponse, isLoading: loadingbranch } = useQuery({
+    queryKey: ["branch"],
+    queryFn: getallbranch,
+  });
+
+
+  useEffect(() => {
+    if (branchresponse) {
+      const data = branchresponse.data
+      const branch = data.map((branch) => ({
+        value: branch._id,
+        label: branch.branch_name,
+      }));
+      setBranchOptions(branch);
+    }
+
+  }, [branchresponse])
 
  
    useEffect(() => {
@@ -142,61 +216,106 @@ function WalletHistory() {
     },
   ];
 
+  console.log("branch--",branch)
+
   return (
-    
-     <div className="flex flex-col p-4 relative">
-  <h2 className="text-2xl text-gray-900 font-bold">Wallet History</h2>
-  
-  <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
-    <div className="relative w-full lg:w-1/3 min-w-[200px]">
-      <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-        {searchLoading ? (
-          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
-        ) : (
-          <Search className="text-gray-500" />
-        )}
-      </div>
-      <input
-        onChange={handleSearch}
-        placeholder="Search..."
-        className="p-3 pl-10 pr-3 border-2 bg-[#F5F5F5] border-gray-500 rounded-md w-full"
+    <>
+     <Breadcrumb
+        items={[{ label: "Wallet" }, { label: "Wallet History", active: true }]}
       />
-    </div>
-    <div className="flex justify-end">
-    <div className="grid grid-cols-3 sm:grid-cols-2 gap-2 w-full max-w-md">
-      {[{ label: "Total Redeemed Amount", value: redeemedAmt }, { label: "Balance Redeemed Amount", value: balAmt }].map((item, index) => (
-        <div key={index} className="flex flex-row items-center justify-between bg-white rounded-lg p-2 h-16 shadow-md text-sm">
-          <div className="flex flex-col justify-center">
-            <h5 className="text-[#67748E]">{item.label}</h5>
-            <h5 className="text-lg font-semibold">{item.value}</h5>
+      <div className="p-4 bg-white border border-[#F2F2F9] rounded-[16px] shadow-sm">
+        {/* Header Controls */}
+        <div className="flex flex-wrap gap-4 justify-between items-center">
+          {/* Left Side Controls */}
+          <div className="flex flex-wrap gap-2 items-center">
+            <Select
+              options={branchOptions}
+              value={
+                id_branch !== '0'
+                  ? branchOptions.find((b) => b.value === id_branch) || ''
+                  : branchOptions.find((b) => b.value === branch) || ''
+              }
+              onChange={(selected) => setBranch(selected.value)}
+              className="min-w-[250px]"
+              styles={customSelectStyles(true)}
+              isLoading={loadingbranch}
+              isDisabled={id_branch !== '0'}
+              placeholder="Select"
+            />
+
+            <div className="relative">
+              {searchLoading ? (
+                <div className="absolute left-3 top-1/2 transform -translate-y-1/2 animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
+              ) : (
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-black" />
+              )}
+              <input
+                onChange={(e) => {
+                  setSearchLoading(true);
+                  setSearchInput(e.target.value);
+                }}
+                placeholder="Search"
+                className="pl-9 pr-4 py-2 border-2 border-[#F2F2F9] rounded-[8px] w-[200px]"
+              />
+            </div>
+
+
           </div>
-          
+
+          {/* Export Button */}
+          <div className="ml-auto flex justify-between items-center">
+            
+          <div className="relative flex items-center gap-2">
+              <CalendarDays className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+              <div className="flex items-center pl-8 border border-[#F2F2F9] rounded-[8px] px-3 py-2 bg-white text-sm">
+                <DatePicker
+                  selected={startDate}
+                  onChange={(date) => setStartDate(date)}
+                  selectsStart
+                  startDate={startDate}
+                  endDate={endDate}
+                  dateFormat="dd/MM/yyyy"
+                  className="outline-none w-[100px]"
+                  placeholderText="From"
+                />
+                <span className="mx-2 text-gray-500">to</span>
+                <DatePicker
+                  selected={endDate}
+                  onChange={(date) => setEndDate(date)}
+                  selectsEnd
+                  startDate={startDate}
+                  endDate={endDate}
+                  minDate={startDate}
+                  dateFormat="dd/MM/yyyy"
+                  className="outline-none w-[100px]"
+                  placeholderText="To"
+                />
+              </div>
+            </div>
+
+            <ExportDropdown
+              apiData={walletData}
+              fileName={`Wallet History ${new Date().toLocaleDateString('en-GB')}`}
+            />
+          </div>
         </div>
-      ))}
-    </div>
-  </div>
-  </div>
- 
 
-  <div className="mt-4">
-    <Table
-      data={walletData}
-      columns={columns}
-      currentPage={currentPage}
-      totalPages={totalPages}
-      handleItemsPerPageChange={handleItemsPerPageChange}
-      handlePageChange={handlePageChange}
-      itemsPerPage={itemsPerPage}
-      totalItems={totalDocuments}
-      loading={isLoading}
-    />
-  </div>
-
-
-
-
-</div>
-
+        {/* Table */}
+        <div className="mt-4">
+          <Table
+            data={walletData}
+            columns={columns}
+            isLoading={isLoading}
+            currentPage={currentPage}
+            handlePageChange={handlePageChange}
+            itemsPerPage={itemsPerPage}
+            totalItems={totalDocuments}
+            handleItemsPerPageChange={handleItemsPerPageChange}
+          />
+        </div>
+      </div>
+    </>
+  
   )
 }
 

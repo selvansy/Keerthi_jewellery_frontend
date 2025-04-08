@@ -5,15 +5,18 @@ import { Fragment } from 'react';
 import { useSelector } from 'react-redux';
 import { ExportToExcel } from './Excelexport';
 import { ExportToPDF } from './ExportPdf';
+import exportIcon from "../../../../assets/icons/send-square.svg"
 
 const ExportDropdown = ({apiData,fileName}) => {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   return (
     <Menu as="div" className="relative inline-block text-left z-20">
       <div>
-        <Menu.Button className=" text-white hover:bg-[#034571] flex items-center gap-2 px-4 py-2 rounded-md"
-        style={{ backgroundColor: layout_color }} >
-          <Download className="h-4 w-4" />
+        <Menu.Button className=" text-black border-2 border-[#034571] flex items-center gap-2 px-4 py-1 rounded-md"
+         >
+        
+          {/* <Download className="h-4 w-4" /> */}
+          <img src={exportIcon} alt="Export" className="h-4 w-4" />
           Export
         </Menu.Button>
       </div>
