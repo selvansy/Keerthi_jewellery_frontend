@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { getallbranch, getCustomerByMobile,schemeAccByCusIdSchmeId,revertschemeAccount} from "../../../api/Endpoints";
+import { getallbranch, getCustomerByMobile,schemeAccByCusIdSchmeId,revertschemeAccount,searchmobileschemeaccount} from "../../../api/Endpoints";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
@@ -16,17 +16,41 @@ function RevertForm({ setIsOpen, isviewOpen }) {
   const [branchData, setBranchData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [customerName, setName] = useState("");
+  const [schemedata, setSchemeData] = useState([]);
+  const [fullData, setFullData] = useState([]);
 
   // Customisations for react-select
-  const customStyles = {
+  const customStyles = (isReadOnly) => ({
     control: (base, state) => ({
       ...base,
       minHeight: "42px",
-      border: state.isFocused ? "1px solid black" : "1px solid #e2e8f0",
+      backgroundColor: "white",
+      border: state.isFocused ? "1px solid black" : "2px solid #f2f3f8",
       boxShadow: state.isFocused ? "0 0 0 1px black" : "none",
       borderRadius: "0.375rem",
+      "&:hover": {
+        color: "#e2e8f0",
+      },
+      pointerEvents: !isReadOnly ? "none" : "auto",
+      opacity: !isReadOnly ? 1 : 1,
     }),
-  };
+    indicatorSeparator: () => ({
+      display: "none",
+    }),
+    placeholder: (base) => ({
+      ...base,
+      color: "#858293",
+      fontWeight: "thin",
+      // fontStyle: "bold",
+    }),
+    dropdownIndicator: (provided, state) => ({
+      ...provided,
+      color: "#232323",
+      "&:hover": {
+        color: "#232323",
+      },
+    }),
+  });
 
   // Form validation schema
   const validationSchema = Yup.object({
@@ -67,7 +91,7 @@ function RevertForm({ setIsOpen, isviewOpen }) {
     queryKey: ["branch"],
     queryFn: getallbranch,
   });
-
+console.log(isviewOpen)
   const { mutate: revertAccount } = useMutation({
     mutationFn: ({id})=>revertschemeAccount(id),
     onSuccess: (response) => {
@@ -99,17 +123,36 @@ function RevertForm({ setIsOpen, isviewOpen }) {
       return;
     }
     setName("");
-    const customerData = await getCustomerByMobile(formik.values.mobile);
+    const data = {
+      search_mobile: formik.values.mobile,
+      id_branch:formik.values.id_branch
+    }
+    const customerData = await searchmobileschemeaccount(data);
 
-    if (customerData && customerData.data) {
-      formik.setFieldValue('id_customer',customerData?.data?._id)
+    if (customerData.data && customerData.data.length > 0) {
+      formik.setFieldValue('id_customer',customerData?.data[0]?.id_customer?._id)
       setName(
-        `${customerData?.data?.firstname} ${customerData?.data?.lastname}`
+        `${customerData?.data[0]?.id_customer?.firstname} ${customerData?.data[0]?.id_customer?.lastname}`
       );
+      const output = customerData.data
+      const data = output
+      .filter(item => [3, 1, 4].includes(item.status))
+      .map(item => ({
+        value: item.scheme_acc_number,
+        label: item.scheme_name,
+      }));    
+      setSchemeData(data);
+      setFullData(output);
     } else {
       toast.error(customerData.message);
     }
   };
+
+  useEffect(()=>{
+    if(formik.values.scheme_account !== ""){
+      handleClosedSchemeAcc()
+    }
+  },[formik.values.scheme_account])
 
   const handleClosedSchemeAcc = async () => {
       if(formik.values.id_customer && formik.values.scheme_account){
@@ -130,7 +173,7 @@ function RevertForm({ setIsOpen, isviewOpen }) {
         {/* Branch Select Field */}
         <div className="flex flex-col">
           <label className="text-black mb-1 font-medium">
-            Branch
+            Branch<span className="text-red-400"> *</span>
           </label>
           <Select
             options={branchData}
@@ -140,7 +183,7 @@ function RevertForm({ setIsOpen, isviewOpen }) {
             onChange={(option) =>
               formik.setFieldValue("id_branch", option.value)
             }
-            styles={customSelectStyles}
+            styles={customStyles(true)}
             isLoading={loadingBranch}
             placeholder="Select Branch"
           />
@@ -162,15 +205,14 @@ function RevertForm({ setIsOpen, isviewOpen }) {
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               placeholder="Enter Mobile Number"
-              className="p-3 pr-12 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600 w-full"
+              className="p-3 pr-12 border-2 border-[#f2f3f8] rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600 w-full"
               maxLength="10"
             />
             <div
               onClick={handleSearchMobile}
               className="absolute inset-y-0 right-0 flex items-center justify-center cursor-pointer w-10 rounded-r-md"
-              style={{ backgroundColor: layout_color }}
             >
-              <Search size={22} className="text-white" />
+              <Search size={22} className="text-black" />
             </div>
           </div>
           {customerName !== "" && <span className="mt-2">Customer name: <span className="text-green-500">{customerName}</span></span>}
@@ -182,7 +224,7 @@ function RevertForm({ setIsOpen, isviewOpen }) {
         </div>
 
         {/* Scheme Account Number Field */}
-        <div className="flex flex-col">
+        {/* <div className="flex flex-col">
           <label className="font-medium text-gray-700">
             Scheme Account Number<span className="text-red-400"> *</span>
           </label>
@@ -197,7 +239,7 @@ function RevertForm({ setIsOpen, isviewOpen }) {
             }}
             onBlur={formik.handleBlur}
             placeholder="Enter Scheme Account Number"
-            className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600 w-full"
+            className="p-3 border-2 border-[#f2f3f8] rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600 w-full"
           />
            <div
               onClick={handleClosedSchemeAcc}
@@ -211,6 +253,26 @@ function RevertForm({ setIsOpen, isviewOpen }) {
             <span className="text-red-500 text-sm mt-1">
               {formik.errors.scheme_account}
             </span>
+          )}
+        </div> */}
+        <div className="flex flex-col">
+          <label className="text-black mb-1 font-medium">
+          Scheme Account Number
+          </label>
+          <Select
+            options={schemedata}
+            value={schemedata.find(
+              (branch) => branch.value === formik.values.scheme_account
+            )}
+            onChange={(option) =>
+              formik.setFieldValue("scheme_account", option.value)
+            }
+            styles={customStyles(true)}
+            isLoading={loadingBranch}
+            placeholder="Select Scheme Account Number"
+          />
+          {formik.touched.scheme_account && formik.errors.scheme_account && (
+            <div className="text-red-500">{formik.errors.scheme_account}</div>
           )}
         </div>
 
@@ -226,7 +288,7 @@ function RevertForm({ setIsOpen, isviewOpen }) {
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             placeholder="Enter Bill Number"
-            className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600"
+            className="p-3 border-2 border-[#f2f3f8] rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600"
           />
           {formik.touched.bill_no && formik.errors.bill_no && (
             <span className="text-red-500 text-sm mt-1">
@@ -246,7 +308,7 @@ function RevertForm({ setIsOpen, isviewOpen }) {
             value={formik.values.bill_date ? formik.values.bill_date.split("T")[0] : ""}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600"
+            className="p-3 border-2 border-[#f2f3f8] rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600"
           />
           {formik.touched.bill_date && formik.errors.bill_date && (
             <span className="text-red-500 text-sm mt-1">
@@ -268,8 +330,8 @@ function RevertForm({ setIsOpen, isviewOpen }) {
             <button
               type="submit"
               disabled={isLoading}
-              className="text-white rounded-md p-2 w-full lg:w-20"
-              style={{ backgroundColor: layout_color }}
+              className="text-white rounded-md p-2 w-full lg:w-20 bg-[#004181]"
+              // style={{ backgroundColor: layout_color }}
             >
               {isLoading ? <SpinLoading /> : "Revert"}
             </button>

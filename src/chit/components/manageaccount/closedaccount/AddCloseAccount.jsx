@@ -19,13 +19,11 @@ import {
   closeBill,
   verifyOtp
 } from "../../../api/Endpoints";
-// import Modal from "../../common/Modelone";
-// import ModelOne from "../../common/Modelone";
-// import RevertForm from "./RevertForm";
+import RevertForm from "./RevertForm";
 import customSelectStyles from "../../common/customSelectStyles";
 import CalenderNew from "../../../../assets/icons/calendarNew.svg";
 import CheckboxToggle from "../../common/checkBox";
-import Verified from "../../../../assets/icons/verified.svg";
+// import Verified from "../../../../assets/icons/verified.svg";
 import ModelOne from '../../common/Modelone';
 import VerificationModal from "./VerificationModal";
 import OtpCompleted from "./OtpCompleted";
@@ -50,14 +48,13 @@ const AddCloseAccount = () => {
   const [showVerification, setShowVerification] = useState(false);
   const [mobileNum, setMobileNum] = useState("");
   const [otpNumber, setOtpNumber] = useState("");
-  const [timer, setTimer] = useState(0);
-  const [canResend, setCanResend] = useState(false);
   const [dynamic, setDynamic] = useState(false);
   const [totalAmount, setAmount] = useState(0);
   const [isviewOpen, setIsviewOpen] = useState(false);
   const [checked, setChecked] = useState(false);
   const [otpSended,setSendOtp]= useState(false);
   const [otpCompleted,setOtpComplete]= useState(false)
+  const [viewRevertForm,setReverView] = useState(false)
 
   // Format today's date
   const today = new Date();
@@ -409,8 +406,9 @@ const AddCloseAccount = () => {
     };
   });
 
-  const handleOpenRevert = () => {
-    setIsviewOpen(true);
+  const handleOpenRevert = (e) => {
+    e.preventDefault()
+    setReverView(true);
   };
 
   const handleOtpToggle = () => {
@@ -426,6 +424,7 @@ const AddCloseAccount = () => {
   const handleOtpComplete = ()=>{
     setOtpComplete(true)
     setSendOtp(false);
+    setReverView(false)
   }
 
 
@@ -435,14 +434,28 @@ const AddCloseAccount = () => {
       <div className="flex flex-row justify-between items-center mt-4 mb-4">
         <p className="text-sm text-gray-400 mb-3">
           Manage Customers /{" "}
-          <span className="text-black">Pre Closed Account</span>
+          <span className="text-black"> {dynamic ? "Pre Close Account" : "Closed Accounts"}</span>
         </p>
+        
       </div>
 
       <div className="bg-[#FFFFFF] rounded-xl p-6 shadow-sm border">
-        <h2 className="text-lg font-semibold mb-4 border-b pb-4">
-          Pre Close Account
+        <div className="flex flex-row justify-between mb-4 border-b pb-4">
+        <h2 className="text-lg font-semibold ">
+        {dynamic ? "Pre Close Account" : "Closed Accounts"}
         </h2>
+        {!dynamic && (
+          <div>
+          <button
+            className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
+            onClick={(e)=>handleOpenRevert(e)}
+            style={{ backgroundColor: layout_color }}
+          >
+            + Revert account
+          </button>
+        </div>
+        )}
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {branchOptions.length > 0 && (
@@ -835,6 +848,16 @@ const AddCloseAccount = () => {
       />
     </ModelOne>
     )}
+     <ModelOne
+          title={"Revert close account"}
+          extraClassName="w-[31rem]"
+          custom='border-b'
+          setIsOpen={setReverView}
+          isOpen={viewRevertForm}
+          closeModal={closeIncommingModal}
+        >
+          <RevertForm isviewOpen={viewRevertForm} setIsOpen={setReverView} />
+        </ModelOne>
     </>
   );
 };
