@@ -318,7 +318,7 @@ const AddCloseAccount = () => {
     postVerifyOtp({
       mobile: mobileNum || formik.values.mobile,
       otp: data,
-      type:'preclose',
+      type: dynamic ? 'preclose' : "close",
       branchId: formik.values.id_branch,
     });
   };
