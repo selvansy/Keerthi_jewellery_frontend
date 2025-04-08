@@ -1,5 +1,5 @@
 import React from 'react';
-import { Download, FileSpreadsheet, FileText } from 'lucide-react';
+import { Download, FileSpreadsheet, FileText,ChevronDown } from 'lucide-react';
 import { Menu, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 import { useSelector } from 'react-redux';
@@ -12,12 +12,13 @@ const ExportDropdown = ({apiData,fileName}) => {
   return (
     <Menu as="div" className="relative inline-block text-left z-20">
       <div>
-        <Menu.Button className=" text-black border-2 border-[#034571] flex items-center gap-2 px-4 py-1 rounded-md"
-         >
-        
-          {/* <Download className="h-4 w-4" /> */}
+        <Menu.Button
+          className="flex items-center gap-2 border border-[#034571] bg-white text-[#034571] 
+                     px-4 py-1.5 text-sm font-medium rounded-md"
+        >
           <img src={exportIcon} alt="Export" className="h-4 w-4" />
           Export
+          <ChevronDown className="h-4 w-4" />
         </Menu.Button>
       </div>
 
