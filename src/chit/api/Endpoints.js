@@ -2718,13 +2718,12 @@ export const getPaymentLedger = async (data) => {
 
 //re check needed for this api section
 export const sendOtp = async(data)=>{
-
   const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/schemeaccount/close/${data.mobile}/branch/${data.branchId}`)
   return response.data
 }
 
 export const verifyOtp = async(data)=>{
-  const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/schemeaccount/verifyotp`,data)
+  const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/otp/verifyotp`,data)
   return response.data
 }
 
