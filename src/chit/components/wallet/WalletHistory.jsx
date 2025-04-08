@@ -13,6 +13,7 @@ import { Breadcrumb } from '../common/breadCumbs/breadCumbs';
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import ExportDropdown from '../common/Dropdown/Export';
+import Action from '../common/action';
 
 const customSelectStyles = (isReadOnly) => ({
   control: (base, state) => ({
@@ -60,6 +61,8 @@ function WalletHistory() {
   const [balAmt,setbalAmt] = useState(0)
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
+    const [activeDropdown, setActiveDropdown] = useState(null);
+  
   
 
   const [searchInput, setSearchInput] = useState(""); 
@@ -156,20 +159,29 @@ function WalletHistory() {
 
 
 
-  const paginationData = {
-    totalItems: totalPages,
-    currentPage: currentPage,
-    itemsPerPage: itemsPerPage,
-    handlePageChange: handlePageChange,
+  const hanldeActiveDropDown = (data) => {
+    setActiveDropdown(data);
   };
-  const paginationButtons = usePagination(paginationData);
 
-  const redeemTypes = {
-    "1": "Direct",
-    "2": "Purchase",
-    "3": "Referral",
-    "4": "Incentives",
+  
+  const handleEdit = (id) => {
+    setIsviewOpen(true);
+    setId(id);
   };
+
+
+
+   useEffect(() => {
+      const handleClickOutside = (event) => {
+        if (activeDropdown && !event.target.closest(".dropdown-container")) {
+          setActiveDropdown(null);
+        }
+      };
+  
+      document.addEventListener("click", handleClickOutside);
+      return () => document.removeEventListener("click", handleClickOutside);
+    }, [activeDropdown]);
+  
 
 
   const columns = [
@@ -178,45 +190,58 @@ function WalletHistory() {
       cell: (_, index) => index + 1 + (currentPage - 1) * limit,
     },
     {
-      header: "Customer name",
-      cell: (row) => `${row?.id_customer?.firstname || ""} ${row?.id_customer?.lastname || ""}`.trim() || "-",
+      header: "Name",
+      cell: (row) => {
+        const emp = row?.id_employee;
+        const cust = row?.id_customer;
+    
+        if (emp) {
+          return `${emp.firstname || ""} ${emp.lastname || ""} ${emp.mobile || "-"}`.trim();
+        }
+    
+        if (cust) {
+          return `${cust.firstname || ""} ${cust.lastname || ""} ${cust.mobile || "-"}`.trim();
+        }
+    
+        return "-";
+      }
+    },         
+    {
+      header: "Wallet Amount",
+      cell: (row) => `${row?.total_reward_amt || "-"}`,
     },
     {
-      header: "mobile",
-      cell: (row) => `${row?.id_customer?.mobile || "-"}`,
-    },
-    // {
-    //   header: "Wallet Points",
-    //   cell: (row) => (
-    //     <span style={{ color: row?.credited_point < 0 ? "red" : "inherit" }}>
-    //       {row?.credited_point !== undefined ? Math.abs(row.credited_point) : "-"}
-    //     </span>
-    //   ),
-    // },
-    {
-      header: "Amount",
+      header: "Wallet Redeemption",
       cell: (row) => (
-        <span style={{ color: row?.credited_amount < 0 ? "red" : "inherit" }}>
-          {row?.credited_amount !== undefined ? Math.abs(row.credited_amount) : "-"}
+        <span style={{ color: row?.redeem_amt < 0 ? "red" : "inherit" }}>
+          {row?.redeem_amt !== undefined ? Math.abs(row.redeem_amt) : "-"}
         </span>
       ),
-    },       
+    },  
     {
-      header: "Type",
-      cell: (row) => redeemTypes[row?.redeem_type] || "-",
+      header: "Balance Reward",
+      cell: (row) => `${row?.balance_amt || "-"}`,
     },
     {
-      header: "Date",
-      cell: (row) => {
-        if (!row?.createdAt) return "-";
-        const date = new Date(row?.createdAt);
-        const formattedDate = date.toISOString().split("T")[0];
-        return formattedDate;
-      }
+      header: "Actions",
+      cell: (row, rowIndex) => (
+        <Action
+          row={row}
+          data={walletData}
+          rowIndex={rowIndex}
+          activeDropdown={activeDropdown}
+          setActive={hanldeActiveDropDown}
+          handleEdit={null}
+          handleDelete={null}
+          handleView={row}
+         
+        />
+      ),
+      sticky: "right",
     },
+   
   ];
 
-  console.log("branch--",branch)
 
   return (
     <>
@@ -228,21 +253,7 @@ function WalletHistory() {
         <div className="flex flex-wrap gap-4 justify-between items-center">
           {/* Left Side Controls */}
           <div className="flex flex-wrap gap-2 items-center">
-            <Select
-              options={branchOptions}
-              value={
-                id_branch !== '0'
-                  ? branchOptions.find((b) => b.value === id_branch) || ''
-                  : branchOptions.find((b) => b.value === branch) || ''
-              }
-              onChange={(selected) => setBranch(selected.value)}
-              className="min-w-[250px]"
-              styles={customSelectStyles(true)}
-              isLoading={loadingbranch}
-              isDisabled={id_branch !== '0'}
-              placeholder="Select"
-            />
-
+          
             <div className="relative">
               {searchLoading ? (
                 <div className="absolute left-3 top-1/2 transform -translate-y-1/2 animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
@@ -258,16 +269,14 @@ function WalletHistory() {
                 className="pl-9 pr-4 py-2 border-2 border-[#F2F2F9] rounded-[8px] w-[200px]"
               />
             </div>
-
-
           </div>
 
           {/* Export Button */}
-          <div className="ml-auto flex justify-between items-center">
+          <div className="ml-auto flex justify-between items-center gap-2">
             
           <div className="relative flex items-center gap-2">
               <CalendarDays className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
-              <div className="flex items-center pl-8 border border-[#F2F2F9] rounded-[8px] px-3 py-2 bg-white text-sm">
+              <div className="flex items-center pl-8 border-2 border-[#F2F2F9] rounded-[8px] px-3 py-2 bg-white text-sm">
                 <DatePicker
                   selected={startDate}
                   onChange={(date) => setStartDate(date)}

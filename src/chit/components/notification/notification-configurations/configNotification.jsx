@@ -31,7 +31,7 @@ const ConfigNotification = () => {
       schemeClose: "Scheme Close",
       schemeReferral: "Scheme Referral",
       walletAmountRedeem: "Wallet Amount Redeem",
-      alertNotification: "Alert Notification",
+      overdue: "Over-Due Notification",
     },
     wishes: {
       birthday: "Birthday",

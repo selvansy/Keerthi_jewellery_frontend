@@ -179,28 +179,16 @@ function RedeemHistory() {
       cell: (_, index) => index + 1 + (currentPage - 1) * limit,
     },
     {
-      header: "Customer name",
-      cell: (row) => `${row?.id_customer?.firstname || ""} ${row?.id_customer?.lastname || ""}`.trim() || "-",
+      header: "Name",
+      cell: (row) => `${row?.user?.firstname || ""} ${row?.user?.lastname || ""} ${row?.user?.mobile || "-"}`.trim() || "-",
     },
     {
-      header: "mobile",
-      cell: (row) => `${row?.id_customer?.mobile || "-"}`,
-    },
-    // {
-    //   header: "Wallet Points",
-    //   cell: (row) => {
-    //     return row?.credited_point !== undefined ? Math.abs(row.credited_point) : "-";
-    //   }
-    // },
-    {
-      header: "Amount",
-      cell: (row) => {
-        return row?.credited_amount !== undefined ? formatNumber({ value: Math.abs(row.credited_amount) }) : "-";
-      }
+      header: "Branch",
+      cell: (row) => `${row?.branch[0]?.branch_name || "-"}`,
     },
     {
-      header: "Type",
-      cell: (row) => redeemTypes[row?.redeem_type] || "-",
+      header: "Bill No",
+      cell: (row) => `${row?.bill_no || "-"}`,
     },
     {
       header: "Date",
@@ -209,6 +197,12 @@ function RedeemHistory() {
         const date = new Date(row?.createdAt);
         const formattedDate = date.toISOString().split("T")[0];
         return formattedDate;
+      }
+    },
+    {
+      header: "Redeemed Amount",
+      cell: (row) => {
+        return row?.credited_amount !== undefined ? formatNumber({ value: Math.abs(row.credited_amount) }) : "-";
       }
     },
   ];
@@ -223,21 +217,7 @@ function RedeemHistory() {
         <div className="flex flex-wrap gap-4 justify-between items-center">
           {/* Left Side Controls */}
           <div className="flex flex-wrap gap-2 items-center">
-            <Select
-              options={branchOptions}
-              value={
-                id_branch !== '0'
-                  ? branchOptions.find((b) => b.value === id_branch) || ''
-                  : branchOptions.find((b) => b.value === branch) || ''
-              }
-              onChange={(selected) => setBranch(selected.value)}
-              className="min-w-[250px]"
-              styles={customSelectStyles(true)}
-              isLoading={loadingbranch}
-              isDisabled={id_branch !== '0'}
-              placeholder="Select"
-            />
-
+          
             <div className="relative">
               {searchLoading ? (
                 <div className="absolute left-3 top-1/2 transform -translate-y-1/2 animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
@@ -250,10 +230,9 @@ function RedeemHistory() {
                   setSearchInput(e.target.value);
                 }}
                 placeholder="Search"
-                className="pl-9 pr-4 py-2 border-2 border-[#F2F2F9] rounded-[8px] w-[200px]"
+                className="pl-9 pr-4 py-2 border-2 border-[#F2F2F9] rounded-[8px] w-[350px]"
               />
             </div>
-
 
           </div>
 

@@ -68,7 +68,7 @@ function WalletRedemption() {
     const [paymentData, setPaymentData] = useState([])
     const [isCustomer, setCustomer] = useState(true);
     const [formData, setFormData] = useState({
-        billno: "",
+        bill_no: "",
         redeem_amt: "",
         wallet_id:"",
         wallet_type:"Customer",
@@ -82,10 +82,10 @@ function WalletRedemption() {
     const handleInputChange = (e) => {
         const { name, value } = e.target;
 
-        if (name === "billno") {
+        if (name === "bill_no") {
             setFormData(prev => ({
                 ...prev,
-                billno: value.toUpperCase()
+                bill_no: value.toUpperCase()
             }));
         } else {
             const numericValue = value.trim() === "" ? 0 : Number(value);
@@ -110,10 +110,9 @@ function WalletRedemption() {
 
     const validateForm = () => {
         let errors = {}
-        // if (!formData.redeem_point) errors.redeem_point = "RedeemPoint is required"
         if (!formData.redeem_amt) errors.redeem_amt = "RedeemAmount is required"
         if (formData.redeem_type == "2") {
-            if (!formData.billno) errors.billno = "Billno is required"
+            if (!formData.bill_no) errors.bill_no = "Billno is required"
         }
         if (formData.redeem_type == "1") {
             if (!formData.payment_mode) errors.payment_mode = "Payment mode is required"
@@ -128,7 +127,7 @@ function WalletRedemption() {
 
     const handleCancel = () => {
         setFormData({
-            billno: "",
+            bill_no: "",
             redeem_amt: "",
             wallet_id:"",
             wallet_type:"Customer",
@@ -145,7 +144,7 @@ function WalletRedemption() {
         if (!validateForm()) {
             return
         }
-        
+        console.log("billNo",formData)
         if(!formData.wallet_id){
             toast.error("Wallet Redeemer not identified")
             return;
@@ -424,8 +423,8 @@ function WalletRedemption() {
                                     <label className='text-gray-700 font-medium'>Bill no<span className='text-red-400'></span></label>
                                     <input
                                         type='text'
-                                        name='billno'
-                                        value={formData.billno}
+                                        name='bill_no'
+                                        value={formData.bill_no}
                                         onInput={(e) => {
                                             const regex = /^[a-zA-Z0-9-]*$/;
                                             if (regex.test(e.target.value)) {
@@ -434,9 +433,9 @@ function WalletRedemption() {
                                         }}
                                         maxLength={20}
                                         className="w-full border-2 border-[#F2F2F9] rounded-md px-3 py-2"
-                                        placeholder='Enter billno'
+                                        placeholder='Enter bill number'
                                     />
-                                    {formErrors.billno && <span className="text-red-500 text-sm mt-1">{formErrors.billno}</span>}
+                                    {formErrors.bill_no && <span className="text-red-500 text-sm mt-1">{formErrors.bill_no}</span>}
                                 </div>
                             </>
                         )
