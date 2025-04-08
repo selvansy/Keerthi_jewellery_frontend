@@ -143,9 +143,9 @@ function RevertForm({ setIsOpen, isviewOpen }) {
       .map(item => ({
         value: item.scheme_acc_number,
         label: item.scheme_name,
-        // status: status[item.status]
+        status: status[item.status]
       }));
-    
+    console.log(data)
       if(data.length <=0 ){
         return toast.error('No closed accounts found')
       }    
@@ -248,6 +248,18 @@ function RevertForm({ setIsOpen, isviewOpen }) {
             styles={customStyles(true)}
             isLoading={loadingBranch}
             placeholder="Select Scheme Account Number"
+            getOptionLabel={(e) => (
+              <div className="flex justify-between items-center">
+                <span>{e.label}</span>
+                <div
+                  className={`text-xs px-2 py-0.5 rounded ${
+                    e.status ? "bg-red-100 text-[#FF0000]" : "bg-green-100 text-green-700"
+                  }`}
+                >
+                  {e.status}
+                </div>
+              </div>
+            )}
           />
           {formik.touched.scheme_account && formik.errors.scheme_account && (
             <div className="text-red-500">{formik.errors.scheme_account}</div>
