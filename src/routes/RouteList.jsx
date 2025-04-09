@@ -376,6 +376,11 @@ const RouteList = [
     element: <Base renderContent={WalletRedemption} />
   },
   {
+    name: "Wallet",
+    path: '/wallet/redeemption/:id',
+    element: <Base renderContent={WalletRedemption} />
+  },
+  {
     name: "Wallet History",
     path: '/wallet/wallethistory/',
     element: <Base renderContent={WalletHistory} />

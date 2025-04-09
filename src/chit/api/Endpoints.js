@@ -98,6 +98,26 @@ export const walletRedeem = async (data) => {
   return response.data;
 };
 
+
+
+export const walletRedeemByUser = async (data) => {
+  const response = await Api.post(
+    `${import.meta.env.VITE_API_URL}/api/client/wallet/user/redeemData?mobile=${data.mobile}`,
+    data
+  );
+  return response.data;
+};
+
+export const RefferalByUser = async (data) => {
+  const response = await Api.post(
+    `${import.meta.env.VITE_API_URL}/api/client/wallet/refferal-list/user?mobile=${data.mobile}`,
+    data
+  );
+  return response.data;
+};
+
+
+
 export const redeemType = async () => {
   const response = await Api.get(
     `${import.meta.env.VITE_API_URL}/api/client/common/redeem-type`

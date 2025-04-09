@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import usePagination from "../../../chit/hooks/usePagination";
 import SpinLoading from "../../components/common/spinLoading";
 import { eventEmitter } from "../../../utils/EventEmitter";
 import { useSelector, useDispatch } from "react-redux";
-import {walletHistory,getallbranch } from "../../api/Endpoints"
+import { walletHistory, getallbranch } from "../../api/Endpoints"
 import { useDebounce } from "../../../chit/hooks/useDebounce"
 import Table from "../../components/common/Table";
-import { Search,CalendarDays  } from "lucide-react";
+import { Search, CalendarDays, Eye } from "lucide-react";
 import Select from "react-select";
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Breadcrumb } from '../common/breadCumbs/breadCumbs';
@@ -14,6 +14,19 @@ import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import ExportDropdown from '../common/Dropdown/Export';
 import Action from '../common/action';
+import More from "../../../assets/more.svg"
+import { createPortal } from 'react-dom';
+import refferalicon from "../../../assets/icons/refer-arrow 1.svg"
+import eyeIcon from "../../../assets/icons/eye.svg"
+import totalGift from "../../../assets/icons/totalgift.svg"
+import chitReceivedGift from "../../../assets/icons/chitReceivedGift.svg"
+import { formatNumber } from '../../utils/commonFunction';
+import RedeemHisCard from './RedeemHisCard';
+import ModelOne from "../common/Modelone";
+import { useNavigate,useLocation  } from 'react-router-dom';
+
+
+
 
 const customSelectStyles = (isReadOnly) => ({
   control: (base, state) => ({
@@ -52,21 +65,38 @@ function WalletHistory() {
 
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const [walletData, setwalletData] = useState([]);
+  const [data,setData] = useState([]);
   const [branchOptions, setBranchOptions] = useState([]);
+  const [giftcount, setGiftcount] = useState({});
+  
   const [branch, setBranch] = useState("")
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [redeemedAmt,setRedeemAmt] = useState(0)
-  const [balAmt,setbalAmt] = useState(0)
+  const [redeemedAmt, setRedeemAmt] = useState(0)
+  const [balAmt, setbalAmt] = useState(0)
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
-    const [activeDropdown, setActiveDropdown] = useState(null);
-  
-  
+  const [activeDropdown, setActiveDropdown] = useState(null);
+  const [position, setPosition] = useState({ top: 0, left: 0 });
+  const [isviewOpen, setIsviewOpen] = useState(false);
 
-  const [searchInput, setSearchInput] = useState(""); 
+  const navigate = useNavigate();
+ 
+  
+  
+  function closeIncommingModal() {
+    setIsviewOpen(false);
+    setId("");
+  }
+
+  const clearId = () => {
+    setId("");
+  };
+
+  const [searchInput, setSearchInput] = useState("");
   const debouncedSearch = useDebounce(searchInput, 500);
+  const dropdownRef = useRef(null);
 
   const limit = 10;
 
@@ -74,10 +104,10 @@ function WalletHistory() {
   const [searchLoading, setSearchLoading] = useState(false);
   const [totalDocuments, setTotalDocuments] = useState(0)
 
-    const roleData = useSelector((state) => state.clientForm.roledata);
-    const id_role = roleData?.id_role?.id_role;
-    const id_client = roleData?.id_client;
-    const id_branch = roleData?.branch;
+  const roleData = useSelector((state) => state.clientForm.roledata);
+  const id_role = roleData?.id_role?.id_role;
+  const id_client = roleData?.id_client;
+  const id_branch = roleData?.branch;
 
 
   useEffect(() => {
@@ -86,7 +116,6 @@ function WalletHistory() {
       setBranch(id_branch)
     }
   }, [roleData]);
-
 
 
   const { data: branchresponse, isLoading: loadingbranch } = useQuery({
@@ -107,29 +136,30 @@ function WalletHistory() {
 
   }, [branchresponse])
 
- 
-   useEffect(() => {
-      getallWalletData({ search: debouncedSearch, page: currentPage, limit: itemsPerPage });
-    }, [currentPage, debouncedSearch, itemsPerPage]);
 
-    const { mutate: getallWalletData } = useMutation({
-      mutationFn: (payload) => walletHistory(payload),
-      onSuccess: (response) => {
-        setwalletData(response.data)
-        setRedeemAmt(response.totalRedeemedAmt)
-        setbalAmt(response.totalBalanceAmt)
-        setTotalPages(response.totalPages)
-        setCurrentPage(response.currentPage)
-        setTotalDocuments(response.totalDocuments)
-        setisLoading(false)
-      },
-      onError: (error) => {
-        console.log(error)
-        setisLoading(false)
-        setwalletData([])
-      }
-    });
-  
+  useEffect(() => {
+    getallWalletData({ search: debouncedSearch, page: currentPage, limit: itemsPerPage });
+  }, [currentPage, debouncedSearch, itemsPerPage]);
+
+  const { mutate: getallWalletData } = useMutation({
+    mutationFn: (payload) => walletHistory(payload),
+    onSuccess: (response) => {
+      setwalletData(response.data)
+      setGiftcount(response.walletCount)
+      setRedeemAmt(response.totalRedeemedAmt)
+      setbalAmt(response.totalBalanceAmt)
+      setTotalPages(response.totalPages)
+      setCurrentPage(response.currentPage)
+      setTotalDocuments(response.totalDocuments)
+      setisLoading(false)
+    },
+    onError: (error) => {
+      console.log(error)
+      setisLoading(false)
+      setwalletData([])
+    }
+  });
+
 
   const handleSearch = (e) => {
     setSearchLoading(true);
@@ -158,30 +188,48 @@ function WalletHistory() {
   };
 
 
+  const hanldeActiveDropDown = (id, event) => {
+    if (id) {
+      const rect = event.currentTarget.getBoundingClientRect();
+      setPosition({
+        top: rect.bottom + window.scrollY,
+        left: rect.right - 130,
+      });
+    }
+    setActiveDropdown(id);
+  };
 
-  const hanldeActiveDropDown = (data) => {
+  const handleRefferalHistory = (data) => {
+    setActiveDropdown(data._id);
+    navigate(`/wallet/redeemption/:${data._id}`,{
+      state:{
+        data
+      }
+    })
+  }
+
+
+  const handleRedeemHistory = (data) => {
     setActiveDropdown(data);
-  };
-
-  
-  const handleEdit = (id) => {
     setIsviewOpen(true);
-    setId(id);
+    setData(data)
+    // setId(id);
   };
 
 
 
-   useEffect(() => {
-      const handleClickOutside = (event) => {
-        if (activeDropdown && !event.target.closest(".dropdown-container")) {
-          setActiveDropdown(null);
-        }
-      };
-  
-      document.addEventListener("click", handleClickOutside);
-      return () => document.removeEventListener("click", handleClickOutside);
-    }, [activeDropdown]);
-  
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (activeDropdown && !event.target.closest(".dropdown-container")) {
+        setActiveDropdown(null);
+      }
+    };
+
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, [activeDropdown]);
+
+
 
 
   const columns = [
@@ -194,18 +242,18 @@ function WalletHistory() {
       cell: (row) => {
         const emp = row?.id_employee;
         const cust = row?.id_customer;
-    
+
         if (emp) {
           return `${emp.firstname || ""} ${emp.lastname || ""} ${emp.mobile || "-"}`.trim();
         }
-    
+
         if (cust) {
           return `${cust.firstname || ""} ${cust.lastname || ""} ${cust.mobile || "-"}`.trim();
         }
-    
+
         return "-";
       }
-    },         
+    },
     {
       header: "Wallet Amount",
       cell: (row) => `${row?.total_reward_amt || "-"}`,
@@ -217,43 +265,126 @@ function WalletHistory() {
           {row?.redeem_amt !== undefined ? Math.abs(row.redeem_amt) : "-"}
         </span>
       ),
-    },  
+    },
     {
       header: "Balance Reward",
       cell: (row) => `${row?.balance_amt || "-"}`,
     },
     {
-      header: "Actions",
-      cell: (row, rowIndex) => (
-        <Action
-          row={row}
-          data={walletData}
-          rowIndex={rowIndex}
-          activeDropdown={activeDropdown}
-          setActive={hanldeActiveDropDown}
-          handleEdit={null}
-          handleDelete={null}
-          handleView={row}
-         
-        />
+      header: "Action",
+      cell: (row) => (
+        <>
+          <div ref={dropdownRef} className="dropdown-container relative flex items-center">
+            <button
+              className="p-2 border hover:bg-gray-100 rounded-full flex justify-center"
+              onClick={(e) => {
+                e.stopPropagation();
+                hanldeActiveDropDown(activeDropdown === row?._id ? null : row?._id, e);
+              }}
+            >
+              <img src={More} alt="" className="w-[20px] h-[20px]" />
+            </button>
+          </div>
+
+          {activeDropdown === row?._id &&
+            createPortal(
+              <div
+                className="absolute"
+                style={{
+                  top: position.top,
+                  left: position.left,
+                  zIndex: 9999,
+                  filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.15))",
+                }}
+              >
+                <div className="w-40 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+                  <div className="py-1">
+                    <button
+                      className="w-full text-left text-nowrap px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                      onClick={() => handleRefferalHistory(row)}
+                    >
+                     <img src={refferalicon} alt="" srcSet="" className='text-black w-4 h-4 mr-1'/>
+                      Refferal History
+                    </button>
+
+                    <button
+                      className="w-full text-left text-nowrap px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                      onClick={() => {
+                        handleRedeemHistory(row);
+                        hanldeActiveDropDown(null);
+                      }}
+                    >
+                      <img src={eyeIcon} alt="" srcSet="" className='text-black w-4 h-4 mr-1'/>
+                      Redeem History
+                    </button>
+
+                  </div>
+                </div>
+              </div>,
+              document.body
+            )}
+        </>
       ),
-      sticky: "right",
-    },
-   
+    }
+
+
   ];
 
+    let cardData = [
+      {
+        img: totalGift,
+        countValue: formatNumber({value:giftcount?.totalRewardAmt,decimalPlaces: 0 }) ,
+        label: "Total Reward Issued",
+      },
+      {
+        img: chitReceivedGift,
+        countValue: formatNumber({value:giftcount?.totalRedeemedAmt,decimalPlaces: 0 }),
+        label: "Total Redeemed Amount",
+      },
+     
+    ];
 
   return (
     <>
-     <Breadcrumb
+      <Breadcrumb
         items={[{ label: "Wallet" }, { label: "Wallet History", active: true }]}
       />
+
+         <div className="flex flex-col p-4">
+        <div className='flex flex-col gap-3'>
+          {/* Cards Section */}
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {
+              cardData.map((e) => (
+                <div className="bg-white border-2 border-[#F5F5F5] rounded-[16px] px-[12px]" key={e.label}>
+                  <div className="rounded-md py-5">
+                    <img
+                      src={e.img}
+                      alt="totalGift"
+                      className="h-[40px] w-[40px]"
+                    />
+                    <div className="flex flex-col  ms-1 mt-2 pt-4">
+                      <h5 className="text-2xl font-semibold">
+                        {e.countValue || 0}
+                      </h5>
+                      <h5 className="text-[#6C7086] font-[500] text-[16px] pt-1" style={{ fontFamily: "Inter, sans-serif" }} >{e.label}</h5>
+                    </div>
+                  </div>
+
+                </div>
+              ))
+            }
+
+          </div>
+        </div>
+      </div>
+
       <div className="p-4 bg-white border border-[#F2F2F9] rounded-[16px] shadow-sm">
         {/* Header Controls */}
         <div className="flex flex-wrap gap-4 justify-between items-center">
           {/* Left Side Controls */}
           <div className="flex flex-wrap gap-2 items-center">
-          
+
             <div className="relative">
               {searchLoading ? (
                 <div className="absolute left-3 top-1/2 transform -translate-y-1/2 animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
@@ -273,8 +404,8 @@ function WalletHistory() {
 
           {/* Export Button */}
           <div className="ml-auto flex justify-between items-center gap-2">
-            
-          <div className="relative flex items-center gap-2">
+
+            <div className="relative flex items-center gap-2">
               <CalendarDays className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
               <div className="flex items-center pl-8 border-2 border-[#F2F2F9] rounded-[8px] px-3 py-2 bg-white text-sm">
                 <DatePicker
@@ -322,9 +453,23 @@ function WalletHistory() {
             handleItemsPerPageChange={handleItemsPerPageChange}
           />
         </div>
+        <ModelOne
+          title={"Redeem History"}
+          extraClassName="w-[650px]"
+          setIsOpen={setIsviewOpen}
+          isOpen={isviewOpen}
+          isLoading={isLoading}
+          closeModal={closeIncommingModal}
+        >
+          <RedeemHisCard 
+         
+          data={data}
+          
+         />
+        </ModelOne>
       </div>
     </>
-  
+
   )
 }
 
