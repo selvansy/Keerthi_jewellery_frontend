@@ -77,7 +77,7 @@ const customSelectStyles = (isReadOnly) => ({
     }),
 });
 
-const CustomerForm = ({ setCusData, id, cusData, id_proof, setIdProof, cus_img, pathurl, setCusImg, setPathurl, handleClear }) => {
+const CustomerForm = ({ setCusData,handleCusData, id, cusData, id_proof, setIdProof, cus_img, pathurl, setCusImg, setPathurl, handleClear }) => {
 
 
     const navigate = useNavigate();
@@ -136,6 +136,14 @@ const CustomerForm = ({ setCusData, id, cusData, id_proof, setIdProof, cus_img, 
             .required("Pincode is required")
             .matches(/^\d{6}$/, "Pincode must be 6 digits"),
 
+            password: Yup.string()
+            .nullable()
+            .notRequired(),
+        
+          confirmPassword: Yup.string()
+            .nullable()
+            .oneOf([Yup.ref('password')], 'Passwords must match')
+            .notRequired(),
 
     });
 
@@ -258,11 +266,8 @@ const CustomerForm = ({ setCusData, id, cusData, id_proof, setIdProof, cus_img, 
         onSuccess: (response) => {
             if (response) {
                 toast.success(response.message);
-
-                setCusData(prev => ({
-                    ...prev,
-                    customerId: response.data,
-                }))
+                handleCusData(response.data);
+                
             }
             setisLoading(false);
         },
@@ -394,7 +399,7 @@ const CustomerForm = ({ setCusData, id, cusData, id_proof, setIdProof, cus_img, 
         if (e) {
             e.preventDefault()
         }
-        const mobileToUse = mobile || cusData.mobile;
+        const mobileToUse = mobile || cusData?.mobile;
 
         if (!mobileToUse) {
             toast.error("Mobile number is required");
@@ -403,8 +408,7 @@ const CustomerForm = ({ setCusData, id, cusData, id_proof, setIdProof, cus_img, 
 
         postSendOtpMobile({
             mobile: mobileToUse,
-            otp: otpNumber,
-            branchId: cusData.id_branch,
+            branchId: cusData?.id_branch,
         });
     };
 
@@ -624,7 +628,6 @@ const CustomerForm = ({ setCusData, id, cusData, id_proof, setIdProof, cus_img, 
     };
 
     const handlePasswordToggle = ()=>{
-
         setShowPassword(!showpassword)
     }
 
@@ -643,6 +646,13 @@ const CustomerForm = ({ setCusData, id, cusData, id_proof, setIdProof, cus_img, 
                             validateOnBlur: false,
                             onSubmit: (values) => {
 
+                                if(values.password !== values.confirmpassword){
+                                    toast.error("Passwords doesn't match");
+                                    return;
+                                }
+
+                                setCusData(values)
+                                console.log("values---",values)
                                 handleDispatch(values);
                                 setisLoading(true);
                                 const formPayload = new FormData();
@@ -1183,7 +1193,7 @@ const CustomerForm = ({ setCusData, id, cusData, id_proof, setIdProof, cus_img, 
 
                                     </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 border-gray-300 mt-8">
+                                    <div className="grid grid-rows-1 md:grid-rows-1 lg:grid-cols-3 gap-6 border-gray-300 mt-8">
 
                                         {/* Resume Upload Field */}
                                         <div className="flex flex-col">
@@ -1278,7 +1288,7 @@ const CustomerForm = ({ setCusData, id, cusData, id_proof, setIdProof, cus_img, 
 
                                     </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-6 my-3">
+                                    <div className="grid grid-rows-1 md:grid-rows-1 lg:grid-cols-1 gap-6 my-3">
                                         <div className="flex flex-col gap-3 lg:mt-4">
                                             <CheckboxToggle
                                                 checked={checked}
@@ -1287,8 +1297,8 @@ const CustomerForm = ({ setCusData, id, cusData, id_proof, setIdProof, cus_img, 
                                             />
 
                                             {checked && (
-                                                <div className="flex flex-row justify-between w-full gap-4 my-2">
-                                                    <div className="flex flex-col gap-3 flex-[0.9]">
+                                                <div className="flex flex-row justify-between w-full mt-2">
+                                                    <div className="flex flex-col flex-[0.9]">
                                                         <label className="block text-sm font-medium mb-1">
                                                             Mobile Number<span className="text-red-400"> *</span>
                                                         </label>

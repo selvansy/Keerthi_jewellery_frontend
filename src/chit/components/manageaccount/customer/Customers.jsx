@@ -42,15 +42,17 @@ function Customers() {
         pincode: "",
         authorno: "",
         password:"",
-        conpassword:""
+        confirmpassword:""
     }), [roledata]);
      
     const [cusData, setCusData] = useState(initialCustomerData);
-    // const [addCusData, setAddCusData] = useState(initialCustomerData);
-
+   
 
     const handleCusData = (data)=>{
-        setCusData(data)
+        setCusData(prev => ({
+            ...prev,
+            customerId: data,
+        }))
     }
 
     useEffect(() => {

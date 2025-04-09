@@ -511,7 +511,7 @@ function Dashboard() {
         </div>
 
         {/* Today's Metal Rate and Table Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 my-3">
+        {/* <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 my-3">
           <div className="bg-white rounded-lg shadow-md p-5 lg:col-span-3">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold text-[#004181]">
@@ -552,7 +552,7 @@ function Dashboard() {
             totalAccounts={totalAccounts}
             options={options}
           />
-        </div>
+        {/* </div> */}
 
         {/* mode of payment and  limits  */}
         <div className="grid  md:grid-cols-12 gap-4">

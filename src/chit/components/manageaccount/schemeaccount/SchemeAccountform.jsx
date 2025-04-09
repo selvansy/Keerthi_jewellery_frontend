@@ -181,6 +181,9 @@ export function ExistingCustomer({ setCusData }) {
 }
 
 const AddSchemeAccount = ({ cusData, handleClear }) => {
+
+  console.log("cusData---",cusData)
+  
   let dispatch = useDispatch();
 
   const id_branch = cusData?.id_branch;
