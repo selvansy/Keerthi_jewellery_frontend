@@ -269,8 +269,7 @@ const Scheme = () => {
   const handleSearch = useCallback((e) => setSearch(e.target.value), []);
 
   const handleStatusToggle = useCallback(
-    async (id, accounts) => {
-      if (!accounts) {
+    async (id) => {
         try {
           const response = await changeschemestatus(id);
           if (response) {
@@ -300,9 +299,6 @@ const Scheme = () => {
           toast.error("Failed to toggle scheme status");
           console.error("Error:", error);
         }
-      } else {
-        toast.error("Scheme accounts exists, action not permitted");
-      }
     },
     [from_date, to_date, debouncedSearch, currentPage, itemsPerPage, filters]
   );
