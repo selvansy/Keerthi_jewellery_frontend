@@ -99,6 +99,18 @@ export const walletRedeem = async (data) => {
 };
 
 
+// 
+
+export const getRefferalpayment = async (data) => {
+  const response = await Api.post(
+    `${import.meta.env.VITE_API_URL}/api/client/wallet/refferal-list/payment/${data.id}`,
+    data
+  );
+  return response.data;
+};
+
+
+
 
 export const walletRedeemByUser = async (data) => {
   const response = await Api.post(

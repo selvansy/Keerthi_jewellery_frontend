@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import React, { useEffect, useRef, useState } from 'react'
-import { Search } from 'lucide-react'
+import { DatabaseBackupIcon, Search } from 'lucide-react'
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { mobilesearch, redeemType, getallwallet, walletRedeem, getallpaymentmode, RefferalByUser } from '../../../chit/api/Endpoints'
@@ -79,8 +79,7 @@ function WalletRedemption() {
     const dropdownRef = useRef(null);
     const [activeDropdown, setActiveDropdown] = useState(null);
     const [position, setPosition] = useState({ top: 0, left: 0 });
-    
-     
+    const [cusdata,setcusData] = useState(null);
 
     const [redeem_type, setRedeemType] = useState([])
     const [paymentData, setPaymentData] = useState([])
@@ -101,7 +100,7 @@ function WalletRedemption() {
     const data  = id ? location.state.data : null;
     
 
-
+    console.log("cusdata--",cusdata)
 
     function closeIncommingModal() {
         setIsviewOpen(false);
@@ -176,7 +175,7 @@ function WalletRedemption() {
 
                 // toast.success(response.message)
                 setRefData(response.data)
-                const res = response.walletData[0]
+                const res = response.walletData[0];
                 const user = res?.id_customer ? res?.id_customer : res?.id_employee;
                 setWalletUser({
                     name: user?.firstname + "" + user.lastname,
@@ -199,7 +198,7 @@ function WalletRedemption() {
         }
     });
 
-
+    
     const layout_color = useSelector((state) => state.clientForm.layoutColor);
     const navigate = useNavigate();
 
@@ -383,13 +382,11 @@ function WalletRedemption() {
 
 
     const handleRefferalistory = (data)=>{
-       
             setActiveDropdown(data);
             setIsviewOpen(true);
-            setData(data)
-          
+            setcusData(data)
     }
-
+  
 
     const columns = [
         {
@@ -398,35 +395,37 @@ function WalletRedemption() {
         },
         {
             header: "Description",
-            // cell: (row) => `${row?.total_reward_amt || "-"}`,
-            cell: (row) => "DIWALI GOLD SAVINGS FUND (2GRM) ANITHA "
+            cell: (row) => {
+             const user = row?.id_scheme_account;
+
+             return `${row?.id_scheme?.scheme_name} ${row?.id_scheme?.description} ${row?.id_scheme?.code} 
+              ${user?.firstname} ${user.lastname}`
+
+            },
         },
         {
             header: "Mobile",
             cell: (row) => {
-                const emp = row?.id_employee;
-                const cust = row?.id_customer;
-
-                if (emp) {
-                    return ` ${emp.mobile || "-"}`.trim();
-                }
-
-                if (cust) {
-                    return `${cust.mobile || "-"}`.trim();
-                }
-
-                return "-";
+             
+                const user = row?.id_scheme_account;
+                return `${user?.mobile}`
             }
         },
         {
             header: "Refferral Reward",
-            cell: (row) => `${row?.creadited_amount || "-"}`,
+            cell: (row) => `${row?.id_scheme?.referralPercentage || "-"}%`,
         },
         {
             header: "Join Date",
-            // cell: (row) => `${row?.creadited_amount || "-"}`,
-            cell: (row) => "09/04/25"
-        },
+            cell: (row) => {
+              const dateStr = row?.id_scheme_account?.start_date;
+              if (!dateStr) return "-";
+          
+              const date = new Date(dateStr);
+              return date.toISOString().split("T")[0];
+            },
+          },
+          
 
         {
             header: "Action",
@@ -734,7 +733,7 @@ function WalletRedemption() {
                             {/* Table */}
                             <div className="mt-4">
                                 <Table
-                                    data={refData}
+                                    data={refData.data}
                                     columns={columns}
                                     isLoading={isLoading}
                                     currentPage={currentPage}
@@ -754,7 +753,7 @@ function WalletRedemption() {
                             >
                                 <RefferalCusCard
 
-                                    refData={refData}
+                                    refData={cusdata}
 
                                 />
                             </ModelOne>
