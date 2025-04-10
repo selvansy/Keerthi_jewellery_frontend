@@ -185,50 +185,55 @@ const CreateDigiGoldScheme = () => {
       noOfDays:Yup.number().required("Maturity days required")
     }),
     context: { isBonus }, 
-    onSubmit: (values) => {
-      const formData = new FormData();
-    
-      // Append all form values except files
-      Object.keys(values).forEach((key) => {
-        // Skip arrays and objects - handle them specially if needed
-        if (typeof values[key] !== 'object' || values[key] === null) {
-          formData.append(key, values[key]);
-        } else if (Array.isArray(values[key])) {
-          // Handle arrays (like values and bonuses)
-          values[key].forEach((item, index) => {
-            if (typeof item === 'object') {
-              // Handle object items in array (like values array)
-              Object.keys(item).forEach(subKey => {
-                formData.append(`${key}[${index}].${subKey}`, item[subKey]);
-              });
-            } else {
-              // Handle primitive items in array (like bonuses array)
-              formData.append(`${key}[${index}]`, item);
-            }
-          });
-        }
-      });
-    
-      // Properly handle image files
-      if (mainImage instanceof File) {
-        formData.append("logo", mainImage);
-      } else if (typeof mainImage === 'string' && !id) {
-        // If it's a string (existing image path) and we're creating new, we need the file
-        // You might need to fetch the file or handle this case differently
-      }
-    
-      if (descriptionImage instanceof File) {
-        formData.append("desc_img", descriptionImage);
-      } else if (typeof descriptionImage === 'string' && !id) {
-        // Same handling as above
-      }
-    
-      if (id) {
-        updateSchemeData({ id, formData });
-      } else {
-        addNewScheme(formData); // Make sure you're passing formData, not values
-      }
-    },
+    // Replace the onSubmit function in your formik configuration
+onSubmit: (values) => {
+  const formData = new FormData();
+
+  // Append simple fields
+  Object.keys(values).forEach((key) => {
+    if (
+      typeof values[key] !== 'object' || 
+      values[key] === null || 
+      key === 'scheme_type' ||
+      key === 'bonus_type' ||
+      key === 'entry_type'
+    ) {
+      formData.append(key, values[key]);
+    }
+  });
+
+  // Handle values array - Convert to JSON string to preserve structure
+  if (values.values && values.values.length > 0) {
+    values.values.forEach((v, i) => {
+      if (v.min != null) formData.append(`values[${i}][min]`, v.min);
+      if (v.max != null) formData.append(`values[${i}][max]`, v.max);
+      if (v.value != null) formData.append(`values[${i}][value]`, v.value);
+    });
+  }
+  
+  
+  if (values.bonuses && values.bonuses.length > 0) {
+    // For arrays of primitive values, append each value separately with the same key
+    values.bonuses.forEach((bonus, index) => {
+      formData.append(`bonuses[${index}]`, bonus);
+    });
+  }
+
+  // Handle image files
+  if (mainImage instanceof File) {
+    formData.append("logo", mainImage);
+  }
+
+  if (descriptionImage instanceof File) {
+    formData.append("desc_img", descriptionImage);
+  }
+
+  if (id) {
+    updateSchemeData({ id, formData });
+  } else {
+    addNewScheme(formData);
+  }
+}
   });
 
   //api calls

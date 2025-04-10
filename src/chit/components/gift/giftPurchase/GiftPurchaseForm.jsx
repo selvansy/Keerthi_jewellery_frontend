@@ -694,6 +694,7 @@ function GiftPurchaseForm({ setIsviewOpen, isviewOpen, id, setId,refetchTable })
                             </div>
                         </div>
                 </div >
+                
             </div >
         </>
     )

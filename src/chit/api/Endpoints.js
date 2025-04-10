@@ -98,6 +98,26 @@ export const walletRedeem = async (data) => {
   return response.data;
 };
 
+
+
+export const walletRedeemByUser = async (data) => {
+  const response = await Api.post(
+    `${import.meta.env.VITE_API_URL}/api/client/wallet/user/redeemData?mobile=${data.mobile}`,
+    data
+  );
+  return response.data;
+};
+
+export const RefferalByUser = async (data) => {
+  const response = await Api.post(
+    `${import.meta.env.VITE_API_URL}/api/client/wallet/refferal-list/user?mobile=${data.mobile}`,
+    data
+  );
+  return response.data;
+};
+
+
+
 export const redeemType = async () => {
   const response = await Api.get(
     `${import.meta.env.VITE_API_URL}/api/client/common/redeem-type`
@@ -106,13 +126,16 @@ export const redeemType = async () => {
 };
 
 export const mobilesearch = async (mobile) => {
+  console.log("mobile--",mobile)
   const response = await Api.get(
     `${
       import.meta.env.VITE_API_URL
-    }/api/client/wallet/customer-details?mobileNumber=${mobile}`
+    }/api/client/wallet/mobile?mobile=${mobile}`
   );
   return response.data;
 };
+
+
 
 export const walletHistory = async (data) => {
   const response = await Api.post(
@@ -567,6 +590,15 @@ export const getgiftvendorById = async (id) => {
 export const giftaccountcount = async (data) => {
   const response = await Api.post(
     `${import.meta.env.VITE_API_URL}/api/client/giftissues/cards`,
+    data
+  );
+  return response.data;
+};
+
+export const giftIssueBySchId = async (value) => {
+    const {id,data} = value
+  const response = await Api.post(
+    `${import.meta.env.VITE_API_URL}/api/client/giftissues/schemeaccount/${id}`,
     data
   );
   return response.data;
@@ -1885,6 +1917,12 @@ export const searchmobileschemeaccount = async (data) => {
   return response.data;
 };
 
+export const customSearchScheme = async (data) => {
+  const response = await Api.post(
+    `${import.meta.env.VITE_API_URL}/api/client/schemeaccount/search`,data);
+  return response.data;
+};
+
 export const getschemeaccountbyid = async (data) => {
   const response = await Api.get(
     `${import.meta.env.VITE_API_URL}/api/client/schemeaccount/${data}`);
@@ -1893,13 +1931,13 @@ export const getschemeaccountbyid = async (data) => {
 
 export const geallschemebyclassification = async (data) => {
   const response = await Api.get(
-    `${import.meta.env.VITE_API_URL}/api/client/scheme/classification/${data}`
+    `${import.meta.env.VITE_API_URL}/api/client/scheme/classification?classId=${data}`
   );
   return response.data;
 };
 export const schemeaccountbyid = async (data) => {
   const response = await Api.get(
-    `${import.meta.env.VITE_API_URL}/api/client/schemeaccount/${data.id}`
+    `${import.meta.env.VITE_API_URL}/api/client/schemeaccount?cl${data.id}`
   );
   return response.data;
 };
@@ -1933,11 +1971,11 @@ export const getcustomerschemeaccount = async (data) => {
   return response.data;
 };
 
-export const searchbarcodenumber = async (data) => {
-  const response = await Api.get(
-    `${import.meta.env.VITE_API_URL}/api/client/giftissues/branch/${
-      data.id_branch
-    }/barcode?search=${data.barcode}`
+export const searchGiftCodenumber = async (data) => {
+  console.log("data---",data)
+  const response = await Api.post(
+    `${import.meta.env.VITE_API_URL}/api/client/giftissues/branch/${data.id_branch}/barcode`,
+    data.GiftCode
   );
   return response.data;
 };
@@ -2706,13 +2744,12 @@ export const getPaymentLedger = async (data) => {
 
 //re check needed for this api section
 export const sendOtp = async(data)=>{
-
   const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/schemeaccount/close/${data.mobile}/branch/${data.branchId}`)
   return response.data
 }
 
 export const verifyOtp = async(data)=>{
-  const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/schemeaccount/verifyotp`,data)
+  const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/otp/verifyotp`,data)
   return response.data
 }
 
@@ -2731,3 +2768,5 @@ export const getDelistedSchemes = async(data)=>{
   const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/scheme/delist`,data)
   return response.data
 }
+
+

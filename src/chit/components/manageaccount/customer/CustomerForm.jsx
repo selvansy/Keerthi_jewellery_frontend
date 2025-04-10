@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { CalendarDays, Camera, X, Send, Plus, Minus } from "lucide-react";
+import { CalendarDays, Camera, X, Send, Plus, EyeOff  } from "lucide-react";
 
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
@@ -21,30 +21,87 @@ import Webcam from "react-webcam";
 import { toast } from "react-toastify";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import SpinLoading from "../../common/spinLoading"; 
+import SpinLoading from "../../common/spinLoading";
 import Select from "react-select";
 import profileplaceholder from "../../../../assets/profileplaceholder.png";
-import { customSelectStyles } from "../../Setup/purity/index";
 import { SetaccExp } from "../../../../redux/clientFormSlice";
+import CalenderNew from "../../../../assets/icons/calendarNew.svg";
+import eye1 from "../../../../assets/icons/eye1.svg"
+import cameraIcon from "../../../../assets/icons/cameraIcon.svg";
+import verified from "../../../../assets/icons/verified.svg";
+import CheckboxToggle from "../../common/checkBox";
+import ModelOne from '../../common/Modelone';
+import VerificationModal from "../closedaccount/VerificationModal";
+import OtpCompleted from "../../manageaccount/closedaccount/VerificationModal";
 
-const CustomerForm = ({ setCusData, id, setAddCusData, addCusData, id_proof, setIdProof, cus_img, pathurl, setCusImg, setPathurl, handleClear }) => {
+
+const customSelectStyles = (isReadOnly) => ({
+    control: (base, state) => ({
+        ...base,
+        minHeight: "42px",
+        backgroundColor: "white",
+        border: state.isFocused ? "1px solid black" : "2px solid #f2f3f8",
+        boxShadow: state.isFocused ? "0 0 0 1px black" : "none",
+        borderRadius: "0.375rem",
+        "&:hover": {
+            color: "#e2e8f0",
+        },
+        pointerEvents: !isReadOnly ? "none" : "auto",
+        opacity: !isReadOnly ? 1 : 1,
+    }),
+    indicatorSeparator: () => ({
+        display: "none",
+    }),
+    placeholder: (base) => ({
+        ...base,
+        color: "#858293",
+        fontWeight: "thin",
+        // fontStyle: "bold",
+    }),
+    dropdownIndicator: (provided, state) => ({
+        ...provided,
+        color: "#232323",
+        "&:hover": {
+            color: "#232323",
+        },
+        menu: (base) => ({
+            ...base,
+            zIndex: 9999,
+            position: 'absolute',
+        }),
+        menuPortal: (base) => ({
+            ...base,
+            zIndex: 9999,
+        }),
+
+    }),
+});
+
+const CustomerForm = ({ setCusData,handleCusData, id, cusData, id_proof, setIdProof, cus_img, pathurl, setCusImg, setPathurl, handleClear }) => {
 
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const layout_color = useSelector((state) => state.clientForm.layoutColor);
     const roledata = useSelector((state) => state.clientForm.roledata);
+    const id_proofInputRef = useRef(null);
 
     const id_branch = roledata?.branch;
 
-    const [showVerification, setShowVerification] = useState(false);
+
     const [isLoading, setisLoading] = useState(false);
-    const [otpNumber, setOtpNumber] = useState("");
+
     const [mobile, setMobile] = useState("");
     const [timer, setTimer] = useState(60);
-    const [canResend, setCanResend] = useState(false);
+
     const [isTimerRunning, setIsTimerRunning] = useState(false);
+    const [showpassword,setShowPassword] = useState(false);
+    const [otpSended, setSendOtp] = useState(false);
+    const [viewRevertForm, setReverView] = useState(false)
     const webcamRef = useRef(null);
+    const [checked, setChecked] = useState(true);
+    const [otpCompleted, setOtpComplete] = useState(false)
+    const [showverifyIcon, setShowVerifyIcon] = useState(false)
     const [showWebcam, setShowWebcam] = useState(false);
     const [countryData, setCountryData] = useState([]);
     const [stateData, setStateData] = useState([]);
@@ -52,7 +109,14 @@ const CustomerForm = ({ setCusData, id, setAddCusData, addCusData, id_proof, set
     const [country, setCountry] = useState("");
     const [state, setState] = useState("");
     const [city, setCity] = useState("");
+     const [otpNumber, setOtpNumber] = useState("");
     const [branchData, setBranchData] = useState([]);
+    const [imagePreviews, setImagePreviews] = useState({
+        image: null,
+        id_proof: null,
+    });
+
+    const descImageInputRef = useRef(null);
 
     const validationSchema = Yup.object({
         firstname: Yup.string().required("First name is required"),
@@ -71,6 +135,15 @@ const CustomerForm = ({ setCusData, id, setAddCusData, addCusData, id_proof, set
         pincode: Yup.string()
             .required("Pincode is required")
             .matches(/^\d{6}$/, "Pincode must be 6 digits"),
+
+            password: Yup.string()
+            .nullable()
+            .notRequired(),
+        
+          confirmPassword: Yup.string()
+            .nullable()
+            .oneOf([Yup.ref('password')], 'Passwords must match')
+            .notRequired(),
 
     });
 
@@ -106,8 +179,8 @@ const CustomerForm = ({ setCusData, id, setAddCusData, addCusData, id_proof, set
                     pincode: res.pincode,
                     authorno: res.authorno,
                 };
-               
-                setAddCusData(formValues);
+
+                setCusData(formValues);
                 setCusImg(response.data.cus_img);
                 const img = `${response.data.pathurl}${response.data.cus_img}`;
                 setPathurl(img);
@@ -146,7 +219,7 @@ const CustomerForm = ({ setCusData, id, setAddCusData, addCusData, id_proof, set
     });
 
     useEffect(() => {
-     
+
         if (branchresponse) {
             const data = branchresponse.data;
             const branch = data.map((branch) => ({
@@ -193,11 +266,8 @@ const CustomerForm = ({ setCusData, id, setAddCusData, addCusData, id_proof, set
         onSuccess: (response) => {
             if (response) {
                 toast.success(response.message);
-
-                setCusData(prev => ({
-                    ...prev,
-                    customerId: response.data,
-                }))
+                handleCusData(response.data);
+                
             }
             setisLoading(false);
         },
@@ -223,36 +293,36 @@ const CustomerForm = ({ setCusData, id, setAddCusData, addCusData, id_proof, set
         },
     });
 
-    const handleid_proofUpload = (e) => {
-        e.preventDefault();
-        const file = e.target.files[0];
-        const allowedTypes = [
-            "application/pdf",
-            "application/msword",
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            "application/vnd.ms-excel",
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            "text/plain",
-        ];
+    // const handleid_proofUpload = (e) => {
+    //     e.preventDefault();
+    //     const file = e.target.files[0];
+    //     const allowedTypes = [
+    //         "application/pdf",
+    //         "application/msword",
+    //         "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    //         "application/vnd.ms-excel",
+    //         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    //         "text/plain",
+    //     ];
 
-        if (file) {
-            if (allowedTypes.includes(file.type)) {
-                setIdProof(file);
-            } else {
-                setIdProof(null);
-                toast.error(
-                    "Please upload a valid file format (PDF, DOC, DOCX, XLS, XLSX, or TXT)"
-                );
-                e.target.value = "";
-            }
-        }
-    };
+    //     if (file) {
+    //         if (allowedTypes.includes(file.type)) {
+    //             setIdProof(file);
+    //         } else {
+    //             setIdProof(null);
+    //             toast.error(
+    //                 "Please upload a valid file format (PDF, DOC, DOCX, XLS, XLSX, or TXT)"
+    //             );
+    //             e.target.value = "";
+    //         }
+    //     }
+    // };
 
     // const handleCancel = ()=>{
     //     setCusImg("")
     //     setPathurl("")
     //     setIdProof(null)
-    //     setaddCusData({
+    //     setCusData({
     //         firstname: "",
     //         lastname: "",
     //         mobile: "",
@@ -272,103 +342,251 @@ const CustomerForm = ({ setCusData, id, setAddCusData, addCusData, id_proof, set
 
     // }
 
-    const handleFileChange = (e) => {
-        e.preventDefault();
-        const file = e.target.files[0];
+    // const handleFileChange = (e) => {
+    //     e.preventDefault();
+    //     const file = e.target.files[0];
 
-        if (!file) {
-            toast.error("No file selected");
+    //     if (!file) {
+    //         toast.error("No file selected");
+    //         return;
+    //     }
+
+    //     const validImageTypes = [
+    //         "image/jpeg",
+    //         "image/png",
+    //         "image/gif",
+    //         "image/webp",
+    //     ];
+    //     const maxSize = 500 * 1024;
+
+    //     if (!validImageTypes.includes(file.type)) {
+    //         toast.error("Invalid file type. Allowed: JPG, PNG, GIF, WEBP");
+    //         return;
+    //     }
+
+    //     if (file.size > maxSize) {
+    //         toast.error("File size exceeded (Max 500KB)");
+    //         return;
+    //     }
+
+    //     setCusImg(file);
+
+    //     const reader = new FileReader();
+    //     reader.onloadend = () => {
+    //         setPathurl(reader.result || "");
+    //     };
+
+    //     reader.readAsDataURL(file);
+    // };
+
+    // const handleCapture = (e) => {
+    //     e.preventDefault();
+    //     const imageSrc = webcamRef.current.getScreenshot();
+    //     setPathurl(imageSrc);
+    //     fetch(imageSrc)
+    //         .then((res) => res.blob())
+    //         .then((blob) => {
+    //             const file = new File([blob], "webcam-photo.jpg", {
+    //                 type: "image/jpeg",
+    //             });
+    //             setCusImg(file);
+    //         });
+    //     setShowWebcam(false);
+    // };
+
+
+    const sendOtpToMobile = (e) => {
+        if (e) {
+            e.preventDefault()
+        }
+        const mobileToUse = mobile || cusData?.mobile;
+
+        if (!mobileToUse) {
+            toast.error("Mobile number is required");
             return;
         }
 
-        const validImageTypes = [
-            "image/jpeg",
-            "image/png",
-            "image/gif",
-            "image/webp",
-        ];
-        const maxSize = 500 * 1024;
-
-        if (!validImageTypes.includes(file.type)) {
-            toast.error("Invalid file type. Allowed: JPG, PNG, GIF, WEBP");
-            return;
-        }
-
-        if (file.size > maxSize) {
-            toast.error("File size exceeded (Max 500KB)");
-            return;
-        }
-
-        setCusImg(file);
-
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            setPathurl(reader.result || "");
-        };
-
-        reader.readAsDataURL(file);
+        postSendOtpMobile({
+            mobile: mobileToUse,
+            branchId: cusData?.id_branch,
+        });
     };
 
-    const handleCapture = (e) => {
-        e.preventDefault();
+
+    const handleOtpToggle = () => {
+        setChecked(!checked);
+    };
+
+
+    const handleCapture = () => {
         const imageSrc = webcamRef.current.getScreenshot();
-        setPathurl(imageSrc);
+        const fileName = `webcam-capture-${new Date().getTime()}.jpg`;
+
+        setImagePreviews((prev) => ({
+            ...prev,
+            image: {
+                previewUrl: imageSrc,
+                name: fileName,
+            },
+        }));
+
         fetch(imageSrc)
             .then((res) => res.blob())
             .then((blob) => {
-                const file = new File([blob], "webcam-photo.jpg", {
+                const file = new File([blob], fileName, {
                     type: "image/jpeg",
                 });
                 setCusImg(file);
+                // formik.setFieldValue("image", file);
             });
+
         setShowWebcam(false);
     };
 
-    const handleClearImage = () => {
-        setCusImg(null);
-        setPathurl(null);
+    const handleClearImage = (e, field) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        setImagePreviews((prev) => ({
+            ...prev,
+            [field]: null,
+        }));
+        formik.setFieldValue(field, null);
     };
 
-    const ResetTimer = () => {
-        setCanResend(false);
-        setIsTimerRunning(false);
-        setTimer(60);
+    const handleFileChange = (event) => {
+
+        const file = event.target.files[0];
+        const name = event.target.name;
+
+        if (file && file.size <= 500 * 1024) {
+            const previewUrl = URL.createObjectURL(file);
+            setImagePreviews((prev) => ({
+                ...prev,
+                [name]: {
+                    file,
+                    previewUrl,
+                    name: file.name,
+                },
+            }));
+
+            if (name === "id_proof") {
+                setIdProof(file);
+            }
+            if (name === "image") {
+                setCusImg(file);
+            }
+
+        } else {
+            toast.error(`File size exceeded, upload max-size(500KB) or file not found`);
+
+        }
     };
+
+
+    
+
+    // const handleClearImage = () => {
+    //     setCusImg(null);
+    //     setPathurl(null);
+    // };
+
+    // const ResetTimer = () => {
+    //     setCanResend(false);
+    //     setIsTimerRunning(false);
+    //     setTimer(60);
+    // };
+
+    // const { mutate: postSendOtpMobile } = useMutation({
+    //     mutationFn: (data) => sendOtp(data),
+    //     onSuccess: (response) => {
+    //         if (response) {
+    //             toast.success(response.message);
+    //         }
+
+    //         // ResetTimer();
+    //     },
+    //     onError: (error) => {
+    //         // setCanResend(true);
+    //         setIsTimerRunning(false);
+    //         setTimer(60);
+    //         toast.error("Invalid mobile number");
+    //     },
+    // });
+
+    // const { mutate: VerifyOtpNumber } = useMutation({
+    //     mutationFn: (data) => verifyOtp(data),
+    //     onSuccess: (response) => {
+    //         if (response) {
+    //             toast.success(response.message);
+    //         }
+    //         ResetTimer();
+    //         setMobile("");
+    //         // setOtpNumber("");
+    //     },
+    //     onError: (error) => {
+    //         // setCanResend(true);
+    //         setIsTimerRunning(false);
+    //         setTimer(60);
+    //         toast.error(error.response?.data?.message);
+    //     },
+    // });
+
+
+
+    // Send OTP API mutation
+
 
     const { mutate: postSendOtpMobile } = useMutation({
-        mutationFn: (data) => sendOtp(data),
+        mutationFn: sendOtp,
         onSuccess: (response) => {
             if (response) {
                 toast.success(response.message);
-            }
+                if (response && !otpSended) {
+                    setSendOtp(!otpSended)
+                    setShowVerifyIcon(false)
+                }
+                setShowVerifyIcon(true)
 
-            ResetTimer();
-        },
-        onError: (error) => {
-            setCanResend(true);
-            setIsTimerRunning(false);
-            setTimer(60);
-            toast.error("Invalid mobile number");
+            }
         },
     });
 
-    const { mutate: VerifyOtpNumber } = useMutation({
-        mutationFn: (data) => verifyOtp(data),
+    // Verify OTP API mutation
+    const { mutate: postVerifyOtp } = useMutation({
+        mutationFn: verifyOtp,
         onSuccess: (response) => {
             if (response) {
+                if (response.status) {
+                    setSendOtp(false)
+                }
                 toast.success(response.message);
             }
-            ResetTimer();
-            setMobile("");
-            setOtpNumber("");
         },
-        onError: (error) => {
-            setCanResend(true);
-            setIsTimerRunning(false);
-            setTimer(60);
-            toast.error(error.response?.data?.message);
-        },
+        onError: ((error) => {
+            setValidity(true)
+            console.log(error)
+        })
     });
+
+
+    function closeIncommingModal(e) {
+        e.preventDefault()
+        setSendOtp(false)
+        setIsviewOpen(false);
+    }
+
+    const handleOtpComplete = () => {
+        setOtpComplete(true)
+        setSendOtp(false);
+        setReverView(false)
+    }
+
+    const handleOpenRevert = (e) => {
+        e.preventDefault()
+        setReverView(true);
+    };
+
 
     useEffect(() => {
         if (timer > 0 && isTimerRunning) {
@@ -377,7 +595,7 @@ const CustomerForm = ({ setCusData, id, setAddCusData, addCusData, id_proof, set
             }, 1000);
             return () => clearInterval(interval);
         } else {
-            setCanResend(true);
+            // setCanResend(true);
             setIsTimerRunning(false);
         }
     }, [timer, isTimerRunning]);
@@ -391,13 +609,14 @@ const CustomerForm = ({ setCusData, id, setAddCusData, addCusData, id_proof, set
     };
 
     const handleDispatch = (data) => {
-     
+
         setCusData({
             customer_name: data.firstname + " " + data.lastname,
             address: data.address,
             id_branch: data.id_branch,
             mobile: data.mobile,
         })
+
         // dispatch(
         //     SetaccExp({
         //         customer_name: data.firstname + " " + data.lastname,
@@ -408,6 +627,9 @@ const CustomerForm = ({ setCusData, id, setAddCusData, addCusData, id_proof, set
         // );
     };
 
+    const handlePasswordToggle = ()=>{
+        setShowPassword(!showpassword)
+    }
 
 
     return (
@@ -417,13 +639,20 @@ const CustomerForm = ({ setCusData, id, setAddCusData, addCusData, id_proof, set
                     {/* Replace Formik with useFormik implementation */}
                     {(() => {
                         const formik = useFormik({
-                            initialValues: addCusData,
+                            initialValues: cusData,
                             validationSchema: validationSchema,
                             enableReinitialize: true,
                             validateOnChange: false,
                             validateOnBlur: false,
                             onSubmit: (values) => {
-                              
+
+                                if(values.password !== values.confirmpassword){
+                                    toast.error("Passwords doesn't match");
+                                    return;
+                                }
+
+                                setCusData(values)
+                                console.log("values---",values)
                                 handleDispatch(values);
                                 setisLoading(true);
                                 const formPayload = new FormData();
@@ -449,7 +678,7 @@ const CustomerForm = ({ setCusData, id, setAddCusData, addCusData, id_proof, set
                                         formik.handleSubmit(e);
                                     }}
                                 >
-                                    <div className="grid grid-rows-2 md:grid-cols-2 gap-5 border-gray-300">
+                                    <div className="grid grid-rows-1 md:grid-cols-2 lg:grid-cols-3 gap-6 border-gray-300">
                                         <div className="flex flex-col">
                                             <label className="text-gray-700 mb-1 font-medium">
                                                 First Name<span className="text-red-400">*</span>
@@ -462,7 +691,7 @@ const CustomerForm = ({ setCusData, id, setAddCusData, addCusData, id_proof, set
                                                     formik.handleChange(e);
                                                     formik.setFieldTouched("firstname", false);
                                                 }}
-                                                className="border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus-[#D1D5DB] focus:border-transparent"
+                                                className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
                                                 placeholder="Enter Here"
                                             />
                                             {formik.errors.firstname ? (
@@ -484,7 +713,7 @@ const CustomerForm = ({ setCusData, id, setAddCusData, addCusData, id_proof, set
                                                     formik.handleChange(e);
                                                     formik.setFieldTouched("lastname", false);
                                                 }}
-                                                className="border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus-[#D1D5DB] focus:border-transparent"
+                                                className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
                                                 placeholder="Enter Here"
                                             />
                                             {formik.errors.lastname ? (
@@ -504,12 +733,12 @@ const CustomerForm = ({ setCusData, id, setAddCusData, addCusData, id_proof, set
                                                 value={
                                                     branchData.find(
                                                         (option) =>
-                                                            option.value === (id_branch !== "0" ? addCusData.id_branch : formik.values.id_branch)
+                                                            option.value === (id_branch !== "0" ? cusData.id_branch : formik.values.id_branch)
                                                     ) || ""
                                                 }
                                                 onChange={(option) => formik.setFieldValue("id_branch", option?.value || "")}
                                                 onKeyDown={(e) => e.key === "Enter" && e.preventDefault()}
-                                                styles={customSelectStyles}
+                                                styles={customSelectStyles(true)}
                                                 isLoading={loadingbranch}
                                                 isDisabled={id_branch !== "0"}
                                                 placeholder="Select Branch"
@@ -534,6 +763,10 @@ const CustomerForm = ({ setCusData, id, setAddCusData, addCusData, id_proof, set
                                                     e.target.value = e.target.value.replace(/\D/g, "");
                                                     formik.handleChange(e);
                                                 }}
+                                                onChange={(e)=>{
+                                                    formik.handleChange(e);
+                                                    setMobile(e.target.value)
+                                                }}
                                                 value={formik.values.mobile}
                                                 pattern="\d{10}"
                                                 maxLength={"10"}
@@ -542,7 +775,7 @@ const CustomerForm = ({ setCusData, id, setAddCusData, addCusData, id_proof, set
                                                         e.preventDefault();
                                                     }
                                                 }}
-                                                className="border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:[#D1D5DB] focus:border-transparent"
+                                                className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
                                                 placeholder="Enter Mobile Number"
                                             />
 
@@ -571,7 +804,7 @@ const CustomerForm = ({ setCusData, id, setAddCusData, addCusData, id_proof, set
                                                 }}
                                                 pattern="\d{10}"
                                                 maxLength={"10"}
-                                                className="border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:[#D1D5DB] focus:border-transparent"
+                                                className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
                                                 placeholder="Enter Whatsapp Number"
                                             />
                                             {formik.errors.whatsapp ? (
@@ -594,14 +827,15 @@ const CustomerForm = ({ setCusData, id, setAddCusData, addCusData, id_proof, set
                                                     <button
                                                         key={gender.value}
                                                         type="button"
-                                                        className={`rounded-full w-20 h-10 flex items-center justify-center border-2 border-black transition-colors duration-200 ${formik.values.gender === gender.value
-                                                            ? "text-white"
-                                                            : "bg-white text-black"
+
+                                                        className={`rounded-md w-20 h-10 flex items-center justify-center border-2 border-black transition-colors duration-200 ${formik.values.gender === gender.value
+                                                            ? "text-[#004181]"
+                                                            : " text-[#6C7086]"
                                                             }`}
                                                         style={
                                                             formik.values.gender === gender.value
-                                                                ? { backgroundColor: layout_color }
-                                                                : {}
+                                                                ? { borderColor: layout_color }
+                                                                : { borderColor: "#f2f3f8" }
                                                         }
                                                         onClick={(e) => {
                                                             e.preventDefault();
@@ -637,7 +871,7 @@ const CustomerForm = ({ setCusData, id, setAddCusData, addCusData, id_proof, set
                                                     setCountry(ctry.value);
                                                     formik.setFieldTouched("id_country", false);
                                                 }}
-                                                customSelectStyles={customSelectStyles}
+                                                styles={customSelectStyles(true)}
                                                 isLoading={loadingCountries}
                                                 placeholder="Select Country"
                                             />
@@ -660,7 +894,7 @@ const CustomerForm = ({ setCusData, id, setAddCusData, addCusData, id_proof, set
                                                     setState(e.value);
                                                     formik.setFieldTouched("id_state", false);
                                                 }}
-                                                customSelectStyles={customSelectStyles}
+                                                styles={customSelectStyles(true)}
                                                 isLoading={loadingStates}
                                                 value={
                                                     stateData.find(
@@ -689,7 +923,7 @@ const CustomerForm = ({ setCusData, id, setAddCusData, addCusData, id_proof, set
                                                     setCity(e.value);
                                                     formik.setFieldTouched("id_city", false);
                                                 }}
-                                                customSelectStyles={customSelectStyles}
+                                                styles={customSelectStyles(true)}
                                                 isLoading={loadingCities}
                                                 value={
                                                     cityData.find(
@@ -719,7 +953,7 @@ const CustomerForm = ({ setCusData, id, setAddCusData, addCusData, id_proof, set
                                                     formik.handleChange(e);
                                                     formik.setFieldTouched("address", false);
                                                 }}
-                                                className="border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:[#D1D5DB] focus:border-transparent"
+                                                className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
                                                 placeholder="Enter Here"
                                             />
                                             {formik.errors.address ? (
@@ -747,7 +981,7 @@ const CustomerForm = ({ setCusData, id, setAddCusData, addCusData, id_proof, set
                                                 }}
                                                 pattern="\d{6}"
                                                 maxLength={"6"}
-                                                className="border-2 border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:[#D1D5DB] focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                                className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
                                                 placeholder="Enter Pincode"
                                             />
                                             {formik.errors.pincode ? (
@@ -757,7 +991,7 @@ const CustomerForm = ({ setCusData, id, setAddCusData, addCusData, id_proof, set
                                             ) : null}
                                         </div>
 
-                                        {/* <div className="flex flex-col">
+                                        <div className="flex flex-col">
                                             <label className="text-black mb-1 font-medium">
                                                 Pan Number<span className="text-red-400"> *</span>
                                             </label>
@@ -769,14 +1003,14 @@ const CustomerForm = ({ setCusData, id, setAddCusData, addCusData, id_proof, set
                                                     const value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
                                                     formik.setFieldValue("pan", value);
                                                 }}
-                                                className="border-2 w-full border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:[#D1D5DB] focus:border-transparent"
+                                                className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
                                                 placeholder="ABCDE1234F"
                                                 maxLength="10"
                                             />
                                             {formik.errors.pan ? (
                                                 <div style={{ color: "red" }}>{formik.errors.pan}</div>
                                             ) : null}
-                                        </div> */}
+                                        </div>
 
                                         <div className="flex flex-col">
                                             <label className="text-gray-700 mb-1 font-medium">
@@ -794,7 +1028,7 @@ const CustomerForm = ({ setCusData, id, setAddCusData, addCusData, id_proof, set
                                                 maxLength="12"
                                                 inputMode="numeric"
                                                 onChange={formik.handleChange}
-                                                className="border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:[#D1D5DB] focus:border-transparent"
+                                                className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
                                                 placeholder="Enter Aadhar Number"
                                             />
 
@@ -810,7 +1044,7 @@ const CustomerForm = ({ setCusData, id, setAddCusData, addCusData, id_proof, set
                                                 Date Of Wedding
                                             </label>
 
-                                            <div className="relative w-full">
+                                            <div className="relative">
                                                 <DatePicker
                                                     selected={formik.values.date_of_wed}
                                                     onChange={(date) => {
@@ -824,19 +1058,20 @@ const CustomerForm = ({ setCusData, id, setAddCusData, addCusData, id_proof, set
                                                         }
                                                     }}
                                                     dateFormat="yyyy-MM-dd"
-                                                    className="w-full border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:[#D1D5DB] h-[50px]"
+                                                    className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
                                                     placeholderText="Select Date"
                                                     wrapperClassName="w-full"
                                                     showMonthDropdown
                                                     showYearDropdown
                                                     dropdownMode="select"
-                                                    title="Enter a date in YYYY-MM-DD format"
                                                 />
-                                                <CalendarDays
-                                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none"
-                                                    size={20}
-                                                />
+                                                <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center pointer-events-none">
+                                                    <img src={CalenderNew} className="w-5 h-5" />
+                                                </span>
+
+                                               
                                             </div>
+
                                             {formik.errors.date_of_wed ? (
                                                 <div style={{ color: "red" }}>
                                                     {formik.errors.date_of_wed}
@@ -862,7 +1097,7 @@ const CustomerForm = ({ setCusData, id, setAddCusData, addCusData, id_proof, set
                                                         }
                                                     }}
                                                     dateFormat="yyyy-MM-dd"
-                                                    className="w-full border-2 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:[#D1D5DB] h-[50px]"
+                                                    className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
                                                     placeholderText="Select Date"
                                                     wrapperClassName="w-full"
                                                     showMonthDropdown
@@ -870,9 +1105,11 @@ const CustomerForm = ({ setCusData, id, setAddCusData, addCusData, id_proof, set
                                                     dropdownMode="select"
                                                 />
 
-                                                <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-gray-500 w-14 h-[43px] justify-center items-center flex rounded-r-md pointer-events-none">
-                                                    <CalendarDays size={20} />
+                                                <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center pointer-events-none">
+                                                    <img src={CalenderNew} className="w-5 h-5" />
                                                 </span>
+
+                                               
                                             </div>
                                             {formik.errors.date_of_birth ? (
                                                 <div style={{ color: "red" }}>
@@ -882,271 +1119,224 @@ const CustomerForm = ({ setCusData, id, setAddCusData, addCusData, id_proof, set
                                         </div>
 
                                         <div className="flex flex-col">
-                                            <label className="text-black mb-1 font-medium">
-                                                Upload Document
+                                            <label className="text-gray-700 mb-1 font-medium">
+                                                Password
                                             </label>
-                                            <label
-                                                htmlFor="id_proof"
-                                                className="flex flex-col justify-center items-center w-full h-12 border-2 border-dashed border-gray-300 text-black cursor-pointer p-5 text-center hover:bg-gray-50 transition-colors"
-                                            >
-                                                <p className="text-gray-900">
-                                                    {id_proof
-                                                        ? id_proof.name || id_proof
-                                                        : "Browse to upload Document (.pdf,.doc,.docx,.xls,.xlsx,.txt)"}
-                                                </p>
+
+                                            <div className="relative w-full">
+                                                <input
+                                                    type={showpassword ? "text" : "password" }
+                                                    name="password"
+                                                    value={formik.values.password}
+                                                    onChange={formik.handleChange}
+                                                    className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                                                    placeholder="Enter password"
+                                                />
+                                               {
+                                                showpassword ? 
+                                                <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center cursor-pointer" 
+                                                onClick={handlePasswordToggle} >
+                                                <img src={eye1} className="w-5 h-5 cursor-pointer" onClick={handlePasswordToggle}/>
+                                                 </span>
+                                                 :
+                                                 <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center cursor-pointer"
+                                                 onClick={handlePasswordToggle}>
+                                                    <EyeOff size={16} className="w-5 h-5 cursor-pointer" onClick={handlePasswordToggle}/>
+                                                    
+                                                </span>
+                                                }
+
+                                            </div>
+                                            {formik.errors.password ? (
+                                                <div style={{ color: "red" }}>
+                                                    {formik.errors.password}
+                                                </div>
+                                            ) : null}
+                                        </div>
+
+                                        <div className="flex flex-col">
+                                            <label className="text-gray-700 mb-1 font-medium">
+                                                Confirm Password
                                             </label>
-                                            <input
-                                                className="hidden"
-                                                name="id_proof"
-                                                id="id_proof"
-                                                type="file"
-                                                accept=".pdf,.doc,.docx,.xls,.xlsx,.txt"
-                                                onChange={(e) => handleid_proofUpload(e)}
-                                            />
+
+                                            <div className="relative w-full">
+                                                <input
+                                                    type={showpassword ? "text" : "password" }
+                                                    name="confirmpassword"
+                                                    value={formik.values.confirmpassword}
+                                                    onChange={formik.handleChange}
+                                                    className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                                                    placeholder="Confirm Password"
+                                                />
+                                               
+                                               {
+                                                showpassword ? 
+                                                <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center cursor-pointer" 
+                                                onClick={handlePasswordToggle} >
+                                                <img src={eye1} className="w-5 h-5 cursor-pointer" onClick={handlePasswordToggle}/>
+                                                 </span>
+                                                 :
+                                                 <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center cursor-pointer"
+                                                 onClick={handlePasswordToggle}>
+                                                    <EyeOff size={16} className="w-5 h-5 cursor-pointer" onClick={handlePasswordToggle}/>
+                                                    
+                                                </span>
+                                                }
+
+                                            </div>
+                                            {formik.errors.confirmpassword ? (
+                                                <div style={{ color: "red" }}>
+                                                    {formik.errors.confirmpassword}
+                                                </div>
+                                            ) : null}
+                                        </div>
+
+                                    </div>
+
+                                    <div className="grid grid-rows-1 md:grid-rows-1 lg:grid-cols-3 gap-6 border-gray-300 mt-8">
+
+                                        {/* Resume Upload Field */}
+                                        <div className="flex flex-col">
+                                            <label className="text-gray-700 mb-1 font-medium">Upload Document</label>
+                                            <div className="flex items-center gap-3 relative">
+                                                <label
+                                                    htmlFor="id_proof"
+                                                    className="flex-1 border-2 border-[#f2f3f8] rounded-md px-3 py-2 cursor-pointer hover:bg-gray-50"
+                                                >
+                                                    <p className="truncate text-[#b5b5b5]">
+                                                        {id_proof
+                                                            ? id_proof.name || id_proof
+                                                            : "Browse"}
+                                                    </p>
+                                                </label>
+                                                <div className="absolute right-0 top-0 bottom-0 h-full flex flex-row gap-2">
+                                                    <label
+                                                        htmlFor="id_proof"
+                                                        className="bg-blue-600 text-white px-4 flex items-center justify-center rounded-md cursor-pointer text-sm"
+                                                        style={{ backgroundColor: layout_color }}
+                                                    >
+                                                        Choose File
+                                                    </label>
+                                                </div>
+                                                <input
+                                                    className="hidden"
+                                                    id="id_proof"
+                                                    name="id_proof"
+                                                    type="file"
+                                                    accept=".pdf,.doc,.docx"
+                                                    onChange={handleFileChange}
+                                                    ref={id_proofInputRef}
+                                                />
+
+                                            </div>
                                             {formik.errors.id_proof ? (
                                                 <div style={{ color: "red" }}>
                                                     {formik.errors.id_proof}
                                                 </div>
                                             ) : null}
+                                        </div>
 
-                                            {id_proof && (
-                                                <div className="flex items-center gap-2 mt-2">
-                                                    <span className="text-sm text-gray-600">
-                                                        Selected file: {id_proof.name || id_proof}
-                                                    </span>
-                                                    <button
-                                                        onClick={() => {
-                                                            setIdProof(null);
-                                                            document.getElementById("id_proof").value = "";
-                                                        }}
-                                                        className="text-red-500 hover:text-red-700"
+                                        {/* Image Upload Field */}
+                                        <div className="flex flex-col">
+                                            <label className="text-gray-700 mb-1 font-medium">
+                                                Upload Profile Image
+                                                <span className="font-normal">(Maximum file size: 500KB)</span>
+                                            </label>
+                                            <div className="flex items-center gap-3 relative">
+
+                                                <label
+                                                    htmlFor="image"
+                                                    className="flex-1 border-2 border-[#f2f3f8] rounded-md px-3 py-2 cursor-pointer hover:bg-gray-50"                                                >
+                                                    <p className="truncate text-[#b5b5b5] w-1/2">
+                                                        {cus_img
+                                                            ? cus_img.name || cus_img
+                                                            : "Browse"}
+                                                    </p>
+                                                </label>
+                                                <div className="absolute right-0 top-0 bottom-0 h-full flex flex-row gap-2">
+                                                    <label
+                                                        htmlFor="image"
+                                                        className="bg-blue-600 text-white px-4 flex items-center justify-center rounded-md cursor-pointer text-sm"
+                                                        style={{ backgroundColor: layout_color }}
                                                     >
-                                                        <X size={16} />
-                                                    </button>
+                                                        Choose File
+                                                    </label>
+                                                    <div
+                                                        className="w-11 h-11 flex items-center justify-center rounded-md cursor-pointer"
+                                                        style={{ backgroundColor: layout_color }}
+                                                        onClick={() => setShowWebcam(true)}
+                                                    >
+                                                        <img
+                                                            src={cameraIcon}
+                                                            alt="Camera Icon"
+                                                            className="w-6 h-6 object-contain"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <input
+                                                    className="hidden"
+                                                    id="image"
+                                                    name="image"
+                                                    type="file"
+                                                    accept="image/*"
+                                                    onChange={handleFileChange}
+                                                    ref={descImageInputRef}
+                                                />
+
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <div className="grid grid-rows-1 md:grid-rows-1 lg:grid-cols-1 gap-6 my-3">
+                                        <div className="flex flex-col gap-3 lg:mt-4">
+                                            <CheckboxToggle
+                                                checked={checked}
+                                                label="To close & refund the account with OTP verification, kindly check the checkbox"
+                                                onChange={handleOtpToggle}
+                                            />
+
+                                            {checked && (
+                                                <div className="flex flex-row justify-between w-full mt-2">
+                                                    <div className="flex flex-col flex-[0.9]">
+                                                        <label className="block text-sm font-medium mb-1">
+                                                            Mobile Number<span className="text-red-400"> *</span>
+                                                        </label>
+                                                        <div className="relative">
+                                                            <input
+                                                                type="number"
+                                                                min="0"
+                                                                className="border-2 border-[#f2f3f8] rounded-md p-2 w-96 lg:w-[81%] focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent pr-24"
+                                                                placeholder="Enter mobile number"
+                                                                value={formik.values.mobile || cusData.mobile}
+                                                                onChange={formik.handleChange}
+                                                                name="otpMobile"
+                                                            />
+
+                                                            {showverifyIcon && (
+                                                                <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center pointer-events-none">
+                                                                    <img src={verified} className="w-5 h-5" />
+                                                                </span>
+                                                            )}
+
+                                                            <div className="absolute -right-2 top-1/2 -translate-y-1/2">
+                                                                <button className="bg-[#004181] text-white rounded-md px-4 py-2"
+                                                                    onClick={(e) => sendOtpToMobile(e)}
+                                                                >
+                                                                    Send OTP
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Right (Narrower) */}
+                                                    <div className="flex items-end flex-[1]">
+                                                    </div>
                                                 </div>
                                             )}
                                         </div>
-
-                                        <div className="flex flex-col">
-                                            <div className="flex flex-row ">
-                                                <label className="text-black mb-1 font-medium">
-                                                    Upload Profile Image
-                                                </label>
-                                                <p className="text-gray-900 text-[12px] truncate text-start mx-2">
-                                                    (Maximum file size(500KB))
-                                                </p>
-                                            </div>
-                                            <div className="flex flex-col sm:flex-row gap-4">
-                                                <div className="flex-1">
-                                                    <label
-                                                        htmlFor="profile-image"
-                                                        className="flex justify-center items-center w-full h-12 border-2 border-dashed border-gray-300 text-black cursor-pointer px-4"
-                                                    >
-                                                        <div className="text-gray-900 text-center text-[12px]">
-                                                            {cus_img ? cus_img.name : "Browse"}
-                                                            <span>
-                                                                {cus_img?.size
-                                                                    ? ` (${(cus_img.size / 1024).toFixed()} KB)`
-                                                                    : profileplaceholder}
-                                                            </span>
-                                                        </div>
-                                                    </label>
-
-                                                    <input
-                                                        className="hidden"
-                                                        name="profile_image"
-                                                        id="profile-image"
-                                                        type="file"
-                                                        accept="image/*"
-                                                        onChange={handleFileChange}
-                                                    />
-
-                                                    <div className="flex flex-col items-center justify-center lg:items-start lg:justify-start lg:w-52 mt-2">
-                                                        <button
-                                                            type="button"
-                                                            onClick={(e) => {
-                                                                e.preventDefault();
-                                                                e.stopPropagation();
-                                                                setShowWebcam((prev) => !prev);
-                                                            }}
-                                                            onKeyDown={(e) => {
-                                                                if (e.key === "Enter") {
-                                                                    e.preventDefault();
-                                                                }
-                                                            }}
-                                                            className="mt-2 rounded-lg flex items-center gap-2 text-white px-3 py-1"
-                                                            style={{ backgroundColor: layout_color }}
-                                                        >
-                                                            <Camera size={16} />
-                                                            <span className="text-sm">
-                                                                {showWebcam ? "Close Camera" : "Open Camera"}
-                                                            </span>
-                                                        </button>
-                                                    </div>
-                                                </div>
-
-                                                <div className="flex items-start justify-center">
-                                                    <div className="relative w-20 h-20 bg-gray-200 rounded-md overflow-hidden">
-                                                        <img
-                                                            src={pathurl ? pathurl : profileplaceholder}
-                                                            alt="Profile Preview"
-                                                            className={`w-full h-full ${cus_img ? "object-cover" : "object-contain"
-                                                                }`}
-                                                        />
-
-                                                        {pathurl && (
-                                                            <button
-                                                                onClick={handleClearImage}
-                                                                className="absolute top-1 right-1 bg-white rounded-full p-1 shadow-md hover:bg-gray-100"
-                                                            >
-                                                                <X size={14} />
-                                                            </button>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        {showWebcam && (
-                                            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                                                <div className="bg-white p-4 rounded-lg">
-                                                    <div className="relative">
-                                                        <Webcam
-                                                            ref={webcamRef}
-                                                            screenshotFormat="image/jpeg"
-                                                            className="rounded-lg"
-                                                        />
-                                                        <div className="mt-4 flex justify-center gap-2">
-                                                            <button
-                                                                onClick={(e) => handleCapture(e)}
-                                                                className=" text-white px-4 py-2 rounded-md"
-                                                                style={{ backgroundColor: layout_color }}
-                                                            >
-                                                                Capture
-                                                            </button>
-                                                            <button
-                                                                onClick={() => setShowWebcam(false)}
-                                                                className="bg-gray-500 text-white px-4 py-2 rounded-md"
-                                                            >
-                                                                Cancel
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        )}
                                     </div>
-                                    <div className="flex flex-col mt-3">
-                                        <div className="flex flex-row items-center">
-                                            <input
-                                                type="checkbox"
-                                                className="w-8 h-5 accent-blue-600"
-                                                name="showVerification"
-                                                checked={showVerification}
-                                                onChange={() => {
-                                                    setShowVerification(!showVerification);
-                                                    setMobile("");
-                                                    setOtpNumber("");
-                                                    ResetTimer();
-                                                }}
-                                            />
-                                            <h2 className="text-lg text-[#023453] font-bold whitespace-nowrap px-2 my-3">
-                                                To verify account with OTP verification, kindly check
-                                                the checkbox.
-                                            </h2>
-                                        </div>
 
-                                        {showVerification && (
-                                            <div className="grid grid-rows-2 md:grid-cols-2 gap-4">
-                                                {/* Mobile Number Input */}
-                                                <div className="flex flex-col relative">
-                                                    <label className="text-black mb-1 font-normal">
-                                                        Mobile Number{" "}
-                                                        <span className="text-red-400">*</span>
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        name="mobile"
-                                                        value={formik.values.mobile || mobile}
-                                                        className="border-2 w-full border-gray-300  bg-[#f2f2f2] rounded-md p-2 focus:outline-none"
-                                                        placeholder="Enter Here"
-                                                        readOnly
-                                                        maxLength={10}
-                                                    />
-
-                                                    <div
-                                                        onClick={() => {
-                                                            const payload = {
-                                                                mobile: formik.values.mobile,
-                                                                branchId: formik.values.id_branch || branch,
-                                                            };
-                                                            setCanResend(false);
-                                                            setIsTimerRunning(true);
-                                                            postSendOtpMobile(payload);
-                                                        }}
-                                                        className="absolute flex items-center justify-center cursor-pointer right-0 top-[29px] w-10 h-10 bg-[#023453] rounded-r-md transition"
-                                                    >
-                                                        <Send size={22} className="text-white" />
-                                                    </div>
-                                                </div>
-
-                                                {/* OTP Input */}
-                                                <div className="flex flex-col relative">
-                                                    <label className="text-black mb-1 font-normal">
-                                                        OTP Number <span className="text-red-400">*</span>
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        name="otp"
-                                                        className="border-2 w-full border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:[#D1D5DB]"
-                                                        placeholder="Enter OTP"
-                                                        value={otpNumber || ""}
-                                                        onChange={(e) => {
-                                                            const value = e.target.value.replace(/\D/g, "");
-                                                            setOtpNumber(value);
-                                                        }}
-                                                    />
-                                                    <div
-                                                        onClick={() => {
-                                                            const payload = {
-                                                                mobile: formik.values.mobile,
-                                                                otp: otpNumber,
-                                                            };
-                                                            VerifyOtpNumber(payload);
-                                                        }}
-                                                        disabled={!otpNumber}
-                                                        className="absolute flex items-center justify-center cursor-pointer right-0 top-[29px] w-10 h-10 bg-[#023453] rounded-r-md transition"
-                                                    >
-                                                        <Send size={22} className="text-white" />
-                                                    </div>
-                                                </div>
-
-                                                {/* Countdown Timer */}
-                                                <div className="flex flex-col text-sm text-gray-600 mt-1">
-                                                    {timer > 0 && isTimerRunning ? (
-                                                        <span>Resend OTP in {timer} seconds</span>
-                                                    ) : (
-                                                        canResend && (
-                                                            <span
-                                                                className="text-blue-600 cursor-pointer hover:underline"
-                                                                onClick={() => {
-                                                                    const payload = {
-                                                                        mobile: formik.values.mobile,
-                                                                        branchId: id_branch,
-                                                                    };
-                                                                    setCanResend(false);
-                                                                    setIsTimerRunning(true);
-                                                                    postSendOtpMobile(payload);
-                                                                }}
-                                                                disabled={isTimerRunning}
-                                                            >
-                                                                Resend OTP
-                                                            </span>
-                                                        )
-                                                    )}
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
                                     <div>
                                         <div className="bg-white mt-6">
                                             <div className="flex justify-end gap-2 mt-3">
@@ -1171,12 +1361,48 @@ const CustomerForm = ({ setCusData, id, setAddCusData, addCusData, id_proof, set
                                             </div>
                                         </div>
                                     </div>
+
                                 </form>
+
+
+                                {otpSended && (
+                                    <ModelOne
+                                        title="Verify Mobile Number"
+                                        setIsOpen={setSendOtp}
+                                        isOpen={otpSended}
+                                        closeModal={closeIncommingModal}
+                                    >
+
+                                        <VerificationModal
+                                            mobile={formik.values.mobile}
+                                            branch={formik.values.id_branch}
+                                            setIsOpen={closeIncommingModal}
+                                            otpComplete={handleOtpComplete}
+                                        />
+                                    </ModelOne>
+                                )}
+
+                                {otpCompleted && (
+                                    <ModelOne
+                                        extraClassName="lg:w-[24rem]"
+                                        setIsOpen={setOtpComplete}
+                                        isOpen={otpCompleted}
+                                        closeModal={closeIncommingModal}
+                                    >
+
+                                        <OtpCompleted
+                                            setIsOpen={closeIncommingModal}
+                                        />
+                                    </ModelOne>
+                                )}
+                                
                             </>
                         );
                     })()}
                 </div>
             </div>
+
+
         </>
     );
 };

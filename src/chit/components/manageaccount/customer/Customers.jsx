@@ -12,10 +12,11 @@ import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
 function Customers() {
+
     const [isCustomer, setIsCustomer] = useState(false);
     const [openAcc, setOpenAcc] = useState(["customer"]);
     const [joinScheme, setJoinScheme] = useState(["add-customer"]);
-    const [cusData, setCusData] = useState({});
+  
     const [id_proof, setIdProof] = useState(null);
     const [cus_img, setCusImg] = useState("");
     const [pathurl, setPathurl] = useState("");
@@ -29,7 +30,8 @@ function Customers() {
         firstname: "",
         lastname: "",
         mobile: "",
-        gender: "",
+        gender: 1,
+        pan:"",
         address: "",
         id_branch: branch || "",
         id_country: "",
@@ -39,13 +41,23 @@ function Customers() {
         date_of_birth: "",
         pincode: "",
         authorno: "",
+        password:"",
+        confirmpassword:""
     }), [roledata]);
+     
+    const [cusData, setCusData] = useState(initialCustomerData);
+   
 
-    const [addCusData, setAddCusData] = useState(initialCustomerData);
+    const handleCusData = (data)=>{
+        setCusData(prev => ({
+            ...prev,
+            customerId: data,
+        }))
+    }
 
     useEffect(() => {
         if (branch !== "0") {
-            setAddCusData((prev) => ({ ...prev, id_branch: branch }));
+            setCusData((prev) => ({ ...prev, id_branch: branch }));
         }
     }, [roledata]);
 
@@ -57,7 +69,7 @@ function Customers() {
         setCusImg("");
         setPathurl("");
         setIdProof(null);
-        setAddCusData(initialCustomerData);
+        setCusData(initialCustomerData);
     };
 
     const handleToggleCustomer = (value) => setIsCustomer(value);
@@ -103,8 +115,8 @@ function Customers() {
                                 <CustomerForm 
                                     setCusData={setCusData} 
                                     id={id} 
-                                    addCusData={addCusData}
-                                    setAddCusData={setAddCusData}
+                                    cusData={cusData}
+                                    // setAddCusData={setAddCusData}
                                     id_proof={id_proof} 
                                     setIdProof={setIdProof}
                                     cus_img={cus_img} 
@@ -112,6 +124,7 @@ function Customers() {
                                     setCusImg={setCusImg} 
                                     setPathurl={setPathurl}
                                     handleClear={handleClear} 
+                                    handleCusData={handleCusData}
                                 />
                             </AccordionContent>
                         </AccordionItem>

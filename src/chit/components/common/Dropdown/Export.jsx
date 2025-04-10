@@ -1,20 +1,24 @@
 import React from 'react';
-import { Download, FileSpreadsheet, FileText } from 'lucide-react';
+import { Download, FileSpreadsheet, FileText,ChevronDown } from 'lucide-react';
 import { Menu, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 import { useSelector } from 'react-redux';
 import { ExportToExcel } from './Excelexport';
 import { ExportToPDF } from './ExportPdf';
+import exportIcon from "../../../../assets/icons/send-square.svg"
 
 const ExportDropdown = ({apiData,fileName}) => {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   return (
     <Menu as="div" className="relative inline-block text-left z-20">
       <div>
-        <Menu.Button className=" text-white hover:bg-[#034571] flex items-center gap-2 px-4 py-2 rounded-md"
-        style={{ backgroundColor: layout_color }} >
-          <Download className="h-4 w-4" />
+        <Menu.Button
+          className="flex items-center gap-2 border border-[#034571] bg-white text-[#034571] 
+                     px-4 py-1.5 text-sm font-medium rounded-md"
+        >
+          <img src={exportIcon} alt="Export" className="h-4 w-4" />
           Export
+          <ChevronDown className="h-4 w-4" />
         </Menu.Button>
       </div>
 
