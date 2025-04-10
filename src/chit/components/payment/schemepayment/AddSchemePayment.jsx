@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useCallback} from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Select from "react-select";
 import { useFormik } from "formik";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -133,21 +133,16 @@ const AddSchemePayment = () => {
           .min(0.01, "Weight must be greater than 0")
           .max(Yup.ref("maxWeight"), "Weight cannot exceed maximum allowed"),
       }),
-      payment_amount: Yup.number().required("Payment amount is required"),
-      // .min(
-      //   Yup.ref('minAmount'),
-      //   "Amount cannot be less than minimum allowed"
-      // )
-      // .max(
-      //   Yup.ref('maxAmount'),
-      //   "Amount cannot exceed maximum allowed"
-      // )
+      payment_amount: Yup.number()
+        .required("Amount is required")
+        .min(minAmount, `Amount must be at least ${minAmount}`)
+        .max(maxAmount, `Amount must be at most ${maxAmount}`),
       total_amt: Yup.number().optional("Total amount is required"),
       payment_mode: Yup.string().required("Payment mode is required"),
       itr_utr: Yup.string(),
       remark: Yup.string(),
     }),
-    validateOnBlur: false,
+    validateOnBlur: true,
     validateOnChange: false,
     onSubmit: (values) => {
       if (id) {
@@ -196,7 +191,7 @@ const AddSchemePayment = () => {
     mutationFn: addschemepayment,
     onSuccess: (response) => {
       toast.success(response.message);
-      navigate("/payment/schemepayment");
+      // navigate("/payment/schemepayment");
     },
     onError: (error) => {
       toast.error(error.response.data.message);
@@ -323,95 +318,170 @@ const AddSchemePayment = () => {
     fetchMetalRate();
   }, [formik.values.id_scheme_account]);
 
+  // useEffect(() => {
+  //   if (!selectedScheme) return;
+
+  //   formik.setFieldValue("payment_amount", "");
+  //   formik.setFieldValue("metal_weight", "");
+
+  //   formik.setFieldValue("id_scheme", selectedScheme?.id_scheme?._id);
+  //   formik.setFieldValue("id_branch", selectedScheme?.id_scheme?.id_branch);
+  //   formik.setFieldValue("mobile", selectedScheme?.id_customer?.mobile);
+  //   formik.setFieldValue(
+  //     "id_classification",
+  //     selectedScheme?.id_classification?._id
+  //   );
+  //   formik.setFieldValue("id_customer", selectedScheme?.id_customer?._id);
+  //   formik.setFieldValue("scheme_type", selectedScheme?.id_scheme?.scheme_type);
+
+  //   const schemeType = selectedScheme?.id_scheme?.scheme_type;
+  //   const classificationOrder = selectedScheme?.id_classification?.order;
+
+  //   setShowWeightInput(false);
+  //   setShowAmountInput(false);
+  //   setIspayamtreadOnly(true);
+
+  //   if (classificationOrder === 2) {
+  //     if (weightSchemeTypes.includes(schemeType)) {
+  //       const paymentAmount = Number(metalRate) * Number(selectedScheme.weight);
+  //       formik.setFieldValue("payment_amount", paymentAmount);
+  //       formik.setFieldValue("metal_weight", selectedScheme.weight);
+  //       setIspayamtreadOnly(true);
+  //     } else {
+  //       formik.setFieldValue("payment_amount", selectedScheme.amount);
+  //       setIspayamtreadOnly(true);
+  //     }
+  //   } else if (classificationOrder === 3) {
+  //     if (selectedScheme.last_paid_amount === 0) {
+  //       if (weightSchemeTypes.includes(schemeType)) {
+  //         setMinWeight(selectedScheme?.id_scheme?.min_weight || 0);
+  //         setMaxWeight(selectedScheme?.id_scheme?.max_weight || 0);
+  //         setShowWeightInput(true);
+  //         setIspayamtreadOnly(true);
+  //       } else {
+  //         setMinAmount(selectedScheme?.id_scheme?.min_amount || 0);
+  //         setMaxAmount(selectedScheme?.id_scheme?.max_amount || 0);
+  //         setShowAmountInput(true);
+  //         setIspayamtreadOnly(false);
+  //       }
+  //     } else {
+  //       if (weightSchemeTypes.includes(schemeType)) {
+  //         formik.setFieldValue("metal_weight", selectedScheme.last_paid_weight);
+  //         setIspayamtreadOnly(true);
+  //       } else {
+  //         formik.setFieldValue(
+  //           "payment_amount",
+  //           selectedScheme.last_paid_amount
+  //         );
+  //         setIspayamtreadOnly(true);
+  //       }
+  //     }
+  //   } else {
+  //     if (weightSchemeTypes.includes(schemeType)) {
+  //       setMinWeight(selectedScheme?.id_scheme?.min_weight || 0);
+  //       setMaxWeight(selectedScheme?.id_scheme?.max_weight || 0);
+  //       setShowWeightInput(true);
+  //       setIspayamtreadOnly(false);
+  //     } else {
+  //       setMinAmount(selectedScheme?.id_scheme?.min_amount || 0);
+  //       setMaxAmount(selectedScheme?.id_scheme?.max_amount || 0);
+  //       setShowAmountInput(true);
+  //       setIspayamtreadOnly(false);
+  //     }
+  //   }
+  // }, [selectedScheme, metalRate]);
   useEffect(() => {
     if (!selectedScheme) return;
-
-    // Reset all relevant fields first
+  
+    const {
+      id_scheme,
+      id_customer,
+      id_classification,
+      amount,
+      weight,
+      last_paid_amount,
+      last_paid_weight,
+    } = selectedScheme;
+  
+    const schemeType = id_scheme?.scheme_type;
+    const classificationOrder = id_classification?.order;
+  
+    // Reset fields
     formik.setFieldValue("payment_amount", "");
     formik.setFieldValue("metal_weight", "");
-
-    // Then set the new values
-    formik.setFieldValue("id_scheme", selectedScheme?.id_scheme?._id);
-    formik.setFieldValue("id_branch", selectedScheme?.id_scheme?.id_branch);
-    formik.setFieldValue("mobile", selectedScheme?.id_customer?.mobile);
-    formik.setFieldValue(
-      "id_classification",
-      selectedScheme?.id_classification?._id
-    );
-    formik.setFieldValue("id_customer", selectedScheme?.id_customer?._id);
-    formik.setFieldValue("scheme_type", selectedScheme?.id_scheme?.scheme_type);
-
-    const schemeType = selectedScheme?.id_scheme?.scheme_type;
-    const classificationOrder = selectedScheme?.id_classification?.order;
-
     setShowWeightInput(false);
     setShowAmountInput(false);
     setIspayamtreadOnly(true);
-
+  
+    // Set common fields
+    formik.setFieldValue("id_scheme", id_scheme?._id);
+    formik.setFieldValue("id_branch", id_scheme?.id_branch);
+    formik.setFieldValue("mobile", id_customer?.mobile);
+    formik.setFieldValue("id_classification", id_classification?._id);
+    formik.setFieldValue("id_customer", id_customer?._id);
+    formik.setFieldValue("scheme_type", schemeType);
+  
+    const isWeightScheme = weightSchemeTypes.includes(schemeType);
+  
+    // Classification logic
     if (classificationOrder === 2) {
-      if (weightSchemeTypes.includes(schemeType)) {
-        const paymentAmount = Number(metalRate) * Number(selectedScheme.weight);
+      if (isWeightScheme) {
+        const paymentAmount = Number(metalRate) * Number(weight || 0);
         formik.setFieldValue("payment_amount", paymentAmount);
-        formik.setFieldValue("metal_weight", selectedScheme.weight);
-        setIspayamtreadOnly(true);
+        formik.setFieldValue("metal_weight", weight);
       } else {
-        formik.setFieldValue("payment_amount", selectedScheme.amount);
-        setIspayamtreadOnly(true);
+        formik.setFieldValue("payment_amount", amount);
       }
     } else if (classificationOrder === 3) {
-      if (selectedScheme.last_paid_amount === 0) {
-        if (weightSchemeTypes.includes(schemeType)) {
-          setMinWeight(selectedScheme?.id_scheme?.min_weight || 0);
-          setMaxWeight(selectedScheme?.id_scheme?.max_weight || 0);
+      const isFirstPayment = last_paid_amount === 0;
+  
+      if (isFirstPayment) {
+        if (isWeightScheme) {
+          setMinWeight(id_scheme?.min_weight || 0);
+          setMaxWeight(id_scheme?.max_weight || 0);
           setShowWeightInput(true);
-          setIspayamtreadOnly(true);
         } else {
-          setMinAmount(selectedScheme?.id_scheme?.min_amount || 0);
-          setMaxAmount(selectedScheme?.id_scheme?.max_amount || 0);
+          setMinAmount(id_scheme?.min_amount || 0);
+          setMaxAmount(id_scheme?.max_amount || 0);
           setShowAmountInput(true);
           setIspayamtreadOnly(false);
         }
       } else {
-        if (weightSchemeTypes.includes(schemeType)) {
-          formik.setFieldValue("metal_weight", selectedScheme.last_paid_weight);
-          setIspayamtreadOnly(true);
+        if (isWeightScheme) {
+          formik.setFieldValue("metal_weight", last_paid_weight);
         } else {
-          formik.setFieldValue(
-            "payment_amount",
-            selectedScheme.last_paid_amount
-          );
-          setIspayamtreadOnly(true);
+          formik.setFieldValue("payment_amount", last_paid_amount);
         }
       }
     } else {
-      if (weightSchemeTypes.includes(schemeType)) {
-        setMinWeight(selectedScheme?.id_scheme?.min_weight || 0);
-        setMaxWeight(selectedScheme?.id_scheme?.max_weight || 0);
+      if (isWeightScheme) {
+        setMinWeight(id_scheme?.min_weight || 0);
+        setMaxWeight(id_scheme?.max_weight || 0);
         setShowWeightInput(true);
-        setIspayamtreadOnly(false);
       } else {
-        setMinAmount(selectedScheme?.id_scheme?.min_amount || 0);
-        setMaxAmount(selectedScheme?.id_scheme?.max_amount || 0);
+        setMinAmount(id_scheme?.min_amount || 0);
+        setMaxAmount(id_scheme?.max_amount || 0);
         setShowAmountInput(true);
-        setIspayamtreadOnly(false);
       }
+      setIspayamtreadOnly(false);
     }
   }, [selectedScheme, metalRate]);
+  
 
   useEffect(() => {
     if (formik.values.metal_weight && metalRate) {
-      if (formik.values.metal_weight < minWeight) {
-        formik.setFieldError(
-          "metal_weight",
-          "Metal can't be less than min weight"
-        );
-      }
-      if (formik.values.metal_weight > maxWeight) {
-        formik.setFieldError(
-          "metal_weight",
-          "Metal can't be greater than max weight"
-        );
-      }
+      // if (formik.values.metal_weight < minWeight) {
+      //   formik.setFieldError(
+      //     "metal_weight",
+      //     "Metal can't be less than min weight"
+      //   );
+      // }
+      // if (formik.values.metal_weight > maxWeight) {
+      //   formik.setFieldError(
+      //     "metal_weight",
+      //     "Metal can't be greater than max weight"
+      //   );
+      // }
       const calculatedAmount =
         Number(formik.values.metal_weight) * Number(metalRate);
       formik.setFieldValue("payment_amount", calculatedAmount);
@@ -446,16 +516,21 @@ const AddSchemePayment = () => {
     if (!formik.values.mobile) {
       return toast.error("Mobile Number is required!");
     }
-  
+
     if (schemedata.length > 0) return;
-  
+
     const searchData = {
       id_branch: formik.values.id_branch || id_branch,
       search_mobile: formik.values.mobile,
     };
-  
+
     handlesearchschemeaccount(searchData);
   }, [formik.values.mobile, formik.values.id_branch, schemedata]);
+
+  useEffect(() => {}, [
+    formik.values.payment_amount,
+    formik.values.metal_weight,
+  ]);
 
   // const handleautocompletemobile = (e) => {
   //   let value = e.target.value;
@@ -476,7 +551,6 @@ const AddSchemePayment = () => {
       // setMobile(value);
     }
   };
-  
 
   const handleCancel = () => {
     navigate("/payment/schemepayment");
@@ -486,9 +560,12 @@ const AddSchemePayment = () => {
     setIsExpanded(!isExpanded);
   };
 
+  console.log(formik.errors);
+  console.log(formik.values)
+
   return (
     <>
-    <form
+      <form
         onSubmit={formik.handleSubmit}
         onKeyDown={(e) => {
           if (e.key === "Enter" && e.target.type !== "textarea") {
@@ -496,29 +573,29 @@ const AddSchemePayment = () => {
           }
         }}
       >
-      <div className="flex flex-row justify-between items-center mb-4">
-        <p className="text-sm text-gray-400 mt-4 mb-4">
-          Payment / <span className="text-black">Scheme Payment</span>
-        </p>
+        <div className="flex flex-row justify-between items-center mb-4">
+          <p className="text-sm text-gray-400 mt-4 mb-4">
+            Payment / <span className="text-black">Scheme Payment</span>
+          </p>
 
-        <div className="flex flec-row gap-2">
-        <button
-          type="button"
-          className="w-20 h-9 border-2 bg-[#F6F7F9] border-[#f2f3f8] rounded-md hover:bg-gray-50 flex justify-center items-center text-[#6C7086]"
-          onClick={() => formik.resetForm()}
-        >
-          Clear
-        </button>
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="w-20 h-9 bg-blue-900 text-white rounded-md hover:bg-blue-800 flex justify-center items-center"
-        >
-          {isLoading ? <SpinLoading /> : id ? "Update" : "Save"}
-        </button>
+          <div className="flex flec-row gap-2">
+            <button
+              type="button"
+              className="w-20 h-9 border-2 bg-[#F6F7F9] border-[#f2f3f8] rounded-md hover:bg-gray-50 flex justify-center items-center text-[#6C7086]"
+              onClick={() => formik.resetForm()}
+            >
+              Clear
+            </button>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-20 h-9 bg-blue-900 text-white rounded-md hover:bg-blue-800 flex justify-center items-center"
+            >
+              {isLoading ? <SpinLoading /> : id ? "Update" : "Save"}
+            </button>
+          </div>
         </div>
-      </div>
-      
+
         <div>
           <div className="flex flex-col lg:flex-row w-full justify-between">
             {/* Left column - form inputs */}
@@ -930,7 +1007,7 @@ const AddSchemePayment = () => {
                         </label>
                         <div className="relative">
                           <input
-                            type="number"
+                            type="text"
                             name="metal_weight"
                             value={formik.values.metal_weight}
                             min={minWeight}
@@ -986,6 +1063,7 @@ const AddSchemePayment = () => {
                           name="payment_amount"
                           value={formik.values.payment_amount}
                           min={minAmount}
+                          onBlur={formik.handleBlur}
                           max={maxAmount}
                           step="0.01"
                           onChange={formik.handleChange}
@@ -1026,20 +1104,25 @@ const AddSchemePayment = () => {
                         isClearable={true}
                         options={paymentmode}
                         placeholder="Select payment mode"
-                        value={paymentmode?.find(
-                          (option) =>
-                            option.value === formik.values.payment_mode
-                        )}
+                        value={
+                          paymentmode?.find(
+                            (option) =>
+                              option.value === formik.values.payment_mode
+                          ) || null
+                        }
                         onChange={(option) => {
-                          if (Number(option.mode) === 7) {
+                          if (!option) {
+                            setSelectedMode("");
+                            formik.setFieldValue("payment_mode", "");
+                            return;
+                          }
+
+                          if (Number(option?.mode) === 7) {
                             setSelectedMode(option.mode);
                           } else {
                             setSelectedMode("");
                           }
-                          formik.setFieldValue(
-                            "payment_mode",
-                            option ? option.value : ""
-                          );
+                          formik.setFieldValue("payment_mode", option.value);
                         }}
                       />
                       {formik.errors.payment_mode && (

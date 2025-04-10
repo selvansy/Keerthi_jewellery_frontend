@@ -12,12 +12,7 @@ import {
   searchcustomermobile,
   geallschemebyclassification,
   getschemeaccountbyid,
-  getschemeById,
   updateschemeaccount,
-  extendinstallment,
-  addcloseSchemeAccount,
-  schemeaccountbyid,
-  getallbranchscheme,
   getallbranchclassification,
   getemployeebybranch,
   getallbranch,
@@ -89,6 +84,7 @@ export function ExistingCustomer({ setCusData }) {
       id_branch: data.id_branch,
       mobile: data.mobile,
       id_customer: data._id,
+      referral_id: data.referral_id
     });
   };
 
@@ -181,8 +177,6 @@ export function ExistingCustomer({ setCusData }) {
 }
 
 const AddSchemeAccount = ({ cusData, handleClear }) => {
-
-  console.log("cusData---",cusData)
   
   let dispatch = useDispatch();
 
@@ -216,7 +210,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
     { id: 1, role: "Employee", endpoint: getEmployeeByMobile },
     { id: 2, role: "Customer", endpoint: getCustomerByMobile },
     { id: 3, role: "Agent" },
-  ];
+  ]; // keep this role format
   const [searchmobile, setSearchMobile] = useState("");
   const [selectedRole, setRole] = useState("");
   const [schemeAccountData, setSchemeAccountData] = useState();
@@ -1206,7 +1200,8 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
                 </div>
                 <p style={{ color: "red" }}>{errors?.maturity_date}</p>
               </div>
-              {!id && (
+              {console.log(cusData)}
+              {(!id && cusData.referral_id === null) && (
                 <>
                   <div className="flex flex-col">
                     <label className="text-black mb-1 font-normal">
