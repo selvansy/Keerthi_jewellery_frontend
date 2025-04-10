@@ -1,42 +1,63 @@
 import React, { useState } from "react";
-import Select from "react-select";
+import Select, { components } from "react-select";
 import { MoreHorizontal } from "lucide-react";
+import { CalendarDays } from "lucide-react";
+import AddAcc from "../../../../../assets/dashboard/addAcc.svg"
+import { useNavigate } from "react-router-dom";
+const CustomControl = (props) => (
+  <components.Control {...props}>
+    <CalendarDays className="ml-2 mr-2 text-gray-500 w-4 h-4" />
+    {props.children}
+  </components.Control>
+);
 
 const AccountStatus = ({ statusData, totalAccounts, options }) => {
   const [hoveredSegment, setHoveredSegment] = useState(null);
-  let offset = 0; // To manage segment positioning
+  let offset = 0;
 
+  const navigate = useNavigate()
   return (
-    <div className="bg-[#FFFFFF] p-6 rounded-lg max-w-lg lg:col-span-2">
+    <div className="border-2 border-[#F5F5F5] p-6 rounded-lg lg:col-span-2 bg-white">
       <div className="flex justify-between items-center mb-8">
-        <h2 className="text-[#2F1C6A] font-semibold text-xl">Account</h2>
+        <h2 className="text-gray-800 font-semibold text-xl">Account</h2>
 
         <Select
           options={options}
-          defaultValue={options[1]} 
-          className="w-[250px]"
+          defaultValue={options[0]}
           styles={{
             control: (base) => ({
               ...base,
               backgroundColor: "white",
-              borderRadius: "6px",
-              borderColor: "#e2e8f0",
+              border: "2px solid #f2f3f8",
+              borderRadius: "8px",
+              borderColor: "#F5F5F5",
               padding: "2px",
               cursor: "pointer",
             }),
+            indicatorSeparator: () => ({
+              display: "none",
+            }),
           }}
+          components={{ Control: CustomControl }}
         />
       </div>
 
       <div className="flex">
         <div className="relative w-56 h-72 mx-auto">
-          <svg 
-            viewBox="0 0 100 100" 
+          <svg
+            viewBox="0 0 100 100"
             className="w-full h-full transform -rotate-90"
           >
             {/* Background Circle */}
-            <circle cx="50" cy="50" r="40" fill="none" stroke="#F5F5F5" strokeWidth="16" />
-            
+            <circle
+              cx="50"
+              cy="50"
+              r="40"
+              fill="none"
+              stroke="#F5F5F5"
+              strokeWidth="16"
+            />
+
             {/* Dynamic Status Segments */}
             {statusData.map(({ label, color, percentage }, index) => {
               const dashValue = (percentage / 100) * 251; // Convert to strokeDasharray scale
@@ -54,31 +75,34 @@ const AccountStatus = ({ statusData, totalAccounts, options }) => {
                   strokeLinecap="round"
                   onMouseEnter={() => setHoveredSegment(label)}
                   onMouseLeave={() => setHoveredSegment(null)}
-                  style={{ cursor: 'pointer' }}
+                  style={{ cursor: "pointer" }}
                 />
               );
               offset -= dashValue; // Move next segment
               return circleElement;
             })}
-            
-            {/* Transparent overlay circles for better hover detection */}
-          <>
-          </>
           </svg>
 
-          {/* Center Percentage */}
+          {/* Center Percentage - The Fixed Part */}
           <div className="absolute inset-0 flex items-center justify-center flex-col">
             {hoveredSegment ? (
               <>
                 <span className="text-sm text-gray-500">{hoveredSegment}</span>
                 <span className="text-4xl font-medium text-gray-400">
-                  {statusData.find(item => item.label === hoveredSegment)?.percentage}%
+                  {
+                    statusData.find((item) => item.label === hoveredSegment)
+                      ?.percentage
+                  }
+                  %
                 </span>
               </>
             ) : (
-              <span className="text-4xl font-medium text-gray-400">
-                {totalAccounts.percentage}%
-              </span>
+              <>
+                <span className="text-sm text-gray-500">Total</span>
+                <span className="text-4xl font-medium text-gray-400">
+                  {totalAccounts.percentage}%
+                </span>
+              </>
             )}
           </div>
         </div>
@@ -87,14 +111,17 @@ const AccountStatus = ({ statusData, totalAccounts, options }) => {
         <div className="ml-8 flex flex-col justify-center">
           <div className="grid gap-y-2">
             {statusData.map(({ label, color, percentage }) => (
-              <div 
-                key={label} 
+              <div
+                key={label}
                 className="flex items-center group"
                 onMouseEnter={() => setHoveredSegment(label)}
                 onMouseLeave={() => setHoveredSegment(null)}
-                style={{ cursor: 'pointer' }}
+                style={{ cursor: "pointer" }}
               >
-                <div className="w-4 h-4 rounded-sm mr-2" style={{ backgroundColor: color }}></div>
+                <div
+                  className="w-4 h-4 rounded-sm mr-2"
+                  style={{ backgroundColor: color }}
+                ></div>
                 <span className="text-sm">{label}</span>
                 <span className="text-sm ml-2 text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity">
                   {percentage}%
@@ -119,12 +146,15 @@ const AccountStatus = ({ statusData, totalAccounts, options }) => {
           </div>
           <div>
             <p className="text-sm font-medium">Total Account</p>
-            <p className="text-lg font-bold">{totalAccounts.count} New Account</p>
+            <p className="text-lg font-bold">
+              {totalAccounts.count} New Account
+            </p>
           </div>
         </div>
 
-        <div className="bg-blue-50 w-10 h-10 rounded-full flex items-center justify-center">
-          <MoreHorizontal size={20} className="text-blue-800" />
+        <div className="bg-[#004181] px-[16px] py-[10px] rounded-[8px]  flex items-center justify-center cursor-pointer" onClick={()=>navigate('/managecustomers/addcustomer')}>
+          <img src={AddAcc} alt={AddAcc} className="h-[25px] w-[25px] me-[18px]" />
+          <button className="text-white">Add Accounts</button>
         </div>
       </div>
     </div>

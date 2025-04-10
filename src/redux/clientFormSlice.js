@@ -119,9 +119,13 @@ const clientFormSlice = createSlice({
     resetPage: (state) => {
       state.currentStep = 0;
     },
+    RoleDatalogout: (state) => {
+      state.roledata = null;
+
+    },
   },
 });
 
 export const { pagehandler, setTotalPage, resetPage,setid,setSuperAdmin,setPushnotifyId,setSettingtype,setAccessmenudata,setWhatsappData,setLayoutColor,setScemeAccountId,SetaccExp,SetOutreport,
-  setSelectedProject, setClientId, setProjectId,setAupayurl,setAusaleurl,setPawnurl, setbranchId,setClientData,setBranchForm,setReviewForm,setRoleData } = clientFormSlice.actions;
+  setSelectedProject, setClientId, setProjectId,setAupayurl,setAusaleurl,setPawnurl, setbranchId,setClientData,setBranchForm,setReviewForm,setRoleData,RoleDatalogout } = clientFormSlice.actions;
 export default clientFormSlice.reducer;
