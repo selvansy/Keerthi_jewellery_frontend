@@ -318,95 +318,170 @@ const AddSchemePayment = () => {
     fetchMetalRate();
   }, [formik.values.id_scheme_account]);
 
+  // useEffect(() => {
+  //   if (!selectedScheme) return;
+
+  //   formik.setFieldValue("payment_amount", "");
+  //   formik.setFieldValue("metal_weight", "");
+
+  //   formik.setFieldValue("id_scheme", selectedScheme?.id_scheme?._id);
+  //   formik.setFieldValue("id_branch", selectedScheme?.id_scheme?.id_branch);
+  //   formik.setFieldValue("mobile", selectedScheme?.id_customer?.mobile);
+  //   formik.setFieldValue(
+  //     "id_classification",
+  //     selectedScheme?.id_classification?._id
+  //   );
+  //   formik.setFieldValue("id_customer", selectedScheme?.id_customer?._id);
+  //   formik.setFieldValue("scheme_type", selectedScheme?.id_scheme?.scheme_type);
+
+  //   const schemeType = selectedScheme?.id_scheme?.scheme_type;
+  //   const classificationOrder = selectedScheme?.id_classification?.order;
+
+  //   setShowWeightInput(false);
+  //   setShowAmountInput(false);
+  //   setIspayamtreadOnly(true);
+
+  //   if (classificationOrder === 2) {
+  //     if (weightSchemeTypes.includes(schemeType)) {
+  //       const paymentAmount = Number(metalRate) * Number(selectedScheme.weight);
+  //       formik.setFieldValue("payment_amount", paymentAmount);
+  //       formik.setFieldValue("metal_weight", selectedScheme.weight);
+  //       setIspayamtreadOnly(true);
+  //     } else {
+  //       formik.setFieldValue("payment_amount", selectedScheme.amount);
+  //       setIspayamtreadOnly(true);
+  //     }
+  //   } else if (classificationOrder === 3) {
+  //     if (selectedScheme.last_paid_amount === 0) {
+  //       if (weightSchemeTypes.includes(schemeType)) {
+  //         setMinWeight(selectedScheme?.id_scheme?.min_weight || 0);
+  //         setMaxWeight(selectedScheme?.id_scheme?.max_weight || 0);
+  //         setShowWeightInput(true);
+  //         setIspayamtreadOnly(true);
+  //       } else {
+  //         setMinAmount(selectedScheme?.id_scheme?.min_amount || 0);
+  //         setMaxAmount(selectedScheme?.id_scheme?.max_amount || 0);
+  //         setShowAmountInput(true);
+  //         setIspayamtreadOnly(false);
+  //       }
+  //     } else {
+  //       if (weightSchemeTypes.includes(schemeType)) {
+  //         formik.setFieldValue("metal_weight", selectedScheme.last_paid_weight);
+  //         setIspayamtreadOnly(true);
+  //       } else {
+  //         formik.setFieldValue(
+  //           "payment_amount",
+  //           selectedScheme.last_paid_amount
+  //         );
+  //         setIspayamtreadOnly(true);
+  //       }
+  //     }
+  //   } else {
+  //     if (weightSchemeTypes.includes(schemeType)) {
+  //       setMinWeight(selectedScheme?.id_scheme?.min_weight || 0);
+  //       setMaxWeight(selectedScheme?.id_scheme?.max_weight || 0);
+  //       setShowWeightInput(true);
+  //       setIspayamtreadOnly(false);
+  //     } else {
+  //       setMinAmount(selectedScheme?.id_scheme?.min_amount || 0);
+  //       setMaxAmount(selectedScheme?.id_scheme?.max_amount || 0);
+  //       setShowAmountInput(true);
+  //       setIspayamtreadOnly(false);
+  //     }
+  //   }
+  // }, [selectedScheme, metalRate]);
   useEffect(() => {
     if (!selectedScheme) return;
-
-    // Reset all relevant fields first
+  
+    const {
+      id_scheme,
+      id_customer,
+      id_classification,
+      amount,
+      weight,
+      last_paid_amount,
+      last_paid_weight,
+    } = selectedScheme;
+  
+    const schemeType = id_scheme?.scheme_type;
+    const classificationOrder = id_classification?.order;
+  
+    // Reset fields
     formik.setFieldValue("payment_amount", "");
     formik.setFieldValue("metal_weight", "");
-
-    // Then set the new values
-    formik.setFieldValue("id_scheme", selectedScheme?.id_scheme?._id);
-    formik.setFieldValue("id_branch", selectedScheme?.id_scheme?.id_branch);
-    formik.setFieldValue("mobile", selectedScheme?.id_customer?.mobile);
-    formik.setFieldValue(
-      "id_classification",
-      selectedScheme?.id_classification?._id
-    );
-    formik.setFieldValue("id_customer", selectedScheme?.id_customer?._id);
-    formik.setFieldValue("scheme_type", selectedScheme?.id_scheme?.scheme_type);
-
-    const schemeType = selectedScheme?.id_scheme?.scheme_type;
-    const classificationOrder = selectedScheme?.id_classification?.order;
-
     setShowWeightInput(false);
     setShowAmountInput(false);
     setIspayamtreadOnly(true);
-
+  
+    // Set common fields
+    formik.setFieldValue("id_scheme", id_scheme?._id);
+    formik.setFieldValue("id_branch", id_scheme?.id_branch);
+    formik.setFieldValue("mobile", id_customer?.mobile);
+    formik.setFieldValue("id_classification", id_classification?._id);
+    formik.setFieldValue("id_customer", id_customer?._id);
+    formik.setFieldValue("scheme_type", schemeType);
+  
+    const isWeightScheme = weightSchemeTypes.includes(schemeType);
+  
+    // Classification logic
     if (classificationOrder === 2) {
-      if (weightSchemeTypes.includes(schemeType)) {
-        const paymentAmount = Number(metalRate) * Number(selectedScheme.weight);
+      if (isWeightScheme) {
+        const paymentAmount = Number(metalRate) * Number(weight || 0);
         formik.setFieldValue("payment_amount", paymentAmount);
-        formik.setFieldValue("metal_weight", selectedScheme.weight);
-        setIspayamtreadOnly(true);
+        formik.setFieldValue("metal_weight", weight);
       } else {
-        formik.setFieldValue("payment_amount", selectedScheme.amount);
-        setIspayamtreadOnly(true);
+        formik.setFieldValue("payment_amount", amount);
       }
     } else if (classificationOrder === 3) {
-      if (selectedScheme.last_paid_amount === 0) {
-        if (weightSchemeTypes.includes(schemeType)) {
-          setMinWeight(selectedScheme?.id_scheme?.min_weight || 0);
-          setMaxWeight(selectedScheme?.id_scheme?.max_weight || 0);
+      const isFirstPayment = last_paid_amount === 0;
+  
+      if (isFirstPayment) {
+        if (isWeightScheme) {
+          setMinWeight(id_scheme?.min_weight || 0);
+          setMaxWeight(id_scheme?.max_weight || 0);
           setShowWeightInput(true);
-          setIspayamtreadOnly(true);
         } else {
-          setMinAmount(selectedScheme?.id_scheme?.min_amount || 0);
-          setMaxAmount(selectedScheme?.id_scheme?.max_amount || 0);
+          setMinAmount(id_scheme?.min_amount || 0);
+          setMaxAmount(id_scheme?.max_amount || 0);
           setShowAmountInput(true);
           setIspayamtreadOnly(false);
         }
       } else {
-        if (weightSchemeTypes.includes(schemeType)) {
-          formik.setFieldValue("metal_weight", selectedScheme.last_paid_weight);
-          setIspayamtreadOnly(true);
+        if (isWeightScheme) {
+          formik.setFieldValue("metal_weight", last_paid_weight);
         } else {
-          formik.setFieldValue(
-            "payment_amount",
-            selectedScheme.last_paid_amount
-          );
-          setIspayamtreadOnly(true);
+          formik.setFieldValue("payment_amount", last_paid_amount);
         }
       }
     } else {
-      if (weightSchemeTypes.includes(schemeType)) {
-        setMinWeight(selectedScheme?.id_scheme?.min_weight || 0);
-        setMaxWeight(selectedScheme?.id_scheme?.max_weight || 0);
+      if (isWeightScheme) {
+        setMinWeight(id_scheme?.min_weight || 0);
+        setMaxWeight(id_scheme?.max_weight || 0);
         setShowWeightInput(true);
-        setIspayamtreadOnly(false);
       } else {
-        setMinAmount(selectedScheme?.id_scheme?.min_amount || 0);
-        setMaxAmount(selectedScheme?.id_scheme?.max_amount || 0);
+        setMinAmount(id_scheme?.min_amount || 0);
+        setMaxAmount(id_scheme?.max_amount || 0);
         setShowAmountInput(true);
-        setIspayamtreadOnly(false);
       }
+      setIspayamtreadOnly(false);
     }
   }, [selectedScheme, metalRate]);
+  
 
   useEffect(() => {
     if (formik.values.metal_weight && metalRate) {
-      if (formik.values.metal_weight < minWeight) {
-        formik.setFieldError(
-          "metal_weight",
-          "Metal can't be less than min weight"
-        );
-      }
-      if (formik.values.metal_weight > maxWeight) {
-        formik.setFieldError(
-          "metal_weight",
-          "Metal can't be greater than max weight"
-        );
-      }
+      // if (formik.values.metal_weight < minWeight) {
+      //   formik.setFieldError(
+      //     "metal_weight",
+      //     "Metal can't be less than min weight"
+      //   );
+      // }
+      // if (formik.values.metal_weight > maxWeight) {
+      //   formik.setFieldError(
+      //     "metal_weight",
+      //     "Metal can't be greater than max weight"
+      //   );
+      // }
       const calculatedAmount =
         Number(formik.values.metal_weight) * Number(metalRate);
       formik.setFieldValue("payment_amount", calculatedAmount);
@@ -486,6 +561,7 @@ const AddSchemePayment = () => {
   };
 
   console.log(formik.errors);
+  console.log(formik.values)
 
   return (
     <>
