@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useCallback} from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Select from "react-select";
 import { useFormik } from "formik";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -133,21 +133,16 @@ const AddSchemePayment = () => {
           .min(0.01, "Weight must be greater than 0")
           .max(Yup.ref("maxWeight"), "Weight cannot exceed maximum allowed"),
       }),
-      payment_amount: Yup.number().required("Payment amount is required"),
-      // .min(
-      //   Yup.ref('minAmount'),
-      //   "Amount cannot be less than minimum allowed"
-      // )
-      // .max(
-      //   Yup.ref('maxAmount'),
-      //   "Amount cannot exceed maximum allowed"
-      // )
+      payment_amount: Yup.number()
+        .required("Amount is required")
+        .min(minAmount, `Amount must be at least ${minAmount}`)
+        .max(maxAmount, `Amount must be at most ${maxAmount}`),
       total_amt: Yup.number().optional("Total amount is required"),
       payment_mode: Yup.string().required("Payment mode is required"),
       itr_utr: Yup.string(),
       remark: Yup.string(),
     }),
-    validateOnBlur: false,
+    validateOnBlur: true,
     validateOnChange: false,
     onSubmit: (values) => {
       if (id) {
@@ -446,16 +441,21 @@ const AddSchemePayment = () => {
     if (!formik.values.mobile) {
       return toast.error("Mobile Number is required!");
     }
-  
+
     if (schemedata.length > 0) return;
-  
+
     const searchData = {
       id_branch: formik.values.id_branch || id_branch,
       search_mobile: formik.values.mobile,
     };
-  
+
     handlesearchschemeaccount(searchData);
   }, [formik.values.mobile, formik.values.id_branch, schemedata]);
+
+  useEffect(() => {}, [
+    formik.values.payment_amount,
+    formik.values.metal_weight,
+  ]);
 
   // const handleautocompletemobile = (e) => {
   //   let value = e.target.value;
@@ -476,7 +476,6 @@ const AddSchemePayment = () => {
       // setMobile(value);
     }
   };
-  
 
   const handleCancel = () => {
     navigate("/payment/schemepayment");
@@ -486,9 +485,11 @@ const AddSchemePayment = () => {
     setIsExpanded(!isExpanded);
   };
 
+  console.log(formik.errors);
+
   return (
     <>
-    <form
+      <form
         onSubmit={formik.handleSubmit}
         onKeyDown={(e) => {
           if (e.key === "Enter" && e.target.type !== "textarea") {
@@ -496,29 +497,29 @@ const AddSchemePayment = () => {
           }
         }}
       >
-      <div className="flex flex-row justify-between items-center mb-4">
-        <p className="text-sm text-gray-400 mt-4 mb-4">
-          Payment / <span className="text-black">Scheme Payment</span>
-        </p>
+        <div className="flex flex-row justify-between items-center mb-4">
+          <p className="text-sm text-gray-400 mt-4 mb-4">
+            Payment / <span className="text-black">Scheme Payment</span>
+          </p>
 
-        <div className="flex flec-row gap-2">
-        <button
-          type="button"
-          className="w-20 h-9 border-2 bg-[#F6F7F9] border-[#f2f3f8] rounded-md hover:bg-gray-50 flex justify-center items-center text-[#6C7086]"
-          onClick={() => formik.resetForm()}
-        >
-          Clear
-        </button>
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="w-20 h-9 bg-blue-900 text-white rounded-md hover:bg-blue-800 flex justify-center items-center"
-        >
-          {isLoading ? <SpinLoading /> : id ? "Update" : "Save"}
-        </button>
+          <div className="flex flec-row gap-2">
+            <button
+              type="button"
+              className="w-20 h-9 border-2 bg-[#F6F7F9] border-[#f2f3f8] rounded-md hover:bg-gray-50 flex justify-center items-center text-[#6C7086]"
+              onClick={() => formik.resetForm()}
+            >
+              Clear
+            </button>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-20 h-9 bg-blue-900 text-white rounded-md hover:bg-blue-800 flex justify-center items-center"
+            >
+              {isLoading ? <SpinLoading /> : id ? "Update" : "Save"}
+            </button>
+          </div>
         </div>
-      </div>
-      
+
         <div>
           <div className="flex flex-col lg:flex-row w-full justify-between">
             {/* Left column - form inputs */}
@@ -930,7 +931,7 @@ const AddSchemePayment = () => {
                         </label>
                         <div className="relative">
                           <input
-                            type="number"
+                            type="text"
                             name="metal_weight"
                             value={formik.values.metal_weight}
                             min={minWeight}
@@ -986,6 +987,7 @@ const AddSchemePayment = () => {
                           name="payment_amount"
                           value={formik.values.payment_amount}
                           min={minAmount}
+                          onBlur={formik.handleBlur}
                           max={maxAmount}
                           step="0.01"
                           onChange={formik.handleChange}
@@ -1026,20 +1028,25 @@ const AddSchemePayment = () => {
                         isClearable={true}
                         options={paymentmode}
                         placeholder="Select payment mode"
-                        value={paymentmode?.find(
-                          (option) =>
-                            option.value === formik.values.payment_mode
-                        )}
+                        value={
+                          paymentmode?.find(
+                            (option) =>
+                              option.value === formik.values.payment_mode
+                          ) || null
+                        }
                         onChange={(option) => {
-                          if (Number(option.mode) === 7) {
+                          if (!option) {
+                            setSelectedMode("");
+                            formik.setFieldValue("payment_mode", "");
+                            return;
+                          }
+
+                          if (Number(option?.mode) === 7) {
                             setSelectedMode(option.mode);
                           } else {
                             setSelectedMode("");
                           }
-                          formik.setFieldValue(
-                            "payment_mode",
-                            option ? option.value : ""
-                          );
+                          formik.setFieldValue("payment_mode", option.value);
                         }}
                       />
                       {formik.errors.payment_mode && (
