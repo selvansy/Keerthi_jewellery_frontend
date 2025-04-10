@@ -23,7 +23,7 @@ const GiftHandOver = () => {
   const [isLoading, setisLoading] = useState(true)
 
   const [searchLoading, setSearchLoading] = useState(false);
-  const [search, setSearch] = useState('')
+  const [search, setSearchInput] = useState('')
   const debouncedSearch = useDebounce(search, 600)
   const [giftissues, setGiftissues] = useState([])
 
