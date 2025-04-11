@@ -218,7 +218,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
 console.log(cusData)
   //* TODO use formik insted of formData
   const [formData, setFormData] = React.useState({
-    id_customer: cusData.customerId || cusData.id_customer || "",
+    id_customer: cusData.id_customer || "",
     mobile: cusData.mobile,
     start_date: start_date,
     id_classification: "",
