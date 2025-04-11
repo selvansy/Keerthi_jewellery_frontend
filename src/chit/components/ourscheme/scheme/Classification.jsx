@@ -63,42 +63,36 @@ const Classification = ({
             Upload Main Image <span className="text-red-500">*</span>
           </label>
           <div className="flex relative">
-            <input
-              type="text"
-              readOnly
-              value={mainImageName || logo}
-              className="border rounded-l-md p-2 w-full bg-gray-50"
-            />
-            {/* <button
-              type="button"
-              className="bg-gray-200 rounded-r-md px-4 py-2 text-sm whitespace-nowrap"
-              onClick={() => mainImageInputRef.current.click()}
-            >
-              Choose File
-            </button> */}
-            <label
-              htmlFor="descImageInput"
-              className="absolute right-0 top-0 bottom-0 bg-blue-600 text-white px-4 flex items-center justify-center rounded-md cursor-pointer text-sm"
-              style={{ backgroundColor: layout_color }}
-              onClick={() => mainImageInputRef.current.click()}
-            >
-              Choose File
-            </label>
-            <input
-              type="file"
-              ref={mainImageInputRef}
-              className="hidden"
-              accept="image/*"
-              onChange={(e) =>
-                handleFileChange(
-                  e,
-                  setMainImageName,
-                  setMainImg,
-                  setMainImagePreview
-                )
-              }
-            />
-          </div>
+    <input
+      type="text"
+      readOnly
+      value={mainImageName || logo}
+      className="border rounded-l-md p-2 w-full bg-gray-50"
+    />
+    <label
+      htmlFor="mainImageInput"  // Changed to match the input id
+      className="absolute right-0 top-0 bottom-0 bg-blue-600 text-white px-4 flex items-center justify-center rounded-md cursor-pointer text-sm"
+      style={{ backgroundColor: layout_color }}
+      // Removed onClick handler
+    >
+      Choose File
+    </label>
+    <input
+      type="file"
+      id="mainImageInput"  // Added id to match label
+      ref={mainImageInputRef}
+      className="hidden"
+      accept="image/*"
+      onChange={(e) =>
+        handleFileChange(
+          e,
+          setMainImageName,
+          setMainImg,
+          setMainImagePreview
+        )
+      }
+    />
+  </div>
           <div className="mt-2 relative">
             <img
               src={
@@ -141,7 +135,7 @@ const Classification = ({
               htmlFor="descImageInput"
               className="absolute right-0 top-0 bottom-0 bg-blue-600 text-white px-4 flex items-center justify-center rounded-md cursor-pointer text-sm"
               style={{ backgroundColor: layout_color }}
-              onClick={() => descImageInputRef.current.click()}
+              // onClick={() => descImageInputRef.current.click()}
             >
               Choose File
             </label>

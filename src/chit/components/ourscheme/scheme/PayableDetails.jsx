@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Select from "react-select";
 import { benefiMakingCharge, rewardType } from "../../../../utils/Constants";
+import { formatNumber } from "../../../utils/commonFunction";
 
 const PayableDetails = ({
   formik,

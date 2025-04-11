@@ -5,9 +5,24 @@ import ErrorPage from "./chit/components/common/ErrorPage";
 import React, { lazy, Suspense } from "react";
 import Loading from "./chit/components/common/Loading";
 import { useSelector } from "react-redux";
+import { requestNotificationPermission } from "./firebase";
+import { useEffect } from "react";
 
  
 function App() {
+
+  // useEffect(() => {
+  //   const runNotificationPermission = async () => {
+  //     if (Notification.permission === 'default') {
+  //       console.log('Requesting permission on load...');
+  //       await requestNotificationPermission();
+  //     } else {
+  //       console.log('Notification already:', Notification.permission);
+  //     }
+  //   };
+
+  //   runNotificationPermission();
+  // }, []);
 
   const auth=localStorage.getItem("token")
   const { menu } = useSelector((state) => state.auth);

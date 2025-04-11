@@ -195,6 +195,8 @@ const SchemeForm = () => {
     },
   });
 
+  console.log(formik.errors)
+
   useEffect(() => {
     if (!id) {
       formik.resetForm();

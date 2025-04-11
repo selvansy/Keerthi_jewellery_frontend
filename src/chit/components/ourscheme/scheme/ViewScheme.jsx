@@ -1,7 +1,6 @@
 import React, { useEffect, useState, Suspense, lazy } from "react";
 import { useFormik } from "formik";
-import Select from "react-select";
-import { Plus, Trash2, SquarePen } from "lucide-react";
+import { formatNumber } from "../../../utils/commonFunction";
 import {
   getSchemeClassifications,
   allinstallmenttype,
@@ -117,6 +116,9 @@ const ViewScheme = () => {
       display_referral: false,
       display_Weight_in_ledger: false,
       wallet_redemption_onpayment: false,
+      pathUrl:'',
+      logo:'',
+      desc_img:''
     },
     validationSchema: schemeValidationSchema,
     onSubmit: (values) => {
@@ -380,7 +382,10 @@ const ViewScheme = () => {
         formik.setFieldValue("classType", true);
       }
       if (schemeData?.data) {
-        formik.setFieldValue("scheme_type", schemeData.data.scheme_type);
+        formik.setFieldValue("scheme_type", schemeData?.data?.scheme_type);
+      }
+      if(schemeData?.data?.pathUrl){
+        formik.setFieldValue("pathUrl",schemeData?.data?.pathUrl)
       }
     }
   }, [id, schemeData]);
@@ -654,7 +659,7 @@ const ViewScheme = () => {
       <div className="w-full flex flex-col gap-3 space-y-6">
         <div className="bg-[#FFFFFF] rounded-lg p-6 shadow-sm border">
           <h2 className="text-lg font-semibold mb-4 border-b pb-4">
-            Add Scheme
+          View Scheme
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -691,12 +696,15 @@ const ViewScheme = () => {
             ) : (
               <div>
                 <label className="block text-sm font-medium mb-1">Branch</label>
-                <input
+                <p className="text-[#72737e] pb-2">
+                    {branch?.branch_name}
+                  </p>
+                {/* <input
                   type="text"
                   disabled
                   value={branch?.branch_name || ""}
                   className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2 text-gray-500"
-                />
+                /> */}
                 {formik.errors.id_branch && (
                   <div className="text-red-500 text-sm mt-1">
                     {formik.errors.id_branch}
@@ -803,14 +811,15 @@ const ViewScheme = () => {
                     Min Amount
                   </label>
                   <p className="text-[#72737e] pb-2">
-                    {formik.values.min_amount}
+                    {formatNumber({value:formik.values.min_amount,decimalPlaces:0})}
                   </p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1">
                     Max Amount
                   </label>
-                  <p className="text-[#72737e] pb-2">{formik.values.max_amount}</p>
+                  <p className="text-[#72737e] pb-2">
+                  {formatNumber({value:formik.values.max_amount,decimalPlaces:0})}</p>
                 </div>
                 </>
                 )}
@@ -981,16 +990,25 @@ const ViewScheme = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div>
               <label className="block text-sm font-medium mb-1">
-                Upload Main Image
+                Main Image
               </label>
+              <div className="">
+                <img
+                className="w-[36px] h-[40px] border rounded-md"
+                 src={`${formik.values.pathUrl}${mainImage}`}/>
+              </div>
               <p className="text-[#72737e] pb-2">{formik.values?.logo}</p>
             </div>
 
             <div>
               <label className="block text-sm font-medium mb-1">
-                Upload Description Image
+                Description Image
               </label>
-              <p className="text-[#72737e] pb-2">{formik.values?.desc_img}</p>
+              <div className="">
+                <img
+                className="w-[36px] h-[40px] border rounded-md"
+                 src={`${formik.values.pathUrl}${descriptionImage}`}/>
+              </div>
             </div>
 
             <div>
