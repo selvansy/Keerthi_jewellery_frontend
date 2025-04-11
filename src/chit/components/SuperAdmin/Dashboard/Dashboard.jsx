@@ -13,8 +13,8 @@ import {
 } from "../../../api/Endpoints";
 import { useMutation } from "@tanstack/react-query";
 import NotificationCard from "./notification_payment/notification";
-
-
+import PaymentHistory from "./notification_payment/payment_history";
+import ModeOfPayment from "./modeOfPayment/modeOfPayment";
 
 function Dashboard() {
   const roleData = useSelector((state) => state.clientForm.roledata);
@@ -114,14 +114,25 @@ function Dashboard() {
         </div>
       </div>
 
-      <div className="flex">
-        <div className="notification-payment">
-          <div className="notifiacation  w-full">
-            <NotificationCard/>
+      <div className="flex w-full">
+        {/* Left side: Notification + PaymentHistory */}
+        <div className="w-4/5 p-2">
+          <div className="bg-white p-4 mb-4 border-2 border-[#F5F5F5] rounded-[20px]">
+            <h2 className="font-semibold text-xl p-4">Notification Limits</h2>
+            <NotificationCard />
+          </div>
+          <div className="bg-white p-4 border-2 border-[#F5F5F5] rounded-[16px]">
+            <PaymentHistory />
+          </div>
+        </div>
+
+        {/* Right side: ModeOfPayment */}
+        <div className="w-2/3 p-2 ">
+          <div className="bg-white p-4 h-full border-2 border-[#F5F5F5] rounded-[16px]">
+            <ModeOfPayment />
           </div>
         </div>
       </div>
-      {/* <TEST/> */}
     </div>
   );
 }

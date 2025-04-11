@@ -2723,25 +2723,37 @@ export const dueReportSummary = async (data) => {
 
 export const preCloseSummary = async (data) => {
   const response = await Api.post(
-    `${import.meta.env.VITE_API_URL}/api/client/reports/preclosesummary`
+    `${import.meta.env.VITE_API_URL}/api/client/reports/preclosesummary`,data
   );
   return response.data;
 };
-export const Redeemptionsummary = async (data) => {
+export const closedSummary = async (data) => {
   const response = await Api.post(
-    `${import.meta.env.VITE_API_URL}/api/client/reports/redeemptionsummary`
+    `${import.meta.env.VITE_API_URL}/api/client/reports/closedsummary`,data
   );
   return response.data;
 };
 export const refundSummary = async (data) => {
   const response = await Api.post(
-    `${import.meta.env.VITE_API_URL}/api/client/reports/refundsummary`
+    `${import.meta.env.VITE_API_URL}/api/client/reports/refundsummary`,data
+  );
+  return response.data;
+};
+export const completedAccount = async (data) => {
+  const response = await Api.post(
+    `${import.meta.env.VITE_API_URL}/api/client/reports//account/completed`,data
   );
   return response.data;
 };
 export const getOverAllSummary = async (data) => {
   const response = await Api.post(
     `${import.meta.env.VITE_API_URL}/api/client/reports/overallreport`,data
+  );
+  return response.data;
+};
+export const amountPayble = async (data) => {
+  const response = await Api.post(
+    `${import.meta.env.VITE_API_URL}/api/client/reports/amountpayble`,data
   );
   return response.data;
 };
@@ -2807,5 +2819,9 @@ export const getSchemeByBrachId = async(id)=>{
 }
 export const getActiveScheme = async()=>{ 
   const response= await Api.get(`${import.meta.env.VITE_API_URL}/api/client/scheme`)
+  return response.data
+}
+export const paymentHistory = async(data)=>{ 
+  const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/dashboard/paymenthistory`,data)
   return response.data
 }

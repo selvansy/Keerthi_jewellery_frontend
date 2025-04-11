@@ -112,6 +112,7 @@ import GiftPurchaseForm from "../chit/components/gift/giftPurchase/GiftPurchaseF
 import ViewScheme from "../chit/components/ourscheme/scheme/ViewScheme";
 
 import GiftHandOverForm from "../chit/components/gift/giftissues/GiftHandOverForm";
+import AmountPayble from "../chit/components/Report/amountPayble";
 
 const RouteList = [
 
@@ -809,6 +810,11 @@ const RouteList = [
     name:"Payment Ledger",
     path:'/report/paymentmodeledger',
     element:<Base renderContent={PaymentLedger} />
+  },
+  {
+    name:"Amount Payble",
+    path:'/report/amountpayble',
+    element:<Base renderContent={AmountPayble} />
   },
  
 
