@@ -277,7 +277,7 @@ function GiftReport() {
             <div className="ml-auto flex justify-between items-center gap-2">
               <ExportDropdown
                 apiData={GiftStockData}
-                fileName={`Wallet History ${new Date().toLocaleDateString('en-GB')}`}
+                fileName={`Gift Stock Data ${new Date().toLocaleDateString('en-GB')}`}
   
               />
             </div>

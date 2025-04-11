@@ -112,6 +112,7 @@ import GiftPurchaseForm from "../chit/components/gift/giftPurchase/GiftPurchaseF
 import ViewScheme from "../chit/components/ourscheme/scheme/ViewScheme";
 
 import GiftHandOverForm from "../chit/components/gift/giftissues/GiftHandOverForm";
+import SchemeAccount from "../chit/components/manageaccount/schemeaccount/SchemeAccount";
 import AmountPayble from "../chit/components/Report/amountPayble";
 
 const RouteList = [
@@ -358,11 +359,11 @@ const RouteList = [
     path: '/managecustomers/completedaccount',
     element: <Base renderContent={CompleteAccount} />
   },
-  {
-    name:"Customer Schemes",
-    path:"/managecustomers/customerschemes",
-    element:<Base renderContent={CustomerSchemes}/>
-  },
+  // {
+  //   name:"Customer Schemes",
+  //   path:"/managecustomers/customerschemes",
+  //   element:<Base renderContent={CustomerSchemes}/>
+  // },
 
   //Wallet
 
@@ -810,6 +811,17 @@ const RouteList = [
     name:"Payment Ledger",
     path:'/report/paymentmodeledger',
     element:<Base renderContent={PaymentLedger} />
+  },
+   {
+    name:"Customer Schemes",
+    path:"/managecustomers/customerschemes",
+    element:<Base renderContent={CustomerSchemes}/>
+  },
+  
+   {
+    name:"Customer Schemes",
+    path:"/managecustomers/customerschemes/test",
+    element:<Base renderContent={SchemeAccount}/>
   },
   {
     name:"Amount Payble",

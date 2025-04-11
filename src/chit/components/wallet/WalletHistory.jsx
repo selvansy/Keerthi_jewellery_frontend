@@ -145,29 +145,36 @@ function WalletHistory() {
 
   useEffect(()=>{
     if(!walletData) return;
-     generateExportData();
+     if(walletData.length > 0){
+      generateExportData();
+     }else{
+      setwalletData([])
+     }
   },[walletData])
 
 
   const generateExportData = () => {
-    const exportData = walletData.map((row, index) => {
-      const emp = row?.id_employee;
-      const cust = row?.id_customer;
-  
-      const name = emp
-        ? `${emp.firstname || ""} ${emp.lastname || ""} ${emp.mobile || "-"}`
-        : cust
-        ? `${cust.firstname || ""} ${cust.lastname || ""} ${cust.mobile || "-"}`
-        : "-";
-  
-      return {
-        sno: index + 1,
-        name,
-        wallet_amount: row.total_reward_amt ?? "-",
-        wallet_redeemption: Math.abs(row.redeem_amt ?? "-"),
-        balance_reward: row.balance_amt ?? "-",
-      };
-    });
+    let exportData=[]
+    if(walletData && walletData.length > 0){
+       exportData = walletData?.map((row, index) => {
+        const emp = row?.id_employee;
+        const cust = row?.id_customer;
+    
+        const name = emp
+          ? `${emp.firstname || ""} ${emp.lastname || ""} ${emp.mobile || "-"}`
+          : cust
+          ? `${cust.firstname || ""} ${cust.lastname || ""} ${cust.mobile || "-"}`
+          : "-";
+    
+        return {
+          sno: index + 1,
+          name,
+          wallet_amount: row.total_reward_amt ?? "-",
+          wallet_redeemption: Math.abs(row.redeem_amt ?? "-"),
+          balance_reward: row.balance_amt ?? "-",
+        };
+      });
+    }
   
     setExpData(exportData); 
   };
@@ -185,6 +192,7 @@ function WalletHistory() {
       setTotalDocuments(response.totalDocuments)
       setisLoading(false)
       setSearchLoading(false);
+      
 
     },
     onError: (error) => {

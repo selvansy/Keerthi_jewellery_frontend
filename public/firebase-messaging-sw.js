@@ -4,13 +4,13 @@ importScripts('https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging-compa
 
 // Initialize the Firebase app in the service worker
 firebase.initializeApp({
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID",
-  measurementId: "YOUR_MEASUREMENT_ID" // If you enabled Analytics
+  apiKey: "AIzaSyAYhSAA0p1qJ_UxM-x808Py6gIuu5IKb28",
+  authDomain: "uplifted-record-424709-v1.firebaseapp.com",
+  projectId: "uplifted-record-424709-v1",
+  storageBucket: "uplifted-record-424709-v1.firebasestorage.app",
+  messagingSenderId: "860673805443",
+  appId: "1:860673805443:web:8e7ab13f943cb12f1a1fb6",
+  measurementId: "G-QG7Q4F51CN"
 });
 
 // Retrieve firebase messaging
