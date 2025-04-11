@@ -296,6 +296,7 @@ onSubmit: (values) => {
   useEffect(() => {
     formik.setFieldValue("id_branch", id_branch || accessBranch);
   }, [id_branch, accessBranch]);
+
   useEffect(() => {
     if (!branchData) return;
 
@@ -325,6 +326,8 @@ onSubmit: (values) => {
     if (digigoldData) {
       if (!silver) {
         setStaticData(digigoldData.data);
+        formik.setFieldValue('term_desc','')
+        formik.setFieldValue('description','')
         formik.setFieldValue("id_metal", digigoldData?.data?.id_gold?._id);
         const data = digigoldData.data.gold.map((item) => ({
           value: item._id,
@@ -335,8 +338,12 @@ onSubmit: (values) => {
           "id_classification",
           digigoldData.data.classification
         );
+        setDescriptionImage(null)
+        setMainImage(null)
       } else {
         setStaticData(digigoldData.data);
+        formik.setFieldValue('term_desc','')
+        formik.setFieldValue('description','')
         formik.setFieldValue("id_metal", digigoldData?.data?.id_silver?._id);
         const data = digigoldData.data.silver.map((item) => ({
           value: item._id,
@@ -347,6 +354,8 @@ onSubmit: (values) => {
           "id_classification",
           digigoldData.data.classification
         );
+        setDescriptionImage(null)
+        setMainImage(null)
       }
     }
   }, [digigoldData, silver]);
@@ -396,9 +405,6 @@ onSubmit: (values) => {
     }
   };
 
-  console.log(schemeData)
-  console.log(formik.values)
-  console.log(formik.errors)
   // Function to generate dynamic fields
   // const generateFields = () => {
   //   const count = formik.values.count;
@@ -992,13 +998,23 @@ onSubmit: (values) => {
       </Accordion>
 
       <div className="flex justify-end space-x-4">
-        <button
+        {id ? (
+          <button
+          type="button"
+          className="w-20 h-9 border-2 bg-[#F6F7F9] border-[#f2f3f8] rounded-md hover:bg-gray-50 flex justify-center items-center text-[#6C7086]"
+          onClick={()=>navigate('/scheme/scheme/')}
+        >
+          Back
+        </button>
+        ):(
+          <button
           type="button"
           className="w-20 h-9 border-2 bg-[#F6F7F9] border-[#f2f3f8] rounded-md hover:bg-gray-50 flex justify-center items-center text-[#6C7086]"
           onClick={() => formik.resetForm()}
         >
           Clear
         </button>
+        )}
         <button
           type="submit"
           disabled={isLoading}

@@ -73,13 +73,12 @@ const Classification = ({
       htmlFor="mainImageInput"  // Changed to match the input id
       className="absolute right-0 top-0 bottom-0 bg-blue-600 text-white px-4 flex items-center justify-center rounded-md cursor-pointer text-sm"
       style={{ backgroundColor: layout_color }}
-      // Removed onClick handler
     >
       Choose File
     </label>
     <input
       type="file"
-      id="mainImageInput"  // Added id to match label
+      id="mainImageInput"
       ref={mainImageInputRef}
       className="hidden"
       accept="image/*"
