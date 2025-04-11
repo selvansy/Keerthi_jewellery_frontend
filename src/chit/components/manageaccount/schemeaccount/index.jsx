@@ -462,7 +462,7 @@ const Schemeaccount = () => {
       ),
       sticky: "right",
     }
-  ].filter(Boolean); ;
+  ].filter(Boolean); 
 
   return (
     <div className="flex flex-col p-4">
