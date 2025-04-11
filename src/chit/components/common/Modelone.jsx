@@ -13,6 +13,7 @@ export default function Modal({
   className = "bg-white rounded-2xl shadow-lg p-6",
 
   children,
+  custom
 
 }) {
 
@@ -25,17 +26,17 @@ export default function Modal({
       <div className={`${className} ${extraClassName} relative`}>
 
         {/* Modal Header */}
-        <div className="flex justify-between items-center border-b pb-4 mb-4">
+        <div className={`flex justify-between items-center pb-4 mb-4 ${custom}`}>
           <h3 className="text-lg font-medium text-gray-900">{title}</h3>
           <button
 
             onClick={closeModal}
 
-            className="text-gray-500 hover:text-gray-700"
+            className="flex items-center justify-center text-gray-500 hover:text-gray-700 rounded-full border w-8 h-8 border-[#F5F5F5]"
           >
             <svg
 
-              className="h-5 w-5"
+              className="h-4 w-4"
 
               fill="none"
 

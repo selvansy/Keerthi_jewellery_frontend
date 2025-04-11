@@ -109,7 +109,7 @@ const SchemeForm = () => {
       //classification
       description: "",
       term_desc: "",
-      classification_order: "",
+      classification_order: 0,
     
       wastagetype: "", // no need to pass
       
@@ -194,6 +194,8 @@ const SchemeForm = () => {
       }
     },
   });
+
+  console.log(formik.errors)
 
   useEffect(() => {
     if (!id) {
@@ -1216,7 +1218,7 @@ const SchemeForm = () => {
                     className={isEditMode ? "text-gray-400" : ""}
                   />
                 </button>
-                <button
+                {/* <button
                   type="button"
                   className="p-2 hover:bg-gray-100 rounded-md"
                   onClick={handleReset}
@@ -1226,7 +1228,7 @@ const SchemeForm = () => {
                     size={20}
                     className={isEditMode ? "text-gray-400" : ""}
                   />
-                </button>
+                </button> */}
               </div>
             </div>
             <div className="flex flex-row justify-start">

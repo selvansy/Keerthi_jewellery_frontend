@@ -3,7 +3,7 @@ import Table from '../../common/Table'
 import { useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import { Search } from 'lucide-react'
-import { giftaccountcount,  giftissuesdatatable } from '../../../api/Endpoints'
+import { giftaccountcount, giftissuesdatatable } from '../../../api/Endpoints'
 import "react-datepicker/dist/react-datepicker.css";
 import { useSelector } from 'react-redux'
 import { useDebounce } from '../../../hooks/useDebounce';
@@ -14,29 +14,29 @@ import totalbal from "../../../../../src/assets/icons/totalbal.svg"
 import { Breadcrumb } from '../../common/breadCumbs/breadCumbs';
 
 // \src\assets\totalbal.svg
-const GiftIssued = () => {
+const GiftHandOver = () => {
 
   const navigate = useNavigate()
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const roledata = useSelector((state) => state.clientForm.roledata);
 
   const [isLoading, setisLoading] = useState(true)
-  
+
   const [searchLoading, setSearchLoading] = useState(false);
-  const [search, setSearch] = useState('')
+  const [search, setSearchInput] = useState('')
   const debouncedSearch = useDebounce(search, 600)
   const [giftissues, setGiftissues] = useState([])
- 
+
 
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [entries,Setentries] = useState(0)
+  const [entries, Setentries] = useState(0)
 
 
 
   const [giftcount, setGiftcount] = useState({});
- 
+
 
   const { mutate: giftaccountcountMutate } = useMutation({
     mutationFn: giftaccountcount,
@@ -69,7 +69,7 @@ const GiftIssued = () => {
     }
   });
 
-   
+
 
 
   useEffect(() => {
@@ -78,19 +78,19 @@ const GiftIssued = () => {
       limit: itemsPerPage,
       search: debouncedSearch,
     };
-    
+
     giftissuesMutate(filterTosend)
-    
+
   }, [currentPage, itemsPerPage, debouncedSearch])
 
 
-  useEffect(()=>{
+  useEffect(() => {
     giftaccountcountMutate({
       page: currentPage,
       limit: itemsPerPage,
       search: debouncedSearch,
     });
-  },[])
+  }, [])
 
 
   const handleClick = (e) => {
@@ -98,7 +98,7 @@ const GiftIssued = () => {
     navigate('/gift/giftissues/creategiftissue');
   }
 
-  
+
 
   const handleItemsPerPageChange = (value) => {
     setItemsPerPage(value);
@@ -115,7 +115,6 @@ const GiftIssued = () => {
     setCurrentPage(pageNumber);
 
   };
-
 
 
   const format = (dateString) => {
@@ -151,7 +150,7 @@ const GiftIssued = () => {
     {
       header: "No.Of Gifts",
       cell: (row) => {
-       const gifts = row?.gifts?.reduce((acc, curr) => acc + curr.qty, 0);
+        const gifts = row?.gifts?.reduce((acc, curr) => acc + curr.qty, 0);
         return gifts;
       }
     },
@@ -193,13 +192,13 @@ const GiftIssued = () => {
       label: "Total Balance",
     },
   ];
-  
+
 
   return (
     <>
-     <Breadcrumb
-            items={[{ label: "Gift" }, { label: "GiftHandover", active: true }]}
-          />
+      <Breadcrumb
+        items={[{ label: "Gift" }, { label: "GiftHandOver", active: true }]}
+      />
 
       <div className="flex flex-col p-4">
         <div className='flex flex-col gap-3'>
@@ -227,60 +226,44 @@ const GiftIssued = () => {
             }
 
           </div>
+        </div>
+      </div>
 
-          <div className="flex flex-col gap-4 mt-4 sm:flex-row sm:justify-between sm:items-center">
-            {/* Search Input - Full width on mobile, moves to right side on desktop */}
-            <div className="relative w-full sm:mb-0 sm:order-2 sm:w-auto">
-              <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                {searchLoading ? (
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
-                ) : (
-                  <Search className="text-black" />
-                )}
-              </div>
-              <input
-                onChange={(e) => {
-                  setSearchLoading(true);
-                  setSearch(e.target.value);
-                }}
-                placeholder="Search"
-                className="px-4 py-2 ps-9 border-2 border-[#F2F2F9] rounded-[8px] w-full sm:w-[228px]"
-              />
+      <div className="flex flex-col p-4  bg-white border border-[#F2F2F9]  rounded-[16px]">
+
+        <div className="flex flex-col sm:flex-row w-full justify-between gap-2 sm:gap-4">
+          {/* Search Input */}
+          <div className="w-full sm:w-[308px]  relative">
+            <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
+              {searchLoading ? (
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
+              ) : (
+                <Search className="text-black" />
+              )}
             </div>
-
-            {/* Container for ActiveDropdown and Add Category button */}
-            <div className="flex flex-row w-full sm:order-1 sm:w-auto sm:mr-auto md:order-1 md:w-auto md:mr-auto">
-              {/* ActiveDropdown - half width on mobile */}
-
-              {/* <div className="w-1/2 sm:w-auto me-1">
-              <ActiveDropdown setActiveFilter={setActiveFilter}/>
-            </div> */}
-
-              {/* Button - half width on mobile, moves to right on desktop */}
-              <div className="w-1/2 sm:hidden">
-                <button
-                  className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-full"
-                  onClick={handleClick}
-                  style={{ backgroundColor: layout_color }} >
-                  + Add GiftHandOver
-                </button>
-
-              </div>
-            </div>
-
-            {/* Desktop-only button - appears on the right side */}
-            <div className="hidden sm:block sm:order-3">
-
-              <button
-                className="rounded-md px-4 py-2 text-white text-nowrap hover:bg-[#034571] transition-colors "
-                onClick={handleClick}
-                style={{ backgroundColor: layout_color }} >
-                + Add GiftHandOver
-              </button>
-            </div>
+            <input
+              onChange={(e) => {
+                setSearchLoading(true);
+                setSearchInput(e.target.value);
+              }}
+              placeholder="Search Customer/ Mobile No"
+              className="px-4 py-2 ps-9 border-2 border-[#F2F2F9] rounded-[8px] w-full"
+            />
           </div>
 
+          {/* Add Button */}
+          <div className="w-full sm:w-auto">
+            <button
+              className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors   min-w-[135px]"
+              onClick={handleClick}
+              style={{ backgroundColor: layout_color }}
+            >
+              + Add GiftHandOver
+            </button>
+          </div>
         </div>
+
+
 
         <div className="mt-4">
           <Table
@@ -294,11 +277,10 @@ const GiftIssued = () => {
             totalItems={entries}
           />
         </div>
-      </div>
 
+      </div>
     </>
-    
   )
 }
 
-export default GiftIssued
+export default GiftHandOver

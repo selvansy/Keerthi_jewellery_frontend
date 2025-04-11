@@ -12,24 +12,20 @@ import {
   searchcustomermobile,
   geallschemebyclassification,
   getschemeaccountbyid,
-  getschemeById,
   updateschemeaccount,
-  extendinstallment,
-  addcloseSchemeAccount,
-  schemeaccountbyid,
-  getallbranchscheme,
   getallbranchclassification,
   getemployeebybranch,
   getallbranch,
   getSchemeAccountCount,
   getCustomerByMobile,
   getEmployeeByMobile,
+  getMetalRateByMetalId
 } from "../../../api/Endpoints";
 import { useSelector, useDispatch } from "react-redux";
 import { customSelectStyles } from "../../Setup/purity/index";
 import SpinLoading from "../../common/spinLoading";
 
-export function ExistingCustomer({ setCusData }) {
+export function ExistingCustomer({ setCusData,handleCusData }) {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const roledata = useSelector((state) => state.clientForm.roledata);
   const id_branch = roledata?.branch;
@@ -68,6 +64,7 @@ export function ExistingCustomer({ setCusData }) {
   const { mutate: handlesearchcustomer } = useMutation({
     mutationFn: (data) => searchcustomermobile(data),
     onSuccess: (response) => {
+      handleCusData(response.data);
       handleResData(response.data);
       setLoading(false);
     },
@@ -89,6 +86,7 @@ export function ExistingCustomer({ setCusData }) {
       id_branch: data.id_branch,
       mobile: data.mobile,
       id_customer: data._id,
+      referral_id: data.referral_id,
     });
   };
 
@@ -138,15 +136,15 @@ export function ExistingCustomer({ setCusData }) {
           maxLength={"10"}
           className="border-2 border-gray-300 rounded-md p-2  focus:border-transparent"
           placeholder="Enter Here"
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              handlesearchcustomer({
-                id_branch: formData.id_branch,
-                search_mobile: formData.mobile,
-              });
-            }
-          }}
+          // onKeyDown={(e) => {
+          //   if (e.key === "Enter") {
+          //     e.preventDefault();
+          //     handlesearchcustomer({
+          //       id_branch: formData.id_branch,
+          //       search_mobile: formData.mobile,
+          //     });
+          //   }
+          // }}
         />
 
         {/* Search Icon */}
@@ -182,14 +180,14 @@ export function ExistingCustomer({ setCusData }) {
 
 const AddSchemeAccount = ({ cusData, handleClear }) => {
   let dispatch = useDispatch();
-
+  console.log("cusData---",cusData)
   const id_branch = cusData?.id_branch;
 
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const navigate = useNavigate();
   const location = useLocation();
-  const todaydate = new Date();
   const { id } = useParams();
+  const todaydate = new Date();
 
   const [isLoading, setLoading] = useState(false);
   const [start_date, setStartDate] = useState(todaydate);
@@ -199,10 +197,8 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
   const [fixedamt, setFixedAmt] = useState([]);
   const [mobile, setMobile] = useState("");
   const [suggestions, setSuggestions] = useState([]);
-  const [branch, setBranch] = useState(id_branch);
   const [branchData, setBranchData] = useState([]);
   const [header, setHeader] = useState("");
-  const [returnRoute, setReturnRoute] = useState("");
   const [classifyfilter, setClassify] = useState([]);
   const [schemefilter, setScheme] = useState([]);
   const [errors, setErrors] = useState(null);
@@ -212,14 +208,17 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
   const referralRoles = [
     { id: 1, role: "Employee", endpoint: getEmployeeByMobile },
     { id: 2, role: "Customer", endpoint: getCustomerByMobile },
-    { id: 3, role: "Agent" },
-  ];
+  ]; // keep this role format
   const [searchmobile, setSearchMobile] = useState("");
   const [selectedRole, setRole] = useState("");
-  const [schemeAccountData, setSchemeAccountData] = useState();
+  const [selectedClassification, setClassification] = useState("");
+  const [id_metal,setMetal]=useState('')
+  const [id_purity,setPurity]= useState('')
+  const [metalRate,setMetalRate]= useState(0)
+console.log(cusData)
   //* TODO use formik insted of formData
   const [formData, setFormData] = React.useState({
-    id_customer: cusData.customerId || cusData.id_customer || "",
+    id_customer: cusData.id_customer || "",
     mobile: cusData.mobile,
     start_date: start_date,
     id_classification: "",
@@ -231,8 +230,8 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
     address: cusData.address,
     customer_name: cusData.customer_name,
     fixedamount: "",
-    amount: 0,
-    weight: 0,
+    amount: null,
+    weight: null,
     scheme_type: 0,
     min_amount: 0,
     max_amount: 0,
@@ -275,6 +274,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
             schemeData?.data?.id_classification?._id
           );
         }
+        console.log(schemeData)
         setFormData({
           id: schemeData.data._id,
           id_scheme: schemeData.data.id_scheme._id,
@@ -439,8 +439,8 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
           address: response.data.address,
           customer_name: response.data.firstname + " " + response.data.lastname,
           total_installments: total_installments,
-          amount: 0,
-          weight: 0,
+          amount: "",
+          weight: "",
           scheme_type: 0,
           min_amount: 0,
           max_amount: 0,
@@ -490,6 +490,43 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
       setFormData((prev) => ({ ...prev, [name]: value }));
       handleschemebyid(value);
     }
+
+    if (name === "weight") {
+      setErrors((prevState) => {
+        const newErrors = { ...prevState };
+    
+        if (value === "") {
+          delete newErrors.weight;
+        } else if (value < formData.min_weight) {
+          newErrors.weight = "Weight can't be less than min weight";
+        } else if (value > formData.max_weight) {
+          newErrors.weight = "Weight can't be more than max weight";
+        } else {
+          delete newErrors.weight;
+        }
+    
+        return newErrors;
+      });
+    }
+
+    if (name === "amount" && selectedClassification === 3) {
+      setErrors((prevState) => {
+        const newErrors = { ...prevState };
+    
+        if (value === "") {
+          delete newErrors.amount;
+        } else if (value < formData.min_amount) {
+          newErrors.amount = "Amount can't be less than min amount";
+        } else if (value > formData.max_amount) {
+          newErrors.amount = "Amount can't be more than max amount";
+        } else {
+          delete newErrors.amount;
+        }
+    
+        return newErrors;
+      });
+    }
+    
   };
 
   // const handleschemebyid = async (id) => {
@@ -542,6 +579,8 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
       );
 
       if (schemeData) {
+        setMetal(schemeData?.id_metal)
+        setPurity(schemeData?.id_purity)
         setFormData((prevState) => ({
           ...prevState,
           scheme_type: schemeData?.scheme_type,
@@ -770,6 +809,8 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
     return !hasErrors;
   };
 
+  const inputHeight = "42px";
+
   const onSubmit = (e) => {
     e.preventDefault();
 
@@ -816,6 +857,54 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
       toast.error(error.response.data.message);
     },
   });
+
+  useEffect(()=>{
+    if(selectedClassification === 3 && [12,3,4].includes(formData.scheme_type)){
+      const fetchMetalRate = async () => {
+        const branchId = formData.id_branch || id_branch;
+  
+        try {
+          const metalRate = await getMetalRateByMetalId(
+            id_metal|| "",
+            id_purity || "",
+            todaydate,
+            branchId
+          );
+  
+          if (metalRate) {
+            const rate = metalRate.data.rate;
+            setMetalRate(rate);
+            // formik.setFieldValue("metal_rate", rate);
+          }
+        } catch (error) {
+          console.error("Error fetching metal rate:", error);
+        }
+      };
+      fetchMetalRate();
+    }
+  },[selectedClassification,formData.scheme_type])
+
+  useEffect(()=>{
+    if(formData.weight && [12,3,4].includes(formData.scheme_type) && !errors.weight){
+      const outputAmount = metalRate * formData.weight
+       if(outputAmount > 0){
+        setFormData((prev) => ({
+          ...prev,
+           amount:outputAmount,
+        }));
+       }else{
+        setFormData((prev) => ({
+          ...prev,
+           amount:0,
+        }));
+       }
+    }else{
+      setFormData((prev) => ({
+        ...prev,
+         amount:0,
+      }));
+    }
+  },[formData.weight])
 
   return (
     <>
@@ -921,6 +1010,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
                       );
 
                       if (selectedOption) {
+                        setClassification(selectedOption.order);
                         setSelectedScheme(selectedOption.name);
                       }
 
@@ -1059,47 +1149,117 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
                 </div>
               ) : (
                 <>
-                  <div className="flex flex-col">
-                    <label className="text-black mb-1 font-normal">
-                      {[12, 3, 4].includes(formData.scheme_type)
-                        ? "Min weight"
-                        : "Min amount"}{" "}
-                      <span className="text-red-400">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="total_installments"
-                      value={formData.min_amount || formData.min_weight}
-                      className="border-2 cursor-not-allowed border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                      placeholder="Enter Total Installment"
-                      disabled
-                    />
-                    <p style={{ color: "red" }}>{errors?.total_installments}</p>
-                  </div>
-                  <div className="flex flex-col">
-                    <label className="text-black mb-1 font-normal">
-                      {[12, 3, 4].includes(formData.scheme_type)
-                        ? "Max weight"
-                        : "Max amount"}
-                      <span className="text-red-400">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="total_installments"
-                      value={formData.max_amount || formData.max_weight}
-                      className="border-2 cursor-not-allowed border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                      placeholder="Enter Total Installment"
-                      disabled
-                    />
-                    <p style={{ color: "red" }}>{errors?.total_installments}</p>
-                  </div>
+                  {selectedClassification === 3 ? (
+                    <>
+                      {[12, 3, 4].includes(formData.scheme_type) ? (
+                        <div className="flex flex-col">
+                          <label className="text-black mb-1 font-normal">
+                            Weight<span className="text-red-400"> * </span>
+                            <span className="text-gray-400 text-sm">{`(min: ${formData.min_weight} - max: ${formData.max_weight})`}</span>
+                          </label>
+                          <input
+                            type="number"
+                            name="weight"
+                            defaultValue={""}
+                            value={formData.weight}
+                            onChange={(e) => filterInputchange(e)}
+                            onWheel={(e) => e.target.blur()}
+                            className="border-2 cursor-not-allowed border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                            placeholder="Enter weight"
+                          />
+                          <p className='text-sm mt-2' style={{ color: "red" }}>{errors?.weight}</p>
+                        </div>
+                      ) : (
+                        <div className="flex flex-col">
+                          <label className="text-black mb-1 font-normal">
+                            Amount<span className="text-red-400"> * </span>
+                            <span className="text-gray-400 text-sm">{`(min: ${formData.min_amount} - max: ${formData.max_amount})`}</span>
+                          </label>
+                          <input
+                            type="number"
+                            name="amount"
+                            defaultValue={""}
+                            value={formData.amount}
+                            onWheel={(e) => e.target.blur()}
+                            onChange={(e) => filterInputchange(e)}
+                            className="border-2 cursor-not-allowed border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                            placeholder="Enter amount"
+                          />
+                          <p className='text-sm mt-2' style={{ color: "red" }}>{errors?.amount}</p>
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <div className="flex flex-col">
+                        <label className="text-black mb-1 font-normal">
+                          {[12, 3, 4].includes(formData.scheme_type)
+                            ? "Min weight"
+                            : "Min amount"}{" "}
+                          <span className="text-red-400">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          name="total_installments"
+                          value={formData.min_amount || formData.min_weight}
+                          className="border-2 cursor-not-allowed border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                          placeholder="Enter Total Installment"
+                        />
+                        <p style={{ color: "red" }}>
+                          {errors?.total_installments}
+                        </p>
+                      </div>
+                      <div className="flex flex-col">
+                        <label className="text-black mb-1 font-normal">
+                          {[12, 3, 4].includes(formData.scheme_type)
+                            ? "Max weight"
+                            : "Max amount"}
+                          <span className="text-red-400">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          name="total_installments"
+                          value={formData.max_amount || formData.max_weight}
+                          className="border-2 cursor-not-allowed border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                          placeholder="Enter Total Installment"
+                          disabled
+                        />
+                        <p style={{ color: "red" }}>
+                          {errors?.total_installments}
+                        </p>
+                      </div>
+                    </>
+                  )}
                 </>
               )}
+              <>
+                {selectedClassification === 3 &&
+                  [12, 3, 4].includes(formData.scheme_type) && (
+                    <div className="flex flex-col">
+                      <label className="text-black mb-1 font-normal">
+                        Payable Amount
+                      </label>
+                      <input
+                        type="text"
+                        name="amount"
+                        value={formData.amount}
+                        disabled
+                        className="border-2 cursor-not-allowed border-gray-300 rounded-md p-2 w-full pr-16 bg-gray-100 focus:outline-none"
+                        placeholder="Payable Amount"
+                      />
+                      {errors?.amount && (
+                        <p style={{ color: "red" }}>
+                          {errors.amount}
+                        </p>
+                      )}
+                    </div>
+                  )}
+              </>
               <div className="flex flex-col relative group">
                 <label className="text-black mb-1 font-normal">
                   Account Name<span className="text-red-400">*</span>
                 </label>
-                <div className="relative w-full">
+                {/* <div className="relative w-full">
                   <input
                     type="text"
                     name="account_name"
@@ -1109,11 +1269,27 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
                     placeholder="Enter Account Name"
                   />
                   <div
-                    className="text-black bg-white absolute flex items-center border-2 justify-center cursor-pointer inset-y-1/2 translate-y-[-8px] translate-x-[0px] right-0 rounded-r-lg w-10 md:h-[43px] h-[61%] 
+                    className="text-black bg-white absolute flex items-center border-2 justify-center cursor-pointer inset-y-1/2 -translate-y-[22px] translate-x-[0px] right-0 rounded-r-lg w-10  
       border-gray-300 group-focus-within:border group-focus-within:border-gray-500 group-focus-within:ring-1 group-focus-within:ring-gray-500"
                   >
                     AC{acNumber}
                   </div>
+                </div> */}
+                <div className="relative">
+                  <input
+                    type="text"
+                    name="account_name"
+                    value={formData.account_name}
+                    onChange={(e) => filterInputchange(e)}
+                    onWheel={(e) => e.target.blur()}
+                    // onBlur={formik.handleBlur}
+                    className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                    placeholder="Enter Account Name"
+                    style={{ height: inputHeight }}
+                  />
+                  <span className="absolute right-0 top-0 w-9 h-full px-3 flex items-center justify-center text-black border-l">
+                    AC{acNumber}
+                  </span>
                 </div>
                 <p style={{ color: "red" }}>{errors?.account_name}</p>
               </div>
@@ -1203,7 +1379,8 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
                 </div>
                 <p style={{ color: "red" }}>{errors?.maturity_date}</p>
               </div>
-              {!id && (
+
+              {!id && cusData.referral_id === null && (
                 <>
                   <div className="flex flex-col">
                     <label className="text-black mb-1 font-normal">

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Select from "react-select";
 import { benefiMakingCharge, rewardType } from "../../../../utils/Constants";
+import { formatNumber } from "../../../utils/commonFunction";
 
 const PayableDetails = ({
   formik,
@@ -172,62 +173,6 @@ const PayableDetails = ({
         </>
       )}
 
-      {/* <div>
-        <label className="block text-sm font-medium mb-1 mt-2">
-          Buy GST Type
-        </label>
-        <Select
-          styles={customStyles}
-          options={gstTypeData}
-          isClearable={true}
-          placeholder="Select gst type"
-          value={
-            gstTypeData?.find(
-              (option) => option.value === formik.values.buygsttype
-            )
-          }
-          onChange={(option) =>
-            formik.setFieldValue("buygsttype", option ? option.value : null)
-          }
-          onBlur={() => formik.setFieldTouched("buygsttype", true)}
-        />
-
-        {formik.touched.buygsttype && formik.errors.buygsttype && (
-          <div className="text-red-500 text-sm mt-1">
-            {formik.errors.buygsttype}
-          </div>
-        )}
-      </div> */}
-      {/* <div className="flex flex-col lg:mt-2">
-        <label className="block text-sm font-medium mb-1">
-          Buy GST <span className="text-red-500">*</span>
-        </label>
-        <div className="relative">
-          <input
-            type="number"
-            name="buy_gst"
-            value={formik.values.buy_gst}
-            onChange={formik.handleChange}
-            onWheel={(e) => e.target.blur()}
-            onBlur={formik.handleBlur}
-            className="w-full border rounded-md px-3 py-2"
-            placeholder="Enter Buy GST"
-            style={{ height: inputHeight }}
-          />
-          <span
-            className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
-            style={{ backgroundColor: layout_color }}
-          >
-            %
-          </span>
-        </div>
-        {formik.touched.buy_gst && formik.errors.buy_gst && (
-          <span className="text-red-500 text-sm mt-1">
-            {formik.errors.buy_gst}
-          </span>
-        )}
-      </div> */}
-
       <div>
         <label className="block text-sm font-medium mb-1 mt-2">
           Benefit Wastage<span className="text-red-500">*</span>
@@ -354,7 +299,7 @@ const PayableDetails = ({
       </div>
       ):(
         <div className="">
-         <label className="block text-sm font-medium mb-1 mt-2">
+          <label className="block text-sm font-medium mb-1 mt-2">
         Benefit  Bonus Percentage
         </label>
         <div className="relative">
@@ -366,13 +311,10 @@ const PayableDetails = ({
             value={formik.values.bonus_percent}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-            placeholder="Enter Reward Percent"
+            className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+            placeholder="Enter Bonus Percent"
           />
-          <span
-            className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
-            style={{ backgroundColor: layout_color }}
-          >
+           <span className="absolute right-0 top-0 w-9 h-full px-3 flex items-center justify-center text-black border-l">
             %
           </span>
         </div>

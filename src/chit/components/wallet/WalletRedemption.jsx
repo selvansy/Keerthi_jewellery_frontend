@@ -1,75 +1,246 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-import React, { useEffect, useState } from 'react'
-import { Search } from 'lucide-react'
+import React, { useEffect, useRef, useState } from 'react'
+import { DatabaseBackupIcon, Search } from 'lucide-react'
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import { mobilesearch, redeemType, getallwallet, walletRedeem, getallpaymentmode } from '../../../chit/api/Endpoints'
+import { mobilesearch, redeemType, getallwallet, walletRedeem, getallpaymentmode, RefferalByUser } from '../../../chit/api/Endpoints'
 import { formatNumber } from "../../utils/commonFunction"
 import SpinLoading from '../common/spinLoading';
-import { customSelectStyles } from "../../../chit/components/Setup/purity";
 import Select from "react-select";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { Breadcrumb } from '../common/breadCumbs/breadCumbs';
+import Table from '../common/Table';
+import ModelOne from '../common/Modelone';
+import { RefferalCusCard } from './RedeemHisCard';
+import { useLocation } from 'react-router-dom';
+import More from "../../../assets/more.svg"
+import { createPortal } from 'react-dom';
+import eyeIcon from "../../../assets/icons/eye.svg"
+
+
+
+
+const customSelectStyles = (isReadOnly) => ({
+    control: (base, state) => ({
+        ...base,
+        minHeight: "42px",
+        backgroundColor: "white",
+        border: state.isFocused ? "1px solid black" : "2px solid #f2f3f8",
+        boxShadow: state.isFocused ? "0 0 0 1px black" : "none",
+        borderRadius: "0.375rem",
+        "&:hover": {
+            color: "#e2e8f0",
+        },
+        pointerEvents: !isReadOnly ? "none" : "auto",
+        opacity: !isReadOnly ? 1 : 1,
+    }),
+    indicatorSeparator: () => ({
+        display: "none",
+    }),
+    placeholder: (base) => ({
+        ...base,
+        color: "#858293",
+        fontWeight: "thin",
+        // fontStyle: "bold",
+    }),
+    dropdownIndicator: (provided, state) => ({
+        ...provided,
+        color: "#232323",
+        "&:hover": {
+            color: "#232323",
+        },
+        menu: (base) => ({
+            ...base,
+            zIndex: 9999,
+            position: 'absolute',
+        }),
+        menuPortal: (base) => ({
+            ...base,
+            zIndex: 9999,
+        }),
+
+    }),
+});
+
+const inputHeight = "42px";
 
 function WalletRedemption() {
 
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(0);
+    const [itemsPerPage, setItemsPerPage] = useState(10);
+    const [totalDocuments, setTotalDocuments] = useState(0)
     const [formErrors, setFormErrors] = useState({})
     const [isLoading, setLoading] = useState(false)
     const [mobile, setMobile] = useState("")
     const [walletData, setWalletData] = useState({})
-    const [walletPoints, setWalletPoints] = useState({})
+    const [walletUser, setWalletUser] = useState({})
+    const [refData, setRefData] = useState([]);
+    const dropdownRef = useRef(null);
+    const [activeDropdown, setActiveDropdown] = useState(null);
+    const [position, setPosition] = useState({ top: 0, left: 0 });
+    const [cusdata,setcusData] = useState(null);
+
     const [redeem_type, setRedeemType] = useState([])
     const [paymentData, setPaymentData] = useState([])
+    const [isCustomer, setCustomer] = useState(true);
     const [formData, setFormData] = useState({
-        billno: "",
+        bill_no: "",
         redeem_amt: "",
-        // redeem_point: walletData.available_point || "",
+        wallet_id: "",
+        wallet_type: "Customer",
         redeem_type: "",
         payment_mode: ""
     });
 
+    const { id } = useParams();
+    const [isviewOpen, setIsviewOpen] = useState(false);
+    const location = useLocation();
+
+    const data  = id ? location.state.data : null;
+    
+
+    console.log("cusdata--",cusdata)
+
+    function closeIncommingModal() {
+        setIsviewOpen(false);
+        setId("");
+    }
+
+    const clearId = () => {
+        setId("");
+    };
+
+    const hanldeActiveDropDown = (id, event) => {
+        if (id) {
+          const rect = event.currentTarget.getBoundingClientRect();
+          setPosition({
+            top: rect.bottom + window.scrollY,
+            left: rect.right - 130,
+          });
+        }
+        setActiveDropdown(id);
+      };
+
+    useEffect(() => {
+
+        if (!id) return;
+
+        const payload = { page: currentPage, limit: itemsPerPage, mobile: "" };
+
+        if (data?.id_customer) {
+            payload.mobile = data?.id_customer.mobile;
+        }
+
+        if (data?.id_employee) {
+            payload.mobile = data?.id_employee.mobile;
+        }
+
+        handleRefferal(payload)
+
+
+    }, [currentPage, itemsPerPage, id, data])
+
+    useEffect(() => {
+        return () => {
+            setWalletUser({})
+        }
+    }, [])
+
+    const handleItemsPerPageChange = (value) => {
+        setItemsPerPage(value);
+        setCurrentPage(1);
+    };
+
+
+    const handlePageChange = (page) => {
+        const pageNumber = Number(page);
+        if (
+            !pageNumber ||
+            isNaN(pageNumber) ||
+            pageNumber < 1 ||
+            pageNumber > totalPages
+        ) {
+            return;
+        }
+
+        setCurrentPage(pageNumber);
+    };
+
+
+    const { mutate: handleRefferal } = useMutation({
+        mutationFn: (payload) => RefferalByUser(payload),
+        onSuccess: (response) => {
+            if (response) {
+
+                // toast.success(response.message)
+                setRefData(response.data)
+                const res = response.walletData[0];
+                const user = res?.id_customer ? res?.id_customer : res?.id_employee;
+                setWalletUser({
+                    name: user?.firstname + "" + user.lastname,
+                    mobile: user?.mobile,
+                    walletAmount: res?.total_reward_amt,
+                    redeem_amt: res?.redeem_amt,
+                    bal_amt: res?.balance_amt,
+                    total_reff: response?.totalDocuments
+                })
+                setTotalPages(response.totalPages)
+                setCurrentPage(response.currentPage)
+                setTotalDocuments(response.totalDocuments)
+
+            }
+            setLoading(false)
+        },
+        onError: (error) => {
+            toast.error(error?.response?.data?.message)
+            setLoading(false)
+        }
+    });
+
+    
     const layout_color = useSelector((state) => state.clientForm.layoutColor);
     const navigate = useNavigate();
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-    
-        if (name === "billno") {
+
+        if (name === "bill_no") {
             setFormData(prev => ({
                 ...prev,
-                billno: value.toUpperCase()
+                bill_no: value.toUpperCase()
             }));
         } else {
             const numericValue = value.trim() === "" ? 0 : Number(value);
 
             if (name === "redeem_amt" && numericValue > walletData.balance_amt) {
-                setFormErrors(prev=>({
+                setFormErrors(prev => ({
                     ...prev,
-                    redeem_amt:"Redeem amount cannot exceed wallet balance!"
+                    redeem_amt: "Redeem amount cannot exceed wallet balance!"
                 }))
-               
+
             } else {
-                setFormErrors(""); 
+                setFormErrors("");
             }
-    
+
             setFormData(prev => ({
                 ...prev,
                 [name]: numericValue
             }));
         }
     };
-    
+
 
     const validateForm = () => {
         let errors = {}
-        // if (!formData.redeem_point) errors.redeem_point = "RedeemPoint is required"
         if (!formData.redeem_amt) errors.redeem_amt = "RedeemAmount is required"
-        if (!formData.redeem_type) errors.redeem_type = "ReedType is required"
         if (formData.redeem_type == "2") {
-            if (!formData.billno) errors.billno = "Billno is required"
+            if (!formData.bill_no) errors.bill_no = "Billno is required"
         }
         if (formData.redeem_type == "1") {
             if (!formData.payment_mode) errors.payment_mode = "Payment mode is required"
         }
+        if (!formData.redeem_type && !isCustomer) errors.redeem_type = "ReedeemType is required"
 
         setFormErrors(errors)
         return Object.keys(errors).length === 0;
@@ -77,12 +248,14 @@ function WalletRedemption() {
 
 
 
-    const handleClear = () => {
+    const handleCancel = () => {
         setFormData({
-            billno: "",
+            bill_no: "",
             redeem_amt: "",
-            // redeem_point: "",
-            redeem_type: ""
+            wallet_id: "",
+            wallet_type: "Customer",
+            redeem_type: "",
+            payment_mode: ""
         })
         setWalletData({})
         setMobile("")
@@ -90,11 +263,18 @@ function WalletRedemption() {
     }
 
     const handleSave = () => {
+
         if (!validateForm()) {
             return
         }
+        if (!formData.wallet_id) {
+            toast.error("Wallet Redeemer not identified")
+            return;
+        }
+
         setLoading(true)
-        handleRedeemPoints(formData)
+
+        handleRedeem(formData)
     }
 
 
@@ -104,17 +284,39 @@ function WalletRedemption() {
 
     };
 
+    const handleWalletData = (data) => {
 
-    const { mutate: handleRedeemPoints } = useMutation({
-        mutationFn: (payload) => walletRedeem(payload),
+        const isCustomer = !!data.customer;
+        setCustomer(isCustomer);
+
+        const person = isCustomer ? data.customer : data.employee;
+
+        setWalletData({
+            name: person?.firstname + ' ' + person?.lastname,
+            phone: person?.mobile,
+            redeem_amt: data?.redeem_amt,
+            balance_amt: data?.balance_amt,
+            active_scheme: data?.activeScheme,
+        });
+
+
+        setFormData((prevData) => ({
+            ...prevData,
+            wallet_type: isCustomer ? "Customer" : "Employee",
+            wallet_id: isCustomer ? data?.customer._id : data?.employee._id,
+            redeem_amt: data?.balance_amt
+        }));
+    };
+
+
+    const { mutate: handleRedeem } = useMutation({
+        mutationFn: walletRedeem,
         onSuccess: (response) => {
             if (response) {
-                handleClear()
+                toast.success(response.message)
+                navigate("/wallet/redeemhistory/")
             }
-
             setLoading(false)
-            toast.success(response.message)
-            navigate("/wallet/wallethistory/")
         },
         onError: (error) => {
             toast.error(error?.response?.data?.message)
@@ -128,20 +330,7 @@ function WalletRedemption() {
         mutationFn: mobilesearch,
         onSuccess: (response) => {
             if (response) {
-                const res = response.data.custData;
-
-                setWalletData({
-                    customer_name: res.firstname + ' ' + res.lastname,
-                    phone: res.mobile,
-                    redeem_amt: response.data?.walletData?.redeem_amt,
-                    balance_amt: response.data?.walletData?.balance_amt,
-                    active_scheme: response.data?.activeScheme,
-                })
-
-                setFormData((prevData) => ({
-                    ...prevData,
-                    id_customer: res._id,
-                }));
+                handleWalletData(response.data.walletData)
             }
             setLoading(false)
         },
@@ -187,237 +376,397 @@ function WalletRedemption() {
             setPaymentData(data);
         }
 
-        if (walletPointsRate) {
-            const data = walletPointsRate.data
-            setWalletPoints(prev => ({
-                ...prev,
-                points: data.points,
-                rupee: data.rupee_per_points
-            }))
 
-        }
 
     }, [redeemTypeData, walletPointsRate, paymentModeData])
 
 
+    const handleRefferalistory = (data)=>{
+            setActiveDropdown(data);
+            setIsviewOpen(true);
+            setcusData(data)
+    }
+  
+
+    const columns = [
+        {
+            header: "S.No",
+            cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
+        },
+        {
+            header: "Description",
+            cell: (row) => {
+             const user = row?.id_scheme_account;
+
+             return `${row?.id_scheme?.scheme_name} ${row?.id_scheme?.description} ${row?.id_scheme?.code} 
+              ${user?.firstname} ${user.lastname}`
+
+            },
+        },
+        {
+            header: "Mobile",
+            cell: (row) => {
+             
+                const user = row?.id_scheme_account;
+                return `${user?.mobile}`
+            }
+        },
+        {
+            header: "Refferral Reward",
+            cell: (row) => `${row?.id_scheme?.referralPercentage || "-"}%`,
+        },
+        {
+            header: "Join Date",
+            cell: (row) => {
+              const dateStr = row?.id_scheme_account?.start_date;
+              if (!dateStr) return "-";
+          
+              const date = new Date(dateStr);
+              return date.toISOString().split("T")[0];
+            },
+          },
+          
+
+        {
+            header: "Action",
+            cell: (row) => (
+                <>
+                    <div ref={dropdownRef} className="dropdown-container relative flex items-center">
+                        <button
+                            className="p-2 border hover:bg-gray-100 rounded-full flex justify-center"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                hanldeActiveDropDown(activeDropdown === row?._id ? null : row?._id, e);
+                            }}
+                        >
+                            <img src={More} alt="" className="w-[20px] h-[20px]" />
+                        </button>
+                    </div>
+
+                    {activeDropdown === row?._id &&
+                        createPortal(
+                            <div
+                                className="absolute"
+                                style={{
+                                    top: position.top,
+                                    left: position.left,
+                                    zIndex: 9999,
+                                    filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.15))",
+                                }}
+                            >
+                                <div className="w-40 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+                                    <div className="py-1">
+                                      
+                                        <button
+                                            className="w-full text-left text-nowrap px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                                            onClick={() => {
+                                                handleRefferalistory(row);
+                                                hanldeActiveDropDown(null);
+                                            }}
+                                        >
+                                            <img src={eyeIcon} alt="" srcSet="" className='text-black w-4 h-4 mr-1' />
+                                            View
+                                        </button>
+
+                                    </div>
+                                </div>
+                            </div>,
+                            document.body
+                        )}
+                </>
+            ),
+        }
+
+
+    ];
+
 
     return (
         <>
-            <div className='w-full flex flex-col bg-white mt-10 p-3 overflow-y-auto scrollbar-hide h-[calc(100vh-200px)]'>
-                <div className="flex justify-between items-center">
-                    <h2 className='text-[18px] text-gray-900 font-bold mt-3 px-8'>
-                        Add Wallet Redemption
-                    </h2>
-                    {/* <div className="flex flex-col">
-                        <h2 className='text-[18px] text-gray-900 font-bold mt-3 px-8'>
-                            Wallet Rate
-                        </h2>
-                        <p className='text-center'>{walletPoints.points} Points = {formatNumber({ value: walletPoints.rupee, decimalPlaces: 0 })}</p>
-                    </div> */}
+
+            <div className="flex flex-row justify-between items-center w-full sm:order-1 sm:w-auto sm:mr-auto md:order-1 md:w-auto md:mr-auto ">
+                <div className="w-1/2 sm:w-auto me-1 mt-2">
+                    <Breadcrumb items={[{ label: "Wallet" }, { label: "Wallet Redeemption", active: true }]} />
                 </div>
-                <div className='flex flex-col bg-white px-8 pb-4 pt-2 relative'>
+            </div>
 
-                    <div className='grid grid-rows-1 md:grid-cols-2 gap-5'>
-                        <div className='flex flex-col mt-2 mb-4 relative'>
-                            <div className="flex flex-col gap-3mt-3">
-                                <div className='flex flex-col gap-3relative'>
-                                    <label className='text-black mb-1 font-normal'>Phone Number<span className='text-red-400'>*</span></label>
-                                    <input
-                                        type='text'
-                                        value={mobile}
-                                        onChange={(e) => {
-                                            const value = e.target.value.replace(/\D/g, '');
-                                            setMobile(value)
-                                        }}
-                                        name='mobile'
-                                        onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '')}
-                                        pattern="\d{10}"
-                                        onKeyDown={(e) => {
-                                            if (e.key === "Enter") {
-                                                e.preventDefault();
-                                                handlesearchcustomer(mobile)
-                                            }
-                                        }}
-                                        maxLength={"10"}
-                                        className='border-2 border-gray-300 rounded-md p-3 focus:border-transparent'
-                                        placeholder='Enter Here'
-                                    />
+            <div className='w-full flex flex-col bg-white border-2 border-[#f2f3f8] rounded-md px-6 p-3 overflow-y-auto scrollbar-hide gap-x-8'>
+                <h2 className='text-xl font-medium mb-4'>{id ? "Refferal History" : "Add Wallet Redemption"}</h2>
+                {
+                    !id && (
+                        <>
 
-                                    {/* Search Icon */}
-                                    <div
-                                        onClick={handleSearchmobile}
-                                        className="w-10 absolute flex items-center justify-center cursor-pointer right-0 rounded-r-lg lg:top-[68%] -translate-y-1/2 sm:top-[54px] sm:h-[47px] h-[47px] top-[54px] md:h-[50px] lg:h-[50px]"
-                                        style={{ backgroundColor: layout_color }}
-                                    >
-                                        {isLoading ? (
-                                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
-                                        ) : (
-                                            <Search size={15} className="text-white" />
-                                        )}
-                                    </div>
+                            <div className='flex flex-col mt-2 relative '>
+                                <label className='text-black mb-1 font-normal'>Phone Number<span className='text-red-400'> *</span></label>
+                                <input
+                                    type='text'
+                                    value={mobile}
+                                    onChange={(e) => {
+                                        const value = e.target.value.replace(/\D/g, '');
+                                        setMobile(value)
+                                    }}
+                                    name='mobile'
+                                    onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '')}
+                                    pattern="\d{10}"
+                                    onKeyDown={(e) => {
+                                        if (e.key === "Enter") {
+                                            e.preventDefault();
+                                            handlesearchcustomer(mobile)
+                                        }
+                                    }}
+                                    maxLength={"10"}
+                                    className="max-w-[300px] border-2 border-[#F2F2F9] rounded-md pr-3 py-2 pl-[45px]"
+                                    placeholder='Enter Here'
+                                />
 
+                                {/* Search Icon */}
+                                <div
+                                    onClick={handleSearchmobile}
+                                    className="absolute flex items-center justify-center cursor-pointer left-[0%] rounded-l-lg top-[70%] -translate-y-1/2 w-10 md:h-[40px] md:top-[48px] h-[18%] sm:left-0 sm:top-[68%] lg:left-[0%]"
+                                >
+                                    {isLoading ? (
+                                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
+                                    ) : (
+                                        <Search size={20} className="text-black" />
+                                    )}
+                                </div>
+
+                            </div>
+                        </>
+                    )
+                }
+                {
+                    id ?
+                        <>
+                            <div className="w-full overflow-x-auto ">
+                                <div className="py-3 my-5 rounded-lg min-w-full">
+                                    <table className="min-w-[600px] table-auto my-3 w-full">
+                                        <thead>
+                                            <tr className="text-gray-600 text-sm md:text-base">
+                                                <th className="text-start px-4 py-2">Name</th>
+                                                <th className="text-start px-4 py-2">Mobile</th>
+                                                <th className="text-start px-4 py-2">Wallet Amount</th>
+                                                <th className="text-start px-4 py-2">Wallet Redeemeption</th>
+                                                <th className="text-start px-4 py-2">Total Reffered</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr className="text-sm md:text-base">
+                                                <td className="text-start px-4 py-2">{walletUser.name || "-"}</td>
+                                                <td className="text-start px-4 py-2">{walletUser.mobile || "-"}</td>
+                                                <td className="text-start px-4 py-2">
+                                                    {formatNumber({ value: walletUser.walletAmount ?? "-", decimalPlaces: 0 })}
+                                                </td>
+                                                <td className="text-start px-4 py-2">
+                                                    {formatNumber({ value: walletUser.redeem_amt ?? "-", decimalPlaces: 0 })}
+                                                </td>
+                                                <td className="text-start px-4 py-2">{walletUser.total_reff ?? "-"}</td>
+                                            </tr>
+
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
 
-                        </div>
-                    </div>
-                    <div className="w-full">
-
-                        <div className="py-3 my-5 border-gray-300">
-                            <table className="min-w-full table-auto my-3">
-                                <thead>
-                                    <tr className=" text-gray-600">
-                                        <th className="px-2 py-2 text-center">Name</th>
-                                        <th className="px-2 py-2 text-center">Phone Number</th>
-                                        <th className="px-2 py-2 text-center">Active Scheme</th>
-                                        <th className="px-2 py-2 text-center">Available Amount</th>
-                                        <th className="px-2 py-2 text-center">Redeemed Amount</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td className="text-center px-2 py-2">{walletData.customer_name || "-"}</td>
-                                        <td className="px-2 py-2 text-center">{walletData.phone || "-"}</td>
-                                        <td className="px-2 py-2 text-center">{walletData.active_scheme ?? "-"}</td>
-                                        <td className="px-2 py-2 text-center">{walletData.balance_amt ?? "-"}</td>
-                                        <td className="px-2 py-2 text-center">{walletData.redeem_amt ?? "-"}</td>
-                                    </tr>
-                                </tbody>
-
-
-                            </table>
-                        </div>
-                    </div>
-
-                    <div className='grid grid-rows-2 md:grid-cols-2 gap-6 mt-5'>
-
-                        {/* <div className='flex flex-col gap-2'>
-                            <label className='text-gray-700 font-medium'>Redeem Point<span className='text-red-400'>*</span></label>
-                            <input
-                                type='text'
-                                name='redeem_point'
-                                value={formData.redeem_point}
-                                onChange={handleInputChange}
-                                onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '')}
-                                pattern="\d{5}"
-                                max={"5"}
-                                maxLength={"5"}
-                                className='border-2 border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
-                                placeholder='Enter redeem_point'
-                            />
-                            {formErrors.redeem_point && <span className="text-red-500 text-sm mt-1">{formErrors.redeem_point}</span>}
-                        </div> */}
-
-                        <div className='flex flex-col gap-2'>
-                            <label className='text-gray-700 font-medium'>Amount<span className='text-red-400'>*</span></label>
-                            <input
-                                type='text'
-                                name='redeem_amt'
-                                maxLength={"5"}
-                                value={formData.redeem_amt}
-                                onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '')}
-                                pattern="\d{5}"
-                                onChange={handleInputChange}
-                                className='border-2 border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent'
-                                placeholder='Enter amount value'
-                            />
-                            {formErrors.redeem_amt && <span className="text-red-500 text-sm mt-1">{formErrors.redeem_amt}</span>}
-                        </div>
-
-                        <div className='flex flex-col gap-2'>
-                            <label className='text-gray-700 font-medium'>
-                                Purpose of Redeem<span className='text-red-400'>*</span>
-                            </label>
-
-                            <Select
-                                name="redeem_type"
-                                value={redeem_type.find(option => option.value === formData.redeem_type)}
-                                onChange={(selectedOption) =>
-                                    handleInputChange({ target: { name: 'redeem_type', value: selectedOption?.value } })
-                                }
-                                options={redeem_type}
-                                styles={customSelectStyles}
-                                placeholder="-- Select --"
-                            />
-
-                            {formErrors.redeem_type && (
-                                <span className="text-red-500 text-sm mt-1">{formErrors.redeem_type}</span>
-                            )}
-                        </div>
-
-
-                        {(formData.redeem_type === "1" || formData.redeem_type === 1) && (
-                            <div className='flex flex-col gap-2'>
-                                <label className='text-gray-700 font-medium'>
-                                    Payment Mode<span className='text-red-400'>*</span>
-                                </label>
-
-                                <Select
-                                    name="paymentData"
-                                    value={paymentData.find(option => option.value === formData.payment_mode)}
-                                    onChange={(selectedOption) =>
-                                        // handleInputChange({ target: { name: 'payment_mode', value: selectedOption?.value } })
-                                        setFormData(prev => ({
-                                            ...prev,
-                                            payment_mode: selectedOption?.value
-                                        }))
-                                    }
-                                    options={paymentData}
-                                    styles={customSelectStyles}
-                                    placeholder="-- Select --"
-                                />
-
-                                {formErrors.payment_mode && (
-                                    <span className="text-red-500 text-sm mt-1">{formErrors.payment_mode}</span>
-                                )}
+                        </>
+                        :
+                        <>
+                            <div className="w-full overflow-x-auto ">
+                                <div className="py-3 my-5 rounded-lg min-w-full">
+                                    <table className="min-w-[600px] table-auto my-3 w-full">
+                                        <thead>
+                                            <tr className="text-gray-600 text-sm md:text-base">
+                                                <th className="text-start px-4 py-2">Name</th>
+                                                <th className="text-start px-4 py-2">Phone Number</th>
+                                                <th className="text-start px-4 py-2">Active Scheme</th>
+                                                <th className="text-start px-4 py-2">Available Amount</th>
+                                                <th className="text-start px-4 py-2">Redeemed Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr className="text-sm md:text-base">
+                                                <td className="text-start px-4 py-2">{walletData.name || "-"}</td>
+                                                <td className="text-start px-4 py-2">{walletData.phone || "-"}</td>
+                                                <td className="text-start px-4 py-2">{walletData.active_scheme ?? "-"}</td>
+                                                <td className="text-start px-4 py-2">{walletData.balance_amt ?? "-"}</td>
+                                                <td className="text-start px-4 py-2">{walletData.redeem_amt ?? "-"}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
-                        )}
+                        </>
+                }
 
-                        <div className='flex flex-col gap-2'>
-                            <label className='text-gray-700 font-medium'>Bill no<span className='text-red-400'></span></label>
-                            <input
-                                type='text'
-                                name='billno'
-                                value={formData.billno}
-                                onInput={(e) => {
-                                    const regex = /^[a-zA-Z0-9-]*$/;
-                                    if (regex.test(e.target.value)) {
-                                        handleInputChange(e);
-                                    }
-                                }}
-                                maxLength={20}
-                                className='border-2 border-gray-300 rounded-md p-3 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent uppercase'
-                                placeholder='Enter billno'
-                            />
-                            {formErrors.billno && <span className="text-red-500 text-sm mt-1">{formErrors.billno}</span>}
-                        </div>
-                    </div>
+                {
+                    !id && (
+                        <>
+                            <div className='grid grid-col-2 md:grid-cols-3 gap-6 mt-8 md:mt-0'>
 
-                    <div className='bg-white mt-6'>
-                        <div className='flex justify-start gap-3 mt-3'>
-                            <button
-                                className='bg-[#E2E8F0] text-black rounded-md p-3 w-1/2  lg:w-20'
-                                type='button'
-                                onClick={handleClear}
+                                <div className='flex flex-col gap-2'>
+                                    <label className='text-gray-700 font-medium'>Redeem Amount<span className='text-red-400'> *</span></label>
+                                    <input
+                                        type='text'
+                                        name='redeem_amt'
+                                        maxLength={"5"}
+                                        value={formData.redeem_amt}
+                                        onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '')}
+                                        pattern="\d{5}"
+                                        onChange={handleInputChange}
+                                        className="w-full border-2 border-[#F2F2F9] rounded-md px-3 py-2"
+                                        placeholder='Enter amount value'
+                                    />
+                                    {formErrors.redeem_amt && <span className="text-red-500 text-sm mt-1">{formErrors.redeem_amt}</span>}
+                                </div>
+                                {
+                                    ((!isCustomer || (formData.redeem_type === "1" || formData.redeem_type === 1)) &&
+                                        <>
+                                            <div className='flex flex-col gap-2'>
+                                                <label className='text-gray-700 font-medium'>
+                                                    Payment Mode<span className='text-red-400'> *</span>
+                                                </label>
+
+                                                <Select
+                                                    name="redeem_type"
+                                                    value={redeem_type.find(option => option.value === formData.redeem_type)}
+                                                    onChange={(selectedOption) =>
+                                                        handleInputChange({ target: { name: 'redeem_type', value: selectedOption?.value } })
+                                                    }
+                                                    options={redeem_type}
+                                                    styles={customSelectStyles(true)}
+                                                    menuPlacement="top"
+                                                    placeholder="-- Select --"
+                                                />
+
+                                                {formErrors.redeem_type && (
+                                                    <span className="text-red-500 text-sm mt-1">{formErrors.redeem_type}</span>
+                                                )}
+                                            </div>
+
+                                        </>)
+                                }
+
+                                {(!isCustomer && (formData.redeem_type === "1" || formData.redeem_type === 1)) && (
+                                    <div className='flex flex-col gap-2'>
+                                        <label className='text-gray-700 font-medium'>
+                                            Payment Mode<span className='text-red-400'>*</span>
+                                        </label>
+
+                                        <Select
+                                            name="paymentData"
+                                            value={paymentData.find(option => option.value === formData.payment_mode)}
+                                            onChange={(selectedOption) =>
+                                                // handleInputChange({ target: { name: 'payment_mode', value: selectedOption?.value } })
+                                                setFormData(prev => ({
+                                                    ...prev,
+                                                    payment_mode: selectedOption?.value
+                                                }))
+                                            }
+                                            options={paymentData}
+                                            styles={customSelectStyles(true)}
+                                            menuPlacement="top"
+                                            placeholder="-- Select --"
+                                        />
+
+                                        {formErrors.payment_mode && (
+                                            <span className="text-red-500 text-sm mt-1">{formErrors.payment_mode}</span>
+                                        )}
+                                    </div>
+                                )}
+
+                                {
+                                    (isCustomer || (formData.redeem_type.toString() == '2')) && (
+                                        <>
+
+                                            <div className='flex flex-col gap-2'>
+                                                <label className='text-gray-700 font-medium'>Bill no<span className='text-red-400'></span></label>
+                                                <input
+                                                    type='text'
+                                                    name='bill_no'
+                                                    value={formData.bill_no}
+                                                    onInput={(e) => {
+                                                        const regex = /^[a-zA-Z0-9-]*$/;
+                                                        if (regex.test(e.target.value)) {
+                                                            handleInputChange(e);
+                                                        }
+                                                    }}
+                                                    maxLength={20}
+                                                    className="w-full border-2 border-[#F2F2F9] rounded-md px-3 py-2"
+                                                    placeholder='Enter bill number'
+                                                />
+                                                {formErrors.bill_no && <span className="text-red-500 text-sm mt-1">{formErrors.bill_no}</span>}
+                                            </div>
+                                        </>
+                                    )
+                                }
+                            </div>
+
+
+                            <div className='bg-white border-gray-300 mt-4'>
+                                <div className='flex justify-end gap-x-2'>
+                                    <button
+                                        className="w-20 h-9 border-2 bg-[#F6F7F9] border-[#f2f3f8] rounded-md hover:bg-gray-50 flex justify-center items-center text-[#6C7086]"
+                                        type='button'
+                                        onClick={handleCancel}
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        className="w-20 h-9 bg-blue-900 text-white rounded-md hover:bg-blue-800 flex justify-center items-center"
+                                        type='button'
+                                        onClick={handleSave}
+                                    >
+                                        {isLoading ? <SpinLoading /> : 'Submit'}
+                                    </button>
+                                </div>
+                            </div>
+
+                        </>
+                    )
+
+                }
+
+                {
+                    id && (
+                        <>
+
+                            {/* Table */}
+                            <div className="mt-4">
+                                <Table
+                                    data={refData.data}
+                                    columns={columns}
+                                    isLoading={isLoading}
+                                    currentPage={currentPage}
+                                    handlePageChange={handlePageChange}
+                                    itemsPerPage={itemsPerPage}
+                                    totalItems={totalDocuments}
+                                    handleItemsPerPageChange={handleItemsPerPageChange}
+                                />
+                            </div>
+                            <ModelOne
+                                title={"Reffered Customer History"}
+                                extraClassName="w-[650px]"
+                                setIsOpen={setIsviewOpen}
+                                isOpen={isviewOpen}
+                                isLoading={isLoading}
+                                closeModal={closeIncommingModal}
                             >
-                                Clear
-                            </button>
-                            <button
-                                className=' text-white rounded-md p-3 w-1/2 lg:w-20'
-                                type='button'
-                                style={{ backgroundColor: layout_color }}
-                                onClick={handleSave}
-                                disabled={isLoading}
-                            >
-                                {isLoading ? <SpinLoading /> : "Save"}
-                            </button>
-                        </div>
-                    </div>
+                                <RefferalCusCard
 
-                </div>
-                <div>
-                </div>
+                                    refData={cusdata}
+
+                                />
+                            </ModelOne>
+                        </>
+                    )
+
+                }
+
+
             </div>
+
+
+
         </>
     )
 }

@@ -19,6 +19,8 @@ import "react-datepicker/dist/react-datepicker.css";
 import usePagination from '../../../hooks/usePagination'
 import ExportDropdown from '../../common/Dropdown/Export'
 import Action from '../../common/action'
+import { Breadcrumb } from '../../common/breadCumbs/breadCumbs'
+import ActiveDropdown from '../../common/ActiveDropdown'
 
 
 const ExistingCusTable = () => {
@@ -33,6 +35,8 @@ const ExistingCusTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [totalDocument,setTotalDoc] = useState(0)
+    const [searchLoading, setSearchLoading] = useState(false);
+  
 
   const [filtered, SetFiltered] = useState(false)
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -40,6 +44,7 @@ const ExistingCusTable = () => {
   const [customerData, setcustomerData] = useState([]);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [selectedRow, setSelectedRow] = useState(null);
+   const [activeFilter, setActiveFilter] = useState(null)
 
   const [search, setSearchInput] = useState('')
   const debouncedSearch = useDebounce(search, 500)
@@ -72,10 +77,6 @@ const ExistingCusTable = () => {
     
   };
 
-  
-
-
-
   useEffect(() => {
     const payload={
       page: currentPage,
@@ -83,33 +84,14 @@ const ExistingCusTable = () => {
       search: debouncedSearch,
       from_date: "",
       to_date: "",
-      id_branch: filters.id_branch
+      id_branch: filters.id_branch,
+      active:activeFilter
     }
     getcustomertableMutate(payload);
-  }, [currentPage, itemsPerPage, debouncedSearch]);
+  }, [currentPage, itemsPerPage, debouncedSearch,activeFilter]);
 
 
 
-  const filterInputchange = (e) => {
-    const { name, value } = e.target;
-    setFilters(prev => ({ ...prev, [name]: value }));
-  };
-
-  const applyfilterdatatable = (e) => {
-    e.preventDefault();
-    setIsFilterOpen(false)
-    SetFiltered(true)
-    const payload = {
-       page: currentPage, 
-      limit: itemsPerPage, 
-      search: debouncedSearch, 
-      from_date: from_date,
-       to_date: to_date, 
-       id_branch: filters.id_branch }
-    
-    getcustomertableMutate(payload);
-
-  };
 
   const formatDate = (dateString) => {
     if (!dateString) return '';
@@ -133,9 +115,11 @@ const ExistingCusTable = () => {
         setTotalPages(response.totalPages);
         setTotalDoc(response.totalDocument)
       }
+      setSearchLoading(false)
       setisLoading(false)
     },
     onError: () => {
+      setSearchLoading(false)
       setisLoading(false)
     }
   });
@@ -155,7 +139,8 @@ const ExistingCusTable = () => {
       search: debouncedSearch,
       from_date: "",
       to_date: "",
-      id_branch: filters.id_branch
+      id_branch: filters.id_branch,
+      active:activeFilter
     });
   }
   const handleClickfilter = (e) => {
@@ -219,7 +204,8 @@ const ExistingCusTable = () => {
                 search: debouncedSearch,
                 from_date: from_date,
                 to_date: to_date,
-                id_branch: filters.id_branch
+                id_branch: filters.id_branch,
+                active:activeFilter
             }
               getcustomertableMutate(payload);
             
@@ -264,7 +250,8 @@ const ExistingCusTable = () => {
         search: debouncedSearch,
         from_date: from_date,
         to_date: to_date,
-        id_branch: filters.id_branch
+        id_branch: filters.id_branch,
+        active:activeFilter
       });
     }
   };
@@ -330,209 +317,83 @@ const ExistingCusTable = () => {
   ];
 
   return (
-    <div className="flex flex-col p-4">
-      <h2 className="text-2xl text-gray-900 font-bold">Existing Customers</h2>
-      <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
-        <div className="relative w-full lg:w-1/3 min-w-[200px]">
-          <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-            {isLoading ? (
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
-            ) : (
-              <Search className="text-gray-500" />
-            )}
-          </div>
-          <input
-            placeholder="Search..."
-            className="p-3 pl-10 pr-3 border-2 bg-[#F5F5F5] border-gray-500 rounded-md w-full"
-            value={search}
-            onChange={handleSearch}
+    <>
+          <Breadcrumb
+            items={[{ label: "Manage Customers" }, { label: "Existing Customer", active: true }]}
           />
-        </div>
-
-        <div className="flex flex-row items-center justify-end gap-2">
-
-          <button
-            className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
-            onClick={handleAddcustomerClick}
-            style={{ backgroundColor: layout_color }}  >
-            + Add Customer
-          </button>
-
-          
-          <ExportDropdown apiData={customerData} fileName="customer Report"/>
-         
-
-          {
-            filtered ?
-              <>
-                <button
-                  id="filter"
-                  className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
-                  onClick={() => handleReset()}
-                  style={{ backgroundColor: layout_color }}>
-                  <RefreshCcw size={20} />
-                </button>
-              </>
-              :
-              <>
-                <button
-                  id="filter"
-                  className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
-                  onClick={(e) => {
-                    handleClickfilter(e);
-                  }}
-                  style={{ backgroundColor: layout_color }}>
-                  <SlidersHorizontal size={20} />
-                </button>
-              </>
-
-          }
-
-        </div>
-
-
-      </div>
-      <div
-        className={`fixed inset-y-0 right-0 w-80 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-40 
-                ${isFilterOpen ? 'translate-x-0' : 'translate-x-full'}`}
-      >
-        <div className="flex flex-col h-full">
-          <div className="flex justify-between items-center p-3">
-            <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
-            <button
-              onClick={() => setIsFilterOpen(false)}
-              className="text-gray-500 hover:text-gray-700"
-            >
-              <X size={20} />
-            </button>
-          </div>
-
-          <form>
-            <div className="p-3 space-y-4 flex-1 overflow-y-auto filterscroll">
-              <div className="flex flex-col border-t"></div>
-              <div className="space-y-2">
-                <label className='text-gray-700 text-sm font-medium'>From Date<span className='text-red-400'>*</span></label>
-                <div className="relative">
-                  <DatePicker
-                    selected={from_date}
-                    onChange={(date) => setFromdate(date)}
-                    dateFormat="dd-MM-yyyy"
-                    placeholderText="Select Date"
-                    className="border border-gray-300 rounded-md p-3 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                    showMonthDropdown
-                    showYearDropdown
-                    dropdownMode="select"
-                    wrapperClassName="w-full"
-                  />
-                  <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-gray-500 w-14 h-[43px] justify-center items-center flex rounded-r-md pointer-events-none">
-                    <CalendarDays size={20} />
-                  </span>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <label className='text-gray-700 text-sm font-medium'>To Date<span className='text-red-400'>*</span></label>
-                <div className="relative">
-                  <DatePicker
-                    selected={to_date}
-                    onChange={(date) => setTodate(date)}
-                    dateFormat="dd-MM-yyyy"
-                    placeholderText="Select Date"
-                    className="border border-gray-300 rounded-md p-3 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                    showMonthDropdown
-                    showYearDropdown
-                    dropdownMode="select"
-                    wrapperClassName="w-full"
-                  />
-                  <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-gray-500 w-14 h-[43px] justify-center items-center flex rounded-r-md pointer-events-none">
-                    <CalendarDays size={20} />
-                  </span>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                {
-                  id_branch === "0" && (
-                    <div className="flex flex-col lg:mt-2">
-                      <label className="text-black mb-1 font-medium">
-                        Branch<span className="text-red-400">*</span>
-                      </label>
-                      <div className="relative">
-                        <select
-                          name="id_branch"
-                          className={`appearance-none border-2 border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-gray-700 ${!id_branch !== "0" ? "cursor-not-allowed bg-gray-100" : ""
-                            }`}
-                          defaultValue=""
-                          onChange={filterInputchange}
-                          value={filters.id_branch}
-                        >
-                          <option value="" className="text-gray-700">
-                            --Select--
-                          </option>
-                          {branchList.map((branch) => (
-                            <option
-                              className="text-gray-700"
-                              key={branch._id}
-                              value={branch._id}
-                            >
-                              {branch.branch_name}
-                            </option>
-                          ))}
-                        </select>
-                        <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                          <svg
-                            className="h-4 w-4 text-gray-400"
-                            fill="none"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="3"
-                            viewBox="0 0 24 24"
-                            stroke="black"
-                          >
-                            <path d="M19 9l-7 7-7-7"></path>
-                          </svg>
-                        </div>
-                      </div>
-
-                    </div>
-
+    
+          <div className="flex flex-col p-4  bg-white border border-[#F2F2F9]  rounded-[16px]">
+    
+            <div className="flex flex-col gap-4 mt-4 sm:flex-row sm:justify-between sm:items-center">
+              {/* Search Input - Full width on mobile, moves to right side on desktop */}
+              <div className="relative w-full  sm:mb-0 sm:order-2 sm:w-auto">
+                <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
+                  {searchLoading ? (
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
+                  ) : (
+                    <Search className="text-black" />
                   )}
+                </div>
+                <input
+                  onChange={(e) => {
+                    setSearchLoading(true);
+                    setSearchInput(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  placeholder="Search"
+                  className="px-4 py-2 ps-9 border-2 border-[#F2F2F9] rounded-[8px] w-full sm:w-[228px]"
+                />
               </div>
-
-              <div className="p-4 borde">
-                <div className="bg-yellow-300 flex justify-center gap-3">
+    
+              {/* Container for ActiveDropdown and Add Category button */}
+              <div className="flex flex-row w-full sm:order-1 sm:w-auto sm:mr-auto">
+                {/* ActiveDropdown - half width on mobile */}
+                <div className="w-1/2 sm:w-auto me-1">
+                  <ActiveDropdown setActiveFilter={setActiveFilter} />
+                </div>
+    
+                {/* Button - half width on mobile, moves to right on desktop */}
+                <div className="w-1/2 sm:hidden">
                   <button
-                    onClick={applyfilterdatatable}
-                    className="flex-1 px-4 py-2 bg-[#61A375] text-white rounded-md"
+                    type="button"
+                    className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-full"
+    
+                    style={{ backgroundColor: layout_color }}
+                    onClick={handleAddcustomerClick}
                   >
-                    Apply
+                     + Add Customer
                   </button>
                 </div>
               </div>
-            </div>
-          </form>
-        </div>
-      </div>
-      {isFilterOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-30"
-          onClick={() => setIsFilterOpen(false)}
-        />
-      )}
-      <div className="mt-4">
-      <Table
-            data={customerData}
-            columns={columns}
-            isLoading={isLoading}
-            currentPage={currentPage}
-            handlePageChange={handlePageChange}
-            itemsPerPage={itemsPerPage}
-            totalItems={totalDocument}
-            handleItemsPerPageChange={handleItemsPerPageChange}
-          />
-      </div>
     
-      <Modal />
-    </div>
+              {/* Desktop-only button - appears on the right side */}
+              <div className="hidden sm:block sm:order-3">
+                <button
+                  type="button"
+                  className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-full" style={{ backgroundColor: layout_color }}
+                  onClick={handleAddcustomerClick}
+                >
+                    + Add Customer
+                </button>
+              </div>
+            </div>
+    
+            <div className="mt-4">
+              <Table
+                data={customerData}
+                columns={columns}
+                isLoading={isLoading}
+                currentPage={currentPage}
+                handlePageChange={handlePageChange}
+                itemsPerPage={itemsPerPage}
+                totalItems={totalDocument}
+                handleItemsPerPageChange={handleItemsPerPageChange}
+              />
+            </div>
+            
+            <Modal />
+          </div>
+        </>
   )
 }
 

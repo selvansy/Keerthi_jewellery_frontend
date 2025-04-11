@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Table from "../../common/Table";
-import { Search} from "lucide-react";
+import { Search } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   getallgiftvendor,
@@ -26,6 +26,7 @@ import Loading from "../../common/Loading";
 import usePagination from "../../../hooks/usePagination";
 import Action from "../../common/action";
 import ActiveDropdown from "../../common/ActiveDropdown";
+import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
 // import { customSelectStyles } from "../../Setup/purity";
 
 
@@ -81,7 +82,7 @@ const Giftvendor = () => {
       search: debouncedSearch,
       page: currentPage,
       limit: itemsPerPage,
-      active:activeFilter
+      active: activeFilter
     });
   };
 
@@ -94,8 +95,9 @@ const Giftvendor = () => {
         setCurrentPage(response.currentPage);
         setTotalDocuments(response.totalDocument);
         Setentries(response.totalDocument);
-        setSearchLoading(false)
+       
       }
+      setSearchLoading(false)
       setisLoading(false);
     },
     onError: () => {
@@ -165,7 +167,7 @@ const Giftvendor = () => {
             search: debouncedSearch,
             page: currentPage,
             limit: itemsPerPage,
-            active:activeFilter
+            active: activeFilter
           });
         }
       }
@@ -279,112 +281,103 @@ const Giftvendor = () => {
     },
   ];
 
- 
+
 
   const hanldeActiveDropDown = (data) => {
     setActiveDropdown(data);
   };
 
   return (
-    <div className="flex flex-col p-4 relative">
-      {isLoading ? (
-        <div className="flex justify-center items-center mt-[150px]">
-          <Loading />
-        </div>
-      ) : (
-        <>
-          <h2 className="text-2xl text-gray-900 font-bold">Gift Vendor</h2>
-          <div className="relative shadow-sm rounded-lg overflow-hidden mt-8">
+    <>
+      <Breadcrumb
+        items={[{ label: "Gift" }, { label: "Gift Vendor", active: true }]}
+      />
 
-          <div className="flex flex-col gap-4 mt-4 sm:flex-row sm:justify-between sm:items-center">
-              {/* Search Input - Full width on mobile, moves to right side on desktop */}
-              <div className="relative w-full sm:mb-0 sm:order-2 sm:w-auto">
-                <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                  {searchLoading ? (
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
-                  ) : (
-                    <Search className="text-black" />
-                  )}
-                </div>
-                <input
-                  onChange={(e) => {
-                    setSearchLoading(true);
-                    setSearch(e.target.value);
-                  }}
-                  placeholder="Search"
-                  className="px-4 py-2 ps-9 border-2 border-[#F2F2F9] rounded-[8px] w-full sm:w-[228px]"
-                />
-              </div>
+      <div className="flex flex-col p-4  bg-white border border-[#F2F2F9]  rounded-[16px]">
 
-              {/* Container for ActiveDropdown and Add Category button */}
-              <div className="flex flex-row w-full sm:order-1 sm:w-auto sm:mr-auto md:order-1 md:w-auto md:mr-auto">
-                {/* ActiveDropdown - half width on mobile */}
-
-                <div className="w-1/2 sm:w-auto me-1">
-                  <ActiveDropdown setActiveFilter={setActiveFilter} />
-                </div>
-
-                {/* Button - half width on mobile, moves to right on desktop */}
-                <div className="w-1/2 sm:hidden">
-                  <button
-                    type="button"
-                     className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-full"
-                    style={{ backgroundColor: layout_color }}
-                    onClick={handleAddgiftvendor}
-                  >
-                   + Add Gift Vendor
-                  </button>
-
-                </div>
-              </div>
-
-              {/* Desktop-only button - appears on the right side */}
-              <div className="hidden sm:block sm:order-3">
-                <button
-                    type="button"
-                     className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-full"
-                    style={{ backgroundColor: layout_color }}
-                    onClick={handleAddgiftvendor}
-                  >
-                  + Add Gift Vendor
-                  </button>
-              </div>
+        <div className="flex flex-col gap-4 mt-4 sm:flex-row sm:justify-between sm:items-center">
+          {/* Search Input - Full width on mobile, moves to right side on desktop */}
+          <div className="relative w-full  sm:mb-0 sm:order-2 sm:w-auto">
+            <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
+              {searchLoading ? (
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
+              ) : (
+                <Search className="text-black" />
+              )}
             </div>
-            <div className="bg-white p-3">
-              <Table
-                data={giftvendorData}
-                columns={columns}
-                isLoading={isLoading}
-                currentPage={currentPage}
-                handlePageChange={handlePageChange}
-                itemsPerPage={itemsPerPage}
-                totalItems={totalDocuments}
-                handleItemsPerPageChange={handleItemsPerPageChange}
-              />
-            </div>
-
+            <input
+              onChange={(e) => {
+                setSearchLoading(true);
+                setSearch(e.target.value);
+              }}
+              placeholder="Search"
+              className="px-4 py-2 ps-9 border-2 border-[#F2F2F9] rounded-[8px] w-full sm:w-[228px]"
+            />
           </div>
 
+          {/* Container for ActiveDropdown and Add Category button */}
+          <div className="flex flex-row w-full sm:order-1 sm:w-auto sm:mr-auto">
+            {/* ActiveDropdown - half width on mobile */}
+            <div className="w-1/2 sm:w-auto me-1">
+              <ActiveDropdown setActiveFilter={setActiveFilter} />
+            </div>
 
-        </>
-      )}
-      <ModelOne
-        title={id ? "Edit Gift Vendor" : "Add Gift Vendor"}
-        extraClassName='w-1/3'
-        setIsOpen={setIsviewOpen}
-        isOpen={isviewOpen}
-        closeModal={closeIncommingModal}
-      >
-        <GiftVendorForm
-          isviewOpen={isviewOpen}
+            {/* Button - half width on mobile, moves to right on desktop */}
+            <div className="w-1/2 sm:hidden">
+              <button
+                type="button"
+                className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-full"
+
+                style={{ backgroundColor: layout_color }}
+                onClick={handleAddgiftvendor}
+              >
+                + Add Gift Vendor
+              </button>
+            </div>
+          </div>
+
+          {/* Desktop-only button - appears on the right side */}
+          <div className="hidden sm:block sm:order-3">
+            <button
+              type="button"
+              className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-full" style={{ backgroundColor: layout_color }}
+              onClick={handleAddgiftvendor}
+            >
+              + Add Gift Vendor
+            </button>
+          </div>
+        </div>
+
+        <div className="mt-4">
+          <Table
+            data={giftvendorData}
+            columns={columns}
+            isLoading={isLoading}
+            currentPage={currentPage}
+            handlePageChange={handlePageChange}
+            itemsPerPage={itemsPerPage}
+            totalItems={totalDocuments}
+            handleItemsPerPageChange={handleItemsPerPageChange}
+          />
+        </div>
+        <ModelOne
+          title={id ? "Edit Gift Vendor" : "Add Gift Vendor"}
+          extraClassName='w-1/3'
           setIsOpen={setIsviewOpen}
-          id={id}
-          setId={setId}
-          refetchTable={refetchTable}
-        />
-      </ModelOne>
-      <Modal />
-    </div>
+          isOpen={isviewOpen}
+          closeModal={closeIncommingModal}
+        >
+          <GiftVendorForm
+            isviewOpen={isviewOpen}
+            setIsOpen={setIsviewOpen}
+            id={id}
+            setId={setId}
+            refetchTable={refetchTable}
+          />
+        </ModelOne>
+        <Modal />
+      </div>
+    </>
   );
 };
 

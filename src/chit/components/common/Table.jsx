@@ -14,11 +14,11 @@ const Table = ({
   handlePageChange,
   handleItemsPerPageChange,
   debounceSearch,
-  handleSearch
+  handleSearch,
+  showPagination = true, 
 }) => {
   const [activeDropdown, setActiveDropdown] = useState(null);
   const dropdownRef = useRef(null);
-
 
 
   useEffect(() => {
@@ -175,7 +175,7 @@ const Table = ({
           </div>
           
           {/* Pagination */}
-          {data.length >= 1 && (
+          {showPagination && data.length >= 1 && (
             <div className="p-4 flex items-center justify-between text-sm text-gray-600 border-t">
               <div>
                 Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems} entries

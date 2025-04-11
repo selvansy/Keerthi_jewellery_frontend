@@ -22,11 +22,15 @@ import usePagination from "../../../hooks/usePagination";
 import SpinLoading from "../../common/spinLoading";
 import Loading from "../../common/Loading";
 import Action from "../../common/action";
+import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
+import ActiveDropdown from "../../common/ActiveDropdown";
 
 const Department = () => {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
   const dispatch = useDispatch();
+  const [activeFilter, setActiveFilter] = useState(null)
+  
   const [deptData, setdeptData] = useState([]);
   const [isviewOpen, setIsviewOpen] = useState(false);
   const [id, setId] = useState("");
@@ -99,9 +103,9 @@ const Department = () => {
       search: debouncedSearch,
       page: currentPage,
       limit: itemsPerPage,
-      currentPage,
+      active:activeFilter
     });
-  }, [currentPage, itemsPerPage, debouncedSearch, isviewOpen]);
+  }, [currentPage, itemsPerPage, debouncedSearch, isviewOpen,activeFilter]);
 
   const hanldeActiveDropDown = (data) => {
     setActiveDropdown(data);
@@ -141,6 +145,7 @@ const Department = () => {
           search: debouncedSearch,
           page: currentPage,
           limit: itemsPerPage,
+          active:activeFilter
         });
 
         toast.success(response.message);
@@ -248,29 +253,60 @@ const Department = () => {
   };
 
   return (
-    <div className="flex flex-col p-4 relative">
-      <>
-        <h2 className="text-2xl text-gray-900 font-bold">Department</h2>
-        <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
-          <div className="relative w-full lg:w-1/3 min-w-[200px]">
+    <>
+      <Breadcrumb
+      items={[{ label: "Settings" }, { label: "Department", active: true }]}
+      />
+
+      <div className="flex flex-col p-4  bg-white border border-[#F2F2F9]  rounded-[16px]">
+
+        <div className="flex flex-col gap-4 mt-4 sm:flex-row sm:justify-between sm:items-center">
+          {/* Search Input - Full width on mobile, moves to right side on desktop */}
+          <div className="relative w-full  sm:mb-0 sm:order-2 sm:w-auto">
             <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
               {searchLoading ? (
                 <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
               ) : (
-                <Search className="text-gray-500" />
+                <Search className="text-black" />
               )}
             </div>
             <input
-              onChange={handleSearch}
-              placeholder="Search..."
-              className="p-3 pl-10 pr-3 border-2 bg-[#F5F5F5] border-gray-500 rounded-md w-full"
+              onChange={(e) => {
+                setSearchLoading(true);
+                setSearchInput(e.target.value);
+              }}
+              placeholder="Search"
+              className="px-4 py-2 ps-9 border-2 border-[#F2F2F9] rounded-[8px] w-full sm:w-[228px]"
             />
           </div>
-          <div className="flex flex-row items-center justify-end gap-2">
+
+          {/* Container for ActiveDropdown and Add Category button */}
+          <div className="flex flex-row w-full sm:order-1 sm:w-auto sm:mr-auto">
+            {/* ActiveDropdown - half width on mobile */}
+            <div className="w-1/2 sm:w-auto me-1">
+              <ActiveDropdown setActiveFilter={setActiveFilter} />
+            </div>
+
+            {/* Button - half width on mobile, moves to right on desktop */}
+            <div className="w-1/2 sm:hidden">
+              <button
+                type="button"
+                className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-full"
+
+                style={{ backgroundColor: layout_color }}
+                onClick={handleaddDept}
+              >
+                + Add Department
+              </button>
+            </div>
+          </div>
+
+          {/* Desktop-only button - appears on the right side */}
+          <div className="hidden sm:block sm:order-3">
             <button
-              className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
+              type="button"
+              className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-full" style={{ backgroundColor: layout_color }}
               onClick={handleaddDept}
-              style={{ backgroundColor: layout_color }}
             >
               + Add Department
             </button>
@@ -289,11 +325,9 @@ const Department = () => {
             handleItemsPerPageChange={handleItemsPerPageChange}
           />
         </div>
-      </>
-
-      <ModelOne
+        <ModelOne
         title={id ? "Edit Department" : "Add Department"}
-        extraClassName="max-w-lg"
+        extraClassName="w-1/3"
         setIsOpen={setIsviewOpen}
         isOpen={isviewOpen}
         closeModal={closeIncommingModal}
@@ -305,7 +339,9 @@ const Department = () => {
         />
       </ModelOne>
       <Modal />
-    </div>
+
+      </div>
+    </>
   );
 };
 

@@ -66,14 +66,33 @@ function ContentForm() {
         }
     }, [contentDetails]);
 
+
+    function cleanHtml(html) {
+        return html
+          .replace(/<p><br><\/p>$/, '') 
+          .replace(/\s+$/, '');         
+      }
+      
+
+
     const handleSubmit = (e) => {
         e.preventDefault();
         setIsLoading(true);
+    
         addContentPolicy(formData);
-    };
+      };
 
+      
     const handleChange = (e) => {
         const { name, value } = e.target;
+        if(name === "content"){
+            const cleanedContent = cleanHtml(value); 
+            setFormData((prev) => ({
+                ...prev,
+                content: cleanedContent,
+            }));
+             }    
+
         setFormData((prev) => ({
             ...prev,
             [name]: value,
@@ -143,7 +162,12 @@ function ContentForm() {
                                     <hr className="border-gray-300" />
                                     <AccordionContent value="content" className="px-6 py-4 text-[16px]">
                                         <div className="p-2 border-gray-300 rounded-lg">
-                                            <ReactQuill
+                                                <ReactQuill
+                                                    value={formData.content || ""}
+                                                    onChange={(value) => setFormData(prev => ({ ...prev, content: value }))}
+                                                    theme="snow"
+                                                />
+                                            {/* <ReactQuill
                                                 value={formData.content || ""}
                                                 onChange={(value) => {
                                                     setFormData(prev => ({
@@ -153,7 +177,7 @@ function ContentForm() {
                                                 }}
                                                 theme="snow"
                                                 readOnly={isViewMode}
-                                            />
+                                            /> */}
                                         </div>
                                     </AccordionContent>
                                 </AccordionItem>

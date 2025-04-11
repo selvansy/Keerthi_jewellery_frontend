@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import Table from '../../common/Table'
 import { useMutation } from '@tanstack/react-query'
 import { Search } from 'lucide-react'
-import {getallgiftinwardtable, changegiftinwardStatus, deletegiftinward } from '../../../api/Endpoints'
+import { getallgiftinwardtable, changegiftinwardStatus, deletegiftinward } from '../../../api/Endpoints'
 import { toast } from 'react-toastify'
 import "react-datepicker/dist/react-datepicker.css";
 import { openModal } from '../../../../redux/modalSlice';
@@ -14,6 +14,7 @@ import { eventEmitter } from '../../../../utils/EventEmitter';
 import Action from '../../common/action'
 import ActiveDropdown from '../../common/ActiveDropdown'
 import GiftPurchaseForm from './GiftPurchaseForm'
+import { Breadcrumb } from '../../common/breadCumbs/breadCumbs'
 
 
 
@@ -23,7 +24,7 @@ const GiftPurchase = () => {
   const dispatch = useDispatch();
 
 
-  const [search, setSearch] = useState('')
+  const [search, setSearchInput ] = useState('')
   const debouncedSearch = useDebounce(search, 600)
   const [isLoading, setisLoading] = useState(true)
   const [giftinward, setGiftinward] = useState([])
@@ -66,9 +67,10 @@ const GiftPurchase = () => {
 
     },
     onError: (error) => {
-      console.error('Error:', error);
+      setGiftinward([])
       setSearchLoading(false)
       setisLoading(false)
+      console.error('Error:', error);
     }
   });
 
@@ -76,13 +78,13 @@ const GiftPurchase = () => {
     page: currentPage,
     limit: itemsPerPage,
     search: debouncedSearch,
-    active:activeFilter
+    active: activeFilter
   };
 
 
   useEffect(() => {
     getgiftinwardMutate(filterTosend)
-  }, [currentPage, itemsPerPage, debouncedSearch,activeFilter])
+  }, [currentPage, itemsPerPage, debouncedSearch, activeFilter])
 
   const refetchTable = () => {
     setIsviewOpen(false);
@@ -90,7 +92,7 @@ const GiftPurchase = () => {
       page: currentPage,
       limit: itemsPerPage,
       search: debouncedSearch,
-      active:activeFilter
+      active: activeFilter
     })
   }
 
@@ -104,7 +106,7 @@ const GiftPurchase = () => {
     let response = await changegiftinwardStatus(id);
     if (response) {
       toast.success(response.message);
-      getgiftinwardMutate({ page: currentPage, limit: itemsPerPage, search: debouncedSearch,active:activeFilter })
+      getgiftinwardMutate({ page: currentPage, limit: itemsPerPage, search: debouncedSearch, active: activeFilter })
     }
   };
 
@@ -161,7 +163,7 @@ const GiftPurchase = () => {
           page: currentPage,
           limit: itemsPerPage,
           search: debouncedSearch,
-          active:activeFilter
+          active: activeFilter
         })
       }
       toast.success(response.message);
@@ -247,7 +249,7 @@ const GiftPurchase = () => {
     },
     {
       header: "Created Date",
-      cell: (row) =>formatDate(row?.gift_vendorid?.createdAt)
+      cell: (row) => formatDate(row?.gift_vendorid?.createdAt)
     },
     {
       header: 'Active',
@@ -282,83 +284,94 @@ const GiftPurchase = () => {
   };
 
   return (
-    <div className="flex flex-col p-4">
-      <h2 className="text-2xl text-gray-900 font-bold">Gift Purchase</h2>
-        <div className="flex flex-col gap-4 mt-4 sm:flex-row sm:justify-between sm:items-center">
-          {/* Search Input - Full width on mobile, moves to right side on desktop */}
-          <div className="relative w-full sm:mb-0 sm:order-2 sm:w-auto">
-            <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-              {searchLoading ? (
-                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
-              ) : (
-                <Search className="text-black" />
-              )}
+ 
+      <>
+        <Breadcrumb
+          items={[{ label: "Gift" }, { label: "Gift Purchase", active: true }]}
+        />
+
+        <div className="flex flex-col p-4  bg-white border border-[#F2F2F9]  rounded-[16px]">
+
+          <div className="flex flex-col gap-4 mt-4 sm:flex-row sm:justify-between sm:items-center">
+            {/* Search Input - Full width on mobile, moves to right side on desktop */}
+            <div className="relative w-full  sm:mb-0 sm:order-2 sm:w-auto">
+              <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
+                {searchLoading ? (
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
+                ) : (
+                  <Search className="text-black" />
+                )}
+              </div>
+              <input
+                onChange={(e) => {
+                  setSearchLoading(true);
+                  setSearchInput(e.target.value);
+                }}
+                placeholder="Search"
+                className="px-4 py-2 ps-9 border-2 border-[#F2F2F9] rounded-[8px] w-full sm:w-[228px]"
+              />
             </div>
-            <input
-              onChange={(e) => {
-                setSearchLoading(true);
-                setSearch(e.target.value);
-              }}
-              placeholder="Search"
-              className="px-4 py-2 ps-9 border-2 border-[#F2F2F9] rounded-[8px] w-full sm:w-[228px]"
-            />
-          </div>
 
-          {/* Container for ActiveDropdown and Add Category button */}
-          <div className="flex flex-row w-full sm:order-1 sm:w-auto sm:mr-auto md:order-1 md:w-auto md:mr-auto">
-            {/* ActiveDropdown - half width on mobile */}
-
-            <div className="w-1/2 sm:w-auto me-1">
+            {/* Container for ActiveDropdown and Add Category button */}
+            <div className="flex flex-row w-full sm:order-1 sm:w-auto sm:mr-auto">
+              {/* ActiveDropdown - half width on mobile */}
+              <div className="w-1/2 sm:w-auto me-1">
               <ActiveDropdown setActiveFilter={setActiveFilter} />
+              </div>
+
+              {/* Button - half width on mobile, moves to right on desktop */}
+              <div className="w-1/2 sm:hidden">
+                <button className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-full"
+
+                  onClick={handleClick}
+                  style={{ backgroundColor: layout_color }} >
+                  Add Purchase
+                </button>
+
+              </div>
             </div>
 
-            {/* Button - half width on mobile, moves to right on desktop */}
-            <div className="w-1/2 sm:hidden">
+            {/* Desktop-only button - appears on the right side */}
+            <div className="hidden sm:block sm:order-3">
+              <button className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-[135px]"
 
-              <button className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-full"
                 onClick={handleClick}
                 style={{ backgroundColor: layout_color }} >
                 Add Purchase
               </button>
 
-
             </div>
           </div>
 
-          {/* Desktop-only button - appears on the right side */}
-          <div className="hidden sm:block sm:order-3">
-            <button className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-full"
 
-              onClick={handleClick}
-              style={{ backgroundColor: layout_color }} >
-              Add Purchase
-            </button>
+          <div className="mt-4">
+            <Table data={giftinward} columns={columns}
+              isLoading={isLoading} currentPage={currentPage}
+              handlePageChange={handlePageChange} itemsPerPage={itemsPerPage}
+              totalItems={totalDocuments}
+              handleItemsPerPageChange={handleItemsPerPageChange} />
           </div>
+          <ModelOne
+            title={id ? "Edit GiftPurchase" : "Add GiftPurchase"}
+            extraClassName='p-7 w-[601px] xs:w-[50px] max-h-[90vh] overflow-y-auto'
+            setIsOpen={setIsviewOpen}
+            isOpen={isviewOpen}
+            closeModal={closeIncommingModal}
+          >
+            <GiftPurchaseForm
+              isviewOpen={isviewOpen}
+              setIsviewOpen={setIsviewOpen}
+              id={id}
+              setId={setId}
+              refetchTable={refetchTable}
+            />
+          </ModelOne>
+
+
+          <Modal />
         </div>
-
-        <div className="bg-white p-3">
-          <Table data={giftinward} columns={columns} isLoading={isLoading} currentPage={currentPage} handlePageChange={handlePageChange} itemsPerPage={itemsPerPage} totalItems={totalDocuments} handleItemsPerPageChange={handleItemsPerPageChange} />
-        </div>
-
-        <ModelOne
-          title={id ? "Edit GiftPurchase" : "Add GiftPurchase"}
-          extraClassName='p-7 w-[601px] xs:w-[50px] max-h-[90vh] overflow-y-auto'
-          setIsOpen={setIsviewOpen}
-          isOpen={isviewOpen}
-          closeModal={closeIncommingModal}
-        >
-          <GiftPurchaseForm
-            isviewOpen={isviewOpen}
-            setIsviewOpen={setIsviewOpen}
-            id={id}
-            setId={setId}
-            refetchTable={refetchTable}
-          />
-        </ModelOne>
-
-  
-      <Modal />
-    </div>
+      </>
+    
   )
 }
 

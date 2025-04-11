@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
 import { toast } from "react-toastify";
 import banner_placeholder from "../../../../assets/banner_placeholder.webp";
@@ -55,6 +55,23 @@ const Classification = ({
     }
   };
 
+  useEffect(() => {
+    if (logo == null) {
+      setMainImagePreview(null);
+      setMainImageName("");
+      if (mainImageInputRef.current) {
+        mainImageInputRef.current.value = "";
+      }
+    }
+    if (desc_img == null) {
+      setDescImagePreview(null);
+      setDescImageName("");
+      if (descImageInputRef.current) {
+        descImageInputRef.current.value = "";
+      }
+    }
+  }, [logo, desc_img]); // Added reset to dependencies
+
   return (
     <div className="p-6 mb-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
@@ -66,7 +83,7 @@ const Classification = ({
             <input
               type="text"
               readOnly
-              value={mainImageName || logo}
+              value={mainImageName || logo || ""}
               className="border rounded-l-md p-2 w-full bg-gray-50"
             />
             {/* <button
@@ -77,15 +94,16 @@ const Classification = ({
               Choose File
             </button> */}
             <label
-              htmlFor="descImageInput"
+              htmlFor="mainImageInput"
               className="absolute right-0 top-0 bottom-0 bg-blue-600 text-white px-4 flex items-center justify-center rounded-md cursor-pointer text-sm"
               style={{ backgroundColor: layout_color }}
-              onClick={() => mainImageInputRef.current.click()}
+              // onClick={() => mainImageInputRef.current.click()}
             >
               Choose File
             </label>
             <input
               type="file"
+              id="mainImageInput"
               ref={mainImageInputRef}
               className="hidden"
               accept="image/*"
@@ -134,14 +152,14 @@ const Classification = ({
             <input
               type="text"
               readOnly
-              value={descImageName || desc_img}
+              value={descImageName || desc_img || ""}
               className="border rounded-md p-2 w-full bg-gray-50"
             />
             <label
               htmlFor="descImageInput"
               className="absolute right-0 top-0 bottom-0 bg-blue-600 text-white px-4 flex items-center justify-center rounded-md cursor-pointer text-sm"
               style={{ backgroundColor: layout_color }}
-              onClick={() => descImageInputRef.current.click()}
+              // onClick={() => descImageInputRef.current.click()}
             >
               Choose File
             </label>
