@@ -299,7 +299,7 @@ const PayableDetails = ({
       </div>
       ):(
         <div className="">
-         <label className="block text-sm font-medium mb-1 mt-2">
+          <label className="block text-sm font-medium mb-1 mt-2">
         Benefit  Bonus Percentage
         </label>
         <div className="relative">
@@ -311,13 +311,10 @@ const PayableDetails = ({
             value={formik.values.bonus_percent}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-            placeholder="Enter Reward Percent"
+            className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+            placeholder="Enter Bonus Percent"
           />
-          <span
-            className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-white rounded-r-md"
-            style={{ backgroundColor: layout_color }}
-          >
+           <span className="absolute right-0 top-0 w-9 h-full px-3 flex items-center justify-center text-black border-l">
             %
           </span>
         </div>
