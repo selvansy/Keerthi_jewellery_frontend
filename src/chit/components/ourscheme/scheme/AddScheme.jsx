@@ -109,7 +109,7 @@ const SchemeForm = () => {
       //classification
       description: "",
       term_desc: "",
-      classification_order: "",
+      classification_order: 0,
     
       wastagetype: "", // no need to pass
       
@@ -194,6 +194,8 @@ const SchemeForm = () => {
       }
     },
   });
+
+  console.log(formik.errors)
 
   useEffect(() => {
     if (!id) {
