@@ -1936,6 +1936,7 @@ export const customSearchScheme = async (data) => {
 };
 
 export const getschemeaccountbyid = async (data) => {
+  console.log("data-",data)
   const response = await Api.get(
     `${import.meta.env.VITE_API_URL}/api/client/schemeaccount/${data}`);
   return response.data;

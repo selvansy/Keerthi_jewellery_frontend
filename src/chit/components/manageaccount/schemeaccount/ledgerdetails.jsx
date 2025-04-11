@@ -3,6 +3,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setScemeAccountId } from "../../../../redux/clientFormSlice"
 import { getschemeaccountbyid } from '../../../api/Endpoints'
 import Table from '../../common/Table'
+import { formatNumber } from "../../../utils/commonFunction";
+
 function Ledgerdetails({ setIsOpen }) {
  const layout_color = useSelector((state) => state.clientForm.layoutColor);
   let dispatch = useDispatch();
@@ -27,8 +29,8 @@ function Ledgerdetails({ setIsOpen }) {
 
   const getLedgerData = async (data) => {
     if (!data) return;
-    const response = await getschemeaccountbyid({ id: data });
-    console.log(response,'jf')
+    const response = await getschemeaccountbyid(data );
+    
     if (response) {
       setLedgerData({
         id: response.data._id,
@@ -63,38 +65,40 @@ function Ledgerdetails({ setIsOpen }) {
       toast.error('Customer not created!');
     }
   };
+
+  console.log("ledgerData----",ledgerData)
   return (
     <div>
 
 <div className="flex justify-center flex-col">
   {/* Ledger Details Section */}
-  <div className="bg-[#f5f5dc] mb-2 p-3">
-    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-      <div className="space-y-1">
-        <p className="text-sm font-semibold text-gray-700">Customer Name</p>
-        <p className="text-sm">{ledgerData?.customer_name || 'N/A'}</p>
+  <div className=" mb-2 p-3">
+    <div className="grid grid-rows-2 lg:grid-cols-2  gap-4 space-y-2">
+      <div className=" flex flex-row gap-3">
+        <p className="text-md font-semibold text-gray-700">Customer Name</p>
+        <p className="text-sm text-[#6C7086] ">{ledgerData?.customer_name || 'N/A'}</p>
       </div>
 
-      <div className="space-y-1">
-        <p className="text-sm font-semibold text-gray-700">Mobile Number</p>
-        <p className="text-sm">{ledgerData?.mobile || 'N/A'}</p>
+      <div className="flex flex-row gap-3">
+        <p className="text-md font-semibold text-gray-700">Mobile Number</p>
+        <p className="text-sm text-[#6C7086]">{ledgerData?.mobile || 'N/A'}</p>
       </div>
 
-      <div className="space-y-1">
-        <p className="text-sm font-semibold text-gray-700">Scheme Type</p>
-        <p className="text-sm">
+      <div className=" flex flex-row gap-3">
+        <p className="text-md font-semibold text-gray-700">Scheme Type</p>
+        <p className="text-sm text-[#6C7086]">
           {ledgerData?.scheme_typename}
         </p>
       </div>
 
-      <div className="space-y-1">
-        <p className="text-sm font-semibold text-gray-700">Classification</p>
-        <p className="text-sm">{ledgerData?.id_classification?.name || 'N/A'}</p>
+      <div className=" flex flex-row gap-3">
+        <p className="text-md font-semibold text-gray-700">Classification</p>
+        <p className="text-sm text-[#6C7086]">{ledgerData?.id_classification?.name || 'N/A'}</p>
       </div>
 
-      <div className="space-y-1">
-        <p className="text-sm font-semibold text-gray-700">Scheme Name</p>
-        <p className="text-sm">
+      <div className=" flex flex-row gap-3">
+        <p className="text-md font-semibold text-gray-700">Scheme Name</p>
+        <p className="text-sm text-[#6C7086]">
           {(() => {
             if (ledgerData.scheme_type === 0 || ledgerData.scheme_type === 1 || ledgerData.scheme_type === 2) {
               return `${ledgerData.scheme_name} ( Rs. ${ledgerData.amount} )`;
@@ -109,54 +113,56 @@ function Ledgerdetails({ setIsOpen }) {
         </p>
       </div>
 
-      <div className="space-y-1">
-        <p className="text-sm font-semibold text-gray-700">Account No</p>
-        <p className="text-sm">{ledgerData?.scheme_acc_number || 'N/A'}</p>
+      <div className=" flex flex-row gap-3">
+        <p className="text-md font-semibold text-gray-700">Account No</p>
+        <p className="text-sm text-[#6C7086]">{ledgerData?.scheme_acc_number || 'N/A'}</p>
       </div>
 
-      <div className="space-y-1">
-        <p className="text-sm font-semibold text-gray-700">Account Name</p>
-        <p className="text-sm">{ledgerData?.account_name || 'N/A'}</p>
+      <div className=" flex flex-row gap-3">
+        <p className="text-md font-semibold text-gray-700">Account Name</p>
+        <p className="text-sm text-[#6C7086]">{ledgerData?.account_name || 'N/A'}</p>
       </div>
 
-      <div className="space-y-1">
-        <p className="text-sm font-semibold text-gray-700">Start Date</p>
-        <p className="text-sm">{ledgerData?.start_date || 'N/A'}</p>
+      <div className=" flex flex-row gap-3">
+        <p className="text-md font-semibold text-gray-700">Start Date</p>
+        <p className="text-sm text-[#6C7086]">{ledgerData?.start_date || 'N/A'}</p>
       </div>
 
-      <div className="space-y-1">
-        <p className="text-sm font-semibold text-gray-700">Bill No</p>
-        <p className="text-sm">{ledgerData?.bill_no || 'N/A'}</p>
+      <div className=" flex flex-row gap-3">
+        <p className="text-md font-semibold text-gray-700">Bill No</p>
+        <p className="text-sm text-[#6C7086]">{ledgerData?.bill_no || 'N/A'}</p>
       </div>
 
-      <div className="space-y-1">
-        <p className="text-sm font-semibold text-gray-700">Bill Date</p>
-        <p className="text-sm">{ledgerData?.bill_date || 'N/A'}</p>
+      <div className=" flex flex-row gap-3">
+        <p className="text-md font-semibold text-gray-700">Bill Date</p>
+        <p className="text-sm text-[#6C7086]">{ledgerData?.bill_date || 'N/A'}</p>
       </div>
 
-      <div className="space-y-1">
-        <p className="text-sm font-semibold text-gray-700">Total Installment</p>
-        <p className="text-sm">{ledgerData?.total_installments || '0'}</p>
+      <div className=" flex flex-row gap-3">
+        <p className="text-md font-semibold text-gray-700">Total Installment</p>
+        <p className="text-sm text-[#6C7086]">{ledgerData?.total_installments || '0'}</p>
       </div>
 
-      <div className="space-y-1">
-        <p className="text-sm font-semibold text-gray-700">Paid Installments</p>
-        <p className="text-sm">{ledgerData?.total_paidinstallments || '0'}</p>
+      <div className=" flex flex-row gap-3">
+        <p className="text-md font-semibold text-gray-700">Paid Installments</p>
+        <p className="text-sm text-[#6C7086]">{ledgerData?.total_paidinstallments || '0'}</p>
       </div>
 
-      <div className="space-y-1">
-        <p className="text-sm font-semibold text-gray-700">Paid Amount</p>
-        <p className="text-sm">Rs. {ledgerData?.total_paidamount || '0'}</p>
+      <div className=" flex flex-row gap-3">
+        <p className="text-md font-semibold text-gray-700">Paid Amount</p>
+        <p className="text-sm text-[#6C7086]">
+        {formatNumber({value:ledgerData?.total_paidamount,decimalPlaces:0}) || '0'} </p>
       </div>
 
-      <div className="space-y-1">
-        <p className="text-sm font-semibold text-gray-700">Bonus</p>
-        <p className="text-sm">Rs. {ledgerData?.total_paidamount || '0'}</p>
+      <div className=" flex flex-row gap-3">
+        <p className="text-md font-semibold text-gray-700">Bonus</p>
+        <p className="text-sm text-[#6C7086]">
+        {formatNumber({value:ledgerData?.id_scheme?.bonus_amount,decimalPlaces:0}) || '0'} </p>
       </div>
 
-      <div className="space-y-1">
-        <p className="text-sm font-semibold text-gray-700">Total Amount</p>
-        <p className="text-sm">Rs. {ledgerData?.total_paidamount || '0'}</p>
+      <div className=" flex flex-row text-center gap-3">
+        <p className="text-md font-semibold text-gray-700">Total Amount</p>
+        <p className="text-sm text-[#6C7086] "> {formatNumber({value:ledgerData?.total_paidamount,decimalPlaces:0}) || '0'}</p>
       </div>
     </div>
   </div>

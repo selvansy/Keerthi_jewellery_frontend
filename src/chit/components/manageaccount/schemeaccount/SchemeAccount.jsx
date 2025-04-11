@@ -3,7 +3,8 @@ import { Breadcrumb } from '../../common/breadCumbs/breadCumbs';
 import ActiveDropdown from '../../common/ActiveDropdown';
 import { Search } from "lucide-react";
 import { useDebounce } from '../../../hooks/useDebounce';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from "react-redux";
+
 import Table from '../../common/Table';
 import { addedtype, allschemestatus, getallschemetypes, getallbranchscheme, getallbranchclassification, getemployeebybranch, getallbranch, schemeaccounttable, changeschemeaccountStatus, deleteschemeaccount } from '../../../api/Endpoints'
 import { useMutation } from '@tanstack/react-query';
@@ -14,6 +15,7 @@ import ModelOne from '../../common/Modelone';
 import Action from '../../common/action';
 import { setScemeAccountId } from "../../../../redux/clientFormSlice"
 import ExportDropdown from "../../../components/common/Dropdown/Export";
+import Ledgerdetails from './ledgerdetails';
 
 
 function SchemeAccount() {
@@ -28,7 +30,7 @@ function SchemeAccount() {
     const [searchLoading, setSearchLoading] = useState(false);
     const [isviewOpen, setIsviewOpen] = useState(false);
     const [searchInput, setSearch] = useState("");
-
+    const dispatch = useDispatch();
     const debouncedSearch = useDebounce(searchInput, 500);
     const [displaysetting, setDiplaySetting] = useState(0);
     const [activeFilter, setActiveFilter] = useState(null)
@@ -39,6 +41,11 @@ function SchemeAccount() {
     let id_client = roledata?.id_client;
     const branch = roledata?.branch;
     const id_branch = roledata?.id_branch
+
+    function closeIncommingModal() {
+        setIsviewOpen(false);
+        setIsSettingOpen(false);
+      }
 
     const handleClick = (e) => {
         e.preventDefault();
@@ -329,7 +336,7 @@ function SchemeAccount() {
                     {displaysetting === 1 && (
                         <ModelOne
                             title={popuptitle}
-                            extraClassName='w-2/3 max-h-[90vh] overflow-y-auto'
+                            extraClassName='w-1/2 max-h-[90vh] overflow-y-auto'
                             setIsOpen={setIsviewOpen}
                             isOpen={isviewOpen}
                             closeModal={closeIncommingModal}
