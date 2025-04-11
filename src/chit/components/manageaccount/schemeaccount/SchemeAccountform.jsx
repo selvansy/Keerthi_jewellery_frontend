@@ -25,7 +25,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { customSelectStyles } from "../../Setup/purity/index";
 import SpinLoading from "../../common/spinLoading";
 
-export function ExistingCustomer({ setCusData }) {
+export function ExistingCustomer({ setCusData,handleCusData }) {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const roledata = useSelector((state) => state.clientForm.roledata);
   const id_branch = roledata?.branch;
@@ -65,6 +65,7 @@ export function ExistingCustomer({ setCusData }) {
     mutationFn: (data) => searchcustomermobile(data),
     onSuccess: (response) => {
       handleResData(response.data);
+      handleCusData(response.data);
       setLoading(false);
     },
     onError: (error) => {
