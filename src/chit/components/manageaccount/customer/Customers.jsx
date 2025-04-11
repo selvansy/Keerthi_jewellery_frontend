@@ -96,7 +96,7 @@ function Customers() {
                         <AccordionItem value="existingCus" className="border rounded-lg bg-white">
                             <AccordionTrigger className="px-6 py-4">Existing Customer</AccordionTrigger>
                             <AccordionContent className="px-6 py-4 text-[16px]">
-                                <ExistingCustomer setCusData={setCusData} />
+                                <ExistingCustomer setCusData={setCusData} handleCusData={handleCusData} />
                             </AccordionContent>
                         </AccordionItem>
 

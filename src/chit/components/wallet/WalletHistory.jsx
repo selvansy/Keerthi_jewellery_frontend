@@ -66,6 +66,7 @@ function WalletHistory() {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const [walletData, setwalletData] = useState([]);
   const [data,setData] = useState([]);
+  const [expData,setExpData] = useState([])
   const [branchOptions, setBranchOptions] = useState([]);
   const [giftcount, setGiftcount] = useState({});
   
@@ -138,8 +139,39 @@ function WalletHistory() {
 
 
   useEffect(() => {
-    getallWalletData({ search: debouncedSearch, page: currentPage, limit: itemsPerPage });
-  }, [currentPage, debouncedSearch, itemsPerPage]);
+    getallWalletData({ search: debouncedSearch, page: currentPage, limit: itemsPerPage,from_date:startDate,to_date:endDate });
+  }, [currentPage, debouncedSearch, itemsPerPage,startDate,endDate]);
+
+
+  useEffect(()=>{
+    if(!walletData) return;
+     generateExportData();
+  },[walletData])
+
+
+  const generateExportData = () => {
+    const exportData = walletData.map((row, index) => {
+      const emp = row?.id_employee;
+      const cust = row?.id_customer;
+  
+      const name = emp
+        ? `${emp.firstname || ""} ${emp.lastname || ""} ${emp.mobile || "-"}`
+        : cust
+        ? `${cust.firstname || ""} ${cust.lastname || ""} ${cust.mobile || "-"}`
+        : "-";
+  
+      return {
+        sno: index + 1,
+        name,
+        wallet_amount: row.total_reward_amt ?? "-",
+        wallet_redeemption: Math.abs(row.redeem_amt ?? "-"),
+        balance_reward: row.balance_amt ?? "-",
+      };
+    });
+  
+    setExpData(exportData); 
+  };
+  
 
   const { mutate: getallWalletData } = useMutation({
     mutationFn: (payload) => walletHistory(payload),
@@ -152,9 +184,12 @@ function WalletHistory() {
       setCurrentPage(response.currentPage)
       setTotalDocuments(response.totalDocuments)
       setisLoading(false)
+      setSearchLoading(false);
+
     },
     onError: (error) => {
       console.log(error)
+      setSearchLoading(false);
       setisLoading(false)
       setwalletData([])
     }
@@ -435,6 +470,12 @@ function WalletHistory() {
 
             <ExportDropdown
               apiData={walletData}
+              dynamicRemove={[
+                '_id', 'id_employee', 'total_reward_point',
+                'redeem_point', 'balance_point', 'payment_mode', 'active',
+                'is_deleted', 'created_by', 'modified_by', 'modified_date',
+                'createdAt', 'updatedAt', '__v', 'id_customer', 'id_scheme_account'
+              ]}
               fileName={`Wallet History ${new Date().toLocaleDateString('en-GB')}`}
             />
           </div>

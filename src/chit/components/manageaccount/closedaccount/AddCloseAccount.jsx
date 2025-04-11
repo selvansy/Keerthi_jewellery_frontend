@@ -17,16 +17,19 @@ import {
   getallpaymentmode,
   sendOtp,
   closeBill,
-  verifyOtp
+  verifyOtp,
+  customSearchScheme
 } from "../../../api/Endpoints";
 import RevertForm from "./RevertForm";
 import customSelectStyles from "../../common/customSelectStyles";
 import CalenderNew from "../../../../assets/icons/calendarNew.svg";
 import CheckboxToggle from "../../common/checkBox";
 // import Verified from "../../../../assets/icons/verified.svg";
-import ModelOne from '../../common/Modelone';
+import ModelOne from "../../common/Modelone";
 import VerificationModal from "./VerificationModal";
 import OtpCompleted from "./OtpCompleted";
+import SpinLoading from "../../common/spinLoading";
+import { formatNumber } from "../../../utils/commonFunction";
 
 const AddCloseAccount = () => {
   const dispatch = useDispatch();
@@ -52,9 +55,11 @@ const AddCloseAccount = () => {
   const [totalAmount, setAmount] = useState(0);
   const [isviewOpen, setIsviewOpen] = useState(false);
   const [checked, setChecked] = useState(false);
-  const [otpSended,setSendOtp]= useState(false);
-  const [otpCompleted,setOtpComplete]= useState(false)
-  const [viewRevertForm,setReverView] = useState(false)
+  const [otpSended, setSendOtp] = useState(false);
+  const [otpCompleted, setOtpComplete] = useState(false);
+  const [viewRevertForm, setReverView] = useState(false);
+  const [isLoading, setLoading] = useState(false);
+  const [isLoading1, setLoading1] = useState(false);
 
   // Format today's date
   const today = new Date();
@@ -133,10 +138,8 @@ const AddCloseAccount = () => {
   }, [paymentModes]);
 
   useEffect(() => {
-    if (formik.values.total_paidamount && formik.values.penalty_amount) {
-      const newPayment =
-        Number(formik.values.total_paidamount) -
-        Number(formik.values.penalty_amount);
+    if (formik.values.total_paidamount) {
+      const newPayment = Number(formik.values.total_paidamount);
       formik.setFieldValue("total_paidamount", newPayment);
     } else if (
       formik.values.penalty_amount <= 0 ||
@@ -145,7 +148,6 @@ const AddCloseAccount = () => {
       formik.setFieldValue("total_paidamount", totalAmount);
     }
   }, [formik.values.penalty_amount, totalAmount]);
-
 
   // Initial data loading
   useEffect(() => {
@@ -177,10 +179,16 @@ const AddCloseAccount = () => {
       return;
     }
 
+    if(!formik.values.id_branch){
+      return toast.error("Choose a branch first")
+    }
+
     if (formik.values.id_branch) {
+      setLoading1(true)
       handlesearchschemeaccount({
         search_mobile: formik.values.mobile,
         id_branch: formik.values.id_branch,
+        status: !dynamic && 2
       });
     } else {
       toast.error("Branch selection is required!");
@@ -203,12 +211,13 @@ const AddCloseAccount = () => {
   });
 
   // Search scheme account API mutation
-  const { mutate: handlesearchschemeaccount } = useMutation({
-    mutationFn: searchmobileschemeaccount,
+  const { mutate: handlesearchschemeaccount} = useMutation({
+    mutationFn: customSearchScheme,
     onSuccess: (response) => {
       if (response?.data) {
         setSchemeData(response.data);
         toast.success(response.message);
+        setLoading1(false)
       }
     },
     onError: (error) => {
@@ -247,10 +256,10 @@ const AddCloseAccount = () => {
     onSuccess: (response) => {
       if (response) {
         toast.success(response.message);
-        if(response && !otpSended){
-          setSendOtp(!otpSended)
+        if (response && !otpSended) {
+          setSendOtp(!otpSended);
+          setLoading(false);
         }
-
       }
     },
   });
@@ -260,16 +269,15 @@ const AddCloseAccount = () => {
     mutationFn: verifyOtp,
     onSuccess: (response) => {
       if (response) {
-        if(response.status){
-          setSendOtp(false)
+        if (response.status) {
+          setSendOtp(false);
         }
         toast.success(response.message);
       }
     },
-    onError:((error)=>{
-      setValidity(true)
-      console.log(error)
-    })
+    onError: (error) => {
+      setValidity(true);
+    },
   });
 
   // Close bill API mutation
@@ -291,8 +299,8 @@ const AddCloseAccount = () => {
 
   // Send OTP handler
   const sendOtpToMobile = (e) => {
-    if(e){
-      e.preventDefault()
+    if (e) {
+      e.preventDefault();
     }
     const mobileToUse = mobileNum || formik.values.mobile;
 
@@ -301,6 +309,12 @@ const AddCloseAccount = () => {
       return;
     }
 
+    if (!formik.values.id_branch) {
+      toast.error("Choose a branch first");
+      return;
+    }
+
+    setLoading(true);
     postSendOtpMobile({
       mobile: mobileToUse,
       otp: otpNumber,
@@ -309,19 +323,19 @@ const AddCloseAccount = () => {
   };
 
   // Verify OTP handler
-  const handleVerifyOtp = (data) => {
-    if (!data) {
-      toast.error("OTP is required");
-      return;
-    }
+  // const handleVerifyOtp = (data) => {
+  //   if (!data) {
+  //     toast.error("OTP is required");
+  //     return;
+  //   }
 
-    postVerifyOtp({
-      mobile: mobileNum || formik.values.mobile,
-      otp: data,
-      type: dynamic ? 'preclose' : "close",
-      branchId: formik.values.id_branch,
-    });
-  };
+  //   postVerifyOtp({
+  //     mobile: mobileNum || formik.values.mobile,
+  //     otp: data,
+  //     type: dynamic ? "preclose" : "close",
+  //     branchId: formik.values.id_branch,
+  //   });
+  // };
 
   // Handle scheme account selection
   const handleSchemeAccountChange = (selectedOption) => {
@@ -332,7 +346,6 @@ const AddCloseAccount = () => {
     );
     if (scheme) {
       setSelectedScheme(scheme);
-
       setAmount(scheme.total_paidamount);
       formik.setFieldValue("total_paidamount", scheme.total_paidamount);
       if (scheme.id_customer?.mobile) {
@@ -407,7 +420,7 @@ const AddCloseAccount = () => {
   });
 
   const handleOpenRevert = (e) => {
-    e.preventDefault()
+    e.preventDefault();
     setReverView(true);
   };
 
@@ -416,391 +429,366 @@ const AddCloseAccount = () => {
   };
 
   function closeIncommingModal(e) {
-    e.preventDefault()
-    setSendOtp(false)
+    e.preventDefault();
+    setSendOtp(false);
     setIsviewOpen(false);
   }
 
-  const handleOtpComplete = ()=>{
-    setOtpComplete(true)
+  const handleOtpComplete = () => {
+    setOtpComplete(true);
     setSendOtp(false);
-    setReverView(false)
-  }
-
+    setReverView(false);
+  };
 
   return (
     <>
-    <form onSubmit={formik.handleSubmit} className="w-full mx-auto space-y-6">
-      <div className="flex flex-row justify-between items-center mt-4 mb-4">
-        <p className="text-sm text-gray-400 mb-3">
-          Manage Customers /{" "}
-          <span className="text-black"> {dynamic ? "Pre Close Account" : "Closed Accounts"}</span>
-        </p>
-        
-      </div>
-
-      <div className="bg-[#FFFFFF] rounded-xl p-6 shadow-sm border">
-        <div className="flex flex-row justify-between mb-4 border-b pb-4">
-        <h2 className="text-lg font-semibold ">
-        {dynamic ? "Pre Close Account" : "Closed Accounts"}
-        </h2>
-        {!dynamic && (
-          <div>
-          <button
-            className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
-            onClick={(e)=>handleOpenRevert(e)}
-            style={{ backgroundColor: layout_color }}
-          >
-            + Revert account
-          </button>
-        </div>
-        )}
+      <form onSubmit={formik.handleSubmit} className="w-full mx-auto space-y-6">
+        <div className="flex flex-row justify-between items-center mt-4 mb-4">
+          <p className="text-sm text-gray-400 mb-3">
+            Manage Customers /{" "}
+            <span className="text-black">
+              {" "}
+              {dynamic ? "Pre Close Account" : "Closed Accounts"}
+            </span>
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {branchOptions.length > 0 && (
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Branche <span className="text-red-500">*</span>
-              </label>
-              <Select
-                styles={customSelectStyles(true)}
-                isClearable={true}
-                options={branchOptions}
-                placeholder="Select Branch"
-                value={
-                  branchOptions.find(
-                    (option) => option.value === formik.values.id_branch
-                  ) || ""
-                }
-                onChange={(option) =>
-                  formik.setFieldValue("id_branch", option ? option.value : "")
-                }
-              />
-              {formik.errors.id_branch && (
-                <div className="text-red-500 text-sm mt-1">
-                  {formik.errors.id_branch}
-                </div>
-              )}
-            </div>
-          )}
-
-          <div>
-            <label className="block text-sm font-medium mb-1">
-              Search Mobile Number / AC No
-              <span className="text-red-400">*</span>
-            </label>
-            <div className="relative">
-              <input
-                type="text"
-                name="mobile"
-                className="w-full border-2 border-[#f2f3f8] rounded-md p-2"
-                placeholder="Enter Mobile No / AC No"
-                value={formik.values.mobile}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-              />
-              <div
-                onClick={handleSearchMobile}
-                className="absolute  flex items-center justify-center cursor-pointer right-0 top-0 h-full w-10 rounded-r-md"
-              >
-                <Search size={22} className="text-[#6C7086]" />
+        <div className="bg-[#FFFFFF] rounded-xl p-6 shadow-sm border">
+          <div className="flex flex-row justify-between mb-4 border-b pb-4">
+            <h2 className="text-lg font-semibold ">
+              {dynamic ? "Pre Close Account" : "Closed Accounts"}
+            </h2>
+            {!dynamic && (
+              <div>
+                <button
+                  className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
+                  onClick={(e) => handleOpenRevert(e)}
+                  style={{ backgroundColor: layout_color }}
+                >
+                  + Revert account
+                </button>
               </div>
-            </div>
-            {formik.touched.mobile && formik.errors.mobile && (
-              <div className="text-red-500 text-sm">{formik.errors.mobile}</div>
             )}
           </div>
-        </div>
-        <div className="mt-4">
-          <h2 className="text-lg font-semibold mb-4 border-b pb-4">
-            Scheme Account Details
-          </h2>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div>
-            <label className="block text-sm font-medium mb-1">
-              Scheme Account<span className="text-red-400"> *</span>
-            </label>
-            <Select
-              name="id_scheme_account"
-              options={schemeAccountOptions}
-              styles={customSelectStyles(true)}
-              className="w-full"
-              placeholder="Select Scheme Account"
-              onChange={handleSchemeAccountChange}
-              onBlur={() => formik.setFieldTouched("id_scheme_account", true)}
-              isSearchable
-              classNamePrefix="select"
-            />
-            {formik.touched.id_scheme_account &&
-              formik.errors.id_scheme_account && (
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {branchOptions.length > 0 && (
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Branche <span className="text-red-500">*</span>
+                </label>
+                <Select
+                  styles={customSelectStyles(true)}
+                  isClearable={true}
+                  options={branchOptions}
+                  placeholder="Select Branch"
+                  value={
+                    branchOptions.find(
+                      (option) => option.value === formik.values.id_branch
+                    ) || ""
+                  }
+                  onChange={(option) =>
+                    formik.setFieldValue(
+                      "id_branch",
+                      option ? option.value : ""
+                    )
+                  }
+                />
+                {formik.errors.id_branch && (
+                  <div className="text-red-500 text-sm mt-1">
+                    {formik.errors.id_branch}
+                  </div>
+                )}
+              </div>
+            )}
+
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Search Mobile Number / AC No
+                <span className="text-red-400">*</span>
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  name="mobile"
+                  className="w-full border-2 border-[#f2f3f8] rounded-md p-2"
+                  placeholder="Enter Mobile No / AC No"
+                  value={formik.values.mobile}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                />
+                <div
+                  onClick={handleSearchMobile}
+                  disabled={isLoading1}
+                  className="absolute  flex items-center justify-center cursor-pointer right-0 top-0 h-full w-10 rounded-r-md"
+                >
+                  {isLoading1 ? (
+                    <SpinLoading 
+                    customCss="black"
+                    />
+                  ) : (
+                    <Search size={22} className="text-[#6C7086]" />
+                  )}
+                </div>
+              </div>
+              {formik.touched.mobile && formik.errors.mobile && (
                 <div className="text-red-500 text-sm">
-                  {formik.errors.id_scheme_account}
+                  {formik.errors.mobile}
                 </div>
               )}
+            </div>
           </div>
-
-          {dynamic && (
-            <div className="flex flex-col">
+          <div className="mt-4">
+            <h2 className="text-lg font-semibold mb-4 border-b pb-4">
+              Scheme Account Details
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div>
               <label className="block text-sm font-medium mb-1">
-                Close Type<span className="text-red-400"> *</span>
+                Scheme Account<span className="text-red-400"> *</span>
               </label>
               <Select
-                name="status"
+                name="id_scheme_account"
+                options={schemeAccountOptions}
                 styles={customSelectStyles(true)}
-                options={schemeStatusOptions}
                 className="w-full"
-                placeholder="Select Close Type"
-                onChange={handleStatusChange}
-                onBlur={() => formik.setFieldTouched("status", true)}
+                placeholder="Select Scheme Account"
+                onChange={handleSchemeAccountChange}
+                onBlur={() => formik.setFieldTouched("id_scheme_account", true)}
                 isSearchable
                 classNamePrefix="select"
               />
-              {formik.touched.status && formik.errors.status && (
-                <div className="text-red-500 text-sm">
-                  {formik.errors.status}
-                </div>
-              )}
-            </div>
-          )}
-
-          <div className="flex flex-col">
-            <label className="block text-sm font-medium mb-1">
-              Scheme Account Number
-            </label>
-            <input
-              type="text"
-              className="border-2 border-[#f2f3f8] rounded-md p-2 w-full"
-              placeholder="Scheme"
-              value={selectedScheme?.scheme_acc_number || ""}
-              readOnly
-            />
-          </div>
-        </div>
-        <div className="mt-4">
-          <h2 className="text-lg font-semibold mb-4 border-b pb-4">
-            Customer Details
-          </h2>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div>
-            <label className="block text-sm font-medium mb-1">
-              Customer Name
-            </label>
-            <input
-              readOnly
-              type="text"
-              value={selectedScheme?.account_name || ""}
-              className="border-2 border-[#f2f3f8] rounded-md p-2 w-full"
-              placeholder="Customer Name"
-            />
-          </div>
-
-          <div className="flex flex-col">
-            <label className="block text-sm font-medium mb-1">Address</label>
-            <input
-              readOnly
-              type="text"
-              value={selectedScheme?.id_customer?.address || ""}
-              className="border-2 border-[#f2f3f8] rounded-md p-2 w-full"
-              placeholder="Customer Address"
-            />
-          </div>
-        </div>
-
-        <div className="mt-4">
-          <h2 className="text-lg font-semibold mb-4 border-b pb-4">
-            Close Form Details
-          </h2>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div>
-            <label className="block text-sm font-medium mb-1">
-              Bill No <span className="text-red-400"> *</span>
-            </label>
-            <input
-              type="text"
-              className="border-2 border-[#f2f3f8] rounded-md p-2 w-full"
-              placeholder="Bill No"
-              name="bill_no"
-              onChange={formik.handleChange}
-              value={formik.values.bill_no}
-              onBlur={formik.handleBlur}
-            />
-            {formik.touched.bill_no && formik.errors.bill_no && (
-              <div className="text-red-500 text-sm">
-                {formik.errors.bill_no}
-              </div>
-            )}
-          </div>
-
-          <div>
-            <label className="text-black mb-2 font-normal">
-              Bill Date<span className="text-red-400">*</span>
-            </label>
-            <div className="relative">
-              <DatePicker
-                selected={
-                  formik.values.bill_date
-                    ? new Date(formik.values.bill_date)
-                    : null
-                }
-                onChange={handleDatePaymentChange}
-                dateFormat="dd-MM-yyyy"
-                placeholderText="Select Date"
-                className="border-2 border-[#f2f3f8] rounded-md p-2 w-full"
-                showMonthDropdown
-                showYearDropdown
-                dropdownMode="select"
-                wrapperClassName="w-full"
-                onBlur={() => formik.setFieldTouched("bill_date", true)}
-              />
-              <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center pointer-events-none">
-                <img src={CalenderNew} className="w-5 h-5" />
-              </span>
-              {formik.touched.bill_date && formik.errors.bill_date && (
-                <div className="text-red-500 text-sm">
-                  {formik.errors.bill_date}
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className="flex flex-col">
-            <label className="block text-sm font-medium mb-1">
-              Paid Installments
-            </label>
-            <input
-              disabled
-              type="text"
-              value={selectedScheme?.total_paidinstallments || ""}
-              className="border-2 border-[#f2f3f8] rounded-md p-2 w-full"
-              placeholder="Paid Installments"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1">
-              Paid Amount
-            </label>
-            <div className="relative">
-              <input
-                disabled
-                type="text"
-                value={selectedScheme?.last_paid_amount || ""}
-                className="border-2 border-[#f2f3f8] pl-10 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                placeholder="Paid Amount"
-              />
-              <span className="absolute left-0 top-0 w-9 h-full px-3 flex items-center justify-center text-black border-r">
-                ₹
-              </span>
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1">
-              Gift Amount
-            </label>
-            <div className="relative">
-              <input
-                disabled
-                type="text"
-                value={selectedScheme?.general?.gift_issues || ""}
-                className="border-2 border-[#f2f3f8] pl-10 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                placeholder="Gift Amount"
-              />
-              <span className="absolute left-0 top-0 w-9 h-full px-3 flex items-center justify-center text-black border-r">
-                ₹
-              </span>
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1">
-              Total Amount
-            </label>
-            <div className="relative">
-              <input
-                type="number"
-                min="0"
-                className="border-2 border-[#f2f3f8] pl-10 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                placeholder="Total amount"
-                value={formik.values.total_paidamount}
-                disabled={!dynamic}
-              />
-              <span className="absolute left-0 top-0 w-9 h-full px-3 flex items-center justify-center text-black border-r">
-                ₹
-              </span>
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1">Remark</label>
-            <input
-              type="text"
-              className="border-2 border-[#f2f3f8] rounded-md p-2 w-full"
-              placeholder="Remarks"
-              name="comments"
-              onChange={formik.handleChange}
-              value={formik.values.comments}
-              onBlur={formik.handleBlur}
-            />
-            {formik.touched.comments && formik.errors.comments && (
-              <div className="text-red-500 text-sm">
-                {formik.errors.comments}
-              </div>
-            )}
-          </div>
-          <div></div>
-          <div></div>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-6">
-          <div className="flex flex-col gap-3 lg:mt-4">
-            <CheckboxToggle
-              checked={checked}
-              label="To close & refund the account with OTP verification, kindly check the checkbox"
-              onChange={handleOtpToggle}
-            />
-
-            {checked && (
-              <div className="flex flex-row justify-between w-full gap-4">
-              <div className="flex flex-col gap-3 flex-[0.9]">
-                <label className="block text-sm font-medium mb-1">
-                  Mobile Number<span className="text-red-400"> *</span>
-                </label>
-                <div className="relative">
-                  <input
-                    type="number"
-                    min="0"
-                    className="border-2 border-[#f2f3f8] rounded-md p-2 w-96 lg:w-[81%] focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent pr-24"
-                    placeholder="Enter mobile number"
-                    value={formik.values.mobile || formik.values.otpMobile}
-                    onChange={formik.handleChange}
-                    name="otpMobile"
-                  />
-                  <div className="absolute -right-2 top-1/2 -translate-y-1/2">
-                    <button className="bg-[#004181] text-white rounded-md px-4 py-2"
-                    onClick={(e)=> sendOtpToMobile(e)}
-                    >
-                    Send OTP
-                    </button>
+              {formik.touched.id_scheme_account &&
+                formik.errors.id_scheme_account && (
+                  <div className="text-red-500 text-sm">
+                    {formik.errors.id_scheme_account}
                   </div>
-                </div>
+                )}
+            </div>
+
+            {dynamic && (
+              <div className="flex flex-col">
+                <label className="block text-sm font-medium mb-1">
+                  Close Type<span className="text-red-400"> *</span>
+                </label>
+                <Select
+                  name="status"
+                  styles={customSelectStyles(true)}
+                  options={schemeStatusOptions}
+                  className="w-full"
+                  placeholder="Select Close Type"
+                  onChange={handleStatusChange}
+                  onBlur={() => formik.setFieldTouched("status", true)}
+                  isSearchable
+                  classNamePrefix="select"
+                />
+                {formik.touched.status && formik.errors.status && (
+                  <div className="text-red-500 text-sm">
+                    {formik.errors.status}
+                  </div>
+                )}
               </div>
-            
-              {/* Right (Narrower) */}
-              <div className="flex items-end flex-[1]">
+            )}
+
+            <div className="flex flex-col">
+              <label className="block text-sm font-medium mb-1">
+                Scheme Account Number
+              </label>
+              <input
+                type="text"
+                className="border-2 border-[#f2f3f8] rounded-md p-2 w-full"
+                placeholder="Scheme"
+                value={selectedScheme?.scheme_acc_number || ""}
+                readOnly
+              />
+            </div>
+          </div>
+          <div className="mt-4">
+            <h2 className="text-lg font-semibold mb-4 border-b pb-4">
+              Customer Details
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Customer Name
+              </label>
+              <input
+                readOnly
+                type="text"
+                value={selectedScheme?.account_name || ""}
+                className="border-2 border-[#f2f3f8] rounded-md p-2 w-full"
+                placeholder="Customer Name"
+              />
+            </div>
+
+            <div className="flex flex-col">
+              <label className="block text-sm font-medium mb-1">Address</label>
+              <input
+                readOnly
+                type="text"
+                value={selectedScheme?.id_customer?.address || ""}
+                className="border-2 border-[#f2f3f8] rounded-md p-2 w-full"
+                placeholder="Customer Address"
+              />
+            </div>
+          </div>
+
+          <div className="mt-4">
+            <h2 className="text-lg font-semibold mb-4 border-b pb-4">
+              Close Form Details
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Bill No <span className="text-red-400"> *</span>
+              </label>
+              <input
+                type="text"
+                className="border-2 border-[#f2f3f8] rounded-md p-2 w-full"
+                placeholder="Bill No"
+                name="bill_no"
+                onChange={formik.handleChange}
+                value={formik.values.bill_no}
+                onBlur={formik.handleBlur}
+              />
+              {formik.touched.bill_no && formik.errors.bill_no && (
+                <div className="text-red-500 text-sm">
+                  {formik.errors.bill_no}
+                </div>
+              )}
+            </div>
+
+            <div>
+              <label className="text-black mb-2 font-normal">
+                Bill Date<span className="text-red-400">*</span>
+              </label>
+              <div className="relative">
+                <DatePicker
+                  selected={
+                    formik.values.bill_date
+                      ? new Date(formik.values.bill_date)
+                      : null
+                  }
+                  onChange={handleDatePaymentChange}
+                  dateFormat="dd-MM-yyyy"
+                  placeholderText="Select Date"
+                  className="border-2 border-[#f2f3f8] rounded-md p-2 w-full"
+                  showMonthDropdown
+                  showYearDropdown
+                  dropdownMode="select"
+                  wrapperClassName="w-full"
+                  onBlur={() => formik.setFieldTouched("bill_date", true)}
+                />
+                <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center pointer-events-none">
+                  <img src={CalenderNew} className="w-5 h-5" />
+                </span>
+                {formik.touched.bill_date && formik.errors.bill_date && (
+                  <div className="text-red-500 text-sm">
+                    {formik.errors.bill_date}
+                  </div>
+                )}
               </div>
             </div>
-            )}
+
+            <div className="flex flex-col">
+              <label className="block text-sm font-medium mb-1">
+                Paid Installments
+              </label>
+              <input
+                disabled
+                type="text"
+                value={selectedScheme?.total_paidinstallments || ""}
+                className="border-2 border-[#f2f3f8] rounded-md p-2 w-full"
+                placeholder="Paid Installments"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Paid Amount
+              </label>
+              <div className="relative">
+                <input
+                  disabled
+                  type="text"
+                  value={formatNumber({value:selectedScheme?.total_paidamount,decimalPlaces:0,currency:null}) || ""}
+                  className="border-2 border-[#f2f3f8] pl-10 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                  placeholder="Paid Amount"
+                />
+                <span className="absolute left-0 top-0 w-9 h-full px-3 flex items-center justify-center text-black border-r">
+                  ₹
+                </span>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1">Remark</label>
+              <input
+                type="text"
+                className="border-2 border-[#f2f3f8] rounded-md p-2 w-full"
+                placeholder="Remarks"
+                name="comments"
+                onChange={formik.handleChange}
+                value={formik.values.comments}
+                onBlur={formik.handleBlur}
+              />
+              {formik.touched.comments && formik.errors.comments && (
+                <div className="text-red-500 text-sm">
+                  {formik.errors.comments}
+                </div>
+              )}
+            </div>
+            <div></div>
+            <div></div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-6">
+            <div className="flex flex-col gap-3 lg:mt-4">
+              <CheckboxToggle
+                checked={checked}
+                label="To close & refund the account with OTP verification, kindly check the checkbox"
+                onChange={handleOtpToggle}
+              />
+
+              {checked && (
+                <div className="flex flex-row justify-between w-full gap-4">
+                  <div className="flex flex-col gap-3 flex-[0.9]">
+                    <label className="block text-sm font-medium mb-1">
+                      Mobile Number<span className="text-red-400"> *</span>
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="number"
+                        min="0"
+                        className="border-2 border-[#f2f3f8] rounded-md p-2 w-96 lg:w-[81%] focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent pr-24"
+                        placeholder="Enter mobile number"
+                        value={formik.values.mobile || formik.values.otpMobile}
+                        onChange={formik.handleChange}
+                        name="otpMobile"
+                      />
+                      <div className="absolute -right-2 top-1/2 -translate-y-1/2">
+                        <button
+                          className="bg-[#004181] text-white rounded-md px-4 py-2"
+                          onClick={(e) => sendOtpToMobile(e)}
+                          disabled={isLoading}
+                        >
+                          {isLoading ? <SpinLoading /> : "Send OTP"}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right (Narrower) */}
+                  <div className="flex items-end flex-[1]"></div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
-      </div>
 
-      
-
-      {/* <div className="flex justify-end space-x-4">
+        {/* <div className="flex justify-end space-x-4">
         <button
           type="button"
           className="w-20 h-9 border-2 bg-[#F6F7F9] border-[#f2f3f8] rounded-md hover:bg-gray-50 flex justify-center items-center text-[#6C7086]"
@@ -816,48 +804,43 @@ const AddCloseAccount = () => {
           {isLoading ? <SpinLoading /> : id ? "Update" : "Save"}
         </button>
       </div> */}
-
-    </form>
-    {otpSended && (
-      <ModelOne
-      title="Verify Mobile Number"
-      setIsOpen={setSendOtp}
-      isOpen={otpSended}
-      closeModal={closeIncommingModal}
-      >
-
-      <VerificationModal
-        mobile={formik.values.mobile}
-        branch={formik.values.id_branch}
-        setIsOpen={closeIncommingModal}
-        otpComplete={handleOtpComplete}
-      />
-    </ModelOne>
-    )}
-
-    {otpCompleted && (
-      <ModelOne
-      extraClassName="lg:w-[24rem]"
-      setIsOpen={setOtpComplete}
-      isOpen={otpCompleted}
-      closeModal={closeIncommingModal}
-      >
-
-      <OtpCompleted
-        setIsOpen={closeIncommingModal}
-      />
-    </ModelOne>
-    )}
-     <ModelOne
-          title={"Revert close account"}
-          extraClassName="w-[31rem]"
-          custom='border-b'
-          setIsOpen={setReverView}
-          isOpen={viewRevertForm}
+      </form>
+      {otpSended && (
+        <ModelOne
+          title="Verify Mobile Number"
+          setIsOpen={setSendOtp}
+          isOpen={otpSended}
           closeModal={closeIncommingModal}
         >
-          <RevertForm isviewOpen={viewRevertForm} setIsOpen={setReverView} />
+          <VerificationModal
+            mobile={formik.values.mobile}
+            branch={formik.values.id_branch}
+            setIsOpen={closeIncommingModal}
+            otpComplete={handleOtpComplete}
+          />
         </ModelOne>
+      )}
+
+      {otpCompleted && (
+        <ModelOne
+          extraClassName="lg:w-[24rem]"
+          setIsOpen={setOtpComplete}
+          isOpen={otpCompleted}
+          closeModal={closeIncommingModal}
+        >
+          <OtpCompleted setIsOpen={closeIncommingModal} />
+        </ModelOne>
+      )}
+      <ModelOne
+        title={"Revert close account"}
+        extraClassName="w-[31rem]"
+        custom="border-b"
+        setIsOpen={setReverView}
+        isOpen={viewRevertForm}
+        closeModal={closeIncommingModal}
+      >
+        <RevertForm isviewOpen={viewRevertForm} setIsOpen={setReverView} />
+      </ModelOne>
     </>
   );
 };

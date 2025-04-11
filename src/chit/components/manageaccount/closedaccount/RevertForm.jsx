@@ -145,7 +145,7 @@ function RevertForm({ setIsOpen, isviewOpen }) {
         label: item.scheme_name,
         status: status[item.status]
       }));
-    console.log(data)
+
       if(data.length <=0 ){
         return toast.error('No closed accounts found')
       }    

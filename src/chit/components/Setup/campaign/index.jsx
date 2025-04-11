@@ -23,6 +23,8 @@ import { useDebounce } from "../../../hooks/useDebounce";
 import usePagination from "../../../hooks/usePagination";
 import SpinLoading from "../../common/spinLoading";
 import Loading from "../../common/Loading";
+import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
+import Action from "../../common/action";
 
 
 function Campaign() {
@@ -165,120 +167,16 @@ function Campaign() {
         return () => document.removeEventListener("click", handleClickOutside);
     }, [activeDropdown]);
 
+    const hanldeActiveDropDown = (data) => {
+        setActiveDropdown(data);
+      };
+
     const columns = [
         {
             header: "S.No",
             cell: (_, index) => index + 1 + (currentPage - 1) * limit,
         },
-        {
-            header: "Actions",
-            cell: (row, rowIndex) => (
-                <div className="dropdown-container relative">
-                    <button
-                        className="p-1 hover:bg-gray-100 rounded-full"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            setActiveDropdown(activeDropdown === row?._id ? null : row?._id);
-                        }}
-                    >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-5 w-5 text-gray-600"
-                            viewBox="0 0 20 20"
-                            fill="currentColor"
-                        >
-                            <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
-                        </svg>
-                    </button>
-
-                    {activeDropdown === row?._id && (
-                        <div
-                            className="absolute"
-                            style={{
-                                top: rowIndex >= campaignData.length - 2 ? "auto" : "72%",
-                                bottom: rowIndex >= campaignData.length - 2 ? "-74%" : "auto",
-
-                                zIndex: 9999,
-                                marginBottom: "8px",
-                                filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.15))",
-                            }}
-                        >
-                            <div className="w-32 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
-                                <div className="py-1">
-                                    <button
-                                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                                        onClick={() => {
-                                            handleEdit(row?._id);
-                                            setActiveDropdown(null);
-                                        }}
-                                    >
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            className="h-4 w-4"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            stroke="currentColor"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth={2}
-                                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                                            />
-                                        </svg>
-                                        Edit
-                                    </button>
-                                    <button
-                                        className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
-                                        onClick={() => {
-                                            handleDelete(row?._id);
-                                            setActiveDropdown(null);
-                                        }}
-                                    >
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            className="h-4 w-4"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            stroke="currentColor"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth={2}
-                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                                            />
-                                        </svg>
-                                        Delete
-                                    </button>
-                                    <button
-                                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                                        onClick={() => setActiveDropdown(null)}
-                                    >
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            className="h-4 w-4"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            stroke="currentColor"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth={2}
-                                                d="M6 18L18 6M6 6l12 12"
-                                            />
-                                        </svg>
-                                        Clear
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                </div>
-            ),
-            sticky: "right",
-        },
+     
         {
             header: "Campaign Name",
             accessor: "name",
@@ -287,13 +185,17 @@ function Campaign() {
             header: "Description",
             accessor: "description",
         },
+        {
+            header: "Actions",
+            cell: (row, rowIndex) => (
+                <Action row={row} data={campaignData} rowIndex={rowIndex} activeDropdown={activeDropdown} setActive={hanldeActiveDropDown}  handleEdit={handleEdit} handleDelete={handleDelete}/>
+            ),
+            sticky: "right",
+          },
 
     ];
 
-    const handleSearch = (e) => {
-        setSearchLoading(true);
-        setSearchInput(e.target.value);
-    };
+ 
 
     const handleItemsPerPageChange = (value) => {
         setItemsPerPage(value);
@@ -334,53 +236,61 @@ function Campaign() {
     const paginationButtons = usePagination(paginationData);
 
     return (
-        <div className="flex flex-col p-4 relative">
-            <>
-                <h2 className="text-2xl text-gray-900 font-bold">Campaign Type</h2>
-                <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
-                    <div className="relative w-full lg:w-1/3 min-w-[200px]">
-                        <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                            {searchLoading ? (
-                                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
-                            ) : (
-                                <Search className="text-gray-500" />
-                            )}
-                        </div>
-                        <input
-                            onChange={handleSearch}
-                            placeholder="Search..."
-                            className="p-3 pl-10 pr-3 border-2 bg-[#F5F5F5] border-gray-500 rounded-md w-full"
-                        />
-                    </div>
-                    <div className="flex flex-row items-center justify-end gap-2">
-                        <button
-                            className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
-                            onClick={handleaddDept}
-                            style={{ backgroundColor: layout_color }}
-                        >
-                            + Add campaign
-                        </button>
-                    </div>
-                </div>
+        <>
+      <Breadcrumb
+        items={[{ label: "Promotions" }, { label: "Campaign Type", active: true }]}
+      />
 
-                <div className="mt-4">
-                    <Table
-                        data={campaignData}
-                        columns={columns}
-                        currentPage={currentPage}
-                        totalPages={totalPages}
-                        handleItemsPerPageChange={handleItemsPerPageChange}
-                        handlePageChange={handlePageChange}
-                        itemsPerPage={itemsPerPage}
-                        totalItems={totalDocuments}
-                        loading={isLoading}
-                    />
-                </div>
+      <div className="flex flex-col p-4  bg-white border border-[#F2F2F9]  rounded-[16px]">
+
+        <div className="flex flex-col sm:flex-row w-full justify-between gap-2 sm:gap-4">
+          {/* Search Input */}
+          <div className="w-full sm:w-[308px]  relative">
+            <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
+              {searchLoading ? (
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
+              ) : (
+                <Search className="text-black" />
+              )}
+            </div>
+            <input
+              onChange={(e) => {
+                setSearchLoading(true);
+                setSearchInput(e.target.value);
+              }}
+              placeholder="Search Customer/ Mobile No"
+              className="px-4 py-2 ps-9 border-2 border-[#F2F2F9] rounded-[8px] w-full"
+            />
+          </div>
+
+          {/* Add Button */}
+          <div className="w-full sm:w-auto">
+            <button
+              className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors   min-w-[135px]"
+              onClick={handleaddDept}
+              style={{ backgroundColor: layout_color }}
+            >
+              + Add campaign
+            </button>
+          </div>
+        </div>
 
 
-            </>
 
-            <ModelOne
+        <div className="mt-4">
+          <Table
+            data={campaignData}
+            columns={columns}
+            isLoading={isLoading}
+            currentPage={currentPage}
+            handleItemsPerPageChange={handleItemsPerPageChange}
+            handlePageChange={handlePageChange}
+            itemsPerPage={itemsPerPage}
+            totalItems={totalDocuments}
+          />
+        </div>
+
+        <ModelOne
                 title={id ? "Edit campaign" : "Add campaign"}
                 extraClassName="w-1/3"
                 setIsOpen={setIsviewOpen}
@@ -390,7 +300,10 @@ function Campaign() {
                 <CampaingForm closeIncommingModal={closeIncommingModal} id={id} clearId={clearId} />
             </ModelOne>
             <Modal />
-        </div>
+
+
+      </div>
+    </>
     );
 
 }

@@ -70,8 +70,9 @@ function GiftReport() {
       limit: itemsPerPage,
       page: currentPage,
       id_branch: branch,
+      search:debouncedSearch
     });
-  }, [currentPage, itemsPerPage, branch]);
+  }, [currentPage, itemsPerPage, branch,debouncedSearch]);
 
 
   const { mutate: getGiftStockData } = useMutation({
@@ -80,6 +81,7 @@ function GiftReport() {
       setGiftStockData(response.data);
       setTotalPages(response.totalPages);
       setTotalDocuments(response.totalCount);
+      setSearchLoading(false);
       setisLoading(false);
     },
     onError: (error) => {
@@ -216,7 +218,7 @@ function GiftReport() {
   return (
     <>
       <Breadcrumb
-        items={[{ label: "Gift" }, { label: "GiftHandOver", active: true }]}
+        items={[{ label: "Gift" }, { label: "Gift Stock Report", active: true }]}
       />
 
       <div className="flex flex-col p-4">

@@ -46,7 +46,6 @@ function AddPromotion() {
         id_branch: [],
         id_scheme: [],
         customer_id: [],
-        newArraivalId:"",
         noti_image: "",
         pushNotification: true,
         sms: false,
@@ -62,7 +61,11 @@ function AddPromotion() {
     const [schemeData, setSchemeData] = useState([]);
     const [cusData, setCusData] = useState([]);
     const [campaignData, setCampaignData] = useState([])
-    const [newArrivals, setnewaArrivals] = useState([])
+    const [image,setImage] = useState("")
+     const [imagePreviews, setImagePreviews] = useState({
+            image: null,
+        });
+    
 
     const [pathurl, setPathurl] = useState(null);
     const [isLoading, setisLoading] = useState("")
@@ -98,11 +101,6 @@ function AddPromotion() {
         enabled: !!branchId,
     });
 
-    const { data: newarrivalsResponse, isLoading: loadingNewarrivals } = useQuery({
-        queryKey: ["newarrivals", branchId],
-        queryFn: () => getNewArrivalByBranch(branchId),
-        enabled: !!branchId,
-    });
 
     useEffect(() => {
         if (branchResponse) {
@@ -134,14 +132,9 @@ function AddPromotion() {
             })));
         }
 
-        if (newarrivalsResponse) {
-            setnewaArrivals(newarrivalsResponse.data.map((newarrivals) => ({
-                value: newarrivals._id,
-                label: newarrivals.title,
-            })));
-        }
+        
 
-    }, [branchResponse, schemeResponse, customerResponse, campaignResponse, newarrivalsResponse]);
+    }, [branchResponse, schemeResponse, customerResponse, campaignResponse]);
 
 
 
@@ -181,27 +174,54 @@ function AddPromotion() {
         }
     };
 
-    const handleFileChange = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            // Check file size (500KB limit)
-            if (file.size > 500 * 1024) {
-                toast.error("File size exceeds 500KB.");
-                return;
-            }
-
-            setFormData((prev) => ({ ...prev, noti_image: file.name }));
-
-            const imageUrl = URL.createObjectURL(file);
-            setPathurl(imageUrl);
-        }
-    };
+   
 
     const handleClearImage = () => {
-        setFormData((prev) => ({ ...prev, noti_image: "" }));
-        setPathurl(null);
+
+        setImagePreviews((prev) => ({
+            ...prev,
+            [field]: null,
+        }));
+        setImage("")
+
+        // setFormData((prev) => ({ ...prev, noti_image: "" }));
+        // setPathurl(null);
         fileInputRef.current.value = "";
     };
+
+     const handleFileChange = (event) => {
+    
+            const file = event.target.files[0];
+            const name = event.target.name;
+    
+            if (file && file.size <= 500 * 1024) {
+                const previewUrl = URL.createObjectURL(file);
+                if (file.size > 500 * 1024) {
+                                toast.error("File size exceeds 500KB.");
+                                return;
+                            }
+                
+                            setImagePreviews((prev) => ({
+                                ...prev,
+                                [name]: {
+                                    file,
+                                    previewUrl,
+                                    name: file.name,
+                                },
+                            }));    
+                            
+                            setImage(file.name)
+                            setPathurl(previewUrl);
+    
+                // setFormData((prev) => ({ ...prev, noti_image: file.name }));
+               
+    
+            } else {
+                toast.error(`File size exceeded, upload max-size(500KB) or file not found`);
+    
+            }
+        };
+    
 
     const handleSubmit = () => {
         setisLoading(true);
@@ -216,6 +236,13 @@ function AddPromotion() {
                 formPayload.append(key, value);
             }
         });
+
+    
+        // Object.entries(formData).forEach(([key, value]) => {
+        //     if (value) formPayload.append(key, value);
+        // });
+
+        if (image) formPayload.append("image", image);
 
         addcustomerMutate(formPayload);
     };
@@ -271,11 +298,11 @@ function AddPromotion() {
 
 
     return (
-        <div className="p-6 bg-white rounded-md shadow-md w-full mx-auto">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Add Promotions</h2>
-            <div>
-                {/* Notification Options */}
-                <div className="flex gap-4 mb-4">
+        <div className="bg-[#FFFFFF] rounded-lg p-6 shadow-sm border">
+        <h2 className="text-lg font-semibold mb-4 border-b pb-4">Add Promotions</h2>
+
+        {/* Notification Options */}
+        <div className="flex gap-4 mb-4">
                     {[
                         { label: "Push Notification", field: "pushNotification" },
                         { label: "SMS", field: "sms" },
@@ -287,18 +314,17 @@ function AddPromotion() {
                                 type="checkbox"
                                 name={field}
                                 checked={formData[field]}
-                                className="w-5 h-5"
+                                className="w-[16px] h-[16px]"
                                 onChange={() => handleCheckboxChange(field)}
                             />
                             <span>{label}</span>
                         </label>
                     ))}
                 </div>
-            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Branch Selection */}
-                <div className="flex flex-col gap-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Branch Selection */}
+            <div className="flex flex-col gap-2">
                     <label className="font-medium text-gray-700">
                         Branch <span className="text-red-400">*</span>
                     </label>
@@ -378,46 +404,11 @@ function AddPromotion() {
 
                 </div> 
 
-                <div className="flex flex-col">
-                    <label className="font-medium text-gray-700">
-                        New Arrivals <span className="text-red-400">*</span>
-                    </label>
-                    <Select
-                        styles={customStyles}
-                        options={newArrivals}
-                        className=" py-2 rounded-md text-gray-100"
-                        placeholder="Select NewArrivals"
-                        value={newArrivals.find(
-                            (option) => option.label === formData.newArraivalId
-                        )}
-                        isLoading={loadingNewarrivals}
-                        onChange={(option) => {
-                            setFormData((prev) => ({
-                                ...prev,
-                                newArraivalId: option.label,
-                            }));
-                        }}
-                    />
-
-                </div> 
-
-                <div className="flex flex-col gap-2">
-                    <label className="font-medium text-gray-700">Image URL</label>
-                    <input
-                        type="text"
-                        name="noti_image"
-                        className={`${ ((!!formData.noti_image) && pathurl) ? "cursor-not-allowed bg-gray-100" : "cursor-pointer"} border p-2 rounded-md text-gray-700`}
-                        placeholder="Enter image URL"
-                        value={formData.noti_image}
-                        onChange={handleChange}
-                        disabled={!!formData.noti_image && pathurl} 
-                    />
-                </div>
 
                 {/* Content */}
                 <div className="flex flex-col gap-2">
                     <label className="font-medium text-gray-700">Content <span className="text-red-400">*</span></label>
-                    <textarea name="body" className="border p-2 rounded-md text-gray-400" placeholder="Enter content" onChange={handleChange}></textarea>
+                    <textarea name="body" className="w-full h-10 border-2 border-[#f2f3f8] rounded-md px-3 text-gray-500" placeholder="Enter content" onChange={handleChange}></textarea>
                 </div>
 
                 {/* Image Upload */}
@@ -435,32 +426,40 @@ function AddPromotion() {
                     <div className="relative w-full">
                         <input
                             type="text"
-                            className={`${ ((!!formData.noti_image )&& pathurl) ? "cursor-not-allowed bg-gray-100" : "cursor-pointer"} border p-2 pr-24 rounded-md text-gray-400 w-full `}
+                            className={`cursor-pointer border p-2 pr-24 rounded-md text-gray-400 w-full `}
                             placeholder="No file chosen"
-                            value={formData.noti_image}
+                            value={imagePreviews ? image : ""}
                             readOnly
-                            onClick={() => fileInputRef.current.click()}
+                            onClick={() => {
+                                if (!(imagePreviews && pathurl)) {
+                                    fileInputRef.current.value = null;
+                                    fileInputRef.current.click();
+                                }
+                            }}
                         />
                         <input
                             type="file"
                             accept="image/*"
                             ref={fileInputRef}
-                            disabled={!!formData.noti_image && pathurl} 
                             onChange={handleFileChange}
-                            className={`${ ((!!formData.noti_image )&& pathurl) ? "cursor-not-allowed bg-gray-100" : "cursor-pointer"} border p-2 pr-24 rounded-md text-gray-400 w-full hidden`}
+                            className={` cursor-pointer border p-2 pr-24 rounded-md text-gray-400 w-full hidden`}
                         />
                         <div
-                            className={`${((!!formData.noti_image) && pathurl) ? "cursor-not-allowed bg-gray-100": "cursor-pointer"}  absolute right-2 top-1/2 -translate-y-1/2 bg-gray-200 px-3 py-1 rounded-md  text-sm`}
-                            onClick={() => fileInputRef.current.click()}
-                            disabled={!!formData.noti_image && pathurl} 
-
+                            className={`cursor-pointer absolute right-2 top-1/2 -translate-y-1/2 text-white px-3 py-2 rounded-md  text-sm`}
+                            onClick={() => {
+                                if (!(imagePreviews && pathurl)) {
+                                    fileInputRef.current.value = null;
+                                    fileInputRef.current.click();
+                                }
+                            }}
+                            style={{backgroundColor:layout_color}}
                         >
                             Choose File
                         </div>
                     </div>
 
                     {/* Image Preview */}
-                    {pathurl && (
+                    {/* {pathurl && (
                         <div className="w-[130px] h-[130px] flex items-start justify-center">
                             <div className="relative rounded-md overflow-hidden">
                                 <img
@@ -476,13 +475,12 @@ function AddPromotion() {
                                 </button>
                             </div>
                         </div>
-                    )}
+                    )} */}
                 </div>
+        </div>
 
-            </div>
-
-            {/* Buttons */}
-            <div className="flex justify-end mt-12 space-x-4">
+         {/* Buttons */}
+         <div className="flex justify-end mt-12 space-x-4">
                 <button type="button" className="bg-gray-300 px-4 py-2 rounded-md" onClick={handleClear}>Clear</button>
                 <button
                     className=" text-white rounded-md p-2  lg:w-20"
@@ -493,9 +491,8 @@ function AddPromotion() {
                 >
                     {isLoading ? <SpinLoading /> : 'Save'}
                 </button>
-
             </div>
-        </div>
+      </div>
     );
 }
 

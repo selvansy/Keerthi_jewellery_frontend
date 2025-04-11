@@ -63,42 +63,35 @@ const Classification = ({
             Upload Main Image <span className="text-red-500">*</span>
           </label>
           <div className="flex relative">
-            <input
-              type="text"
-              readOnly
-              value={mainImageName || logo}
-              className="border rounded-l-md p-2 w-full bg-gray-50"
-            />
-            {/* <button
-              type="button"
-              className="bg-gray-200 rounded-r-md px-4 py-2 text-sm whitespace-nowrap"
-              onClick={() => mainImageInputRef.current.click()}
-            >
-              Choose File
-            </button> */}
-            <label
-              htmlFor="descImageInput"
-              className="absolute right-0 top-0 bottom-0 bg-blue-600 text-white px-4 flex items-center justify-center rounded-md cursor-pointer text-sm"
-              style={{ backgroundColor: layout_color }}
-              onClick={() => mainImageInputRef.current.click()}
-            >
-              Choose File
-            </label>
-            <input
-              type="file"
-              ref={mainImageInputRef}
-              className="hidden"
-              accept="image/*"
-              onChange={(e) =>
-                handleFileChange(
-                  e,
-                  setMainImageName,
-                  setMainImg,
-                  setMainImagePreview
-                )
-              }
-            />
-          </div>
+    <input
+      type="text"
+      readOnly
+      value={mainImageName || logo}
+      className="border rounded-l-md p-2 w-full bg-gray-50"
+    />
+    <label
+      htmlFor="mainImageInput"  // Changed to match the input id
+      className="absolute right-0 top-0 bottom-0 bg-blue-600 text-white px-4 flex items-center justify-center rounded-md cursor-pointer text-sm"
+      style={{ backgroundColor: layout_color }}
+    >
+      Choose File
+    </label>
+    <input
+      type="file"
+      id="mainImageInput"
+      ref={mainImageInputRef}
+      className="hidden"
+      accept="image/*"
+      onChange={(e) =>
+        handleFileChange(
+          e,
+          setMainImageName,
+          setMainImg,
+          setMainImagePreview
+        )
+      }
+    />
+  </div>
           <div className="mt-2 relative">
             <img
               src={
@@ -141,7 +134,7 @@ const Classification = ({
               htmlFor="descImageInput"
               className="absolute right-0 top-0 bottom-0 bg-blue-600 text-white px-4 flex items-center justify-center rounded-md cursor-pointer text-sm"
               style={{ backgroundColor: layout_color }}
-              onClick={() => descImageInputRef.current.click()}
+              // onClick={() => descImageInputRef.current.click()}
             >
               Choose File
             </label>
@@ -227,7 +220,7 @@ const Classification = ({
       <div className="flex items-center w-full bg-[#FFF8EA] rounded-md h-[68px] p-3">
         <div className="flex items-center gap-3">
           <div className="flex justify-center rounded-full bg-[#FFECC3] p-2">
-          <img src={warning} alt="Warning" />
+            <img src={warning} alt="Warning" />
           </div>
           <h5>
             <span className="font-bold">Note:</span> Please ensure your input
@@ -241,25 +234,68 @@ const Classification = ({
         <label className="block mb-2">
           Display Order (App) <span className="text-red-500">*</span>
         </label>
-        <div className="relative w-full md:w-1/4">
+        <div className="relative flex justify-center w-full md:w-1/4 items-center">
           <input
             type="number"
-            name="classification_order"
-            value={formik?.values?.classification_order}
-            onWheel={(e) => e.target.blur()}
-            onChange={(e) => {
-              if (e.target.value < 50) {
-                formik.handleChange(e);
-              } else {
-                formik.setFieldError(
-                  "classification_order",
-                  "Value must be less than 50"
-                );
-              }
-            }}
-            onBlur={formik?.handleBlur}
-            className="border rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+            name="installments"
+            value={formik.values.classification_order}
+            onChange={formik.handleChange}
+            className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+            min="1"
           />
+          <div className="absolute right-2 flex flex-col">
+            <button
+              type="button"
+              onClick={() =>
+                formik.setFieldValue(
+                  "classification_order",
+                  parseInt(formik.values.classification_order || 0) + 1
+                )
+              }
+              className="focus:outline-none"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polyline points="18 15 12 9 6 15"></polyline>
+              </svg>
+            </button>
+            <button
+              type="button"
+              onClick={() =>
+                formik.setFieldValue(
+                  "classification_order",
+                  Math.max(
+                    1,
+                    parseInt(formik.values.classification_order || 0) - 1
+                  )
+                )
+              }
+              className="focus:outline-none"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+          </div>
         </div>
         {formik?.touched?.classification_order &&
           formik?.errors?.classification_order && (

@@ -397,6 +397,30 @@ const Scheme = () => {
         cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
       },
       
+      // {
+      //   header: "Scheme",
+      //   cell: (row) => {
+      //     const {
+      //       scheme_name,
+      //       amount,
+      //       min_amount,
+      //       max_amount,
+      //       min_weight,
+      //       max_weight,
+      //       scheme_type
+      //     } = row;
+
+      //     if (amount !== null && amount !== undefined) {
+      //       return `${scheme_name} (₹ ${amount})`;
+      //     } else if (min_weight !== null && max_weight !== null) {
+      //       return `${scheme_name} (GRM ${min_weight} - ${max_weight})`;
+      //     } else if (min_amount !== null && max_amount !== null) {
+      //       return `${scheme_name} (₹ ${min_amount} - ₹ ${max_amount})`;
+      //     } else {
+      //       return `${scheme_name} (Details Unavailable)`;
+      //     }
+      //   },
+      // },
       {
         header: "Scheme",
         cell: (row) => {
@@ -407,19 +431,30 @@ const Scheme = () => {
             max_amount,
             min_weight,
             max_weight,
+            scheme_type
           } = row;
-
+      
+          // Priority 1: Fixed amount
           if (amount !== null && amount !== undefined) {
             return `${scheme_name} (₹ ${amount})`;
-          } else if (min_weight !== null && max_weight !== null) {
-            return `${scheme_name} (GRM ${min_weight} - ${max_weight})`;
-          } else if (min_amount !== null && max_amount !== null) {
-            return `${scheme_name} (₹ ${min_amount} - ₹ ${max_amount})`;
-          } else {
-            return `${scheme_name} (Details Unavailable)`;
           }
+      
+          // Weight-based schemes (type 12, 3, 4)
+          const isWeightBased = [12, 3, 4].includes(Number(scheme_type));
+      
+          if (isWeightBased && min_weight !== null && max_weight !== null) {
+            return `${scheme_name} (GRM ${min_weight} - ${max_weight})`;
+          }
+      
+          // Amount-based schemes (default)
+          if (!isWeightBased && min_amount !== null && max_amount !== null) {
+            return `${scheme_name} ( ₹ ${min_amount} - ₹ ${max_amount})`;
+          }
+      
+          // Fallback
+          return `${scheme_name} (Details Unavailable)`;
         },
-      },
+      },      
       { header: "Code", cell: (row) => row?.code },
       {
         header: "Metal Name",

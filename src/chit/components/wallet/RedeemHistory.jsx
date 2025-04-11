@@ -79,9 +79,12 @@ function RedeemHistory() {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const id_branch = roleData?.branch;
 
+ 
+
   useEffect(() => {
-    getallRedeemData({ search: debouncedSearch, page: currentPage, limit: itemsPerPage });
-  }, [currentPage, debouncedSearch, itemsPerPage]);
+    getallRedeemData({ search: debouncedSearch, page: currentPage, limit: itemsPerPage,from_date:startDate,to_date:endDate });
+    }, [currentPage, debouncedSearch, itemsPerPage,startDate,endDate]);
+  
 
   useEffect(() => {
     if (!roleData) return
@@ -122,10 +125,12 @@ function RedeemHistory() {
       setTotalPages(response.totalPages)
       setCurrentPage(response.currentPage)
       setTotalDocuments(response.totalDocuments)
+      setSearchLoading(false);
       setisLoading(false)
     },
     onError: (error) => {
       console.log(error)
+      setSearchLoading(false);
       setisLoading(false)
       setRedeemData([])
     }
@@ -182,10 +187,10 @@ function RedeemHistory() {
       header: "Name",
       cell: (row) => `${row?.user?.firstname || ""} ${row?.user?.lastname || ""} ${row?.user?.mobile || "-"}`.trim() || "-",
     },
-    {
-      header: "Branch",
-      cell: (row) => `${row?.branch[0]?.branch_name || "-"}`,
-    },
+    // {
+    //   header: "Branch",
+    //   cell: (row) => `${row?.branch[0]?.branch_name || "-"}`,
+    // },
     {
       header: "Bill No",
       cell: (row) => `${row?.bill_no || "-"}`,
