@@ -8,8 +8,8 @@ const firebaseConfig = {
   projectId: "uplifted-record-424709-v1",
   storageBucket: "uplifted-record-424709-v1.firebasestorage.app",
   messagingSenderId: "860673805443",
-  appId: "1:860673805443:web:8e7ab13f943cb12f1a1fb6",
-  measurementId: "G-QG7Q4F51CN"
+  appId: "1:860673805443:web:1c22c7f2ac29ab641a1fb6",
+  measurementId: "G-2T0NK03JVM"
 };
 
 // Initialize Firebase
@@ -47,7 +47,7 @@ export const requestNotificationPermission = async () => {
 // Send token to your backend
 const sendTokenToServer = async (token) => {
   try {
-    const response = await fetch('http://localhost:5000/api/register-device', {
+    const response = await fetch('http://localhost:3002/api/register-device', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
