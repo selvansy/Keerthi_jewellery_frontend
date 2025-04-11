@@ -64,8 +64,8 @@ export function ExistingCustomer({ setCusData,handleCusData }) {
   const { mutate: handlesearchcustomer } = useMutation({
     mutationFn: (data) => searchcustomermobile(data),
     onSuccess: (response) => {
-      handleResData(response.data);
       handleCusData(response.data);
+      handleResData(response.data);
       setLoading(false);
     },
     onError: (error) => {
@@ -136,15 +136,15 @@ export function ExistingCustomer({ setCusData,handleCusData }) {
           maxLength={"10"}
           className="border-2 border-gray-300 rounded-md p-2  focus:border-transparent"
           placeholder="Enter Here"
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              handlesearchcustomer({
-                id_branch: formData.id_branch,
-                search_mobile: formData.mobile,
-              });
-            }
-          }}
+          // onKeyDown={(e) => {
+          //   if (e.key === "Enter") {
+          //     e.preventDefault();
+          //     handlesearchcustomer({
+          //       id_branch: formData.id_branch,
+          //       search_mobile: formData.mobile,
+          //     });
+          //   }
+          // }}
         />
 
         {/* Search Icon */}
@@ -180,7 +180,7 @@ export function ExistingCustomer({ setCusData,handleCusData }) {
 
 const AddSchemeAccount = ({ cusData, handleClear }) => {
   let dispatch = useDispatch();
-
+  console.log("cusData---",cusData)
   const id_branch = cusData?.id_branch;
 
   const layout_color = useSelector((state) => state.clientForm.layoutColor);

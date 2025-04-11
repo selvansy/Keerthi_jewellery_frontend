@@ -9,13 +9,13 @@ import exportIcon from "../../../../assets/icons/send-square.svg"
 
 const ExportDropdown = ({apiData,fileName,dynamicRemove={}}) => {
 
-  const filteredData = apiData.map(item => {
-    const newItem = { ...item };
-    dynamicRemove.forEach(key => {
-      delete newItem[key];
-    });    
-    return newItem;
-  });
+  // const filteredData = apiData.map(item => {
+  //   const newItem = { ...item };
+  //   dynamicRemove.forEach(key => {
+  //     delete newItem[key];
+  //   });    
+  //   return newItem;
+  // });
 
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   return (

@@ -609,7 +609,7 @@ const CustomerForm = ({ setCusData,handleCusData, id, cusData, id_proof, setIdPr
     };
 
     const handleDispatch = (data) => {
-
+        console.log("data---",data)
         setCusData({
             customer_name: data.firstname + " " + data.lastname,
             address: data.address,

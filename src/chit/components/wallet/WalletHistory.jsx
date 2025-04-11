@@ -150,7 +150,7 @@ function WalletHistory() {
 
 
   const generateExportData = () => {
-    const exportData = data.map((row, index) => {
+    const exportData = walletData.map((row, index) => {
       const emp = row?.id_employee;
       const cust = row?.id_customer;
   

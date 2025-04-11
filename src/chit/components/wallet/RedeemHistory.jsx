@@ -187,10 +187,10 @@ function RedeemHistory() {
       header: "Name",
       cell: (row) => `${row?.user?.firstname || ""} ${row?.user?.lastname || ""} ${row?.user?.mobile || "-"}`.trim() || "-",
     },
-    {
-      header: "Branch",
-      cell: (row) => `${row?.branch[0]?.branch_name || "-"}`,
-    },
+    // {
+    //   header: "Branch",
+    //   cell: (row) => `${row?.branch[0]?.branch_name || "-"}`,
+    // },
     {
       header: "Bill No",
       cell: (row) => `${row?.bill_no || "-"}`,
