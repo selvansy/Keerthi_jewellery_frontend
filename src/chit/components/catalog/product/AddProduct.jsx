@@ -454,22 +454,19 @@ const AddProduct = () => {
     const formDataToSend = new FormData();
 
     Object.entries(formData).forEach(([key, value]) => {
-      if (
-        key === "wastageCharges[_id]" ||
-        key === "makingCharges[_id]" ||
-        key == "_id" ||
-        key == "pathurl"
-      ) {
-        return; // Skip these keys
+      if (key === "_id" || key === "pathurl" || key === "active") {
+        console.log("Skipping:", key);
+        return;
       }
-
+    
       if (typeof value === "object" && value !== null) {
         Object.entries(value).forEach(([subKey, subValue]) => {
           if (
             subKey === "_id" &&
             (key === "wastageCharges" || key === "makingCharges")
           ) {
-            return; // Skip subKey "_id" under wastageCharges and makingCharges
+            console.log("Skipping subKey _id inside:", key);
+            return;
           }
           formDataToSend.append(`${key}[${subKey}]`, subValue);
         });
@@ -477,6 +474,7 @@ const AddProduct = () => {
         formDataToSend.append(key, value);
       }
     });
+    
 
     if (product_image && product_image.length > 0) {
       product_image.forEach((image, index) => {

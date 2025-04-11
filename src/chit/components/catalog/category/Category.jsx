@@ -171,7 +171,7 @@ const Category = () => {
         modalType: "CONFIRMATION",
         header: "Delete Category",
         formData: {
-          message: "Are you sure you want to delete?",
+          message: "Are you sure you want to delete this category? This will also delete all products related to this category, and this action cannot be undone.",
           CategoryId: id,
         },
         buttons: {

@@ -7,17 +7,21 @@ import "jspdf-autotable";
 import ExportDropdown from "../../components/common/Dropdown/Export";
 import { ExportToExcel } from "../common/Dropdown/Excelexport";
 import { ExportToPDF } from "../common/Dropdown/ExportPdf";
-import { schemePayment } from "../../../chit/api/Endpoints";
-import { SlidersHorizontal, Search, X, Eye } from "lucide-react";
+import {
+    amountPayble,
+  dueReportSummary,
+  getOverAllSummary,
+  preCloseSummary,
+} from "../../../chit/api/Endpoints";
+import { SlidersHorizontal, Search, X } from "lucide-react";
 import { CalendarDays, RefreshCcw } from "lucide-react";
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import { useSelector } from "react-redux";
-import { formatNumber } from "../../utils/commonFunction";
 import { Breadcrumb } from "../common/breadCumbs/breadCumbs";
 import DateRangeSelector from "../common/calender";
 
-function AccountSummaryReport() {
+function AmountPayble() {
   const roledata = localStorage.getItem("decoded");
 
   const id_role = roledata?.id_role?.id_role;
@@ -26,27 +30,25 @@ function AccountSummaryReport() {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
   const [isLoading, setisLoading] = useState(true);
-  const [paymentData, setPaymentData] = useState([]);
+  const [paybleData, setPaybleData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [totalPages, setTotalPages] = useState(0);
+  const [totalPages,  setTotalPages] = useState(0);
   const [totalDocuments, setTotalDocuments] = useState(0);
-  const [from_date, setfrom_date] = useState();
-  const [to_date, setto_date] = useState();
+  const [from_date,setfrom_date]=useState()
+  const [to_date,setto_date]=useState()
 
   useEffect(() => {
-    getPaymentData({ from_date, to_date });
-  }, [from_date, to_date]);
+    getAmountPayble({from_date,to_date});
+  }, [from_date,to_date]);
 
-  const { mutate: getPaymentData } = useMutation({
-    mutationFn: ({ from_date, to_date }) =>
-      schemePayment({ from_date, to_date }),
+  const { mutate: getAmountPayble } = useMutation({
+    mutationFn:({from_date,to_date})=> amountPayble({from_date,to_date}),
     onSuccess: (response) => {
-      const { data } = response;
-      setPaymentData(data);
+      setPaybleData(response.data);
       setisLoading(false);
-      setTotalPages(response.totalPages);
-      setTotalDocuments(response.totalDocuments);
+      setTotalDocuments(response.totalDocs)
+      setTotalPages(response.totalDocs)
     },
     onError: (error) => {
       setisLoading(false);
@@ -54,22 +56,20 @@ function AccountSummaryReport() {
     },
   });
 
+
+
   const columns = [
     {
       header: "S.No",
       cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
     },
     {
-      header: "Receipt No",
-      cell: (row) => row?.payment_receipt,
+      header: "Scheme",
+      cell: (row) => row?.scheme_name,
     },
     {
-      header: "Transaction ID",
-      cell: (row) => row?.id_transaction,
-    },
-    {
-      header: "Payment Date",
-      cell: (row) => row?.createdAt,
+      header: "Classification",
+      cell: (row) => row?.classification_name,
     },
     {
       header: "Customer",
@@ -80,42 +80,37 @@ function AccountSummaryReport() {
       cell: (row) => row?.customer_mobile,
     },
     {
-      header: "Payment Date",
-      cell: (row) => {
-        const date = new Date(row?.createdAt);
-        return date.toLocaleDateString("en-GB"); 
-      },
-    },
-    {
       header: "Accounter Name",
-      cell: (row) => row?.accounter_name,
+      cell: (row) => row?.account_name,
     },
     {
-      header: "Scheme Name",
-      cell: (row) => row?.scheme_name,
+      header: "scheme A/c No ",
+      cell: (row) => row?.scheme_acc_number,
     },
     {
-      header: "scheme A/c No",
-      cell: (row) => row?.schemeAccNo,
-    },
-    {
-      header: "Classification",
-      cell: (row) => row?.classification_name,
-    },
-    {
-      header: "Paid Amount",
-      cell: (row) =>
-        formatNumber({ value: row?.payment_amount, decimalPlaces: 0 }),
-    },
-    {
-      header: "Payment mode",
-      cell: (row) => row?.payment_mode,
-    },
-    {
-      header: "Paid Installment",
-      cell: (row) => `${row?.totalPaidInstallment}/${row?.total_installments}`,
-    },
+        header: "joined Date ",
+        cell: (row) => {
+          return new Date(row.createdAt).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "numeric",
+            day: "numeric",
+          });
+        }
+      },
+      {
+        header: "Maturity Date ",
+        cell: (row) => row?.maturity_date,
+      },
+      {
+        header: "Paid Installment",
+        cell: (row) => `${row?.totalPaidCount}/${row?.total_installments}`,
+      },
+      {
+        header: "Total Paid Amount",
+        cell: (row) => row?.totalPaidAmount,
+      },
   ];
+
 
   const handlePageChange = (page) => {
     const pageNumber = Number(page);
@@ -156,8 +151,8 @@ function AccountSummaryReport() {
                 }}
               />
               <ExportDropdown
-                apiData={paymentData}
-                fileName={`Scheme Payment ${new Date().toLocaleDateString(
+                apiData={paybleData}
+                fileName={`Overall report ${new Date().toLocaleDateString(
                   "en-GB"
                 )}`}
               />
@@ -166,7 +161,7 @@ function AccountSummaryReport() {
         </div>
         <div className="mt-4">
           <Table
-            data={paymentData}
+            data={paybleData}
             columns={columns}
             loading={isLoading}
             currentPage={currentPage}
@@ -181,4 +176,5 @@ function AccountSummaryReport() {
   );
 }
 
-export default AccountSummaryReport;
+export default AmountPayble;
+

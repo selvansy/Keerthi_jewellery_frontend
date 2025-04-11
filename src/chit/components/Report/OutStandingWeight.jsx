@@ -8,7 +8,7 @@ import {
 
 import {OutstandingTable} from "../common/OutStandingReport"
 import {OutStandingFilter} from "../common/OutStandingReport"
-import {  todayMetalRate } from "../SuperAdmin/Dashboard/dasApi"
+// import {  todayMetalRate } from "../SuperAdmin/Dashboard/dasApi"
 import { useDispatch, useSelector } from 'react-redux';
 
 export default function OutStandingWeight() { 

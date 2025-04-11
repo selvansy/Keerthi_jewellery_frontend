@@ -113,6 +113,7 @@ import ViewScheme from "../chit/components/ourscheme/scheme/ViewScheme";
 
 import GiftHandOverForm from "../chit/components/gift/giftissues/GiftHandOverForm";
 import SchemeAccount from "../chit/components/manageaccount/schemeaccount/SchemeAccount";
+import AmountPayble from "../chit/components/Report/amountPayble";
 
 const RouteList = [
 
@@ -821,6 +822,11 @@ const RouteList = [
     name:"Customer Schemes",
     path:"/managecustomers/customerschemes/test",
     element:<Base renderContent={SchemeAccount}/>
+  },
+  {
+    name:"Amount Payble",
+    path:'/report/amountpayble',
+    element:<Base renderContent={AmountPayble} />
   },
  
 

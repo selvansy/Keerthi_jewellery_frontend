@@ -24,11 +24,13 @@ import { jwtDecode } from "jwt-decode";
 import { useSelector, useDispatch } from "react-redux";
 import { useMutation } from "@tanstack/react-query";
 import {updatelayoutcolor } from "../../api/Endpoints";
-import { setLayoutColor } from "../../../redux/clientFormSlice";
+import { RoleDatalogout, setLayoutColor } from "../../../redux/clientFormSlice";
 import { logout, SetMenu } from "../../../redux/authSlice";
 import Command from "../../../assets/command.svg";
 import Search from "../../../assets/search.svg";
 import CustomerModal from "./customerModal";
+import settings from "../../../assets/dashboard/setting.svg"
+import notification from "../../../assets/dashboard/notification.svg"
 
 const Base = ({ renderContent: RenderContent }) => {
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -246,6 +248,7 @@ const Base = ({ renderContent: RenderContent }) => {
     sessionStorage.clear();
     localStorage.clear();
     dispatch(logout());
+    dispatch(RoleDatalogout())
     navigate("/");
   };
 
@@ -509,18 +512,32 @@ const Base = ({ renderContent: RenderContent }) => {
           </div>
 
           {/* Right side with settings, notifications and user menu */}
-          <div className="flex items-center space-x-3">
+          <div className="xl:flex items-center space-x-3 hidden ">
+            <div className="bg-[#FFE28D] flex px-[12px] py-[6px] rounded-[8px]">
+              <p>Gold (24K):</p> {" "} <p>₹8,050.00</p>
+            </div>
+            <div className="bg-[#FFE28D] flex px-[12px] py-[6px] rounded-[8px]">
+              <p>Gold (24K):</p> {" "} <p>₹8,050.00</p>
+            </div>
+            <div className="bg-[#C0C0C0] flex px-[12px] py-[6px] rounded-[8px]">
+              <p>Gold (24K):</p>{" "} <p>₹8,050.00</p>
+            </div>
+            
+            <div className="border-2 border-[#F2F2F9] rounded-full">
             <button
               className="p-2 text-gray-900"
               data-testid="toggle-settings"
-              onClick={() => setSettingsOpen(!settingsOpen)}
+              // onClick={() => setSettingsOpen(!settingsOpen)}
             >
-              <Settings size={24} />
+              <img src={settings} alt="" srcset="" />
             </button>
+            </div>
 
+            <div className="border-2 border-[#F2F2F9] rounded-full">
             <button className="p-2 text-gray-900">
-              <Bell size={24} />
+            <img src={notification} alt="" srcset="" />
             </button>
+            </div>
 
             {roledata ? (
               <div className="relative inline-block text-left">

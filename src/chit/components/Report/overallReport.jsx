@@ -17,6 +17,8 @@ import { CalendarDays, RefreshCcw } from "lucide-react";
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import { useSelector } from "react-redux";
+import { Breadcrumb } from "../common/breadCumbs/breadCumbs";
+import DateRangeSelector from "../common/calender";
 
 function overallReport() {
   const roledata = localStorage.getItem("decoded");
@@ -30,17 +32,22 @@ function overallReport() {
   const [overAllData, setOverAllData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [totalDocuments,setTotalDocuments]=useState(0)
+  const [totalPages,  setTotalPages] = useState(0);
+  const [totalDocuments, setTotalDocuments] = useState(0);
+  const [from_date,setfrom_date]=useState()
+  const [to_date,setto_date]=useState()
+
   useEffect(() => {
-    getOverAllReport();
-  }, []);
+    getOverAllReport({from_date,to_date});
+  }, [from_date,to_date]);
 
   const { mutate: getOverAllReport } = useMutation({
-    mutationFn: getOverAllSummary,
+    mutationFn:({from_date,to_date})=> getOverAllSummary({from_date,to_date}),
     onSuccess: (response) => {
-      setOverAllData(response);
+      setOverAllData(response.data);
       setisLoading(false);
-      // setTotalDocuments(response.)
+      setTotalDocuments(response.totalDocs)
+      setTotalPages(response.totalDocs)
     },
     onError: (error) => {
       setisLoading(false);
@@ -54,71 +61,117 @@ function overallReport() {
       cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
     },
     {
-      header: "Scheme",
+      header: "SCHEME NAME",
       cell: (row) => row?.scheme_name,
     },
     {
-      header: "Total Accounts",
-      cell: (row) => row?.totalAccounts,
-    },
-    {
-      header: "Total Open Account",
+      header: "NEW JOIN",
       cell: (row) => row?.totalOpenAccount,
     },
     {
-      header: "Total Closed Account",
+      header: "PAID ACCOUNT",
+      cell: (row) => row?.totalPaidAccounts,
+    },
+    {
+      header: "PAID Amount",
+      cell: (row) => row?.totalOpenAmount,
+    },
+    {
+      header: "CLOSE ACCOUNT",
       cell: (row) => row?.totalCloseAccount,
     },
     {
-      header: "Total PreClosed Account",
-      cell: (row) => row?.totalPreCloseAccount,
-    },
-    {
-      header: "Total Refund Account",
-      cell: (row) => row?.totalRefundAccount,
-    },
-    {
-      header: "Total Closed Amount",
+      header: "CLOSE Amount",
       cell: (row) => row?.totalCloseAmount,
     },
     {
-      header: "Total PreClosed Amount",
+      header: "CLOSE WGT",
+      cell: (row) => row?.closedWeight,
+    },
+    {
+      header: "PRE-CLOSE ACCOUNT",
       cell: (row) => row?.totalPreCloseAccount,
     },
     {
-      header: "Total Refund Amount",
+      header: "PRE-CLOSE AMOUNT",
+      cell: (row) => row?.totalPreCloseAmount,
+    },
+    {
+      header: "REFUND ACCOUNT ",
+      cell: (row) => row?.totalRefundAccount,
+    },
+    {
+      header: "REFUND Amount ",
       cell: (row) => row?.totalRefundAmount,
+    },
+    {
+      header: "BRANCH NAME",
+      cell: (row) => row?.Branch_name,
     },
   ];
 
+
+  const handlePageChange = (page) => {
+    const pageNumber = Number(page);
+    if (
+      !pageNumber ||
+      isNaN(pageNumber) ||
+      pageNumber < 1 ||
+      pageNumber > totalPages
+    ) {
+      return;
+    }
+
+    setCurrentPage(pageNumber);
+  };
+
+  const handleItemsPerPageChange = (value) => {
+    setItemsPerPage(value);
+    setCurrentPage(1);
+  };
+
   return (
-    <div className="flex flex-col p-4">
-      <h2 className="text-2xl text-gray-900 font-bold">Over All Report</h2>
-      <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
-        <div className="relative w-full lg:w-1/3 min-w-[200px]">
-          <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-            <Search className="text-gray-500" />
+    <>
+      <Breadcrumb
+        items={[
+          { label: "Scheme Reports" },
+          { label: "Overall Report", active: true },
+        ]}
+      />
+      <div className="flex flex-col p-4 bg-white border-2 border-[#F2F2F9] rounded-[16px] ">
+        <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
+          <div className="flex justify-between items-center w-full">
+            <div className="flex justify-start"></div>
+            <div className="flex justify-end items-center gap-4">
+              <DateRangeSelector
+                onChange={(range) => {
+                  setfrom_date(range.startDate);
+                  setto_date(range.endDate);
+                }}
+              />
+              <ExportDropdown
+                apiData={overAllData}
+                fileName={`Overall report ${new Date().toLocaleDateString(
+                  "en-GB"
+                )}`}
+              />
+            </div>
           </div>
-          <input
-            placeholder="Search..."
-            className="p-3 pl-10 pr-3 border-2 bg-[#F5F5F5] border-gray-500 rounded-md w-full"
+        </div>
+        <div className="mt-4">
+          <Table
+            data={overAllData}
+            columns={columns}
+            loading={isLoading}
+            currentPage={currentPage}
+            handlePageChange={handlePageChange}
+            itemsPerPage={itemsPerPage}
+            totalItems={totalDocuments}
+            handleItemsPerPageChange={handleItemsPerPageChange}
           />
         </div>
       </div>
-      <div className="mt-4">
-        <Table
-          data={overAllData}
-          columns={columns}
-          loading={isLoading}
-          // currentPage={currentPage}
-          // handleItemsPerPageChange={handleItemsPerPageChange}
-          // handlePageChange={handlePageChange}
-          // itemsPerPage={itemsPerPage}
-          // totalItems={totalDocuments}
-
-        />
-      </div>
-    </div>
+    </>
   );
 }
 
