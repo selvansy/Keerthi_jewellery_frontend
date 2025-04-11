@@ -31,4 +31,7 @@ body{
   text-align: center;
 }
 
+.quill-editor.readonly .ql-editor {
+  pointer-events: none;
+}
 

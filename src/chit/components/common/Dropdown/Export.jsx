@@ -7,7 +7,16 @@ import { ExportToExcel } from './Excelexport';
 import { ExportToPDF } from './ExportPdf';
 import exportIcon from "../../../../assets/icons/send-square.svg"
 
-const ExportDropdown = ({apiData,fileName}) => {
+const ExportDropdown = ({apiData,fileName,dynamicRemove={}}) => {
+
+  const filteredData = apiData.map(item => {
+    const newItem = { ...item };
+    dynamicRemove.forEach(key => {
+      delete newItem[key];
+    });    
+    return newItem;
+  });
+
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   return (
     <Menu as="div" className="relative inline-block text-left z-20">
@@ -35,12 +44,12 @@ const ExportDropdown = ({apiData,fileName}) => {
           <div className="py-1">
             <Menu.Item>
               {({ active }) => (
-                <ExportToExcel apiData={apiData} fileName={fileName}/>
+                <ExportToExcel apiData={filteredData} fileName={fileName}/>
               )}
             </Menu.Item>
             <Menu.Item>
               {({ active }) => (
-                <ExportToPDF apiData={apiData} fileName={fileName}/>
+                <ExportToPDF apiData={filteredData} fileName={fileName}/>
               )}
             </Menu.Item>
           </div>
