@@ -498,49 +498,7 @@ function TEST() {
          
         </div>
 
-        {/* Today's Metal Rate and Table Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 my-3">
-          <div className="bg-white rounded-lg shadow-md p-5 lg:col-span-3">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-[#004181]">
-                Today's Metal Rate
-              </h2>
-              <div
-                className="flex items-center justify-center p-3 rounded-md cursor-pointer bg-[#F0F7FE]"
-                onClick={() => navigate("/masters/metalrate")}
-              >
-                <img src={plus} alt="plus" className="w-6 h-6 cursor-pointer" />
-                <div className="text-[#004181] text-md font-medium px-2 font- cursor-pointer">
-                 Add Metal Rate
-                </div>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {metalRate.map((metal, index) => (
-                <div
-                  key={index}
-                  className="p-3 rounded-lg border border-gray-200 "
-                >
-                  <img
-                    src={metals[metal.material_type_id.id_metal]}
-                    alt={metal.name}
-                    className="h-12 w-20 mb-2 "
-                  />
-                  <h3 className="text-2xl font-medium text-[#090909] mt-6">
-                    ₹{metal.rate}
-                  </h3>
-                  <p className="text-sm text-gray-600">{metal?.material_type_id?.metal_name} ({metal?.purity_id?.purity_name})</p>
-                </div>
-              ))}
-            </div>
-          </div>
-          {/* donut Chart */}
-          <AccountStatus
-            statusData={statusData}
-            totalAccounts={totalAccounts}
-            options={options}
-          />
-        </div>
+  
 
         {/* mode of payment and  limits  */}
         <div className="grid  md:grid-cols-12 gap-4">

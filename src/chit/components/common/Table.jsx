@@ -38,7 +38,7 @@ const Table = ({
   return (
     <div className={`antialiased w-full ${className}`}>
       <div className="mx-auto bg-white">
-        <div className="bg-white relative  rounded-lg overflow-hidden">
+        <div className="bg-white relative   overflow-hidden">
           {/* Search Bar */}
           {/* <div className="flex justify-end p-3">
             <div className="relative">

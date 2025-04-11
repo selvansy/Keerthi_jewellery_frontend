@@ -1,38 +1,57 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import customer from "../../../../../assets/Total_Customer.svg";
 import Total_Account from "../../../../../assets/Total_Account.svg";
 import overDue from "../../../../../assets/dashboard/overDue.svg";
 import payment from "../../../../../assets/dashboard/payment.svg";
+import { getOverAllDashboard } from "../../../../api/Endpoints";
+import { useMutation } from "@tanstack/react-query";
+import { formatNumber } from "../../../../utils/commonFunction";
 
-function HeaderDashborder() {
-  const cardData = {
-    total_account: 120,
-    total_complete: 80,
-    total_closed: 40,
-    total_Customers: 30,
+function HeaderDashborder({ id_branch }) {
+  const initialState = {
+    totalAccounts: 0,
+    totalCustomers: 0,
+    totalGoldSave: 0,
+    totalAmount: 0,
+    overDues: 0,
   };
+  const [cardData, setCardData] = useState(initialState);
+
+  useEffect(() => {
+    getOverAll(id_branch ?? "");
+  }, [id_branch]);
+
+  const { mutate: getOverAll } = useMutation({
+    mutationFn: (id_branch) => getOverAllDashboard(id_branch),
+    onSuccess: (response) => {
+      setCardData(response.data);
+    },
+    onError: (error) => {
+        setCardData(initialState)
+    },
+  });
 
   const cards = [
     {
       title: "Total Customer",
       subTitle: "Total Accounts",
-      value: cardData.total_account || 0,
-      sub_Value: cardData.total_Customers || 0,
+      value: cardData.totalAccounts || 0,
+      sub_Value: cardData.totalCustomers || 0,
       image: customer,
     },
     {
       title: "Total Gold Savings",
-      value: cardData.total_account || 0,
+      value: cardData.totalGoldSave || 0,
       image: Total_Account,
     },
     {
       title: "Total Overdue",
-      value: cardData.total_complete || 0,
+      value: cardData.overDues || 0,
       image: overDue,
     },
     {
       title: "Total Payment",
-      value: cardData.total_closed || 0,
+      value: cardData.totalAmount || 0,
       image: payment,
     },
   ];
@@ -58,7 +77,7 @@ function HeaderDashborder() {
                     </div>
                     <div className="text-[#F5F5F5] text-xl font-semibold border-s-2 boder-[#F5F5F5] h-[50px]"></div>
                     <div className="flex flex-col items-start">
-                      <p className="text-2xl font-semibold">{card.value}</p>
+                      <p className="text-2xl font-semibold"> {card.value} </p>
                       <p className="text-[#6C7086] text-sm font-medium">
                         {card.title}
                       </p>
@@ -67,7 +86,11 @@ function HeaderDashborder() {
                 </>
               ) : (
                 <>
-                  <p className="text-2xl font-semibold">{card.value}</p>
+                  <p className="text-2xl font-semibold">
+                    {card.title == "Total Payment"
+                      ? formatNumber({ value: card.value, decimalPlaces: 0 })
+                      : card.value}
+                  </p>
                   <p className="text-[#6C7086] text-sm font-medium">
                     {card.title}
                   </p>

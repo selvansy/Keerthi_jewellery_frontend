@@ -812,7 +812,7 @@ export const schemepaymentdatatable = async (data) => {
 
 export const schemePayment = async (data) => {
   const response = await Api.post(
-    `${import.meta.env.VITE_API_URL}/api/client/reports/paymentsummary`
+    `${import.meta.env.VITE_API_URL}/api/client/reports/paymentsummary`,data
   );
   return response.data;
 };
@@ -2704,7 +2704,7 @@ export const getContentTypes = async (data) => {
 //
 export const dueReportSummary = async (data) => {
   const response = await Api.post(
-    `${import.meta.env.VITE_API_URL}/api/client/reports/overdue`
+    `${import.meta.env.VITE_API_URL}/api/client/reports/overdue`,data
   );
   return response.data;
 };
@@ -2729,7 +2729,7 @@ export const refundSummary = async (data) => {
 };
 export const getOverAllSummary = async (data) => {
   const response = await Api.post(
-    `${import.meta.env.VITE_API_URL}/api/client/reports/overallreport`
+    `${import.meta.env.VITE_API_URL}/api/client/reports/overallreport`,data
   );
   return response.data;
 };
@@ -2770,3 +2770,30 @@ export const getDelistedSchemes = async(data)=>{
 }
 
 
+// dashboard
+
+export const getOverAllDashboard = async(branchId)=>{ 
+  const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/dashboard/overall`,{branchId})
+  return response.data
+}
+
+export const getAccountReview = async(data)=>{ 
+  console.log(data)
+  const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/dashboard/accountreview`,data)
+  return response.data
+}
+
+export const accountStats = async(data)=>{ 
+  console.log(data)
+  const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/dashboard/account`,data)
+  return response.data
+}
+
+export const getSchemeByBrachId = async(id)=>{ 
+  const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/scheme/branch/${id}`)
+  return response.data
+}
+export const getActiveScheme = async()=>{ 
+  const response= await Api.get(`${import.meta.env.VITE_API_URL}/api/client/scheme`)
+  return response.data
+}

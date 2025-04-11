@@ -6,25 +6,15 @@ import { customSelectStyles } from "../../Setup/purity";
 import TEST from "./test";
 import AccountStatus from "./accountReview/accountStatus";
 import { useSelector } from "react-redux";
-import { getAllBranch, getbranchbyid } from "../../../api/Endpoints";
+import {
+  accountStats,
+  getAllBranch,
+  getbranchbyid,
+} from "../../../api/Endpoints";
 import { useMutation } from "@tanstack/react-query";
+import NotificationCard from "./notification_payment/notification";
 
-const options = [
-  { value: "today", label: "Today" },
-  { value: "week", label: "This Week" },
-  { value: "month", label: "This Month" },
-  { value: "year", label: "This Year" },
-];
-const totalAccounts = { count: 173, percentage: 77 };
 
-const statusData = [
-  { label: "Digi Gold", color: "#3A0CA3", percentage: 15 },
-  { label: "Open", color: "#B5179E", percentage: 20 },
-  { label: "Close", color: "#FFC300", percentage: 10 },
-  { label: "Preclosed", color: "#F72585", percentage: 15 },
-  { label: "Completed", color: "#D99FE7", percentage: 12 },
-  { label: "Refund", color: "#317BFF", percentage: 8 },
-];
 
 function Dashboard() {
   const roleData = useSelector((state) => state.clientForm.roledata);
@@ -40,9 +30,9 @@ function Dashboard() {
       getAllBranches();
     }
 
-    return ()=>{
-      setSelectedBranch('')
-    }
+    return () => {
+      setSelectedBranch("");
+    };
   }, [roleData]);
 
   //mutation to get branch by id
@@ -54,7 +44,7 @@ function Dashboard() {
         _id: data._id,
         branch_name: data.branch_name,
       });
-      setSelectedBranch(data._id)
+      setSelectedBranch(data._id);
     },
     onError: (error) => {
       console.error("Error fetching branches:", error);
@@ -77,7 +67,6 @@ function Dashboard() {
     },
   });
 
-  console.log(selectedBranch)
   return (
     <div className="px-4">
       {/* branch selection */}
@@ -112,23 +101,26 @@ function Dashboard() {
 
       {/* top section */}
       <div>
-        <HeaderDashborder />
+        <HeaderDashborder id_branch={selectedBranch} />
       </div>
 
       {/* Account Review and account status */}
       <div className="grid grid-cols-1 xl:grid-cols-7 gap-4">
         <div className="md:col-span-4">
-          <AccountReview />
+          <AccountReview id_branch={selectedBranch} />
         </div>
         <div className=" md:col-span-3">
-          <AccountStatus
-            statusData={statusData}
-            totalAccounts={totalAccounts}
-            options={options}
-          />
+          <AccountStatus id_branch={selectedBranch} />
         </div>
       </div>
 
+      <div className="flex">
+        <div className="notification-payment">
+          <div className="notifiacation  w-full">
+            <NotificationCard/>
+          </div>
+        </div>
+      </div>
       {/* <TEST/> */}
     </div>
   );
