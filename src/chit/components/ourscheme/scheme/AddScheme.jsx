@@ -696,6 +696,25 @@ const SchemeForm = () => {
     }
   };
 
+  useEffect(()=>{
+    formik.setFieldValue("total_installments","")
+    if(formik.values.maturity_period){
+       if(formik.values.installment_type === 1 && formik.values.maturity_period != ""){
+        const newOut = Number(formik.values.maturity_period )- 1
+        formik.setFieldValue("total_installments",newOut)
+       }else if(formik.values.installment_type === 2 && formik.values.maturity_period != ""){
+        const newOut = Number(formik.values.maturity_period)- Number(4.345)
+        formik.setFieldValue("total_installments",Math.round(newOut))
+       }else if(formik.values.installment_type === 4 && formik.values.maturity_period != ""){
+        formik.setFieldValue("total_installments",formik.values.maturity_period)
+       }else{
+        const newOUt = Number(formik.values.maturity_period) - 31
+        formik.setFieldValue("total_installments",newOUt)
+       }
+
+    }
+  },[formik.values.maturity_period,validation])
+
 
   return (
     <form
@@ -929,7 +948,7 @@ const SchemeForm = () => {
                 } else if (option.value == 2) {
                   setValidation({ max: 52, maxLength: 2, val: "weeks" });
                 } else if (option.value === 3) {
-                  setValidation({ max: 336, maxLength: 3, val: "Days" });
+                  setValidation({ max: 365, maxLength: 3, val: "Days" });
                 } else {
                   setValidation({ max: 1, maxLength: 1, val: "year" });
                 }
