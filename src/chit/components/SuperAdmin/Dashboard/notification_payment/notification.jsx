@@ -1,10 +1,29 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import whatsapp from "../../../../../assets/whatsapp.svg";
 import sms from "../../../../../assets/sms.svg";
 import email from "../../../../../assets/email.svg";
+import { getTopupByClient } from "../../../../api/Endpoints";
+import { useSelector } from "react-redux";
+import { useQuery } from "@tanstack/react-query";
 
 function NotificationCard() {
-  const [cardData, setCardData] = useState(null);
+  const [topupData, setTopData] = useState(null);
+  const roledata = useSelector((state) => state.clientForm.roledata);
+  const id_client = roledata?.id_client;
+
+   const { data: topUpFileds } = useQuery({
+      queryKey: ["branch", id_client],
+      queryFn: () => {
+        return getTopupByClient(id_client);
+      },
+      enabled: !!id_client,
+    });
+    useEffect(() => {
+      if (topUpFileds) {
+        setTopData(topUpFileds.data);
+      }
+    }, [topUpFileds]);
+
   return (
     <div className="grid grid-cols-2  gap-4  ">
       <div className="bg-white rounded-[16px] pt-[20px] pb-[25px] px-[12px] border-2 border-[#F5F5F5] ">
@@ -13,7 +32,7 @@ function NotificationCard() {
         </div>
         <div className="flex flex-col py-[12px] ms-1">
           <h5 className="text-2xl font-semibold">
-            {cardData?.total_whatsapp || 0}
+            {topupData?.WhatsApp || 0}
           </h5>
           <h5 className="text-[#6C7086] text-md mt-2">WhatsApp Limit</h5>
         </div>
@@ -24,7 +43,7 @@ function NotificationCard() {
           <img src={sms} alt="sms" className="h-[40px] w-[40px]" />
         </div>
         <div className="flex flex-col py-[12px] ms-1">
-          <h5 className="text-2xl font-semibold">{cardData?.total_sms || 0}</h5>
+          <h5 className="text-2xl font-semibold">{topupData?.SMS || 0}</h5>
           <h5 className="text-[#6C7086] text-md mt-2">SMS Limit</h5>
         </div>
       </div>

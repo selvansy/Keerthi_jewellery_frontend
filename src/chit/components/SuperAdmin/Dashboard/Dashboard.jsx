@@ -114,25 +114,26 @@ function Dashboard() {
         </div>
       </div>
 
-      <div className="flex w-full">
-        {/* Left side: Notification + PaymentHistory */}
-        <div className="w-4/5 p-2">
-          <div className="bg-white p-4 mb-4 border-2 border-[#F5F5F5] rounded-[20px]">
-            <h2 className="font-semibold text-xl p-4">Notification Limits</h2>
-            <NotificationCard />
-          </div>
-          <div className="bg-white p-4 border-2 border-[#F5F5F5] rounded-[16px]">
-            <PaymentHistory />
-          </div>
-        </div>
+      <div className="flex flex-col md:flex-row w-full">
+  {/* Left side: Notification + PaymentHistory */}
+  <div className="w-full md:w-4/5 p-2">
+    <div className="bg-white p-4 mb-4 border-2 border-[#F5F5F5] rounded-[20px]">
+      <h2 className="font-semibold text-xl p-4">Notification Limits</h2>
+      <NotificationCard  />
+    </div>
+    <div className="bg-white p-4 border-2 border-[#F5F5F5] rounded-[16px]">
+      <PaymentHistory id_branch={selectedBranch}/>
+    </div>
+  </div>
 
-        {/* Right side: ModeOfPayment */}
-        <div className="w-2/3 p-2 ">
-          <div className="bg-white p-4 h-full border-2 border-[#F5F5F5] rounded-[16px]">
-            <ModeOfPayment />
-          </div>
-        </div>
-      </div>
+  {/* Right side: ModeOfPayment */}
+  <div className=" md:w-3/5 p-2">
+    <div className="bg-white p-4 h-full border-2 border-[#F5F5F5] rounded-[16px]">
+      <ModeOfPayment id_branch={selectedBranch}/>
+    </div>
+  </div>
+</div>
+
     </div>
   );
 }
