@@ -188,7 +188,7 @@ const AddCloseAccount = () => {
       handlesearchschemeaccount({
         search_mobile: formik.values.mobile,
         id_branch: formik.values.id_branch,
-        status: !dynamic && 2
+        status: !dynamic ?  [2] : [0]
       });
     } else {
       toast.error("Branch selection is required!");

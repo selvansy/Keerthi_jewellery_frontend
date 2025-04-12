@@ -221,6 +221,7 @@ const AddSchemePayment = () => {
     mutationFn: addschemepayment,
     onSuccess: (response) => {
       toast.success(response.message);
+      
       // navigate("/payment/schemepayment");
     },
     onError: (error) => {
