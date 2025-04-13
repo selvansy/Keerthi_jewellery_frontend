@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import Table from "../../components/common/Table";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+import Select from "react-select";
+
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import ExportDropdown from "../../components/common/Dropdown/Export";
@@ -9,6 +11,8 @@ import { ExportToExcel } from "../common/Dropdown/Excelexport";
 import { ExportToPDF } from "../common/Dropdown/ExportPdf";
 import {
   dueReportSummary,
+  getActiveScheme,
+  getallScheme,
   getOverAllSummary,
   preCloseSummary,
 } from "../../../chit/api/Endpoints";
@@ -19,35 +23,59 @@ import DatePicker from "react-datepicker";
 import { useSelector } from "react-redux";
 import { Breadcrumb } from "../common/breadCumbs/breadCumbs";
 import DateRangeSelector from "../common/calender";
+import { customSelectStyles } from "../Setup/purity";
 
 function overallReport() {
-  const roledata = localStorage.getItem("decoded");
-
-  const id_role = roledata?.id_role?.id_role;
-  const id_client = roledata?.id_client;
-  const id_branch = roledata?.branch;
-  const layout_color = useSelector((state) => state.clientForm.layoutColor);
-
   const [isLoading, setisLoading] = useState(true);
   const [overAllData, setOverAllData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [totalPages,  setTotalPages] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
   const [totalDocuments, setTotalDocuments] = useState(0);
-  const [from_date,setfrom_date]=useState()
-  const [to_date,setto_date]=useState()
+  const [from_date, setfrom_date] = useState();
+  const [to_date, setto_date] = useState();
+
+  const roleData = useSelector((state) => state.clientForm.roledata);
+  const accessBranch = roleData?.branch;
+  const id_branch = roleData?.id_branch;
+
+  const [schemeList, setSchemeList] = useState([]);
+  const [selectedScheme, setSelectedScheme] = useState();
 
   useEffect(() => {
-    getOverAllReport({from_date,to_date});
-  }, [from_date,to_date]);
+    getOverAllReport({ from_date, to_date, id_branch,id_scheme:selectedScheme });
+  }, [from_date, to_date,selectedScheme]);
+  useEffect(() => {
+    if (!roleData) return;
+    if (accessBranch == 0) {
+      getAllScheme();
+    }
+  }, [roleData]);
+
+  const { mutate: getAllScheme } = useMutation({
+    mutationFn: () => getActiveScheme(),
+    onSuccess: (response) => {
+      setSchemeList(
+        response.data.map((item) => ({
+          label: item.scheme_name,
+          value: item._id,
+        }))
+      );
+    },
+    onError: (error) => {
+      setisLoading(false);
+      console.error("Error fetching payment data:", error);
+    },
+  });
 
   const { mutate: getOverAllReport } = useMutation({
-    mutationFn:({from_date,to_date})=> getOverAllSummary({from_date,to_date}),
+    mutationFn: ({ from_date, to_date,id_branch,id_scheme:selectedScheme }) =>
+      getOverAllSummary({ from_date, to_date,id_branch,id_scheme:selectedScheme }),
     onSuccess: (response) => {
       setOverAllData(response.data);
       setisLoading(false);
-      setTotalDocuments(response.totalDocs)
-      setTotalPages(response.totalDocs)
+      setTotalDocuments(response.totalDocs);
+      setTotalPages(response.totalDocs);
     },
     onError: (error) => {
       setisLoading(false);
@@ -110,7 +138,6 @@ function overallReport() {
     },
   ];
 
-
   const handlePageChange = (page) => {
     const pageNumber = Number(page);
     if (
@@ -141,7 +168,19 @@ function overallReport() {
       <div className="flex flex-col p-4 bg-white border-2 border-[#F2F2F9] rounded-[16px] ">
         <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
           <div className="flex justify-between items-center w-full">
-            <div className="flex justify-start"></div>
+            <div className="flex justify-start">
+              <Select
+                className="mt-2 w-[219px]"
+                styles={customSelectStyles(true)}
+                options={schemeList || []}
+                value={schemeList.find(
+                  (option) => option.value === selectedScheme
+                )}
+                onChange={(option) => {
+                  setSelectedScheme(option.value);
+                }}
+              />
+            </div>
             <div className="flex justify-end items-center gap-4">
               <DateRangeSelector
                 onChange={(range) => {

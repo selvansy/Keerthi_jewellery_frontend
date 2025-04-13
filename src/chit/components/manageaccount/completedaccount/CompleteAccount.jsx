@@ -122,7 +122,7 @@ function CompleteAccount() {
       <Breadcrumb
         items={[
           { label: "Scheme Reports" },
-          { label: "Completed  Report", active: true },
+          { label: "Completed Account", active: true },
         ]}
       />
       <div className="flex flex-col p-4 bg-white border-2 border-[#F2F2F9] rounded-[16px] ">

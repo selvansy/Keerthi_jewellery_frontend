@@ -2826,7 +2826,18 @@ export const paymentHistory = async(data)=>{
   const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/dashboard/paymenthistory`,data)
   return response.data
 }
+
 export const paymentModeHistory = async(data)=>{ 
   const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/dashboard/paymentmodehistory`,data)
   return response.data
 }
+
+export const getEmployeeRefferal = async(data)=>{ 
+  const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/reports/employeereffer`,data)
+  return response.data
+}
+export const getCustomerRefferal = async(data)=>{ 
+  const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/reports/customerreffer`,data)
+  return response.data
+}
+

@@ -278,7 +278,8 @@ const Metal = () => {
           </div>
 
           {/* Add Metal Button */}
-          <div className="w-full flex justify-end">
+          {MetalData.length<=3&&(
+            <div className="w-full flex justify-end">
             <button
               className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-[135px] sm:w-auto"
               onClick={handleaddmetal}
@@ -287,6 +288,7 @@ const Metal = () => {
               + Add Metal
             </button>
           </div>
+          )}
         </div>
 
         <div className="mt-4">

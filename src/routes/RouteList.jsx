@@ -114,6 +114,8 @@ import ViewScheme from "../chit/components/ourscheme/scheme/ViewScheme";
 import GiftHandOverForm from "../chit/components/gift/giftissues/GiftHandOverForm";
 import SchemeAccount from "../chit/components/manageaccount/schemeaccount/SchemeAccount";
 import AmountPayble from "../chit/components/Report/amountPayble";
+import EmployeeRefferal from "../chit/components/Report/employeeRefferal";
+import CustomerRefferal from "../chit/components/Report/customerRefferal";
 
 const RouteList = [
 
@@ -356,7 +358,7 @@ const RouteList = [
   },
   {
     name: "Completed Account",
-    path: '/managecustomers/completedaccount',
+    path: '/report/completedaccount',
     element: <Base renderContent={CompleteAccount} />
   },
   // {
@@ -806,6 +808,16 @@ const RouteList = [
     name:"over all",
     path:'/report/overallreport',
     element:<Base renderContent={overallReport} />
+  },
+  {
+    name:"Employee Refferal",
+    path:'/accountreport/employeereferrals',
+    element:<Base renderContent={EmployeeRefferal} />
+  },
+  {
+    name:"Employee Refferal",
+    path:'/accountreport/customerreferrals',
+    element:<Base renderContent={CustomerRefferal} />
   },
   {
     name:"Payment Ledger",
