@@ -2478,6 +2478,16 @@ export const searchaccountnumber = async (data) => {
   return response.data;
 };
 
+export const searchPaymentBySchNo = async (data) => {
+  const response = await Api.get(
+    `${import.meta.env.VITE_API_URL}/api/client/payment/schacc?schAcc=${data.mobile}&limit=${data.limit}&page=${data.page}`
+  );
+  return response.data;
+};
+
+
+
+
 export const searchSchAccByMobile = async (data) => {
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/schemeaccount/accnum/mobile/search?value=${data.value}&branchId=${data.branchId}`);
     return response.data;

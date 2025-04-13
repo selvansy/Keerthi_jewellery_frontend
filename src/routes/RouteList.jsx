@@ -113,6 +113,7 @@ import ViewScheme from "../chit/components/ourscheme/scheme/ViewScheme";
 
 import GiftHandOverForm from "../chit/components/gift/giftissues/GiftHandOverForm";
 import SchemeAccount from "../chit/components/manageaccount/schemeaccount/SchemeAccount";
+import GifthandoverDetails from "../chit/components/manageaccount/schemeaccount/GifthandoverDetails";
 
 const RouteList = [
 
@@ -811,16 +812,21 @@ const RouteList = [
     path:'/report/paymentmodeledger',
     element:<Base renderContent={PaymentLedger} />
   },
-   {
-    name:"Customer Schemes",
-    path:"/managecustomers/customerschemes",
-    element:<Base renderContent={CustomerSchemes}/>
-  },
+  //  {
+  //   name:"Customer Schemes",
+  //   path:"/managecustomers/customerschemes",
+  //   element:<Base renderContent={CustomerSchemes}/>
+  // },
   
    {
     name:"Customer Schemes",
-    path:"/managecustomers/customerschemes/test",
+    path:"/managecustomers/customerschemes",
     element:<Base renderContent={SchemeAccount}/>
+  },
+  {
+    name:"Gift Handover",
+    path:"/managecustomers/customerschemes/gifthandover",
+    element:<Base renderContent={GifthandoverDetails}/>
   },
  
 

@@ -62,7 +62,8 @@ function GiftPurchaseForm({ setIsviewOpen, isviewOpen, id, setId,refetchTable })
         price: "",
         buyingPrice: '',
         gift_vendorid: '',
-        qty: "",
+        inward_qty: "",
+        qty:"",
         gst_percenty: "",
         total: total,
         cus_sellprice: "",
@@ -137,7 +138,7 @@ function GiftPurchaseForm({ setIsviewOpen, isviewOpen, id, setId,refetchTable })
             invoice_no: resdata.invoice_no,
             id_gift: resdata.id_gift,
             id_branch: resdata.id_branch,
-            qty: resdata.qty,
+            inward_qty: resdata.inward_qty,
             price: resdata.price,
             gst_percenty: resdata.gst_percenty,
             cus_sellprice: resdata.cus_sellprice,
@@ -263,17 +264,18 @@ function GiftPurchaseForm({ setIsviewOpen, isviewOpen, id, setId,refetchTable })
         
         
 
-        if (name === "qty") {
-            if (name === "qty" && newvalue < 0) {
+        if (name === "inward_qty") {
+            if (name === "inward_qty" && newvalue < 0) {
                 setErrors(prev => ({
                     ...prev,
-                    qty: "Quantity is required"
+                    inward_qty: "Quantity is required"
                 }));
             }
            
             setFormData(prev => ({
                 ...prev,
-                qty: newvalue
+                inward_qty: newvalue,
+                qty:newvalue
             }));
 
         }
@@ -296,8 +298,10 @@ function GiftPurchaseForm({ setIsviewOpen, isviewOpen, id, setId,refetchTable })
             invoice_no: formData.invoice_no,
             id_gift: formData.id_gift,
             id_branch: formData.id_branch,
-            qty: formData.qty,
+            inward_qty: formData.inward_qty,
+            qty:formData.qty,
             price: formData.price,
+            total:formData.total,
             gst_percenty: formData.gst_percenty,
             cus_sellprice: formData.cus_sellprice,
         };
@@ -314,7 +318,8 @@ function GiftPurchaseForm({ setIsviewOpen, isviewOpen, id, setId,refetchTable })
             price: "",
             buyingPrice: '',
             gift_vendorid: '',
-            qty: "",
+            inward_qty: "",
+            qty:"",
             gst_percenty: "",
             total: "",
             cus_sellprice: "",
@@ -325,7 +330,7 @@ function GiftPurchaseForm({ setIsviewOpen, isviewOpen, id, setId,refetchTable })
 
     const calculateGst = useMemo(() => {
         return () => {
-          const quan = Number(formData.qty);
+          const quan = Number(formData.inward_qty);
           const prc = Number(formData.price);
           const gst = Number(formData.gst_percenty);
     
@@ -344,7 +349,7 @@ function GiftPurchaseForm({ setIsviewOpen, isviewOpen, id, setId,refetchTable })
           }));
           return totalAmt;
         };
-      }, [formData.qty, formData.price, formData.gst_percenty]);
+      }, [formData.inward_qty, formData.price, formData.gst_percenty]);
     
       useEffect(() => {
         setFormData(prev => ({ ...prev, total: calculateGst() }));
@@ -355,7 +360,7 @@ function GiftPurchaseForm({ setIsviewOpen, isviewOpen, id, setId,refetchTable })
         if (!formData.gift_vendorid) errors.gift_vendorid = 'Gift Vendor Id is required';
         if (!formData.invoice_no) errors.invoice_no = 'Invoice Number is required';
         if (!formData.id_gift) errors.id_gift = 'Gift Id is required';
-        if (!formData.qty) errors.qty = 'Qty is required';
+        if (!formData.inward_qty) errors.inward_qty = 'inward_qty is required';
         if (!formData.id_branch) errors.id_branch = 'Branch is required';
         if (!formData.gst_percenty) errors.gst_percenty = 'Gst Percentage is required';
         if (!formData.price) errors.price = 'Price is required';
@@ -497,13 +502,13 @@ function GiftPurchaseForm({ setIsviewOpen, isviewOpen, id, setId,refetchTable })
                                 </label>
                                 <input
                                     type="text"
-                                    name="qty"
+                                    name="inward_qty"
                                     minLength={""}
                                     maxLength={"5"}
                                     onInput={(e) => {
                                         e.target.value = e.target.value.replace(/\D/g, ""); 
                                     }}
-                                    value={formData.qty}
+                                    value={formData.inward_qty}
                                     onChange={handleChange}
                                     
                                     className="border-2 border-[#F2F2F9] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
@@ -511,7 +516,7 @@ function GiftPurchaseForm({ setIsviewOpen, isviewOpen, id, setId,refetchTable })
                                     required
                                 />
                                 {
-                                    errors.qty && <span className="text-red-500 text-sm">{errors.qty}</span>
+                                    errors.inward_qty && <span className="text-red-500 text-sm">{errors.inward_qty}</span>
                                 }
                             </div>
 

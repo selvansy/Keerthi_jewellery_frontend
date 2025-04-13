@@ -1,17 +1,25 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from 'react-redux';
 import { setScemeAccountId } from "../../../../redux/clientFormSlice"
-import { getschemeaccountbyid } from '../../../api/Endpoints'
+import { getschemeaccountbyid, searchPaymentBySchNo } from '../../../api/Endpoints'
 import Table from '../../common/Table'
 import { formatNumber } from "../../../utils/commonFunction";
+import { useMutation } from "@tanstack/react-query";
 
 function Ledgerdetails({ setIsOpen }) {
- const layout_color = useSelector((state) => state.clientForm.layoutColor);
+
+  const layout_color = useSelector((state) => state.clientForm.layoutColor);
   let dispatch = useDispatch();
   const id = useSelector((state) => state.clientForm.id_scheme_account);
-  console.log("----", id)
-  const [ledgerData, setLedgerData] = useState([]);
+
+  const [ledgerData, setLedgerData] = useState({});
   const [paymentdata, setpaymentdata] = useState([]);
+  const [isLoading, setisLoading] = useState(true)
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalDocument, setTotalDocument] = useState(0)
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+
   const handleCancel = (e) => {
     e.preventDefault();
     dispatch(setScemeAccountId(null))
@@ -24,13 +32,61 @@ function Ledgerdetails({ setIsOpen }) {
 
   }, [id])
 
+  useEffect(() => {
+    if (!ledgerData) return;
+    if (Object.keys(ledgerData).length !== 0) {
 
+      const payload = {
+        page: currentPage,
+        limit: itemsPerPage,
+        mobile: ledgerData?.mobile
+      }
+      handleSearchvalue(payload)
+    } else {
+      setpaymentdata([]);
+    }
+  }, [ledgerData])
+
+
+  const handleItemsPerPageChange = (value) => {
+    setItemsPerPage(value);
+    setCurrentPage(1);
+  };
+
+  const handlePageChange = (page) => {
+    const pageNumber = Number(page);
+    if (
+      !pageNumber ||
+      isNaN(pageNumber) ||
+      pageNumber < 1 ||
+      pageNumber > totalPages
+    ) {
+      return;
+    }
+    setCurrentPage(pageNumber);
+  };
+
+
+  const { mutate: handleSearchvalue } = useMutation({
+    mutationFn: searchPaymentBySchNo,
+    onSuccess: (response) => {
+      if (response) {
+        setpaymentdata(response.data);
+        setTotalDocument(response.totalDocument)
+        setCurrentPage(response.currentPage)
+        setTotalPages(response.totalPages)
+        toast.success(response.message);
+      }
+    },
+    onError: (error) => {
+      toast.error(error.message || 'Something went wrong');
+    }
+  });
 
 
   const getLedgerData = async (data) => {
     if (!data) return;
-    const response = await getschemeaccountbyid(data );
-    
+    const response = await getschemeaccountbyid(data);
     if (response) {
       setLedgerData({
         id: response.data._id,
@@ -58,158 +114,97 @@ function Ledgerdetails({ setIsOpen }) {
         address: response.data.id_customer.address,
         customer_name: response?.data?.id_customer?.firstname + ' ' + response.data?.id_customer?.lastname,
         mobile: response.data.id_customer.mobile,
-        maturity_date: response.data.maturity_date
+        maturity_date: response.data.maturity_date,
+        paid_weight:response.data?.payment?.metal_weight,
+        gift_issues:response.data?.gift_issues
       });
-      setpaymentdata(response.data.paymentdata);
+      // setpaymentdata(response.data.paymentdata);
     } else {
       toast.error('Customer not created!');
     }
   };
 
-  console.log("ledgerData----",ledgerData)
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-GB');
+  };
+
+
+  const columns = [
+    // {
+    //     header: 'S.No',
+    //     cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
+    // },
+    {
+      header: "Installments",
+      cell: (row) => row?.paid_installments ?? "-",
+    },
+    {
+      header: "Receipt No",
+      cell: (row) => row?.payment_receipt
+    },
+    {
+      header: "Total Amount",
+      cell: (row) => row?.total_amt
+    },
+    {
+      header: "A/c No",
+      cell: (row) => row?.id_scheme_account?.scheme_acc_number ?? "-"
+    },
+    {
+      header: "ITR/UTR",
+      cell: (row) => row?.itr_utr ?? "-"
+    },
+    {
+      header: "Remarks",
+      cell: (row) => row?.remark ?? "-"
+    },
+
+
+  ]
+
+
   return (
-    <div>
+    <div className="bg-white mx-auto">
 
-<div className="flex justify-center flex-col">
-  {/* Ledger Details Section */}
-  <div className=" mb-2 p-3">
-    <div className="grid grid-rows-2 lg:grid-cols-2  gap-4 space-y-2">
-      <div className=" flex flex-row gap-3">
-        <p className="text-md font-semibold text-gray-700">Customer Name</p>
-        <p className="text-sm text-[#6C7086] ">{ledgerData?.customer_name || 'N/A'}</p>
+      {/* Scheme Details */}
+      <div className="grid grid-rows-2 lg:grid-cols-2 gap-4 text-sm">
+        <Detail label="Accounter Name" value={ledgerData?.account_name} />
+        <Detail label="Mobile No" value={ledgerData?.mobile} />
+        <Detail label="Scheme Name" value={ledgerData?.scheme_name} />
+        <Detail label="Start Date" value={formatDate(ledgerData?.start_date)} />
+        <Detail label="Scheme A/C No" value={ledgerData?.scheme_acc_number} />
+        <Detail label="Maturity Date" value={ledgerData?.maturity_date} />
+        <Detail label="Classification" value={ledgerData?.id_classification?.description ?? "-"} />
+        <Detail
+          label="Paid Installments"
+          value={`${ledgerData?.total_paidinstallments ?? "-"}/${ledgerData?.total_installments}`}
+        />
+        <Detail label="Scheme Type" value={ledgerData?.scheme_typename} />
+        <Detail label="Paid Amount" value={formatNumber({value:ledgerData?.total_paidamount ?? "",decimalPlaces:0})} />
+        <Detail label="Bonus Amount" value={   
+          formatNumber({value:paymentdata[0]?.wallet?.balance_amt ?? "-",decimalPlaces:0}) } />
+        <Detail label="Paid Weight" value={ledgerData?.paid_weight} />
+        <Detail label="Total Amount" value={formatNumber({value:ledgerData?.total_paidamount ?? "",decimalPlaces:0})} />
+        <Detail label="Gift Handover" value={ledgerData?.gift_issues} />
+        <Detail label="Status" value={ledgerData?.status} highlight />
       </div>
 
-      <div className="flex flex-row gap-3">
-        <p className="text-md font-semibold text-gray-700">Mobile Number</p>
-        <p className="text-sm text-[#6C7086]">{ledgerData?.mobile || 'N/A'}</p>
-      </div>
+      {/* Installments Table */}
+      <div className="mt-10">
 
-      <div className=" flex flex-row gap-3">
-        <p className="text-md font-semibold text-gray-700">Scheme Type</p>
-        <p className="text-sm text-[#6C7086]">
-          {ledgerData?.scheme_typename}
-        </p>
-      </div>
+        <div className="overflow-x-auto">
+          <Table
+            data={paymentdata}
+            columns={columns}
+            isLoading={isLoading}
+            currentPage={currentPage}
+            handlePageChange={handlePageChange}
+            itemsPerPage={itemsPerPage}
+            totalItems={totalDocument}
+            handleItemsPerPageChange={handleItemsPerPageChange}
+          />
 
-      <div className=" flex flex-row gap-3">
-        <p className="text-md font-semibold text-gray-700">Classification</p>
-        <p className="text-sm text-[#6C7086]">{ledgerData?.id_classification?.name || 'N/A'}</p>
-      </div>
-
-      <div className=" flex flex-row gap-3">
-        <p className="text-md font-semibold text-gray-700">Scheme Name</p>
-        <p className="text-sm text-[#6C7086]">
-          {(() => {
-            if (ledgerData.scheme_type === 0 || ledgerData.scheme_type === 1 || ledgerData.scheme_type === 2) {
-              return `${ledgerData.scheme_name} ( Rs. ${ledgerData.amount} )`;
-            } else if (ledgerData.scheme_type === 4 || ledgerData.scheme_type === 6 || ledgerData.scheme_type === 7 || ledgerData.scheme_type === 8 || ledgerData.scheme_type === 9 || ledgerData.scheme_type === 10) {
-              return `${ledgerData.scheme_name} ( Rs. ${ledgerData.min_amount} ) (${ledgerData.max_amount})`;
-            } else if (ledgerData.scheme_type === 3) {
-              return `${ledgerData.scheme_name} (${ledgerData.min_weight}) (${ledgerData.max_weight})`;
-            } else {
-              return `${ledgerData.scheme_name} ( Rs. ${ledgerData.payamount} )`;
-            }
-          })()}
-        </p>
-      </div>
-
-      <div className=" flex flex-row gap-3">
-        <p className="text-md font-semibold text-gray-700">Account No</p>
-        <p className="text-sm text-[#6C7086]">{ledgerData?.scheme_acc_number || 'N/A'}</p>
-      </div>
-
-      <div className=" flex flex-row gap-3">
-        <p className="text-md font-semibold text-gray-700">Account Name</p>
-        <p className="text-sm text-[#6C7086]">{ledgerData?.account_name || 'N/A'}</p>
-      </div>
-
-      <div className=" flex flex-row gap-3">
-        <p className="text-md font-semibold text-gray-700">Start Date</p>
-        <p className="text-sm text-[#6C7086]">{ledgerData?.start_date || 'N/A'}</p>
-      </div>
-
-      <div className=" flex flex-row gap-3">
-        <p className="text-md font-semibold text-gray-700">Bill No</p>
-        <p className="text-sm text-[#6C7086]">{ledgerData?.bill_no || 'N/A'}</p>
-      </div>
-
-      <div className=" flex flex-row gap-3">
-        <p className="text-md font-semibold text-gray-700">Bill Date</p>
-        <p className="text-sm text-[#6C7086]">{ledgerData?.bill_date || 'N/A'}</p>
-      </div>
-
-      <div className=" flex flex-row gap-3">
-        <p className="text-md font-semibold text-gray-700">Total Installment</p>
-        <p className="text-sm text-[#6C7086]">{ledgerData?.total_installments || '0'}</p>
-      </div>
-
-      <div className=" flex flex-row gap-3">
-        <p className="text-md font-semibold text-gray-700">Paid Installments</p>
-        <p className="text-sm text-[#6C7086]">{ledgerData?.total_paidinstallments || '0'}</p>
-      </div>
-
-      <div className=" flex flex-row gap-3">
-        <p className="text-md font-semibold text-gray-700">Paid Amount</p>
-        <p className="text-sm text-[#6C7086]">
-        {formatNumber({value:ledgerData?.total_paidamount,decimalPlaces:0}) || '0'} </p>
-      </div>
-
-      <div className=" flex flex-row gap-3">
-        <p className="text-md font-semibold text-gray-700">Bonus</p>
-        <p className="text-sm text-[#6C7086]">
-        {formatNumber({value:ledgerData?.id_scheme?.bonus_amount,decimalPlaces:0}) || '0'} </p>
-      </div>
-
-      <div className=" flex flex-row text-center gap-3">
-        <p className="text-md font-semibold text-gray-700">Total Amount</p>
-        <p className="text-sm text-[#6C7086] "> {formatNumber({value:ledgerData?.total_paidamount,decimalPlaces:0}) || '0'}</p>
-      </div>
-    </div>
-  </div>
-
-  {/* Payment Data Table */}
-  <div className="overflow-x-auto" style={{ maxHeight:'300px', overflowY: 'auto' }}>
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50 sticky top-0">
-              <tr>
-                <th className="px-4 py-2">SNo</th>
-                <th className="px-4 py-2">Paid Inst</th>
-                <th className="px-4 py-2">Paid Date</th>
-                <th className="px-4 py-2">Receipt No</th>
-                {/* <th className="px-4 py-2">Total AMT</th> */}
-                <th className="px-4 py-2">Mode of payment</th>
-              </tr>
-            </thead>
-            <tbody>
-              {paymentdata.map((payment, index) => {
-                const formatDate = (dateString) => {
-                  const date = new Date(dateString);
-                  return date.toLocaleDateString('en-GB');
-                };
-
-                return (
-                  <tr key={payment._id} className="border-t my-auto">
-                    <td className="px-4 py-2">{index + 1}</td>
-                    <td className="px-4 py-2">{payment.paid_installments}</td>
-                    <td className="px-4 py-2">{formatDate(payment.date_payment)}</td>
-                    <td className="px-4 py-2">{payment.payment_receipt}</td>
-                    {/* <td className="px-4 py-2">{payment.total_amt}</td> */}
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div className="bg-white p-2 border-t-2 border-gray-300 mt-4">
-        <div className="flex justify-end gap-2 mt-3">
-          <button
-            className="bg-[#E2E8F0] text-black rounded-md p-2 w-full lg:w-20"
-            onClick={handleCancel}
-          >
-            Cancel
-          </button>
         </div>
       </div>
     </div>
@@ -217,3 +212,16 @@ function Ledgerdetails({ setIsOpen }) {
 }
 
 export default Ledgerdetails;
+
+
+function Detail({ label, value, highlight = false }) {
+  return (
+    <div className="flex">
+      <span className="w-44 font-medium text-gray-700">{label}</span>
+      <span className={`${highlight ? 'text-green-600 font-semibold' : 'text-gray-600 text-start'} `}>
+        {value || 'N/A'}
+      </span>
+
+    </div>
+  );
+}
