@@ -788,7 +788,7 @@ const AddCloseAccount = () => {
           </div>
         </div>
 
-        {/* <div className="flex justify-end space-x-4">
+        <div className="flex justify-end space-x-4">
         <button
           type="button"
           className="w-20 h-9 border-2 bg-[#F6F7F9] border-[#f2f3f8] rounded-md hover:bg-gray-50 flex justify-center items-center text-[#6C7086]"
@@ -801,9 +801,9 @@ const AddCloseAccount = () => {
           disabled={isLoading}
           className="w-20 h-9 bg-blue-900 text-white rounded-md hover:bg-blue-800 flex justify-center items-center"
         >
-          {isLoading ? <SpinLoading /> : id ? "Update" : "Save"}
+          {isLoading ? <SpinLoading /> : "Save"}
         </button>
-      </div> */}
+      </div>
       </form>
       {otpSended && (
         <ModelOne

@@ -114,6 +114,7 @@ import ViewScheme from "../chit/components/ourscheme/scheme/ViewScheme";
 import GiftHandOverForm from "../chit/components/gift/giftissues/GiftHandOverForm";
 import SchemeAccount from "../chit/components/manageaccount/schemeaccount/SchemeAccount";
 import GifthandoverDetails from "../chit/components/manageaccount/schemeaccount/GifthandoverDetails";
+import AmountPayble from "../chit/components/Report/amountPayble";
 
 const RouteList = [
 
@@ -824,9 +825,9 @@ const RouteList = [
     element:<Base renderContent={SchemeAccount}/>
   },
   {
-    name:"Gift Handover",
-    path:"/managecustomers/customerschemes/gifthandover",
-    element:<Base renderContent={GifthandoverDetails}/>
+    name:"Amount Payble",
+    path:'/report/amountpayble',
+    element:<Base renderContent={AmountPayble} />
   },
  
 

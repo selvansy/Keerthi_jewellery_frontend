@@ -39,8 +39,8 @@ const Product = () => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [searchLoading, setSearchLoading] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
-  const [totalDocuments,setTotalDocuments]=useState(0)
-  const [activeFilter,setActiveFilter]=useState(null)
+  const [totalDocuments, setTotalDocuments] = useState(0);
+  const [activeFilter, setActiveFilter] = useState(null);
 
   //mutation to get getproductData
   const { mutate: getproductData } = useMutation({
@@ -49,7 +49,7 @@ const Product = () => {
       setisLoading(false);
       setSearchLoading(false);
       setproductData(response.data);
-      setTotalDocuments(response.totalDocument)
+      setTotalDocuments(response.totalDocument);
       setTotalPages(response.data.totalPages);
     },
     onError: (error) => {
@@ -66,9 +66,9 @@ const Product = () => {
       limit: itemsPerPage,
       search: debouncedSearch,
       id_branch: id_branch,
-      active:activeFilter
+      active: activeFilter,
     });
-  }, [currentPage, itemsPerPage, debouncedSearch,activeFilter]);
+  }, [currentPage, itemsPerPage, debouncedSearch, activeFilter]);
 
   const handleSearch = (e) => {
     setSearchLoading(true);
@@ -114,9 +114,7 @@ const Product = () => {
     );
   };
 
-
-
- useEffect(() => {
+  useEffect(() => {
     const handleDelete = (id) => {
       deleteProduct(id);
     };
@@ -128,28 +126,24 @@ const Product = () => {
     };
   }, []);
 
+  const { mutate: deleteProduct } = useMutation({
+    mutationFn: ({ productId }) => deleteproduct(productId),
+    onSuccess: (response) => {
+      toast.success(response.message);
+      getproductData({
+        search: debouncedSearch,
+        page: currentPage,
+        limit: itemsPerPage,
+      });
 
-    const { mutate: deleteProduct } = useMutation({
-      mutationFn: ({ productId }) => deleteproduct(productId),
-      onSuccess: (response) => {
-        toast.success(response.message);
-        getproductData({
-          search: debouncedSearch,
-          page: currentPage,
-          limit: itemsPerPage,
-        });
-  
-        setDeleteId(null);
-        eventEmitter.off("CONFIRMATION_SUBMIT");
-      },
-      onError: (error) => {
-        setDeleteId(null);
-        eventEmitter.off("CONFIRMATION_SUBMIT");
-      },
-    });
-  
-
-
+      setDeleteId(null);
+      eventEmitter.off("CONFIRMATION_SUBMIT");
+    },
+    onError: (error) => {
+      setDeleteId(null);
+      eventEmitter.off("CONFIRMATION_SUBMIT");
+    },
+  });
 
   const handleEdit = (id) => {
     navigate(`/catalog/editproduct/${id}`);
@@ -188,8 +182,8 @@ const Product = () => {
       header: "Image",
       cell: (row) => (
         <div className="w-12 h-12 rounded overflow-hidden">
-          <img 
-            src={`${row.pathurl}${row.product_image[0]}`} 
+          <img
+            src={`${row.pathurl}${row.product_image[0]}`}
             alt={row?.branchName || "Preview"}
             className="w-full h-full object-cover"
           />
@@ -203,7 +197,7 @@ const Product = () => {
         return date.toLocaleDateString("en-GB");
       },
     },
-   
+
     {
       header: "Active",
       accessor: "active",
@@ -215,19 +209,28 @@ const Product = () => {
             checked={row?.active === true}
             onChange={() => handleStatusToggle(row?._id)}
           />
-                     <div
- className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-[#E7EEF5] p-[2px] after:duration-300 after:bg-[#004181] ${
+          <div
+            className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-[#E7EEF5] p-[2px] after:duration-300 after:bg-[#004181] ${
               row?.active === true
                 ? "peer-checked:bg-[#E7EEF5] peer-checked:ring-[#E7EEF5]"
                 : "peer-checked:bg-[#E7EEF5] peer-checked:ring-gray-400"
-            } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-[${layout_color}] peer-hover:after:scale-95`}          ></div>
+            } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-[${layout_color}] peer-hover:after:scale-95`}
+          ></div>
         </label>
       ),
     },
     {
       header: "Actions",
       cell: (row, rowIndex) => (
-        <Action row={row} data={productData} rowIndex={rowIndex} activeDropdown={activeDropdown} setActive={hanldeActiveDropDown}  handleEdit={handleEdit} handleDelete={handleDelete}/>
+        <Action
+          row={row}
+          data={productData}
+          rowIndex={rowIndex}
+          activeDropdown={activeDropdown}
+          setActive={hanldeActiveDropDown}
+          handleEdit={handleEdit}
+          handleDelete={handleDelete}
+        />
       ),
       sticky: "right",
     },
@@ -236,7 +239,6 @@ const Product = () => {
   const hanldeActiveDropDown = (data) => {
     setActiveDropdown(data);
   };
-
 
   const handleItemsPerPageChange = (value) => {
     setItemsPerPage(value);
@@ -249,15 +251,11 @@ const Product = () => {
 
   return (
     <>
-    <Breadcrumb items={[
-      {label:"Catelogue"},
-      {label:"Product",active:true}
-    ]} />
-    <div className="flex flex-col p-4 bg-white border border-[#F2F2F9]  rounded-[16px] ">
-
-
-    <div className="flex flex-col gap-4 mt-4 sm:flex-row sm:justify-between sm:items-center">
-          {/* Search Input - Full width on mobile, moves to right side on desktop */}
+      <Breadcrumb
+        items={[{ label: "Catelogue" }, { label: "Product", active: true }]}
+      />
+      <div className="flex flex-col p-4 bg-white border border-[#F2F2F9]  rounded-[16px] ">
+        <div className="flex flex-col gap-4 mt-4 sm:flex-row sm:justify-between sm:items-center">
           <div className="relative w-full  sm:mb-0 sm:order-2 sm:w-auto">
             <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
               {searchLoading ? (
@@ -273,26 +271,22 @@ const Product = () => {
             />
           </div>
 
-          {/* Container for ActiveDropdown and Add Category button */}
           <div className="flex flex-row w-full sm:order-1 sm:w-auto sm:mr-auto">
-            {/* ActiveDropdown - half width on mobile */}
             <div className="w-1/2 sm:w-auto me-1">
-              <ActiveDropdown setActiveFilter={setActiveFilter}/>
+              <ActiveDropdown setActiveFilter={setActiveFilter} />
             </div>
 
-            {/* Button - half width on mobile, moves to right on desktop */}
             <div className="w-1/2 sm:hidden">
               <button
                 className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-full"
                 onClick={handleClick}
                 style={{ backgroundColor: layout_color }}
               >
-                + Add Category
+                + Add Product
               </button>
             </div>
           </div>
 
-          {/* Desktop-only button - appears on the right side */}
           <div className="hidden sm:block sm:order-3">
             <button
               className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-[135px]"
@@ -304,16 +298,21 @@ const Product = () => {
           </div>
         </div>
 
+        <div className="mt-4">
+          <Table
+            data={productData}
+            currentPage={currentPage}
+            handleItemsPerPageChange={handleItemsPerPageChange}
+            handlePageChange={handlePageChange}
+            itemsPerPage={itemsPerPage}
+            totalItems={totalDocuments}
+            columns={columns}
+            loading={isLoading}
+          />
+        </div>
 
-
-
-      <div className="mt-4">
-        <Table data={productData} currentPage={currentPage} handleItemsPerPageChange={handleItemsPerPageChange} handlePageChange={handlePageChange}  itemsPerPage={itemsPerPage} totalItems={totalDocuments} columns={columns} loading={isLoading} />
+        <Modal />
       </div>
-   
-
-      <Modal />
-    </div>
     </>
   );
 };

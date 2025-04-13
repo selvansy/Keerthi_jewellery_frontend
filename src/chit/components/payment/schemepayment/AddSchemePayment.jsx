@@ -60,6 +60,7 @@ const AddSchemePayment = () => {
   const [maxWeight, setMaxWeight] = useState(0);
   const [showWeightInput, setShowWeightInput] = useState(false);
   const [showAmountInput, setShowAmountInput] = useState(false);
+  const [isFirstPayment,setIsFirstPay]=useState(false)
 
   // Customisations for react-select
   const customStyles = (isReadOnly) => ({
@@ -114,6 +115,11 @@ const AddSchemePayment = () => {
       total_installments: 1,
       id_classification: "",
       installments: 1,
+      min_amount:0,
+      max_amount:0,
+      min_weight:0,
+      max_weight:0,
+      isFirstPayment:false
     },
 
     validationSchema: Yup.object({
@@ -126,17 +132,41 @@ const AddSchemePayment = () => {
       id_scheme_account: Yup.string().required("Scheme account is required"),
       date_payment: Yup.date().required("Payment date is required"),
       metal_rate: Yup.number().optional("Metal rate is required"),
-      metal_weight: Yup.number().when("showWeightInput", {
-        is: true,
-        then: Yup.number()
-          .required("Metal weight is required")
-          .min(0.01, "Weight must be greater than 0")
-          .max(Yup.ref("maxWeight"), "Weight cannot exceed maximum allowed"),
+      // metal_weight: Yup.number().when("showWeightInput", {
+      //   is: true,
+      //   then: Yup.number()
+      //     .required("Metal weight is required")
+      //     .min(0.01, "Weight must be greater than 0")
+      //     .max(Yup.ref("maxWeight"), "Weight cannot exceed maximum allowed"),
+      // }),
+      metal_weight: Yup.number().when([], {
+        is: () => showWeightInput,
+        then: () => 
+          Yup.number()
+            .required("Metal weight is required")
+            .min(minWeight, `Weight must be at least ${minWeight}g`)
+            .max(maxWeight, `Weight cannot exceed ${maxWeight}g`),
+        otherwise: () => Yup.number().notRequired()
       }),
-      payment_amount: Yup.number()
-        .required("Amount is required")
-        .min(minAmount, `Amount must be at least ${minAmount}`)
-        .max(maxAmount, `Amount must be at most ${maxAmount}`),
+      // payment_amount: Yup.number().when('isFirstPayment', {
+      //   is: true,
+      //   then: Yup.number()
+      //     .required("Amount is required")
+      //     .min(minAmount, `Amount must be at least ${minAmount}`)
+      //     .max(maxAmount, `Amount must be at most ${maxAmount}`),
+      //   otherwise: Yup.number().notRequired(),
+      // }),      
+      payment_amount: Yup.number().when([], {
+        is: () => showAmountInput && isFirstPayment,
+        then: () => 
+          Yup.number()
+            .required("Amount is required")
+            .min(minAmount, `Amount must be at least ${minAmount}`)
+            .max(maxAmount, `Amount cannot exceed ${maxAmount}`),
+        otherwise: () => 
+          Yup.number()
+            .required("Amount is required")
+      }),
       total_amt: Yup.number().optional("Total amount is required"),
       payment_mode: Yup.string().required("Payment mode is required"),
       itr_utr: Yup.string(),
@@ -433,16 +463,22 @@ const AddSchemePayment = () => {
         formik.setFieldValue("payment_amount", amount);
       }
     } else if (classificationOrder === 3) {
-      const isFirstPayment = last_paid_amount === 0;
+      const output = last_paid_amount === 0;
+      setIsFirstPay(output)
+      formik.setFieldValue('isFirstPayment',isFirstPayment)
   
       if (isFirstPayment) {
         if (isWeightScheme) {
           setMinWeight(id_scheme?.min_weight || 0);
+          formik.setFieldValue("min_weight", id_scheme?.min_weight);
           setMaxWeight(id_scheme?.max_weight || 0);
+          formik.setFieldValue("max_weight", id_scheme?.max_weight);
           setShowWeightInput(true);
         } else {
           setMinAmount(id_scheme?.min_amount || 0);
+          formik.setFieldValue("min_amount", id_scheme?.min_amount);
           setMaxAmount(id_scheme?.max_amount || 0);
+          formik.setFieldValue("max_amount", id_scheme?.max_amount);
           setShowAmountInput(true);
           setIspayamtreadOnly(false);
         }
@@ -559,6 +595,13 @@ const AddSchemePayment = () => {
   const toggleAccordion = () => {
     setIsExpanded(!isExpanded);
   };
+
+  useEffect(()=>{
+    if(formik.values.installments){
+      const newTotal = formik.values.installments * formik.values.payment_amount
+      formik.setFieldValue('payment_amount',newTotal)
+    }
+  },[formik.values.installments])
 
   console.log(formik.errors);
   console.log(formik.values)
