@@ -18,8 +18,6 @@ import { createPortal } from 'react-dom';
 import eyeIcon from "../../../assets/icons/eye.svg"
 
 
-
-
 const customSelectStyles = (isReadOnly) => ({
     control: (base, state) => ({
         ...base,

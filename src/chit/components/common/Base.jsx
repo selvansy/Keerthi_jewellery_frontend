@@ -31,6 +31,7 @@ import Search from "../../../assets/search.svg";
 import CustomerModal from "./customerModal";
 import settings from "../../../assets/dashboard/setting.svg"
 import notification from "../../../assets/dashboard/notification.svg"
+import Dashboard from '../../../assets/icons/Dashboard.svg'
 
 const Base = ({ renderContent: RenderContent }) => {
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -590,7 +591,7 @@ const Base = ({ renderContent: RenderContent }) => {
         <nav className="flex-1 text-white scrollbar-hide overflow-y-auto">
           <MenuItem
             text="Dashboard"
-            menuIcon="Home"
+            menuIcon={Dashboard}
             hasSubmenu={false}
             onClick={() => {
               setSelectedSection("Dashboard");

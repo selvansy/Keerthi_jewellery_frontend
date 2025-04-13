@@ -113,6 +113,7 @@ const AddEmployee = () => {
       date_of_birth: null,
       date_of_join: null,
       aadharNumber: "",
+      employeeIncentivePercentage:0
       // phone: "",
     },
     validationSchema: Yup.object({
@@ -240,7 +241,6 @@ const AddEmployee = () => {
   useEffect(() => {
     if (countryResponse) {
       // const countryId = countryResponse.data[0]._id;
-      console.log("kd");
       const countryId = countryResponse.data.map((state) => ({
         value: state._id,
         label: state.country_name,
@@ -548,6 +548,8 @@ const AddEmployee = () => {
                 ? "Pan Number"
                 : field === "aadharNumber"
                 ? "Aadhar card number"
+                : "employeeIncentivePercentage"
+                ? "Employee Incentive Percentage"
                 : field
                     .replace(/_/g, " ")
                     .replace(/\b\w/g, (char) => char.toUpperCase())}
@@ -555,7 +557,7 @@ const AddEmployee = () => {
                 <span className="text-red-500"> *</span>
               )}
             </label>
-
+            
             {field === "id_state" ? (
               <Select
                 options={states}
@@ -650,7 +652,7 @@ const AddEmployee = () => {
         </p>
       </div>
 
-      <div className="bg-[#FFFFFF] rounded-3xl p-6 shadow-sm border">
+      <div className="bg-[#FFFFFF] rounded-xl p-6 shadow-sm border">
         <h2 className="text-lg font-semibold mb-4 border-b pb-4">
           {id ? "Edit Employee" : "Add Employee"}
         </h2>
@@ -767,7 +769,7 @@ const AddEmployee = () => {
             </div>
           </div>
         </div>
-        <div className="flex justify-end space-x-4 mt-4">
+        <div className="flex justify-end space-x-4 mt-4 py-5">
           <button
             type="button"
             onClick={() => navigate("/employee/details/")}

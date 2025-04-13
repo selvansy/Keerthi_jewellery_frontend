@@ -241,7 +241,7 @@ const GiftPurchase = () => {
     },
     {
       header: "Total",
-      cell: (row) => row?.price
+      cell: (row) => row?.total
     },
     {
       header: "Sell price",

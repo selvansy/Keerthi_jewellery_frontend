@@ -8,7 +8,7 @@ import Select from "react-select";
 import Table from '../../common/Table';
 import { Breadcrumb } from '../../common/breadCumbs/breadCumbs';
 import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,useLocation } from 'react-router-dom';
 import { form } from 'framer-motion/client';
 //import customSelectStyles from '../../common/customSelectStyles';//
 
@@ -19,44 +19,51 @@ const customComponents = {
 };
 const customSelectStyles = (isReadOnly) => ({
     control: (base, state) => ({
-      ...base,
-      minHeight: "42px",
-      backgroundColor: "white",
-      border: state.isFocused ? "1px solid black" : "2px solid #f2f3f8",
-      boxShadow: state.isFocused ? "0 0 0 1px black" : "none",
-      borderRadius: "0.375rem",
-      "&:hover": {
-        color: "#e2e8f0",
-      },
-      pointerEvents: !isReadOnly ? "none" : "auto",
-      opacity: !isReadOnly ? 1 : 1,
+        ...base,
+        minHeight: "42px",
+        backgroundColor: "white",
+        border: state.isFocused ? "1px solid black" : "2px solid #f2f3f8",
+        boxShadow: state.isFocused ? "0 0 0 1px black" : "none",
+        borderRadius: "0.375rem",
+        "&:hover": {
+            color: "#e2e8f0",
+        },
+        pointerEvents: !isReadOnly ? "none" : "auto",
+        opacity: !isReadOnly ? 1 : 1,
     }),
     indicatorSeparator: () => ({
-      display: "none",
+        display: "none",
     }),
     placeholder: (base) => ({
-      ...base,
-      color: "#858293",
-      fontWeight: "thin",
-      // fontStyle: "bold",
+        ...base,
+        color: "#858293",
+        fontWeight: "thin",
+        // fontStyle: "bold",
     }),
     dropdownIndicator: (provided, state) => ({
-      ...provided,
-      color: "#232323",
-      "&:hover": {
+        ...provided,
         color: "#232323",
-      },
+        "&:hover": {
+            color: "#232323",
+        },
     }),
-  });
+});
 
-  const inputHeight = "42px";
+const inputHeight = "42px";
 
 
 
 function GiftHandOverForm() {
 
-    const [isLoading, setLoading] = useState(false);
 
+
+    
+    const navigate = useNavigate();
+    const roledata = useSelector((state) => state.clientForm.roledata);
+    const layout_color = useSelector((state) => state.clientForm.layoutColor);
+    const id_branch = roledata?.branch;
+    const branchaccess = roledata?.id_branch;
+    const [isLoading, setLoading] = useState(false);
     const [AddLoading, setAddLoading] = useState(false);
     const [visibleaccount, setVisibleaccount] = useState(false);
     const [searchGiftCode, setSearchGiftCode] = useState("");
@@ -75,19 +82,17 @@ function GiftHandOverForm() {
     const [customer_name, setCustomername] = useState('');
     const [address, setAddress] = useState('');
     const [noOfgifts, setNoGifts] = useState("")
-    const [alloted_gifts, setAllotedGifts] = useState("")
+    const [alloted_gifts, setAllotedGifts] = useState(0)
     const [schId, setSchId] = useState("");
     const [giftStock, setGiftStock] = useState("")
     const [addGift, setAddGift] = useState([])
 
 
-
-    const navigate = useNavigate();
-    const roledata = useSelector((state) => state.clientForm.roledata);
-    const layout_color = useSelector((state) => state.clientForm.layoutColor);
-    const id_branch = roledata?.branch;
-    const branchaccess = roledata?.id_branch;
-
+    const location = useLocation();
+    const data = location?.state?.data;
+     
+    console.log("data",data)
+    
     const [formData, setFormData] = useState({
         id_customer: "",
         mobile: null,
@@ -96,6 +101,78 @@ function GiftHandOverForm() {
         gift_issues: [],
         qty: "",
     });
+
+  
+    const scheme_gift = formData.issue_type;
+
+
+    useEffect(() => {
+        if(!data || scheme_gift === 2) return;
+        if (data) {
+            handlesearchScheme({ value: data.mobile, branchId: formData.id_branch })
+            handleSchemeAcc(1)
+            handleChangeSchemeAccount({value:data._id,label:data?.scheme_name,Allottedgifts:data?.allottedgifts})
+
+            // setVisibleaccount(true)
+            setFormData((prev) => ({
+                ...prev,
+                issue_type: 1,
+            }));
+        
+            setSchId(data._id)
+        } else {
+            setFormData({
+                id_customer: "",
+                mobile: null,
+                id_branch: "",
+                issue_type: null,
+                gift_issues: [],
+                qty: "",
+            })
+        }
+    }, [data,scheme_gift])
+
+
+    
+
+
+    useEffect(() => {
+
+        if (!roledata) return;
+        if (id_branch !== "0" || id_branch !== 0) {
+            setFormData(prev => ({
+                ...prev,
+                id_branch: branchaccess
+            }));
+            setIdbranch(branchaccess)
+        }
+
+    }, [branchaccess, roledata]);
+
+    useEffect(() => {
+        if (!schId) return;
+        const payload = {
+            page: currentPage,
+            limit: itemsPerPage,
+            search: "",
+            id: schId
+        }
+        handleGiftIssuesBySchId(payload)
+    }, [currentPage, itemsPerPage, schId, visibleaccount])
+
+
+    const { mutate: handleGiftIssuesBySchId } = useMutation({
+        mutationFn: (value) => giftIssueBySchId(value),
+        onSuccess: (response) => {
+            if (response) {
+                setGiftHis(response.giftsList)
+                setTotalPages(response.totalPages)
+                setCurrentPage(response.currentPage)
+                setTotalDocuments(response.totalDocument)
+            }
+        },
+    });
+
 
     const validateForm = () => {
         const errors = {};
@@ -199,31 +276,6 @@ function GiftHandOverForm() {
     }, [giftResponse, branchresponse, giftIssueResponse]);
 
 
-    useEffect(() => {
-
-        if (!roledata) return;
-        if (id_branch !== "0" || id_branch !== 0) {
-            setFormData(prev => ({
-                ...prev,
-                id_branch: branchaccess
-            }));
-            setIdbranch(branchaccess)
-        }
-
-    }, [branchaccess, roledata]);
-
-    useEffect(() => {
-        if (!schId) return;
-        const payload = {
-            page: currentPage,
-            limit: itemsPerPage,
-            search: "",
-            id: schId
-        }
-        handleGiftIssuesBySchId(payload)
-    }, [currentPage, itemsPerPage, schId, visibleaccount])
-
-
     const handleSearchmobile = () => {
 
         if (formData.mobile === "") {
@@ -270,22 +322,7 @@ function GiftHandOverForm() {
     });
 
 
-    const { mutate: handleGiftIssuesBySchId } = useMutation({
-        mutationFn: (value) => giftIssueBySchId(value),
-        onSuccess: (response) => {
-            if (response) {
-                setGiftHis(response.giftsList)
-                setTotalPages(response.totalPages)
-                setCurrentPage(response.currentPage)
-                Setentries(response.totalDocument)
-            }
-        },
-        // onError: (error) => {
-        //     console.log("eror")
-        //     // toast.error(error.response.data.message)
-        // }
-    });
-
+ 
     const { mutate: handlesearchcustomer } = useMutation({
         mutationFn: (payload) => searchcustomermobile(payload),
         onSuccess: (response) => {
@@ -683,7 +720,7 @@ function GiftHandOverForm() {
 
                                         handleSchemeAcc(item.value);
                                     }}
-                                
+
                                     styles={customSelectStyles(true)}
                                     isLoading={loadingGiftItems}
                                     placeholder="Select scheme customer"
@@ -723,15 +760,12 @@ function GiftHandOverForm() {
                                     if (e.key === "Enter") {
                                         e.preventDefault();
                                         handleSearchmobile()
-                                        // handlesearchcustomer({
-                                        //     id_branch: formData.id_branch,
-                                        //     search_mobile: formData.mobile,
-                                        // });
+                                      
                                     }
                                 }}
                             />
-                           {/* Search Icon */}
-                           <div
+                            {/* Search Icon */}
+                            <div
                                 onClick={handleSearchmobile}
                                 className="absolute flex items-center justify-center cursor-pointer right-[0%] rounded-r-lg top-[70%] -translate-y-1/2 w-10 md:h-[40px] md:top-[48px] h-[18%] sm:right-0 sm:top-[68%] lg:right-[0%]"
                             >
@@ -741,18 +775,6 @@ function GiftHandOverForm() {
                                     <Search size={15} className="text-black" />
                                 )}
                             </div>
-                          
-
-                            {/* <div
-                                onClick={handleSearchmobile}
-                                className="absolute flex items-center justify-center cursor-pointer right-[0%] rounded-r-lg top-[70%] -translate-y-1/2 w-10 md:h-[42px] md:top-[50px] h-[20%] sm:right-0 sm:top-[68%] lg:right-[0%]"
-                            >
-                                {isLoading ? (
-                                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
-                                ) : (
-                                    <Search size={15} className="text-black" />
-                                )}
-                            </div> */}
                         </div>
 
                         {visibleaccount === true && (
@@ -831,7 +853,7 @@ function GiftHandOverForm() {
                                 onChange={(selectedOption) => {
                                     setSearchGiftCode(selectedOption.value);
                                 }}
-                             
+
                                 components={customComponents}
                                 styles={customSelectStyles(true)}
                                 isLoading={loadingGifts}
@@ -848,7 +870,7 @@ function GiftHandOverForm() {
                                     <Search size={15} className="text-black" />
                                 )}
                             </div>
-                          
+
                         </div>
 
                         <div className="flex flex-col mt-2">
@@ -949,7 +971,7 @@ function GiftHandOverForm() {
 
 
             {((giftHis?.length > 0) && (visibleaccount === true)) && (
-            <div className="w-full flex flex-col bg-white border-2 border-[#f2f3f8] rounded-md p-6  mt-3 overflow-y-auto scrollbar-hide gap-8">
+                <div className="w-full flex flex-col bg-white border-2 border-[#f2f3f8] rounded-md p-6  mt-3 overflow-y-auto scrollbar-hide gap-8">
                     <div className="mt-6 p-3">
                         <div className="mb-2">
                             <h2 className='text-xl font-medium mb-4'>Gift HandOver History</h2>
@@ -965,8 +987,8 @@ function GiftHandOverForm() {
                             />
                         </div>
                     </div>
-            </div>
-               )}
+                </div>
+            )}
 
 
 

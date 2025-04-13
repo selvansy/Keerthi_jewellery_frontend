@@ -206,7 +206,7 @@ export const schemeValidationSchema = Yup.object({
     .required("Maturity Period is required")
     .integer("Maturity Period must be a whole number")
     .positive("Maturity Period must be a positive number")
-    .max(336, "Maturity Period cannot exceed 336")
+    .max(365, "Maturity Period cannot exceed 336")
     .test(
       "max-length",
       "Maturity month cannot be more than 3 digits",
