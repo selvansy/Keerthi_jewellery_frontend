@@ -247,6 +247,25 @@ function SchemeAccount() {
             ),
         },
         {
+            header: "Status",
+            cell: (row) => {
+
+                const status = row?.status_name;
+                const styles = statusStyles[status] || {
+                    bg: "bg-gray-200",
+                    text: "text-gray-700",
+                };
+
+                return (
+                    <div
+                        className={`w-24 h-8 rounded-md py-1 px-2 flex justify-center items-center font-medium ${styles.bg} ${styles.text}`}
+                    >
+                        {row?.status_name}
+                    </div>
+                );
+            },
+        },
+        {
             header: "Start Date",
             cell: (row) => {
                 const date = new Date(row?.start_date);
@@ -276,26 +295,6 @@ function SchemeAccount() {
             header: "Created Through",
             cell: (row) => row?.created_through
         },
-        {
-            header: "Status",
-            cell: (row) => {
-
-                const status = row?.status_name;
-                const styles = statusStyles[status] || {
-                    bg: "bg-gray-200",
-                    text: "text-gray-700",
-                };
-
-                return (
-                    <div
-                        className={`w-24 h-8 rounded-md py-1 px-2 flex justify-center items-center font-medium ${styles.bg} ${styles.text}`}
-                    >
-                        {row?.status_name}
-                    </div>
-                );
-            },
-        },
-
         {
             header: "Action",
             cell: (row) => (

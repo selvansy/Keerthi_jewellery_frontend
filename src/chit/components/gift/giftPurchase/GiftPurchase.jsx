@@ -229,7 +229,7 @@ const GiftPurchase = () => {
     },
     {
       header: "Qty",
-      cell: (row) => row?.qty
+      cell: (row) => row?.inward_qty
     },
     {
       header: "Price",
