@@ -85,7 +85,6 @@ const AddSchemePayment = () => {
       ...base,
       color: "#858293",
       fontWeight: "thin",
-      // fontStyle: "bold",
     }),
     dropdownIndicator: (provided, state) => ({
       ...provided,
@@ -127,19 +126,12 @@ const AddSchemePayment = () => {
       id_branch: Yup.string().required("Branch is required"),
       mobile: Yup.string()
         .required("Mobile number is required")
-        .matches(/^(\+)?\d*$/, "Invalid mobile number")
-        .min(10, "Mobile number must be at least 10 digits")
+        // .matches(/^(\+)?\d*$/, "Invalid mobile number")
+        // .min(10, "Mobile number must be at least 10 digits")
         .max(13, "Mobile number must be at most 13 digits"),
       id_scheme_account: Yup.string().required("Scheme account is required"),
       date_payment: Yup.date().required("Payment date is required"),
       metal_rate: Yup.number().optional("Metal rate is required"),
-      // metal_weight: Yup.number().when("showWeightInput", {
-      //   is: true,
-      //   then: Yup.number()
-      //     .required("Metal weight is required")
-      //     .min(0.01, "Weight must be greater than 0")
-      //     .max(Yup.ref("maxWeight"), "Weight cannot exceed maximum allowed"),
-      // }),
       metal_weight: Yup.number().when([], {
         is: () => showWeightInput,
         then: () =>
@@ -149,14 +141,6 @@ const AddSchemePayment = () => {
             .max(maxWeight, `Weight cannot exceed ${maxWeight}g`),
         otherwise: () => Yup.number().notRequired(),
       }),
-      // payment_amount: Yup.number().when('isFirstPayment', {
-      //   is: true,
-      //   then: Yup.number()
-      //     .required("Amount is required")
-      //     .min(minAmount, `Amount must be at least ${minAmount}`)
-      //     .max(maxAmount, `Amount must be at most ${maxAmount}`),
-      //   otherwise: Yup.number().notRequired(),
-      // }),
       payment_amount: Yup.number().when([], {
         is: () => showAmountInput && isFirstPayment,
         then: () =>
@@ -171,8 +155,8 @@ const AddSchemePayment = () => {
       itr_utr: Yup.string(),
       remark: Yup.string(),
     }),
-    validateOnBlur: true,
-    validateOnChange: false,
+    validateOnBlur: false,
+    validateOnChange: true,
     onSubmit: (values) => {
       if (id) {
         updateschemepaymentmutate({ id, values });
@@ -372,7 +356,6 @@ const AddSchemePayment = () => {
     // Set common fields
     formik.setFieldValue("id_scheme", id_scheme?._id);
     formik.setFieldValue("id_branch", id_scheme?.id_branch);
-    formik.setFieldValue("mobile", id_customer?.mobile);
     formik.setFieldValue("id_classification", id_classification?._id);
     formik.setFieldValue("id_customer", id_customer?._id);
     formik.setFieldValue("scheme_type", schemeType);
@@ -384,18 +367,18 @@ const AddSchemePayment = () => {
       if (isWeightScheme) {
         const paymentAmount = Number(metalRate) * Number(weight || 0);
         formik.setFieldValue("payment_amount", paymentAmount);
-        setBaseAmount(paymentAmount)
+        setBaseAmount(paymentAmount);
         formik.setFieldValue("metal_weight", weight);
       } else {
         formik.setFieldValue("payment_amount", amount);
-        setBaseAmount(amount)
+        setBaseAmount(amount);
       }
     } else if (classificationOrder === 3) {
       const output = last_paid_amount === 0;
       setIsFirstPay(output);
-      formik.setFieldValue("isFirstPayment", isFirstPayment);
+      formik.setFieldValue("isFirstPayment", output);
 
-      if (isFirstPayment) {
+      if (output) {
         if (isWeightScheme) {
           setMinWeight(id_scheme?.min_weight || 0);
           formik.setFieldValue("min_weight", id_scheme?.min_weight);
@@ -413,9 +396,12 @@ const AddSchemePayment = () => {
       } else {
         if (isWeightScheme) {
           formik.setFieldValue("metal_weight", last_paid_weight);
+          const calculatedAmount = Number(metalRate) * Number(last_paid_weight || 0);
+          formik.setFieldValue("payment_amount", calculatedAmount);
+          setBaseAmount(calculatedAmount);
         } else {
           formik.setFieldValue("payment_amount", last_paid_amount);
-          setBaseAmount(last_paid_amount)
+          setBaseAmount(last_paid_amount);
         }
       }
     } else {
@@ -437,14 +423,14 @@ const AddSchemePayment = () => {
       const calculatedAmount =
         Number(formik.values.metal_weight) * Number(metalRate);
       formik.setFieldValue("payment_amount", calculatedAmount);
-      setBaseAmount(calculatedAmount)
+      setBaseAmount(calculatedAmount);
     } else if (
       (weightSchemeTypes.includes(selectedScheme.scheme_type) &&
         formik.values.metal_weight === "") ||
       formik.values.metal_weight === 0
     ) {
       formik.setFieldValue("payment_amount", "");
-      setBaseAmount('')
+      setBaseAmount(0);
     }
   }, [
     formik.values.metal_weight,
@@ -463,35 +449,39 @@ const AddSchemePayment = () => {
       formik.setFieldValue("metal_weight", "");
       setShowWeightInput(false);
       setShowAmountInput(false);
-      setBaseAmount("")
+      setBaseAmount(0);
     }
   }, [mobile]);
 
-  useEffect(() => {}, [
-    formik.values.payment_amount,
-    formik.values.metal_weight,
-  ]);
+  useEffect(() => {
+    // Update total amount when installments or base amount changes
+    if (baseAmount > 0 && formik.values.installments > 1) {
+      const newTotal = baseAmount * formik.values.installments;
+      formik.setFieldValue("payment_amount", newTotal);
+    } else if (baseAmount > 0) {
+      formik.setFieldValue("payment_amount", baseAmount);
+    }
+  }, [formik.values.installments, baseAmount]);
 
   const handleSearch = () => {
     if (!formik.values.mobile) {
       return toast.error("Please provide mobile or scheme account number!");
     }
 
-  
     const searchData = {
       id_branch: formik.values.id_branch || id_branch,
       search_mobile: formik.values.mobile,
-      type:"payment"
+      type: "payment"
     };
-  
+
     handlesearchschemeaccount(searchData);
   };
 
   const handleInputChange = (e) => {
     const value = e.target.value;
-    formik.setFieldValue("mobile", value); 
+    formik.setFieldValue("mobile", value);
   };
-  
+
   const handlePaste = (e) => {
     const pastedData = e.clipboardData.getData('text');
     formik.setFieldValue("mobile", pastedData);
@@ -505,21 +495,28 @@ const AddSchemePayment = () => {
   const toggleAccordion = () => {
     setIsExpanded(!isExpanded);
   };
-  
 
-  useEffect(() => {
-    if (formik.values.installments) {
-      const newTotal =
-        formik.values.installments * baseAmount;
-      formik.setFieldValue("payment_amount", newTotal);
+  const handleAmountChange = (e) => {
+    const value = parseFloat(e.target.value) || 0;
+    formik.setFieldValue("payment_amount", value);
+    // Only update baseAmount if it's a single installment or we're changing the base amount
+    if (formik.values.installments === 1) {
+      setBaseAmount(value);
     }
-  }, [formik.values.installments]);
+  };
+
+  const handleInstallmentChange = (value) => {
+    formik.setFieldValue("installments", value);
+  };
 
   const handlReset = (e) => {
     e.preventDefault();
     formik.resetForm();
+    setBaseAmount(0);
   };
 
+  console.log(formik.values)
+  console.log(formik.errors)
   return (
     <>
       <form
@@ -625,13 +622,6 @@ const AddSchemePayment = () => {
                       }
                     }}
                   />
-                  {/* <div
-                    
-                    className="absolute inset-y-1/2 right-0 -translate-y-2 w-10 h-[62%] flex items-center justify-center cursor-pointer rounded-r-md"
-                    style={{ backgroundColor: layout_color }}
-                  >
-                    <Search size={20} className="text-white" />
-                  </div> */}
                 </div>
 
                 {/* Scheme account selection */}
@@ -854,7 +844,6 @@ const AddSchemePayment = () => {
                       wrapperClassName="w-full"
                     />
                     <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center pointer-events-none">
-                      {/* <CalendarDays size={20} /> */}
                       <img src={Calender} className="w-5 h-5" />
                     </span>
                   </div>
@@ -885,7 +874,7 @@ const AddSchemePayment = () => {
                       type="number"
                       name="installments"
                       value={formik.values.installments}
-                      onChange={formik.handleChange}
+                      onChange={(e) => handleInstallmentChange(parseInt(e.target.value) || 1)}
                       className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                       min="1"
                     />
@@ -893,8 +882,7 @@ const AddSchemePayment = () => {
                       <button
                         type="button"
                         onClick={() =>
-                          formik.setFieldValue(
-                            "installments",
+                          handleInstallmentChange(
                             parseInt(formik.values.installments || 0) + 1
                           )
                         }
@@ -917,8 +905,7 @@ const AddSchemePayment = () => {
                       <button
                         type="button"
                         onClick={() =>
-                          formik.setFieldValue(
-                            "installments",
+                          handleInstallmentChange(
                             Math.max(
                               1,
                               parseInt(formik.values.installments || 0) - 1
@@ -1024,7 +1011,7 @@ const AddSchemePayment = () => {
                           onBlur={formik.handleBlur}
                           max={maxAmount}
                           step="0.01"
-                          onChange={formik.handleChange}
+                          onChange={handleAmountChange}
                           onKeyDown={(e) => {
                             if (
                               !/^[0-9\b.]+$/.test(e.key) &&
