@@ -525,13 +525,13 @@ const Base = ({ renderContent: RenderContent }) => {
             </div>
             
             <div className="border-2 border-[#F2F2F9] rounded-full">
-            <button
+            {/* <button
               className="p-2 text-gray-900"
               data-testid="toggle-settings"
               // onClick={() => setSettingsOpen(!settingsOpen)}
             >
               <img src={settings} alt="" srcset="" />
-            </button>
+            </button> */}
             </div>
 
             <div className="border-2 border-[#F2F2F9] rounded-full">

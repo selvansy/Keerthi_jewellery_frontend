@@ -119,7 +119,7 @@ const CreateDigiGoldScheme = () => {
       sell_gst: "",
       max_amount: "",
       min_amount: "",
-      scheme_type: 10,
+      scheme_type: !silver ? 10 : 14,
       noOfDays: null,
       maxLimit:null,
     },
