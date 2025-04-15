@@ -1921,10 +1921,11 @@ export const searchcustomermobile = async (data) => {
 }
 
 export const searchmobileschemeaccount = async (data) => {
+  console.log(data)
   const response = await Api.get(
     `${import.meta.env.VITE_API_URL}/api/client/schemeaccount/branch/${
       data.id_branch
-    }/customer/search?mobile=${data.search_mobile}`
+    }/customer/search?mobile=${data.search_mobile}&type=${data.type}`
   );
   return response.data;
 };

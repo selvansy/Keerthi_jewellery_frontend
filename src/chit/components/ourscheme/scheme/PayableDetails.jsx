@@ -274,7 +274,7 @@ const PayableDetails = ({
       {formik.values.bonus_type !== 2 ? (
         <div className="">
        <label className="block text-sm font-medium mb-1 mt-2">
-         Benefit Bonus Amount <span className="text-red-500">*</span>
+         Benefit Bonus Amount
         </label>
         <div className="relative">
         <span className="absolute left-0 top-0 w-9 h-full px-3 flex items-center justify-center text-black border-r">
