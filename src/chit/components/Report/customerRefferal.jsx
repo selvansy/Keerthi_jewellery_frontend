@@ -4,13 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import "jspdf-autotable";
 import ExportDropdown from "../../components/common/Dropdown/Export";
 
-import {
-  getActiveScheme,
-  getallbranch,
-  getbranchbyid,
-  getPaymentLedger,
-  getSchemeByBrachId,
-} from "../../../chit/api/Endpoints";
+import { getCustomerRefferal } from "../../../chit/api/Endpoints";
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import { useSelector } from "react-redux";
@@ -20,18 +14,15 @@ import Select from "react-select";
 import { customSelectStyles } from "../Setup/purity";
 import { Breadcrumb } from "../common/breadCumbs/breadCumbs";
 import DateRangeSelector from "../common/calender";
+import { formatNumber } from "../../utils/commonFunction";
 
-function PaymentLedger() {
+function CustomerRefferal() {
   const roleData = useSelector((state) => state.clientForm.roledata);
   const accessBranch = roleData?.branch;
   const id_branch = roleData?.id_branch;
 
-
-  const id_role = roleData?.id_role?.id_role;
-  const layout_color = useSelector((state) => state.clientForm.layoutColor);
-
   const [isLoading, setisLoading] = useState(true);
-  const [paymentData, setPaymentData] = useState([]);
+  const [customerRefData, setCustomerRefData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [totalPages, setTotalPages] = useState(0);
@@ -39,74 +30,32 @@ function PaymentLedger() {
 
   const [from_date, setfrom_date] = useState();
   const [to_date, setto_date] = useState();
-  const [branches, setBranches] = useState([]);
-  const [schemeList, setSchemeList] = useState([]);
-  const [selectedScheme, setSelectedScheme] = useState();
 
   useEffect(() => {
     if (!roleData) return;
     if (accessBranch == 0) {
-      getAllScheme();
-    }
-  }, [roleData]);
-
-  useEffect(() => {
-    if (!roleData) return;
-    if (accessBranch == 0) {
-      getPaymentData({
+      getCustomerData({
         limit: itemsPerPage,
         page: currentPage,
         from_date,
         to_date,
-        id_scheme:selectedScheme
       });
     } else {
-      getPaymentData({
+      getCustomerData({
         limit: itemsPerPage,
         page: currentPage,
         id_branch,
         from_date,
         to_date,
-        id_scheme:selectedScheme
       });
     }
-  }, [currentPage, itemsPerPage, roleData, from_date, to_date,selectedScheme]);
-
-  const { mutate: getAllScheme } = useMutation({
-    mutationFn: () => getActiveScheme(),
-    onSuccess: (response) => {
-      setSchemeList(
-        response.data.map((item) => ({
-          label: item.scheme_name,
-          value: item._id,
-        }))
-      );
-    },
-    onError: (error) => {
-      setisLoading(false);
-      console.error("Error fetching payment data:", error);
-    },
-  });
-  
-  const { mutate: getAllSchemeById } = useMutation({
-    mutationFn: (data) => getSchemeByBrachId(data),
-    onSuccess: (response) => {
-      setPaymentData(response.data);
-      setTotalPages(response.totalPages);
-      setTotalDocuments(response.totalDocuments);
-      setisLoading(false);
-    },
-    onError: (error) => {
-      setisLoading(false);
-      console.error("Error fetching payment data:", error);
-    },
-  });
+  }, [currentPage, itemsPerPage, roleData, from_date, to_date]);
 
   // Mutation to get payment data
-  const { mutate: getPaymentData } = useMutation({
-    mutationFn: (data) => getPaymentLedger(data),
+  const { mutate: getCustomerData } = useMutation({
+    mutationFn: (data) => getCustomerRefferal(data),
     onSuccess: (response) => {
-      setPaymentData(response.data);
+      setCustomerRefData(response.data);
       setTotalPages(response.totalPages);
       setTotalDocuments(response.totalDocuments);
       setisLoading(false);
@@ -116,6 +65,7 @@ function PaymentLedger() {
       console.error("Error fetching payment data:", error);
     },
   });
+
 
   const columns = [
     {
@@ -123,16 +73,62 @@ function PaymentLedger() {
       cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
     },
     {
+      header: "Customer ",
+      cell: (row) => row?.Customer,
+    },
+    {
+      header: "Mobile",
+      cell: (row) => row?.mobile,
+    },
+    {
       header: "SCHEME NAME",
       cell: (row) => row?.scheme_name,
     },
     {
-      header: "Payment Mode",
-      cell: (row) => row?.payment_mode,
+      header: "Referred Customer Name",
+      cell: (row) => row?.referred_Customer,
     },
     {
-      header: "Amount",
-      cell: (row) => row?.totalAmount,
+      header: "Referred Customer Mobile no",
+      cell: (row) => row?.referred_customer_mobile,
+    },
+    {
+      header: "Joined Date",
+      cell: (row) => {
+        return new Date(row.joined_Date).toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "numeric",
+          day: "numeric",
+        });
+      },
+    },
+    {
+      header: "chit Purchase Value ",
+      cell: (row) => {
+        return formatNumber({
+          value: row?.totalChit_value,
+          decimalPlaces: 0,
+        });
+      },
+    },
+    {
+      header: "Incentive Amount ",
+      cell: (row) => {
+        return formatNumber({
+          value: row?.incentive_Amount,
+          decimalPlaces: 0,
+        });
+      },
+    },
+    {
+      header: "Payment Date",
+      cell: (row) => {
+        return new Date(row.payment_date).toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "numeric",
+          day: "numeric",
+        });
+      },
     },
   ];
 
@@ -160,25 +156,13 @@ function PaymentLedger() {
       <Breadcrumb
         items={[
           { label: "Account Reports" },
-          { label: "Payment Ledger Report", active: true },
+          { label: "Customer Referral", active: true },
         ]}
       />
       <div className="flex flex-col p-4 bg-white border-2 border-[#F2F2F9] rounded-[16px] ">
         <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
           <div className="flex justify-between items-center w-full">
-            <div className="flex justify-start">
-              <Select
-                className="mt-2 w-[219px]"
-                styles={customSelectStyles(true)}
-                options={schemeList || []}
-                value={schemeList.find(
-                  (option) => option.value === selectedScheme
-                )}
-                onChange={(option) => {
-                 setSelectedScheme(option.value)
-                }}
-              />
-            </div>
+            <div className="flex justify-start"></div>
             <div className="flex justify-end items-center gap-4">
               <DateRangeSelector
                 onChange={(range) => {
@@ -187,7 +171,7 @@ function PaymentLedger() {
                 }}
               />
               <ExportDropdown
-                apiData={paymentData}
+                apiData={customerRefData}
                 fileName={`Overall report ${new Date().toLocaleDateString(
                   "en-GB"
                 )}`}
@@ -197,7 +181,7 @@ function PaymentLedger() {
         </div>
         <div className="mt-4">
           <Table
-            data={paymentData}
+            data={customerRefData}
             columns={columns}
             loading={isLoading}
             currentPage={currentPage}
@@ -212,4 +196,4 @@ function PaymentLedger() {
   );
 }
 
-export default PaymentLedger;
+export default CustomerRefferal;

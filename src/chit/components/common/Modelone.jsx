@@ -26,7 +26,7 @@ export default function Modal({
       <div className={`${className} ${extraClassName} relative`}>
 
         {/* Modal Header */}
-        <div className={`flex justify-between items-center pb-4 mb-4 ${custom}`}>
+        <div className={`flex border-b-2 border-gray-200 justify-between items-center pb-4 mb-4 ${custom} `}>
           <h3 className="text-lg font-medium text-gray-900">{title}</h3>
           <button
 

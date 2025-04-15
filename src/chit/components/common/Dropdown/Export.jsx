@@ -44,12 +44,12 @@ const ExportDropdown = ({apiData,fileName,dynamicRemove={}}) => {
           <div className="py-1">
             <Menu.Item>
               {({ active }) => (
-                <ExportToExcel apiData={filteredData} fileName={fileName}/>
+                <ExportToExcel apiData={apiData} fileName={fileName}/>
               )}
             </Menu.Item>
             <Menu.Item>
               {({ active }) => (
-                <ExportToPDF apiData={filteredData} fileName={fileName}/>
+                <ExportToPDF apiData={apiData} fileName={fileName}/>
               )}
             </Menu.Item>
           </div>

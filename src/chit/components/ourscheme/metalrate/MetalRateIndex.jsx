@@ -59,7 +59,7 @@ function MetalRateIndex() {
   }, [roledata, branchId]);
   
   useEffect(()=>{
-    getallpuritytableMutate();
+  getallpuritytableMutate();
   },[])
 
   const handleSubmit = (e) => {

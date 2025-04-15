@@ -17,6 +17,7 @@ import { useDebounce } from '../../hooks/useDebounce';
 import { Search, CalendarDays, Eye } from "lucide-react";
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
+import { useNavigate } from 'react-router-dom';
 
 function GiftReport() {
 
@@ -43,6 +44,7 @@ function GiftReport() {
   const [branchOptions, setBranchOptions] = useState([]);
   const [giftcount, setGiftcount] = useState({});
   const [branch, setBranch] = useState(branchId)
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (!roleData) return;

@@ -45,10 +45,10 @@ const options = [
     label: "This Year",
     value: new Date(now.getFullYear(), 0, 1).toISOString(),
   },
-  {
-    label: "Custom",
-    value: "",
-  },
+  // {
+  //   label: "Custom",
+  //   value: "",
+  // },
 ];
 
 const initialState = {
