@@ -40,21 +40,22 @@ const Classification = ({
   const handleFileRemove = (id) => {
     if (id === 1) {
       setMainImagePreview(null);
-      setMainImageName("");
+      setMainImageName(null);
       setMainImg(null);
+      formik.setFieldValue('')
       if (mainImageInputRef.current) {
         mainImageInputRef.current.value = "";
       }
     } else if (id === 2) {
       setDescImagePreview(null);
-      setDescImageName("");
+      setDescImageName(null);
       setDescImg(null);
       if (descImageInputRef.current) {
         descImageInputRef.current.value = "";
       }
     }
   };
-
+console.log(mainImageName,logo)
   return (
     <div className="p-6 mb-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
@@ -66,11 +67,11 @@ const Classification = ({
     <input
       type="text"
       readOnly
-      value={mainImageName || logo}
+      value={mainImageName || logo || ""}  // logo
       className="border rounded-l-md p-2 w-full bg-gray-50"
     />
     <label
-      htmlFor="mainImageInput"  // Changed to match the input id
+      htmlFor="mainImageInput" 
       className="absolute right-0 top-0 bottom-0 bg-blue-600 text-white px-4 flex items-center justify-center rounded-md cursor-pointer text-sm"
       style={{ backgroundColor: layout_color }}
     >
@@ -127,7 +128,7 @@ const Classification = ({
             <input
               type="text"
               readOnly
-              value={descImageName || desc_img}
+              value={descImageName || desc_img || ""} // desc_img
               className="border rounded-md p-2 w-full bg-gray-50"
             />
             <label
