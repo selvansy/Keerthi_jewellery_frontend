@@ -1,62 +1,83 @@
 import React, { useEffect, useState } from "react";
 import Table from "../../components/common/Table";
 import { useMutation } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
-import jsPDF from "jspdf";
 import "jspdf-autotable";
 import ExportDropdown from "../../components/common/Dropdown/Export";
-import { ExportToExcel } from "../common/Dropdown/Excelexport";
-import { ExportToPDF } from "../common/Dropdown/ExportPdf";
+
 import {
-    amountPayble,
-  dueReportSummary,
-  getOverAllSummary,
-  preCloseSummary,
+  getActiveScheme,
+  getallbranch,
+  getbranchbyid,
+  getEmployeeRefferal,
+  getPaymentLedger,
+  getSchemeByBrachId,
 } from "../../../chit/api/Endpoints";
-import { SlidersHorizontal, Search, X } from "lucide-react";
-import { CalendarDays, RefreshCcw } from "lucide-react";
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import { useSelector } from "react-redux";
+import usePagination from "../../hooks/usePagination";
+import { getAllBranch } from "../../api/Endpoints";
+import Select from "react-select";
+import { customSelectStyles } from "../Setup/purity";
 import { Breadcrumb } from "../common/breadCumbs/breadCumbs";
 import DateRangeSelector from "../common/calender";
+import { formatNumber } from "../../utils/commonFunction";
 
-function AmountPayble() {
-  const roledata = localStorage.getItem("decoded");
+function EmployeeRefferal() {
+  const roleData = useSelector((state) => state.clientForm.roledata);
+  const accessBranch = roleData?.branch;
+  const id_branch = roleData?.id_branch;
 
-  const id_role = roledata?.id_role?.id_role;
-  const id_client = roledata?.id_client;
-  const id_branch = roledata?.branch;
-  const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
   const [isLoading, setisLoading] = useState(true);
-  const [paybleData, setPaybleData] = useState([]);
+  const [employeeRefData, setEmployeeRefData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [totalPages,  setTotalPages] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
   const [totalDocuments, setTotalDocuments] = useState(0);
-  const [from_date,setfrom_date]=useState()
-  const [to_date,setto_date]=useState()
+
+  const [from_date, setfrom_date] = useState();
+  const [to_date, setto_date] = useState();
+
+
 
   useEffect(() => {
-    getAmountPayble({from_date,to_date});
-  }, [from_date,to_date]);
+    if (!roleData) return;
+    if (accessBranch == 0) {
+      getEmployeeData({
+        limit: itemsPerPage,
+        page: currentPage,
+        from_date,
+        to_date,
+      });
+    } else {
+      getEmployeeData({
+        limit: itemsPerPage,
+        page: currentPage,
+        id_branch,
+        from_date,
+        to_date,
+      });
+    }
+  }, [currentPage, itemsPerPage, roleData, from_date, to_date]);
 
-  const { mutate: getAmountPayble } = useMutation({
-    mutationFn:({from_date,to_date})=> amountPayble({from_date,to_date}),
+
+
+
+  // Mutation to get payment data
+  const { mutate: getEmployeeData } = useMutation({
+    mutationFn: (data) => getEmployeeRefferal(data),
     onSuccess: (response) => {
-      setPaybleData(response.data);
+      setEmployeeRefData(response.data);
+      setTotalPages(response.totalPages);
+      setTotalDocuments(response.totalDocuments);
       setisLoading(false);
-      setTotalDocuments(response.totalDocs)
-      setTotalPages(response.totalDocs)
     },
     onError: (error) => {
       setisLoading(false);
-      console.error("Error fetching metal rate:", error);
+      console.error("Error fetching payment data:", error);
     },
   });
-
-
 
   const columns = [
     {
@@ -64,53 +85,46 @@ function AmountPayble() {
       cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
     },
     {
-      header: "Scheme",
-      cell: (row) => row?.scheme_name,
+      header: "Reffer ID",
+      cell: (row) => row?.referral_code,
     },
     {
-      header: "Classification",
-      cell: (row) => row?.classification_name,
+      header: "Employee Name",
+      cell: (row) => row?.employee_name,
     },
     {
-      header: "Customer",
+      header: "customer name",
       cell: (row) => row?.customer_name,
     },
     {
-      header: "Mobile Number",
+      header: "Customer Contact",
       cell: (row) => row?.customer_mobile,
     },
     {
-      header: "Accounter Name",
-      cell: (row) => row?.account_name,
-    },
-    {
-      header: "scheme A/c No ",
-      cell: (row) => row?.scheme_acc_number,
-    },
-    {
-        header: "joined Date ",
-        cell: (row) => {
-          return new Date(row.createdAt).toLocaleDateString("en-US", {
+      header: "Referred Date",
+      cell: (row) =>{
+        return new Date(row.createdAt).toLocaleDateString("en-US", {
             year: "numeric",
             month: "numeric",
             day: "numeric",
           });
+      }
+    },
+    {
+        header: "Referral Bonus Amount",
+        cell: (row) => {
+          return formatNumber({ value: row?.ReferralBonusAmount, decimalPlaces: 0 });
         }
-      },
-      {
-        header: "Maturity Date ",
-        cell: (row) => row?.maturity_date,
-      },
-      {
-        header: "Paid Installment",
-        cell: (row) => `${row?.totalPaidCount}/${row?.total_installments}`,
-      },
-      {
-        header: "Total Paid Amount",
-        cell: (row) => row?.totalPaidAmount,
-      },
+      }
+      
   ];
 
+
+
+  const handleItemsPerPageChange = (value) => {
+    setItemsPerPage(value);
+    setCurrentPage(1);
+  };
 
   const handlePageChange = (page) => {
     const pageNumber = Number(page);
@@ -126,23 +140,19 @@ function AmountPayble() {
     setCurrentPage(pageNumber);
   };
 
-  const handleItemsPerPageChange = (value) => {
-    setItemsPerPage(value);
-    setCurrentPage(1);
-  };
-
   return (
     <>
       <Breadcrumb
         items={[
-          { label: "Scheme Reports" },
-          { label: "Amount Payable", active: true },
+          { label: "Account Reports" },
+          { label: "Employee Referral", active: true },
         ]}
       />
       <div className="flex flex-col p-4 bg-white border-2 border-[#F2F2F9] rounded-[16px] ">
         <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
           <div className="flex justify-between items-center w-full">
-            <div className="flex justify-start"></div>
+            <div className="flex justify-start">
+            </div>
             <div className="flex justify-end items-center gap-4">
               <DateRangeSelector
                 onChange={(range) => {
@@ -151,7 +161,8 @@ function AmountPayble() {
                 }}
               />
               <ExportDropdown
-                apiData={paybleData}
+
+                apiData={employeeRefData}
                 fileName={`Overall report ${new Date().toLocaleDateString(
                   "en-GB"
                 )}`}
@@ -161,7 +172,7 @@ function AmountPayble() {
         </div>
         <div className="mt-4">
           <Table
-            data={paybleData}
+            data={employeeRefData}
             columns={columns}
             loading={isLoading}
             currentPage={currentPage}
@@ -176,5 +187,6 @@ function AmountPayble() {
   );
 }
 
-export default AmountPayble;
+export default EmployeeRefferal;
+
 
