@@ -162,8 +162,8 @@ const AddSchemePayment = () => {
       if (id) {
         updateschemepaymentmutate({ id, values });
       } else {
-        if(!isLoading){
-          setIsLoading(true)
+        if (!isLoading) {
+          setIsLoading(true);
           // createschemepaymentmutate(values);
         }
       }
@@ -208,50 +208,28 @@ const AddSchemePayment = () => {
     mutationFn: addschemepayment,
     onSuccess: (response) => {
       toast.success(response.message);
-      resetForm()
+      resetForm();
     },
     onError: (error) => {
       toast.error(error.response.data.message);
     },
   });
 
-useEffect(()=>{
-if(isLoading){
-  resetForm()
-}
-},[isLoading])
-
-// const resetForm = () => {
-//   formik.resetForm();
-//   setSchemeData([]);
-//   setFullData([]);
-//   setSelectedScheme({});
-//   setMobile("");
-//   setBaseAmount(0);
-//   setShowWeightInput(false);
-//   setShowAmountInput(false);
-//   setIspayamtreadOnly(true);
-//   setIsFirstPay(false);
-//   setSelectedMode(0);
-//   setIsLoading(false);
-// }
-const resetForm = () => {
-  formik.resetForm();
-  setSchemeData([]);
-  setFullData([]);
-  setSelectedScheme({});
-  setMobile("");
-  setBaseAmount(0);
-  setShowWeightInput(false);
-  setShowAmountInput(false);
-  setIspayamtreadOnly(true);
-  setIsFirstPay(false);
-  setSelectedMode(0);
-  setIsLoading(false);
-  setSelectKey(prev => prev + 1);
-}
-
-
+  const resetForm = () => {
+    formik.resetForm();
+    setSchemeData([]);
+    setFullData([]);
+    setSelectedScheme({});
+    setMobile("");
+    setBaseAmount(0);
+    setShowWeightInput(false);
+    setShowAmountInput(false);
+    setIspayamtreadOnly(true);
+    setIsFirstPay(false);
+    setSelectedMode(0);
+    setIsLoading(false);
+    setSelectKey((prev) => prev + 1);
+  };
 
   const { mutate: updateschemepaymentmutate } = useMutation({
     mutationFn: updateschemepayment,
@@ -439,7 +417,8 @@ const resetForm = () => {
       } else {
         if (isWeightScheme) {
           formik.setFieldValue("metal_weight", last_paid_weight);
-          const calculatedAmount = Number(metalRate) * Number(last_paid_weight || 0);
+          const calculatedAmount =
+            Number(metalRate) * Number(last_paid_weight || 0);
           formik.setFieldValue("payment_amount", calculatedAmount);
           setBaseAmount(calculatedAmount);
         } else {
@@ -514,7 +493,7 @@ const resetForm = () => {
     const searchData = {
       id_branch: formik.values.id_branch || id_branch,
       search_mobile: formik.values.mobile,
-      type: "payment"
+      type: "payment",
     };
 
     handlesearchschemeaccount(searchData);
@@ -526,7 +505,7 @@ const resetForm = () => {
   };
 
   const handlePaste = (e) => {
-    const pastedData = e.clipboardData.getData('text');
+    const pastedData = e.clipboardData.getData("text");
     formik.setFieldValue("mobile", pastedData);
     e.preventDefault();
   };
@@ -910,7 +889,9 @@ const resetForm = () => {
                       type="number"
                       name="installments"
                       value={formik.values.installments}
-                      onChange={(e) => handleInstallmentChange(parseInt(e.target.value) || 1)}
+                      onChange={(e) =>
+                        handleInstallmentChange(parseInt(e.target.value) || 1)
+                      }
                       className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                       min="1"
                     />

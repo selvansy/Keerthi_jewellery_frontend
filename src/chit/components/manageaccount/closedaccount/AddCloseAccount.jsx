@@ -77,7 +77,8 @@ const AddCloseAccount = () => {
     bill_date: Yup.string().required("Bill date is required"),
     mobile: Yup.string()
       .required("Mobile is required")
-      .matches(/^\d{10}$/, "Mobile number must be 10 digits"),
+      // .matches(/^\d{10}$/, "Mobile number must be 10 digits")
+      ,
     refund_paymenttype: refundtype
       ? Yup.string().required("Refund payment type is required")
       : Yup.string(),
@@ -221,7 +222,7 @@ const AddCloseAccount = () => {
       }
     },
     onError: (error) => {
-      console.log(error);
+      setLoading1(false)
       toast.error(error.response.data.message);
     },
   });

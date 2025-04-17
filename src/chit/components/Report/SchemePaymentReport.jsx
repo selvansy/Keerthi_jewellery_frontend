@@ -35,12 +35,18 @@ function AccountSummaryReport() {
   const [to_date, setto_date] = useState();
 
   useEffect(() => {
-    getPaymentData({ from_date, to_date });
-  }, [from_date, to_date]);
+    getPaymentData({
+      from_date,
+      to_date,
+      page: currentPage,
+      limit: itemsPerPage,
+    });
+  }, [from_date, to_date, currentPage, itemsPerPage]);
+  
 
   const { mutate: getPaymentData } = useMutation({
-    mutationFn: ({ from_date, to_date }) =>
-      schemePayment({ from_date, to_date }),
+    mutationFn: ({ from_date, to_date ,page,limit}) =>
+      schemePayment({ from_date, to_date,page,limit}),
     onSuccess: (response) => {
       const { data } = response;
       setPaymentData(data);
@@ -125,7 +131,7 @@ function AccountSummaryReport() {
       pageNumber < 1 ||
       pageNumber > totalPages
     ) {
-      return;
+      // return;
     }
 
     setCurrentPage(pageNumber);
