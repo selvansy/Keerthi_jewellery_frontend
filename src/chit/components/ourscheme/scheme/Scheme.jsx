@@ -411,12 +411,10 @@ const Scheme = () => {
       
           // Priority 1: Fixed amount
           if(scheme_type === 10){
-            console.log(min_amount, max_amount)
             return `${scheme_name} ( ₹ ${min_amount} - ₹ ${max_amount})`;
           }
 
           if(scheme_type === 14){
-            console.log(min_amount, max_amount)
             return `${scheme_name} ( ₹ ${min_amount} - ₹ ${max_amount})`;
           }
 
@@ -457,7 +455,17 @@ const Scheme = () => {
         cell: (row) => row.metal_name,
       },
       { header: "Installments", cell: (row) => row?.total_installments },
-      { header: "Maturity Month", cell: (row) => row?.maturity_period },
+      { 
+        header: "Maturity Month", 
+        cell: (row) => {
+          if (row.scheme_type !== 10 && row.scheme_type !== 14) {
+            return row?.maturity_period;
+          } else {
+            return row?.noOfDays;
+          }
+        } 
+      }
+      ,
       {
         header: "Scheme Type",
         cell: (row) => row.schemetype_name,

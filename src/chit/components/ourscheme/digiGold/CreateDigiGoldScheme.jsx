@@ -119,7 +119,7 @@ const CreateDigiGoldScheme = () => {
       sell_gst: "",
       max_amount: "",
       min_amount: "",
-      scheme_type: !silver ? 10 : 14,
+      scheme_type: silver ? 14 : 10,
       noOfDays: null,
       maxLimit:null,
     },
@@ -340,6 +340,8 @@ onSubmit: (values) => {
         );
         setDescriptionImage(null)
         setMainImage(null)
+        formik.setFieldValue("scheme_type", 10);
+        formik.setFieldValue('code',"Digigold")
       } else {
         setStaticData(digigoldData.data);
         formik.setFieldValue('term_desc','')
@@ -356,6 +358,8 @@ onSubmit: (values) => {
         );
         setDescriptionImage(null)
         setMainImage(null)
+        formik.setFieldValue("scheme_type", 14);
+        formik.setFieldValue('code',"Digisilver")
       }
     }
   }, [digigoldData, silver]);
@@ -807,7 +811,7 @@ onSubmit: (values) => {
 
           <div>
             <label className="block text-sm font-medium mb-1">
-              Bonus Type <span className="text-red-400">*</span>
+              Bonus Type {!silver && <span className="text-red-400">*</span>}
             </label>
             <Select
               styles={customStyles(true)}
@@ -837,7 +841,7 @@ onSubmit: (values) => {
 
           <div>
             <label className="block text-sm font-medium mb-1">
-              Entry Type<span className="text-red-400">*</span>
+              Entry Type {!silver && <span className="text-red-400">*</span>}
             </label>
             <Select
               name="entry_type"
@@ -935,7 +939,7 @@ onSubmit: (values) => {
 
           <div>
             <label className="block text-sm font-medium mb-1">
-              Count<span className="text-red-400">*</span>
+              Count {!silver && <span className="text-red-400">*</span>}
             </label>
             <input
               type="number"
