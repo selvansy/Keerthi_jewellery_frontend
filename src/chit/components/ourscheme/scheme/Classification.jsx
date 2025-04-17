@@ -55,7 +55,7 @@ const Classification = ({
       }
     }
   };
-console.log(mainImageName,logo)
+
   return (
     <div className="p-6 mb-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
@@ -243,6 +243,15 @@ console.log(mainImageName,logo)
             onChange={formik.handleChange}
             className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
             min="1"
+            onKeyDown={(e) => {
+              const current = parseInt(formik.values.classification_order || "0", 10);
+            
+              if (e.key === "ArrowUp") {
+                formik.setFieldValue("classification_order", current + 1);
+              } else if (e.key === "ArrowDown") {
+                formik.setFieldValue("classification_order", Math.max(0, current - 1));
+              }
+            }}            
           />
           <div className="absolute right-2 flex flex-col">
             <button
@@ -279,7 +288,7 @@ console.log(mainImageName,logo)
                     parseInt(formik.values.classification_order || 0) - 1
                   )
                 )
-              }
+              }      
               className="focus:outline-none"
             >
               <svg
