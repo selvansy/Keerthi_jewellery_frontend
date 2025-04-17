@@ -113,7 +113,7 @@ const AddEmployee = () => {
       date_of_birth: null,
       date_of_join: null,
       aadharNumber: "",
-      employeeIncentivePercentage:0
+      employeeIncentivePercentage: 0,
       // phone: "",
     },
     validationSchema: Yup.object({
@@ -557,7 +557,7 @@ const AddEmployee = () => {
                 <span className="text-red-500"> *</span>
               )}
             </label>
-            
+
             {field === "id_state" ? (
               <Select
                 options={states}
@@ -674,7 +674,10 @@ const AddEmployee = () => {
                   dateFormat="yyyy-MM-dd"
                   placeholderText="Select Date"
                   className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                  showMonthDropdown
+                  showYearDropdown
                   wrapperClassName="w-full"
+                  dropdownMode="select"
                 />
                 <span className="absolute right-0 top-0 h-full w-10 flex items-center justify-center pointer-events-none">
                   <CalendarDays size={20} className="text-gray-400" />
