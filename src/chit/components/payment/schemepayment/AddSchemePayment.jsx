@@ -62,6 +62,7 @@ const AddSchemePayment = () => {
   const [showAmountInput, setShowAmountInput] = useState(false);
   const [isFirstPayment, setIsFirstPay] = useState(false);
   const [baseAmount, setBaseAmount] = useState(0);
+  const [selectKey, setSelectKey] = useState(0);
 
   // Customisations for react-select
   const customStyles = (isReadOnly) => ({
@@ -161,7 +162,10 @@ const AddSchemePayment = () => {
       if (id) {
         updateschemepaymentmutate({ id, values });
       } else {
-        createschemepaymentmutate(values);
+        if(!isLoading){
+          setIsLoading(true)
+          // createschemepaymentmutate(values);
+        }
       }
     },
   });
@@ -204,11 +208,50 @@ const AddSchemePayment = () => {
     mutationFn: addschemepayment,
     onSuccess: (response) => {
       toast.success(response.message);
+      resetForm()
     },
     onError: (error) => {
       toast.error(error.response.data.message);
     },
   });
+
+useEffect(()=>{
+if(isLoading){
+  resetForm()
+}
+},[isLoading])
+
+// const resetForm = () => {
+//   formik.resetForm();
+//   setSchemeData([]);
+//   setFullData([]);
+//   setSelectedScheme({});
+//   setMobile("");
+//   setBaseAmount(0);
+//   setShowWeightInput(false);
+//   setShowAmountInput(false);
+//   setIspayamtreadOnly(true);
+//   setIsFirstPay(false);
+//   setSelectedMode(0);
+//   setIsLoading(false);
+// }
+const resetForm = () => {
+  formik.resetForm();
+  setSchemeData([]);
+  setFullData([]);
+  setSelectedScheme({});
+  setMobile("");
+  setBaseAmount(0);
+  setShowWeightInput(false);
+  setShowAmountInput(false);
+  setIspayamtreadOnly(true);
+  setIsFirstPay(false);
+  setSelectedMode(0);
+  setIsLoading(false);
+  setSelectKey(prev => prev + 1);
+}
+
+
 
   const { mutate: updateschemepaymentmutate } = useMutation({
     mutationFn: updateschemepayment,
@@ -509,14 +552,6 @@ const AddSchemePayment = () => {
     formik.setFieldValue("installments", value);
   };
 
-  const handlReset = (e) => {
-    e.preventDefault();
-    formik.resetForm();
-    setBaseAmount(0);
-  };
-
-  console.log(formik.values)
-  console.log(formik.errors)
   return (
     <>
       <form
@@ -630,9 +665,10 @@ const AddSchemePayment = () => {
                     Scheme Account<span className="text-red-400"> *</span>
                   </label>
                   <Select
+                    key={selectKey}
                     styles={customStyles(true)}
                     isClearable={true}
-                    options={schemedata || []}
+                    options={schemedata}
                     placeholder="Choose scheme Account"
                     value={schemedata?.find(
                       (option) =>
