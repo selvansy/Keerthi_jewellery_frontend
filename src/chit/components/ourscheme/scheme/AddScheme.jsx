@@ -21,9 +21,6 @@ import { useQuery, useQueries, useMutation } from "@tanstack/react-query";
 const PayableDetails = lazy(() => import("./PayableDetails"));
 const AdvancedSettings = lazy(() => import("./AdvancedSettings"));
 const Classification = lazy(() => import("./Classification"));
-// import CustomerDetails from "./CustomerDetails";
-// import AgentDetails from "./AgentDetails";
-// import Grace from "./GracePeriod";
 import {
   Accordion,
   AccordionContent,
@@ -32,7 +29,7 @@ import {
 } from "../../../../../components/ui/accordion";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { schemeValidationSchema } from "../../../../utils/validations/schemeValidationSchema";
 import SpinLoading from "../../common/spinLoading";
 import "react-datepicker/dist/react-datepicker.css";
@@ -114,11 +111,11 @@ const SchemeForm = () => {
       wastagetype: "", // no need to pass
       
       // AdvancedSettings fields
-      limit_installment: "",
+      limit_installment: 1,
       pending_installment: "",
       paid_installment: "",
-      limit_customer: "",
-      gift_minimum_paid_installment: "",
+      limit_customer: 0,
+      gift_minimum_paid_installment: 0,
       referralPercentage:"",
 
       //gift
@@ -129,7 +126,7 @@ const SchemeForm = () => {
       bonus_amount: "",
       bonus_percent: "",
       not_paid_installment: "",
-      convenience_fees: "",
+      convenience_fees: 0,
       display_referral: false,
       display_Weight_in_ledger: false,
       wallet_redemption_onpayment: false,
@@ -307,7 +304,7 @@ const SchemeForm = () => {
     },
     onError: (error) => {
       setIsLoading(false);
-      toast.error(error.response.message);
+      toast.error(error.response?.data?.message);
     },
   });
 

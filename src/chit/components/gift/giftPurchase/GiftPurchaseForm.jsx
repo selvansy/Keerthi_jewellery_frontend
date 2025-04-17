@@ -191,6 +191,7 @@ function GiftPurchaseForm({ setIsviewOpen, isviewOpen, id, setId,refetchTable })
     const handleChange = (e) => {
         const { name, value } = e.target;
          const newvalue = Number(value)
+
         if (name === "gift_vendorid") {
             if (value !== "") {
                 giftItems(value)
@@ -554,7 +555,7 @@ function GiftPurchaseForm({ setIsviewOpen, isviewOpen, id, setId,refetchTable })
 
                             <div className="flex flex-col gap-2 ">
                                 <label className="text-gray-700 font-medium">
-                                    Amount<span className="text-red-400">*</span>
+                                    Amount <span className='text-sm'>(Per Pcs)</span> <span className="text-red-400">*</span>
                                 </label>
 
                                 <div className="relative">
@@ -666,7 +667,13 @@ function GiftPurchaseForm({ setIsviewOpen, isviewOpen, id, setId,refetchTable })
                                     type="number"
                                     name="cus_sellprice"
                                     value={formData.cus_sellprice}
-                                    onChange={handleChange}
+                                    onChange={(e) => {
+                                        if (e.target.value.length === 0) {
+                                            setFormData(prev => ({ ...prev, cus_sellprice: "" }));
+                                        } else {
+                                            handleChange(e);
+                                        }
+                                    }}                                    
                                     className="border-2 border-[#F2F2F9] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                                     placeholder="Enter Here"
                                     required
