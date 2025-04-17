@@ -40,6 +40,7 @@ const AddEmployee = () => {
     "lastname",
     "mobile",
     "address",
+    "id_country",
     "id_state",
     "id_city",
     "gender",
@@ -240,13 +241,14 @@ const AddEmployee = () => {
   // Effects
   useEffect(() => {
     if (countryResponse) {
-      // const countryId = countryResponse.data[0]._id;
-      const countryId = countryResponse.data.map((state) => ({
+      const countryOptions = countryResponse.data.map((state) => ({
         value: state._id,
         label: state.country_name,
       }));
-      setSelectedCountry(countryId);
-      formik.setFieldValue("id_country", countryId);
+      setSelectedCountry(countryOptions);
+      // if (countryOptions.length > 0) {
+      //   formik.setFieldValue("id_country", countryOptions[0].value);
+      // }
     }
     if (branchResponse) {
       const branchData = branchResponse.data.map((branch) => ({
@@ -280,6 +282,7 @@ const AddEmployee = () => {
           : null,
         aadharNumber: employee.aadhar_number || "",
         id_country: employee.id_country._id || country._id,
+        employeeIncentivePercentage:employee.employeeIncentivePercentage || 0
       });
 
       setImagePreviews({
@@ -548,8 +551,8 @@ const AddEmployee = () => {
                 ? "Pan Number"
                 : field === "aadharNumber"
                 ? "Aadhar card number"
-                : "employeeIncentivePercentage"
-                ? "Employee Incentive Percentage"
+                : field === "employeeIncentivePercentage"
+              ? "Employee Incentive Percentage"
                 : field
                     .replace(/_/g, " ")
                     .replace(/\b\w/g, (char) => char.toUpperCase())}

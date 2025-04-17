@@ -189,13 +189,14 @@ const SchemeForm = () => {
         setIsLoading(true);
         updateSchemeData({ id, data: formData });
       } else {
+       if(!isLoading){
         setIsLoading(true);
         addNewScheme(formData);
+       }
+       return
       }
     },
   });
-
-  console.log(formik.errors)
 
   useEffect(() => {
     if (!id) {
