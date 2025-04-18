@@ -398,16 +398,16 @@ function SchemeAccount() {
         <>
             <>
                 <Breadcrumb
-                    items={[{ label: "Manage Customers" }, { label: "Customer Schemes", active: true }]}
+                    items={[{ label: "Managecustomers" }, { label: "Customer Schemes", active: true }]}
                 />
 
                 <div className="flex flex-col p-4 bg-white border border-[#F2F2F9] rounded-[16px]">
                     <div className="flex flex-col gap-4 mt-4 sm:flex-row sm:justify-between sm:items-center">
 
                         {/* Left Side: ActiveDropdown + Search */}
-                        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4 w-full sm:w-auto">
-                            <div className="w-full sm:w-auto">
-                                <div className="relative sm:w-[175px]">
+                        <div className="flex flex-col gap-2 sm:items-center sm:gap-4 w-full sm:w-auto">
+                            <div className="w-full">
+                                <div className="relative  w-full">
                                     <select
                                         className="appearance-none border-2 border-[#F2F2F9] rounded-[8px] p-2 w-full bg-white pr-8 text-gray-700"
                                         value={selectedValue}
@@ -455,7 +455,7 @@ function SchemeAccount() {
                         </div>
 
                         {/* Right Side: Export + Add Customer */}
-                        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4 w-full sm:w-auto">
+                        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4 w-full sm:w-auto lg:pt-10">
                             <div className="w-full sm:w-auto">
                                 <ExportDropdown
                                     apiData={schaccExp}
