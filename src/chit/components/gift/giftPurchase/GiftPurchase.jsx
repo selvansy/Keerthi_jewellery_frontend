@@ -221,7 +221,7 @@ const GiftPurchase = () => {
     },
     {
       header: "Gift Name",
-      cell: (row) => row?.id_gift.gift_name
+      cell: (row) => row?.id_gift?.gift_name
     },
     {
       header: "Vendor Name",
