@@ -38,7 +38,6 @@ const customSelectStyles = (isReadOnly) => ({
         ...base,
         color: "#858293",
         fontWeight: "thin",
-        // fontStyle: "bold",
     }),
     dropdownIndicator: (provided, state) => ({
         ...provided,
@@ -855,8 +854,12 @@ console.log(formData)
                                 }}
 
                                 components={customComponents}
-                                styles={customSelectStyles(true)}
+                                styles={{
+                                    ...customSelectStyles(true),
+                                    menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                                  }}
                                 isLoading={loadingGifts}
+                                menuPortalTarget={document.body}
                                 placeholder="Search/Select GiftCode"
                             />
                             {/* Search Icon */}
