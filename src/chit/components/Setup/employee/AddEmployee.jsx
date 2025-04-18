@@ -280,9 +280,11 @@ const AddEmployee = () => {
         date_of_birth: employee.date_of_birth
           ? new Date(employee.date_of_birth)
           : null,
-        aadharNumber: employee.aadhar_number || "",
+        aadharNumber: employee.aadharNumber || "",
         id_country: employee.id_country._id || country._id,
-        employeeIncentivePercentage:employee.employeeIncentivePercentage || 0
+        employeeIncentivePercentage:employee.employeeIncentivePercentage || 0,
+        pan:employee.pan || "",
+        whatsappNumber:employee.whatsappNumber
       });
 
       setImagePreviews({
@@ -703,7 +705,7 @@ const AddEmployee = () => {
                 className="flex-1 border-2 border-[#f2f3f8] rounded-md px-3 py-2 cursor-pointer hover:bg-gray-50"
               >
                 <p className="truncate text-[#b5b5b5]">
-                  {formik.values.resume ? formik.values.resume.name : "Browse"}
+                  {imagePreviews.resume?.name || imagePreviews.resume ||(formik.values.resume ? formik.values.resume.name : "Browse")}
                 </p>
               </label>
               <div className="absolute right-0 top-0 bottom-0 h-full flex flex-row gap-2">
@@ -739,7 +741,7 @@ const AddEmployee = () => {
                 className="flex-1 border-2 border-[#f2f3f8] rounded-md px-3 py-2 cursor-pointer hover:bg-gray-50"
               >
                 <p className="truncate text-[#b5b5b5]">
-                  {imagePreviews.image?.name ||
+                  {imagePreviews.image?.name || imagePreviews.image ||
                     (formik.values.image ? formik.values.image.name : "Browse")}
                 </p>
               </label>

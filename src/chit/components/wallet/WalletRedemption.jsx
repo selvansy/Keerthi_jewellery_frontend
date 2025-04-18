@@ -2,7 +2,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import React, { useEffect, useRef, useState } from 'react'
 import { DatabaseBackupIcon, Search } from 'lucide-react'
 import { useSelector } from 'react-redux';
-import { toast } from 'react-toastify';
+import { toast } from 'sonner';
 import { mobilesearch, redeemType, getallwallet, walletRedeem, getallpaymentmode, RefferalByUser } from '../../../chit/api/Endpoints'
 import { formatNumber } from "../../utils/commonFunction"
 import SpinLoading from '../common/spinLoading';
@@ -96,9 +96,6 @@ function WalletRedemption() {
     const location = useLocation();
 
     const data  = id ? location.state.data : null;
-    
-
-    console.log("cusdata--",cusdata)
 
     function closeIncommingModal() {
         setIsviewOpen(false);
@@ -328,6 +325,9 @@ function WalletRedemption() {
         mutationFn: mobilesearch,
         onSuccess: (response) => {
             if (response) {
+                if(response?.data?.walletData === null){
+                    return toast.error('No wallet data')
+                }
                 handleWalletData(response.data.walletData)
             }
             setLoading(false)
