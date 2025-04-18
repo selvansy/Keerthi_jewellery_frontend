@@ -1554,6 +1554,7 @@ const AddSchemePayment = () => {
       resetForm();
     },
     onError: (error) => {
+      setIsLoading(false)
       toast.error(error.response.data.message);
     },
   });

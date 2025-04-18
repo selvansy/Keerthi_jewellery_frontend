@@ -99,7 +99,7 @@ const OurEmployee = () => {
   };
 
   const { mutate: getallemployeetableMutate } = useMutation({
-    mutationFn: () => getallemployeetable(payload),
+    mutationFn: (payload) => getallemployeetable(payload),
     onSuccess: (response) => {
       if (response?.data) {
         setEmployeeData(response.data);
@@ -122,9 +122,7 @@ const OurEmployee = () => {
       if (isLastItemOnPage && isNotFirstPage) {
         setCurrentPage(prev => prev - 1);
       } else {
-
         getallemployeetableMutate({ page: currentPage, limit: itemsPerPage });
-
       }
     },
   });

@@ -81,7 +81,10 @@ const VerificationModal = ({setIsOpen,mobile,branch,otpComplete}) => {
     },
   });
 
-  const handleVerifyOtp = () => {
+  const handleVerifyOtp = (e) => {
+    if(e){
+      e.preventDefault()
+    }
     const data = otp.join("")
 
     if (!data) {
@@ -165,7 +168,7 @@ const VerificationModal = ({setIsOpen,mobile,branch,otpComplete}) => {
           <button 
             className={`px-6 py-2 ${otp[otp.length-1] !== "bg-[#6C7086]" ? "bg-[#004181]": "bg-[#6C7086]"} text-white rounded-md `}
             disabled={otp.some(digit => digit === '')}
-            onClick={()=>handleVerifyOtp(otp.join(""))}
+            onClick={(e)=>handleVerifyOtp(e)}
           >
             Verify
           </button>
