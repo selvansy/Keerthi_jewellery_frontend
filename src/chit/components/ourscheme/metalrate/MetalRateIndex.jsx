@@ -35,6 +35,8 @@ function MetalRateIndex() {
   const [branchId, setIdbranch] = useState("");
   const [formErrors, setFormErrors] = useState({});
   const [updateData, setUpdate] = useState(false);
+  const [respnseData,setResponseData] = useState([])
+  const [key,setKey]= useState(0)
   const roledata = useSelector((state) => state.clientForm.roledata);
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
@@ -149,6 +151,7 @@ function MetalRateIndex() {
     mutationFn: (data) => createmetalrate(data),
     onSuccess: (response) => {
       // toast.success(response.message)
+      setResponseData(response?.data?.data)
       handleSuccess();
       setIsOpen(false);
       setFormData(response.data);
@@ -162,6 +165,18 @@ function MetalRateIndex() {
     },
   });
 
+  useEffect(()=>{
+    const updatedArray = metalValue.map((metal) => {
+      const match = respnseData.find(item => item.purity_id === metal._id);
+
+      return {
+        ...metal,
+        value: match ? match.rate : metal.value, 
+      };
+    });
+    setMetalValue(updatedArray);
+  },[respnseData])
+
   const { mutate: getMetalRate } = useMutation({
     mutationFn: (data) => todaymetalrate(data),
     onSuccess: (response) => {
@@ -171,7 +186,6 @@ function MetalRateIndex() {
         setUpdate(true);
       }
     },
-
     onError: (error) => {
       console.log(error.response.data);
     },
@@ -184,8 +198,9 @@ function MetalRateIndex() {
         name: e.material_type_id.metal_name,
         purity: e.purity_id.purity_name,
         value: e.rate,
+        _id:e?.purity_id?._id
       }));
-
+// console.log(data,"data")
       setMetalValue(metalRate);
 
       setUpdate(false);
