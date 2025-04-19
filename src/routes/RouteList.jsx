@@ -262,11 +262,11 @@ const RouteList = [
   },
 
   //Payment
-  {
-    name: "Scheme Payment",
-    path: '/payment/customerpayment',
-    element: <Base renderContent={SchemePayment} />
-  },
+  // {
+  //   name: "Scheme Payment",
+  //   path: '/payment/customerpayment',
+  //   element: <Base renderContent={SchemePayment} />
+  // },
   {
     name: "Add Scheme Payment",
     path: '/payment/addschemepayment',
