@@ -12,6 +12,7 @@ import {
   addcustomer,
   allcountry,
   allcity,
+  getBranchById
 } from "../../../api/Endpoints";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -37,7 +38,7 @@ import OtpCompleted from "../../manageaccount/closedaccount/OtpCompleted";
 const customSelectStyles = (isReadOnly) => ({
   control: (base, state) => ({
     ...base,
-    minHeight: "42px",
+    minHeight: "43px",
     backgroundColor: "white",
     border: state.isFocused ? "1px solid black" : "2px solid #f2f3f8",
     boxShadow: state.isFocused ? "0 0 0 1px black" : "none",
@@ -75,6 +76,8 @@ const customSelectStyles = (isReadOnly) => ({
   }),
 });
 
+const inputHeight = "42px";
+
 const CustomerForm = ({
   setCusData,
   handleCusData,
@@ -89,12 +92,13 @@ const CustomerForm = ({
   handleClear,
 }) => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
-  const roledata = useSelector((state) => state.clientForm.roledata);
+  const roleData = useSelector((state) => state.clientForm.roledata);
   const id_proofInputRef = useRef(null);
 
-  const id_branch = roledata?.branch;
+  const id_branch = roleData?.id_branch;
+  const accessBranch = roleData?.branch;
 
   const [isLoading, setisLoading] = useState(false);
 
@@ -116,8 +120,7 @@ const CustomerForm = ({
   const [country, setCountry] = useState("");
   const [state, setState] = useState("");
   const [city, setCity] = useState("");
-  const [otpNumber, setOtpNumber] = useState("");
-  const [branchData, setBranchData] = useState([]);
+  const [branchData, setBranchData] = useState(() => (accessBranch === "0" ? [] : {}));
   const [imagePreviews, setImagePreviews] = useState({
     image: null,
     id_proof: null,
@@ -149,6 +152,36 @@ const CustomerForm = ({
       .nullable()
       .oneOf([Yup.ref("password")], "Passwords must match")
       .notRequired(),
+  });
+
+  const formik = useFormik({
+    initialValues: cusData,
+    validationSchema: validationSchema,
+    enableReinitialize: true,
+    validateOnChange: false,
+    validateOnBlur: false,
+    onSubmit: (values) => {
+      if (values.password !== values.confirmpassword) {
+        toast.error("Passwords doesn't match");
+        return;
+      }
+
+      setCusData(values);
+      handleDispatch(values);
+      setisLoading(true);
+      const formPayload = new FormData();
+
+      Object.entries(values).forEach(([key, value]) => {
+        if (value) formPayload.append(key, value);
+      });
+
+      if (cus_img) formPayload.append("cus_img", cus_img);
+      if (id_proof) formPayload.append("id_proof", id_proof);
+
+      id
+        ? updateCustomerData({ id, data: formPayload })
+        : addcustomerMutate(formPayload);
+    },
   });
 
   useEffect(() => {
@@ -215,21 +248,41 @@ const CustomerForm = ({
     enabled: !!state,
   });
 
-  const { data: branchresponse, isLoading: loadingbranch } = useQuery({
-    queryKey: ["branch"],
-    queryFn: getallbranch,
+  // const { data: branchresponse, isLoading: loadingbranch } = useQuery({
+  //   queryKey: ["branch"],
+  //   queryFn: getallbranch,
+  // });
+
+  const { data: branchresponse } = useQuery({
+    queryKey: ["branches", accessBranch, id_branch],
+    queryFn: async () => {
+      if (accessBranch === "0") {
+        setisLoading(true);
+        return getallbranch();
+      }
+      setisLoading(true);
+      return getBranchById(id_branch);
+    },
+    enabled: Boolean(accessBranch),
+    staleTime: 5 * 60 * 1000,
+    cacheTime: 10 * 60 * 1000,
   });
 
   useEffect(() => {
-    if (branchresponse) {
-      const data = branchresponse.data;
-      const branch = data.map((branch) => ({
-        value: branch._id,
-        label: branch.branch_name,
+    if (!branchresponse) return;
+    if (accessBranch === "0" && branchresponse.data) {
+      const formattedBranches = branchresponse.data.map((item) => ({
+        value: item._id,
+        label: item.branch_name,
       }));
-      setBranchData(branch);
+      setBranchData(formattedBranches);
+      setisLoading(false);
+    } else if (branchresponse.data) {
+      setBranchData(branchresponse.data);
+      formik.setFieldValue("id_branch", branchresponse.data._id);
+      setisLoading(false);
     }
-  }, [branchresponse]);
+  }, [branchresponse, accessBranch]);
 
   useEffect(() => {
     if (countryresponse) {
@@ -468,42 +521,16 @@ const CustomerForm = ({
     setShowPassword(!showpassword);
   };
 
+  
+
   return (
     <>
       <div className="w-full flex flex-col bg-white">
         <div className="flex flex-col">
-          {(() => {
-            const formik = useFormik({
-              initialValues: cusData,
-              validationSchema: validationSchema,
-            //   enableReinitialize: true,
-              validateOnChange: false,
-              validateOnBlur: false,
-              onSubmit: (values) => {
-                if (values.password !== values.confirmpassword) {
-                  toast.error("Passwords doesn't match");
-                  return;
-                }
-
-                setCusData(values);
-                handleDispatch(values);
-                setisLoading(true);
-                const formPayload = new FormData();
-
-                Object.entries(values).forEach(([key, value]) => {
-                  if (value) formPayload.append(key, value);
-                });
-
-                if (cus_img) formPayload.append("cus_img", cus_img);
-                if (id_proof) formPayload.append("id_proof", id_proof);
-
-                id
-                  ? updateCustomerData({ id, data: formPayload })
-                  : addcustomerMutate(formPayload);
-              },
-            });
-
-            return (
+          {/* {(() => { */}
+            
+{/* 
+            return ( */}
               <>
                 <form
                   onSubmit={(e) => {
@@ -556,7 +583,7 @@ const CustomerForm = ({
                       ) : null}
                     </div>
 
-                    <div className="flex flex-col">
+                    {/* <div className="flex flex-col">
                       <label className="text-black mb-1 font-medium">
                         Branch<span className="text-red-400">*</span>
                       </label>
@@ -589,7 +616,51 @@ const CustomerForm = ({
                           {formik.errors.id_branch}
                         </div>
                       )}
-                    </div>
+                    </div> */}
+                    {accessBranch === "0" && branchData.length > 0 && !isLoading ? (
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Branches <span className="text-red-500">*</span>
+              </label>
+              <Select
+                styles={customSelectStyles(true)}
+                isClearable={true}
+                options={branchData}
+                placeholder="Select Branch"
+                value={
+                  branchData.find(
+                    (option) => option.value === formik.values.id_branch
+                  ) || ""
+                }
+                onChange={(option) =>
+                  formik.setFieldValue("id_branch", option ? option.value : "")
+                }
+              />
+              {formik.errors.id_branch && (
+                <div className="text-red-500 text-sm mt-1">
+                  {formik.errors.id_branch}
+                </div>
+              )}
+            </div>
+          ) : (
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Branch <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                disabled
+                style={{ height: inputHeight }}
+                value={branchData?.branch_name || ""}
+                className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2 text-gray-500"
+              />
+              {formik.errors.id_branch && (
+                <div className="text-red-500 text-sm mt-1">
+                  {formik.errors.id_branch}
+                </div>
+              )}
+            </div>
+          )}
 
                     <div className="flex flex-col">
                       <label className="text-gray-700 mb-1 font-medium">
@@ -1240,8 +1311,8 @@ const CustomerForm = ({
                   )}
                 </form>
               </>
-            );
-          })()}
+            {/* ); */}
+          {/* })()} */}
         </div>
       </div>
     </>

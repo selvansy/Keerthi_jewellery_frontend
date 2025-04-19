@@ -180,7 +180,6 @@ export function ExistingCustomer({ setCusData,handleCusData }) {
 
 const AddSchemeAccount = ({ cusData, handleClear }) => {
   let dispatch = useDispatch();
-  console.log("cusData---",cusData)
   const id_branch = cusData?.id_branch;
 
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
@@ -215,10 +214,10 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
   const [id_metal,setMetal]=useState('')
   const [id_purity,setPurity]= useState('')
   const [metalRate,setMetalRate]= useState(0)
-console.log(cusData)
+
   //* TODO use formik insted of formData
   const [formData, setFormData] = React.useState({
-    id_customer: cusData.id_customer || "",
+    id_customer: cusData.customerId || "",
     mobile: cusData.mobile,
     start_date: start_date,
     id_classification: "",
