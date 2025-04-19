@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { getallbranch, getCustomerByMobile,schemeAccByCusIdSchmeId,revertschemeAccount,searchmobileschemeaccount,customSearchScheme} from "../../../api/Endpoints";
+import { getallbranch,schemeAccByCusIdSchmeId,revertschemeAccount,customSearchScheme} from "../../../api/Endpoints";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";

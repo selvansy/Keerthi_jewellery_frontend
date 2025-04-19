@@ -85,10 +85,12 @@ export function ExistingCustomer({ setCusData,handleCusData }) {
       address: data.address,
       id_branch: data.id_branch,
       mobile: data.mobile,
-      id_customer: data._id,
+      customerId: data._id,
       referral_id: data.referral_id,
     });
   };
+
+  console.log(formData)
 
   return (
     <div className="grid grid-rows-2 md:grid-cols-2 gap-2">
@@ -273,7 +275,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
             schemeData?.data?.id_classification?._id
           );
         }
-        console.log(schemeData)
+
         setFormData({
           id: schemeData.data._id,
           id_scheme: schemeData.data.id_scheme._id,

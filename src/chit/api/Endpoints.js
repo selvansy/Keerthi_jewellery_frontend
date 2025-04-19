@@ -2563,11 +2563,11 @@ export const getSchemeClassifications = async () => {
 };
 
 //get customer details by mobile number no branch Id needed
-export const getCustomerByMobile = async (number) => {
+export const getCustomerByMobile = async (number,customer) => {
   const response = await Api.get(
     `${
       import.meta.env.VITE_API_URL
-    }/api/client/customer/mobile/search?search=${number}`
+    }/api/client/customer/mobile/search?search=${number}&cutomer=${customer}`
   );
   return response.data;
 };

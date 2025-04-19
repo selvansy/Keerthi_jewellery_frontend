@@ -46,7 +46,7 @@ function Customers() {
     }), [roledata]);
      
     const [cusData, setCusData] = useState(initialCustomerData);
-   
+   console.log(cusData,'gj')
 
     const handleCusData = (data)=>{
         setCusData(prev => ({
