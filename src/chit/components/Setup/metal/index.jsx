@@ -47,6 +47,7 @@ const Metal = () => {
   const [searchInput, setSearchInput] = useState("");
   const debouncedSearch = useDebounce(searchInput, 500);
   const [searchLoading, setSearchLoading] = useState("");
+  const [enableButton,setEnableButton]= useState(false)
 
   const limit = 10;
 
@@ -57,6 +58,7 @@ const Metal = () => {
         setMetalData(response.data);
         setTotalPages(response.totalPages);
         setTotalDocument(response.totalDocument);
+        setEnableButton(true)
       }
       setSearchLoading(false);
       setisLoading(false);
@@ -278,7 +280,7 @@ const Metal = () => {
           </div>
 
           {/* Add Metal Button */}
-          {MetalData.length<=3&&(
+          {(MetalData.length<=3 && enableButton)&&(
             <div className="w-full flex justify-end">
             <button
               className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-[135px] sm:w-auto"

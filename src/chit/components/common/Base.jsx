@@ -681,7 +681,7 @@ const Base = ({ renderContent: RenderContent }) => {
         <nav className="flex-1 text-white scrollbar-hide overflow-y-auto">
           <MenuItem
             text="Dashboard"
-            menuIcon={Dashboard}
+            // menuIcon={Dashboard}
             hasSubmenu={false}
             onClick={() => {
               setSelectedSection("Dashboard");

@@ -12,7 +12,7 @@ import {
   addcustomer,
   allcountry,
   allcity,
-  getBranchById
+  getBranchById,
 } from "../../../api/Endpoints";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -120,7 +120,9 @@ const CustomerForm = ({
   const [country, setCountry] = useState("");
   const [state, setState] = useState("");
   const [city, setCity] = useState("");
-  const [branchData, setBranchData] = useState(() => (accessBranch === "0" ? [] : {}));
+  const [branchData, setBranchData] = useState(() =>
+    accessBranch === "0" ? [] : {}
+  );
   const [imagePreviews, setImagePreviews] = useState({
     image: null,
     id_proof: null,
@@ -188,7 +190,7 @@ const CustomerForm = ({
     if (id) {
       getCustomerData(id);
     } else {
-    //   handleClear();
+      //   handleClear();
     }
   }, [id]);
 
@@ -343,7 +345,6 @@ const CustomerForm = ({
       console.error("Erro:", error);
     },
   });
-
 
   const sendOtpToMobile = (e) => {
     if (e) {
@@ -521,69 +522,65 @@ const CustomerForm = ({
     setShowPassword(!showpassword);
   };
 
-  
-
   return (
     <>
       <div className="w-full flex flex-col bg-white">
         <div className="flex flex-col">
           {/* {(() => { */}
-            
-{/* 
+
+          {/* 
             return ( */}
-              <>
-                <form
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    formik.handleSubmit(e);
-                  }}
-                >
-                  <div className="grid grid-rows-1 md:grid-cols-2 lg:grid-cols-3 gap-6 border-gray-300">
-                    <div className="flex flex-col">
-                      <label className="text-gray-700 mb-1 font-medium">
-                        First Name<span className="text-red-400">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        name="firstname"
-                        value={formik.values.firstname}
-                        onChange={(e) => {
-                          formik.handleChange(e);
-                          formik.setFieldTouched("firstname", false);
-                        }}
-                        className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
-                        placeholder="Enter Here"
-                      />
-                      {formik.errors.firstname ? (
-                        <div style={{ color: "red" }}>
-                          {formik.errors.firstname}
-                        </div>
-                      ) : null}
+          <>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                formik.handleSubmit(e);
+              }}
+            >
+              <div className="grid grid-rows-1 md:grid-cols-2 lg:grid-cols-3 gap-6 border-gray-300">
+                <div className="flex flex-col">
+                  <label className="text-gray-700 mb-1 font-medium">
+                    First Name<span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="firstname"
+                    value={formik.values.firstname}
+                    onChange={(e) => {
+                      formik.handleChange(e);
+                      formik.setFieldTouched("firstname", false);
+                    }}
+                    className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                    placeholder="Enter Here"
+                  />
+                  {formik.errors.firstname ? (
+                    <div style={{ color: "red" }}>
+                      {formik.errors.firstname}
                     </div>
+                  ) : null}
+                </div>
 
-                    <div className="flex flex-col">
-                      <label className="text-gray-700 mb-1 font-medium">
-                        Last Name<span className="text-red-400">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        name="lastname"
-                        value={formik.values.lastname}
-                        onChange={(e) => {
-                          formik.handleChange(e);
-                          formik.setFieldTouched("lastname", false);
-                        }}
-                        className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
-                        placeholder="Enter Here"
-                      />
-                      {formik.errors.lastname ? (
-                        <div style={{ color: "red" }}>
-                          {formik.errors.lastname}
-                        </div>
-                      ) : null}
-                    </div>
+                <div className="flex flex-col">
+                  <label className="text-gray-700 mb-1 font-medium">
+                    Last Name<span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="lastname"
+                    value={formik.values.lastname}
+                    onChange={(e) => {
+                      formik.handleChange(e);
+                      formik.setFieldTouched("lastname", false);
+                    }}
+                    className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                    placeholder="Enter Here"
+                  />
+                  {formik.errors.lastname ? (
+                    <div style={{ color: "red" }}>{formik.errors.lastname}</div>
+                  ) : null}
+                </div>
 
-                    {/* <div className="flex flex-col">
+                {/* <div className="flex flex-col">
                       <label className="text-black mb-1 font-medium">
                         Branch<span className="text-red-400">*</span>
                       </label>
@@ -617,701 +614,688 @@ const CustomerForm = ({
                         </div>
                       )}
                     </div> */}
-                    {accessBranch === "0" && branchData.length > 0 && !isLoading ? (
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Branches <span className="text-red-500">*</span>
-              </label>
-              <Select
-                styles={customSelectStyles(true)}
-                isClearable={true}
-                options={branchData}
-                placeholder="Select Branch"
-                value={
-                  branchData.find(
-                    (option) => option.value === formik.values.id_branch
-                  ) || ""
-                }
-                onChange={(option) =>
-                  formik.setFieldValue("id_branch", option ? option.value : "")
-                }
-              />
-              {formik.errors.id_branch && (
-                <div className="text-red-500 text-sm mt-1">
-                  {formik.errors.id_branch}
-                </div>
-              )}
-            </div>
-          ) : (
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Branch <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                disabled
-                style={{ height: inputHeight }}
-                value={branchData?.branch_name || ""}
-                className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2 text-gray-500"
-              />
-              {formik.errors.id_branch && (
-                <div className="text-red-500 text-sm mt-1">
-                  {formik.errors.id_branch}
-                </div>
-              )}
-            </div>
-          )}
-
-                    <div className="flex flex-col">
-                      <label className="text-gray-700 mb-1 font-medium">
-                        Mobile<span className="text-red-400">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        name="mobile"
-                        onInput={(e) => {
-                          e.target.value = e.target.value.replace(/\D/g, "");
-                          formik.handleChange(e);
-                        }}
-                        onChange={(e) => {
-                          formik.handleChange(e);
-                          setMobile(e.target.value);
-                        }}
-                        value={formik.values.mobile}
-                        pattern="\d{10}"
-                        maxLength={"10"}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") {
-                            e.preventDefault();
-                          }
-                        }}
-                        className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
-                        placeholder="Enter Mobile Number"
-                      />
-
-                      {formik.errors.mobile ? (
-                        <div style={{ color: "red" }}>
-                          {formik.errors.mobile}
-                        </div>
-                      ) : null}
-                    </div>
-
-                    <div className="flex flex-col">
-                      <label className="text-gray-700 mb-1 font-medium">
-                        Whatsapp Number
-                      </label>
-                      <input
-                        type="text"
-                        name="whatsapp"
-                        onInput={(e) =>
-                          (e.target.value = e.target.value.replace(/\D/g, ""))
-                        }
-                        value={formik.values.whatsapp}
-                        onChange={(e) => {
-                          e.preventDefault();
-                          formik.handleChange(e);
-                          formik.setFieldTouched("whatsapp", false);
-                        }}
-                        pattern="\d{10}"
-                        maxLength={"10"}
-                        className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
-                        placeholder="Enter Whatsapp Number"
-                      />
-                      {formik.errors.whatsapp ? (
-                        <div style={{ color: "red" }}>
-                          {formik.errors.whatsapp}
-                        </div>
-                      ) : null}
-                    </div>
-
-                    <div className="flex flex-col">
-                      <label className="text-black mb-1 font-medium">
-                        Gender<span className="text-red-400">*</span>
-                      </label>
-                      <div className="flex flex-row gap-6 justify-start">
-                        {[
-                          { label: "Male", value: 1 },
-                          { label: "Female", value: 2 },
-                          { label: "Other", value: 3 },
-                        ].map((gender) => (
-                          <button
-                            key={gender.value}
-                            type="button"
-                            className={`rounded-md w-20 h-10 flex items-center justify-center border-2 border-black transition-colors duration-200 ${
-                              formik.values.gender === gender.value
-                                ? "text-[#004181]"
-                                : " text-[#6C7086]"
-                            }`}
-                            style={
-                              formik.values.gender === gender.value
-                                ? { borderColor: layout_color }
-                                : { borderColor: "#f2f3f8" }
-                            }
-                            onClick={(e) => {
-                              e.preventDefault();
-                              formik.setFieldValue("gender", gender.value);
-                              formik.setFieldTouched("gender", false);
-                            }}
-                          >
-                            {gender.label}
-                          </button>
-                        ))}
-                      </div>
-                      {formik.errors.gender ? (
-                        <div style={{ color: "red" }}>
-                          {formik.errors.gender}
-                        </div>
-                      ) : null}
-                    </div>
-
-                    <div className="flex flex-col">
-                      <label className="text-black mb-1 font-medium">
-                        Country<span className="text-red-400">*</span>
-                      </label>
-
-                      <Select
-                        options={countryData}
-                        value={
-                          countryData.find(
-                            (ctry) => ctry.value === formik.values.id_country
-                          ) || country
-                        }
-                        onChange={(ctry) => {
-                          formik.setFieldValue("id_country", ctry.value);
-                          setCountry(ctry.value);
-                          formik.setFieldTouched("id_country", false);
-                        }}
-                        styles={customSelectStyles(true)}
-                        isLoading={loadingCountries}
-                        placeholder="Select Country"
-                      />
-                      {formik.errors.id_country ? (
-                        <div style={{ color: "red" }}>
-                          {formik.errors.id_country}
-                        </div>
-                      ) : null}
-                    </div>
-
-                    <div className="flex flex-col">
-                      <label className="text-black mb-1 font-medium">
-                        State<span className="text-red-400">*</span>
-                      </label>
-
-                      <Select
-                        options={stateData}
-                        onChange={(e) => {
-                          formik.setFieldValue("id_state", e.value);
-                          setState(e.value);
-                          formik.setFieldTouched("id_state", false);
-                        }}
-                        styles={customSelectStyles(true)}
-                        isLoading={loadingStates}
-                        value={
-                          stateData.find(
-                            (ctry) => ctry.value === formik.values.id_state
-                          ) || state
-                        }
-                        placeholder="Select state"
-                      />
-
-                      {formik.errors.id_state ? (
-                        <div style={{ color: "red" }}>
-                          {formik.errors.id_state}
-                        </div>
-                      ) : null}
-                    </div>
-
-                    <div className="flex flex-col">
-                      <label className="text-black mb-1 font-medium">
-                        City<span className="text-red-400">*</span>
-                      </label>
-
-                      <Select
-                        options={cityData}
-                        onChange={(e) => {
-                          formik.setFieldValue("id_city", e.value);
-                          setCity(e.value);
-                          formik.setFieldTouched("id_city", false);
-                        }}
-                        styles={customSelectStyles(true)}
-                        isLoading={loadingCities}
-                        value={
-                          cityData.find(
-                            (ctry) => ctry.value === formik.values.id_city
-                          ) || city
-                        }
-                        placeholder="Select city"
-                      />
-
-                      {formik.errors.id_city ? (
-                        <div style={{ color: "red" }}>
-                          {formik.errors.id_city}
-                        </div>
-                      ) : null}
-                    </div>
-
-                    <div className="flex flex-col">
-                      <label className="text-gray-700 mb-1 font-medium">
-                        Address<span className="text-red-400">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        name="address"
-                        value={formik.values.address}
-                        onChange={(e) => {
-                          e.preventDefault();
-                          formik.handleChange(e);
-                          formik.setFieldTouched("address", false);
-                        }}
-                        className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
-                        placeholder="Enter Here"
-                      />
-                      {formik.errors.address ? (
-                        <div style={{ color: "red" }}>
-                          {formik.errors.address}
-                        </div>
-                      ) : null}
-                    </div>
-
-                    <div className="flex flex-col">
-                      <label className="text-gray-700 mb-1 font-medium">
-                        Pincode<span className="text-red-400">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        name="pincode"
-                        value={formik.values.pincode}
-                        onInput={(e) =>
-                          (e.target.value = e.target.value.replace(/\D/g, ""))
-                        }
-                        onChange={(e) => {
-                          e.preventDefault();
-                          formik.handleChange(e);
-                          formik.setFieldTouched("pincode", false);
-                        }}
-                        pattern="\d{6}"
-                        maxLength={"6"}
-                        className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
-                        placeholder="Enter Pincode"
-                      />
-                      {formik.errors.pincode ? (
-                        <div style={{ color: "red" }}>
-                          {formik.errors.pincode}
-                        </div>
-                      ) : null}
-                    </div>
-
-                    <div className="flex flex-col">
-                      <label className="text-black mb-1 font-medium">
-                        Pan Number<span className="text-red-400"> *</span>
-                      </label>
-                      <input
-                        type="text"
-                        name="pan"
-                        value={formik.values.pan}
-                        onChange={(e) => {
-                          const value = e.target.value
-                            .toUpperCase()
-                            .replace(/[^A-Z0-9]/g, "");
-                          formik.setFieldValue("pan", value);
-                        }}
-                        className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
-                        placeholder="ABCDE1234F"
-                        maxLength="10"
-                      />
-                      {formik.errors.pan ? (
-                        <div style={{ color: "red" }}>{formik.errors.pan}</div>
-                      ) : null}
-                    </div>
-
-                    <div className="flex flex-col">
-                      <label className="text-gray-700 mb-1 font-medium">
-                        Aadhar Card Number
-                        <span className="text-red-400"> *</span>
-                      </label>
-                      <input
-                        type="text"
-                        name="authorno"
-                        value={formik.values.authorno}
-                        pattern="\d{12}"
-                        onInput={(e) =>
-                          (e.target.value = e.target.value.replace(/\D/g, ""))
-                        }
-                        maxLength="12"
-                        inputMode="numeric"
-                        onChange={formik.handleChange}
-                        className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
-                        placeholder="Enter Aadhar Number"
-                      />
-
-                      {formik.errors.authorno ? (
-                        <div style={{ color: "red" }}>
-                          {formik.errors.authorno}
-                        </div>
-                      ) : null}
-                    </div>
-
-                    <div className="flex flex-col">
-                      <label className="text-gray-700 mb-1 font-medium">
-                        Date Of Wedding
-                      </label>
-
-                      <div className="relative">
-                        <DatePicker
-                          selected={formik.values.date_of_wed}
-                          onChange={(date) => {
-                            const value = formatDate(date);
-                            formik.setFieldValue("date_of_wed", value);
-                            formik.setFieldTouched("date_of_wed", false);
-                          }}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                              e.preventDefault();
-                            }
-                          }}
-                          dateFormat="yyyy-MM-dd"
-                          className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
-                          placeholderText="Select Date"
-                          wrapperClassName="w-full"
-                          showMonthDropdown
-                          showYearDropdown
-                          dropdownMode="select"
-                        />
-                        <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center pointer-events-none">
-                          <img src={CalenderNew} className="w-5 h-5" />
-                        </span>
-                      </div>
-
-                      {formik.errors.date_of_wed ? (
-                        <div style={{ color: "red" }}>
-                          {formik.errors.date_of_wed}
-                        </div>
-                      ) : null}
-                    </div>
-
-                    <div className="flex flex-col">
-                      <label className="text-gray-700 mb-1 font-medium">
-                        Date Of Birth<span className="text-red-400">*</span>
-                      </label>
-                      <div className="relative">
-                        <DatePicker
-                          selected={formik.values.date_of_birth}
-                          onChange={(date) => {
-                            const value = formatDate(date);
-                            formik.setFieldValue("date_of_birth", value);
-                            formik.setFieldTouched("date_of_birth", false);
-                          }}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                              e.preventDefault();
-                            }
-                          }}
-                          dateFormat="yyyy-MM-dd"
-                          className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
-                          placeholderText="Select Date"
-                          wrapperClassName="w-full"
-                          showMonthDropdown
-                          showYearDropdown
-                          dropdownMode="select"
-                        />
-
-                        <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center pointer-events-none">
-                          <img src={CalenderNew} className="w-5 h-5" />
-                        </span>
-                      </div>
-                      {formik.errors.date_of_birth ? (
-                        <div style={{ color: "red" }}>
-                          {formik.errors.date_of_birth}
-                        </div>
-                      ) : null}
-                    </div>
-
-                    <div className="flex flex-col">
-                      <label className="text-gray-700 mb-1 font-medium">
-                        Password
-                      </label>
-
-                      <div className="relative w-full">
-                        <input
-                          type={showpassword ? "text" : "password"}
-                          name="password"
-                          value={formik.values.password}
-                          onChange={formik.handleChange}
-                          className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
-                          placeholder="Enter password"
-                        />
-                        {showpassword ? (
-                          <span
-                            className="absolute right-0 top-0 h-full w-14 flex items-center justify-center cursor-pointer"
-                            onClick={handlePasswordToggle}
-                          >
-                            <img
-                              src={eye1}
-                              className="w-5 h-5 cursor-pointer"
-                              onClick={handlePasswordToggle}
-                            />
-                          </span>
-                        ) : (
-                          <span
-                            className="absolute right-0 top-0 h-full w-14 flex items-center justify-center cursor-pointer"
-                            onClick={handlePasswordToggle}
-                          >
-                            <EyeOff
-                              size={16}
-                              className="w-5 h-5 cursor-pointer"
-                              onClick={handlePasswordToggle}
-                            />
-                          </span>
-                        )}
-                      </div>
-                      {formik.errors.password ? (
-                        <div style={{ color: "red" }}>
-                          {formik.errors.password}
-                        </div>
-                      ) : null}
-                    </div>
-
-                    <div className="flex flex-col">
-                      <label className="text-gray-700 mb-1 font-medium">
-                        Confirm Password
-                      </label>
-
-                      <div className="relative w-full">
-                        <input
-                          type={showpassword ? "text" : "password"}
-                          name="confirmpassword"
-                          value={formik.values.confirmpassword}
-                          onChange={formik.handleChange}
-                          className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
-                          placeholder="Confirm Password"
-                        />
-
-                        {showpassword ? (
-                          <span
-                            className="absolute right-0 top-0 h-full w-14 flex items-center justify-center cursor-pointer"
-                            onClick={handlePasswordToggle}
-                          >
-                            <img
-                              src={eye1}
-                              className="w-5 h-5 cursor-pointer"
-                              onClick={handlePasswordToggle}
-                            />
-                          </span>
-                        ) : (
-                          <span
-                            className="absolute right-0 top-0 h-full w-14 flex items-center justify-center cursor-pointer"
-                            onClick={handlePasswordToggle}
-                          >
-                            <EyeOff
-                              size={16}
-                              className="w-5 h-5 cursor-pointer"
-                              onClick={handlePasswordToggle}
-                            />
-                          </span>
-                        )}
-                      </div>
-                      {formik.errors.confirmpassword ? (
-                        <div style={{ color: "red" }}>
-                          {formik.errors.confirmpassword}
-                        </div>
-                      ) : null}
-                    </div>
-                  </div>
-
-                  <div className="grid grid-rows-1 md:grid-rows-1 lg:grid-cols-3 gap-6 border-gray-300 mt-8">
-                    {/* Resume Upload Field */}
-                    <div className="flex flex-col">
-                      <label className="text-gray-700 mb-1 font-medium">
-                        Upload Document
-                      </label>
-                      <div className="flex items-center gap-3 relative">
-                        <label
-                          htmlFor="id_proof"
-                          className="flex-1 border-2 border-[#f2f3f8] rounded-md px-3 py-2 cursor-pointer hover:bg-gray-50"
-                        >
-                          <p className="truncate text-[#b5b5b5]">
-                            {id_proof ? id_proof.name || id_proof : "Browse"}
-                          </p>
-                        </label>
-                        <div className="absolute right-0 top-0 bottom-0 h-full flex flex-row gap-2">
-                          <label
-                            htmlFor="id_proof"
-                            className="bg-blue-600 text-white px-4 flex items-center justify-center rounded-md cursor-pointer text-sm"
-                            style={{ backgroundColor: layout_color }}
-                          >
-                            Choose File
-                          </label>
-                        </div>
-                        <input
-                          className="hidden"
-                          id="id_proof"
-                          name="id_proof"
-                          type="file"
-                          accept=".pdf,.doc,.docx"
-                          onChange={handleFileChange}
-                          ref={id_proofInputRef}
-                        />
-                      </div>
-                      {formik.errors.id_proof ? (
-                        <div style={{ color: "red" }}>
-                          {formik.errors.id_proof}
-                        </div>
-                      ) : null}
-                    </div>
-
-                    {/* Image Upload Field */}
-                    <div className="flex flex-col">
-                      <label className="text-gray-700 mb-1 font-medium">
-                        Upload Profile Image
-                        <span className="font-normal">
-                          (Maximum file size: 500KB)
-                        </span>
-                      </label>
-                      <div className="flex items-center gap-3 relative">
-                        <label
-                          htmlFor="image"
-                          className="flex-1 border-2 border-[#f2f3f8] rounded-md px-3 py-2 cursor-pointer hover:bg-gray-50"
-                        >
-                          <p className="truncate text-[#b5b5b5] w-1/2">
-                            {cus_img ? cus_img.name || cus_img : "Browse"}
-                          </p>
-                        </label>
-                        <div className="absolute right-0 top-0 bottom-0 h-full flex flex-row gap-2">
-                          <label
-                            htmlFor="image"
-                            className="bg-blue-600 text-white px-4 flex items-center justify-center rounded-md cursor-pointer text-sm"
-                            style={{ backgroundColor: layout_color }}
-                          >
-                            Choose File
-                          </label>
-                          <div
-                            className="w-11 h-11 flex items-center justify-center rounded-md cursor-pointer"
-                            style={{ backgroundColor: layout_color }}
-                            onClick={() => setShowWebcam(true)}
-                          >
-                            <img
-                              src={cameraIcon}
-                              alt="Camera Icon"
-                              className="w-6 h-6 object-contain"
-                            />
-                          </div>
-                        </div>
-                        <input
-                          className="hidden"
-                          id="image"
-                          name="image"
-                          type="file"
-                          accept="image/*"
-                          onChange={handleFileChange}
-                          ref={descImageInputRef}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-rows-1 md:grid-rows-1 lg:grid-cols-1 gap-6 my-3">
-                    <div className="flex flex-col gap-3 lg:mt-4">
-                      <CheckboxToggle
-                        checked={checked}
-                        label="To close & refund the account with OTP verification, kindly check the checkbox"
-                        onChange={handleOtpToggle}
-                      />
-
-                      {checked && (
-                        <div className="flex flex-row justify-between w-full mt-2">
-                          <div className="flex flex-col flex-[0.9]">
-                            <label className="block text-sm font-medium mb-1">
-                              Mobile Number
-                              <span className="text-red-400"> *</span>
-                            </label>
-                            <div className="relative">
-                              <input
-                                type="number"
-                                min="0"
-                                className="border-2 border-[#f2f3f8] rounded-md p-2 w-96 lg:w-[81%] focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent pr-24"
-                                placeholder="Enter mobile number"
-                                value={formik.values.mobile || cusData.mobile}
-                                onChange={formik.handleChange}
-                                name="otpMobile"
-                              />
-
-                              {showverifyIcon && (
-                                <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center pointer-events-none">
-                                  <img src={verified} className="w-5 h-5" />
-                                </span>
-                              )}
-
-                              <div className="absolute -right-2 top-1/2 -translate-y-1/2">
-                                <button
-                                  className="bg-[#004181] text-white rounded-md px-4 py-2"
-                                  onClick={(e) => sendOtpToMobile(e)}
-                                >
-                                  Send OTP
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Right (Narrower) */}
-                          <div className="flex items-end flex-[1]"></div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
+                {accessBranch === "0" && branchData.length > 0 && !isLoading ? (
                   <div>
-                    <div className="bg-white mt-6">
-                      <div className="flex justify-end gap-2 mt-3">
-                        <button
-                          className="bg-[#E2E8F0] text-black rounded-md p-2 w-full lg:w-20"
-                          type="button"
-                          onClick={() => {
-                            handleClear();
-                            navigate("/managecustomers/customer/");
-                          }}
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          className="text-white rounded-md p-2 w-full lg:w-20"
-                          type="submit"
-                          style={{ backgroundColor: layout_color }}
-                          disabled={isLoading}
-                        >
-                          {isLoading ? <SpinLoading /> : id ? "Update" : "Save"}
-                        </button>
+                    <label className="block text-sm font-medium mb-2">
+                      Branches <span className="text-red-500">*</span>
+                    </label>
+                    <Select
+                      styles={customSelectStyles(true)}
+                      isClearable={true}
+                      options={branchData}
+                      placeholder="Select Branch"
+                      value={
+                        branchData.find(
+                          (option) => option.value === formik.values.id_branch
+                        ) || ""
+                      }
+                      onChange={(option) =>
+                        formik.setFieldValue(
+                          "id_branch",
+                          option ? option.value : ""
+                        )
+                      }
+                    />
+                    {formik.errors.id_branch && (
+                      <div className="text-red-500 text-sm mt-1">
+                        {formik.errors.id_branch}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Branch <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      disabled
+                      style={{ height: inputHeight }}
+                      value={branchData?.branch_name || ""}
+                      className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2 text-gray-500"
+                    />
+                    {formik.errors.id_branch && (
+                      <div className="text-red-500 text-sm mt-1">
+                        {formik.errors.id_branch}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                <div className="flex flex-col">
+                  <label className="text-gray-700 mb-1 font-medium">
+                    Mobile<span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="mobile"
+                    onChange={(e) => {
+                      let digitsOnly = e.target.value.replace(/\D/g, "");
+                      if (
+                        digitsOnly.length > 10 &&
+                        digitsOnly.startsWith("91")
+                      ) {
+                        digitsOnly = digitsOnly.slice(2);
+                      }
+                      const cleaned = digitsOnly.slice(-10);
+
+                      formik.setFieldValue("mobile", cleaned);
+                      setMobile(cleaned);
+                    }}
+                    value={formik.values.mobile}
+                    pattern="\d{10}"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                      }
+                    }}
+                    className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                    placeholder="Enter Mobile Number"
+                  />
+
+                  {formik.errors.mobile && (
+                    <div style={{ color: "red" }}>{formik.errors.mobile}</div>
+                  )}
+                </div>
+
+                <div className="flex flex-col">
+                  <label className="text-gray-700 mb-1 font-medium">
+                    Whatsapp Number
+                  </label>
+                  <input
+                    type="text"
+                    name="whatsapp"
+                    onInput={(e) =>
+                      (e.target.value = e.target.value.replace(/\D/g, ""))
+                    }
+                    value={formik.values.whatsapp}
+                    onChange={(e) => {
+                      e.preventDefault();
+                      formik.handleChange(e);
+                      formik.setFieldTouched("whatsapp", false);
+                    }}
+                    pattern="\d{10}"
+                    maxLength={"10"}
+                    className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                    placeholder="Enter Whatsapp Number"
+                  />
+                  {formik.errors.whatsapp ? (
+                    <div style={{ color: "red" }}>{formik.errors.whatsapp}</div>
+                  ) : null}
+                </div>
+
+                <div className="flex flex-col">
+                  <label className="text-black mb-1 font-medium">
+                    Gender<span className="text-red-400">*</span>
+                  </label>
+                  <div className="flex flex-row gap-6 justify-start">
+                    {[
+                      { label: "Male", value: 1 },
+                      { label: "Female", value: 2 },
+                      { label: "Other", value: 3 },
+                    ].map((gender) => (
+                      <button
+                        key={gender.value}
+                        type="button"
+                        className={`rounded-md w-20 h-10 flex items-center justify-center border-2 border-black transition-colors duration-200 ${
+                          formik.values.gender === gender.value
+                            ? "text-[#004181]"
+                            : " text-[#6C7086]"
+                        }`}
+                        style={
+                          formik.values.gender === gender.value
+                            ? { borderColor: layout_color }
+                            : { borderColor: "#f2f3f8" }
+                        }
+                        onClick={(e) => {
+                          e.preventDefault();
+                          formik.setFieldValue("gender", gender.value);
+                          formik.setFieldTouched("gender", false);
+                        }}
+                      >
+                        {gender.label}
+                      </button>
+                    ))}
+                  </div>
+                  {formik.errors.gender ? (
+                    <div style={{ color: "red" }}>{formik.errors.gender}</div>
+                  ) : null}
+                </div>
+
+                <div className="flex flex-col">
+                  <label className="text-black mb-1 font-medium">
+                    Country<span className="text-red-400">*</span>
+                  </label>
+
+                  <Select
+                    options={countryData}
+                    value={
+                      countryData.find(
+                        (ctry) => ctry.value === formik.values.id_country
+                      ) || country
+                    }
+                    onChange={(ctry) => {
+                      formik.setFieldValue("id_country", ctry.value);
+                      setCountry(ctry.value);
+                      formik.setFieldTouched("id_country", false);
+                    }}
+                    styles={customSelectStyles(true)}
+                    isLoading={loadingCountries}
+                    placeholder="Select Country"
+                  />
+                  {formik.errors.id_country ? (
+                    <div style={{ color: "red" }}>
+                      {formik.errors.id_country}
+                    </div>
+                  ) : null}
+                </div>
+
+                <div className="flex flex-col">
+                  <label className="text-black mb-1 font-medium">
+                    State<span className="text-red-400">*</span>
+                  </label>
+
+                  <Select
+                    options={stateData}
+                    onChange={(e) => {
+                      formik.setFieldValue("id_state", e.value);
+                      setState(e.value);
+                      formik.setFieldTouched("id_state", false);
+                    }}
+                    styles={customSelectStyles(true)}
+                    isLoading={loadingStates}
+                    value={
+                      stateData.find(
+                        (ctry) => ctry.value === formik.values.id_state
+                      ) || state
+                    }
+                    placeholder="Select state"
+                  />
+
+                  {formik.errors.id_state ? (
+                    <div style={{ color: "red" }}>{formik.errors.id_state}</div>
+                  ) : null}
+                </div>
+
+                <div className="flex flex-col">
+                  <label className="text-black mb-1 font-medium">
+                    City<span className="text-red-400">*</span>
+                  </label>
+
+                  <Select
+                    options={cityData}
+                    onChange={(e) => {
+                      formik.setFieldValue("id_city", e.value);
+                      setCity(e.value);
+                      formik.setFieldTouched("id_city", false);
+                    }}
+                    styles={customSelectStyles(true)}
+                    isLoading={loadingCities}
+                    value={
+                      cityData.find(
+                        (ctry) => ctry.value === formik.values.id_city
+                      ) || city
+                    }
+                    placeholder="Select city"
+                  />
+
+                  {formik.errors.id_city ? (
+                    <div style={{ color: "red" }}>{formik.errors.id_city}</div>
+                  ) : null}
+                </div>
+
+                <div className="flex flex-col">
+                  <label className="text-gray-700 mb-1 font-medium">
+                    Address<span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="address"
+                    value={formik.values.address}
+                    onChange={(e) => {
+                      e.preventDefault();
+                      formik.handleChange(e);
+                      formik.setFieldTouched("address", false);
+                    }}
+                    className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                    placeholder="Enter Here"
+                  />
+                  {formik.errors.address ? (
+                    <div style={{ color: "red" }}>{formik.errors.address}</div>
+                  ) : null}
+                </div>
+
+                <div className="flex flex-col">
+                  <label className="text-gray-700 mb-1 font-medium">
+                    Pincode<span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="pincode"
+                    value={formik.values.pincode}
+                    onInput={(e) =>
+                      (e.target.value = e.target.value.replace(/\D/g, ""))
+                    }
+                    onChange={(e) => {
+                      e.preventDefault();
+                      formik.handleChange(e);
+                      formik.setFieldTouched("pincode", false);
+                    }}
+                    pattern="\d{6}"
+                    maxLength={"6"}
+                    className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                    placeholder="Enter Pincode"
+                  />
+                  {formik.errors.pincode ? (
+                    <div style={{ color: "red" }}>{formik.errors.pincode}</div>
+                  ) : null}
+                </div>
+
+                <div className="flex flex-col">
+                  <label className="text-black mb-1 font-medium">
+                    Pan Number<span className="text-red-400"> *</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="pan"
+                    value={formik.values.pan}
+                    onChange={(e) => {
+                      const value = e.target.value
+                        .toUpperCase()
+                        .replace(/[^A-Z0-9]/g, "");
+                      formik.setFieldValue("pan", value);
+                    }}
+                    className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                    placeholder="ABCDE1234F"
+                    maxLength="10"
+                  />
+                  {formik.errors.pan ? (
+                    <div style={{ color: "red" }}>{formik.errors.pan}</div>
+                  ) : null}
+                </div>
+
+                <div className="flex flex-col">
+                  <label className="text-gray-700 mb-1 font-medium">
+                    Aadhar Card Number
+                    <span className="text-red-400"> *</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="authorno"
+                    value={formik.values.authorno}
+                    pattern="\d{12}"
+                    onInput={(e) =>
+                      (e.target.value = e.target.value.replace(/\D/g, ""))
+                    }
+                    maxLength="12"
+                    inputMode="numeric"
+                    onChange={formik.handleChange}
+                    className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                    placeholder="Enter Aadhar Number"
+                  />
+
+                  {formik.errors.authorno ? (
+                    <div style={{ color: "red" }}>{formik.errors.authorno}</div>
+                  ) : null}
+                </div>
+
+                <div className="flex flex-col">
+                  <label className="text-gray-700 mb-1 font-medium">
+                    Date Of Wedding
+                  </label>
+
+                  <div className="relative">
+                    <DatePicker
+                      selected={formik.values.date_of_wed}
+                      onChange={(date) => {
+                        const value = formatDate(date);
+                        formik.setFieldValue("date_of_wed", value);
+                        formik.setFieldTouched("date_of_wed", false);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                        }
+                      }}
+                      dateFormat="yyyy-MM-dd"
+                      className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                      placeholderText="Select Date"
+                      wrapperClassName="w-full"
+                      showMonthDropdown
+                      showYearDropdown
+                      dropdownMode="select"
+                    />
+                    <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center pointer-events-none">
+                      <img src={CalenderNew} className="w-5 h-5" />
+                    </span>
+                  </div>
+
+                  {formik.errors.date_of_wed ? (
+                    <div style={{ color: "red" }}>
+                      {formik.errors.date_of_wed}
+                    </div>
+                  ) : null}
+                </div>
+
+                <div className="flex flex-col">
+                  <label className="text-gray-700 mb-1 font-medium">
+                    Date Of Birth<span className="text-red-400">*</span>
+                  </label>
+                  <div className="relative">
+                    <DatePicker
+                      selected={formik.values.date_of_birth}
+                      onChange={(date) => {
+                        const value = formatDate(date);
+                        formik.setFieldValue("date_of_birth", value);
+                        formik.setFieldTouched("date_of_birth", false);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                        }
+                      }}
+                      dateFormat="yyyy-MM-dd"
+                      className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                      placeholderText="Select Date"
+                      wrapperClassName="w-full"
+                      showMonthDropdown
+                      showYearDropdown
+                      dropdownMode="select"
+                    />
+
+                    <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center pointer-events-none">
+                      <img src={CalenderNew} className="w-5 h-5" />
+                    </span>
+                  </div>
+                  {formik.errors.date_of_birth ? (
+                    <div style={{ color: "red" }}>
+                      {formik.errors.date_of_birth}
+                    </div>
+                  ) : null}
+                </div>
+
+                <div className="flex flex-col">
+                  <label className="text-gray-700 mb-1 font-medium">
+                    Password
+                  </label>
+
+                  <div className="relative w-full">
+                    <input
+                      type={showpassword ? "text" : "password"}
+                      name="password"
+                      value={formik.values.password}
+                      onChange={formik.handleChange}
+                      className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                      placeholder="Enter password"
+                    />
+                    {showpassword ? (
+                      <span
+                        className="absolute right-0 top-0 h-full w-14 flex items-center justify-center cursor-pointer"
+                        onClick={handlePasswordToggle}
+                      >
+                        <img
+                          src={eye1}
+                          className="w-5 h-5 cursor-pointer"
+                          onClick={handlePasswordToggle}
+                        />
+                      </span>
+                    ) : (
+                      <span
+                        className="absolute right-0 top-0 h-full w-14 flex items-center justify-center cursor-pointer"
+                        onClick={handlePasswordToggle}
+                      >
+                        <EyeOff
+                          size={16}
+                          className="w-5 h-5 cursor-pointer"
+                          onClick={handlePasswordToggle}
+                        />
+                      </span>
+                    )}
+                  </div>
+                  {formik.errors.password ? (
+                    <div style={{ color: "red" }}>{formik.errors.password}</div>
+                  ) : null}
+                </div>
+
+                <div className="flex flex-col">
+                  <label className="text-gray-700 mb-1 font-medium">
+                    Confirm Password
+                  </label>
+
+                  <div className="relative w-full">
+                    <input
+                      type={showpassword ? "text" : "password"}
+                      name="confirmpassword"
+                      value={formik.values.confirmpassword}
+                      onChange={formik.handleChange}
+                      className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                      placeholder="Confirm Password"
+                    />
+
+                    {showpassword ? (
+                      <span
+                        className="absolute right-0 top-0 h-full w-14 flex items-center justify-center cursor-pointer"
+                        onClick={handlePasswordToggle}
+                      >
+                        <img
+                          src={eye1}
+                          className="w-5 h-5 cursor-pointer"
+                          onClick={handlePasswordToggle}
+                        />
+                      </span>
+                    ) : (
+                      <span
+                        className="absolute right-0 top-0 h-full w-14 flex items-center justify-center cursor-pointer"
+                        onClick={handlePasswordToggle}
+                      >
+                        <EyeOff
+                          size={16}
+                          className="w-5 h-5 cursor-pointer"
+                          onClick={handlePasswordToggle}
+                        />
+                      </span>
+                    )}
+                  </div>
+                  {formik.errors.confirmpassword ? (
+                    <div style={{ color: "red" }}>
+                      {formik.errors.confirmpassword}
+                    </div>
+                  ) : null}
+                </div>
+              </div>
+
+              <div className="grid grid-rows-1 md:grid-rows-1 lg:grid-cols-3 gap-6 border-gray-300 mt-8">
+                {/* Resume Upload Field */}
+                <div className="flex flex-col">
+                  <label className="text-gray-700 mb-1 font-medium">
+                    Upload Document
+                  </label>
+                  <div className="flex items-center gap-3 relative">
+                    <label
+                      htmlFor="id_proof"
+                      className="flex-1 border-2 border-[#f2f3f8] rounded-md px-3 py-2 cursor-pointer hover:bg-gray-50"
+                    >
+                      <p className="truncate text-[#b5b5b5]">
+                        {id_proof ? id_proof.name || id_proof : "Browse"}
+                      </p>
+                    </label>
+                    <div className="absolute right-0 top-0 bottom-0 h-full flex flex-row gap-2">
+                      <label
+                        htmlFor="id_proof"
+                        className="bg-blue-600 text-white px-4 flex items-center justify-center rounded-md cursor-pointer text-sm"
+                        style={{ backgroundColor: layout_color }}
+                      >
+                        Choose File
+                      </label>
+                    </div>
+                    <input
+                      className="hidden"
+                      id="id_proof"
+                      name="id_proof"
+                      type="file"
+                      accept=".pdf,.doc,.docx"
+                      onChange={handleFileChange}
+                      ref={id_proofInputRef}
+                    />
+                  </div>
+                  {formik.errors.id_proof ? (
+                    <div style={{ color: "red" }}>{formik.errors.id_proof}</div>
+                  ) : null}
+                </div>
+
+                {/* Image Upload Field */}
+                <div className="flex flex-col">
+                  <label className="text-gray-700 mb-1 font-medium">
+                    Upload Profile Image
+                    <span className="font-normal">
+                      (Maximum file size: 500KB)
+                    </span>
+                  </label>
+                  <div className="flex items-center gap-3 relative">
+                    <label
+                      htmlFor="image"
+                      className="flex-1 border-2 border-[#f2f3f8] rounded-md px-3 py-2 cursor-pointer hover:bg-gray-50"
+                    >
+                      <p className="truncate text-[#b5b5b5] w-1/2">
+                        {cus_img ? cus_img.name || cus_img : "Browse"}
+                      </p>
+                    </label>
+                    <div className="absolute right-0 top-0 bottom-0 h-full flex flex-row gap-2">
+                      <label
+                        htmlFor="image"
+                        className="bg-blue-600 text-white px-4 flex items-center justify-center rounded-md cursor-pointer text-sm"
+                        style={{ backgroundColor: layout_color }}
+                      >
+                        Choose File
+                      </label>
+                      <div
+                        className="w-11 h-11 flex items-center justify-center rounded-md cursor-pointer"
+                        style={{ backgroundColor: layout_color }}
+                        onClick={() => setShowWebcam(true)}
+                      >
+                        <img
+                          src={cameraIcon}
+                          alt="Camera Icon"
+                          className="w-6 h-6 object-contain"
+                        />
                       </div>
                     </div>
+                    <input
+                      className="hidden"
+                      id="image"
+                      name="image"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      ref={descImageInputRef}
+                    />
                   </div>
-                  {otpSended && (
-                    <ModelOne
-                      title="Verify Mobile Number"
-                      setIsOpen={setSendOtp}
-                      isOpen={otpSended}
-                      closeModal={closeIncommingModal}
-                    >
-                      <VerificationModal
-                        mobile={formik.values.mobile}
-                        branch={formik.values.id_branch}
-                        setIsOpen={closeIncommingModal}
-                        otpComplete={handleOtpComplete}
-                      />
-                    </ModelOne>
-                  )}
+                </div>
+              </div>
 
-                  {otpCompleted && (
-                    <ModelOne
-                      extraClassName="lg:w-[24rem]"
-                      setIsOpen={setOtpComplete}
-                      isOpen={otpCompleted}
-                      closeModal={closeIncommingModal}
-                    >
-                      <OtpCompleted setIsOpen={closeIncommingModal} />
-                    </ModelOne>
+              <div className="grid grid-rows-1 md:grid-rows-1 lg:grid-cols-1 gap-6 my-3">
+                <div className="flex flex-col gap-3 lg:mt-4">
+                  <CheckboxToggle
+                    checked={checked}
+                    label="To close & refund the account with OTP verification, kindly check the checkbox"
+                    onChange={handleOtpToggle}
+                  />
+
+                  {checked && (
+                    <div className="flex flex-row justify-between w-full mt-2">
+                      <div className="flex flex-col flex-[0.9]">
+                        <label className="block text-sm font-medium mb-1">
+                          Mobile Number
+                          <span className="text-red-400"> *</span>
+                        </label>
+                        <div className="relative">
+                          <input
+                            type="number"
+                            min="0"
+                            className="border-2 border-[#f2f3f8] rounded-md p-2 w-96 lg:w-[81%] focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent pr-24"
+                            placeholder="Enter mobile number"
+                            value={formik.values.mobile || cusData.mobile}
+                            onChange={formik.handleChange}
+                            name="otpMobile"
+                          />
+
+                          {showverifyIcon && (
+                            <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center pointer-events-none">
+                              <img src={verified} className="w-5 h-5" />
+                            </span>
+                          )}
+
+                          <div className="absolute -right-2 top-1/2 -translate-y-1/2">
+                            <button
+                              className="bg-[#004181] text-white rounded-md px-4 py-2"
+                              onClick={(e) => sendOtpToMobile(e)}
+                            >
+                              Send OTP
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Right (Narrower) */}
+                      <div className="flex items-end flex-[1]"></div>
+                    </div>
                   )}
-                </form>
-              </>
-            {/* ); */}
+                </div>
+              </div>
+
+              <div>
+                <div className="bg-white mt-6">
+                  <div className="flex justify-end gap-2 mt-3">
+                    <button
+                      className="bg-[#E2E8F0] text-black rounded-md p-2 w-full lg:w-20"
+                      type="button"
+                      onClick={() => {
+                        handleClear();
+                        navigate("/managecustomers/customer/");
+                      }}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      className="text-white rounded-md p-2 w-full lg:w-20"
+                      type="submit"
+                      style={{ backgroundColor: layout_color }}
+                      disabled={isLoading}
+                    >
+                      {isLoading ? <SpinLoading /> : id ? "Update" : "Save"}
+                    </button>
+                  </div>
+                </div>
+              </div>
+              {otpSended && (
+                <ModelOne
+                  title="Verify Mobile Number"
+                  setIsOpen={setSendOtp}
+                  isOpen={otpSended}
+                  closeModal={closeIncommingModal}
+                >
+                  <VerificationModal
+                    mobile={formik.values.mobile}
+                    branch={formik.values.id_branch}
+                    setIsOpen={closeIncommingModal}
+                    otpComplete={handleOtpComplete}
+                  />
+                </ModelOne>
+              )}
+
+              {otpCompleted && (
+                <ModelOne
+                  extraClassName="lg:w-[24rem]"
+                  setIsOpen={setOtpComplete}
+                  isOpen={otpCompleted}
+                  closeModal={closeIncommingModal}
+                >
+                  <OtpCompleted setIsOpen={closeIncommingModal} />
+                </ModelOne>
+              )}
+            </form>
+          </>
+          {/* ); */}
           {/* })()} */}
         </div>
       </div>
