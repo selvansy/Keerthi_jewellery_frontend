@@ -686,7 +686,7 @@ const ViewScheme = () => {
               <label className="block text-sm font-medium mb-1">
                 Scheme Name
               </label>
-              <p className="text-[#72737e] pb-2">{formik.values.scheme_name} || N/A</p>
+              <p className="text-[#72737e] pb-2">{formik.values.scheme_name}</p>
             </div>
 
             <div>

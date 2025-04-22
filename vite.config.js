@@ -7,6 +7,9 @@ export default defineConfig({
     outDir: 'dist',
   },
   base: './',
+  server: {
+    host: true
+  }
 
 })
 
