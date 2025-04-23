@@ -270,7 +270,7 @@ const Userrole = () => {
               className="p-3 pl-10 pr-3 border-2 bg-[#F5F5F5] border-gray-500 rounded-md w-full"
             />
           </div>
-          <div className="flex flex-row items-center justify-end gap-2">
+          {/* <div className="flex flex-row items-center justify-end gap-2">
             <button
               className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
               onClick={handleAdduserrole}
@@ -278,7 +278,7 @@ const Userrole = () => {
             >
               + Add User Role
             </button>
-          </div>
+          </div> */}
         </div>
 
         <div className="mt-4">

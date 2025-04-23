@@ -143,14 +143,19 @@ function WalletHistory() {
   }, [currentPage, debouncedSearch, itemsPerPage,startDate,endDate]);
 
 
-  useEffect(()=>{
-    if(!walletData) return;
-     if(walletData.length > 0){
+  // useEffect(()=>{
+  //   if(!walletData) return;
+  //    if(walletData.length > 0){
+  //     generateExportData();
+  //    }else{
+  //     setwalletData([])
+  //    }
+  // },[walletData])
+  useEffect(() => {
+    if (walletData?.length > 0) {
       generateExportData();
-     }else{
-      setwalletData([])
-     }
-  },[walletData])
+    }
+  }, [walletData]);
 
 
   const generateExportData = () => {
