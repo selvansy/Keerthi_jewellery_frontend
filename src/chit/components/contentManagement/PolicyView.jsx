@@ -1,22 +1,33 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { getContentTypes } from "../../api/Endpoints";
+import { getContentTypes,getallContent} from "../../api/Endpoints";
 import { useMutation } from "@tanstack/react-query";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { toast } from "react-toastify";
-import { sections } from "../../../../src/utils/Constants.js";
+// import { sections } from "../../../../src/utils/Constants.js";
 
 
 const PolicyView = () => {
-    const [activeTab, setActiveTab] = useState(1);
+    const [activeTab, setActiveTab] = useState("1");
     const [contentData, setContentData] = useState([]);
     const layout_color = useSelector((state) => state.clientForm.layoutColor);
+    const [setcion,setSections]=useState([])
 
     const { mutate: ContentPolicy } = useMutation({
         mutationFn: (payload) => getContentTypes(payload),
         onSuccess: (response) => {
             setContentData(response.data);
+        },
+        onError: (error) => {
+            setContentData([]);
+        }
+    });
+
+    const { mutate: contents } = useMutation({
+        mutationFn: () => getallContent(),
+        onSuccess: (response) => {
+            setSections(response.data);
         },
         onError: (error) => {
             setContentData([]);
@@ -30,6 +41,7 @@ const PolicyView = () => {
             type: activeTab
         };
         ContentPolicy(payload);
+        contents()
     }, [activeTab]);
 
     return (
@@ -44,7 +56,7 @@ const PolicyView = () => {
                     aria-label="Navigation Tabs"
                 >
                     <ul className="flex flex-wrap justify-center md:justify-start gap-4 text-md font-medium">
-                        {sections.map(({ id, name }) => (
+                        {setcion.map(({ id, name }) => (
                             <li key={id}>
                                 <button
                                     type="button"
@@ -67,7 +79,7 @@ const PolicyView = () => {
 
                 {/* Content Area */}
                 <div className="space-y-6">
-                    {sections.map(({ id, name }) =>
+                    {setcion.map(({ id, name }) =>
                         activeTab === id ? (
                             <div key={id} id={id} className="p-4 bg-white rounded-lg shadow-md">
                                 <p className="text-xl font-semibold text-gray-900 mb-4">{name}</p>

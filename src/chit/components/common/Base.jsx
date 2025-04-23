@@ -526,6 +526,7 @@ const Base = ({ renderContent: RenderContent }) => {
         { text: "Submenu", action: () => handleClick("Sub Menu") },
         { text: "Metal", action: () => handleClick("Metal") },
         { text: "Purity", action: () => handleClick("Purity") },
+        { text: "Policies", action: () => handleClick("Policies") },
       ],
       onClick: () => setSelectedParentSection("Settings"),
     },
