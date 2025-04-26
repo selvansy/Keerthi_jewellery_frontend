@@ -893,7 +893,7 @@ const CustomerForm = ({
 
                 <div className="flex flex-col">
                   <label className="text-black mb-1 font-medium">
-                    Pan Number<span className="text-red-400"> *</span>
+                    Pan Number
                   </label>
                   <input
                     type="text"
@@ -979,7 +979,7 @@ const CustomerForm = ({
 
                 <div className="flex flex-col">
                   <label className="text-gray-700 mb-1 font-medium">
-                    Date Of Birth<span className="text-red-400">*</span>
+                    Date Of Birth
                   </label>
                   <div className="relative">
                     <DatePicker

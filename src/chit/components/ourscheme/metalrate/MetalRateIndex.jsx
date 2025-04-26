@@ -364,7 +364,7 @@ function MetalRateIndex() {
               {purityData.map((item, index) => (
                 <div className="flex flex-col mt-2" key={index}>
                   <label className="text-black mb-2 font-semibold">
-                    {`${item.id_metal.metal_name} ( ${item.purity_name} )`}/g
+                    {`${item.id_metal?.metal_name} ( ${item?.purity_name} )`}/g
                     <span className="text-[#F04438]"> *</span>
                   </label>
                   <div className="relative w-full">

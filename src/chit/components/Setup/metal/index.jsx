@@ -115,7 +115,7 @@ const Metal = () => {
         modalType: "CONFIRMATION",
         header: "Confirm Delete",
         formData: {
-          message: "Are you sure you want to delete your row?",
+          message: "Are you sure you want to delete this metal?",
           MetalId: id,
         },
         buttons: {
@@ -280,7 +280,7 @@ const Metal = () => {
           </div>
 
           {/* Add Metal Button */}
-          {(MetalData.length<=3 && enableButton)&&(
+          {(MetalData && MetalData.length<=3 && enableButton)&&(
             <div className="w-full flex justify-end">
             <button
               className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-[135px] sm:w-auto"

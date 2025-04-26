@@ -95,7 +95,7 @@ const Base = ({ renderContent: RenderContent }) => {
         const metals = ["Gold", "Silver", "Platinum"];
         const metalRegexes = metals.map((m) => new RegExp(`^${m}$`, "i"));
 
-        const goldPurityRegex = /^(24|22)\s?k(t)?$/i;
+        const goldPurityRegex = /^(24|22)\s?(k|c)t$/i;
 
         const filteredData = data.filter((item) => {
           const metalName = item?.id_metal?.metal_name;
@@ -606,7 +606,7 @@ const Base = ({ renderContent: RenderContent }) => {
           {/* Right side with settings, notifications and user menu */}
           <div className="xl:flex items-center space-x-3 hidden ">
             <div className="bg-[#FFE28D] flex px-[12px] py-[6px] rounded-[8px]">
-              <p>Gold (24K):</p> <p>{formatNumber({value:metalRate[0]?.rate, decimalPlaces: 0})}</p>
+              <p>Gold (24K):</p> <p>{formatNumber({value:metalRate[0]?.rate, decimalPlaces: 0}) || 0}</p>
             </div>
             <div className="bg-[#FFE28D] flex px-[12px] py-[6px] rounded-[8px]">
               <p>Gold (22K):</p> <p>{formatNumber({value:metalRate[1]?.rate, decimalPlaces: 0})}</p>

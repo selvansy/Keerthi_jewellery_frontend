@@ -56,7 +56,7 @@ const AdvancedSettings = ({ formik, layout_color, installment_type }) => {
       {/* Scheme Customer Limit */}
       <div className="flex flex-col mt-2">
       <label className="block text-sm font-medium mb-1">
-          Scheme Customer Limit <span className="text-red-400"> *</span>
+          Scheme Customer Limit
         </label>
         <div className="relative">
           <input
@@ -158,7 +158,7 @@ const AdvancedSettings = ({ formik, layout_color, installment_type }) => {
     <p className="text-md  mb-4 border-b pb-2 mt-3 font-medium col-span-3">Referral</p>
     <div className="flex flex-col mt-2">
         <label className="block text-sm font-medium mb-1">
-        Referral Percentage (Monthly) <span className="text-red-400">*</span>
+        Referral Percentage (Monthly)
         </label>
         <div className="relative">
           <input

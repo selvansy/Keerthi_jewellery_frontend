@@ -274,7 +274,7 @@ const Purity = () => {
     {
       header: "Metal Name",
       cell: (row) => {
-        return row.id_metal.metal_name;
+        return row.id_metal?.metal_name;
       },
     },
     {

@@ -811,7 +811,8 @@ onSubmit: (values) => {
 
           <div>
             <label className="block text-sm font-medium mb-1">
-              Bonus Type {!silver && <span className="text-red-400">*</span>}
+              Bonus Type 
+              {/* {!silver && <span className="text-red-400">*</span>} */}
             </label>
             <Select
               styles={customStyles(true)}
@@ -841,7 +842,8 @@ onSubmit: (values) => {
 
           <div>
             <label className="block text-sm font-medium mb-1">
-              Entry Type {!silver && <span className="text-red-400">*</span>}
+              Entry Type 
+              {/* {!silver && <span className="text-red-400">*</span>} */}
             </label>
             <Select
               name="entry_type"
@@ -908,7 +910,7 @@ onSubmit: (values) => {
 
           <div className="flex flex-col ">
             <label className="block text-sm font-medium mb-1">
-              Max Limit <span className="text-red-400"> *</span>
+              Max Limit
             </label>
             <div className="relative">
               <span className="absolute left-0 top-0 w-9 h-full px-3 flex items-center justify-center text-black border-r">
@@ -939,7 +941,8 @@ onSubmit: (values) => {
 
           <div>
             <label className="block text-sm font-medium mb-1">
-              Count {!silver && <span className="text-red-400">*</span>}
+              Count 
+              {/* {!silver && <span className="text-red-400">*</span>} */}
             </label>
             <input
               type="number"

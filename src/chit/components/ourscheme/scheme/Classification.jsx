@@ -233,7 +233,7 @@ const Classification = ({
       {/* Classification Order */}
       <div className="mt-4">
         <label className="block mb-2">
-          Display Order (App) <span className="text-red-500">*</span>
+          Display Order (App)
         </label>
         <div className="relative flex justify-center w-full md:w-1/4 items-center">
           <input
