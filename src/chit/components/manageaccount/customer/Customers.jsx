@@ -77,17 +77,24 @@ function Customers() {
     return (
         <div className="flex flex-col">
             {!id && (
-                <div className="flex items-center bg-gray-200 my-6 border border-black rounded-xxl w-fit mt-3">
-                    {["Customer", "Existing Customer"].map((label, index) => (
-                        <button
-                            key={label}
-                            onClick={() => handleToggleCustomer(index === 1)}
-                            className={`px-4 py-1 transition-all ${isCustomer === (index === 1) ? `bg-[${layoutColor}] text-white` : "bg-gray-300 text-gray-700 dark:bg-white dark:text-black"} ${index === 0 ? "rounded-l-lg" : "rounded-r-lg"}`}
-                        >
-                            {label}
-                        </button>
-                    ))}
-                </div>
+                <div className="flex items-center bg-gray-200 my-6 border border-black rounded-xl w-fit mt-3 overflow-hidden">
+                {["Customer", "Existing Customer"].map((label, index) => (
+                    <button
+                        key={label}
+                        onClick={() => handleToggleCustomer(index === 1)}
+                        className={`px-4 py-1 transition-all ${
+                            isCustomer === (index === 1) 
+                                ? `bg-[${layoutColor}] text-white` 
+                                : "bg-gray-300 text-gray-700 dark:bg-white dark:text-black"
+                        } ${
+                            index === 0 ? "rounded-l-lg border-r border-black" 
+                            : "rounded-r-lg border-l border-black"
+                        }`}
+                    >
+                        {label}
+                    </button>
+                ))}
+            </div>
             )}
 
             <Accordion type="multiple" className="space-y-4" value={openAcc} onValueChange={setOpenAcc}>

@@ -128,6 +128,26 @@ const CustomerForm = ({
     id_proof: null,
   });
 
+  const initialCustomerData =({
+    firstname: "",
+    lastname: "",
+    mobile: "",
+    gender: 1,
+    pan:"",
+    address: "",
+    id_branch: id_branch ? id_branch : accessBranch || "",
+    id_country: "",
+    id_state: "",
+    id_city: "",
+    date_of_wed: "",
+    date_of_birth: "",
+    pincode: "",
+    authorno: "",
+    password:"",
+    confirmpassword:"",
+    whatsapp:""
+});
+
   const descImageInputRef = useRef(null);
 
   const validationSchema = Yup.object({
@@ -157,7 +177,7 @@ const CustomerForm = ({
   });
 
   const formik = useFormik({
-    initialValues: cusData,
+    initialValues: initialCustomerData,
     validationSchema: validationSchema,
     enableReinitialize: true,
     validateOnChange: false,
@@ -168,7 +188,7 @@ const CustomerForm = ({
         return;
       }
 
-      setCusData(values);
+      // setCusData(values);
       handleDispatch(values);
       setisLoading(true);
       const formPayload = new FormData();
@@ -250,11 +270,6 @@ const CustomerForm = ({
     enabled: !!state,
   });
 
-  // const { data: branchresponse, isLoading: loadingbranch } = useQuery({
-  //   queryKey: ["branch"],
-  //   queryFn: getallbranch,
-  // });
-
   const { data: branchresponse } = useQuery({
     queryKey: ["branches", accessBranch, id_branch],
     queryFn: async () => {
@@ -321,13 +336,22 @@ const CustomerForm = ({
       if (response) {
         toast.success(response.message);
         handleCusData(response.data);
+        formik.resetForm({
+          values: initialCustomerData,
+        });
+        
+        setCusImg(null);
+        setIdProof(null);
+        setImagePreviews({
+          image: null,
+          id_proof: null,
+        });
       }
       setisLoading(false);
     },
     onError: (error) => {
       setisLoading(false);
       toast.error(error.response.data.message);
-      console.error("Error:", error);
     },
   });
 
@@ -562,7 +586,7 @@ const CustomerForm = ({
 
                 <div className="flex flex-col">
                   <label className="text-gray-700 mb-1 font-medium">
-                    Last Name<span className="text-red-400">*</span>
+                    Last Name 
                   </label>
                   <input
                     type="text"
@@ -917,7 +941,6 @@ const CustomerForm = ({
                 <div className="flex flex-col">
                   <label className="text-gray-700 mb-1 font-medium">
                     Aadhar Card Number
-                    <span className="text-red-400"> *</span>
                   </label>
                   <input
                     type="text"
@@ -1214,7 +1237,7 @@ const CustomerForm = ({
                             min="0"
                             className="border-2 border-[#f2f3f8] rounded-md p-2 w-96 lg:w-[81%] focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent pr-24"
                             placeholder="Enter mobile number"
-                            value={formik.values.mobile || cusData.mobile}
+                            value={formik.values.mobile}
                             onChange={formik.handleChange}
                             name="otpMobile"
                           />

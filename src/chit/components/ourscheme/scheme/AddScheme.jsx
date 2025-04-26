@@ -694,24 +694,49 @@ const SchemeForm = () => {
     }
   };
 
-  useEffect(()=>{
-    formik.setFieldValue("total_installments","")
-    if(formik.values.maturity_period){
-       if(formik.values.installment_type === 1 && formik.values.maturity_period != ""){
-        const newOut = Number(formik.values.maturity_period )- 1
-        formik.setFieldValue("total_installments",newOut)
-       }else if(formik.values.installment_type === 2 && formik.values.maturity_period != ""){
-        const newOut = Number(formik.values.maturity_period)- Number(4.345)
-        formik.setFieldValue("total_installments",Math.round(newOut))
-       }else if(formik.values.installment_type === 4 && formik.values.maturity_period != ""){
-        formik.setFieldValue("total_installments",formik.values.maturity_period)
-       }else{
-        const newOUt = Number(formik.values.maturity_period) - 31
-        formik.setFieldValue("total_installments",newOUt)
-       }
+  // useEffect(()=>{
+  //   formik.setFieldValue("total_installments","")
+  //   if(formik.values.maturity_period){
+  //      if(formik.values.installment_type === 1 && formik.values.maturity_period != ""){
+  //       const newOut = Number(formik.values.maturity_period )- 1
+  //       formik.setFieldValue("total_installments",newOut)
+  //      }else if(formik.values.installment_type === 2 && formik.values.maturity_period != ""){
+  //       const newOut = Number(formik.values.maturity_period)- Number(4.345)
+  //       formik.setFieldValue("total_installments",Math.round(newOut))
+  //      }else if(formik.values.installment_type === 4 && formik.values.maturity_period != ""){
+  //       formik.setFieldValue("total_installments",formik.values.maturity_period)
+  //      }else{
+  //       const newOUt = Number(formik.values.maturity_period) - 31
+  //       formik.setFieldValue("total_installments",newOUt)
+  //      }
 
+  //   }
+  // },[formik.values.maturity_period,validation])
+  useEffect(() => {
+    if (formik.values.maturity_period && formik.values.installment_type) {
+      let calculatedInstallments = 0;
+      const maturityMonths = Number(formik.values.maturity_period);
+      
+      switch (formik.values.installment_type) {
+        case 1: // Monthly
+          calculatedInstallments = maturityMonths - 1;
+          break;
+        case 2: // Weekly
+          calculatedInstallments = Math.round(maturityMonths * 4.345 - 4.345);
+          break;
+        case 3: // Daily
+          calculatedInstallments = maturityMonths * 30 - 30;
+          break;
+        case 4: // Yearly
+          calculatedInstallments = 1;
+          break;
+        default:
+          calculatedInstallments = 0;
+      }
+  
+      formik.setFieldValue("total_installments", calculatedInstallments);
     }
-  },[formik.values.maturity_period,validation])
+  }, [formik.values.maturity_period, formik.values.installment_type]);
 
 
   return (
@@ -935,7 +960,7 @@ const SchemeForm = () => {
                 (option) => option.value === formik.values.installment_type
               )}
               onChange={(option) => {
-                formik.setFieldValue("maturity_period", "");
+                // formik.setFieldValue("maturity_period", "");
                 formik.setFieldValue(
                   "installment_type",
                   option ? option.value : null
