@@ -2852,3 +2852,10 @@ export const getCustomerRefferal = async(data)=>{
   return response.data
 }
 
+
+//!drill down api
+
+export const getSchemeDetailedView = async(data)=>{ 
+  const response= await Api.get(`${import.meta.env.VITE_API_URL}/api/client/reports/scheme?schemeid=${data.id}&page=${data.page}&limit=${data.limit}&search=${data.search}`,)
+  return response.data
+}

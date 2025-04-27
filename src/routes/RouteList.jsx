@@ -117,6 +117,7 @@ import GifthandoverDetails from "../chit/components/manageaccount/schemeaccount/
 import AmountPayble from "../chit/components/Report/amountPayble";
 import EmployeeRefferal from "../chit/components/Report/employeeRefferal";
 import CustomerRefferal from "../chit/components/Report/customerRefferal";
+import DrilldownTable from "../chit/components/common/DrillDownTable";
 
 const RouteList = [
 
@@ -841,6 +842,13 @@ const RouteList = [
     path:'/report/amountpayble',
     element:<Base renderContent={AmountPayble} />
   },
+
+  //! drill down table route
+  {
+    name:"Drill Down",
+    path:"/report/table",
+    element:<Base renderContent={DrilldownTable}/>
+  }
  
 
 ];

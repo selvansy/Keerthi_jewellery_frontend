@@ -61,6 +61,8 @@ export const customSelectStyles = (isReadOnly) => ({
   }),
 });
 
+const inputHeight = "42px";
+
 const Purity = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -292,49 +294,6 @@ const Purity = () => {
       ),
       sticky: "right",
     },
-
-    // {
-    //   header: "Display App",
-    //   accessor: "display_app",
-    //   cell: (row) => (
-    //     <label className="relative inline-flex items-center cursor-pointer">
-    //       <input
-    //         type="checkbox"
-    //         className="sr-only peer"
-    //         checked={row?.display_app === true}
-    //         onChange={() => handleDisplayappToggle(row?._id, row?.display_app)}
-    //       />
-    //       <div
-    //         className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-black p-[2px] after:duration-300 after:bg-black ${
-    //           row.active === true
-    //             ? "peer-checked:bg-[#61A375] peer-checked:ring-[#61A375]"
-    //             : "peer-checked:bg-gray-400 peer-checked:ring-gray-400"
-    //         } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-white peer-hover:after:scale-95`}
-    //       ></div>
-    //     </label>
-    //   ),
-    // },
-    // {
-    //   header: "Status",
-    //   accessor: "active",
-    //   cell: (row) => (
-    //     <label className="relative inline-flex items-center cursor-pointer">
-    //       <input
-    //         type="checkbox"
-    //         className="sr-only peer"
-    //         checked={row?.active === true}
-    //         onChange={() => handleStatusToggle(row?._id, row?.active)}
-    //       />
-    //       <div
-    //         className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-black p-[2px] after:duration-300 after:bg-black ${
-    //           row.active === true
-    //             ? "peer-checked:bg-[#61A375] peer-checked:ring-[#61A375]"
-    //             : "peer-checked:bg-gray-400 peer-checked:ring-gray-400"
-    //         } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-white peer-hover:after:scale-95`}
-    //       ></div>
-    //     </label>
-    //   ),
-    // },
   ];
 
   const handleSearch = (e) => {

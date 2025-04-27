@@ -20,8 +20,10 @@ import { useSelector } from "react-redux";
 import { Breadcrumb } from "../common/breadCumbs/breadCumbs";
 import DateRangeSelector from "../common/calender";
 
+
 function AccountSummaryReport() {
   const roledata = localStorage.getItem("decoded");
+  const navigate = useNavigate()
 
   const id_role = roledata?.id_role?.id_role;
   const id_client = roledata?.id_client;
@@ -55,6 +57,13 @@ function AccountSummaryReport() {
     },
   });
 
+  const handleSchemeClick = (row) => {
+      navigate("/report/table", {
+        state: { id: row._id, type: "scheme" },
+      });
+  };
+  
+
   const columns = [
     {
       header: "S.No",
@@ -62,8 +71,16 @@ function AccountSummaryReport() {
     },
     {
       header: "SCHEME NAME",
-      cell: (row) => row?.scheme_name,
-    },
+      cell: (row) => (
+        <span
+          className="cursor-pointer underline"
+          onClick={() => 
+            handleSchemeClick(row)}
+        >
+          {row?.scheme_name}
+        </span>
+      ),
+    },    
     {
       header: "Scheme Code",
       cell: (row) => row?.code,

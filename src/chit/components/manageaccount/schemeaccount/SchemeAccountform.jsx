@@ -25,10 +25,12 @@ import { useSelector, useDispatch } from "react-redux";
 import { customSelectStyles } from "../../Setup/purity/index";
 import SpinLoading from "../../common/spinLoading";
 
-export function ExistingCustomer({ setCusData,handleCusData }) {
+export function ExistingCustomer({ setCusData,handleCusData,openJoinScheme}) {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const roledata = useSelector((state) => state.clientForm.roledata);
   const id_branch = roledata?.branch;
+
+  const inputHeight = "42px";
 
   const dispatch = useDispatch();
 
@@ -67,6 +69,7 @@ export function ExistingCustomer({ setCusData,handleCusData }) {
       handleCusData(response.data);
       handleResData(response.data);
       setLoading(false);
+      openJoinScheme()
     },
     onError: (error) => {
       toast.error(error?.response?.data?.message);
@@ -90,10 +93,8 @@ export function ExistingCustomer({ setCusData,handleCusData }) {
     });
   };
 
-  console.log(formData)
-
   return (
-    <div className="grid grid-rows-2 md:grid-cols-2 gap-2">
+    <div className="grid md:grid-cols-3 gap-2">
       <div className="flex flex-col">
         <label className="text-black mb-1 font-normal">
           Branch<span className="text-red-400">*</span>
@@ -112,9 +113,13 @@ export function ExistingCustomer({ setCusData,handleCusData }) {
             }));
             setBranch(branch.value);
           }}
-          customSelectStyles={customSelectStyles}
+          styles={{
+            ...customSelectStyles(true),
+            menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+          }}
           isLoading={branchloading}
           placeholder="Select Branch"
+          menuPortalTarget={document.body}
         />
       </div>
 
@@ -132,11 +137,12 @@ export function ExistingCustomer({ setCusData,handleCusData }) {
               mobile: value,
             }));
           }}
+          style={{ height: inputHeight }}
           name="mobile"
           onInput={(e) => (e.target.value = e.target.value.replace(/\D/g, ""))}
           pattern="\d{10}"
           maxLength={"10"}
-          className="border-2 border-gray-300 rounded-md p-2  focus:border-transparent"
+          className="border-2 border-[#f2f3f8] rounded-md p-2  focus:border-transparent"
           placeholder="Enter Here"
           // onKeyDown={(e) => {
           //   if (e.key === "Enter") {
@@ -152,13 +158,13 @@ export function ExistingCustomer({ setCusData,handleCusData }) {
         {/* Search Icon */}
         <div
           onClick={handleSearchmobile}
-          className="absolute flex items-center justify-center cursor-pointer right-[0%] rounded-r-lg top-[70%] -translate-y-1/2 w-10 md:h-[42px] md:top-[50px] h-[20%] sm:right-0 sm:top-[68%] lg:right-[0%]"
-          style={{ backgroundColor: layout_color }}
+          className="absolute flex items-center justify-center cursor-pointer rounded-r-lg right-2 translate-y-9"
+          // style={{ backgroundColor: layout_color }}
         >
           {isLoading ? (
             <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
           ) : (
-            <Search size={15} className="text-white" />
+            <Search size={15} className="text-gray" />
           )}
         </div>
       </div>
@@ -172,7 +178,7 @@ export function ExistingCustomer({ setCusData,handleCusData }) {
           type="text"
           name="customer_name"
           value={formData.customer_name}
-          className="border-2 w-full bg-[#e8f0fe] border-gray-300 cursor-not-allowed rounded-md p-2 pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+          className="border-2 border-[#f2f3f8] w-full bg-[#F4F4F4]  cursor-not-allowed rounded-md p-2 pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
           placeholder="Enter name"
         />
       </div>
@@ -917,11 +923,11 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
         )}
       </div>
       <div
-        className={`w-full flex flex-col bg-white pl-8 pr-8 pb-4  ${
+        className={`w-full flex flex-col bg-white px-4  ${
           !cusData && "border-[#023453] border-t-2 h-[calc(100vh-200px)]"
-        } mt-3 overflow-y-auto scrollbar-hide `}
+        } overflow-y-auto scrollbar-hide `}
       >
-        <div className="grid md:grid-cols-2 gap-3 mt-4">
+        <div className="grid md:grid-cols-2 gap-2">
           <div className="flex flex-col">
             <label className="text-black mb-1 font-medium">
               Branch<span className="text-red-400">*</span>
