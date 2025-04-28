@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { X, Trash2 } from "lucide-react";
 import Select from "react-select";
 import {
@@ -37,6 +37,37 @@ const Organisation = () => {
   const [states, setStates] = useState([]);
   const [city, setCity] = useState([]);
 
+  const customStyles = (isReadOnly) => ({
+    control: (base, state) => ({
+      ...base,
+      minHeight: "42px",
+      backgroundColor: "white",
+      border: state.isFocused ? "1px solid black" : "2px solid #f2f3f8",
+      boxShadow: state.isFocused ? "0 0 0 1px black" : "none",
+      borderRadius: "0.375rem",
+      "&:hover": {
+        color: "#e2e8f0",
+      },
+      pointerEvents: !isReadOnly ? "none" : "auto",
+      opacity: !isReadOnly ? 1 : 1,
+    }),
+    indicatorSeparator: () => ({
+      display: "none",
+    }),
+    placeholder: (base) => ({
+      ...base,
+      color: "#858293",
+      fontWeight: "thin",
+    }),
+    dropdownIndicator: (provided, state) => ({
+      ...provided,
+      color: "#232323",
+      "&:hover": {
+        color: "#232323",
+      },
+    }),
+  });
+console.log(orgData,'kd')
   const formik = useFormik({
     initialValues: {
       company_name: orgData?.company_name || "",
@@ -141,7 +172,8 @@ const Organisation = () => {
   }, [countryData, statesData, cityData]);
 
   useEffect(() => {
-    if (fetchedData && fetchedData.data.length > 0) {
+    console.log(fetchedData,'jg')
+    if (fetchedData && fetchedData?.data) {
       const newData = fetchedData.data;
       setOrgData(newData);
 
@@ -260,7 +292,7 @@ const Organisation = () => {
         <p className="text-sm text-gray-400 mt-4 mb-4">Settings/<span className="text-black">Organisation</span></p>
       </div>
       <form onSubmit={formik.handleSubmit}>
-        <div className="flex flex-col bg-white border-2 border-[#F2F2F9] rounded-[10px] mt-3 pb-3">
+        <div className="flex flex-col bg-white border-2 border-[#F2F2F9] rounded-[10px] mt-3 px-4 pb-4">
           <div className="p-4">
             <h2 className="text-lg font-semibold mb-4 border-b pb-4">Company Information</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -399,7 +431,7 @@ const Organisation = () => {
                   onChange={handleCountryChange}
                   onBlur={formik.handleBlur}
                   placeholder="Select Country"
-                  styles={customSelectStyles}
+                  styles={customStyles(true)}
                   className="react-select-container"
                   classNamePrefix="react-select"
                 />
@@ -422,7 +454,7 @@ const Organisation = () => {
                   onChange={handleStateChange}
                   onBlur={formik.handleBlur}
                   placeholder="Select State"
-                  styles={customSelectStyles}
+                  styles={customStyles(true)}
                   className="react-select-container"
                   classNamePrefix="react-select"
                 />
@@ -445,7 +477,7 @@ const Organisation = () => {
                   onChange={handleCityChange}
                   onBlur={formik.handleBlur}
                   placeholder="Select City"
-                  styles={customSelectStyles}
+                  styles={customStyles(true)}
                   className="react-select-container"
                   classNamePrefix="react-select"
                 />
