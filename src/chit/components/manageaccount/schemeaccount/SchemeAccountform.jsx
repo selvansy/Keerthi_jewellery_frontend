@@ -195,7 +195,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
   const location = useLocation();
   const { id } = useParams();
   const todaydate = new Date();
-
+console.log(cusData)
   const [isLoading, setLoading] = useState(false);
   const [start_date, setStartDate] = useState(todaydate);
   const [maturity_date, setMaturityDate] = useState("");
@@ -409,7 +409,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
       );
 
       if (matchingRole) {
-        const data = await matchingRole.endpoint(searchmobile);
+        const data = await matchingRole.endpoint(searchmobile,cusData.customerId);
         setReferralName(`${data.data.firstname} ${data.data.lastname}`);
         setFormData((prev) => ({
           ...prev,
@@ -458,6 +458,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
           referral_id: "",
           code: 0,
           scheme_count_number: "",
+          noOfDays:""
         });
       }
     },
@@ -606,6 +607,12 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
             max_amount: 0,
           }));
         } else {
+          if([10,14].includes(schemeData.scheme_type)){
+            setFormData((prevData) => ({
+              ...prevData,
+                noOfDays:schemeData?.noOfDays
+            }));
+          }
           setFormData((prevData) => ({
             ...prevData,
             min_amount: schemeData?.min_amount,
@@ -735,22 +742,54 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
     navigate("/manageaccount/addcustomer");
   };
 
+  // const handleStartDateChange = (date) => {
+  //   setStartDate(date);
+  //   setFormData((prev) => ({ ...prev, start_date: date }));
+
+  //   const start = new Date(date);
+  //   start.setMonth(start.getMonth() + formData.maturity_period);
+
+  //   const day = String(start.getDate()).padStart(2, "0");
+  //   const month = String(start.getMonth() + 1).padStart(2, "0");
+  //   const year = start.getFullYear();
+
+  //   const formattedDate = `${day}-${month}-${year}`;
+
+  //   // setMaturityDate(formattedDate);
+  //   // setFormData((prev) => ({ ...prev, maturity_date: formattedDate }));
+  // };
+
   const handleStartDateChange = (date) => {
     setStartDate(date);
     setFormData((prev) => ({ ...prev, start_date: date }));
-
-    const start = new Date(date);
-    start.setMonth(start.getMonth() + formData.maturity_period);
-
-    const day = String(start.getDate()).padStart(2, "0");
-    const month = String(start.getMonth() + 1).padStart(2, "0");
-    const year = start.getFullYear();
-
-    const formattedDate = `${day}-${month}-${year}`;
-
-    // setMaturityDate(formattedDate);
-    // setFormData((prev) => ({ ...prev, maturity_date: formattedDate }));
+  
+    // Check for scheme types 10 or 14 and calculate the maturity date using noOfDays
+    if (formData.scheme_type === 10 || formData.scheme_type === 14) {
+      const currentDate = new Date(date);
+      const maturityDate = new Date(currentDate);
+      maturityDate.setDate(currentDate.getDate() + formData.noOfDays); // Adding noOfDays to current date
+  
+      const day = String(maturityDate.getDate()).padStart(2, "0");
+      const month = String(maturityDate.getMonth() + 1).padStart(2, "0"); // Month is zero-indexed, so add 1
+      const year = maturityDate.getFullYear();
+  
+      const formattedDate = `${day}-${month}-${year}`;
+      setFormData((prev) => ({ ...prev, maturity_date: formattedDate }));
+    } else {
+      // For other scheme types, use the original method
+      const start = new Date(date);
+      start.setMonth(start.getMonth() + formData.maturity_period);
+  
+      const day = String(start.getDate()).padStart(2, "0");
+      const month = String(start.getMonth() + 1).padStart(2, "0");
+      const year = start.getFullYear();
+  
+      const formattedDate = `${day}-${month}-${year}`;
+      setFormData((prev) => ({ ...prev, maturity_date: formattedDate }));
+    }
   };
+  
+  
 
   const isValidForm = () => {
     const err = {};

@@ -1921,11 +1921,10 @@ export const searchcustomermobile = async (data) => {
 }
 
 export const searchmobileschemeaccount = async (data) => {
-  console.log(data)
   const response = await Api.get(
     `${import.meta.env.VITE_API_URL}/api/client/schemeaccount/branch/${
       data.id_branch
-    }/customer/search?mobile=${data.search_mobile}&type=${data.type}`
+    }/customer/search?mobile=${data.search_mobile}&state=${data.type}`
   );
   return response.data;
 };
@@ -2564,10 +2563,11 @@ export const getSchemeClassifications = async () => {
 
 //get customer details by mobile number no branch Id needed
 export const getCustomerByMobile = async (number,customer) => {
+  console.log(number,customer)
   const response = await Api.get(
     `${
       import.meta.env.VITE_API_URL
-    }/api/client/customer/mobile/search?search=${number}&cutomer=${customer}`
+    }/api/client/customer/mobile/search?search=${number}&customer=${customer}`
   );
   return response.data;
 };
@@ -2753,7 +2753,7 @@ export const refundSummary = async (data) => {
 };
 export const completedAccount = async (data) => {
   const response = await Api.post(
-    `${import.meta.env.VITE_API_URL}/api/client/reports//account/completed`,data
+    `${import.meta.env.VITE_API_URL}/api/client/reports/account/completed`,data
   );
   return response.data;
 };
@@ -2764,11 +2764,13 @@ export const getOverAllSummary = async (data) => {
   return response.data;
 };
 export const amountPayble = async (data) => {
+  console.log(data)
   const response = await Api.post(
     `${import.meta.env.VITE_API_URL}/api/client/reports/amountpayble`,data
   );
   return response.data;
 };
+
 export const getPaymentLedger = async (data) => {
   const response = await Api.post(
     `${import.meta.env.VITE_API_URL}/api/client/reports/paymentledger`,
@@ -2859,3 +2861,17 @@ export const getSchemeDetailedView = async(data)=>{
   const response= await Api.get(`${import.meta.env.VITE_API_URL}/api/client/reports/scheme?schemeid=${data.id}&page=${data.page}&limit=${data.limit}&search=${data.search}`,)
   return response.data
 }
+
+export const getSchemewiseAmount = async (data) => {
+  const response = await Api.post(
+    `${import.meta.env.VITE_API_URL}/api/client/reports/amount`,data
+  );
+  return response.data;
+};
+
+export const getSchemewiseWeight = async (data) => {
+  const response = await Api.post(
+    `${import.meta.env.VITE_API_URL}/api/client/reports/weight`,data
+  );
+  return response.data;
+};

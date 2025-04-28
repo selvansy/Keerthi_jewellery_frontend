@@ -313,7 +313,7 @@ const SchemeForm = () => {
     onSuccess: (response) => {
       if (response.status === 200) {
         setIsLoading(false);
-        toast.success(response.message);
+        toast.success(response?.data?.message);
         formik.resetForm();
         navigate("/scheme/scheme/");
       }

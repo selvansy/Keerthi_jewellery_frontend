@@ -4,7 +4,7 @@ import * as Yup from "yup";
 import { getallbranch,schemeAccByCusIdSchmeId,revertschemeAccount,customSearchScheme} from "../../../api/Endpoints";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import Select from "react-select";
 import customSelectStyles from "../../common/customSelectStyles";
 import SpinLoading from "../../common/spinLoading";
@@ -132,6 +132,10 @@ function RevertForm({ setIsOpen, isviewOpen }) {
     const status = ['','Closed','',"Pre-closed","Refund"]
     const customerData = await customSearchScheme(data);
 
+    if(customerData.data && customerData.data.length == 0){
+      return toast.error("No account found to revert")
+    }
+
     if (customerData.data && customerData.data.length > 0) {
       formik.setFieldValue('id_customer',customerData?.data[0]?.id_customer?._id)
       setName(
@@ -152,10 +156,7 @@ function RevertForm({ setIsOpen, isviewOpen }) {
       setSchemeData(data);
       setFullData(output);
     } 
-    // else {
-
-    //   toast.error(customerData.message);
-    // }
+    
   };
 
   useEffect(()=>{

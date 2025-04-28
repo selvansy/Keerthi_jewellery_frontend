@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { CalendarDays, Search, Send } from "lucide-react";
+import { Search,  } from "lucide-react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useDispatch, useSelector } from "react-redux";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import Select from "react-select";
 import { useFormik } from "formik";
@@ -24,7 +24,6 @@ import RevertForm from "./RevertForm";
 import customSelectStyles from "../../common/customSelectStyles";
 import CalenderNew from "../../../../assets/icons/calendarNew.svg";
 import CheckboxToggle from "../../common/checkBox";
-// import Verified from "../../../../assets/icons/verified.svg";
 import ModelOne from "../../common/Modelone";
 import VerificationModal from "./VerificationModal";
 import OtpCompleted from "./OtpCompleted";
@@ -60,6 +59,9 @@ const AddCloseAccount = () => {
   const [viewRevertForm, setReverView] = useState(false);
   const [isLoading, setLoading] = useState(false);
   const [isLoading1, setLoading1] = useState(false);
+  const [bonusAmnt, setBonusAmnt] = useState(0);
+  const [bonustype, setBonusType] = useState(null);
+  const [calculatedTotal, setCalculatedTotal] = useState(0);
 
   // Format today's date
   const today = new Date();
@@ -76,9 +78,7 @@ const AddCloseAccount = () => {
     bill_no: Yup.string().required("Bill number is required"),
     bill_date: Yup.string().required("Bill date is required"),
     mobile: Yup.string()
-      .required("Mobile is required")
-      // .matches(/^\d{10}$/, "Mobile number must be 10 digits")
-      ,
+      .required("Mobile is required"),
     refund_paymenttype: refundtype
       ? Yup.string().required("Refund payment type is required")
       : Yup.string(),
@@ -99,6 +99,7 @@ const AddCloseAccount = () => {
       penalty_amount: "",
       total_paidamount: 0,
       otpMobile: "",
+      total_amount: 0
     },
     validationSchema,
     onSubmit: (values) => {
@@ -107,6 +108,32 @@ const AddCloseAccount = () => {
     validateOnBlur: true,
     validateOnChange: false,
   });
+
+  // Calculate bonus when scheme or bonus type changes
+  useEffect(() => {
+    console.log(bonusAmnt,bonustype)
+    if (!selectedScheme) return;
+
+    const baseAmount = selectedScheme.total_paidamount || 0;
+    let calculatedAmount = baseAmount;
+
+    if (bonustype === 1) {
+      // Fixed amount bonus
+      console.log("first")
+      calculatedAmount = baseAmount + (bonusAmnt || 0);
+      console.log(calculatedAmount)
+    } else if (bonustype === 2) {
+      // Percentage bonus
+      console.log(" 1")
+      calculatedAmount = baseAmount + (baseAmount * (bonusAmnt || 0) / 100);
+      console.log(calculatedAmount)
+    }
+
+    setCalculatedTotal(calculatedAmount);
+    formik.setFieldValue("total_paidamount", calculatedAmount);
+    formik.setFieldValue("total_amount", baseAmount); // Original amount without bonus
+
+  }, [selectedScheme, bonustype, bonusAmnt]);
 
   const { data: paymentModes } = useQuery({
     queryKey: ["paymentModes"],
@@ -138,17 +165,17 @@ const AddCloseAccount = () => {
     }
   }, [paymentModes]);
 
-  useEffect(() => {
-    if (formik.values.total_paidamount) {
-      const newPayment = Number(formik.values.total_paidamount);
-      formik.setFieldValue("total_paidamount", newPayment);
-    } else if (
-      formik.values.penalty_amount <= 0 ||
-      formik.values.penalty_amount === ""
-    ) {
-      formik.setFieldValue("total_paidamount", totalAmount);
-    }
-  }, [formik.values.penalty_amount, totalAmount]);
+  // useEffect(() => {
+  //   if (formik.values.total_paidamount) {
+  //     const newPayment = Number(formik.values.total_paidamount);
+  //     formik.setFieldValue("total_paidamount", newPayment);
+  //   } else if (
+  //     formik.values.penalty_amount <= 0 ||
+  //     formik.values.penalty_amount === ""
+  //   ) {
+  //     formik.setFieldValue("total_paidamount", calculatedTotal || totalAmount);
+  //   }
+  // }, [formik.values.penalty_amount, totalAmount, calculatedTotal]);
 
   // Initial data loading
   useEffect(() => {
@@ -162,16 +189,6 @@ const AddCloseAccount = () => {
       to_date: "",
     });
   }, []);
-
-  // Fetch scheme accounts when branch or mobile changes
-  // useEffect(() => {
-  //   if (formik.values.mobile && formik.values.id_branch) {
-  //     handlesearchschemeaccount({
-  //       search_mobile: formik.values.mobile,
-  //       id_branch: formik.values.id_branch
-  //     });
-  //   }
-  // }, [formik.values.mobile, formik.values.id_branch]);
 
   // Handle search mobile click
   const handleSearchMobile = () => {
@@ -215,10 +232,13 @@ const AddCloseAccount = () => {
   const { mutate: handlesearchschemeaccount} = useMutation({
     mutationFn: customSearchScheme,
     onSuccess: (response) => {
-      if (response?.data) {
+      if (response?.data && response.data.length > 0) {
         setSchemeData(response.data);
         toast.success(response.message);
         setLoading1(false)
+      }else{
+        setLoading1(false)
+        toast.error("No scheme account to close")
       }
     },
     onError: (error) => {
@@ -323,21 +343,6 @@ const AddCloseAccount = () => {
     });
   };
 
-  // Verify OTP handler
-  // const handleVerifyOtp = (data) => {
-  //   if (!data) {
-  //     toast.error("OTP is required");
-  //     return;
-  //   }
-
-  //   postVerifyOtp({
-  //     mobile: mobileNum || formik.values.mobile,
-  //     otp: data,
-  //     type: dynamic ? "preclose" : "close",
-  //     branchId: formik.values.id_branch,
-  //   });
-  // };
-
   // Handle scheme account selection
   const handleSchemeAccountChange = (selectedOption) => {
     formik.setFieldValue("id_scheme_account", selectedOption.value);
@@ -348,9 +353,22 @@ const AddCloseAccount = () => {
     if (scheme) {
       setSelectedScheme(scheme);
       setAmount(scheme.total_paidamount);
-      formik.setFieldValue("total_paidamount", scheme.total_paidamount);
+      
       if (scheme.id_customer?.mobile) {
         setMobileNum(scheme.id_customer.mobile);
+      }
+      
+      // Set bonus information
+      if (scheme?.id_scheme?.bonus_type !== null) {
+        setBonusType(scheme.id_scheme.bonus_type);
+        if (scheme.id_scheme.bonus_type === 1) {
+          setBonusAmnt(scheme.id_scheme.bonus_amount);
+        } else if (scheme.id_scheme.bonus_type === 2) {
+          setBonusAmnt(scheme.id_scheme.bonus_percent);
+        }
+      } else {
+        setBonusType(null);
+        setBonusAmnt(0);
       }
     }
   };
@@ -440,6 +458,8 @@ const AddCloseAccount = () => {
     setSendOtp(false);
     setReverView(false);
   };
+
+  console.log(formik.values)
 
   return (
     <>
@@ -715,7 +735,7 @@ const AddCloseAccount = () => {
                 <input
                   disabled
                   type="text"
-                  value={formatNumber({value:selectedScheme?.total_paidamount,decimalPlaces:0,currency:null}) || ""}
+                  value={formatNumber({value: formik.values.total_amount, decimalPlaces: 0, currency: null}) || ""}
                   className="border-2 border-[#f2f3f8] pl-10 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                   placeholder="Paid Amount"
                 />
@@ -724,6 +744,48 @@ const AddCloseAccount = () => {
                 </span>
               </div>
             </div>
+
+            {bonustype !== null && (
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  {bonustype === 1 ? "Bonus Amount" : "Bonus Percentage"}
+                </label>
+                <div className="relative">
+                  <input
+                    disabled
+                    type="text"
+                    value={bonustype === 1 
+                      ? formatNumber({value: bonusAmnt, decimalPlaces: 0, currency: null})
+                      : `${bonusAmnt}%`}
+                    className="border-2 border-[#f2f3f8] pl-10 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                    placeholder={bonustype === 1 ? "Bonus Amount" : "Bonus Percentage"}
+                  />
+                  <span className="absolute left-0 top-0 w-9 h-full px-3 flex items-center justify-center text-black border-r">
+                    {bonustype === 1 ? '₹' : '%'}
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {bonustype !== null && (
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Total Amount
+                </label>
+                <div className="relative">
+                  <input
+                    disabled
+                    type="text"
+                    value={formatNumber({value: formik.values.total_paidamount, decimalPlaces: 0, currency: null}) || ""}
+                    className="border-2 border-[#f2f3f8] pl-10 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                    placeholder="Total Amount"
+                  />
+                  <span className="absolute left-0 top-0 w-9 h-full px-3 flex items-center justify-center text-black border-r">
+                    ₹
+                  </span>
+                </div>
+              </div>
+            )}
 
             <div>
               <label className="block text-sm font-medium mb-1">Remark</label>
@@ -742,8 +804,6 @@ const AddCloseAccount = () => {
                 </div>
               )}
             </div>
-            <div></div>
-            <div></div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-6">
             <div className="flex flex-col gap-3 lg:mt-4">
@@ -780,9 +840,6 @@ const AddCloseAccount = () => {
                       </div>
                     </div>
                   </div>
-
-                  {/* Right (Narrower) */}
-                  <div className="flex items-end flex-[1]"></div>
                 </div>
               )}
             </div>
@@ -790,21 +847,21 @@ const AddCloseAccount = () => {
         </div>
 
         <div className="flex justify-end space-x-4">
-        <button
-          type="button"
-          className="w-20 h-9 border-2 bg-[#F6F7F9] border-[#f2f3f8] rounded-md hover:bg-gray-50 flex justify-center items-center text-[#6C7086]"
-          onClick={() => formik.resetForm()}
-        >
-          Clear
-        </button>
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="w-20 h-9 bg-blue-900 text-white rounded-md hover:bg-blue-800 flex justify-center items-center"
-        >
-          {isLoading ? <SpinLoading /> : "Save"}
-        </button>
-      </div>
+          <button
+            type="button"
+            className="w-20 h-9 border-2 bg-[#F6F7F9] border-[#f2f3f8] rounded-md hover:bg-gray-50 flex justify-center items-center text-[#6C7086]"
+            onClick={() => formik.resetForm()}
+          >
+            Clear
+          </button>
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-20 h-9 bg-blue-900 text-white rounded-md hover:bg-blue-800 flex justify-center items-center"
+          >
+            {isLoading ? <SpinLoading /> : "Save"}
+          </button>
+        </div>
       </form>
       {otpSended && (
         <ModelOne

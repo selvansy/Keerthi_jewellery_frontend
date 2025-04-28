@@ -1330,6 +1330,71 @@
 // };
 
 // export default AddSchemePayment;
+// import React, { useState, useEffect, useCallback } from "react";
+// import Select from "react-select";
+// import { useFormik } from "formik";
+// import { useMutation, useQuery } from "@tanstack/react-query";
+// import { useNavigate, useLocation, useParams } from "react-router-dom";
+// import { CalendarDays, ChevronDown, ChevronUp } from "lucide-react";
+// import Calender from "../../../../assets/icons/calender.svg";
+// import "react-datepicker/dist/react-datepicker.css";
+// import DatePicker from "react-datepicker";
+// import { toast } from "sonner";
+// import * as Yup from "yup";
+// import {
+//   addschemepayment,
+//   getmultipaymentmode,
+//   searchmobileschemeaccount,
+//   getschemepaymentbyid,
+//   updateschemepayment,
+//   getallbranch,
+//   getBranchById,
+//   getallpaymentmode,
+//   getMetalRateByMetalId,
+// } from "../../../api/Endpoints";
+// import { useDispatch, useSelector } from "react-redux";
+// import SpinLoading from "../../common/spinLoading";
+
+// const AddSchemePayment = () => {
+//   const navigate = useNavigate();
+//   const location = useLocation();
+//   const { id } = useParams();
+//   const todaydate = new Date();
+//   const formattedDate = todaydate.toISOString();
+
+//   // Redux
+//   const layout_color = useSelector((state) => state.clientForm.layoutColor);
+//   const roleData = useSelector((state) => state.clientForm.roledata);
+//   const id_branch = roleData?.id_branch;
+//   const accessBranch = roleData?.branch;
+
+//   const [ispaymode, setIspaymode] = useState(false);
+//   const [multipaymode, setMultiPaymode] = useState([]);
+//   const [mobile, setMobile] = useState("");
+//   const [paymentmode, setPaymentmode] = useState([]);
+//   const [errors, setErrors] = useState([]);
+//   const [isExpanded, setIsExpanded] = useState(false);
+//   const [ispayamtreadOnly, setIspayamtreadOnly] = useState(true);
+//   const [branch, setBranch] = useState(() => (accessBranch === "0" ? [] : {}));
+//   const [schemedata, setSchemeData] = useState([]);
+//   const [fullData, setFullData] = useState([]);
+//   const [selectedScheme, setSelectedScheme] = useState({});
+//   const weightSchemeTypes = [12, 3, 4]; // Scheme types that use weight
+//   const [selectedMode, setSelectedMode] = useState(0);
+//   const [isLoading, setIsLoading] = useState(false);
+//   const [multiplayModes, setMultiplayModes] = useState([]);
+//   const [metalRate, setMetalRate] = useState(0);
+
+//   // Dynamic amount/weight constraints
+//   const [minAmount, setMinAmount] = useState(0);
+//   const [maxAmount, setMaxAmount] = useState(0);
+//   const [minWeight, setMinWeight] = useState(0);
+//   const [maxWeight, setMaxWeight] = useState(0);
+//   const [showWeightInput, setShowWeightInput] = useState(false);
+//   const [showAmountInput, setShowAmountInput] = useState(false);
+//   const [isFirstPayment, setIsFirstPay] = useState(false);
+//   const [baseAmount, setBaseAmount] = useState(0);
+//   const [selectKey, setSelectKey] = useState(0);
 import React, { useState, useEffect, useCallback } from "react";
 import Select from "react-select";
 import { useFormik } from "formik";
@@ -1354,6 +1419,7 @@ import {
 } from "../../../api/Endpoints";
 import { useDispatch, useSelector } from "react-redux";
 import SpinLoading from "../../common/spinLoading";
+import { formatNumber } from "../../../utils/commonFunction";
 
 const AddSchemePayment = () => {
   const navigate = useNavigate();
@@ -1473,13 +1539,25 @@ const AddSchemePayment = () => {
             .max(maxWeight, `Weight cannot exceed ${maxWeight}g`),
         otherwise: () => Yup.number().notRequired(),
       }),
+      // payment_amount: Yup.number().when([], {
+      //   is: () => showAmountInput && isFirstPayment,
+      //   then: () =>
+      //     Yup.number()
+      //       .required("Amount is required")
+      //       .min(minAmount, `Amount must be at least ${minAmount}`)
+      //       .max(maxAmount, `Amount cannot exceed ${maxAmount}`),
+      //   otherwise: () => Yup.number().required("Amount is required"),
+      // }),
       payment_amount: Yup.number().when([], {
         is: () => showAmountInput && isFirstPayment,
         then: () =>
           Yup.number()
             .required("Amount is required")
             .min(minAmount, `Amount must be at least ${minAmount}`)
-            .max(maxAmount, `Amount cannot exceed ${maxAmount}`),
+            .max(
+              maxAmount * (formik.values.installments || 1),
+              `Total payment cannot exceed ${maxAmount * (formik.values.installments || 1)} for ${formik.values.installments} installments`
+            ),
         otherwise: () => Yup.number().required("Amount is required"),
       }),
       total_amt: Yup.number().optional("Total amount is required"),
@@ -1512,7 +1590,7 @@ const AddSchemePayment = () => {
       }
     },
   });
-
+console.log(formik.values.errors)
   // API calls
   const { data: branchData } = useQuery({
     queryKey: ["branches", accessBranch, id_branch],
@@ -1817,24 +1895,50 @@ const AddSchemePayment = () => {
   //   showWeightInput,
   //   selectedScheme.last_paid_weight,
   // ]);
-  useEffect(() => {
-    // Skip calculation for scheme types 2,5,6
-    if ([2, 5, 6].includes(selectedScheme?.scheme_type)) return;
+  // useEffect(() => {
+  //   // Skip calculation for scheme types 2,5,6
+  //   if ([2, 5, 6].includes(selectedScheme?.scheme_type)) return;
   
-    if (formik.values.metal_weight && metalRate) {
+  //   if (formik.values.metal_weight && metalRate) {
+  //     const calculatedAmount = Number(formik.values.metal_weight) * Number(metalRate);
+  //     formik.setFieldValue("payment_amount", calculatedAmount);
+  //     setBaseAmount(calculatedAmount);
+  //   } else if (
+  //     (weightSchemeTypes.includes(selectedScheme?.scheme_type) &&
+  //       formik.values.metal_weight === "") ||
+  //     formik.values.metal_weight === 0
+  //   ) {
+  //     formik.setFieldValue("payment_amount", "");
+  //     setBaseAmount(0);
+  //   }
+  // }, [
+  //   formik.values.metal_weight,
+  //   metalRate,
+  //   selectedScheme?.scheme_type,
+  // ]);
+  useEffect(() => {
+    // Handle weight-based payment calculation (scheme types 12, 3, 4)
+    if (![2, 5, 6].includes(selectedScheme?.scheme_type) && formik.values.metal_weight && metalRate) {
       const calculatedAmount = Number(formik.values.metal_weight) * Number(metalRate);
       formik.setFieldValue("payment_amount", calculatedAmount);
       setBaseAmount(calculatedAmount);
-    } else if (
-      (weightSchemeTypes.includes(selectedScheme?.scheme_type) &&
-        formik.values.metal_weight === "") ||
-      formik.values.metal_weight === 0
-    ) {
+    } 
+    // Handle amount-based calculation (scheme types 2, 5, 6)
+    else if ([2, 5, 6].includes(formik.values.scheme_type) && 
+             formik.values.payment_amount > 0 && 
+             metalRate > 0) {
+      const calculatedWeight = formik.values.payment_amount / metalRate;
+      formik.setFieldValue("metal_weight", calculatedWeight.toFixed(3));
+    }
+    // Clear amount if weight is empty
+    else if (weightSchemeTypes.includes(selectedScheme?.scheme_type) && 
+            (formik.values.metal_weight === "" || formik.values.metal_weight === 0)) {
       formik.setFieldValue("payment_amount", "");
       setBaseAmount(0);
     }
   }, [
     formik.values.metal_weight,
+    formik.values.payment_amount,
     metalRate,
     selectedScheme?.scheme_type,
   ]);
@@ -2215,7 +2319,7 @@ const AddSchemePayment = () => {
                             </div>
                             <div className="flex items-center">
                               <span className="text-gray-900">
-                                {selectedScheme?.total_paidamount || "-"}
+                               ₹ {selectedScheme?.total_paidamount || "-"}
                               </span>
                             </div>
                           </div>
@@ -2299,7 +2403,7 @@ const AddSchemePayment = () => {
                       name="installments"
                       value={formik.values.installments}
                       onChange={(e) =>
-                        handleInstallmentChange(parseInt(e.target.value) || 1)
+                        handleInstallmentChange(parseInt(e.target.value))
                       }
                       className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                       min="1"
@@ -2692,7 +2796,7 @@ const AddSchemePayment = () => {
                     </div>
                     <div className="flex items-center">
                       <span className="text-gray-900">
-                        {selectedScheme?.total_paidamount || "-"}
+                        {selectedScheme?.total_paidamount ? formatNumber({value:selectedScheme?.total_paidamount,decimalPlaces:0}) : "-"}
                       </span>
                     </div>
                   </div>
@@ -2705,7 +2809,7 @@ const AddSchemePayment = () => {
                     </div>
                     <div className="flex items-center">
                       <span className="text-gray-900">
-                        {selectedScheme?.total_weight || "-"}
+                        {selectedScheme?.total_weight ? `${selectedScheme?.total_weight} g` : "-"}
                       </span>
                     </div>
                   </div>

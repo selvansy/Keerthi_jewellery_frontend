@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { DateRange } from "react-date-range";
 import { format } from "date-fns";
-import { CalendarDays } from "lucide-react"; // or any icon lib
+import { CalendarDays } from "lucide-react";
 
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
@@ -18,17 +18,22 @@ export default function DateRangeSelector({ onChange }) {
 
   const handleSelect = (ranges) => {
     setRange([ranges.selection]);
-    setOpen(false);
-    onChange?.(ranges.selection);
+    
+    // Only close the calendar and trigger onChange when both dates are different
+    // This prevents closing when start date is selected and end date is auto-set to same date
+    if (ranges.selection.startDate.getTime() !== ranges.selection.endDate.getTime()) {
+      onChange?.(ranges.selection);
+      setOpen(false);
+    }
   };
 
   return (
     <div className="relative">
       <button
-        className="flex items-center gap-2 px-4 py-2 border border-[#F2F2F9]   rounded-[8px] text-sm text-[#6C7086] bg-white "
+        className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-600 bg-white"
         onClick={() => setOpen(!open)}
       >
-        <CalendarDays size={16} className="text-[#6C7086]" />
+        <CalendarDays size={16} className="text-gray-500" />
         {`${format(range[0].startDate, "dd/MM/yyyy")} to ${format(
           range[0].endDate,
           "dd/MM/yyyy"
@@ -42,7 +47,7 @@ export default function DateRangeSelector({ onChange }) {
             onChange={handleSelect}
             moveRangeOnFirstSelection={false}
             ranges={range}
-            className="bg-white border border-[#F2F2F9]"
+            className="bg-white border border-gray-200"
           />
         </div>
       )}

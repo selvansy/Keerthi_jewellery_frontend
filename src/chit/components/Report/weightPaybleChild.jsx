@@ -1,17 +1,15 @@
 import React, { useEffect, useState } from "react";
-import Table from "../../components/common/Table";
+import Table from "../common/Table";
 import { useMutation } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
-import ExportDropdown from "../../components/common/Dropdown/Export";
+import ExportDropdown from "../common/Dropdown/Export";
 import { ExportToExcel } from "../common/Dropdown/Excelexport";
 import { ExportToPDF } from "../common/Dropdown/ExportPdf";
 import {
-  dueReportSummary,
-  getOverAllSummary,
-  preCloseSummary,
-} from "../../../chit/api/Endpoints";
+  getSchemewiseAmount,
+} from "../../api/Endpoints";
 import { SlidersHorizontal, Search, X } from "lucide-react";
 import { CalendarDays, RefreshCcw } from "lucide-react";
 import "react-datepicker/dist/react-datepicker.css";
@@ -20,36 +18,38 @@ import { useSelector } from "react-redux";
 import { Breadcrumb } from "../common/breadCumbs/breadCumbs";
 import DateRangeSelector from "../common/calender";
 
-
-function AccountSummaryReport() {
+function WeightPaybleChild() {
   const roledata = localStorage.getItem("decoded");
-  const navigate = useNavigate()
 
-  const id_role = roledata?.id_role?.id_role;
-  const id_client = roledata?.id_client;
-  const id_branch = roledata?.branch;
-  const layout_color = useSelector((state) => state.clientForm.layoutColor);
+  const location = useLocation();
+  const { id} = location.state || {};
+
+  // const id_role = roledata?.id_role?.id_role;
+  // const id_client = roledata?.id_client;
+  // const id_branch = roledata?.branch;
+  // const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
   const [isLoading, setisLoading] = useState(true);
-  const [overAllData, setOverAllData] = useState([]);
+  const [paybleData, setPaybleData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [totalPages,  setTotalPages] = useState(0);
   const [totalDocuments, setTotalDocuments] = useState(0);
   const [from_date,setfrom_date]=useState()
   const [to_date,setto_date]=useState()
+  const type= 'weight'
 
   useEffect(() => {
-    getOverAllReport({from_date,to_date});
+    getAmountPayble({id:id,page:currentPage,limit:itemsPerPage,from_date,to_date});
   }, [from_date,to_date]);
 
-  const { mutate: getOverAllReport } = useMutation({
-    mutationFn:({from_date,to_date})=> getOverAllSummary({from_date,to_date}),
+  const { mutate: getAmountPayble } = useMutation({
+    mutationFn:({id,page,limit,from_date,to_date})=> getSchemewiseAmount({id,page,limit,from_date,to_date,type}),
     onSuccess: (response) => {
-      setOverAllData(response.data);
+      setPaybleData(response.data);
       setisLoading(false);
-      setTotalDocuments(response.totalDocs)
-      setTotalPages(response.totalDocs)
+      setTotalDocuments(response.totalCount)
+      setTotalPages(response.totalPages)
     },
     onError: (error) => {
       setisLoading(false);
@@ -57,50 +57,69 @@ function AccountSummaryReport() {
     },
   });
 
-  const handleSchemeClick = (row) => {
-      navigate("/report/table", {
-        state: { id: row._id, type: "scheme" },
-      });
-  };
+  function formatDate(dateString) {
+    const date = new Date(dateString);
   
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // month is 0-based
+    const year = date.getFullYear() + 1; // Add 1 year
+
+    return `${day}/${month}/${year}`;
+  }
+
+
 
   const columns = [
     {
       header: "S.No",
       cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
     },
+    // {
+    //   header: "Scheme",
+    //   cell: (row) => row?.scheme_name,
+    // },
+    // {
+    //   header: "Classification",
+    //   cell: (row) => row?.classification_name,
+    // },
     {
-      header: "SCHEME NAME",
-      cell: (row) => (
-        <span
-          className="cursor-pointer hover:underline font-semibold"
-          onClick={() => 
-            handleSchemeClick(row)}
-        >
-          {row?.scheme_name}
-        </span>
-      ),
+      header: "Customer",
+      cell: (row) => {
+        const customer = row?.customer || "";
+        const mobile = row?.mobile || "";
+        return mobile ? `${customer} (${mobile})` : customer;
+      },
     },    
     {
-      header: "Scheme Code",
-      cell: (row) => row?.code,
+      header: "Accounter Name",
+      cell: (row) => {
+        const fname = row?.accounter_fname || "";
+        const lname = row?.accounter_lname || "";
+        return lname ? `${fname} ${lname}` : fname;
+      },
     },
     {
-      header: "open Accounts",
-      cell: (row) => row?.totalOpenAccount,
+      header: "scheme A/c No ",
+      cell: (row) => row?.schemeAccNumber,
     },
     {
-      header: "CLOSE ACCOUNT",
-      cell: (row) => row?.totalCloseAccount,
+      header: "Total Collectd Weight",
+      cell: (row) => `${row?.totalValue} g`,
     },
     {
-      header: "PAID ACCOUNT",
-      cell: (row) => row?.totalPaidAccounts,
+      header: "Maturity Date ",
+      cell: (row) => row?.maturityDate,
     },
-    {
-      header: "REFUND ACCOUNT ",
-      cell: (row) => row?.totalRefundAccount,
-    },
+    // {
+    //     header: "joined Date ",
+    //     cell: (row) => {
+    //       return formatDate(row?.joinedDate)
+    //     }
+    //   },
+      {
+        header: "Paid Installment",
+        cell: (row) => row?.paidInstallments,
+      },
   ];
 
 
@@ -128,7 +147,7 @@ function AccountSummaryReport() {
       <Breadcrumb
         items={[
           { label: "Scheme Reports" },
-          { label: "Account Summary", active: true },
+          { label: "weight Payable", active: true },
         ]}
       />
       <div className="flex flex-col p-4 bg-white border-2 border-[#F2F2F9] rounded-[16px] ">
@@ -143,7 +162,7 @@ function AccountSummaryReport() {
                 }}
               />
               <ExportDropdown
-                apiData={overAllData}
+                apiData={paybleData}
                 fileName={`Overall report ${new Date().toLocaleDateString(
                   "en-GB"
                 )}`}
@@ -153,7 +172,7 @@ function AccountSummaryReport() {
         </div>
         <div className="mt-4">
           <Table
-            data={overAllData}
+            data={paybleData}
             columns={columns}
             loading={isLoading}
             currentPage={currentPage}
@@ -168,5 +187,4 @@ function AccountSummaryReport() {
   );
 }
 
-export default AccountSummaryReport;
-
+export default WeightPaybleChild;

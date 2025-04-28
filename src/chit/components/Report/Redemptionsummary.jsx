@@ -34,6 +34,8 @@ function RedemptionReport() {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [from_date,setfrom_date]=useState()
   const [to_date,setto_date]=useState()
+  const [totalDocuments, setTotalDocuments] = useState(0);
+  const [totalPages,  setTotalPages] = useState(0);
 
   useEffect(() => {
     getCloseData({from_date,to_date});
@@ -43,7 +45,10 @@ function RedemptionReport() {
     mutationFn:({from_date,to_date})=> closedSummary({from_date,to_date}),
     onSuccess: (response) => {
       const { data } = response;
+      console.log(data)
       setCloseData(data);
+      setTotalDocuments(response?.totalDocuments)
+      setTotalPages(response?.totalPages)
       setisLoading(false);
     },
     onError: (error) => {
@@ -146,9 +151,26 @@ function RedemptionReport() {
       header: "Closed By",
       cell: (row) => row?.closed_by,
     },
-   
-      
   ];
+
+  const handlePageChange = (page) => {
+    const pageNumber = Number(page);
+    if (
+      !pageNumber ||
+      isNaN(pageNumber) ||
+      pageNumber < 1 ||
+      pageNumber > totalPages
+    ) {
+      return;
+    }
+
+    setCurrentPage(pageNumber);
+  };
+
+  const handleItemsPerPageChange = (value) => {
+    setItemsPerPage(value);
+    setCurrentPage(1);
+  };
 
   return (
     <>
@@ -183,11 +205,11 @@ function RedemptionReport() {
           data={closeData}
           columns={columns}
           loading={isLoading}
-          // currentPage={currentPage}
-          // handlePageChange={handlePageChange}
-          // itemsPerPage={itemsPerPage}
-          // totalItems={totalDocuments}
-          // handleItemsPerPageChange={handleItemsPerPageChange}
+          currentPage={currentPage}
+          handlePageChange={handlePageChange}
+          itemsPerPage={itemsPerPage}
+          totalItems={totalDocuments}
+          handleItemsPerPageChange={handleItemsPerPageChange}
         />
       </div>
     </div>

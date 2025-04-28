@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import Table from "../../components/common/Table";
+import Table from "../common/Table";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
-import ExportDropdown from "../../components/common/Dropdown/Export";
+import ExportDropdown from "../common/Dropdown/Export";
 import { ExportToExcel } from "../common/Dropdown/Excelexport";
 import { ExportToPDF } from "../common/Dropdown/ExportPdf";
 import {
@@ -12,7 +12,7 @@ import {
   dueReportSummary,
   getOverAllSummary,
   preCloseSummary,
-} from "../../../chit/api/Endpoints";
+} from "../../api/Endpoints";
 import { SlidersHorizontal, Search, X } from "lucide-react";
 import { CalendarDays, RefreshCcw } from "lucide-react";
 import "react-datepicker/dist/react-datepicker.css";
@@ -177,4 +177,3 @@ function AmountPayble() {
 }
 
 export default AmountPayble;
-

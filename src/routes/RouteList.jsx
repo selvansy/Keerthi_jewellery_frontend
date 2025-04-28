@@ -114,10 +114,14 @@ import ViewScheme from "../chit/components/ourscheme/scheme/ViewScheme";
 import GiftHandOverForm from "../chit/components/gift/giftissues/GiftHandOverForm";
 import SchemeAccount from "../chit/components/manageaccount/schemeaccount/SchemeAccount";
 import GifthandoverDetails from "../chit/components/manageaccount/schemeaccount/GifthandoverDetails";
-import AmountPayble from "../chit/components/Report/amountPayble";
+import AmountPayble from "../chit/components/Report/amountPaybleChild";
 import EmployeeRefferal from "../chit/components/Report/employeeRefferal";
 import CustomerRefferal from "../chit/components/Report/customerRefferal";
 import DrilldownTable from "../chit/components/common/DrillDownTable";
+import AmountPaybleParent from "../chit/components/Report/amountPaybleParent";
+import AmountPaybleChild from "../chit/components/Report/amountPaybleChild";
+import WeightPaybleParent from "../chit/components/Report/weightPaybleParent";
+import WeightPaybleChild from "../chit/components/Report/weightPaybleChild";
 
 const RouteList = [
 
@@ -840,7 +844,13 @@ const RouteList = [
   {
     name:"Amount Payble",
     path:'/report/amountpayble',
-    element:<Base renderContent={AmountPayble} />
+    element:<Base renderContent={AmountPaybleParent} />
+  },
+
+  {
+    name:"Weight Payble",
+    path:'/report/weightpayable',
+    element:<Base renderContent={WeightPaybleParent} />
   },
 
   //! drill down table route
@@ -848,6 +858,15 @@ const RouteList = [
     name:"Drill Down",
     path:"/report/table",
     element:<Base renderContent={DrilldownTable}/>
+  },
+  {
+    name:"Amount Payble",
+    path:'/report/schemewiseamount',
+    element:<Base renderContent={AmountPaybleChild} />
+  },{
+    name:"Amount Payble",
+    path:'/report/schemewiseweight',
+    element:<Base renderContent={WeightPaybleChild} />
   }
  
 

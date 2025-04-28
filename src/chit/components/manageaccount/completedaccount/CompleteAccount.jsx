@@ -19,6 +19,7 @@ import DatePicker from "react-datepicker";
 import { useSelector } from "react-redux";
 import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
 import DateRangeSelector from "../../common/calender";
+import { formatNumber } from "../../../utils/commonFunction";
 
 function CompleteAccount() {
   const roledata = localStorage.getItem("decoded");
@@ -32,8 +33,10 @@ function CompleteAccount() {
   const [preCloseData, setPreCloseData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [totalPages,  setTotalPages] = useState(0);
   const [from_date, setfrom_date] = useState();
   const [to_date, setto_date] = useState();
+  const [totalDocuments, setTotalDocuments] = useState(0);
 
   useEffect(() => {
     getCompletedData({ from_date, to_date });
@@ -46,12 +49,28 @@ function CompleteAccount() {
       const { data } = response;
       setPreCloseData(data);
       setisLoading(false);
+      setTotalDocuments(response.totalDocuments)
+      setTotalPages(response.totalPages)
     },
     onError: (error) => {
       setisLoading(false);
       console.error("Error fetching metal rate:", error);
     },
   });
+
+  const handlePageChange = (page) => {
+    const pageNumber = Number(page);
+    if (
+      !pageNumber ||
+      isNaN(pageNumber) ||
+      pageNumber < 1 ||
+      pageNumber > totalPages
+    ) {
+      return;
+    }
+
+    setCurrentPage(pageNumber);
+  };
 
   const columns = [
     {
@@ -72,11 +91,11 @@ function CompleteAccount() {
     },
     {
       header: "Total Paid Amount",
-      cell: (row) => row?.totalPaidAmount,
+      cell: (row) => formatNumber({value:row?.totalPaidAmount,decimalPlaces:0}),
     },
     {
       header: "total Paid Weight",
-      cell: (row) => row?.totalPaidWeight,
+      cell: (row) => `${row?.totalPaidWeight} g`,
     },
     {
       header: "Classification",
@@ -117,6 +136,11 @@ function CompleteAccount() {
     },
   ];
 
+  const handleItemsPerPageChange = (value) => {
+    setItemsPerPage(value);
+    setCurrentPage(1);
+  };
+
   return (
     <>
       <Breadcrumb
@@ -150,11 +174,11 @@ function CompleteAccount() {
             data={preCloseData}
             columns={columns}
             loading={isLoading}
-            // currentPage={currentPage}
-            // handlePageChange={handlePageChange}
-            // itemsPerPage={itemsPerPage}
-            // totalItems={totalDocuments}
-            // handleItemsPerPageChange={handleItemsPerPageChange}
+            currentPage={currentPage}
+            handlePageChange={handlePageChange}
+            itemsPerPage={itemsPerPage}
+            totalItems={totalDocuments}
+            handleItemsPerPageChange={handleItemsPerPageChange}
           />
         </div>
       </div>
