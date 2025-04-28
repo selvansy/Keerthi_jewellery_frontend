@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Search,  } from "lucide-react";
+import { Search } from "lucide-react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useDispatch, useSelector } from "react-redux";
@@ -18,7 +18,7 @@ import {
   sendOtp,
   closeBill,
   verifyOtp,
-  customSearchScheme
+  customSearchScheme,
 } from "../../../api/Endpoints";
 import RevertForm from "./RevertForm";
 import customSelectStyles from "../../common/customSelectStyles";
@@ -77,8 +77,7 @@ const AddCloseAccount = () => {
     comments: Yup.string().required("Comments are required"),
     bill_no: Yup.string().required("Bill number is required"),
     bill_date: Yup.string().required("Bill date is required"),
-    mobile: Yup.string()
-      .required("Mobile is required"),
+    mobile: Yup.string().required("Mobile is required"),
     refund_paymenttype: refundtype
       ? Yup.string().required("Refund payment type is required")
       : Yup.string(),
@@ -99,7 +98,8 @@ const AddCloseAccount = () => {
       penalty_amount: "",
       total_paidamount: 0,
       otpMobile: "",
-      total_amount: 0
+      total_amount: 0,
+      bonusAmnt: "",
     },
     validationSchema,
     onSubmit: (values) => {
@@ -109,31 +109,29 @@ const AddCloseAccount = () => {
     validateOnChange: false,
   });
 
-  // Calculate bonus when scheme or bonus type changes
+  useEffect(()=>{
+   formik.resetForm()
+  },[dynamic])
+
+ 
   useEffect(() => {
-    console.log(bonusAmnt,bonustype)
     if (!selectedScheme) return;
 
     const baseAmount = selectedScheme.total_paidamount || 0;
     let calculatedAmount = baseAmount;
 
+    const bonus = Number(formik.values.bonusAmnt || 0);
+
     if (bonustype === 1) {
-      // Fixed amount bonus
-      console.log("first")
-      calculatedAmount = baseAmount + (bonusAmnt || 0);
-      console.log(calculatedAmount)
+      calculatedAmount = baseAmount + bonus;
     } else if (bonustype === 2) {
-      // Percentage bonus
-      console.log(" 1")
-      calculatedAmount = baseAmount + (baseAmount * (bonusAmnt || 0) / 100);
-      console.log(calculatedAmount)
+      calculatedAmount = baseAmount + (baseAmount * bonus) / 100;
     }
 
     setCalculatedTotal(calculatedAmount);
     formik.setFieldValue("total_paidamount", calculatedAmount);
-    formik.setFieldValue("total_amount", baseAmount); // Original amount without bonus
-
-  }, [selectedScheme, bonustype, bonusAmnt]);
+    formik.setFieldValue("total_amount", baseAmount);
+  }, [selectedScheme, bonustype, formik.values.bonusAmnt]);
 
   const { data: paymentModes } = useQuery({
     queryKey: ["paymentModes"],
@@ -165,18 +163,6 @@ const AddCloseAccount = () => {
     }
   }, [paymentModes]);
 
-  // useEffect(() => {
-  //   if (formik.values.total_paidamount) {
-  //     const newPayment = Number(formik.values.total_paidamount);
-  //     formik.setFieldValue("total_paidamount", newPayment);
-  //   } else if (
-  //     formik.values.penalty_amount <= 0 ||
-  //     formik.values.penalty_amount === ""
-  //   ) {
-  //     formik.setFieldValue("total_paidamount", calculatedTotal || totalAmount);
-  //   }
-  // }, [formik.values.penalty_amount, totalAmount, calculatedTotal]);
-
   // Initial data loading
   useEffect(() => {
     getallbranchMutate();
@@ -197,16 +183,16 @@ const AddCloseAccount = () => {
       return;
     }
 
-    if(!formik.values.id_branch){
-      return toast.error("Choose a branch first")
+    if (!formik.values.id_branch) {
+      return toast.error("Choose a branch first");
     }
 
     if (formik.values.id_branch) {
-      setLoading1(true)
+      setLoading1(true);
       handlesearchschemeaccount({
         search_mobile: formik.values.mobile,
         id_branch: formik.values.id_branch,
-        status: !dynamic ?  [2] : [0]
+        status: !dynamic ? [2] : [0],
       });
     } else {
       toast.error("Branch selection is required!");
@@ -229,20 +215,20 @@ const AddCloseAccount = () => {
   });
 
   // Search scheme account API mutation
-  const { mutate: handlesearchschemeaccount} = useMutation({
+  const { mutate: handlesearchschemeaccount } = useMutation({
     mutationFn: customSearchScheme,
     onSuccess: (response) => {
       if (response?.data && response.data.length > 0) {
         setSchemeData(response.data);
         toast.success(response.message);
-        setLoading1(false)
-      }else{
-        setLoading1(false)
-        toast.error("No scheme account to close")
+        setLoading1(false);
+      } else {
+        setLoading1(false);
+        toast.error("No scheme account to close");
       }
     },
     onError: (error) => {
-      setLoading1(false)
+      setLoading1(false);
       toast.error(error.response.data.message);
     },
   });
@@ -353,18 +339,20 @@ const AddCloseAccount = () => {
     if (scheme) {
       setSelectedScheme(scheme);
       setAmount(scheme.total_paidamount);
-      
+
       if (scheme.id_customer?.mobile) {
         setMobileNum(scheme.id_customer.mobile);
       }
-      
+
       // Set bonus information
       if (scheme?.id_scheme?.bonus_type !== null) {
         setBonusType(scheme.id_scheme.bonus_type);
         if (scheme.id_scheme.bonus_type === 1) {
           setBonusAmnt(scheme.id_scheme.bonus_amount);
+          formik.setFieldValue("bonusAmnt", scheme.id_scheme.bonus_amount);
         } else if (scheme.id_scheme.bonus_type === 2) {
           setBonusAmnt(scheme.id_scheme.bonus_percent);
+          formik.setFieldValue("bonusAmnt", scheme.id_scheme.bonus_percent);
         }
       } else {
         setBonusType(null);
@@ -459,7 +447,7 @@ const AddCloseAccount = () => {
     setReverView(false);
   };
 
-  console.log(formik.values)
+  console.log(formik.values);
 
   return (
     <>
@@ -544,9 +532,7 @@ const AddCloseAccount = () => {
                   className="absolute  flex items-center justify-center cursor-pointer right-0 top-0 h-full w-10 rounded-r-md"
                 >
                   {isLoading1 ? (
-                    <SpinLoading 
-                    customCss="black"
-                    />
+                    <SpinLoading customCss="black" />
                   ) : (
                     <Search size={22} className="text-[#6C7086]" />
                   )}
@@ -735,7 +721,13 @@ const AddCloseAccount = () => {
                 <input
                   disabled
                   type="text"
-                  value={formatNumber({value: formik.values.total_amount, decimalPlaces: 0, currency: null}) || ""}
+                  value={
+                    formatNumber({
+                      value: formik.values.total_amount,
+                      decimalPlaces: 0,
+                      currency: null,
+                    }) || ""
+                  }
                   className="border-2 border-[#f2f3f8] pl-10 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                   placeholder="Paid Amount"
                 />
@@ -752,16 +744,71 @@ const AddCloseAccount = () => {
                 </label>
                 <div className="relative">
                   <input
-                    disabled
+                    disabled={!dynamic} // This makes the field editable when dynamic is true
+                    name="bonusAmnt"
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      const numericValue =
+                        value === "" ? 0 : Number(value.replace(/,/g, ""));
+
+                      // Only validate when dynamic is true (user can edit)
+                      if (dynamic) {
+                        // For fixed amount bonus (type 1)
+                        if (bonustype === 1) {
+                          if (
+                            numericValue >
+                            selectedScheme?.id_scheme?.bonus_amount
+                          ) {
+                            toast.error(
+                              `Cannot exceed scheme bonus amount of ${formatNumber(
+                                {
+                                  value:
+                                    selectedScheme?.id_scheme?.bonus_amount,
+                                  decimalPlaces: 0,
+                                  currency: null,
+                                }
+                              )}`
+                            );
+                            return;
+                          }
+                        }
+                        // For percentage bonus (type 2)
+                        else if (bonustype === 2) {
+                          if (
+                            numericValue >
+                            selectedScheme?.id_scheme?.bonus_percent
+                          ) {
+                            toast.error(
+                              `Cannot exceed scheme bonus percentage of ${selectedScheme?.id_scheme?.bonus_percent}%`
+                            );
+                            return;
+                          }
+                        }
+                      }
+
+                      // Update the form value directly
+                      formik.setFieldValue("bonusAmnt", numericValue);
+                      setBonusAmnt(numericValue); // Also update the state variable
+                    }}
                     type="text"
-                    value={bonustype === 1 
-                      ? formatNumber({value: bonusAmnt, decimalPlaces: 0, currency: null})
-                      : `${bonusAmnt}%`}
+                    value={
+                      bonustype === 1
+                        ? formatNumber({
+                            value: formik.values.bonusAmnt,
+                            decimalPlaces: 0,
+                            currency: null,
+                          })
+                        : bonustype === 2
+                        ? formik.values.bonusAmnt
+                        : ""
+                    }
                     className="border-2 border-[#f2f3f8] pl-10 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                    placeholder={bonustype === 1 ? "Bonus Amount" : "Bonus Percentage"}
+                    placeholder={
+                      bonustype === 1 ? "Bonus Amount" : "Bonus Percentage"
+                    }
                   />
                   <span className="absolute left-0 top-0 w-9 h-full px-3 flex items-center justify-center text-black border-r">
-                    {bonustype === 1 ? '₹' : '%'}
+                    {bonustype === 1 ? "₹" : "%"}
                   </span>
                 </div>
               </div>
@@ -776,7 +823,13 @@ const AddCloseAccount = () => {
                   <input
                     disabled
                     type="text"
-                    value={formatNumber({value: formik.values.total_paidamount, decimalPlaces: 0, currency: null}) || ""}
+                    value={
+                      formatNumber({
+                        value: formik.values.total_paidamount,
+                        decimalPlaces: 0,
+                        currency: null,
+                      }) || ""
+                    }
                     className="border-2 border-[#f2f3f8] pl-10 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                     placeholder="Total Amount"
                   />
