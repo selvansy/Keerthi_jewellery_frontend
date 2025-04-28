@@ -580,6 +580,15 @@ function GiftHandOverForm() {
         return `${day}/${month}/${year}`;
     };
 
+    const formatDate = (dateString) => {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+      };
+
 
     const columns = [
         {
@@ -601,7 +610,6 @@ function GiftHandOverForm() {
 
     ];
 
-
     const GiftCodecolumns = [
         {
             header: 'S.No',
@@ -614,6 +622,10 @@ function GiftHandOverForm() {
         {
             header: "No.Of Gifts",
             cell: (row) => row?.quantity,
+        },
+        {
+            header: "Issue Date",
+            cell: (row) =>  formatDate(new Date()),
         },
         {
             header: "Actions",
@@ -851,6 +863,7 @@ console.log(formData)
                                 value={GiftCodeNums.find(option => option.value === searchGiftCode) || ""}
                                 onChange={(selectedOption) => {
                                     setSearchGiftCode(selectedOption.value);
+                                    handleSearchGiftCode()
                                 }}
 
                                 components={customComponents}
@@ -861,6 +874,7 @@ console.log(formData)
                                 isLoading={loadingGifts}
                                 menuPortalTarget={document.body}
                                 placeholder="Search/Select GiftCode"
+                               
                             />
                             {/* Search Icon */}
                             <div

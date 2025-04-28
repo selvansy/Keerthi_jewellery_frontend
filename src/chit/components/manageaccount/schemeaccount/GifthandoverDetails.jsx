@@ -122,7 +122,7 @@ function GifthandoverDetails() {
             cell: (row) => row?.qty,
         },
         {
-            header: "Issues Date",
+            header: "Issue Date",
             cell: (row) => format(row?.giftIssueDate),
         },
 
