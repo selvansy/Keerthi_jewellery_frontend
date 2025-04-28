@@ -2043,7 +2043,6 @@ console.log(formik.values.errors)
     formik.setFieldValue("installments", value);
   };
 
-  console.log(selectedScheme)
   return (
     <>
       <form

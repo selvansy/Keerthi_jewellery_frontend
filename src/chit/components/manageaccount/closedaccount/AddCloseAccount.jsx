@@ -525,6 +525,12 @@ const AddCloseAccount = () => {
                   value={formik.values.mobile}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleSearchMobile();
+                    }
+                  }}
                 />
                 <div
                   onClick={handleSearchMobile}
@@ -802,12 +808,12 @@ const AddCloseAccount = () => {
                         ? formik.values.bonusAmnt
                         : ""
                     }
-                    className="border-2 border-[#f2f3f8] pl-10 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                    className={`border-2 border-[#f2f3f8] ${bonustype == 1 && "pl-10"} rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent`}
                     placeholder={
                       bonustype === 1 ? "Bonus Amount" : "Bonus Percentage"
                     }
                   />
-                  <span className="absolute left-0 top-0 w-9 h-full px-3 flex items-center justify-center text-black border-r">
+                  <span className={`absolute ${bonustype == 1 ? 'left-0 top-0 px-3 border-r' : "right-0 top-0 border-l"} w-9 h-full  flex items-center justify-center text-black `}>
                     {bonustype === 1 ? "₹" : "%"}
                   </span>
                 </div>
