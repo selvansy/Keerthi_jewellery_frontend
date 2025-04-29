@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import usePagination from "../../../chit/hooks/usePagination";
-import SpinLoading from "../../components/common/spinLoading";
-import { eventEmitter } from "../../../utils/EventEmitter";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { redeemHistory, getallbranch } from "../../api/Endpoints"
 import { useDebounce } from "../../../chit/hooks/useDebounce"
 import Table from "../../components/common/Table";
@@ -11,7 +9,6 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { formatNumber } from "../../utils/commonFunction"
 import { Breadcrumb } from '../common/breadCumbs/breadCumbs';
 import ExportDropdown from '../common/Dropdown/Export';
-import Select from "react-select";
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 
@@ -95,23 +92,23 @@ function RedeemHistory() {
 
 
 
-  const { data: branchresponse, isLoading: loadingbranch } = useQuery({
-    queryKey: ["branch"],
-    queryFn: getallbranch,
-  });
+  // const { data: branchresponse, isLoading: loadingbranch } = useQuery({
+  //   queryKey: ["branch"],
+  //   queryFn: getallbranch,
+  // });
 
 
-  useEffect(() => {
-    if (branchresponse) {
-      const data = branchresponse.data
-      const branch = data.map((branch) => ({
-        value: branch._id,
-        label: branch.branch_name,
-      }));
-      setBranchOptions(branch);
-    }
+  // useEffect(() => {
+  //   if (branchresponse) {
+  //     const data = branchresponse.data
+  //     const branch = data.map((branch) => ({
+  //       value: branch._id,
+  //       label: branch.branch_name,
+  //     }));
+  //     setBranchOptions(branch);
+  //   }
 
-  }, [branchresponse])
+  // }, [branchresponse])
 
 
 

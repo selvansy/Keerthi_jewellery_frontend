@@ -86,7 +86,7 @@ function WalletRedemption() {
         bill_no: "",
         redeem_amt: "",
         wallet_id: "",
-        wallet_type: "Customer",
+        // wallet_type: "Customer",
         redeem_type: "",
         payment_mode: ""
     });
@@ -298,7 +298,7 @@ function WalletRedemption() {
         setFormData((prevData) => ({
             ...prevData,
             wallet_type: isCustomer ? "Customer" : "Employee",
-            wallet_id: isCustomer ? data?.customer._id : data?.employee._id,
+            wallet_id: data._id,
             redeem_amt: data?.balance_amt
         }));
     };

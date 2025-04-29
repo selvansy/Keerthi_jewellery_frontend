@@ -882,13 +882,13 @@ const AddCloseAccount = () => {
                       <input
                         type="number"
                         min="0"
-                        className="border-2 border-[#f2f3f8] rounded-md p-2 w-96 lg:w-[81%] focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent pr-24"
+                        className="border-2 border-[#f2f3f8] rounded-md p-2 w-96 lg:w-[46%] focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent pr-24"
                         placeholder="Enter mobile number"
                         value={formik.values.mobile || formik.values.otpMobile}
                         onChange={formik.handleChange}
                         name="otpMobile"
                       />
-                      <div className="absolute -right-2 top-1/2 -translate-y-1/2">
+                      <div className="absolute right-96 top-1/2 -translate-y-1/2">
                         <button
                           className="bg-[#004181] text-white rounded-md px-4 py-2"
                           onClick={(e) => sendOtpToMobile(e)}

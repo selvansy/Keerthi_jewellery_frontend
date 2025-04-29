@@ -1,13 +1,13 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import Select from "react-select";
 import Table from "../common/Table"
-import { walletRedeemByUser, getRefferalpayment } from "../../api/Endpoints"
+import { walletRedeemByUser, getRefferalpayment,userRedeemHistory} from "../../api/Endpoints"
 import { useMutation } from '@tanstack/react-query';
 import { formatNumber } from '../../utils/commonFunction';
 
 
 export default function RedeemHisCard(userdata) {
-
+console.log(userdata,'dj')
     const { data } = userdata;
 
     const [currentPage, setCurrentPage] = useState(1);
@@ -21,19 +21,17 @@ export default function RedeemHisCard(userdata) {
     useEffect(() => {
         if (!data) return;
         const payload = { page: currentPage, limit: itemsPerPage, mobile: "" };
-        if (data?.id_customer) {
-            payload.mobile = data?.id_customer.mobile;
-        }
-
-        if (data?.id_employee) {
-            payload.mobile = data?.id_employee.mobile;
+        if(data._id){
+            payload.id = data._id
         }
 
         getallWalletData(payload);
     }, [currentPage, itemsPerPage, data]);
 
+
+
     const { mutate: getallWalletData } = useMutation({
-        mutationFn: (payload) => walletRedeemByUser(payload),
+        mutationFn: (payload) => userRedeemHistory(payload),
         onSuccess: (response) => {
             setwalletData(response.data)
             setTotalPages(response.totalPages)

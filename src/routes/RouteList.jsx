@@ -87,7 +87,7 @@ import Ticket from "../chit/components/help/ticket";
 import TopUp from "../chit/components/SuperAdmin/topupApprovals/index"
 import ContentManagement from "../chit/components/contentManagement/ContentManagement";
 import ContentForm from "../chit/components/contentManagement/ContentForm";
-import CustomerSchemes from "../../src/chit/components/manageaccount/schemeaccount/index"
+// import CustomerSchemes from "../../src/chit/components/manageaccount/schemeaccount/index"
 import FaqTable from "../chit/components/faq";
 import FaqCreation from "../chit/components/SuperAdmin/faq/FaqCreation"
 import FaqIndex from "../chit/components/SuperAdmin/faq";
@@ -97,7 +97,7 @@ import NotificationHistory from "../chit/components/notification/notificationhis
 import ContentView from "../chit/components/contentManagement/ContentView";
 import PolicyView from "../chit/components/contentManagement/PolicyView";
 import OverDueReport from "../chit/components/Report/overDueReport";
-import PreClose from "../chit/components/Report/preclose";
+// import PreClose from "../chit/components/Report/preclose";
 import PreCloseReport from "../chit/components/Report/preclose";
 import RedemptionReport from "../chit/components/Report/Redemptionsummary";
 import RefundReport from "../chit/components/Report/RefundSummary";
@@ -107,7 +107,7 @@ import GiftReport from "../chit/components/Report/GiftReport";
 import PaymentPrint from "../chit/components/Print/CardPrint/PaymentPrint";
 import Delist from "../chit/components/ourscheme/delist";
 import MetalRateIndex from "../chit/components/ourscheme/metalrate/MetalRateIndex";
-import GiftPurchase from "../chit/components/gift/giftPurchase/GiftPurchase";
+// import GiftPurchase from "../chit/components/gift/giftPurchase/GiftPurchase";
 import GiftPurchaseForm from "../chit/components/gift/giftPurchase/GiftPurchaseForm";
 import ViewScheme from "../chit/components/ourscheme/scheme/ViewScheme";
 

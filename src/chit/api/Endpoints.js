@@ -2855,6 +2855,16 @@ export const getCustomerRefferal = async(data)=>{
 }
 
 
+//!per user redeem history
+export const userRedeemHistory = async (data) => {
+  const response = await Api.get(
+    `${import.meta.env.VITE_API_URL}/api/client/wallet/history?id=${data.id}&page=${data.page}&limit=${data.limit}`,
+    data
+  );
+  return response.data;
+};
+
+
 //!drill down api
 
 export const getSchemeDetailedView = async(data)=>{ 

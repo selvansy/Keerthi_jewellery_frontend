@@ -7,7 +7,7 @@ import { Search, Trash2 } from 'lucide-react'
 import Select from "react-select";
 import Table from '../../common/Table';
 import { Breadcrumb } from '../../common/breadCumbs/breadCumbs';
-import { toast } from 'react-toastify';
+import { toast } from 'sonner';
 import { useNavigate,useLocation } from 'react-router-dom';
 import { form } from 'framer-motion/client';
 //import customSelectStyles from '../../common/customSelectStyles';//
@@ -653,7 +653,6 @@ console.log(formData)
                     <Breadcrumb items={[{ label: "Gift" }, { label: "GiftHandover", active: true }]} />
                 </div>
 
-                {/* Button - half width on mobile, moves to right on desktop */}
                 <div className="w-1/2 sm:hidden ">
                     <button
                         className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-full"
@@ -917,10 +916,16 @@ console.log(formData)
                                     minLength={""}
                                     maxLength={"5"}
                                     onInput={(e) => {
+                                        if(Number(e.target.value > alloted_gifts)){
+                                            return toast.error("Not allowed to add gift more than allocated quantity")
+                                        }
                                         e.target.value = e.target.value.replace(/\D/g, "");
                                     }}
                                     value={formData.qty}
                                     onChange={(e) => {
+                                        if(Number(e.target.value) > alloted_gifts){
+                                            return 
+                                        }
                                         const value = e.target.value;
                                         setFormData((prev) => ({
                                             ...prev,
@@ -952,7 +957,6 @@ console.log(formData)
                         </div>
                     </div>
                     {(GiftCodeData?.length > 0) && (
-
                         <div className="mt-6 p-3">
                             <div className="mb-2">
                                 <Table

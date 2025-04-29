@@ -249,7 +249,10 @@ const SchemeAccount = () => {
     },
     {
       header: "Last Paid Date",
-      cell: (row) => new Date(row?.last_paid_date).toLocaleDateString('en-GB')
+      cell: (row) => row?.last_paid_date 
+  ? new Date(row.last_paid_date).toLocaleDateString('en-GB') 
+  : '-'
+
     },
     {
       header: 'Scheme Type',

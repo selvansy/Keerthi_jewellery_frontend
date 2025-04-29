@@ -25,7 +25,7 @@ import Down from "../../../../assets/down.svg";
 import UP from "../../../../assets/up.svg";
 import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
 
-function MetalRateIndex() {
+function MetalRateIndex({refresh}) {
   const [purityData, setPurityData] = useState([]);
   const [metalValue, setMetalValue] = useState([]);
   const [formData, setFormData] = useState([]);
@@ -90,11 +90,6 @@ function MetalRateIndex() {
 
       addMetalRate(formValues);
     }
-
-    // if (Object.keys(errors).length === 0) {
-    //     const filteredData = formData.map(({ _id, active, is_deleted, createdAt, updatedAt, ...rest }) => rest);
-    //     addMetalRate(filteredData)
-    // }
   };
 
   const handleSuccess = () => {
@@ -150,6 +145,7 @@ function MetalRateIndex() {
   const { mutate: addMetalRate } = useMutation({
     mutationFn: (data) => createmetalrate(data),
     onSuccess: (response) => {
+      refresh()
       // toast.success(response.message)
       setResponseData(response?.data?.data)
       handleSuccess();
@@ -157,7 +153,6 @@ function MetalRateIndex() {
       setFormData(response.data);
       handleMetalRate(response.data);
     },
-
     onError: (error) => {
       setLoading(false);
       toast.error(error.response.data.message);
@@ -283,12 +278,6 @@ function MetalRateIndex() {
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {metalValue?.slice(0,4).map((e) => (
             <div className="bg-white rounded-[16px] py-2 px-[10px] border border-[#F2F2F9]">
-              {/* <div className="flex justify-end">
-                <span className="min-w-[54px] bg-[#DCFDEC] me-2 px-2.5 py-2 font-semibold rounded-[40px] text-[#159B5A] flex items-center">
-                  + ₹12{" "}
-                  <img src={UP} alt="" className="h-[10px] w-[10px] ml-1" />
-                </span>
-              </div> */}
 
               <div className="rounded-md">
                 {e.name !== "Silver" ? (
@@ -346,12 +335,6 @@ function MetalRateIndex() {
                       placeholder="Select Branch"
                       className="border-1 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent border-[#F2F2F9]"
                     />
-
-                    {/* <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                                            <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
-                                                <path d="M19 9l-7 7-7-7"></path>
-                                            </svg>
-                                        </div> */}
                     {formErrors.id_branch && (
                       <span className="text-red-500 text-sm mt-1">
                         {formErrors.id_branch}

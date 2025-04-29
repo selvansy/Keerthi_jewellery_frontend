@@ -32,7 +32,11 @@ import CustomerModal from "./customerModal";
 // import settings from "../../../assets/dashboard/setting.svg"
 import notification from "../../../assets/dashboard/notification.svg";
 import Dashboard from "../../../assets/icons/Dashboard.svg";
-import { getallpurity, getMetalRateByMetalId } from "../../api/Endpoints";
+import {
+  getallpurity,
+  getMetalRateByMetalId,
+  todaymetalrate,
+} from "../../api/Endpoints";
 import { formatNumber } from "../../utils/commonFunction";
 
 const Base = ({ renderContent: RenderContent }) => {
@@ -81,91 +85,90 @@ const Base = ({ renderContent: RenderContent }) => {
   const { info } = useSelector((state) => state.auth);
   const decoded = jwtDecode(info);
   let id = decoded.id_role._id;
+  const branchId = decoded.id_branch;
 
   const menus = useSelector((state) => state.auth.menu);
 
-  useEffect(() => {
-    const getPurity = async () => {
-      try {
-        const response = await getallpurity();
-        const data = response?.data;
-
-        if (!data || !Array.isArray(data)) return;
-
-        const metals = ["Gold", "Silver", "Platinum"];
-        const metalRegexes = metals.map((m) => new RegExp(`^${m}$`, "i"));
-
-        const goldPurityRegex = /^(24|22)\s?(k|c)t$/i;
-
-        const filteredData = data.filter((item) => {
-          const metalName = item?.id_metal?.metal_name;
-          const purityName = item?.purity_name;
-
-          if (!metalName) return false;
-
-          const isMetalMatch = metalRegexes.some((regex) =>
-            regex.test(metalName)
-          );
-          if (!isMetalMatch) return false;
-
-          if (/^gold$/i.test(metalName)) {
+  const getPurity = async () => {
+    try {
+      const response = await getallpurity();
+      const data = response?.data;
+  
+      if (!data || !Array.isArray(data)) return;
+  
+      const metals = ["Gold", "Silver"];
+      const goldPurityRegex = /^(24|22)\s?(k|c)t$/i;
+  
+      const filteredData = data.filter((item) => {
+        const metalName = item?.id_metal?.metal_name;
+        const purityName = item?.purity_name;
+  
+        if (!metalName || !purityName) return false;
+  
+        const isGold = /^gold$/i.test(metalName);
+        const isSilver = /^silver$/i.test(metalName);
+  
+        if (isGold) {
+          return goldPurityRegex.test(purityName);
+        }
+  
+        if (isSilver) {
+          return true; // Allow all silver
+        }
+  
+        return false; // No other metals like platinum
+      });
+  
+      const id_branch = decoded?.id_branch;
+      const passData = { id_branch: branchId };
+      const metalRates = await todaymetalrate(passData);
+  
+      const getPriority = (purity_name) => {
+        const name = purity_name.toLowerCase();
+        if (/24/.test(name)) return 0;
+        if (/22/.test(name)) return 1;
+        if (/silver/.test(name)) return 2;
+        return 3;
+      };
+  
+      const sortedData = metalRates?.data
+        ?.filter((item) => {
+          const metalName = item.material_type_id?.metal_name;
+          const purityName = item.purity_id?.purity_name;
+  
+          if (!metalName || !purityName) return false;
+  
+          const isGold = /^gold$/i.test(metalName);
+          const isSilver = /^silver$/i.test(metalName);
+  
+          if (isGold) {
             return goldPurityRegex.test(purityName);
           }
-
-          return true;
+  
+          if (isSilver) {
+            return true;
+          }
+  
+          return false;
+        })
+        .sort((a, b) => {
+          return (
+            getPriority(a.purity_id?.purity_name || "") -
+            getPriority(b.purity_id?.purity_name || "")
+          );
         });
-
-        const id_branch = decoded?.id_branch;
-        const today = new Date();
-
-        const metalRates = await Promise.all(
-          filteredData.map(async (item) => {
-            try {
-              const response = await getMetalRateByMetalId(
-                item.id_metal?._id,
-                item?._id,
-                today,
-                id_branch
-              );
-
-              return {
-                ...item,
-                rate: response?.data?.rate || null,
-              };
-            } catch (err) {
-              console.error(
-                `Failed to fetch rate for purity ID ${item.id_purity}`,
-                err
-              );
-              return {
-                ...item,
-                rate: null,
-                error: true,
-              };
-            }
-          })
-        );
-        const getPriority = (purity_name) => {
-          const name = purity_name.toLowerCase();
-          if (/24/.test(name)) return 0;
-          if (/22/.test(name)) return 1;
-          if (/silver/.test(name)) return 2;
-          return 3;
-        };
-        
-        const sortedData = metalRates.sort((a, b) => {
-          return getPriority(a.purity_name) - getPriority(b.purity_name);
-        });
-
-        if (sortedData.length > 0) {
-          setMetalRate(sortedData);
-        }
-        
-      } catch (error) {
-        console.error("Failed to fetch purity data:", error);
+  
+      if (sortedData && sortedData.length > 0) {
+        console.log(sortedData);
+        setMetalRate(sortedData);
       }
-    };
+    } catch (error) {
+      console.error("Failed to fetch purity data:", error);
+    }
+  };
+  
 
+  useEffect(() => {
     getPurity();
   }, []);
 
@@ -606,13 +609,25 @@ const Base = ({ renderContent: RenderContent }) => {
           {/* Right side with settings, notifications and user menu */}
           <div className="xl:flex items-center space-x-3 hidden ">
             <div className="bg-[#FFE28D] flex px-[12px] py-[6px] rounded-[8px]">
-              <p>Gold (24K):</p> <p>{formatNumber({value:metalRate[0]?.rate, decimalPlaces: 0}) || 0}</p>
+              <p>Gold (24K):</p>{" "}
+              <p>
+                {formatNumber({
+                  value: metalRate[0]?.rate,
+                  decimalPlaces: 0,
+                }) || 0}
+              </p>
             </div>
             <div className="bg-[#FFE28D] flex px-[12px] py-[6px] rounded-[8px]">
-              <p>Gold (22K):</p> <p>{formatNumber({value:metalRate[1]?.rate, decimalPlaces: 0})}</p>
+              <p>Gold (22K):</p>{" "}
+              <p>
+                {formatNumber({ value: metalRate[1]?.rate, decimalPlaces: 0 })}
+              </p>
             </div>
             <div className="bg-[#C0C0C0] flex px-[12px] py-[6px] rounded-[8px]">
-              <p>Silver :</p> <p>{formatNumber({value:metalRate[2]?.rate, decimalPlaces: 0})}</p>
+              <p>Silver :</p>{" "}
+              <p>
+                {formatNumber({ value: metalRate[2]?.rate, decimalPlaces: 0 })}
+              </p>
             </div>
 
             <div className="border-2 border-[#F2F2F9] rounded-full">
@@ -889,7 +904,7 @@ const Base = ({ renderContent: RenderContent }) => {
         </div>
         <main className="bg-[#fffefa] px-6 pt-4 pb-4 mb-6">
           <div className="h-full">
-            <RenderContent />
+            <RenderContent refresh={getPurity} />
           </div>
         </main>
       </div>
