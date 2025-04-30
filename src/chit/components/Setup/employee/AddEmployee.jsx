@@ -193,7 +193,7 @@ const AddEmployee = () => {
 
       Object.keys(values).forEach((key) => {
         if (
-          values[key] &&
+          (values[key] !== null && values[key] !== undefined) &&
           typeof values[key] !== "object" &&
           key !== "id_branch" &&
           key !== "date_of_birth" &&
@@ -282,7 +282,7 @@ const AddEmployee = () => {
           : null,
         aadharNumber: employee.aadharNumber || "",
         id_country: employee.id_country._id || country._id,
-        employeeIncentivePercentage:employee.employeeIncentivePercentage || 0,
+        employeeIncentivePercentage:employee?.employeeIncentivePercentage || 0,
         pan:employee.pan || "",
         whatsappNumber:employee.whatsappNumber
       });

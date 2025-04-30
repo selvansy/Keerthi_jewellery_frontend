@@ -122,7 +122,7 @@ const AddSchemePayment = () => {
       min_weight: 0,
       max_weight: 0,
       isFirstPayment: false,
-      totalInstallments: 1
+      totalInstallments: 1,
     },
 
     validationSchema: Yup.object({
@@ -159,7 +159,9 @@ const AddSchemePayment = () => {
             .min(minAmount, `Amount must be at least ${minAmount}`)
             .max(
               maxAmount * (formik.values.installments || 1),
-              `Total payment cannot exceed ${maxAmount * (formik.values.installments || 1)} for ${formik.values.installments} installments`
+              `Total payment cannot exceed ${
+                maxAmount * (formik.values.installments || 1)
+              } for ${formik.values.installments} installments`
             ),
         otherwise: () => Yup.number().required("Amount is required"),
       }),
@@ -173,12 +175,14 @@ const AddSchemePayment = () => {
         .test(
           "max-installments",
           "Installments exceed total scheme installments",
-          function(value) {
+          function (value) {
             if (!selectedScheme) return true;
             const totalPaid = selectedScheme.total_paidinstallments || 0;
-            return value + totalPaid <= selectedScheme?.id_scheme?.total_installments;
+            return (
+              value + totalPaid <= selectedScheme?.id_scheme?.total_installments
+            );
           }
-        )
+        ),
     }),
     validateOnBlur: false,
     validateOnChange: false,
@@ -193,7 +197,7 @@ const AddSchemePayment = () => {
       }
     },
   });
-console.log(formik.values.errors)
+  console.log(formik.values.errors);
   // API calls
   const { data: branchData } = useQuery({
     queryKey: ["branches", accessBranch, id_branch],
@@ -235,7 +239,7 @@ console.log(formik.values.errors)
       resetForm();
     },
     onError: (error) => {
-      setIsLoading(false)
+      setIsLoading(false);
       toast.error(error.response.data.message);
     },
   });
@@ -387,7 +391,7 @@ console.log(formik.values.errors)
       weight,
       last_paid_amount,
       last_paid_weight,
-      total_installments
+      total_installments,
     } = selectedScheme;
 
     const schemeType = id_scheme?.scheme_type;
@@ -406,8 +410,7 @@ console.log(formik.values.errors)
     formik.setFieldValue("id_classification", id_classification?._id);
     formik.setFieldValue("id_customer", id_customer?._id);
     formik.setFieldValue("scheme_type", schemeType);
-    formik.setFieldValue('total_installments', total_installments);
-   
+    formik.setFieldValue("total_installments", total_installments);
 
     const isWeightScheme = weightSchemeTypes.includes(schemeType);
 
@@ -501,7 +504,7 @@ console.log(formik.values.errors)
   // useEffect(() => {
   //   // Skip calculation for scheme types 2,5,6
   //   if ([2, 5, 6].includes(selectedScheme?.scheme_type)) return;
-  
+
   //   if (formik.values.metal_weight && metalRate) {
   //     const calculatedAmount = Number(formik.values.metal_weight) * Number(metalRate);
   //     formik.setFieldValue("payment_amount", calculatedAmount);
@@ -521,21 +524,30 @@ console.log(formik.values.errors)
   // ]);
   useEffect(() => {
     // Handle weight-based payment calculation (scheme types 12, 3, 4)
-    if (![2, 5, 6].includes(selectedScheme?.scheme_type) && formik.values.metal_weight && metalRate) {
-      const calculatedAmount = Number(formik.values.metal_weight) * Number(metalRate);
+    if (
+      ![2, 5, 6].includes(selectedScheme?.scheme_type) &&
+      formik.values.metal_weight &&
+      metalRate
+    ) {
+      const calculatedAmount =
+        Number(formik.values.metal_weight) * Number(metalRate);
       formik.setFieldValue("payment_amount", calculatedAmount);
       setBaseAmount(calculatedAmount);
-    } 
+    }
     // Handle amount-based calculation (scheme types 2, 5, 6)
-    else if ([2, 5, 6].includes(formik.values.scheme_type) && 
-             formik.values.payment_amount > 0 && 
-             metalRate > 0) {
+    else if (
+      [2, 5, 6].includes(formik.values.scheme_type) &&
+      formik.values.payment_amount > 0 &&
+      metalRate > 0
+    ) {
       const calculatedWeight = formik.values.payment_amount / metalRate;
       formik.setFieldValue("metal_weight", calculatedWeight.toFixed(3));
     }
     // Clear amount if weight is empty
-    else if (weightSchemeTypes.includes(selectedScheme?.scheme_type) && 
-            (formik.values.metal_weight === "" || formik.values.metal_weight === 0)) {
+    else if (
+      weightSchemeTypes.includes(selectedScheme?.scheme_type) &&
+      (formik.values.metal_weight === "" || formik.values.metal_weight === 0)
+    ) {
       formik.setFieldValue("payment_amount", "");
       setBaseAmount(0);
     }
@@ -561,7 +573,6 @@ console.log(formik.values.errors)
   }, [mobile]);
 
   useEffect(() => {
-    // Update total amount when installments or base amount changes
     if (baseAmount > 0 && formik.values.installments > 1) {
       const newTotal = baseAmount * formik.values.installments;
       formik.setFieldValue("payment_amount", newTotal);
@@ -625,7 +636,7 @@ console.log(formik.values.errors)
   const handleAmountChange = (e) => {
     const value = parseFloat(e.target.value) || 0;
     formik.setFieldValue("payment_amount", value);
-    
+
     if (formik.values.installments === 1) {
       setBaseAmount(value);
     }
@@ -633,16 +644,16 @@ console.log(formik.values.errors)
 
   const handleInstallmentChange = (value) => {
     if (!selectedScheme) return;
-    
+
     const totalPaid = selectedScheme.total_paidinstallments || 0;
     const maxAllowed = selectedScheme.total_installments - totalPaid;
-    
+
     if (value > maxAllowed) {
       value = maxAllowed;
     } else if (value < 1) {
       value = 1;
     }
-    
+
     formik.setFieldValue("installments", value);
   };
 
@@ -921,7 +932,7 @@ console.log(formik.values.errors)
                             </div>
                             <div className="flex items-center">
                               <span className="text-gray-900">
-                               ₹ {selectedScheme?.total_paidamount || "-"}
+                                ₹ {selectedScheme?.total_paidamount || "-"}
                               </span>
                             </div>
                           </div>
@@ -1009,7 +1020,12 @@ console.log(formik.values.errors)
                       }
                       className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                       min="1"
-                      max={selectedScheme ? selectedScheme.total_installments - (selectedScheme.total_paidinstallments || 0) : undefined}
+                      max={
+                        selectedScheme
+                          ? selectedScheme.total_installments -
+                            (selectedScheme.total_paidinstallments || 0)
+                          : undefined
+                      }
                     />
                     <div className="absolute right-2 flex flex-col">
                       <button
@@ -1021,9 +1037,10 @@ console.log(formik.values.errors)
                         }
                         className="focus:outline-none"
                         disabled={
-                          selectedScheme && 
-                          formik.values.installments >= 
-                          (selectedScheme.total_installments - (selectedScheme.total_paidinstallments || 0))
+                          selectedScheme &&
+                          formik.values.installments >=
+                            selectedScheme.total_installments -
+                              (selectedScheme.total_paidinstallments || 0)
                         }
                       >
                         <svg
@@ -1073,9 +1090,12 @@ console.log(formik.values.errors)
                       {formik.errors.installments}
                     </div>
                   )}
-                  {(selectedScheme && schemedata.length > 0) && (
+                  {selectedScheme && schemedata.length > 0 && (
                     <div className="text-xs text-gray-500 mt-1">
-                      {`Remaining installments: ${selectedScheme?.id_scheme?.total_installments - (selectedScheme?.total_paidinstallments || 0)}`}
+                      {`Remaining installments: ${
+                        selectedScheme?.id_scheme?.total_installments -
+                        (selectedScheme?.total_paidinstallments || 0)
+                      }`}
                     </div>
                   )}
                 </div>
@@ -1398,7 +1418,12 @@ console.log(formik.values.errors)
                     </div>
                     <div className="flex items-center">
                       <span className="text-gray-900">
-                        {selectedScheme?.total_paidamount ? formatNumber({value:selectedScheme?.total_paidamount,decimalPlaces:0}) : "-"}
+                        {selectedScheme?.total_paidamount
+                          ? formatNumber({
+                              value: selectedScheme?.total_paidamount,
+                              decimalPlaces: 0,
+                            })
+                          : "-"}
                       </span>
                     </div>
                   </div>
@@ -1411,7 +1436,9 @@ console.log(formik.values.errors)
                     </div>
                     <div className="flex items-center">
                       <span className="text-gray-900">
-                        {selectedScheme?.total_weight ? `${selectedScheme?.total_weight} g` : "-"}
+                        {selectedScheme?.total_weight
+                          ? `${selectedScheme?.total_weight} g`
+                          : "-"}
                       </span>
                     </div>
                   </div>

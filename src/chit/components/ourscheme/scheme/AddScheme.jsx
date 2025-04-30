@@ -412,6 +412,7 @@ const SchemeForm = () => {
         final_join_date: schemeData?.data?.final_join_date || "",
         setMainImage: schemeData?.data?.logo || null,
         setDescriptionImage: schemeData?.data?.desc_img || null,
+        referralPercentage: schemeData?.data?.referralPercentage || ""
       });
       if (schemeData?.data?.logo) {
         setMainImage(schemeData?.data?.logo);
