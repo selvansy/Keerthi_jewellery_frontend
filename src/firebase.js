@@ -2,8 +2,17 @@ import { initializeApp } from 'firebase/app';
 import { getMessaging, getToken, onMessage } from 'firebase/messaging';
 
 // Your Firebase configuration from the Firebase Console
+// const firebaseConfig = {
+//    apiKey: "AIzaSyAYhSAA0p1qJ_UxM-x808Py6gIuu5IKb28",
+//   authDomain: "uplifted-record-424709-v1.firebaseapp.com",
+//   projectId: "uplifted-record-424709-v1",
+//   storageBucket: "uplifted-record-424709-v1.firebasestorage.app",
+//   messagingSenderId: "860673805443",
+//   appId: "1:860673805443:web:1c22c7f2ac29ab641a1fb6",
+//   measurementId: "G-2T0NK03JVM"
+// };
 const firebaseConfig = {
-   apiKey: "AIzaSyAYhSAA0p1qJ_UxM-x808Py6gIuu5IKb28",
+  apiKey: "AIzaSyAYhSAA0p1qJ_UxM-x808Py6gIuu5IKb28",
   authDomain: "uplifted-record-424709-v1.firebaseapp.com",
   projectId: "uplifted-record-424709-v1",
   storageBucket: "uplifted-record-424709-v1.firebasestorage.app",

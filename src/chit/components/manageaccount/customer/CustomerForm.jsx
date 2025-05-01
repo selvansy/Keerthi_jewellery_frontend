@@ -152,7 +152,7 @@ const CustomerForm = ({
 
   const validationSchema = Yup.object({
     firstname: Yup.string().required("First name is required"),
-    lastname: Yup.string().required("Last name is required"),
+    // lastname: Yup.string().required("Last name is required"),
     mobile: Yup.string()
       .required("Mobile number is required")
       .matches(/^\d{10}$/, "Mobile number must be 10 digits"),

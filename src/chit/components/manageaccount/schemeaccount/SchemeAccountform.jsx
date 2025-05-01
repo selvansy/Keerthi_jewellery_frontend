@@ -376,7 +376,7 @@ console.log(cusData)
     if (cusData) {
       handlesearchcustomer({
         id_branch: cusData.id_branch,
-        search_mobile: cusData.mobile,
+        search: cusData.mobile,
       });
     }
 
@@ -437,12 +437,7 @@ console.log(cusData)
           scheme_acc_number: "",
           id_scheme: "",
           id_branch: id_branch,
-          account_name:
-            response.data.firstname +
-            " " +
-            response.data.lastname -
-            AC +
-            acNumber,
+          account_name: `${response.data.firstname} ${response.data.lastname} - AC${acNumber}`,
           address: response.data.address,
           customer_name: response.data.firstname + " " + response.data.lastname,
           total_installments: total_installments,
@@ -455,7 +450,7 @@ console.log(cusData)
           max_weight: 0,
           maturity_period: maturity_period,
           maturity_date: maturity_date,
-          referral_id: "",
+          referral_id: response?.data?.referral_id,
           code: 0,
           scheme_count_number: "",
           noOfDays:""
@@ -463,6 +458,8 @@ console.log(cusData)
       }
     },
   });
+
+  console.log(formData,"k")
 
   // const handleautocompletemobile = (e) => {
   //   const value = e.target.value;
@@ -1426,7 +1423,7 @@ console.log(cusData)
                 <p style={{ color: "red" }}>{errors?.maturity_date}</p>
               </div>
 
-              {!id && cusData.referral_id === null && (
+              {!id && formData.referral_id === null && (
                 <>
                   <div className="flex flex-col">
                     <label className="text-black mb-1 font-normal">

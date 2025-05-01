@@ -11,18 +11,18 @@ import { useEffect } from "react";
  
 function App() {
 
-  // useEffect(() => {
-  //   const runNotificationPermission = async () => {
-  //     if (Notification.permission === 'default') {
-  //       console.log('Requesting permission on load...');
-  //       await requestNotificationPermission();
-  //     } else {
-  //       console.log('Notification already:', Notification.permission);
-  //     }
-  //   };
+  useEffect(() => {
+    const runNotificationPermission = async () => {
+      if (Notification.permission === 'default') {
+        console.log('Requesting permission on load...');
+        await requestNotificationPermission();
+      } else {
+        console.log('Notification already:', Notification.permission);
+      }
+    };
 
-  //   runNotificationPermission();
-  // }, []);
+    runNotificationPermission();
+  }, []);
 
   const auth=localStorage.getItem("token")
   const { menu } = useSelector((state) => state.auth);
