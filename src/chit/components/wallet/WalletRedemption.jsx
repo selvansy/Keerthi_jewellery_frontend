@@ -394,24 +394,39 @@ function WalletRedemption() {
         {
             header: "Description",
             cell: (row) => {
-             const user = row?.id_scheme_account;
+             const user = row
 
-             return `${row?.id_scheme?.scheme_name} ${row?.id_scheme?.description} ${row?.id_scheme?.code} 
-              ${user?.firstname} ${user.lastname}`
+            //  return `${row?.id_scheme?.scheme_name}  ${row?.id_scheme?.code} 
+            //   ${user?.id_employee?.firstname} ${user?.id_employee?.lastname}` || `${user?.id_customer?.firstname} ${user?.id_customer?.lastname}`
+            return (
+                <div className="flex flex-col">
+                  <span>{row?.id_scheme?.scheme_name} {row?.id_scheme?.code}</span>
+                  <span>
+                    {user?.id_employee?.firstname && user?.id_employee?.lastname
+                      ? `${user.id_employee.firstname} ${user.id_employee.lastname}`
+                      : `${user?.id_customer?.firstname || ''} ${user?.id_customer?.lastname || ''}`}
+                  </span>
+                </div>
+              );
+              
 
             },
         },
         {
             header: "Mobile",
             cell: (row) => {
-             
-                const user = row?.id_scheme_account;
-                return `${user?.mobile}`
+                console.log(row)
+                const user = row;
+                return <span>
+                {user?.id_employee?.mobile
+                  ? `${user.id_employee.mobile}`
+                  : `${user?.id_customer?.mobile || ''}`}
+              </span>
             }
         },
         {
             header: "Refferral Reward",
-            cell: (row) => `${row?.id_scheme?.referralPercentage || "-"}%`,
+            cell: (row) => `${row?.id_scheme?.referralPercentage || "-"}`,
         },
         {
             header: "Join Date",

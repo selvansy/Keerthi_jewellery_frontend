@@ -22,7 +22,7 @@ const Table = ({
   handleSearch,
   showPagination = true,
 }) => {
-  console.log(currentPage,totalItems,itemsPerPage)
+  console.log(totalItems , itemsPerPage)
   const [activeDropdown, setActiveDropdown] = useState(null);
   const dropdownRef = useRef(null);
 

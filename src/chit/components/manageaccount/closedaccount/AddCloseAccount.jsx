@@ -395,6 +395,7 @@ const AddCloseAccount = () => {
       toast.error("OTP verification is required");
       return;
     }
+    setLoading(true)
     BillClose(values);
   };
 

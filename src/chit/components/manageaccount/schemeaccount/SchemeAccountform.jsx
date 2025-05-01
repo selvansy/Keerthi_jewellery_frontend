@@ -222,6 +222,7 @@ console.log(cusData)
   const [id_metal,setMetal]=useState('')
   const [id_purity,setPurity]= useState('')
   const [metalRate,setMetalRate]= useState(0)
+  const [referralId,setReferralid] = useState(null)
 
   //* TODO use formik insted of formData
   const [formData, setFormData] = React.useState({
@@ -411,10 +412,11 @@ console.log(cusData)
       if (matchingRole) {
         const data = await matchingRole.endpoint(searchmobile,cusData.customerId);
         setReferralName(`${data.data.firstname} ${data.data.lastname}`);
+        setReferralid(data?.data?._id)
         setFormData((prev) => ({
           ...prev,
           referral_type: matchingRole.role,
-          referral_id: data?.data?._id,
+          // referral_id: data?.data?._id,
         }));
       } else {
         console.warn("No matching referral role found!");
@@ -424,10 +426,13 @@ console.log(cusData)
     }
   };
 
+  console.log(referralId)
+
   const { mutate: handlesearchcustomer } = useMutation({
     mutationFn: searchcustomermobile,
     onSuccess: (response) => {
       if (response) {
+        setReferralid
         setFormData({
           id_customer: response.data._id,
           mobile: response.data.mobile,
@@ -437,7 +442,7 @@ console.log(cusData)
           scheme_acc_number: "",
           id_scheme: "",
           id_branch: id_branch,
-          account_name: `${response.data.firstname} ${response.data.lastname} - AC${acNumber}`,
+          account_name: `${response.data.firstname} ${response.data.lastname}`,
           address: response.data.address,
           customer_name: response.data.firstname + " " + response.data.lastname,
           total_installments: total_installments,
@@ -458,8 +463,6 @@ console.log(cusData)
       }
     },
   });
-
-  console.log(formData,"k")
 
   // const handleautocompletemobile = (e) => {
   //   const value = e.target.value;
@@ -858,20 +861,24 @@ console.log(cusData)
     e.preventDefault();
 
     if (isValidForm()) {
+      const updatedFormData = {
+        ...formData,
+        referral_id: referralId,
+        scheme_count_number: acNumber,
+      };
+    
+      setFormData(updatedFormData);
+      setLoading(true);
+    
       if (id) {
-        setLoading(true);
-        updateSchemeaccount(formData);
+        updateSchemeaccount(updatedFormData);
       } else {
-        setFormData((prev) => ({
-          ...prev,
-          scheme_count_number: acNumber,
-        }));
-        setLoading(true);
-        createSchemeaccount(formData);
+        createSchemeaccount(updatedFormData);
       }
     } else {
       console.log("Form has validation errors");
     }
+    
   };
 
   const { mutate: createSchemeaccount } = useMutation({
@@ -1336,23 +1343,6 @@ console.log(cusData)
                 </div>
                 <p style={{ color: "red" }}>{errors?.account_name}</p>
               </div>
-              {/* {parseInt(isaccountno) === 1 && (
-                <div className="flex flex-col">
-                  <label className="text-black mb-1 font-normal">
-                    Account Number
-                  </label>
-                  <input
-                    type="text"
-                    name="scheme_acc_number"
-                    onChange={(e) => {
-                      filterInputchange(e);
-                    }}
-                    value={formData.scheme_acc_number}
-                    className="border-2 border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                    placeholder="Enter Account Number"
-                  />
-                </div>
-              )} */}
 
               <div className="flex flex-col">
                 <label className="text-black mb-1 font-normal">
@@ -1423,7 +1413,7 @@ console.log(cusData)
                 <p style={{ color: "red" }}>{errors?.maturity_date}</p>
               </div>
 
-              {!id && formData.referral_id === null && (
+              {!id && formData.referral_id === null  && (
                 <>
                   <div className="flex flex-col">
                     <label className="text-black mb-1 font-normal">
@@ -1484,12 +1474,6 @@ console.log(cusData)
                     <div
                       disabled={searchmobile === ""}
                       onClick={handleSearchmobile}
-                      onKeyDown={(e) => {
-                        e.preventDefault();
-                        if (e) {
-                          console.log(e.key);
-                        }
-                      }}
                       className="absolute flex items-center justify-center cursor-pointer right-[0%] rounded-r-lg top-[68%] -translate-y-1/2 w-10 md:h-[43px] md:top-[50px] h-[62%] sm:right-0 sm:top-[68%] lg:right-[0%]"
                       style={{ backgroundColor: layout_color }}
                     >

@@ -31,8 +31,13 @@ function PreCloseReport() {
   const [preCloseData, setPreCloseData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [from_date,setfrom_date]=useState()
-  const [to_date,setto_date]=useState()
+  const [from_date,setfrom_date]=useState(new Date())
+  const [to_date,setto_date]=useState(new Date())
+  const [totalDocuments, setTotalDocuments] = useState(0);
+
+  useEffect(() => {
+    getPreCloseData({from_date,to_date});
+  }, []);
 
   useEffect(() => {
     getPreCloseData({from_date,to_date});
@@ -41,9 +46,12 @@ function PreCloseReport() {
   const { mutate: getPreCloseData } = useMutation({
     mutationFn:({from_date,to_date})=> preCloseSummary({from_date,to_date}),
     onSuccess: (response) => {
-      const { data } = response;
-      setPreCloseData(data);
+      if(response){
+        setPreCloseData(response?.data);
+      setCurrentPage(response.currentPage)
+      setTotalDocuments(response.totalDocuments)
       setisLoading(false);
+      }
     },
     onError: (error) => {
       setisLoading(false);
@@ -51,7 +59,24 @@ function PreCloseReport() {
     },
   });
 
- 
+  const handleItemsPerPageChange = (value) => {
+    setItemsPerPage(value);
+    setCurrentPage(1);
+  };
+
+  const handlePageChange = (page) => {
+    const pageNumber = Number(page);
+    if (
+      !pageNumber ||
+      isNaN(pageNumber) ||
+      pageNumber < 1 ||
+      pageNumber > totalPages
+    ) {
+      return;
+    }
+
+    setCurrentPage(pageNumber);
+  };
 
   const columns = [
     {
@@ -182,11 +207,11 @@ function PreCloseReport() {
           data={preCloseData}
           columns={columns}
           loading={isLoading}
-          // currentPage={currentPage}
-          // handlePageChange={handlePageChange}
-          // itemsPerPage={itemsPerPage}
-          // totalItems={totalDocuments}
-          // handleItemsPerPageChange={handleItemsPerPageChange}
+          currentPage={currentPage}
+          handlePageChange={handlePageChange}
+          itemsPerPage={itemsPerPage}
+          totalItems={totalDocuments}
+          handleItemsPerPageChange={handleItemsPerPageChange}
         />
       </div>
     </div>
