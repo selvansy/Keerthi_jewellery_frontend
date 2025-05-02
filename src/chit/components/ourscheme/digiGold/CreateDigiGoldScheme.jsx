@@ -4,7 +4,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import Select from "react-select";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { useSelector } from "react-redux";
 import {
   getBranchById,
@@ -186,56 +186,69 @@ const CreateDigiGoldScheme = () => {
     }),
     context: { isBonus }, 
     // Replace the onSubmit function in your formik configuration
-onSubmit: (values) => {
-  const formData = new FormData();
+// Replace the onSubmit function in your formik configuration
+onSubmit: async (values) => {
+  setIsLoading(true);
+  
+  try {
+    const formData = new FormData();
 
-  // Append simple fields
-  Object.keys(values).forEach((key) => {
-    if (
-      typeof values[key] !== 'object' || 
-      values[key] === null || 
-      key === 'scheme_type' ||
-      key === 'bonus_type' ||
-      key === 'entry_type'
-    ) {
-      formData.append(key, values[key]);
+    // Append all simple fields
+    Object.keys(values).forEach(key => {
+      // Skip arrays and objects (they'll be handled separately)
+      if (key !== 'values' && key !== 'bonuses' && 
+          key !== 'logo' && key !== 'desc_img' &&
+          values[key] !== undefined && values[key] !== null) {
+        formData.append(key, values[key]);
+      }
+    });
+
+    // Handle values array
+    if (values.values && values.values.length > 0) {
+      values.values.forEach((item, index) => {
+        if (item.min !== undefined) formData.append(`values[${index}][min]`, item.min);
+        if (item.max !== undefined) formData.append(`values[${index}][max]`, item.max);
+        if (item.value !== undefined) formData.append(`values[${index}][value]`, item.value);
+      });
     }
-  });
 
-  // Handle values array - Convert to JSON string to preserve structure
-  if (values.values && values.values.length > 0) {
-    values.values.forEach((v, i) => {
-      if (v.min != null) formData.append(`values[${i}][min]`, v.min);
-      if (v.max != null) formData.append(`values[${i}][max]`, v.max);
-      if (v.value != null) formData.append(`values[${i}][value]`, v.value);
-    });
-  }
-  
-  
-  if (values.bonuses && values.bonuses.length > 0) {
-    // For arrays of primitive values, append each value separately with the same key
-    values.bonuses.forEach((bonus, index) => {
-      formData.append(`bonuses[${index}]`, bonus);
-    });
-  }
+    // Handle bonuses array
+    if (values.bonuses && values.bonuses.length > 0) {
+      values.bonuses.forEach((bonus, index) => {
+        formData.append(`bonuses[${index}]`, bonus);
+      });
+    }
 
-  // Handle image files
-  if (mainImage instanceof File) {
-    formData.append("logo", mainImage);
-  }
+    // Handle image files
+    if (mainImage instanceof File) {
+      formData.append("logo", mainImage);
+    } else if (typeof mainImage === 'string' && mainImage.startsWith('http')) {
+      // If it's a URL (existing image), we might not need to send it again
+      // Or you can convert URL to blob if needed
+    }
 
-  if (descriptionImage instanceof File) {
-    formData.append("desc_img", descriptionImage);
-  }
+    if (descriptionImage instanceof File) {
+      formData.append("desc_img", descriptionImage);
+    } else if (typeof descriptionImage === 'string' && descriptionImage.startsWith('http')) {
+      // Handle existing description image
+    }
 
-  if (id) {
-    updateSchemeData({ id, formData });
-  } else {
-    addNewScheme(formData);
+    if (id) {
+      // For update
+       updateSchemeData({ id, formData });
+    } else {
+      // For create
+       addNewScheme(formData);
+    }
+  } catch (error) {
+    console.error("Submission error:", error);
+    toast.error("Failed to submit form");
+    setIsLoading(false);
   }
 }
   });
-
+ 
+  console.log(formik.errors)
   //api calls
   const { data: branchData } = useQuery({
     queryKey: ["branches", accessBranch, id_branch],
@@ -267,13 +280,14 @@ onSubmit: (values) => {
   const { mutate: addNewScheme } = useMutation({
     mutationFn: addscheme,
     onSuccess: (response) => {
-      setIsLoading(false);
+      setIsLoading(true);
       toast.success(response.message);
       navigate("/scheme/scheme/");
     },
     onError: (error) => {
+      console.log(error)
       setIsLoading(false);
-      toast.error(error.response.message);
+      toast.error(error.response?.data?.message);
     },
   });
 

@@ -48,7 +48,7 @@ const AddSchemePayment = () => {
   const [schemedata, setSchemeData] = useState([]);
   const [fullData, setFullData] = useState([]);
   const [selectedScheme, setSelectedScheme] = useState({});
-  const weightSchemeTypes = [12, 3, 4]; // Scheme types that use weight
+  const weightSchemeTypes = [12, 3, 4];
   const [selectedMode, setSelectedMode] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [multiplayModes, setMultiplayModes] = useState([]);
@@ -170,19 +170,23 @@ const AddSchemePayment = () => {
       itr_utr: Yup.string(),
       remark: Yup.string(),
       installments: Yup.number()
-        .required("Installments is required")
-        .min(1, "At least 1 installment is required")
-        .test(
-          "max-installments",
-          "Installments exceed total scheme installments",
-          function (value) {
-            if (!selectedScheme) return true;
-            const totalPaid = selectedScheme.total_paidinstallments || 0;
-            return (
-              value + totalPaid <= selectedScheme?.id_scheme?.total_installments
-            );
-          }
-        ),
+  .required("Installments is required")
+  .min(1, "At least 1 installment is required")
+  .test(
+    "max-installments",
+    "Installments exceed total scheme installments",
+    function (value) {
+      if (!selectedScheme) return true;
+
+      const schemeType = selectedScheme?.id_scheme?.scheme_type;
+      if (schemeType === 10 || schemeType === 14) return true;
+
+      const totalPaid = selectedScheme.total_paidinstallments || 0;
+      const totalInstallments = selectedScheme?.id_scheme?.total_installments;
+
+      return value + totalPaid <= totalInstallments;
+    }
+   ),
     }),
     validateOnBlur: false,
     validateOnChange: false,
@@ -945,7 +949,8 @@ const AddSchemePayment = () => {
                             </div>
                             <div className="flex items-center">
                               <span className="text-gray-900">
-                                {selectedScheme?.total_weight || "-"}
+                              {Number((selectedScheme?.total_weight || 0).toFixed(2))}
+                                {/* {selectedScheme?.total_weight || "-"} */}
                               </span>
                             </div>
                           </div>
@@ -1179,6 +1184,7 @@ const AddSchemePayment = () => {
                           onBlur={formik.handleBlur}
                           max={maxAmount}
                           step="0.01"
+                          onWheel={(e)=>e.target.blur()}
                           onChange={handleAmountChange}
                           onKeyDown={(e) => {
                             if (
@@ -1436,9 +1442,7 @@ const AddSchemePayment = () => {
                     </div>
                     <div className="flex items-center">
                       <span className="text-gray-900">
-                        {selectedScheme?.total_weight
-                          ? `${selectedScheme?.total_weight} g`
-                          : "-"}
+                        {selectedScheme?.total_weight != null ? `${Number(selectedScheme.total_weight.toFixed(2))} g` : ""}
                       </span>
                     </div>
                   </div>
