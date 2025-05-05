@@ -494,9 +494,10 @@ const Scheme = () => {
             rowIndex={rowIndex}
             activeDropdown={activeDropdown}
             setActive={hanldeActiveDropDown}
-            handleEdit={row.scheme_type !== 10 ? handleEdit : handleDigiGold}
+            // handleEdit={row.scheme_type !== 10 ? handleEdit : handleDigiGold}
             handleView={handleView}
-            handleDelete={handleDelete}
+            cancel={true}
+            // handleDelete={false}
           />
         ),
         sticky: "right",

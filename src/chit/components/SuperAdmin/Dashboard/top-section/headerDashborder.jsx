@@ -6,6 +6,7 @@ import payment from "../../../../../assets/dashboard/payment.svg";
 import { getOverAllDashboard } from "../../../../api/Endpoints";
 import { useMutation } from "@tanstack/react-query";
 import { formatNumber } from "../../../../utils/commonFunction";
+import { formatDecimal } from "../../../../utils/commonFunction";
 
 function HeaderDashborder({ id_branch }) {
   const initialState = {
@@ -41,7 +42,7 @@ function HeaderDashborder({ id_branch }) {
     },
     {
       title: "Total Gold Savings",
-      value: cardData.totalGoldSave || 0,
+      value: `${formatDecimal(cardData.totalGoldSave)} g` || 0,
       image: Total_Account,
     },
     {

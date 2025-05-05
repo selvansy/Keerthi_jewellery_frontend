@@ -48,7 +48,10 @@ const AddSchemePayment = () => {
   const [schemedata, setSchemeData] = useState([]);
   const [fullData, setFullData] = useState([]);
   const [selectedScheme, setSelectedScheme] = useState({});
-  const weightSchemeTypes = [12, 3, 4];
+  // Add these to your constants
+  const weightSchemeTypes = [12, 3, 4]; // Schemes where weight is primary input
+  const amountSchemeTypes = [2, 5, 6]; // Schemes where amount is primary input
+  const specialSchemeTypes = [10, 14]; // Schemes that need special handling
   const [selectedMode, setSelectedMode] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [multiplayModes, setMultiplayModes] = useState([]);
@@ -170,23 +173,24 @@ const AddSchemePayment = () => {
       itr_utr: Yup.string(),
       remark: Yup.string(),
       installments: Yup.number()
-  .required("Installments is required")
-  .min(1, "At least 1 installment is required")
-  .test(
-    "max-installments",
-    "Installments exceed total scheme installments",
-    function (value) {
-      if (!selectedScheme) return true;
+        .required("Installments is required")
+        .min(1, "At least 1 installment is required")
+        .test(
+          "max-installments",
+          "Installments exceed total scheme installments",
+          function (value) {
+            if (!selectedScheme) return true;
 
-      const schemeType = selectedScheme?.id_scheme?.scheme_type;
-      if (schemeType === 10 || schemeType === 14) return true;
+            const schemeType = selectedScheme?.id_scheme?.scheme_type;
+            if (schemeType === 10 || schemeType === 14) return true;
 
-      const totalPaid = selectedScheme.total_paidinstallments || 0;
-      const totalInstallments = selectedScheme?.id_scheme?.total_installments;
+            const totalPaid = selectedScheme.total_paidinstallments || 0;
+            const totalInstallments =
+              selectedScheme?.id_scheme?.total_installments;
 
-      return value + totalPaid <= totalInstallments;
-    }
-   ),
+            return value + totalPaid <= totalInstallments;
+          }
+        ),
     }),
     validateOnBlur: false,
     validateOnChange: false,
@@ -201,7 +205,7 @@ const AddSchemePayment = () => {
       }
     },
   });
-  console.log(formik.values.errors);
+
   // API calls
   const { data: branchData } = useQuery({
     queryKey: ["branches", accessBranch, id_branch],
@@ -526,34 +530,78 @@ const AddSchemePayment = () => {
   //   metalRate,
   //   selectedScheme?.scheme_type,
   // ]);
+  // useEffect(() => {
+  //   // Handle weight-based payment calculation (scheme types 12, 3, 4)
+  //   if (
+  //     ![2, 5, 6].includes(selectedScheme?.scheme_type) &&
+  //     formik.values.metal_weight &&
+  //     metalRate
+  //   ) {
+  //     const calculatedAmount =
+  //       Number(formik.values.metal_weight) * Number(metalRate);
+  //     formik.setFieldValue("payment_amount", calculatedAmount);
+  //     setBaseAmount(calculatedAmount);
+  //   }
+  //   // Handle amount-based calculation (scheme types 2, 5, 6)
+  //   else if (
+  //     [2, 5, 6].includes(formik.values.scheme_type) &&
+  //     formik.values.payment_amount > 0 &&
+  //     metalRate > 0
+  //   ) {
+  //     const calculatedWeight = formik.values.payment_amount / metalRate;
+  //     formik.setFieldValue("metal_weight", calculatedWeight.toFixed(3));
+  //   }
+  //   // Clear amount if weight is empty
+  //   else if (
+  //     weightSchemeTypes.includes(selectedScheme?.scheme_type) &&
+  //     (formik.values.metal_weight === "" || formik.values.metal_weight === 0)
+  //   ) {
+  //     formik.setFieldValue("payment_amount", "");
+  //     setBaseAmount(0);
+  //   }
+  // }, [
+  //   formik.values.metal_weight,
+  //   formik.values.payment_amount,
+  //   metalRate,
+  //   selectedScheme?.scheme_type,
+  // ]);
   useEffect(() => {
-    // Handle weight-based payment calculation (scheme types 12, 3, 4)
+    if (!selectedScheme?.scheme_type || !metalRate) return;
+  
+    const schemeType = selectedScheme.scheme_type;
+  
     if (
-      ![2, 5, 6].includes(selectedScheme?.scheme_type) &&
-      formik.values.metal_weight &&
-      metalRate
+      (!formik.values.metal_weight && !formik.values.payment_amount) ||
+      metalRate <= 0
     ) {
-      const calculatedAmount =
-        Number(formik.values.metal_weight) * Number(metalRate);
-      formik.setFieldValue("payment_amount", calculatedAmount);
-      setBaseAmount(calculatedAmount);
+      return;
     }
-    // Handle amount-based calculation (scheme types 2, 5, 6)
-    else if (
-      [2, 5, 6].includes(formik.values.scheme_type) &&
-      formik.values.payment_amount > 0 &&
-      metalRate > 0
-    ) {
-      const calculatedWeight = formik.values.payment_amount / metalRate;
-      formik.setFieldValue("metal_weight", calculatedWeight.toFixed(3));
+  
+    // schemes (12, 3, 4)
+    if (weightSchemeTypes.includes(schemeType)) {
+      console.log("first")
+      if (formik.values.metal_weight) {
+        const calculatedAmount = Number(formik.values.metal_weight) * metalRate;
+        formik.setFieldValue("payment_amount", calculatedAmount.toFixed(2));
+        setBaseAmount(calculatedAmount);
+      }
     }
-    // Clear amount if weight is empty
-    else if (
-      weightSchemeTypes.includes(selectedScheme?.scheme_type) &&
-      (formik.values.metal_weight === "" || formik.values.metal_weight === 0)
-    ) {
-      formik.setFieldValue("payment_amount", "");
-      setBaseAmount(0);
+    // schemes (2, 5, 6)
+    else if (amountSchemeTypes.includes(schemeType)) {
+      console.log("sec")
+      if (formik.values.payment_amount) {
+        const calculatedWeight = formik.values.payment_amount / metalRate;
+        formik.setFieldValue("metal_weight", calculatedWeight.toFixed(3));
+      }
+    }
+    // schemes (10, 14)
+    else if (specialSchemeTypes.includes(schemeType)) {
+      if (formik.values.metal_weight && formik.values.payment_amount) {
+        const calculatedAmount = Number(formik.values.metal_weight) * metalRate;
+        if (Math.abs(calculatedAmount - formik.values.payment_amount) > 0.01) {
+          formik.setFieldValue("payment_amount", calculatedAmount.toFixed(2));
+        }
+      }
     }
   }, [
     formik.values.metal_weight,
@@ -949,7 +997,9 @@ const AddSchemePayment = () => {
                             </div>
                             <div className="flex items-center">
                               <span className="text-gray-900">
-                              {Number((selectedScheme?.total_weight || 0).toFixed(2))}
+                                {Number(
+                                  (selectedScheme?.total_weight || 0).toFixed(2)
+                                )}
                                 {/* {selectedScheme?.total_weight || "-"} */}
                               </span>
                             </div>
@@ -1097,10 +1147,17 @@ const AddSchemePayment = () => {
                   )}
                   {selectedScheme && schemedata.length > 0 && (
                     <div className="text-xs text-gray-500 mt-1">
-                      {`Remaining installments: ${
-                        selectedScheme?.id_scheme?.total_installments -
-                        (selectedScheme?.total_paidinstallments || 0)
-                      }`}
+                      {selectedScheme &&
+                        schemedata.length > 0 &&
+                        selectedScheme?.scheme_type !== 10 &&
+                        selectedScheme?.scheme_type !== 14 && (
+                          <div className="text-xs text-gray-500 mt-1">
+                            {`Remaining installments: ${
+                              selectedScheme?.id_scheme?.total_installments -
+                              (selectedScheme?.total_paidinstallments || 0)
+                            }`}
+                          </div>
+                        )}
                     </div>
                   )}
                 </div>
@@ -1184,7 +1241,7 @@ const AddSchemePayment = () => {
                           onBlur={formik.handleBlur}
                           max={maxAmount}
                           step="0.01"
-                          onWheel={(e)=>e.target.blur()}
+                          onWheel={(e) => e.target.blur()}
                           onChange={handleAmountChange}
                           onKeyDown={(e) => {
                             if (
@@ -1442,7 +1499,11 @@ const AddSchemePayment = () => {
                     </div>
                     <div className="flex items-center">
                       <span className="text-gray-900">
-                        {selectedScheme?.total_weight != null ? `${Number(selectedScheme.total_weight.toFixed(2))} g` : ""}
+                        {selectedScheme?.total_weight != null
+                          ? `${Number(
+                              selectedScheme.total_weight.toFixed(2)
+                            )} g`
+                          : ""}
                       </span>
                     </div>
                   </div>

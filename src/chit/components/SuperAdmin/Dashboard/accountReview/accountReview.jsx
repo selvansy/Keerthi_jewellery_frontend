@@ -115,7 +115,7 @@ function AccountReview({id_branch}) {
     },
     {
       title: "Received Weights",
-      value:  `${accountDataCount.receivedWeights} g`,
+      value:  `${formatDecimal(accountDataCount.receivedWeights)} g` ,
       img: receiveWgt,
     },
   ];

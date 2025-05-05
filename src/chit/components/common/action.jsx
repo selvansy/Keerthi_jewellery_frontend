@@ -1,14 +1,38 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import More from "../../../assets/more.svg"
+import More from "../../../assets/more.svg";
 
-function Action({ row, data, rowIndex, activeDropdown, setActive, handleEdit, handleDelete, handleView = null, showEdit = true ,cancel=false}) {
+// Custom hook for detecting clicks outside
+const useOutsideClick = (ref, callback) => {
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (ref.current && !ref.current.contains(event.target)) {
+        callback();
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [ref, callback]);
+};
+
+function Action({ row, data, rowIndex, activeDropdown, setActive, handleEdit, handleDelete=false, handleView = null, showEdit = false ,cancel=false}) {
   const dropdownRef = useRef(null);
+  const buttonRef = useRef(null);
   const [position, setPosition] = useState({ top: 0, left: 0 });
 
+  // Use the outside click hook
+  useOutsideClick([dropdownRef, buttonRef], () => {
+    if (activeDropdown === row?._id) {
+      setActive(null);
+    }
+  });
+
   const calculatePosition = () => {
-    if (activeDropdown === row?._id && dropdownRef.current) {
-      const rect = dropdownRef.current.getBoundingClientRect();
+    if (activeDropdown === row?._id && buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
 
       const adjustedLeft = Math.min(
         rect.left + window.scrollX,
@@ -16,7 +40,7 @@ function Action({ row, data, rowIndex, activeDropdown, setActive, handleEdit, ha
       );
 
       setPosition({
-        top: rect.top + window.scrollY + 3,
+        top: rect.top + window.scrollY + rect.height + 3,
         left: adjustedLeft,
       });
     }
@@ -30,39 +54,39 @@ function Action({ row, data, rowIndex, activeDropdown, setActive, handleEdit, ha
 
   return (
     <>
-      <div ref={dropdownRef} className="dropdown-container relative flex items-center ">
+      <div className="dropdown-container relative flex items-center">
         <button
+          ref={buttonRef}
           className="p-2 border hover:bg-gray-100 rounded-full flex justify-center"
           onClick={(e) => {
             e.stopPropagation();
             setActive(activeDropdown === row?._id ? null : row?._id);
           }}
         >
-         <img src={More} alt="" className='w-[20px] h-[20px]' />
-
+          <img src={More} alt="" className='w-[20px] h-[20px]' />
         </button>
       </div>
 
       {activeDropdown === row?._id &&
         createPortal(
           <div
+            ref={dropdownRef}
             className="absolute"
             style={{
-              top: position.top,
-              left: position.left,
+              top: `${position.top}px`,
+              left: `${position.left}px`,
               zIndex: 9999,
               filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.15))",
             }}
           >
-            <div className="w-32 rounded-md shadow-lg  bg-white ring-1 ring-black ring-opacity-5">
+            <div className="w-32 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
               <div className="py-1">
                 {handleView && (
-
                   <button
                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
                     onClick={() => {
-                      handleView(row._id)
-                      setActive(null)
+                      handleView(row._id);
+                      setActive(null);
                     }}
                   >
                     View
@@ -73,26 +97,31 @@ function Action({ row, data, rowIndex, activeDropdown, setActive, handleEdit, ha
                   <button
                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
                     onClick={() => {
-                      handleEdit(row._id)
-                      setActive(null)
+                      handleEdit(row._id);
+                      setActive(null);
                     }}
                   >
                     Edit
                   </button>
                 )}
-                <button
-                  className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
-                  onClick={() => handleDelete(row._id)}
-                >
-                  Delete
-                </button>
+                {handleDelete && (
+                  <button
+                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
+                    onClick={() => {
+                      handleDelete(row._id);
+                      setActive(null);
+                    }}
+                  >
+                    Delete
+                  </button>
+                )}
                 {cancel && (
                   <button
-                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                  onClick={() => setActive(null)}
-                >
-                  Cancel
-                </button>
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                    onClick={() => setActive(null)}
+                  >
+                    Cancel
+                  </button>
                 )}
               </div>
             </div>
