@@ -67,10 +67,41 @@ const SchemeForm = () => {
   const [wastagedata, setWastageType] = useState([]);
   const [schemeTypeData, setSchemeTypeData] = useState([]);
   const [giftType, setGiftType] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
   const [spanText, setSpanText] = useState("");
   const [validation, setValidation] = useState({});
   const [pathUrl, setPathUrl] = useState("");
+
+  const { mutate: addNewScheme, isPending: isAdding } = useMutation({
+    mutationFn: addscheme,
+    onSuccess: (response) => {
+      // setIsLoading(false);
+      toast.success(response.message);
+      navigate("/scheme/scheme/");
+    },
+    onError: (error) => {
+      // setIsLoading(false);
+      toast.error(error.response?.data?.message);
+    },
+  });
+
+  const { mutate: updateSchemeData, isPending: isUpdating } = useMutation({
+    mutationFn: ({ id, data }) => updateScheme(id, data),
+    onSuccess: (response) => {
+      if (response.status === 200) {
+        // setIsLoading(false);
+        toast.success(response?.data?.message);
+        formik.resetForm();
+        navigate("/scheme/scheme/");
+      }
+    },
+    onError: () => {
+      // setIsLoading(false);
+      toast.error(response.message);
+    },
+  });
+
+  const isLoading = isAdding || isUpdating;
 
   const formik = useFormik({
     initialValues: {
@@ -90,7 +121,7 @@ const SchemeForm = () => {
       startingAmount: "",
       saving_type: "",
       final_join_date: "",
-      
+
       // PayableDetails fields
       amount: "", // no need to pass
       min_amount: "",
@@ -101,22 +132,21 @@ const SchemeForm = () => {
       benefit_min_installment_wst_mkg: "",
       wastagebenefit: "",
       benefit_making: "",
-      
-      
+
       //classification
       description: "",
       term_desc: "",
       classification_order: 0,
-    
+
       wastagetype: "", // no need to pass
-      
+
       // AdvancedSettings fields
       limit_installment: 1,
       pending_installment: "",
       paid_installment: "",
       limit_customer: 0,
       gift_minimum_paid_installment: 0,
-      referralPercentage:"",
+      referralPercentage: "",
 
       //gift
       gift_type: 1,
@@ -133,6 +163,7 @@ const SchemeForm = () => {
     },
     validationSchema: schemeValidationSchema,
     onSubmit: (values) => {
+      if (isLoading) return;
       const formData = new FormData();
 
       if (formik.values.classType) {
@@ -183,17 +214,14 @@ const SchemeForm = () => {
       }
 
       if (id) {
-        setIsLoading(true);
         updateSchemeData({ id, data: formData });
       } else {
-       if(!isLoading){
-        setIsLoading(true);
         addNewScheme(formData);
-       }
-       return
+        return;
       }
     },
   });
+
 
   useEffect(() => {
     if (!id) {
@@ -246,19 +274,29 @@ const SchemeForm = () => {
     queryFn: getSchemeClassifications,
   });
 
-  const { data: branchData } = useQuery({
+  // const { data: branchData } = useQuery({
+  //   queryKey: ["branches", accessBranch, id_branch],
+  //   queryFn: async () => {
+  //     if (accessBranch === "0") {
+  //       setIsLoading(true);
+  //       return getallbranch();
+  //     }
+  //     setIsLoading(true);
+  //     return getBranchById(id_branch);
+  //   },
+  //   enabled: Boolean(accessBranch),
+  //   staleTime: 5 * 60 * 1000,
+  //   cacheTime: 10 * 60 * 1000,
+  // });
+  const { data: branchData, isLoading: isBranchLoading } = useQuery({
     queryKey: ["branches", accessBranch, id_branch],
     queryFn: async () => {
       if (accessBranch === "0") {
-        setIsLoading(true);
         return getallbranch();
       }
-      setIsLoading(true);
       return getBranchById(id_branch);
     },
     enabled: Boolean(accessBranch),
-    staleTime: 5 * 60 * 1000,
-    cacheTime: 10 * 60 * 1000,
   });
 
   const { data: schemeData } = useQuery({
@@ -294,35 +332,6 @@ const SchemeForm = () => {
     scheme_typeResponse,
     giftIssueResponse,
   ] = results.map((result) => result.data);
-
-  const { mutate: addNewScheme } = useMutation({
-    mutationFn: addscheme,
-    onSuccess: (response) => {
-      setIsLoading(false);
-      toast.success(response.message);
-      navigate("/scheme/scheme/");
-    },
-    onError: (error) => {
-      setIsLoading(false);
-      toast.error(error.response?.data?.message);
-    },
-  });
-
-  const { mutate: updateSchemeData } = useMutation({
-    mutationFn: ({ id, data }) => updateScheme(id, data),
-    onSuccess: (response) => {
-      if (response.status === 200) {
-        setIsLoading(false);
-        toast.success(response?.data?.message);
-        formik.resetForm();
-        navigate("/scheme/scheme/");
-      }
-    },
-    onError: () => {
-      setIsLoading(false);
-      toast.error(response.message);
-    },
-  });
 
   //useEffect
   useEffect(() => {
@@ -412,7 +421,7 @@ const SchemeForm = () => {
         final_join_date: schemeData?.data?.final_join_date || "",
         setMainImage: schemeData?.data?.logo || null,
         setDescriptionImage: schemeData?.data?.desc_img || null,
-        referralPercentage: schemeData?.data?.referralPercentage || ""
+        referralPercentage: schemeData?.data?.referralPercentage || "",
       });
       if (schemeData?.data?.logo) {
         setMainImage(schemeData?.data?.logo);
@@ -522,11 +531,11 @@ const SchemeForm = () => {
         label: item.branch_name,
       }));
       setBranch(formattedBranches);
-      setIsLoading(false);
+      // setIsLoading(false);
     } else if (branchData.data) {
       setBranch(branchData.data);
       formik.setFieldValue("id_branch", branchData.data._id);
-      setIsLoading(false);
+      // setIsLoading(false);
     }
   }, [branchData, accessBranch]);
 
@@ -603,7 +612,7 @@ const SchemeForm = () => {
   };
 
   const handleAmountSelect = (index) => {
-    console.log(index)
+    console.log(index);
     setSelectedAmount(index);
     setEditAmount(amounts[index]);
   };
@@ -695,29 +704,11 @@ const SchemeForm = () => {
     }
   };
 
-  // useEffect(()=>{
-  //   formik.setFieldValue("total_installments","")
-  //   if(formik.values.maturity_period){
-  //      if(formik.values.installment_type === 1 && formik.values.maturity_period != ""){
-  //       const newOut = Number(formik.values.maturity_period )- 1
-  //       formik.setFieldValue("total_installments",newOut)
-  //      }else if(formik.values.installment_type === 2 && formik.values.maturity_period != ""){
-  //       const newOut = Number(formik.values.maturity_period)- Number(4.345)
-  //       formik.setFieldValue("total_installments",Math.round(newOut))
-  //      }else if(formik.values.installment_type === 4 && formik.values.maturity_period != ""){
-  //       formik.setFieldValue("total_installments",formik.values.maturity_period)
-  //      }else{
-  //       const newOUt = Number(formik.values.maturity_period) - 31
-  //       formik.setFieldValue("total_installments",newOUt)
-  //      }
-
-  //   }
-  // },[formik.values.maturity_period,validation])
   useEffect(() => {
     if (formik.values.maturity_period && formik.values.installment_type) {
       let calculatedInstallments = 0;
       const maturityMonths = Number(formik.values.maturity_period);
-      
+
       switch (formik.values.installment_type) {
         case 1: // Monthly
           calculatedInstallments = maturityMonths - 1;
@@ -734,11 +725,10 @@ const SchemeForm = () => {
         default:
           calculatedInstallments = 0;
       }
-  
+
       formik.setFieldValue("total_installments", calculatedInstallments);
     }
   }, [formik.values.maturity_period, formik.values.installment_type]);
-
 
   return (
     <form
@@ -1350,43 +1340,41 @@ const SchemeForm = () => {
 
         <AccordionItem value="payable" className="border rounded-lg bg-white">
           <AccordionTrigger className="px-6 py-4 ">
-           {/* <div className="w-full text-start text-lg font-semibold pb-4"> Payable Details</div> */}
-           Payable Details
+            {/* <div className="w-full text-start text-lg font-semibold pb-4"> Payable Details</div> */}
+            Payable Details
           </AccordionTrigger>
           <AccordionContent className="px-6">
             <div className="border-t pt-4">
-            <Suspense fallback={<SpinLoading />}>
-              <PayableDetails
-                formik={formik}
-                layout_color={layout_color}
-                gstTypeData={bygstdata || []}
-                wastagedata={wastagedata || []}
-                install_type={formik.values.installment_type}
-                classType={formik.values.classType}
-                maturity_period={formik.values.maturity_period}
-                scheme_type={formik.values.scheme_type}
-                customStyle={customStyles}
-              />
-            </Suspense>
+              <Suspense fallback={<SpinLoading />}>
+                <PayableDetails
+                  formik={formik}
+                  layout_color={layout_color}
+                  gstTypeData={bygstdata || []}
+                  wastagedata={wastagedata || []}
+                  install_type={formik.values.installment_type}
+                  classType={formik.values.classType}
+                  maturity_period={formik.values.maturity_period}
+                  scheme_type={formik.values.scheme_type}
+                  customStyle={customStyles}
+                />
+              </Suspense>
             </div>
           </AccordionContent>
         </AccordionItem>
 
         <AccordionItem value="advanced" className="border rounded-lg bg-white">
-          <AccordionTrigger className="px-6 py-4">
-            Installment
-          </AccordionTrigger>
+          <AccordionTrigger className="px-6 py-4">Installment</AccordionTrigger>
           <AccordionContent className="px-6">
-           <div className="border-t pt-4">
-           <Suspense fallback={<SpinLoading />}>
-              <AdvancedSettings
-                formik={formik}
-                layout_color={layout_color}
-                giftData={giftType}
-                installment_type={formik.values.installment_type}
-              />
-            </Suspense>
-           </div>
+            <div className="border-t pt-4">
+              <Suspense fallback={<SpinLoading />}>
+                <AdvancedSettings
+                  formik={formik}
+                  layout_color={layout_color}
+                  giftData={giftType}
+                  installment_type={formik.values.installment_type}
+                />
+              </Suspense>
+            </div>
           </AccordionContent>
         </AccordionItem>
 
@@ -1398,19 +1386,19 @@ const SchemeForm = () => {
             Classification Details
           </AccordionTrigger>
           <AccordionContent value="classification" className="px-6">
-          <div className="border-t pt-4">
-           <Suspense fallback={<SpinLoading />}>
-              <Classification
-                formik={formik}
-                layout_color={layout_color}
-                setMainImg={setMainImage}
-                setDescImg={setDescriptionImage}
-                pathurl={pathUrl}
-                logo={mainImage}
-                desc_img={descriptionImage}
-              />
-            </Suspense>
-           </div>
+            <div className="border-t pt-4">
+              <Suspense fallback={<SpinLoading />}>
+                <Classification
+                  formik={formik}
+                  layout_color={layout_color}
+                  setMainImg={setMainImage}
+                  setDescImg={setDescriptionImage}
+                  pathurl={pathUrl}
+                  logo={mainImage}
+                  desc_img={descriptionImage}
+                />
+              </Suspense>
+            </div>
           </AccordionContent>
         </AccordionItem>
       </Accordion>
@@ -1423,10 +1411,19 @@ const SchemeForm = () => {
         >
           Clear
         </button>
-        <button
+        {/* <button
           type="submit"
           disabled={isLoading}
           className="w-20 h-9 bg-blue-900 text-white rounded-md hover:bg-blue-800 flex justify-center items-center"
+        >
+          {isLoading ? <SpinLoading /> : id ? "Update" : "Save"}
+        </button> */}
+        <button
+          type="submit"
+          disabled={isLoading || !formik.isValid || !formik.dirty}
+          className={`w-20 h-9 bg-blue-900 text-white rounded-md flex justify-center items-center ${
+            isLoading ? "opacity-50" : "hover:bg-blue-800"
+          }`}
         >
           {isLoading ? <SpinLoading /> : id ? "Update" : "Save"}
         </button>
