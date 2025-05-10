@@ -304,7 +304,7 @@ const CustomerForm = ({
   useEffect(() => {
     if (countryresponse) {
       const data = countryresponse.data;
-      const country = data.map((country) => ({
+      const country = data?.map((country) => ({
         value: country._id,
         label: country.country_name,
       }));
@@ -794,7 +794,7 @@ const CustomerForm = ({
                   <Select
                     options={countryData}
                     value={
-                      countryData.find(
+                      countryData?.find(
                         (ctry) => ctry.value === formik.values.id_country
                       ) || country
                     }

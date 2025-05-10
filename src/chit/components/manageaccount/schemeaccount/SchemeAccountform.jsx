@@ -195,7 +195,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
   const location = useLocation();
   const { id } = useParams();
   const todaydate = new Date();
-console.log(cusData)
+
   const [isLoading, setLoading] = useState(false);
   const [start_date, setStartDate] = useState(todaydate);
   const [maturity_date, setMaturityDate] = useState("");
@@ -678,9 +678,9 @@ console.log(cusData)
         throw new Error("Invalid installment type");
     }
 
-    const formattedDate = `${String(date.getDate()).padStart(2, "0")}/${String(
+    const formattedDate = `${String(date.getDate()).padStart(2, "0")}-${String(
       date.getMonth() + 1
-    ).padStart(2, "0")}/${date.getFullYear()}`;
+    ).padStart(2, "0")}-${date.getFullYear()}`;
 
     setMaturityDate(formattedDate);
 
@@ -763,20 +763,18 @@ console.log(cusData)
     setStartDate(date);
     setFormData((prev) => ({ ...prev, start_date: date }));
   
-    // Check for scheme types 10 or 14 and calculate the maturity date using noOfDays
     if (formData.scheme_type === 10 || formData.scheme_type === 14) {
       const currentDate = new Date(date);
       const maturityDate = new Date(currentDate);
-      maturityDate.setDate(currentDate.getDate() + formData.noOfDays); // Adding noOfDays to current date
+      maturityDate.setDate(currentDate.getDate() + formData.noOfDays);
   
       const day = String(maturityDate.getDate()).padStart(2, "0");
-      const month = String(maturityDate.getMonth() + 1).padStart(2, "0"); // Month is zero-indexed, so add 1
+      const month = String(maturityDate.getMonth() + 1).padStart(2, "0");
       const year = maturityDate.getFullYear();
   
       const formattedDate = `${day}-${month}-${year}`;
       setFormData((prev) => ({ ...prev, maturity_date: formattedDate }));
     } else {
-      // For other scheme types, use the original method
       const start = new Date(date);
       start.setMonth(start.getMonth() + formData.maturity_period);
   
@@ -866,7 +864,7 @@ console.log(cusData)
         referral_id: referralId,
         scheme_count_number: acNumber,
       };
-    
+     console.log(updatedFormData)
       setFormData(updatedFormData);
       setLoading(true);
     
@@ -887,7 +885,7 @@ console.log(cusData)
       toast.success(response.message);
       setLoading(false);
       handleClear();
-      navigate("/managecustomers/customer/");
+      navigate("/managecustomers/customerschemes");
     },
     onError: (error) => {
       setLoading(false);
@@ -1209,6 +1207,7 @@ console.log(cusData)
                           </label>
                           <input
                             type="number"
+                            step="any"
                             name="weight"
                             defaultValue={""}
                             value={formData.weight}

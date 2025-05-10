@@ -93,36 +93,36 @@ const Base = ({ renderContent: RenderContent }) => {
     try {
       const response = await getallpurity();
       const data = response?.data;
-  
+
       if (!data || !Array.isArray(data)) return;
-  
+
       const metals = ["Gold", "Silver"];
       const goldPurityRegex = /^(24|22)\s?(k|c)t$/i;
-  
+
       const filteredData = data.filter((item) => {
         const metalName = item?.id_metal?.metal_name;
         const purityName = item?.purity_name;
-  
+
         if (!metalName || !purityName) return false;
-  
+
         const isGold = /^gold$/i.test(metalName);
         const isSilver = /^silver$/i.test(metalName);
-  
+
         if (isGold) {
           return goldPurityRegex.test(purityName);
         }
-  
+
         if (isSilver) {
           return true; // Allow all silver
         }
-  
+
         return false; // No other metals like platinum
       });
-  
+
       const id_branch = decoded?.id_branch;
       const passData = { id_branch: branchId };
       const metalRates = await todaymetalrate(passData);
-  
+
       const getPriority = (purity_name) => {
         const name = purity_name.toLowerCase();
         if (/24/.test(name)) return 0;
@@ -130,25 +130,25 @@ const Base = ({ renderContent: RenderContent }) => {
         if (/silver/.test(name)) return 2;
         return 3;
       };
-  
+
       const sortedData = metalRates?.data
         ?.filter((item) => {
           const metalName = item.material_type_id?.metal_name;
           const purityName = item.purity_id?.purity_name;
-  
+
           if (!metalName || !purityName) return false;
-  
+
           const isGold = /^gold$/i.test(metalName);
           const isSilver = /^silver$/i.test(metalName);
-  
+
           if (isGold) {
             return goldPurityRegex.test(purityName);
           }
-  
+
           if (isSilver) {
             return true;
           }
-  
+
           return false;
         })
         .sort((a, b) => {
@@ -157,7 +157,7 @@ const Base = ({ renderContent: RenderContent }) => {
             getPriority(b.purity_id?.purity_name || "")
           );
         });
-  
+
       if (sortedData && sortedData.length > 0) {
         console.log(sortedData);
         setMetalRate(sortedData);
@@ -166,7 +166,6 @@ const Base = ({ renderContent: RenderContent }) => {
       console.error("Failed to fetch purity data:", error);
     }
   };
-  
 
   useEffect(() => {
     getPurity();
@@ -568,6 +567,31 @@ const Base = ({ renderContent: RenderContent }) => {
     },
   ];
 
+  const getGold24Rate = () => {
+    const gold24 = metalRate.find(
+      (item) =>
+        item.material_type_id?.metal_name?.toLowerCase() === "gold" &&
+        /24/.test(item.purity_id?.purity_name?.toLowerCase())
+    );
+    return gold24?.rate || 0;
+  };
+
+  const getGold22Rate = () => {
+    const gold22 = metalRate.find(
+      (item) =>
+        item.material_type_id?.metal_name?.toLowerCase() === "gold" &&
+        /22/.test(item.purity_id?.purity_name?.toLowerCase())
+    );
+    return gold22?.rate || 0;
+  };
+
+  const getSilverRate = () => {
+    const silver = metalRate.find(
+      (item) => item.material_type_id?.metal_name?.toLowerCase() === "silver"
+    );
+    return silver?.rate || 0;
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <header className="fixed top-0 right-0 lg:left-64 left-0 bg-[#FBFCF8] shadow-md z-50 h-16 ">
@@ -607,76 +631,84 @@ const Base = ({ renderContent: RenderContent }) => {
           </div>
 
           {/* Right side with settings, notifications and user menu */}
-          <div className="xl:flex items-center space-x-3 hidden ">
-            <div className="bg-[#FFE28D] flex px-[12px] py-[6px] rounded-[8px]">
-              <p>Gold (24K):</p>{" "}
-              <p>
-                {formatNumber({
-                  value: metalRate[0]?.rate,
-                  decimalPlaces: 0,
-                }) || 0}
-              </p>
-            </div>
-            <div className="bg-[#FFE28D] flex px-[12px] py-[6px] rounded-[8px]">
-              <p>Gold (22K):</p>{" "}
-              <p>
-                {formatNumber({ value: metalRate[1]?.rate, decimalPlaces: 0 })}
-              </p>
-            </div>
-            <div className="bg-[#C0C0C0] flex px-[12px] py-[6px] rounded-[8px]">
-              <p>Silver :</p>{" "}
-              <p>
-                {formatNumber({ value: metalRate[2]?.rate, decimalPlaces: 0 })}
-              </p>
-            </div>
 
-            <div className="border-2 border-[#F2F2F9] rounded-full">
-              {/* <button
-              className="p-2 text-gray-900"
-              data-testid="toggle-settings"
-              // onClick={() => setSettingsOpen(!settingsOpen)}
-            >
-              <img src={settings} alt="" srcset="" />
-            </button> */}
-            </div>
-
-            <div className="border-2 border-[#F2F2F9] rounded-full">
-              <button className="p-2 text-gray-900">
-                <img src={notification} alt="" srcset="" />
-              </button>
-            </div>
-
-            {roledata ? (
-              <div className="relative inline-block text-left">
-                <button
-                  onClick={() => setIsOpen(!isOpen)}
-                  className="flex items-center gap-2 p-2 focus:outline-none"
-                >
-                  <span
-                    className="flex items-center justify-center w-9 h-9 text-lg font-semibold text-white rounded-full"
-                    style={{ backgroundColor: layout_color }}
-                  >
-                    {role}
-                  </span>
-                  <ChevronDown className="h-4 w-4 text-gray-700" />
-                </button>
-
-                {isOpen && (
-                  <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-md shadow-lg">
-                    <button
-                      className="block w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
-                      onClick={handleLogout}
-                    >
-                      Logout
-                    </button>
-                  </div>
-                )}
+          <div className="flex items-center space-x-1 xl:space-x-3 flex-wrap justify-end">
+            {/* Metal rates - will stack vertically on small screens */}
+            <div className="flex flex-col sm:flex-row gap-1 sm:gap-2">
+              <div className="bg-[#FFE28D] flex px-2 py-1 sm:px-3 sm:py-1.5 rounded-[8px] text-xs sm:text-sm">
+                <span className="hidden sm:inline">Gold (24K):</span>
+                <span className="sm:hidden">G24:</span>
+                <span className="ml-1">
+                  {formatNumber({
+                    value: getGold24Rate(),
+                    decimalPlaces: 0,
+                  })}
+                </span>
               </div>
-            ) : (
-              <button className="p-2 text-gray-900">
-                <UserRoundCheck size={28} />
+              <div className="bg-[#FFE28D] flex px-2 py-1 sm:px-3 sm:py-1.5 rounded-[8px] text-xs sm:text-sm">
+                <span className="hidden sm:inline">Gold (22K):</span>
+                <span className="sm:hidden">G22:</span>
+                <span className="ml-1">
+                  {formatNumber({
+                    value: getGold22Rate(),
+                    decimalPlaces: 0,
+                  })}
+                </span>
+              </div>
+              <div className="bg-[#C0C0C0] flex px-2 py-1 sm:px-3 sm:py-1.5 rounded-[8px] text-xs sm:text-sm">
+                <span className="hidden sm:inline">Silver:</span>
+                <span className="sm:hidden">S:</span>
+                <span className="ml-1">
+                  {formatNumber({
+                    value: getSilverRate(),
+                    decimalPlaces: 0,
+                  })}
+                </span>
+              </div>
+            </div>
+
+            {/* Notification and user menu */}
+            <div className="flex items-center space-x-1 sm:space-x-2">
+              <button className="p-1 sm:p-2 text-gray-900">
+                <img
+                  src={notification}
+                  alt="Notifications"
+                  className="w-5 h-5 sm:w-6 sm:h-6"
+                />
               </button>
-            )}
+
+              {roledata ? (
+                <div className="relative inline-block text-left">
+                  <button
+                    onClick={() => setIsOpen(!isOpen)}
+                    className="flex items-center gap-1 p-1 sm:p-2 focus:outline-none"
+                  >
+                    <span
+                      className="flex items-center justify-center w-7 h-7 sm:w-9 sm:h-9 text-sm sm:text-lg font-semibold text-white rounded-full"
+                      style={{ backgroundColor: layout_color }}
+                    >
+                      {role}
+                    </span>
+                    <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4 text-gray-700" />
+                  </button>
+
+                  {isOpen && (
+                    <div className="absolute right-0 mt-2 w-32 sm:w-40 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+                      <button
+                        className="block w-full px-3 py-1.5 sm:px-4 sm:py-2 text-left text-xs sm:text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={handleLogout}
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <button className="p-1 sm:p-2 text-gray-900">
+                  <UserRoundCheck size={24} className="sm:size-7" />
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </header>

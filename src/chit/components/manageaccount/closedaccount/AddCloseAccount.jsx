@@ -77,7 +77,7 @@ const AddCloseAccount = () => {
     comments: Yup.string().required("Comments are required"),
     bill_no: Yup.string().required("Bill number is required"),
     bill_date: Yup.string().required("Bill date is required"),
-    mobile: Yup.string().required("Mobile is required"),
+    mobile: Yup.string().required("Mobile number or Ac number required"),
     refund_paymenttype: refundtype
       ? Yup.string().required("Refund payment type is required")
       : Yup.string(),
@@ -401,28 +401,28 @@ const AddCloseAccount = () => {
 
   // Filter scheme statuses to exclude status 2 and 0
   const schemeStatusOptions = schemestatus
-    .filter((status) => status.id_status !== 0 && status.id_status !== 2)
+    .filter((status) => status.id_status !== 0 && status.id_status !== 2 && status.id_status !== 7)
     .map((status) => ({
       value: status.id_status,
-      label: status.status_name,
+      label: status.status_name, 
     }));
 
   // Create scheme account options
   const schemeAccountOptions = schemedata.map((account) => {
-    let label = account.id_scheme.scheme_name;
+    let label = account?.id_scheme?.scheme_name;
 
-    if ([4, 5, 6, 7, 8, 9, 10].includes(account.id_scheme.scheme_type)) {
-      label += ` (Rs. ${account.id_scheme.min_amount} - Rs. ${account.id_scheme.max_amount})`;
-    } else if (account.id_scheme.scheme_type === 3) {
-      label += ` (${account.id_scheme.min_weight} - ${account.id_scheme.max_weight})`;
-    } else if ([0, 1, 2].includes(account.id_scheme.scheme_type)) {
-      label += ` (Rs. ${account.id_scheme.amount})`;
+    if ([4, 5, 6, 7, 8, 9, 10].includes(account?.id_scheme?.scheme_type)) {
+      label += ` (Rs. ${account?.id_scheme?.min_amount} - Rs. ${account?.id_scheme?.max_amount})`;
+    } else if (account?.id_scheme?.scheme_type === 3) {
+      label += ` (${account?.id_scheme?.min_weight} - ${account?.id_scheme?.max_weight})`;
+    } else if ([0, 1, 2].includes(account?.id_scheme?.scheme_type)) {
+      label += ` (Rs. ${account?.id_scheme?.amount})`;
     }
 
-    label += ` - (${account.scheme_acc_number || "Not Allocated"})`;
+    label += ` - (${account?.scheme_acc_number || "Not Allocated"})`;
 
     return {
-      value: account._id,
+      value: account?._id,
       label,
     };
   });

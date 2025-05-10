@@ -149,7 +149,7 @@ const SchemeAccount = () => {
   const handleSelect = (value) => {
     const num = parseInt(value);
     setSelectedValue(value);
-    setActiveFilter(value !== "" ? num : null);
+    setActiveFilter(value !== "" ? num : "");
   };
 
   const hanldeActiveDropDown = (id, event) => {

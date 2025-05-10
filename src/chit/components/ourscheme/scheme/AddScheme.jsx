@@ -336,7 +336,6 @@ const SchemeForm = () => {
   //useEffect
   useEffect(() => {
     if (id && schemeData) {
-      // Set the classification type first
       const classItem = classifications.find(
         (c) => c.value === schemeData.id_classification
       );

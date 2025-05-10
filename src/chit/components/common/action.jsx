@@ -18,7 +18,7 @@ const useOutsideClick = (ref, callback) => {
   }, [ref, callback]);
 };
 
-function Action({ row, data, rowIndex, activeDropdown, setActive, handleEdit, handleDelete=false, handleView = null, showEdit = false ,cancel=false}) {
+function Action({ row, data, rowIndex, activeDropdown, setActive, handleEdit, handleDelete=false,showDelete= false, handleView = null, showEdit = false ,cancel=false}) {
   const dropdownRef = useRef(null);
   const buttonRef = useRef(null);
   const [position, setPosition] = useState({ top: 0, left: 0 });
@@ -104,7 +104,7 @@ function Action({ row, data, rowIndex, activeDropdown, setActive, handleEdit, ha
                     Edit
                   </button>
                 )}
-                {handleDelete && (
+                {showDelete && (
                   <button
                     className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
                     onClick={() => {
