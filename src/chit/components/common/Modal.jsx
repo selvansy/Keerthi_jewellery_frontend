@@ -5,6 +5,7 @@ import { eventEmitter } from '../../../utils/EventEmitter';
 import { getgiftvendorbranchById } from '../../api/Endpoints';
 import Barcode from 'react-barcode';
 import Table from "./Table";
+import { X } from 'lucide-react';
 
 const Modal = () => {
 
@@ -12,12 +13,8 @@ const Modal = () => {
     const { isOpen, modalType, header, formData, buttons, options: modalOptions, extraData } = useSelector((state) => state.modal);
 
     const [localFormData, setLocalFormData] = useState(formData || {});
-    const [options, setOptions] = useState(modalOptions || []);
     const [activeTab, setActiveTab] = useState('userInfo');
-    const [activeTab2, setActiveTab2] = useState('Role Name');
-    const [gift_image, setGiftImage] = useState(null);
     const [vendorfilter, setVendor] = useState([]);
-    const [branchfilter, setBranchId] = useState([]);
     const [isLoading, setisLoading] = useState(false)
     useEffect(() => {
         setLocalFormData(formData || {});
@@ -314,21 +311,6 @@ const Modal = () => {
             case 'CONFIRMATION':
                 return (
                     <div className="text-start py-4">
-                        {/* <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
-                            <svg
-                                className="h-6 w-6 text-red-600"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                                />
-                            </svg>
-                        </div> */}
                         <p className="text-lg text-gray-700">
                             {formData.message}
                         </p>
@@ -645,30 +627,9 @@ const Modal = () => {
                     <h2 className="text-lg font-semibold mx-3">{header}</h2>
                     <button
                         onClick={() => dispatch(closeModal())}
-                        className="flex items-center justify-center text-gray-500 hover:text-gray-700 bg-[#E6E6E670] rounded-full w-6 h-6 pb-1 text-center"
+                        className="flex items-center justify-center text-gray-500 hover:text-gray-700 bg-[#E6E6E670] rounded-full w-6 h-6 px-1 py-1 text-center"
                     >
-                        <svg
-
-                            className="h-5 w-5"
-
-                            fill="none"
-
-                            viewBox="0 0 24 24"
-
-                            stroke="currentColor"
-                        >
-                            <path
-
-                                strokeLinecap="round"
-
-                                strokeLinejoin="round"
-
-                                strokeWidth={2}
-
-                                d="M6 18L18 6M6 6l12 12"
-
-                            />
-                        </svg>
+                        <X/>
                     </button>
                 </div>
                 <div className="p-3 mx-3">

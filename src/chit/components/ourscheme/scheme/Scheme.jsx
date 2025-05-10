@@ -497,8 +497,8 @@ const Scheme = () => {
             // handleEdit={row.scheme_type !== 10 ? handleEdit : handleDigiGold}
             handleView={handleView}
             cancel={true}
-            // showEdit={row.activeAccounts !== true}
-            // handleDelete={false}
+            showEdit={false}
+            showDelete={false}
           />
         ),
         sticky: "right",

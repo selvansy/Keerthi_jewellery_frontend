@@ -52,6 +52,7 @@ const AddSchemePayment = () => {
   const weightSchemeTypes = [12, 3, 4]; // Schemes where weight is primary input
   const amountSchemeTypes = [2, 5, 6]; // Schemes where amount is primary input
   const specialSchemeTypes = [10, 14]; // Schemes that need special handling
+  
   const [selectedMode, setSelectedMode] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [multiplayModes, setMultiplayModes] = useState([]);
