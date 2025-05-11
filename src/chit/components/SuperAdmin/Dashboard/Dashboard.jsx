@@ -73,17 +73,19 @@ function Dashboard() {
       <div className="flex justify-end">
         {accessBranch == "0" && branch.length > 0 ? (
           <div>
-            <Select
-              className="mt-2 min-w-[190px]"
-              styles={customSelectStyles(true)}
-              options={branch || []}
-              placeholder="Over All"
-              value={branch.find((option) => option.value === selectedBranch)}
-              onChange={(option) => {
-                setSelectedBranch(option.value);
-              }}
-            />
-          </div>
+          <Select
+            isClearable={true}
+            className="mt-2 min-w-[190px]"
+            styles={customSelectStyles(true)}
+            options={branch || []}
+            placeholder="Over All"
+            value={branch.find((option) => option.value === selectedBranch) || null}
+            onChange={(option) => {
+              // Handle both selected and cleared values
+              setSelectedBranch(option ? option.value : null);
+            }}
+          />
+        </div>        
         ) : (
           <div>
             <label className="block text-sm text-gray-500 font-medium mb-1 mt-3">

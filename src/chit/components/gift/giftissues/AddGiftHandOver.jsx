@@ -10,7 +10,7 @@ import Select from "react-select";
 import { customSelectStyles } from "../../../components/Setup/purity/index";
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { emptyToZero, formatNumber } from "../../../utils/commonFunction"
-import { addgiftissues, searchGiftCodenumber, giftissuetype, searchcustomermobile, getallgiftInwardByBranch,searchSchAccByMobile, getallbranch, getschemeaccountbyid } from '../../../api/Endpoints'
+import { addgiftissues, searchGiftCodenumber, giftissuetype, searchcustomermobile, getallgiftInwardByBranch,searchSchAccByMobile, getallbranch } from '../../../api/Endpoints'
 import SpinLoading from '../../common/spinLoading';
 
 const AddGiftIssued = () => {

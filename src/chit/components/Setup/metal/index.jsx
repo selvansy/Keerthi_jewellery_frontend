@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Table from "../../common/Table";
 import { Search } from "lucide-react";
-import { data, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   getallmetaltable,
   changemetalstatus,
@@ -10,20 +10,19 @@ import {
   updatemetal,
   addmetal,
 } from "../../../api/Endpoints";
-import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
-import { openModal } from "../../../../redux/modalSlice";
-import { eventEmitter } from "../../../../utils/EventEmitter";
-import { useSelector, useDispatch } from "react-redux";
-import { setid } from "../../../../redux/clientFormSlice";
 import Modal from "../../common/Modal";
 import ModelOne from "../../common/Modelone";
 import { useDebounce } from "../../../hooks/useDebounce";
 import SpinLoading from "../../common/spinLoading";
 import { label, metadata, tr } from "framer-motion/client";
 import Action from "../../common/action";
-import { closeModal } from "../../../../redux/modalSlice";
 import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
+import { useMutation } from "@tanstack/react-query";
+import { useSelector, useDispatch } from "react-redux";
+import { openModal } from "../../../../redux/modalSlice";
+import { closeModal } from "../../../../redux/modalSlice";
+import { eventEmitter } from "../../../../utils/EventEmitter";
 
 const Metal = () => {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
@@ -508,13 +507,6 @@ export const MetalForm = ({ setIsOpen, id, clearId }) => {
       </div>
 
       <Modal />
-
-      {/* <ModelOne isOpen={succNot} setIsOpen={setSuccNot} title="Success">
-        <div className="flex flex-col items-center">
-          <img src="/success-icon.png" alt="Success" className="w-16 h-16" />
-          <p className="text-lg font-semibold text-center mt-4">{successMessage}</p>
-        </div>
-      </ModelOne> */}
     </div>
   );
 };

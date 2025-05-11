@@ -1936,7 +1936,6 @@ export const customSearchScheme = async (data) => {
 };
 
 export const getschemeaccountbyid = async (data) => {
-  console.log("data-",data)
   const response = await Api.get(
     `${import.meta.env.VITE_API_URL}/api/client/schemeaccount/${data}`);
   return response.data;
@@ -1948,12 +1947,7 @@ export const geallschemebyclassification = async (data) => {
   );
   return response.data;
 };
-export const schemeaccountbyid = async (data) => {
-  const response = await Api.get(
-    `${import.meta.env.VITE_API_URL}/api/client/schemeaccount?cl${data.id}`
-  );
-  return response.data;
-};
+
 export const extendinstallment = async (data) => {
   const response = await Api.post(
     `${import.meta.env.VITE_API_URL}/api/client/extendinstallment`,

@@ -1,11 +1,18 @@
 import Base from "../chit/components/common/Base";
 import Scheme from "../chit/components/ourscheme/scheme/Scheme";
 import AddScheme from "../chit/components/ourscheme/scheme/AddScheme";
-import MetalRate from "../chit/components/ourscheme/metalrate/index";
 import CreateMetalRate from "../chit/components/ourscheme/metalrate/Createmetalrate";
 import SchemeClassification from "../chit/components/ourscheme/classification/schemeClassification";
-import CreateSchemeClassificaton from "../chit/components/ourscheme/classification/CreateSchemeClassification";
-import DigiGoldScheme from "../chit/components/ourscheme/digiGold/DigiGoldScheme"
+// import AddGiftHandOver from "../chit/components/gift/giftissues/AddGiftHandOver";
+// import SchemePayment from "../chit/components/payment/schemepayment/SchemePayment";
+// import CloseAccount from "../chit/components/manageaccount/closedaccount/CloseAccount";
+// import CardPrint from "../chit/components/Print/CardPrint/CardPrint";
+// import PrecloseAccount from "../chit/components/manageaccount/preclose/PrecloseAccount";
+// import { path } from "framer-motion/client";
+// import TicketSubmissionForm from "../chit/components/help/Addticket";
+// import MetalRate from "../chit/components/ourscheme/metalrate/index";
+// import CreateSchemeClassificaton from "../chit/components/ourscheme/classification/CreateSchemeClassification";
+// import DigiGoldScheme from "../chit/components/ourscheme/digiGold/DigiGoldScheme"
 import CreateDigiGoldScheme from "../chit/components/ourscheme/digiGold/CreateDigiGoldScheme";
 import GiftVendor from "../chit/components/gift/giftvendor/index";
 import GiftItem from "../chit/components/gift/giftitem/index";
@@ -33,11 +40,8 @@ import StaffUser from "../chit/components/Setup/staffuser/index";
 import UserAccess from "../chit/components/Setup/useraccess/index";
 
 import GiftHandOver from "../chit/components/gift/giftissues/GiftHandOver";
-import AddGiftHandOver from "../chit/components/gift/giftissues/AddGiftHandOver";
-import SchemePayment from "../chit/components/payment/schemepayment/SchemePayment";
 import Schemeaccount from "../chit/components/manageaccount/schemeaccount/index";
 import AddSchemeAccount from "../chit/components/manageaccount/schemeaccount/SchemeAccountform";
-import CloseAccount from "../chit/components/manageaccount/closedaccount/CloseAccount";
 import AddCloseAccount from "../chit/components/manageaccount/closedaccount/AddCloseAccount";
 import AddRvertAccount from "../chit/components/manageaccount/closedaccount/AddRvertAccount";
 import CompleteAccount from "../chit/components/manageaccount/completedaccount/CompleteAccount";
@@ -65,7 +69,6 @@ import SchemeAccountReport from "../chit/components/Report/SchemeAccountReport";
 import AccountSummaryReport from "../chit/components/Report/AccountSummary";
 import OutStandingReport from "../chit/components/common/OutStandingReport";
 import OutStandingAmount from "../chit/components/Report/OutStandingAmout";
-import CardPrint from "../chit/components/Print/CardPrint/CardPrint";
 import AccountSearchAndPrint from "../chit/components/Print/ReceiptPrint/AccountSearchAndPrint";
 import NewArrivalsWhatsapp from "../chit/components/whatsapp/newarrivals/index";
 import ProductWhatsapp from "../chit/components/whatsapp/product/index";
@@ -80,9 +83,6 @@ import WalletHistory from "../chit/components/wallet/WalletHistory";
 import Addwallet from "../chit/components/wallet/Addwallet";
 import SchemeForm from "../chit/components/ourscheme/scheme/AddScheme";
 import RedeemHistory from "../chit/components/wallet/RedeemHistory";
-import PrecloseAccount from "../chit/components/manageaccount/preclose/PrecloseAccount";
-import { path } from "framer-motion/client";
-import TicketSubmissionForm from "../chit/components/help/Addticket";
 import Ticket from "../chit/components/help/ticket";
 import TopUp from "../chit/components/SuperAdmin/topupApprovals/index"
 import ContentManagement from "../chit/components/contentManagement/ContentManagement";
@@ -113,8 +113,8 @@ import ViewScheme from "../chit/components/ourscheme/scheme/ViewScheme";
 
 import GiftHandOverForm from "../chit/components/gift/giftissues/GiftHandOverForm";
 import SchemeAccount from "../chit/components/manageaccount/schemeaccount/SchemeAccount";
-import GifthandoverDetails from "../chit/components/manageaccount/schemeaccount/GifthandoverDetails";
-import AmountPayble from "../chit/components/Report/amountPaybleChild";
+// import GifthandoverDetails from "../chit/components/manageaccount/schemeaccount/GifthandoverDetails";
+// import AmountPayble from "../chit/components/Report/amountPaybleChild";
 import EmployeeRefferal from "../chit/components/Report/employeeRefferal";
 import CustomerRefferal from "../chit/components/Report/customerRefferal";
 import DrilldownTable from "../chit/components/common/DrillDownTable";

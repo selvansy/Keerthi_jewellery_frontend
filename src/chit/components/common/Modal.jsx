@@ -6,30 +6,31 @@ import { getgiftvendorbranchById } from '../../api/Endpoints';
 import Barcode from 'react-barcode';
 import Table from "./Table";
 import { X } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const Modal = () => {
 
     const dispatch = useDispatch();
-    const { isOpen, modalType, header, formData, buttons, options: modalOptions, extraData } = useSelector((state) => state.modal);
+   const navigate =useNavigate()
+    const { isOpen, modalType, header, formData, buttons } = useSelector((state) => state.modal);
 
     const [localFormData, setLocalFormData] = useState(formData || {});
     const [activeTab, setActiveTab] = useState('userInfo');
-    const [vendorfilter, setVendor] = useState([]);
     const [isLoading, setisLoading] = useState(false)
     useEffect(() => {
         setLocalFormData(formData || {});
     }, [formData]);
 
 
-    const handleVendorChange = async (e) => {
+    // const handleVendorChange = async (e) => {
 
-        const selectedBranchId = e.target.value;
-        if (!selectedBranchId) return;
-        const response = await getgiftvendorbranchById({ "id_branch": selectedBranchId });
-        if (response) {
-            setVendor(response.data);
-        }
-    };
+    //     const selectedBranchId = e.target.value;
+    //     if (!selectedBranchId) return;
+    //     const response = await getgiftvendorbranchById({ "id_branch": selectedBranchId });
+    //     if (response) {
+    //         setVendor(response.data);
+    //     }
+    // };
 
     const handleInputChange = (e) => {
 
@@ -53,6 +54,9 @@ const Modal = () => {
         switch (modalType) {
             case 'CONFIRMATION':
                 eventEmitter.emit(`${modalType}_SUBMIT`, formData);
+                if (formData.redirectTo) {
+                    navigate(formData.redirectTo);
+                  }
                 dispatch(closeModal());
                 break;
             case 'SUCCESS':
@@ -173,7 +177,12 @@ const Modal = () => {
 
     const handleCancel = () => {
         if (modalType === 'CONFIRMATION') {
-            dispatch(closeModal());
+            if (modalType === 'CONFIRMATION' && formData.onCancel) {
+                formData.onCancel();
+              }else if(modalType === 'CONFIRMATION' && formData.onCancelRedirect){
+                navigate(formData.onCancelRedirect);
+              }
+              dispatch(closeModal());
 
             if (modalType === 'NAVIGATION') {
                 dispatch(closeModal())
@@ -310,7 +319,7 @@ const Modal = () => {
 
             case 'CONFIRMATION':
                 return (
-                    <div className="text-start py-4">
+                    <div className="text-start py-4 px-4">
                         <p className="text-lg text-gray-700">
                             {formData.message}
                         </p>
@@ -621,17 +630,19 @@ const Modal = () => {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed  inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-            <div className={`bg-white rounded-2xl shadow-md  ${modalType !== 'SUCCESS' ? "lg:w-[550px]" : "lg:w-[400px]"}`}>
-            <div className={`flex items-center justify-between p-4 ${modalType !== 'SUCCESS' ? "border-b" : ""}`}>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+            <div className={`bg-white rounded-2xl shadow-md ${modalType !== 'SUCCESS' ? "lg:w-[550px]" : "lg:w-[400px]"}`}>
+                {header && (
+                    <div className={`flex items-center justify-between p-4 ${modalType !== 'SUCCESS' ? "border-b" : ""}`}>
                     <h2 className="text-lg font-semibold mx-3">{header}</h2>
                     <button
                         onClick={() => dispatch(closeModal())}
                         className="flex items-center justify-center text-gray-500 hover:text-gray-700 bg-[#E6E6E670] rounded-full w-6 h-6 px-1 py-1 text-center"
                     >
-                        <X/>
+                        <X />
                     </button>
                 </div>
+                )}
                 <div className="p-3 mx-3">
                     {renderForm()}
                 </div>
@@ -640,13 +651,11 @@ const Modal = () => {
                         <button
                             onClick={handleCancel}
                             className={`px-4 py-2 rounded-md
-                                ${modalType === 'CONFIRMATION' || modalType === 'SENDCONFIRMATION'
+                                ${modalType === 'CONFIRMATION' || modalType === 'SENDCONFIRMATION' || modalType === 'NAVIGATION'
                                     ? 'bg-[#F6F7F9] text-gray-800 hover:bg-gray-400'
                                     : 'bg-[#F6F7F9] text-gray-800 hover:bg-red-400'}`}
                         >
-                            {modalType === 'CONFIRMATION' || modalType === 'SENDCONFIRMATION'
-                                ? 'Cancel'
-                                : buttons.cancel.text}
+                            {buttons.cancel.text || 'Cancel'}
                         </button>
                     )}
                     {buttons?.submit && (
@@ -654,10 +663,12 @@ const Modal = () => {
                             onClick={handleSubmit}
                             className={`px-4 py-2 rounded-md
                                 ${modalType === 'CONFIRMATION' || modalType === 'SENDCONFIRMATION'
-                                    ? 'bg-red-600 text-white hover:bg-red-700 px-2'
+                                    ? 'bg-red-600 text-white hover:bg-red-700'
                                     : 'bg-[#61A375] text-white hover:bg-[#528f63]'}`}
                         >
-                            {(modalType === 'CONFIRMATION' || modalType === 'SENDCONFIRMATION') && ("Delete")}
+                            {buttons.submit.text || 
+                                (modalType === 'CONFIRMATION' ? 'Confirm' : 
+                                 modalType === 'SENDCONFIRMATION' ? 'Send' : 'Submit')}
                         </button>
                     )}
                 </div>

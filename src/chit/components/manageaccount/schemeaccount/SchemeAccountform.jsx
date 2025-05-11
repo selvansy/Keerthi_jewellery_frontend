@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect} from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
-import { CalendarDays, Search } from "lucide-react";
-import { SetaccExp } from "../../../../redux/clientFormSlice";
+import { CalendarDays, CloudFog, Search } from "lucide-react";
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import { toast } from "react-toastify";
@@ -24,8 +23,13 @@ import {
 import { useSelector, useDispatch } from "react-redux";
 import { customSelectStyles } from "../../Setup/purity/index";
 import SpinLoading from "../../common/spinLoading";
+import { openModal } from "../../../../redux/modalSlice";
+import { closeModal } from "../../../../redux/modalSlice";
+import { eventEmitter } from "../../../../utils/EventEmitter";
+import Modal from "../../common/Modal";
 
 export function ExistingCustomer({ setCusData,handleCusData,openJoinScheme}) {
+
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const roledata = useSelector((state) => state.clientForm.roledata);
   const id_branch = roledata?.branch;
@@ -92,6 +96,24 @@ export function ExistingCustomer({ setCusData,handleCusData,openJoinScheme}) {
       referral_id: data.referral_id,
     });
   };
+
+//   useEffect(() => {
+//   const handleConfirmation = (data) => {
+//     if (data.paymentData) {
+//       navigate('/payment', { 
+//         state: { 
+//           paymentData: data.paymentData 
+//         } 
+//       });
+//     }
+//   };
+
+//   eventEmitter.on('CONFIRMATION_SUBMIT', handleConfirmation);
+
+//   return () => {
+//     eventEmitter.off('CONFIRMATION_SUBMIT', handleConfirmation);
+//   };
+// }, [navigate]);
 
   return (
     <div className="grid md:grid-cols-3 gap-2">
@@ -271,53 +293,53 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
     }
   }, [branchresponse]);
 
-  useEffect(() => {
-    const scheme = async () => {
-      const schemeData = await getschemeaccountbyid(id);
-      if (schemeData) {
-        handleschemebyclassification(schemeData.data.id_classification._id);
-        if (schemeData.data.id_classification.order === 2) {
-          setSelectedScheme("Fixed");
-          handleschemebyclassification(
-            schemeData?.data?.id_classification?._id
-          );
-        }
+  // useEffect(() => {
+  //   const scheme = async () => {
+  //     const schemeData = await getschemeaccountbyid(id);
+  //     if (schemeData) {
+  //       handleschemebyclassification(schemeData.data.id_classification._id);
+  //       if (schemeData.data.id_classification.order === 2) {
+  //         setSelectedScheme("Fixed");
+  //         handleschemebyclassification(
+  //           schemeData?.data?.id_classification?._id
+  //         );
+  //       }
 
-        setFormData({
-          id: schemeData.data._id,
-          id_scheme: schemeData.data.id_scheme._id,
-          scheme_type: schemeData.data.id_scheme.scheme_type,
-          total_installments: schemeData.data.id_scheme.total_installments,
-          min_amount: schemeData.data.id_scheme.min_amount,
-          max_amount: schemeData.data.id_scheme.max_amount,
-          min_weight: schemeData.data.id_scheme.min_weight,
-          max_weight: schemeData.data.id_scheme.max_weight,
-          id_customer: schemeData.data.id_customer._id,
-          scheme_acc_number: schemeData.data.scheme_acc_number,
-          start_date: schemeData.data.start_date,
-          id_classification: schemeData.data.id_classification._id,
-          collectionuserid: schemeData.data.collectionuserid,
-          id_branch: schemeData.data.id_branch._id,
-          account_name: schemeData.data.account_name,
-          // customer_name:
-          //   schemeData.data.id_customer.firstname +
-          //   " " +
-          //   schemeData.data.id_customer.lastname,
-          mobile: schemeData.data.id_customer.mobile,
-          address: schemeData.data.id_customer.address,
-          amount: schemeData.data.amount,
-          maturity_period: schemeData.data.id_scheme.maturity_period,
-          maturity_date: schemeData.data.maturity_date,
-          referral_id: schemeData.data.referral_id,
-          customer_name: schemeData.data.id_customer
-            ? `${schemeData.data.id_customer.firstname} ${schemeData.data.id_customer.lastname}`
-            : "",
-        });
-        setAcNumber(schemeData.data.scheme_count_number);
-      }
-    };
-    scheme();
-  }, [id]);
+  //       setFormData({
+  //         id: schemeData.data._id,
+  //         id_scheme: schemeData.data.id_scheme._id,
+  //         scheme_type: schemeData.data.id_scheme.scheme_type,
+  //         total_installments: schemeData.data.id_scheme.total_installments,
+  //         min_amount: schemeData.data.id_scheme.min_amount,
+  //         max_amount: schemeData.data.id_scheme.max_amount,
+  //         min_weight: schemeData.data.id_scheme.min_weight,
+  //         max_weight: schemeData.data.id_scheme.max_weight,
+  //         id_customer: schemeData.data.id_customer._id,
+  //         scheme_acc_number: schemeData.data.scheme_acc_number,
+  //         start_date: schemeData.data.start_date,
+  //         id_classification: schemeData.data.id_classification._id,
+  //         collectionuserid: schemeData.data.collectionuserid,
+  //         id_branch: schemeData.data.id_branch._id,
+  //         account_name: schemeData.data.account_name,
+  //         // customer_name:
+  //         //   schemeData.data.id_customer.firstname +
+  //         //   " " +
+  //         //   schemeData.data.id_customer.lastname,
+  //         mobile: schemeData.data.id_customer.mobile,
+  //         address: schemeData.data.id_customer.address,
+  //         amount: schemeData.data.amount,
+  //         maturity_period: schemeData.data.id_scheme.maturity_period,
+  //         maturity_date: schemeData.data.maturity_date,
+  //         referral_id: schemeData.data.referral_id,
+  //         customer_name: schemeData.data.id_customer
+  //           ? `${schemeData.data.id_customer.firstname} ${schemeData.data.id_customer.lastname}`
+  //           : "",
+  //       });
+  //       setAcNumber(schemeData.data.scheme_count_number);
+  //     }
+  //   };
+  //   scheme();
+  // }, [id]);
 
   // const handleschemeaccountbyid = async (data) => {
   //   if (!data) return;
@@ -426,7 +448,6 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
     }
   };
 
-  console.log(referralId)
 
   const { mutate: handlesearchcustomer } = useMutation({
     mutationFn: searchcustomermobile,
@@ -458,7 +479,8 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
           referral_id: response?.data?.referral_id,
           code: 0,
           scheme_count_number: "",
-          noOfDays:""
+          noOfDays:"",
+          flexFixed:0
         });
       }
     },
@@ -864,7 +886,6 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
         referral_id: referralId,
         scheme_count_number: acNumber,
       };
-     console.log(updatedFormData)
       setFormData(updatedFormData);
       setLoading(true);
     
@@ -882,10 +903,12 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
   const { mutate: createSchemeaccount } = useMutation({
     mutationFn: addschemeaccount,
     onSuccess: (response) => {
+      console.log(response,'sl')
       toast.success(response.message);
       setLoading(false);
       handleClear();
-      navigate("/managecustomers/customerschemes");
+      handlePayment(response.id)
+      // navigate("/managecustomers/customerschemes");
     },
     onError: (error) => {
       setLoading(false);
@@ -952,6 +975,35 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
          amount:0,
       }));
     }
+  },[formData.weight])
+
+  const handlePayment = (id) => {
+    dispatch(
+      openModal({
+        modalType: "CONFIRMATION",
+        header: "Proceed to payment",
+        formData: {
+          message: "You're all set! Continue to the Payment Module to complete the process.",
+          redirectTo: `/payment/addschemepayment/${id}`,
+          onCancelRedirect: '/managecustomers/customerschemes'
+        },
+        buttons: {
+          cancel: {
+            text: "No"
+          },
+          submit: {
+            text: "Yes"
+          },
+        },
+      })
+    );
+  };
+
+  useEffect(()=>{
+    setFormData((prev) => ({
+      ...prev,
+       flexFixed:formData.weight,
+    }));
   },[formData.weight])
 
   return (
@@ -1505,6 +1557,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
             </div>
           </div>
         </form>
+        <Modal/>
       </div>
     </>
   );
