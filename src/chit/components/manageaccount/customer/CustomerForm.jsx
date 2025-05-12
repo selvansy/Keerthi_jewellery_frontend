@@ -220,23 +220,28 @@ const CustomerForm = ({
       if (response) {
         const res = response.data;
         const formValues = {
-          firstname: res.firstname,
-          lastname: res.lastname,
-          mobile: res.mobile,
-          gender: res.gender,
-          address: res.address,
-          whatsapp: res.whatsapp,
-          id_branch: res.branchDetails?._id,
-          id_country: res.countryDetails?._id,
-          id_state: res.stateDetails?._id,
-          id_city: res.cityDetails?._id,
-          date_of_wed: res.date_of_wed,
-          pan: res.pan,
-          date_of_birth: res.date_of_birth,
-          pincode: res.pincode,
-          authorno: res.authorno,
+          firstname: res?.firstname || "",
+          lastname: res?.lastname || "",
+          mobile: res?.mobile || "",
+          gender: res?.gender || 1,
+          address: res?.address || "",
+          whatsapp: res?.whatsapp || "",
+          id_branch: res?.branchDetails?._id || "",
+          id_country: res?.countryDetails?._id || "",
+          id_state: res?.stateDetails?._id || "",
+          id_city: res?.cityDetails?._id || "",
+          date_of_wed: res?.date_of_wed || "",
+          pan: res?.pan || "",
+          date_of_birth: res?.date_of_birth || "",
+          pincode: res?.pincode || "",
+          authorno: res?.authorno || "",
+          password: res?.password || "",
+          confirmpassword: res?.password || "",
         };
 
+        // 4. Set form values directly using formik.setValues
+        formik.setValues(formValues);
+        
         setCusData(formValues);
         setCusImg(response.data.cus_img);
         const img = `${response.data.pathurl}${response.data.cus_img}`;
@@ -249,9 +254,11 @@ const CustomerForm = ({
       }
     },
     onError: (error) => {
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Error fetching customer data");
     },
   });
+
+  console.log(cusData,'dlk')
 
   const { data: countryresponse, isLoading: loadingCountries } = useQuery({
     queryKey: ["country", country],
