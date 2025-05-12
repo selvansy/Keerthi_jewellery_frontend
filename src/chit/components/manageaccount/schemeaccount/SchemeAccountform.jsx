@@ -482,7 +482,8 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
           code: 0,
           scheme_count_number: "",
           noOfDays:"",
-          flexFixed:0
+          flexFixed:0,
+          fixed:0
         });
       }
     },
@@ -1001,12 +1002,18 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
     );
   };
 
-  useEffect(()=>{
-    setFormData((prev) => ({
-      ...prev,
-       flexFixed:formData.weight,
-    }));
-  },[formData.weight])
+  useEffect(() => {
+    const { weight, flexFixed } = formData;
+  
+    if ((selectedClassification === 2 || selectedClassification === 3) && weight !== 0) {
+      setFormData((prev) => ({
+        ...prev,
+        flexFixed: weight,
+        weight: 0,
+      }));
+    }
+  }, [formData.weight, selectedClassification]);
+  
 
   return (
     <>

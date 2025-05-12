@@ -222,7 +222,6 @@ const SchemeForm = () => {
     },
   });
 
-
   useEffect(() => {
     if (!id) {
       formik.resetForm();
@@ -1170,12 +1169,32 @@ const SchemeForm = () => {
                 </label>
                 <input
                   type="number"
-                  min={1}
+                  min={[12, 3, 4].includes(formik.values.scheme_type) ? 0.1 : 1}
+                  step={
+                    [12, 3, 4].includes(formik.values.scheme_type) ? "any" : "1"
+                  }
                   max={99999999999}
                   className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
-                  placeholder="Enter start amount"
+                  placeholder={
+                    [12, 3, 4].includes(formik.values.scheme_type)
+                      ? "Enter start weight (e.g. 0.1)"
+                      : "Enter start amount"
+                  }
                   {...formik.getFieldProps("startingAmount")}
-                  onBlur={formik.handleBlur}
+                  onBlur={(e) => {
+                    // Validate the value meets minimum requirement
+                    const value = parseFloat(e.target.value);
+                    if ([12, 3, 4].includes(formik.values.scheme_type)) {
+                      if (value < 0.1) {
+                        formik.setFieldValue("startingAmount", 0.1);
+                      }
+                    } else {
+                      if (value < 1) {
+                        formik.setFieldValue("startingAmount", 1);
+                      }
+                    }
+                    formik.handleBlur(e);
+                  }}
                   onInput={(e) => {
                     let value = e.target.value;
                     if (value.length > 11) {
