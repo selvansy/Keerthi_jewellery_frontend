@@ -4,7 +4,7 @@ import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { CalendarDays, CloudFog, Search } from "lucide-react";
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import Select from "react-select";
 import {
   addschemeaccount,
@@ -60,6 +60,9 @@ export function ExistingCustomer({ setCusData,handleCusData,openJoinScheme}) {
   }, [branchresponse]);
 
   const handleSearchmobile = () => {
+    if(!formData.mobile) {
+      return toast.error("Enter a mobile number to search")
+    }
     setLoading(true);
     handlesearchcustomer({
       id_branch: formData.id_branch,
@@ -181,7 +184,6 @@ export function ExistingCustomer({ setCusData,handleCusData,openJoinScheme}) {
         <div
           onClick={handleSearchmobile}
           className="absolute flex items-center justify-center cursor-pointer rounded-r-lg right-2 translate-y-9"
-          // style={{ backgroundColor: layout_color }}
         >
           {isLoading ? (
             <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
