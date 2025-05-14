@@ -171,6 +171,9 @@ function PromotionSummary() {
     setCurrentPage(pageNumber);
   };
 
+  const handleClick = ()=>{
+    navigate('/')
+  }
 
   return (
     <>
@@ -193,12 +196,19 @@ function PromotionSummary() {
                   setto_date(range.endDate);
                 }}
               />
-              <ExportDropdown
+              {/* <ExportDropdown
                 apiData={promData}
                 fileName={`Promotions report ${new Date().toLocaleDateString(
                   "en-GB"
                 )}`}
-              />
+              /> */}
+              <button
+              className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-[135px]"
+              onClick={handleClick}
+              style={{ backgroundColor: layout_color }}
+            >
+              + Add Category
+            </button>
             </div>
           </div>
         </div>

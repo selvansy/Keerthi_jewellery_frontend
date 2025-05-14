@@ -1002,17 +1002,39 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
     );
   };
 
-  useEffect(() => {
-    const { weight, flexFixed } = formData;
+  // useEffect(() => {
+  //   const { weight, flexFixed } = formData;
   
-    if ((selectedClassification === 2 || selectedClassification === 3) && weight !== 0) {
-      setFormData((prev) => ({
-        ...prev,
-        flexFixed: weight,
-        weight: 0,
-      }));
+  //   if ((selectedClassification === 2 || selectedClassification === 3) && weight !== 0) {
+  //     setFormData((prev) => ({
+  //       ...prev,
+  //       flexFixed: weight,
+  //       weight: 0,
+  //     }));
+  //   }
+  // }, [formData.weight, selectedClassification]);
+  useEffect(() => {
+    const { weight, amount } = formData;
+  
+    if ((selectedClassification === 2 || selectedClassification === 3)) {
+      if (weight !== 0) {
+        setFormData((prev) => ({
+          ...prev,
+          flexFixed: weight,
+          weight: 0,
+          amount: 0
+        }));
+      } else if (amount !== 0) {
+        setFormData((prev) => ({
+          ...prev,
+          flexFixed: amount,
+          weight: 0,
+          amount: 0
+        }));
+      }
     }
-  }, [formData.weight, selectedClassification]);
+  }, [formData.weight, formData.amount, selectedClassification]);
+  
   
 
   return (

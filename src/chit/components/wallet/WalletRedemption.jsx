@@ -175,7 +175,7 @@ function WalletRedemption() {
                 setWalletUser({
                     name: user?.firstname + "" + user.lastname,
                     mobile: user?.mobile,
-                    walletAmount: res?.total_reward_amt,
+                    walletAmount: res?.balance_amt,
                     redeem_amt: res?.redeem_amt,
                     bal_amt: res?.balance_amt,
                     total_reff: response?.totalDocuments
@@ -395,16 +395,16 @@ function WalletRedemption() {
             header: "Description",
             cell: (row) => {
              const user = row
-
-            //  return `${row?.id_scheme?.scheme_name}  ${row?.id_scheme?.code} 
-            //   ${user?.id_employee?.firstname} ${user?.id_employee?.lastname}` || `${user?.id_customer?.firstname} ${user?.id_customer?.lastname}`
             return (
+                
                 <div className="flex flex-col">
-                  <span>{row?.id_scheme?.scheme_name} {row?.id_scheme?.code}</span>
+                  <span>{row?.id_scheme?.scheme_name} 
+                    {/* {row?.id_scheme?.code} */}
+                    </span>
                   <span>
-                    {user?.id_employee?.firstname && user?.id_employee?.lastname
-                      ? `${user.id_employee.firstname} ${user.id_employee.lastname}`
-                      : `${user?.id_customer?.firstname || ''} ${user?.id_customer?.lastname || ''}`}
+                    
+                    {user?.id_scheme_account?.firstname && user?.id_scheme_account?.lastname
+                     &&  `${user?.id_scheme_account?.firstname || ''} ${user?.id_scheme_account?.lastname || ''}`}
                   </span>
                 </div>
               );
@@ -415,18 +415,16 @@ function WalletRedemption() {
         {
             header: "Mobile",
             cell: (row) => {
-                console.log(row)
                 const user = row;
                 return <span>
-                {user?.id_employee?.mobile
-                  ? `${user.id_employee.mobile}`
-                  : `${user?.id_customer?.mobile || ''}`}
+                  {user?.id_scheme_account?.mobile
+                     &&  `${user?.id_scheme_account?.mobile || ''}`}
               </span>
             }
         },
         {
             header: "Refferral Reward",
-            cell: (row) => `${row?.id_scheme?.referralPercentage || "-"}`,
+            cell: (row) => `₹ ${row?.credited_amount || "-"}`,
         },
         {
             header: "Join Date",

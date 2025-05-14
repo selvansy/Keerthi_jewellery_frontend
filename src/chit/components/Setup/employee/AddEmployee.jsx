@@ -108,6 +108,7 @@ const AddEmployee = () => {
       id_country: "",
       id_state: "",
       id_city: "",
+      id_branch:"",
       address: "",
       pincode: "",
       pan: "",
@@ -138,6 +139,7 @@ const AddEmployee = () => {
       pincode: Yup.string()
         .matches(/^[0-9]{6}$/, "Pincode must be 6 digits")
         .required("Pincode is required"),
+        id_branch: Yup.string().required("Country is required"),
       id_state: Yup.string().required("State is required"),
       id_city: Yup.string().required("City is required"),
       id_country: Yup.string().required("Country is required"),
@@ -774,7 +776,7 @@ const AddEmployee = () => {
           <button
             type="submit"
             disabled={isLoading || !formik.isValid}
-            className={`w-20 h-9 bg-gradient-to-r from-[#091B1B] to-[#072D2D] text-white rounded-md hover:from-[#072D2D] hover:to-[#072D2D] flex justify-center items-center ${
+            className={`w-20 h-9 bg-[#004181] text-white rounded-md hover:from-[#072D2D] hover:to-[#072D2D] flex justify-center items-center ${
               isLoading ? "opacity-50 cursor-not-allowed" : ""
             }`}
           >

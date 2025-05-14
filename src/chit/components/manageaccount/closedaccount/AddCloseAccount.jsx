@@ -57,8 +57,9 @@ const AddCloseAccount = () => {
   const [otpSended, setSendOtp] = useState(false);
   const [otpCompleted, setOtpComplete] = useState(false);
   const [viewRevertForm, setReverView] = useState(false);
-  const [isLoading, setLoading] = useState(false);
-  const [isLoading1, setLoading1] = useState(false);
+  const [isSearchLoading, setSearchLoading] = useState(false); // Loading for search
+  const [isSendOtpLoading, setSendOtpLoading] = useState(false); // Loading for send OTP
+  const [isSaveLoading, setSaveLoading] = useState(false); // Loading for save
   const [bonusAmnt, setBonusAmnt] = useState(0);
   const [bonustype, setBonusType] = useState(null);
   const [calculatedTotal, setCalculatedTotal] = useState(0);
@@ -74,7 +75,6 @@ const AddCloseAccount = () => {
       : Yup.number(),
     id_scheme_account: Yup.string().required("Scheme account is required"),
     id_branch: Yup.string().required("Branch is required"),
-    comments: Yup.string().required("Comments are required"),
     bill_no: Yup.string().required("Bill number is required"),
     bill_date: Yup.string().required("Bill date is required"),
     mobile: Yup.string().required("Mobile number or Ac number required"),
@@ -188,7 +188,7 @@ const AddCloseAccount = () => {
     }
 
     if (formik.values.id_branch) {
-      setLoading1(true);
+      setSearchLoading(true);
       handlesearchschemeaccount({
         search_mobile: formik.values.mobile,
         id_branch: formik.values.id_branch,
@@ -221,14 +221,14 @@ const AddCloseAccount = () => {
       if (response?.data && response.data.length > 0) {
         setSchemeData(response.data);
         toast.success(response.message);
-        setLoading1(false);
+        setSearchLoading(false);
       } else {
-        setLoading1(false);
+        setSearchLoading(false);
         toast.error("No scheme account to close");
       }
     },
     onError: (error) => {
-      setLoading1(false);
+      setSearchLoading(false);
       toast.error(error.response.data.message);
     },
   });
@@ -265,10 +265,13 @@ const AddCloseAccount = () => {
         toast.success(response.message);
         if (response && !otpSended) {
           setSendOtp(!otpSended);
-          setLoading(false);
+          setSendOtpLoading(false);
         }
       }
     },
+    onError: (error) => {
+      setSendOtpLoading(false);
+    }
   });
 
   // Verify OTP API mutation
@@ -300,8 +303,12 @@ const AddCloseAccount = () => {
         } else {
           navigate("/report/refund/");
         }
+        setSaveLoading(false);
       }
     },
+    onError: (error) => {
+      setSaveLoading(false);
+    }
   });
 
   // Send OTP handler
@@ -321,7 +328,7 @@ const AddCloseAccount = () => {
       return;
     }
 
-    setLoading(true);
+    setSendOtpLoading(true);
     postSendOtpMobile({
       mobile: mobileToUse,
       otp: otpNumber,
@@ -395,7 +402,7 @@ const AddCloseAccount = () => {
       toast.error("OTP verification is required");
       return;
     }
-    setLoading(true)
+    setSaveLoading(true);
     BillClose(values);
   };
 
@@ -535,10 +542,10 @@ const AddCloseAccount = () => {
                 />
                 <div
                   onClick={handleSearchMobile}
-                  disabled={isLoading1}
+                  disabled={isSearchLoading}
                   className="absolute  flex items-center justify-center cursor-pointer right-0 top-0 h-full w-10 rounded-r-md"
                 >
-                  {isLoading1 ? (
+                  {isSearchLoading ? (
                     <SpinLoading customCss="black" />
                   ) : (
                     <Search size={22} className="text-[#6C7086]" />
@@ -893,9 +900,9 @@ const AddCloseAccount = () => {
                         <button
                           className="bg-[#004181] text-white rounded-md px-4 py-2"
                           onClick={(e) => sendOtpToMobile(e)}
-                          disabled={isLoading}
+                          disabled={isSendOtpLoading}
                         >
-                          {isLoading ? <SpinLoading /> : "Send OTP"}
+                          {isSendOtpLoading ? <SpinLoading /> : "Send OTP"}
                         </button>
                       </div>
                     </div>
@@ -916,10 +923,10 @@ const AddCloseAccount = () => {
           </button>
           <button
             type="submit"
-            disabled={isLoading}
+            disabled={isSaveLoading}
             className="w-20 h-9 bg-blue-900 text-white rounded-md hover:bg-blue-800 flex justify-center items-center"
           >
-            {isLoading ? <SpinLoading /> : "Save"}
+            {isSaveLoading ? <SpinLoading /> : "Save"}
           </button>
         </div>
       </form>

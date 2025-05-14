@@ -1,42 +1,45 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { getallSchemes, getallbranch, getcustomerByBranchId, addPromotions, getallCampaign ,getNewArrivalByBranch } from "../../../api/Endpoints";
+import { getallSchemes, getallbranch, getcustomerByBranchId, addPromotions, getallCampaign  } from "../../../api/Endpoints";
 import Select from "react-select";
-import { customSelectStyles } from "../../Setup/purity";
 import { MultiSelect } from "react-multi-select-component";
-import { X } from 'lucide-react'
-import { layoutGridMoveHorizontal } from "@lucide/lab";
 import { toast } from "react-toastify";
 import SpinLoading from "../../common/spinLoading";
 import { useNavigate } from "react-router-dom";
-// import {handleFileChange} from "../../.../../common/fileUpload"
+import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
 
-
-
-export const customStyles = {
-    control: (provided) => ({
-        ...provided,
-        padding: "2px",
-        borderRadius: "6px",
-        borderColor: "#cbd5e1",
-        boxShadow: "none",
-        "&:hover": {
-            borderColor: "#94a3b8",
-        },
+const customStyles = (isReadOnly) => ({
+    control: (base, state) => ({
+      ...base,
+      minHeight: "42px",
+      backgroundColor: "white",
+      border: state.isFocused ? "1px solid black" : "2px solid #f2f3f8",
+      boxShadow: state.isFocused ? "0 0 0 1px black" : "none",
+      borderRadius: "0.375rem",
+      "&:hover": {
+        color: "#e2e8f0",
+      },
+      pointerEvents: !isReadOnly ? "none" : "auto",
+      opacity: !isReadOnly ? 1 : 1,
     }),
-    menu: (provided) => ({
-        ...provided,
-        borderRadius: "6px",
-        zIndex: 10,
+    indicatorSeparator: () => ({
+      display: "none",
     }),
-    option: (provided, state) => ({
-        ...provided,
-        backgroundColor: state.isSelected ? "#3b82f6" : state.isFocused ? "#bfdbfe" : "white",
-        color: state.isSelected ? "white" : "black",
-        padding: "8px 12px",
+    placeholder: (base) => ({
+      ...base,
+      color: "#858293",
+      fontWeight: "thin",
+      // fontStyle: "bold",
     }),
-};
+    dropdownIndicator: (provided, state) => ({
+      ...provided,
+      color: "#232323",
+      "&:hover": {
+        color: "#232323",
+      },
+    }),
+  });
 
 function AddPromotion() {
 
@@ -287,7 +290,7 @@ function AddPromotion() {
         }
     });
 
-
+ 
     const handleCheckboxChange = (field) => {
         setFormData((prevData) => ({
             ...prevData,
@@ -296,8 +299,13 @@ function AddPromotion() {
     }
 
 
-
     return (
+        <>
+        <div className="flex flex-row justify-start items-center w-full sm:order-1 sm:w-auto sm:mr-auto md:order-1 md:w-auto md:mr-auto ">
+                <div className="w-1/2 sm:w-auto mt-2">
+                    <Breadcrumb items={[{ label: "Promotions " }, { label: "Promotions Creation", active: true }]} />
+                </div>
+            </div>
         <div className="bg-[#FFFFFF] rounded-lg p-6 shadow-sm border">
         <h2 className="text-lg font-semibold mb-4 border-b pb-4">Add Promotions</h2>
 
@@ -386,13 +394,14 @@ function AddPromotion() {
                         Title <span className="text-red-400">*</span>
                     </label>
                     <Select
-                        styles={customStyles}
+                        styles={customStyles(true)}
+                        isClearable={true}
                         options={campaignData}
-                        className=" py-2 rounded-md text-gray-100"
+                        className=" py-2 rounded-md "
                         placeholder="Select title"
                         value={campaignData.find(
                             (option) => option.label === formData.title
-                        )}
+                        ) || null}
                         isLoading={loadingCampaign}
                         onChange={(option) => {
                             setFormData((prev) => ({
@@ -457,25 +466,6 @@ function AddPromotion() {
                             Choose File
                         </div>
                     </div>
-
-                    {/* Image Preview */}
-                    {/* {pathurl && (
-                        <div className="w-[130px] h-[130px] flex items-start justify-center">
-                            <div className="relative rounded-md overflow-hidden">
-                                <img
-                                    src={pathurl}
-                                    alt="Preview"
-                                    className="w-full h-full object-cover rounded-md"
-                                />
-                                <button
-                                    onClick={handleClearImage}
-                                    className="absolute top-1 right-1 bg-white rounded-full p-1 shadow-md hover:bg-gray-100"
-                                >
-                                    <X size={14} />
-                                </button>
-                            </div>
-                        </div>
-                    )} */}
                 </div>
         </div>
 
@@ -493,6 +483,7 @@ function AddPromotion() {
                 </button>
             </div>
       </div>
+        </>
     );
 }
 

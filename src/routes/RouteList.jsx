@@ -122,6 +122,7 @@ import AmountPaybleParent from "../chit/components/Report/amountPaybleParent";
 import AmountPaybleChild from "../chit/components/Report/amountPaybleChild";
 import WeightPaybleParent from "../chit/components/Report/weightPaybleParent";
 import WeightPaybleChild from "../chit/components/Report/weightPaybleChild";
+// import Campaign from "../chit/components/Setup/campaign/index";
 
 const RouteList = [
 
@@ -129,6 +130,12 @@ const RouteList = [
     name: 'Login',
     path: '/',
     element: <Login />
+  },
+
+  {
+    name:"Campaign",
+    path:"/campaign",
+    element:<Base renderContent={Campaign}/>
   },
 
   {
@@ -262,7 +269,7 @@ const RouteList = [
 
   {
     name: "Campaign Type",
-    path: '/masters/campaign',
+    path: '/promotions/campaign',
     element: <Base renderContent={Campaign} />
   },
 

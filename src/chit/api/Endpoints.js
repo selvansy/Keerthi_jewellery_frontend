@@ -2712,7 +2712,7 @@ export const addPromotions = async (data) => {
 };
 
 export const getContentTypes = async (data) => {
-  const response = await Api.post(
+  const response = await Api.get(
     `${import.meta.env.VITE_API_URL}/api/client/content/all/type/${data.type}`,
     data.data
   );

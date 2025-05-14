@@ -312,7 +312,7 @@ function GiftHandOverForm() {
                     mobile: response.data[0].id_customer?.mobile,
                 }));
 
-                toast.success(response.data.message)
+                toast.success(response.message)
             }
         },
         onError: (error) => {

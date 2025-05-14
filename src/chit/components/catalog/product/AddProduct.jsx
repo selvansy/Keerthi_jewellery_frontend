@@ -31,7 +31,7 @@ import WastageChargeForm from "./wastageCharge";
 import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
 const AddProduct = () => {
   const roleData = useSelector((state) => state.clientForm.roledata);
-  const accessBranch = roleData?.branch;
+  const accessBranch = roleData?.id_branch || roleData?.branch;
   const naviagte = useNavigate();
   const { id } = useParams();
   const [branch, setBranch] = useState(() => (accessBranch === "0" ? [] : {}));
@@ -102,6 +102,7 @@ const AddProduct = () => {
         id_metal: formData.id_metal,
         id_purity: formData.id_purity,
         date: new Date(),
+        branch: accessBranch
       });
     }
   }, [formData.id_purity]);
@@ -155,8 +156,8 @@ const AddProduct = () => {
   ]);
 
   const { mutate: getTodayMetalRate } = useMutation({
-    mutationFn: ({ id_metal, id_purity, date }) =>
-      getMetalRateByMetalId(id_metal, id_purity, date),
+    mutationFn: ({ id_metal, id_purity, date,branch}) =>
+      getMetalRateByMetalId(id_metal, id_purity, date,branch),
     onSuccess: (response) => {
       const { data } = response;
       setCurrentRate(data.rate);
