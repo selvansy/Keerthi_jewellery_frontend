@@ -14,6 +14,7 @@ import {
   organisation,
   getOrganisation,
 } from "../../../api/Endpoints";
+import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
 
 const Organisation = () => {
   const [imagePreviews, setImagePreviews] = useState({
@@ -288,11 +289,14 @@ console.log(orgData,'kd')
 
   return (
     <>
-      <div className="flex flex-row justify-between">
+      {/* <div className="flex flex-row justify-between">
         <p className="text-sm text-gray-400 mt-4 mb-4">Settings/<span className="text-black">Organisation</span></p>
-      </div>
+      </div> */}
+      <Breadcrumb
+        items={[{ label: "Settings" }, { label: "Organisation", active: true }]}
+      />
       <form onSubmit={formik.handleSubmit}>
-        <div className="flex flex-col bg-white border-2 border-[#F2F2F9] rounded-[10px] mt-3 px-4 pb-4">
+        <div className="flex flex-col bg-white border-2 border-[#F2F2F9] rounded-[10px] px-4 pb-4">
           <div className="p-4">
             <h2 className="text-lg font-semibold mb-4 border-b pb-4">Company Information</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

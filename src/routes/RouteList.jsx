@@ -263,7 +263,7 @@ const RouteList = [
   },
   {
     name: "Topup",
-    path: '/usersettings/topup',
+    path: '/settings/topup',
     element: <Base renderContent={Topup} />
   },
 
@@ -567,7 +567,7 @@ const RouteList = [
   },
   {
     name: "Organisation",
-    path: '/usersettings/organisation',
+    path: '/settings/organisation',
     element: <Base renderContent={Organisation} />
   },
 

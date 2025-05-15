@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import { addTicketRaise } from "../../api/Endpoints";
 import { useMutation } from "@tanstack/react-query";
@@ -14,6 +14,20 @@ const TicketSubmissionForm = ({ isOpen, onClose }) => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const fileInputRef = useRef(null);
+  const modalRef = useRef(null); // 👈 For detecting outside clicks
+
+  // ✅ Close when clicking outside the modal
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (modalRef.current && !modalRef.current.contains(e.target)) {
+        onClose();
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [onClose]);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -60,31 +74,36 @@ const TicketSubmissionForm = ({ isOpen, onClose }) => {
     else return (bytes / 1048576).toFixed(1) + " MB";
   };
 
-  //mutation for add ticket raise
   const { mutate: handleAddTicket } = useMutation({
     mutationFn: addTicketRaise,
     onSuccess: (response) => {
       if (response.message) {
-        toast.success(response.message)
-        setCategory('Other');
-        setDescription('');
-        setAttachments([]);
-        onClose()
+        toast.success(response.message);
+        resetForm(); // ✅ Reset form on success
+        onClose();
       }
-      
     },
-    onError: (error) => {
+    onError: () => {
       toast.error("Failed to submit the ticket. Please try again.");
-      
     },
   });
 
-  const handleSubmit = async () => {
+  const resetForm = () => {
+    setCategory("Other");
+    setDescription("");
+    setAttachments([]);
+    setError("");
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const handleSubmit = () => {
     if (!description.trim()) {
       setError("Ticket description is required.");
       return;
     }
-    setLoading(true)
+    setLoading(true);
     setError("");
 
     const formData = new FormData();
@@ -97,14 +116,19 @@ const TicketSubmissionForm = ({ isOpen, onClose }) => {
 
     try {
       handleAddTicket(formData);
-    } catch (error) {
+    } catch {
       setError("Failed to submit the ticket. Try again.");
-    } 
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-end z-50">
-      <div className="bg-white h-full w-full max-w-md text-gray-800 shadow-lg flex flex-col">
+      <div
+        className="bg-white h-full w-full max-w-md text-gray-800 shadow-lg flex flex-col"
+        ref={modalRef} // 👈 Reference modal element
+      >
         <div className="flex justify-between items-center p-4 border-b">
           <h2 className="font-medium">Submit a Ticket</h2>
           <button
@@ -124,12 +148,13 @@ const TicketSubmissionForm = ({ isOpen, onClose }) => {
               onChange={(e) => setCategory(e.target.value)}
             >
               <option value="Other">Other</option>
-              <option value="Other">Other</option>
             </select>
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm mb-1">Ticket Description*</label>
+            <label className="block text-sm mb-1">
+              Ticket Description<span className="text-red-500"> *</span>
+            </label>
             <textarea
               placeholder="How can we help today?"
               className="w-full border rounded-md p-2 h-24 resize-none"
@@ -195,7 +220,7 @@ const TicketSubmissionForm = ({ isOpen, onClose }) => {
           <div className="flex justify-end space-x-2 rounded-[8px]">
             <button
               className="px-4 py-1.5 border border-[#F6F7F9] rounded text-sm bg-[#F6F7F9]"
-              onClick={onClose}
+              onClick={resetForm} // ✅ Clear the form instead of closing
             >
               Clear
             </button>
@@ -204,7 +229,7 @@ const TicketSubmissionForm = ({ isOpen, onClose }) => {
               onClick={handleSubmit}
               disabled={loading}
             >
-              {loading?<SpinLoading/>:"Submit"}
+              {loading ? <SpinLoading /> : "Submit"}
             </button>
           </div>
         </div>

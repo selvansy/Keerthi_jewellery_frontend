@@ -1375,6 +1375,7 @@ export const getallpaymentmode = async () => {
 
 //staff user
 export const getstaffusertable = async (data) => {
+  console.log(data,'kd')
   const response = await Api.post(
     `${import.meta.env.VITE_API_URL}/api/client/staff/table`,
     data
