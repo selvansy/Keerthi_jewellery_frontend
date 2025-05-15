@@ -1391,6 +1391,7 @@ export const addstaff = async (data) => {
 };
 
 export const updatestaff = async (id, data) => {
+  console.log(id,data,"dk")
   const response = await Api.patch(
     `${import.meta.env.VITE_API_URL}/api/client/staff/${id}`,
     data

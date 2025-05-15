@@ -132,23 +132,43 @@ const StaffUser = () => {
       header: "S.No",
       cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
     },
-    {
-      header: "Name",
-      cell: (row) => {
-        if (row?.id_employee) {
-          return `${row?.id_employee.firstname || ""} ${
-            row?.id_employee.lastname || ""
-          }`.trim();
-        }
-        return "-";
-      },
-    },
+    // {
+    //   header: "Name",
+    //   cell: (row) => {
+    //     if (row?.id_employee) {
+    //       return `${row?.id_employee.firstname || ""} ${
+    //         row?.id_employee.lastname || ""
+    //       }`.trim();
+    //     }
+    //     return "-";
+    //   },
+    // },
     {
       header: "Username",
       cell: (row) => row?.username,
     },
     {
-      header: "Roles",
+      header: "Employee ID",
+      cell: (row) => {
+        if (row?.id_role) {
+          return `${row?.id_employee?.employeeId || ""}`;
+        } else {
+          return "-";
+        }
+      },
+    },
+    {
+      header: "Branch",
+      cell: (row) => {
+        if (row?.id_branch) {
+          return `${row?.access_branch[0]?.branch_name || row?.id_branch?.branch_name || ""}`;
+        } else {
+          return "-";
+        }
+      },
+    },
+    {
+      header: "User Role",
       cell: (row) => {
         if (row?.id_role) {
           return `${row?.id_role.role_name || ""}`;
@@ -178,31 +198,22 @@ const StaffUser = () => {
         </label>
       ),
     },
-    {
-      header: "Branch",
-      cell: (row) => {
-        if (row?.id_branch) {
-          return `${row?.id_branch.branch_name || ""}`;
-        } else {
-          return "-";
-        }
-      },
-    },
-    {
-      header: "Access Branch",
-      cell: (row) => {
-        if (typeof row?.access_branch === "string") {
-          return "All branch";
-        }
-        if (
-          typeof row?.access_branch === "object" &&
-          row?.access_branch !== null
-        ) {
-          return row?.access_branch.branch_name || "-";
-        }
-        return "-";
-      },
-    },
+    
+    // {
+    //   header: "Access Branch",
+    //   cell: (row) => {
+    //     if (typeof row?.access_branch === "string") {
+    //       return "All branch";
+    //     }
+    //     if (
+    //       typeof row?.access_branch === "object" &&
+    //       row?.access_branch !== null
+    //     ) {
+    //       return row?.access_branch.branch_name || "-";
+    //     }
+    //     return "-";
+    //   },
+    // },
     {
       header: "Actions",
       cell: (row, rowIndex) => (
@@ -305,7 +316,7 @@ const StaffUser = () => {
           />
 
           <ModelOne
-            title={'Create new user'}
+            title={'Add New User'}
             extraClassName="w-1/3"
             setIsOpen={setIsviewOpen}
             isOpen={isviewOpen}

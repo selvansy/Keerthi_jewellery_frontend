@@ -10,13 +10,12 @@ import { ExportToPDF } from "../common/Dropdown/ExportPdf";
 import {
   dueReportSummary,
 } from "../../../chit/api/Endpoints";
-import { SlidersHorizontal, Search, X } from "lucide-react";
-import { CalendarDays, RefreshCcw } from "lucide-react";
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import { useSelector } from "react-redux";
 import { Breadcrumb } from "../common/breadCumbs/breadCumbs";
 import DateRangeSelector from "../common/calender";
+import { formatNumber } from "../../utils/commonFunction";
 
 function OverDueReport() {
   const roledata = localStorage.getItem("decoded");
@@ -53,6 +52,15 @@ function OverDueReport() {
       console.error("Error fetching metal rate:", error);
     },
   });
+
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
 
   const columns = [
     {
@@ -96,15 +104,17 @@ function OverDueReport() {
     },
     {
       header: "Total Paid Installments",
-      cell: (row) => `${row?.totalPaidInstallment}/${row?.total_installments}`,
+      cell: (row) => `${row?.paid_installments}/${row?.total_installments}`,
     },
     {
       header: "Total Paid Amount",
-      cell: (row) => row?.totalPaidAmount,
+      // cell: (row) => row?.totalPaidAmount,
+      cell: (row) => `₹ ${row?.amount}`
     },
     {
       header: "Total Paid Weight",
-      cell: (row) => row?.totalPaidWeight,
+      // cell: (row) => row?.totalPaidWeight,
+      cell: (row) => `${row?.weight} g`,
     },
     {
       header: "pending installments ",
@@ -113,8 +123,9 @@ function OverDueReport() {
     {
       header: "Last Paid Date",
       cell: (row) => {
-        const date = new Date(row?.lastPaidDate);
-        return date.toLocaleDateString("en-GB");
+        // const date = new Date(row?.lastPaidDate);  
+       return formatDate(row?.createdAt);
+        // return date.toLocaleDateString("en-GB");
       },
     },
   ];
