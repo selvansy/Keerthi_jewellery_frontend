@@ -655,7 +655,7 @@ const AddSchemePayment = () => {
           formik.setFieldValue('metal_weight', initialWeight);
           setShowWeightInput(true);
       } else {
-        formik.setFieldValue("payment_amount", amount);
+        formik.setFieldValue("payment_amount", selectedScheme?.flexFixed);
         setBaseAmount(amount);
       }
     } else if (classificationOrder === 3) {

@@ -1,23 +1,17 @@
 import React, { useEffect, useState } from "react";
 import Table from "../../components/common/Table";
 import { useMutation } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
-import jsPDF from "jspdf";
 import "jspdf-autotable";
 import ExportDropdown from "../../components/common/Dropdown/Export";
-import { ExportToExcel } from "../common/Dropdown/Excelexport";
-import { ExportToPDF } from "../common/Dropdown/ExportPdf";
 import {
-  dueReportSummary,
   preCloseSummary,
 } from "../../../chit/api/Endpoints";
-import { SlidersHorizontal, Search, X } from "lucide-react";
-import { CalendarDays, RefreshCcw } from "lucide-react";
 import "react-datepicker/dist/react-datepicker.css";
-import DatePicker from "react-datepicker";
 import { useSelector } from "react-redux";
 import { Breadcrumb } from "../common/breadCumbs/breadCumbs";
 import DateRangeSelector from "../common/calender";
+import { formatNumber } from "../../utils/commonFunction";
+import { formatDecimal } from "../../utils/commonFunction";
 
 function PreCloseReport() {
   const roledata = localStorage.getItem("decoded");
@@ -109,11 +103,16 @@ function PreCloseReport() {
     },
     {
       header: "Paid Amount",
-      cell: (row) => row?.totalPaidAmount,
+      // cell: (row) => row?.totalPaidAmount,
+      cell: (row) => (
+        <div style={{ textAlign: 'right' }}>
+          {formatNumber({value:row?.totalPaidAmount,decimalPlaces:0})}
+        </div>
+      ),
     },
     {
       header: "Paid Weight",
-      cell: (row) => row?.totalPaidWeight,
+      cell: (row) => `${formatDecimal(row?.totalPaidWeight)} g`,
     },
     {
       header: "Classification",
@@ -122,20 +121,27 @@ function PreCloseReport() {
     {
       header: "Started date",
       cell: (row) => {
-        return new Date(row.createdAt).toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "numeric",
-          day: "numeric",
-        });
+        const date = new Date(row.createdAt);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}-${month}-${year}`;
       }
-    },
+    },    
     {
       header: "Maturity Date",
       cell: (row) => row?.maturity_date,
     },
     {
       header: "Last paid Date",
-      cell: (row) => row?.last_paid_date,
+      // cell: (row) => row?.last_paid_date,
+      cell: (row) => {
+        const date = new Date(row?.last_paid_date);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}-${month}-${year}`;
+      }
     },
     {
       header: "Closed Date",
@@ -161,10 +167,13 @@ function PreCloseReport() {
         });
       }
     },
-    
     {
       header: "Gift Handover",
-      cell: (row) => row?.gift_issues,
+      cell: (row) => (
+        <div style={{ textAlign: 'right' }}>
+          {row?.gift_issues}
+        </div>
+      ),
     },
     {
       header: "Closed By",

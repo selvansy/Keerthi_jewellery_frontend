@@ -18,7 +18,7 @@ import { schemeColumns } from "../../../utils/DrillDownColums";
 function DrilldownTable({
   fetchDataFunction,
   columns,
-  breadcrumbItems,
+  // breadcrumbItems,
   exportFileName,
   
   // Optional props with defaults
@@ -26,7 +26,7 @@ function DrilldownTable({
   initialItemsPerPage = 10,
   showDateRange = false,
   showExport = false,
-  showBreadcrumb = false,
+  // showBreadcrumb = false,
   containerClassName = "flex flex-col p-4 bg-white border-2 border-[#F2F2F9] rounded-[16px]",
   headerClassName = "flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4",
 }) {
@@ -42,8 +42,9 @@ function DrilldownTable({
   const [column,setColumn] = useState()
 
   const location = useLocation();
-  const { id, type } = location.state || {};
+  const { id, type,showBreadcrumb,breadcrumbItems} = location.state || {};
  
+  console.log(showBreadcrumb,'kd')
   useEffect(()=>{
     const fetchData =async()=>{
         switch (type) {

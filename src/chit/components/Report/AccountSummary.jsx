@@ -58,10 +58,19 @@ function AccountSummaryReport() {
   });
 
   const handleSchemeClick = (row) => {
-      navigate("/report/table", {
-        state: { id: row._id, type: "scheme" },
-      });
+    navigate("/report/table", {
+      state: {
+        id: row._id,
+        type: "scheme",
+        showBreadcrumb: true,
+        breadcrumbItems: [
+          { label: "Scheme Reports" },
+          { label: "Account Summary", active: true },
+        ]
+      }
+    });
   };
+  
   
 
   const columns = [

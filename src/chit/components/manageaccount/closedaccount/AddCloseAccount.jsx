@@ -17,6 +17,7 @@ import {
   getallpaymentmode,
   sendOtp,
   closeBill,
+  getmultipaymentmode,
   verifyOtp,
   customSearchScheme,
 } from "../../../api/Endpoints";
@@ -63,6 +64,47 @@ const AddCloseAccount = () => {
   const [bonusAmnt, setBonusAmnt] = useState(0);
   const [bonustype, setBonusType] = useState(null);
   const [calculatedTotal, setCalculatedTotal] = useState(0);
+  const [paymentmode, setPaymentmode] = useState([]);
+  const [ispaymode, setIspaymode] = useState(false);
+  const [multiplayModes, setMultiplayModes] = useState([]);
+  const [selectedMode, setSelectedMode] = useState(0);
+  const [multipaymode, setMultiPaymode] = useState([]);
+
+  const customStyles = (isReadOnly) => ({
+    control: (base, state) => ({
+      ...base,
+      minHeight: "42px",
+      backgroundColor: "white",
+      border: state.isFocused ? "1px solid black" : "2px solid #f2f3f8",
+      boxShadow: state.isFocused ? "0 0 0 1px black" : "none",
+      borderRadius: "0.375rem",
+      "&:hover": {
+        color: "#e2e8f0",
+      },
+      pointerEvents: !isReadOnly ? "none" : "auto",
+      opacity: !isReadOnly ? 1 : 1,
+    }),
+    indicatorSeparator: () => ({
+      display: "none",
+    }),
+    placeholder: (base) => ({
+      ...base,
+      color: "#858293",
+      fontWeight: "thin",
+      // fontStyle: "bold",
+    }),
+    dropdownIndicator: (provided, state) => ({
+      ...provided,
+      color: "#232323",
+      "&:hover": {
+        color: "#232323",
+      },
+    }),
+    menuPortal: (base) => ({
+      ...base,
+      zIndex: 9999, // set high z-index here
+    }),
+  });
 
   // Format today's date
   const today = new Date();
@@ -109,11 +151,53 @@ const AddCloseAccount = () => {
     validateOnChange: false,
   });
 
-  useEffect(()=>{
-   formik.resetForm()
-  },[dynamic])
+  const { data: paymentModes } = useQuery({
+    queryKey: ["paymentModes"],
+    queryFn: getallpaymentmode,
+  });
 
- 
+  useEffect(() => {
+    formik.resetForm();
+  }, [dynamic]);
+
+  useEffect(() => {
+    if (paymentModes) {
+      const data = paymentModes.data.map((item) => ({
+        mode: item.id_mode,
+        value: item._id,
+        label: item.mode_name,
+      }));
+      setPaymentmode(data);
+    }
+  }, [paymentModes]);
+
+  useEffect(() => {
+    const getMutliOptions = async () => {
+      const data = await getmultipaymentmode();
+      setMultiplayModes(data);
+    };
+
+    if (selectedMode === 7) {
+      getMutliOptions();
+    }
+  }, [selectedMode]);
+
+  // enable multipayment
+  useEffect(() => {
+    if (selectedMode === 7) {
+      if (multiplayModes?.data?.length > 0) {
+        setIspaymode(true);
+        const data = multiplayModes.data.map((item) => ({
+          value: item.parameter,
+          label: item.name,
+        }));
+        setMultiPaymode(data);
+      }
+    } else {
+      setIspaymode(false);
+    }
+  }, [multiplayModes, selectedMode]);
+
   useEffect(() => {
     if (!selectedScheme) return;
 
@@ -132,11 +216,6 @@ const AddCloseAccount = () => {
     formik.setFieldValue("total_paidamount", calculatedAmount);
     formik.setFieldValue("total_amount", baseAmount);
   }, [selectedScheme, bonustype, formik.values.bonusAmnt]);
-
-  const { data: paymentModes } = useQuery({
-    queryKey: ["paymentModes"],
-    queryFn: getallpaymentmode,
-  });
 
   useEffect(() => {
     const lastPart = location.pathname.substring(
@@ -271,24 +350,24 @@ const AddCloseAccount = () => {
     },
     onError: (error) => {
       setSendOtpLoading(false);
-    }
+    },
   });
 
   // Verify OTP API mutation
-  const { mutate: postVerifyOtp } = useMutation({
-    mutationFn: verifyOtp,
-    onSuccess: (response) => {
-      if (response) {
-        if (response.status) {
-          setSendOtp(false);
-        }
-        toast.success(response.message);
-      }
-    },
-    onError: (error) => {
-      setValidity(true);
-    },
-  });
+  // const { mutate: postVerifyOtp } = useMutation({
+  //   mutationFn: verifyOtp,
+  //   onSuccess: (response) => {
+  //     if (response) {
+  //       if (response.status) {
+  //         setSendOtp(false);
+  //       }
+  //       toast.success(response.message);
+  //     }
+  //   },
+  //   onError: (error) => {
+  //     setValidity(true);
+  //   },
+  // });
 
   // Close bill API mutation
   const { mutate: BillClose } = useMutation({
@@ -308,7 +387,7 @@ const AddCloseAccount = () => {
     },
     onError: (error) => {
       setSaveLoading(false);
-    }
+    },
   });
 
   // Send OTP handler
@@ -408,10 +487,15 @@ const AddCloseAccount = () => {
 
   // Filter scheme statuses to exclude status 2 and 0
   const schemeStatusOptions = schemestatus
-    .filter((status) => status.id_status !== 0 && status.id_status !== 2 && status.id_status !== 7)
+    .filter(
+      (status) =>
+        status.id_status !== 0 &&
+        status.id_status !== 2 &&
+        status.id_status !== 7
+    )
     .map((status) => ({
       value: status.id_status,
-      label: status.status_name, 
+      label: status.status_name,
     }));
 
   // Create scheme account options
@@ -816,12 +900,20 @@ const AddCloseAccount = () => {
                         ? formik.values.bonusAmnt
                         : ""
                     }
-                    className={`border-2 border-[#f2f3f8] ${bonustype == 1 && "pl-10"} rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent`}
+                    className={`border-2 border-[#f2f3f8] ${
+                      bonustype == 1 && "pl-10"
+                    } rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent`}
                     placeholder={
                       bonustype === 1 ? "Bonus Amount" : "Bonus Percentage"
                     }
                   />
-                  <span className={`absolute ${bonustype == 1 ? 'left-0 top-0 px-3 border-r' : "right-0 top-0 border-l"} w-9 h-full  flex items-center justify-center text-black `}>
+                  <span
+                    className={`absolute ${
+                      bonustype == 1
+                        ? "left-0 top-0 px-3 border-r"
+                        : "right-0 top-0 border-l"
+                    } w-9 h-full  flex items-center justify-center text-black `}
+                  >
                     {bonustype === 1 ? "₹" : "%"}
                   </span>
                 </div>
@@ -871,6 +963,69 @@ const AddCloseAccount = () => {
                 </div>
               )}
             </div>
+
+            <div className={`flex flex-col`}>
+              <label className="block text-sm font-medium mb-1">
+                Payment Mode<span className="text-red-400"> *</span>
+              </label>
+              <Select
+                styles={customStyles(true)}
+                menuPortalTarget={document.body}
+                isClearable={true}
+                options={paymentmode}
+                placeholder="Select payment mode"
+                value={
+                  paymentmode?.find(
+                    (option) => option.value === formik.values.payment_mode
+                  ) || null
+                }
+                onChange={(option) => {
+                  if (!option) {
+                    setSelectedMode("");
+                    formik.setFieldValue("payment_mode", "");
+                    return;
+                  }
+
+                  if (Number(option?.mode) === 7) {
+                    setSelectedMode(option.mode);
+                  } else {
+                    setSelectedMode("");
+                  }
+                  formik.setFieldValue("payment_mode", option.value);
+                }}
+              />
+              {formik.errors.payment_mode && (
+                <div className="text-red-500 text-sm mt-1">
+                  {formik.errors.payment_mode}
+                </div>
+              )}
+            </div>
+
+            {ispaymode && (
+              <>
+                {multiplayModes?.data?.map((multipay) => (
+                  <div key={multipay.parameter} className="flex flex-col">
+                    <label className="block text-sm font-medium mb-1">
+                      {multipay.name}
+                    </label>
+                    <input
+                      type="number"
+                      name={multipay.parameter}
+                      value={formik.values[multipay.parameter] || ""}
+                      onChange={(e) => {
+                        formik.setFieldValue(
+                          multipay.parameter,
+                          Number(e.target.value) || ""
+                        );
+                      }}
+                      className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                      placeholder="Enter amount here"
+                    />
+                  </div>
+                ))}
+              </>
+            )}
+
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-6">
             <div className="flex flex-col gap-3 lg:mt-4">
