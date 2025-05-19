@@ -16,6 +16,7 @@ import { useSelector } from "react-redux";
 import { formatNumber } from "../../utils/commonFunction";
 import { Breadcrumb } from "../common/breadCumbs/breadCumbs";
 import DateRangeSelector from "../common/calender";
+import { formatDate } from "../../../utils/FormatDate";
 
 function AccountSummaryReport() {
   const roledata = localStorage.getItem("decoded");
@@ -75,7 +76,7 @@ function AccountSummaryReport() {
     },
     {
       header: "Payment Date",
-      cell: (row) => row?.createdAt,
+      cell: (row) =>formatDate(row?.createdAt),
     },
     {
       header: "Customer",
@@ -85,13 +86,10 @@ function AccountSummaryReport() {
       header: "Mobile Number",
       cell: (row) => row?.customer_mobile,
     },
-    {
-      header: "Payment Date",
-      cell: (row) => {
-        const date = new Date(row?.createdAt);
-        return date.toLocaleDateString("en-GB"); 
-      },
-    },
+    // {
+    //   header: "Payment Date",
+    //   cell: (row) => formatDate(row?.createdAt)
+    // },
     {
       header: "Accounter Name",
       cell: (row) => row?.accounter_name,
@@ -115,7 +113,7 @@ function AccountSummaryReport() {
     },
     {
       header: "Payment mode",
-      cell: (row) => row?.payment_mode,
+      cell: (row) => row?.payment_mode ||  "Cash Free",
     },
     {
       header: "Paid Installment",

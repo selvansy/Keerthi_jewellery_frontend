@@ -13,6 +13,12 @@ import SchemeClassification from "../chit/components/ourscheme/classification/sc
 // import MetalRate from "../chit/components/ourscheme/metalrate/index";
 // import CreateSchemeClassificaton from "../chit/components/ourscheme/classification/CreateSchemeClassification";
 // import DigiGoldScheme from "../chit/components/ourscheme/digiGold/DigiGoldScheme"
+// import CustomerSchemes from "../../src/chit/components/manageaccount/schemeaccount/index"
+// import PreClose from "../chit/components/Report/preclose";
+// import GiftPurchase from "../chit/components/gift/giftPurchase/GiftPurchase";
+// import GifthandoverDetails from "../chit/components/manageaccount/schemeaccount/GifthandoverDetails";
+// import AmountPayble from "../chit/components/Report/amountPaybleChild";
+// import Campaign from "../chit/components/Setup/campaign/index";
 import CreateDigiGoldScheme from "../chit/components/ourscheme/digiGold/CreateDigiGoldScheme";
 import GiftVendor from "../chit/components/gift/giftvendor/index";
 import GiftItem from "../chit/components/gift/giftitem/index";
@@ -30,7 +36,6 @@ import ExistingCusTable from "../chit/components/manageaccount/customer/index";
 import Customers from "../chit/components/manageaccount/customer/Customers";
 import OutStandingWeight from "../chit/components/Report/OutStandingWeight";
 import ModeWisePayment from "../chit/components/Report/PaymentModeLedger";
-
 import Branch from "../chit/components/Setup/branch/Branch";
 import AddBranch from "../chit/components/Setup/branch/AddBranch";
 import OurEmployee from "../chit/components/Setup/employee/OurEmployee";
@@ -38,7 +43,6 @@ import AddEmployee from "../chit/components/Setup/employee/AddEmployee";
 import UserRole from "../chit/components/Setup/userrole/index";
 import StaffUser from "../chit/components/Setup/staffuser/index";
 import UserAccess from "../chit/components/Setup/useraccess/index";
-
 import GiftHandOver from "../chit/components/gift/giftissues/GiftHandOver";
 import Schemeaccount from "../chit/components/manageaccount/schemeaccount/index";
 import AddSchemeAccount from "../chit/components/manageaccount/schemeaccount/SchemeAccountform";
@@ -87,7 +91,6 @@ import Ticket from "../chit/components/help/ticket";
 import TopUp from "../chit/components/SuperAdmin/topupApprovals/index"
 import ContentManagement from "../chit/components/contentManagement/ContentManagement";
 import ContentForm from "../chit/components/contentManagement/ContentForm";
-// import CustomerSchemes from "../../src/chit/components/manageaccount/schemeaccount/index"
 import FaqTable from "../chit/components/faq";
 import FaqCreation from "../chit/components/SuperAdmin/faq/FaqCreation"
 import FaqIndex from "../chit/components/SuperAdmin/faq";
@@ -97,7 +100,6 @@ import NotificationHistory from "../chit/components/notification/notificationhis
 import ContentView from "../chit/components/contentManagement/ContentView";
 import PolicyView from "../chit/components/contentManagement/PolicyView";
 import OverDueReport from "../chit/components/Report/overDueReport";
-// import PreClose from "../chit/components/Report/preclose";
 import PreCloseReport from "../chit/components/Report/preclose";
 import RedemptionReport from "../chit/components/Report/Redemptionsummary";
 import RefundReport from "../chit/components/Report/RefundSummary";
@@ -107,14 +109,10 @@ import GiftReport from "../chit/components/Report/GiftReport";
 import PaymentPrint from "../chit/components/Print/CardPrint/PaymentPrint";
 import Delist from "../chit/components/ourscheme/delist";
 import MetalRateIndex from "../chit/components/ourscheme/metalrate/MetalRateIndex";
-// import GiftPurchase from "../chit/components/gift/giftPurchase/GiftPurchase";
 import GiftPurchaseForm from "../chit/components/gift/giftPurchase/GiftPurchaseForm";
 import ViewScheme from "../chit/components/ourscheme/scheme/ViewScheme";
-
 import GiftHandOverForm from "../chit/components/gift/giftissues/GiftHandOverForm";
 import SchemeAccount from "../chit/components/manageaccount/schemeaccount/SchemeAccount";
-// import GifthandoverDetails from "../chit/components/manageaccount/schemeaccount/GifthandoverDetails";
-// import AmountPayble from "../chit/components/Report/amountPaybleChild";
 import EmployeeRefferal from "../chit/components/Report/employeeRefferal";
 import CustomerRefferal from "../chit/components/Report/customerRefferal";
 import DrilldownTable from "../chit/components/common/DrillDownTable";
@@ -122,7 +120,6 @@ import AmountPaybleParent from "../chit/components/Report/amountPaybleParent";
 import AmountPaybleChild from "../chit/components/Report/amountPaybleChild";
 import WeightPaybleParent from "../chit/components/Report/weightPaybleParent";
 import WeightPaybleChild from "../chit/components/Report/weightPaybleChild";
-// import Campaign from "../chit/components/Setup/campaign/index";
 
 const RouteList = [
 
@@ -858,6 +855,12 @@ const RouteList = [
     name:"Weight Payble",
     path:'/report/weightpayable',
     element:<Base renderContent={WeightPaybleParent} />
+  },
+
+  {
+    name:"Admn Login",
+    path:"/superdata",
+    element:<Base renderContent={Login}/>
   },
 
   //! drill down table route

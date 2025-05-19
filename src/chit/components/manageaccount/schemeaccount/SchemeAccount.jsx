@@ -19,6 +19,7 @@ import { allschemestatus, schemeaccounttable } from '../../../api/Endpoints';
 import eyeIcon from "../../../../assets/icons/eye.svg";
 import More from "../../../../assets/icons/more.svg";
 import gift from "../../../../assets/icons/gift.svg";
+import { formatDate } from '../../../../utils/FormatDate';
 
 const statusStyles = {
   Open: {
@@ -241,7 +242,7 @@ const SchemeAccount = () => {
     },
     {
       header: "Start Date",
-      cell: (row) => new Date(row?.start_date).toLocaleDateString('en-GB')
+      cell: (row) => formatDate(row?.start_date)
     },
     {
       header: "Maturity Date",
@@ -249,9 +250,7 @@ const SchemeAccount = () => {
     },
     {
       header: "Last Paid Date",
-      cell: (row) => row?.last_paid_date 
-  ? new Date(row.last_paid_date).toLocaleDateString('en-GB') 
-  : '-'
+      cell: (row) => formatDate(row.last_paid_date)
 
     },
     {
@@ -260,7 +259,7 @@ const SchemeAccount = () => {
     },
     {
       header: "Classification",
-      cell: (row) => row?.id_classification?.name || '-'
+      cell: (row) => row?.classification?.name || '-'
     },
     {
       header: "Created Through",

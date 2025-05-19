@@ -1,24 +1,19 @@
 import React, { useEffect, useState } from "react";
 import Table from "../../components/common/Table";
 import { useMutation } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import ExportDropdown from "../../components/common/Dropdown/Export";
-import { ExportToExcel } from "../common/Dropdown/Excelexport";
-import { ExportToPDF } from "../common/Dropdown/ExportPdf";
 import {
   closedSummary,
-  dueReportSummary,
-  preCloseSummary,
 } from "../../../chit/api/Endpoints";
-import { SlidersHorizontal, Search, X } from "lucide-react";
-import { CalendarDays, RefreshCcw } from "lucide-react";
 import "react-datepicker/dist/react-datepicker.css";
-import DatePicker from "react-datepicker";
 import { useSelector } from "react-redux";
 import { Breadcrumb } from "../common/breadCumbs/breadCumbs";
 import DateRangeSelector from "../common/calender";
+import { formatNumber } from "../../utils/commonFunction";
+import { formatDecimal } from "../../utils/commonFunction";
+import { formatDate } from "../../../utils/FormatDate";
 
 function RedemptionReport() {
   const roledata = localStorage.getItem("decoded");
@@ -36,6 +31,7 @@ function RedemptionReport() {
   const [to_date,setto_date]=useState()
   const [totalDocuments, setTotalDocuments] = useState(0);
   const [totalPages,  setTotalPages] = useState(0);
+  
 
   useEffect(() => {
     getCloseData({from_date,to_date});
@@ -90,11 +86,11 @@ function RedemptionReport() {
     },
     {
       header: "Paid Amount",
-      cell: (row) => row?.totalPaidAmount,
+      cell: (row) => formatNumber({value:row?.totalPaidAmount,decimalPlaces:0}),
     },
     {
       header: "Paid Weight",
-      cell: (row) => row?.totalPaidWeight,
+      cell: (row) => `${formatDecimal(row?.totalPaidWeight)} g`,
     },
     {
       header: "Classification",
@@ -102,13 +98,7 @@ function RedemptionReport() {
     },
     {
       header: "Started date",
-      cell: (row) => {
-        return new Date(row.createdAt).toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "numeric",
-          day: "numeric",
-        });
-      }
+      cell: (row) => formatDate(row?.createdAt),
     },
     {
       header: "Maturity Date",
@@ -116,17 +106,11 @@ function RedemptionReport() {
     },
     {
       header: "Last paid Date",
-      cell: (row) => row?.last_paid_date,
+      cell: (row) => formatDate(row?.last_paid_date),
     },
     {
       header: "Closed Date",
-      cell: (row) => {
-        return new Date(row.closed_date).toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "numeric",
-          day: "numeric",
-        });
-      }
+      cell: (row) => formatDate(row?.closed_date),
     },
     {
       header: "Bill No ",
@@ -134,15 +118,8 @@ function RedemptionReport() {
     },
     {
       header: "Bill Date",
-      cell: (row) => {
-        return new Date(row.bill_date).toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "numeric",
-          day: "numeric",
-        });
-      }
+      cell: (row) => formatDate(row?.bill_date),
     },
-    
     {
       header: "Gift Handover",
       cell: (row) => row?.gift_issues,

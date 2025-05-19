@@ -1,7 +1,6 @@
-import React, { useState } from "react";
-import { Lock, User } from "lucide-react";
+import React, { useState,useEffect} from "react";
 import { useMutation } from "@tanstack/react-query";
-import { staffLofgin } from "../api/Endpoints";
+import { staffLofgin,adminLogin} from "../api/Endpoints";
 import { useDispatch } from "react-redux";
 import { login } from "../../redux/authSlice";
 import { useNavigate } from "react-router-dom";
@@ -11,19 +10,23 @@ import Logo from "../../assets/login.svg";
 import Background from "../../assets/LoginBg.png";
 import { toast } from "react-toastify";
 import { Eye, EyeOff } from "lucide-react";
+import { useLocation } from "react-router-dom";
 
 const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation()
+
   const [formData, setFormData] = useState({
     username: "",
     password: "",
   });
   const [isLoading, setLoading] = useState(false);
   const [showPass, setShowPass] = useState(false);
+  const [superMan,setSuperMan]= useState(false)
 
   const { mutate: loginStaff } = useMutation({
-    mutationFn: staffLofgin,
+    mutationFn: superMan ? adminLogin : staffLofgin,
     onSuccess: (response) => {
       setLoading(false);
       dispatch(login(response.token));
@@ -49,6 +52,15 @@ const Login = () => {
       loginStaff(formData);
     }
   };
+
+  useEffect(() => {
+    if (location.pathname === "/superdata") {
+      console.log("first")
+      setSuperMan(true);
+    } else {
+      setSuperMan(false);
+    }
+  }, [location.pathname]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -81,7 +93,7 @@ const Login = () => {
         </div>
         <form onSubmit={handleSubmit}>
           <div className="space-y-4">
-            <div className="">
+              <div className="">
               <label htmlFor="" className="ms-1">
                 Username <span className="text-[#F04438]">*</span>{" "}
               </label>
