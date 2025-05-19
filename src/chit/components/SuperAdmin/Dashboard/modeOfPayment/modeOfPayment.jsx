@@ -166,7 +166,7 @@ function ModeOfPayment({ id_branch }) {
                       scope="row"
                       className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
                     >
-                      {item.payment_mode}
+                      {item.payment_mode || "Cash Free"}
                     </th>
                     <td className="px-6 py-4">{item.totalAmount}</td>
                   </tr>
