@@ -12,6 +12,7 @@ import { Breadcrumb } from "../common/breadCumbs/breadCumbs";
 import DateRangeSelector from "../common/calender";
 import { formatNumber } from "../../utils/commonFunction";
 import { formatDecimal } from "../../utils/commonFunction";
+import { formatDate } from "../../../utils/FormatDate";
 
 function PreCloseReport() {
   const roledata = localStorage.getItem("decoded");
@@ -28,6 +29,7 @@ function PreCloseReport() {
   const [from_date,setfrom_date]=useState(new Date())
   const [to_date,setto_date]=useState(new Date())
   const [totalDocuments, setTotalDocuments] = useState(0);
+  const [processData,setProcessData]=useState([]);
 
   useEffect(() => {
     getPreCloseData({from_date,to_date});
@@ -71,6 +73,32 @@ function PreCloseReport() {
 
     setCurrentPage(pageNumber);
   };
+
+  useEffect(() => {
+    const process = preCloseData.map((item, index) => ({
+      "S.No": index + 1,
+      "Name":item.customer_name,
+      "Customer Mobile":item.customer_mobile,
+      "Acc Name":item.account_name,
+      "Scheme Name":item.schemeName,
+      "Scheme Acc no":item.scheme_acc_number,
+      "Total Paid Installment":item.total_paid_installments,
+      "Total Installment":item.total_installments,
+      "Total amount":item.totalPaidAmount,
+      "Total Weight":item.totalPaidWeight,
+      // "Classifictaion Name":item.classification_name,
+      // "Created At":item.createdAt,
+      // "Maturity date":item.maturity_date,
+      // "Last Paid Date":item.last_paid_date,
+      // "Closed Date":item.closed_date,
+      "Bill Number":item.bill_no,
+      "Bill date":item.bill_date ? formatDate(item.bill_date) : '',
+      "Gift Issues":item.gift_issues,
+      "Closed by":item.closed_by,
+       
+    }));
+    setProcessData(process);
+  }, [preCloseData]);
 
   const columns = [
     {
@@ -120,13 +148,7 @@ function PreCloseReport() {
     },
     {
       header: "Started date",
-      cell: (row) => {
-        const date = new Date(row.createdAt);
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const year = date.getFullYear();
-        return `${day}-${month}-${year}`;
-      }
+      cell: (row) => formatDate(row.createdAt) 
     },    
     {
       header: "Maturity Date",
@@ -203,8 +225,8 @@ function PreCloseReport() {
               }}
             />
             <ExportDropdown
-              apiData={preCloseData}
-              fileName={`Overdue report ${new Date().toLocaleDateString(
+              apiData={processData}
+              fileName={`Preclose${new Date().toLocaleDateString(
                 "en-GB"
               )}`}
             />

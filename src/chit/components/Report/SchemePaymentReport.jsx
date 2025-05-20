@@ -17,6 +17,7 @@ import { formatNumber } from "../../utils/commonFunction";
 import { Breadcrumb } from "../common/breadCumbs/breadCumbs";
 import DateRangeSelector from "../common/calender";
 import { formatDate } from "../../../utils/FormatDate";
+import Select from "react-select";
 
 function AccountSummaryReport() {
   const roledata = localStorage.getItem("decoded");
@@ -34,6 +35,40 @@ function AccountSummaryReport() {
   const [totalDocuments, setTotalDocuments] = useState(0);
   const [from_date, setfrom_date] = useState();
   const [to_date, setto_date] = useState();
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [processData, setProcessData] = useState([]);
+
+  const customSelectStyles = (isReadOnly) => ({
+    control: (base, state) => ({
+      ...base,
+      minHeight: "42px",
+      backgroundColor: "white",
+      border: state.isFocused ? "1px solid black" : "2px solid #f2f3f8",
+      boxShadow: state.isFocused ? "0 0 0 1px black" : "none",
+      borderRadius: "0.375rem",
+      "&:hover": {
+        color: "#e2e8f0",
+      },
+      pointerEvents: !isReadOnly ? "none" : "auto",
+      opacity: !isReadOnly ? 1 : 1,
+    }),
+    indicatorSeparator: () => ({
+      display: "none",
+    }),
+    placeholder: (base) => ({
+      ...base,
+      color: "#858293",
+      fontWeight: "thin",
+      // fontStyle: "bold",
+    }),
+    dropdownIndicator: (provided, state) => ({
+      ...provided,
+      color: "#232323",
+      "&:hover": {
+        color: "#232323",
+      },
+    }),
+  });
 
   useEffect(() => {
     getPaymentData({
@@ -60,6 +95,25 @@ function AccountSummaryReport() {
       console.error("Error fetching metal rate:", error);
     },
   });
+
+  useEffect(() => {
+    const process = paymentData?.map((item, index) => ({
+      "S.No": index + 1 + (currentPage - 1) * itemsPerPage,
+      "Receipt No": item.payment_receipt,
+      "Transaction ID": item.id_transaction,
+      "Payment Date": item.createdAt ? formatDate(item.createdAt) : '',
+      "Customer": item.customer_name,
+      "Mobile Number": item.customer_mobile,
+      "Accounter Name": item.accounter_name,
+      "Scheme Name": item.scheme_name,
+      "Scheme A/c No": item.schemeAccNo,
+      "Classification": item.classification_name,
+      "Paid Amount": item.payment_amount,
+      "Payment mode": item.payment_mode || "Cash Free",
+      "Paid Installment": `${item.totalPaidInstallment}/${item.total_installments}`
+    }));
+    setProcessData(process);
+  }, [paymentData, currentPage, itemsPerPage]);
 
   const columns = [
     {
@@ -149,9 +203,34 @@ function AccountSummaryReport() {
         ]}
       />
       <div className="flex flex-col p-4 bg-white border-2 border-[#F2F2F9] rounded-[16px] ">
-        <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
-          <div className="flex justify-between items-center w-full">
-            <div className="flex justify-start"></div>
+      <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4 w-full">
+         <div className="flex justify-start">
+              {/* <div className="w-60">
+              <Select 
+              styles={customSelectStyles(true)}
+              options={[
+                 { label: "purity", value: "a" },
+                    { label: "price", value: "b" },
+                    { label: "bonus", value: "c" },
+              ]}
+              />
+              </div> */}
+              <div className="relative w-90 sm:w-[228px] ml-5">
+                 {searchLoading ? (
+                    <div className="absolute left-2 top-1/2 transform -translate-y-1/2 animate-spin rounded-full w-5 h-5 border-b-2 border-gray-900" />
+                   ) : (
+                   <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-black w-5 h-5" />
+                      )}
+                   <input
+                      onChange={(e) => {
+                       setSearchLoading(true);
+                        }}
+                        placeholder="Search"
+                        className="pl-8 pr-4 py-2 border-2 border-[#F2F2F9] rounded-[8px] w-full"
+                        />
+                  </div>
+            </div>
+          <div className="flex justify-end items-center w-full">
             <div className="flex justify-end items-center gap-4">
               <DateRangeSelector
                 onChange={(range) => {
@@ -160,8 +239,8 @@ function AccountSummaryReport() {
                 }}
               />
               <ExportDropdown
-                apiData={paymentData}
-                fileName={`Scheme Payment ${new Date().toLocaleDateString(
+                apiData={processData}
+                fileName={`Scheme Payment Report ${new Date().toLocaleDateString(
                   "en-GB"
                 )}`}
               />

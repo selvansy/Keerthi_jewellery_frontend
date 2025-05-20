@@ -257,10 +257,10 @@ const PayableDetails = ({
           value={
             reward?.find(
               (option) => option.value === formik.values.bonus_type
-            ) || null
+            ) || ""
           }
           onChange={(option) =>
-            formik.setFieldValue("bonus_type", option?.value ?? null)
+            formik.setFieldValue("bonus_type", option?.value ?? "")
           }
           onBlur={() => formik.setFieldTouched("bonus_type", true)}
         />

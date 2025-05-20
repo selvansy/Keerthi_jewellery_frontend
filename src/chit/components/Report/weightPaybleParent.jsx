@@ -39,6 +39,7 @@ function WeightPaybleParent() {
   const [totalDocuments, setTotalDocuments] = useState(0);
   const [from_date,setfrom_date]=useState(new Date())
   const [to_date,setto_date]=useState(new Date())
+  const [processData,setProcessData]=useState([]);
   const type = "weight"
 
   useEffect(() => {
@@ -125,6 +126,16 @@ function WeightPaybleParent() {
       },
   ];
 
+  useEffect(() => {
+    const process =paybleData?.map((item, index) => ({
+      "S.No": index + 1,
+      "Scheme Name":item.schemeName,
+      "Classification Name":item.classificationName,
+      "Total Paid Weight": `${item.totalCollectedAmount} g`, 
+    }));
+    setProcessData(process);
+  }, [paybleData]);
+
 
   const handlePageChange = (page) => {
     const pageNumber = Number(page);
@@ -165,8 +176,8 @@ function WeightPaybleParent() {
                 }}
               />
               <ExportDropdown
-                apiData={paybleData}
-                fileName={`Overall report ${new Date().toLocaleDateString(
+                apiData={processData}
+                fileName={`Weight payable ${new Date().toLocaleDateString(
                   "en-GB"
                 )}`}
               />

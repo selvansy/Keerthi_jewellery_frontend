@@ -2,32 +2,21 @@ import React, { useEffect, useState } from "react";
 import Table from "../common/Table";
 import { useMutation } from "@tanstack/react-query";
 import { useLocation } from "react-router-dom";
-import jsPDF from "jspdf";
 import "jspdf-autotable";
 import ExportDropdown from "../common/Dropdown/Export";
-import { ExportToExcel } from "../common/Dropdown/Excelexport";
-import { ExportToPDF } from "../common/Dropdown/ExportPdf";
 import {
   getSchemewiseAmount,
 } from "../../api/Endpoints";
-import { SlidersHorizontal, Search, X } from "lucide-react";
-import { CalendarDays, RefreshCcw } from "lucide-react";
 import "react-datepicker/dist/react-datepicker.css";
-import DatePicker from "react-datepicker";
-import { useSelector } from "react-redux";
+import { formatDate } from "../../../utils/FormatDate";
+
 import { Breadcrumb } from "../common/breadCumbs/breadCumbs";
 import DateRangeSelector from "../common/calender";
 
 function WeightPaybleChild() {
-  const roledata = localStorage.getItem("decoded");
 
   const location = useLocation();
   const { id} = location.state || {};
-
-  // const id_role = roledata?.id_role?.id_role;
-  // const id_client = roledata?.id_client;
-  // const id_branch = roledata?.branch;
-  // const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
   const [isLoading, setisLoading] = useState(true);
   const [paybleData, setPaybleData] = useState([]);
@@ -37,6 +26,7 @@ function WeightPaybleChild() {
   const [totalDocuments, setTotalDocuments] = useState(0);
   const [from_date,setfrom_date]=useState()
   const [to_date,setto_date]=useState()
+  const [processData,setProcessData]=useState([]);
   const type= 'weight'
 
   useEffect(() => {
@@ -57,17 +47,19 @@ function WeightPaybleChild() {
     },
   });
 
-  function formatDate(dateString) {
-    const date = new Date(dateString);
-  
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // month is 0-based
-    const year = date.getFullYear() + 1; // Add 1 year
-
-    return `${day}/${month}/${year}`;
-  }
-
-
+  useEffect(() => {
+    const process = paybleData?.map((item, index) => ({
+      "S.No": index + 1,
+      "Customer":item?.customer,
+      "Accounter Name":`${item?.accounter_fname} ${item?.accounter_lname}`,
+      "scheme A/c No": item?.schemeAccNumber,
+      "Total Collectd Weight":item?.totalValue,
+      "Maturity Date":formatDate(item?.maturityDate),
+      "Paid Installment":item?.paidInstallments,
+       
+    }));
+    setProcessData(process);
+  }, [paybleData]);
 
   const columns = [
     {
@@ -108,7 +100,7 @@ function WeightPaybleChild() {
     },
     {
       header: "Maturity Date ",
-      cell: (row) => row?.maturityDate,
+      cell: (row) => formatDate(row?.maturityDate),
     },
     // {
     //     header: "joined Date ",
@@ -162,8 +154,8 @@ function WeightPaybleChild() {
                 }}
               />
               <ExportDropdown
-                apiData={paybleData}
-                fileName={`Overall report ${new Date().toLocaleDateString(
+                apiData={processData}
+                fileName={`Per scheme wieght payable ${new Date().toLocaleDateString(
                   "en-GB"
                 )}`}
               />
