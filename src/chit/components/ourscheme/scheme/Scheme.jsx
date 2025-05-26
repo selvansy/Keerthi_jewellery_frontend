@@ -412,7 +412,7 @@ const Scheme = () => {
           const isWeightBased = [12, 3, 4].includes(Number(scheme_type));
 
           if (isWeightBased && min_weight !== null && max_weight !== null) {
-            return `${scheme_name} (G ${min_weight} - ${max_weight})`;
+            return `${scheme_name} ( ${min_weight} g - ${max_weight} g)`;
           }
 
           // Amount-based schemes (default)

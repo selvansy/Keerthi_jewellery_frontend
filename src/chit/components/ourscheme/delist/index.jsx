@@ -106,7 +106,6 @@ const Delist = () => {
     );
 
     eventEmitter.on("CONFIRMATION_SUBMIT", async (data) => {
-      console.log(data)
       try {
         let response = await deleteScheme(data.subid);
         toast.success(response.message);

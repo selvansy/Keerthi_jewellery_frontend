@@ -89,8 +89,6 @@ function GiftHandOverForm() {
 
     const location = useLocation();
     const data = location?.state?.data;
-     
-    console.log("data",data)
     
     const [formData, setFormData] = useState({
         id_customer: "",
@@ -298,27 +296,63 @@ function GiftHandOverForm() {
     }
 
 
+    // const { mutate: handlesearchScheme } = useMutation({
+    //     mutationFn: (data) => searchSchAccByMobile(data),
+    //     onSuccess: (response) => {
+
+    //         if (response) {
+    //             setCustomername(response.data[0].id_customer?.firstname + ' ' + response.data[0]?.id_customer?.lastname);
+    //             setAddress(response.data[0]?.id_customer?.address);
+    //             handleSchemeAccount(response.schemeSummary)
+    //             setFormData(prev => ({
+    //                 ...prev,
+    //                 id_customer: response.data[0].id_customer?._id,
+    //                 mobile: response.data[0].id_customer?.mobile,
+    //             }));
+
+    //             toast.success(response.message)
+    //         }
+    //     },
+    //     onError: (error) => {
+    //         toast.error(error.response.data.message)
+    //     }
+    // });
+
     const { mutate: handlesearchScheme } = useMutation({
         mutationFn: (data) => searchSchAccByMobile(data),
         onSuccess: (response) => {
-
-            if (response) {
-                setCustomername(response.data[0].id_customer?.firstname + ' ' + response.data[0]?.id_customer?.lastname);
-                setAddress(response.data[0]?.id_customer?.address);
-                handleSchemeAccount(response.schemeSummary)
-                setFormData(prev => ({
-                    ...prev,
-                    id_customer: response.data[0].id_customer?._id,
-                    mobile: response.data[0].id_customer?.mobile,
-                }));
-
-                toast.success(response.message)
-            }
+          if (!response?.data?.length) {
+            toast.error("No accounts found");
+            return;
+          }
+    
+          const eligibleAccounts = response.data.filter(
+            account => account.paidInstallments >= account.id_scheme.gift_minimum_paid_installment
+          );
+    
+          if (eligibleAccounts.length === 0) {
+            toast.error("No eligible accounts (insufficient paid installments)");
+            return;
+          }
+    
+          const account = eligibleAccounts[0];
+          setCustomername(`${account.id_customer?.firstname} ${account.id_customer?.lastname}`);
+          setAddress(account.id_customer?.address);
+          setSchId(account.id_scheme_account);
+    
+          setFormData(prev => ({
+            ...prev,
+            id_customer: account.id_customer?._id,
+            mobile: account.id_customer?.mobile,
+          }));
+    
+          handleschemeaccountbyBranch(eligibleAccounts);
+          toast.success(response.message);
         },
         onError: (error) => {
-            toast.error(error.response.data.message)
-        }
-    });
+          toast.error(error.response?.data?.message || "Failed to fetch scheme accounts");
+        },
+      });
 
 
  
@@ -643,7 +677,7 @@ function GiftHandOverForm() {
 
 
     ]
-console.log(formData)
+
     return (
         <>
             <div className="flex flex-row justify-between items-center w-full sm:order-1 sm:w-auto sm:mr-auto md:order-1 md:w-auto md:mr-auto ">
@@ -971,20 +1005,20 @@ console.log(formData)
                 </div>
 
                 <div className='bg-white border-gray-300'>
-                    <div className='flex justify-end gap-2'>
+                    <div className='flex justify-end gap-5'>
+                    <button
+                            className="w-20 h-9 bg-blue-900 text-white rounded-md hover:bg-blue-800 flex justify-center items-center"
+                            type='button'
+                            onClick={handleSubmit}
+                        >
+                            {isLoading ? <SpinLoading /> : 'Submit'}
+                        </button>
                         <button
                             className="w-20 h-9 border-2 bg-[#F6F7F9] border-[#f2f3f8] rounded-md hover:bg-gray-50 flex justify-center items-center text-[#6C7086]"
                             type='button'
                             onClick={handleCancle}
                         >
                             Cancel
-                        </button>
-                        <button
-                            className="w-20 h-9 bg-blue-900 text-white rounded-md hover:bg-blue-800 flex justify-center items-center"
-                            type='button'
-                            onClick={handleSubmit}
-                        >
-                            {isLoading ? <SpinLoading /> : 'Submit'}
                         </button>
                     </div>
                 </div>

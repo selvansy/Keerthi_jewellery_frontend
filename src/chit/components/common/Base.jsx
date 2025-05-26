@@ -942,7 +942,7 @@ const Base = ({ renderContent: RenderContent }) => {
 
       <footer className="flex flex-row justify-center items-center w-full h-10 bg-white border-t py-3 px-2 fixed bottom-0 left-0 lg:left-40 z-30">
         <div className="flex w-3/4 justify-center items-center ">
-          <div className="text-sm lg:text-lg md:text-md flex text-nowrap">
+          <div className="text-[14px] flex text-nowrap text-[#6C7086]">
             ATTS Technologies Private Limited © 2025. All rights reserved.
           </div>
           {/* <div className="mx-2">/</div>

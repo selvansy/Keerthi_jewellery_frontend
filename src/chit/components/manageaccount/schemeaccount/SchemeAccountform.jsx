@@ -500,8 +500,9 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
       if (Number(searchmobile) === Number(cusData.mobile)) {
         return toast.error("Self referral is not allowed");
       }
+      console.log(selectedRole)
       const matchingRole = referralRoles.find(
-        (element) => Number(selectedRole) === element.id
+        (element) => Number(selectedRole) === element.value
       );
 
       if (matchingRole) {
@@ -509,7 +510,13 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
           searchmobile,
           cusData.customerId
         );
-        setReferralName(`${data.data.firstname} ${data.data.lastname}`);
+
+        if(data && !data.data){
+          console.log("first")
+          return toast.error("No customer found or deleted customer")
+        }
+
+        setReferralName(`${data?.data?.firstname} ${data.data.lastname}`);
         setReferralid(data?.data?._id);
         setFormData((prev) => ({
           ...prev,
@@ -630,6 +637,10 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
     }
   };
 
+  useEffect(()=>{
+    handleschemebyid(formData.id_scheme);
+  },[formData.id_scheme])
+
   // const handleschemebyid = async (id) => {
   //   try {
   //     const countData = await getSchemeAccountCount(formData.mobile, id);
@@ -684,6 +695,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
   // };
   const handleschemebyid = async (id) => {
     try {
+      console.log(id)
       const countData = await getSchemeAccountCount(formData.mobile, id);
       const newAcNumber = countData.data !== 0 ? Number(countData.data) + 1 : 1;
       setAcNumber(newAcNumber);
@@ -980,8 +992,8 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
     onSuccess: (response) => {
       toast.success(response.message);
       setLoading(false);
-      handleClear();
       handlePayment(response.id);
+      handleClear();
       // navigate("/managecustomers/customerschemes");
     },
     onError: (error) => {
@@ -1059,13 +1071,13 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
   }, [formData.weight]);
 
   const handlePayment = (id) => {
+    console.log(id)
     dispatch(
       openModal({
         modalType: "CONFIRMATION",
         header: "Proceed to payment",
         formData: {
-          message:
-            "You're all set! Continue to the Payment Module to complete the process.",
+          message: "You're all set! Continue to the Payment Module to complete the process.",
           redirectTo: `/payment/addschemepayment/${id}`,
           onCancelRedirect: "/managecustomers/customerschemes",
         },
@@ -1117,8 +1129,10 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
     }
   }, [formData.id_scheme, selectedScheme, schemefilter]);
 
+  console.log(errors)
+
   return (
-    <>
+   <form onSubmit={onSubmit}>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div>
           <label className="text-black mb-1 font-normal">
@@ -1555,7 +1569,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
                 placeholder="Select Referral Type"
               />
             </div>
-            <div className="flex flex-col relative">
+            <div className="relative">
               <label className="text-black mb-1 font-normal">
                 Search Referral Number
               </label>
@@ -1605,7 +1619,8 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
           </button>
         </div>
       </div>
-    </>
+      <Modal/>
+    </form>
   );
 };
 

@@ -187,7 +187,7 @@ const CreateDigiGoldScheme = () => {
       min_amount: Yup.number().required("Min Amount is required"),
       scheme_type: Yup.number().required("Scheme type is required"),
       noOfDays:Yup.number().required("Maturity days required"),
-      main_image: Yup.mixed()
+      logo: Yup.mixed()
       .test('required', 'Main image is required', (value) => {
         return mainImage !== null && mainImage !== false;
       })
@@ -203,9 +203,9 @@ const CreateDigiGoldScheme = () => {
 // Replace the onSubmit function in your formik configuration
 onSubmit: async (values) => {
   setIsLoading(true);
-
+  
   if (!mainImage) {
-    formik.setFieldError('main_image', 'Main image is required');
+    formik.setFieldError('logo', 'Main image is required');
     setIsLoading(false);
     return;
   }
@@ -215,13 +215,12 @@ onSubmit: async (values) => {
 
     Object.keys(values).forEach(key => {
       if (key !== 'values' && key !== 'bonuses' && 
-          key !== 'logo' && key !== 'desc_img' &&
+          key !== 'logo' && key !== 'desc_img' &&  key !== 'main_image' &&
           values[key] !== undefined && values[key] !== null) {
         formData.append(key, values[key]);
       }
     });
 
-    // Handle values array
     if (values.values && values.values.length > 0) {
       values.values.forEach((item, index) => {
         if (item.min !== undefined) formData.append(`values[${index}][min]`, item.min);
@@ -230,33 +229,32 @@ onSubmit: async (values) => {
       });
     }
 
-    // Handle bonuses array
     if (values.bonuses && values.bonuses.length > 0) {
       values.bonuses.forEach((bonus, index) => {
         formData.append(`bonuses[${index}]`, bonus);
       });
     }
 
-    // Handle image files
     if (mainImage instanceof File) {
       formData.append("logo", mainImage);
-    } else if (typeof mainImage === 'string' && mainImage.startsWith('http')) {
-      // If it's a URL (existing image), we might not need to send it again
-      // Or you can convert URL to blob if needed
+    } else if (typeof mainImage === 'string') {
+      formData.append("logo", mainImage);
     }
 
-    if (descriptionImage instanceof File) {
-      formData.append("desc_img", descriptionImage);
-    } else if (typeof descriptionImage === 'string' && descriptionImage.startsWith('http')) {
-      // Handle existing description image
+    if (descriptionImage) {
+      if (descriptionImage instanceof File) {
+        formData.append("desc_img", descriptionImage);
+      } else if (typeof descriptionImage === 'string') {
+        formData.append("desc_img", descriptionImage);
+      }
     }
 
     if (id) {
       // For update
-       updateSchemeData({ id, formData });
+      updateSchemeData({ id, formData });
     } else {
       // For create
-       addNewScheme(formData);
+      addNewScheme(formData);
     }
   } catch (error) {
     console.error("Submission error:", error);

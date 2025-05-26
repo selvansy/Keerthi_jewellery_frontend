@@ -288,7 +288,7 @@ const PayableDetails = ({
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             className="w-full border-2 border-[#f2f3f8] pl-10 rounded-md px-3 py-2"
-            placeholder="Enter Reward Amount"
+            placeholder="Enter bonus amount"
           />
         </div>
         {formik.touched.bonus_amount && formik.errors.bonus_amount && (
@@ -328,7 +328,7 @@ const PayableDetails = ({
 
       <div className="flex flex-col lg:mt-2">
         <label className="block text-sm font-medium mb-1">
-          Benefit Minimum Installment
+         Minimum Installment For Benefit
         </label>
         <input
           type="number"

@@ -14,8 +14,14 @@ input[type="number"] {
 }
 
 
-body{
+/* body{
   font-family: "Roboto", serif;
+} */
+
+@layer base {
+  html {
+    font-family: Inter, sans-serif;
+  }
 }
 
 .color-display{

@@ -218,7 +218,7 @@ const SchemeAccount = () => {
               : "bg-[#FF000038] text-red-500 font-medium"
           }`}
         >
-          {row?.total_paidinstallments}/{row?.total_installments}
+          {row?.paid_installments}/{row?.total_installments}
         </div>
       ),
     },
