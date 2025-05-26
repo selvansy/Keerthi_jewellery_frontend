@@ -739,7 +739,7 @@ const SchemeForm = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <div>
             <label className="block text-sm font-medium mb-1">
-              Scheme Name <span className="text-red-500">*</span>
+              Scheme Name<span className="text-red-500"> *</span>
             </label>
             <input
               type="text"
@@ -838,7 +838,7 @@ const SchemeForm = () => {
               styles={customStyles(true)}
               isClearable={true}
               options={metal}
-              placeholder="Select metal"
+              placeholder="Choose a metal"
               value={metal.find(
                 (option) => option.value === formik.values.id_metal
               )}
@@ -864,8 +864,8 @@ const SchemeForm = () => {
               isClearable={true}
               isDisabled={!formik.values.id_metal}
               placeholder={
-                !formik.values.id_metal
-                  ? "Choose a metal first"
+                !formik.values.id_metal ?
+                  "Choose a metal first"
                   : "Select purtiy type"
               }
               value={purity.find(

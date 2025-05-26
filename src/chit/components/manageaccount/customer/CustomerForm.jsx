@@ -18,14 +18,10 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { sendOtp, verifyOtp } from "../../../api/Endpoints";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import Webcam from "react-webcam";
 import { toast } from "react-toastify";
-import { useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import SpinLoading from "../../common/spinLoading";
 import Select from "react-select";
-import profileplaceholder from "../../../../assets/profileplaceholder.png";
-import { SetaccExp } from "../../../../redux/clientFormSlice";
 import CalenderNew from "../../../../assets/icons/calendarNew.svg";
 import eye1 from "../../../../assets/icons/eye1.svg";
 import cameraIcon from "../../../../assets/icons/cameraIcon.svg";
@@ -128,12 +124,12 @@ const CustomerForm = ({
     id_proof: null,
   });
 
-  const initialCustomerData =({
+  const initialCustomerData = {
     firstname: "",
     lastname: "",
     mobile: "",
-    gender: 1,
-    pan:"",
+    gender: null,
+    pan: "",
     address: "",
     id_branch: id_branch ? id_branch : accessBranch || "",
     id_country: "",
@@ -142,11 +138,12 @@ const CustomerForm = ({
     date_of_wed: "",
     date_of_birth: "",
     pincode: "",
-    authorno: "",
-    password:"",
-    confirmpassword:"",
-    whatsapp:""
-});
+    aadharNumber: "",
+    password: "",
+    confirmpassword: "",
+    whatsapp: "",
+    otpVerified:false
+  };
 
   const descImageInputRef = useRef(null);
 
@@ -161,9 +158,9 @@ const CustomerForm = ({
     id_country: Yup.string().required("Country is required"),
     id_state: Yup.string().required("State is required"),
     id_city: Yup.string().required("City is required"),
-    date_of_birth: Yup.date()
-      .typeError("Invalid date format")
-      .required("Birth Date is required"),
+    // date_of_birth: Yup.date()
+    //   .typeError("Invalid date format")
+    //   .required("Birth Date is required"),
     pincode: Yup.string()
       .required("Pincode is required")
       .matches(/^\d{6}$/, "Pincode must be 6 digits"),
@@ -174,6 +171,12 @@ const CustomerForm = ({
       .nullable()
       .oneOf([Yup.ref("password")], "Passwords must match")
       .notRequired(),
+    aadharNumber: Yup.string()
+      .required("Aadhaar number is required")
+      .matches(/^\d{12}$/, "Aadhaar number must be exactly 12 digits"),
+    pan: Yup.string()
+      .required("PAN card number is required")
+      .matches(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, "Invalid PAN card format")
   });
 
   const formik = useFormik({
@@ -234,14 +237,14 @@ const CustomerForm = ({
           pan: res?.pan || "",
           date_of_birth: res?.date_of_birth || "",
           pincode: res?.pincode || "",
-          authorno: res?.authorno || "",
+          aadharNumber: res?.aadharNumber || "",
           password: res?.password || "",
           confirmpassword: res?.password || "",
         };
 
         // 4. Set form values directly using formik.setValues
         formik.setValues(formValues);
-        
+
         setCusData(formValues);
         setCusImg(response.data.cus_img);
         const img = `${response.data.pathurl}${response.data.cus_img}`;
@@ -254,11 +257,13 @@ const CustomerForm = ({
       }
     },
     onError: (error) => {
-      toast.error(error.response?.data?.message || "Error fetching customer data");
+      toast.error(
+        error.response?.data?.message || "Error fetching customer data"
+      );
     },
   });
 
-  console.log(cusData,'dlk')
+  console.log(cusData, "dlk");
 
   const { data: countryresponse, isLoading: loadingCountries } = useQuery({
     queryKey: ["country", country],
@@ -346,7 +351,7 @@ const CustomerForm = ({
         formik.resetForm({
           values: initialCustomerData,
         });
-        
+
         setCusImg(null);
         setIdProof(null);
         setImagePreviews({
@@ -490,7 +495,6 @@ const CustomerForm = ({
     },
     onError: (error) => {
       setValidity(true);
-      console.log(error);
     },
   });
 
@@ -501,6 +505,7 @@ const CustomerForm = ({
   }
 
   const handleOtpComplete = () => {
+    formik.setFieldValue("otpVerified",true)
     setOtpComplete(true);
     setSendOtp(false);
   };
@@ -571,7 +576,7 @@ const CustomerForm = ({
               <div className="grid grid-rows-1 md:grid-cols-2 lg:grid-cols-3 gap-6 border-gray-300">
                 <div className="flex flex-col">
                   <label className="text-gray-700 mb-1 font-medium">
-                    First Name<span className="text-red-400">*</span>
+                    First Name<span className="text-red-400"> *</span>
                   </label>
                   <input
                     type="text"
@@ -593,7 +598,7 @@ const CustomerForm = ({
 
                 <div className="flex flex-col">
                   <label className="text-gray-700 mb-1 font-medium">
-                    Last Name 
+                    Last Name
                   </label>
                   <input
                     type="text"
@@ -695,7 +700,7 @@ const CustomerForm = ({
 
                 <div className="flex flex-col">
                   <label className="text-gray-700 mb-1 font-medium">
-                    Mobile<span className="text-red-400">*</span>
+                    Mobile<span className="text-red-400"> *</span>
                   </label>
                   <input
                     type="text"
@@ -757,13 +762,13 @@ const CustomerForm = ({
 
                 <div className="flex flex-col">
                   <label className="text-black mb-1 font-medium">
-                    Gender<span className="text-red-400">*</span>
+                    Gender<span className="text-red-400"> *</span>
                   </label>
                   <div className="flex flex-row gap-6 justify-start">
                     {[
                       { label: "Male", value: 1 },
                       { label: "Female", value: 2 },
-                      { label: "Other", value: 3 },
+                      { label: "Others", value: 3 },
                     ].map((gender) => (
                       <button
                         key={gender.value}
@@ -795,7 +800,7 @@ const CustomerForm = ({
 
                 <div className="flex flex-col">
                   <label className="text-black mb-1 font-medium">
-                    Country<span className="text-red-400">*</span>
+                    Country<span className="text-red-400"> *</span>
                   </label>
 
                   <Select
@@ -823,7 +828,7 @@ const CustomerForm = ({
 
                 <div className="flex flex-col">
                   <label className="text-black mb-1 font-medium">
-                    State<span className="text-red-400">*</span>
+                    State<span className="text-red-400"> *</span>
                   </label>
 
                   <Select
@@ -850,7 +855,7 @@ const CustomerForm = ({
 
                 <div className="flex flex-col">
                   <label className="text-black mb-1 font-medium">
-                    City<span className="text-red-400">*</span>
+                    City<span className="text-red-400"> *</span>
                   </label>
 
                   <Select
@@ -877,7 +882,7 @@ const CustomerForm = ({
 
                 <div className="flex flex-col">
                   <label className="text-gray-700 mb-1 font-medium">
-                    Address<span className="text-red-400">*</span>
+                    Address<span className="text-red-400"> *</span>
                   </label>
                   <input
                     type="text"
@@ -898,7 +903,7 @@ const CustomerForm = ({
 
                 <div className="flex flex-col">
                   <label className="text-gray-700 mb-1 font-medium">
-                    Pincode<span className="text-red-400">*</span>
+                    Pincode<span className="text-red-400"> *</span>
                   </label>
                   <input
                     type="text"
@@ -947,12 +952,12 @@ const CustomerForm = ({
 
                 <div className="flex flex-col">
                   <label className="text-gray-700 mb-1 font-medium">
-                    Aadhar Card Number
+                    Aadhar Card Number<span className="text-red-400"> *</span>
                   </label>
                   <input
                     type="text"
-                    name="authorno"
-                    value={formik.values.authorno}
+                    name="aadharNumber"
+                    value={formik.values.aadharNumber}
                     pattern="\d{12}"
                     onInput={(e) =>
                       (e.target.value = e.target.value.replace(/\D/g, ""))
@@ -964,8 +969,10 @@ const CustomerForm = ({
                     placeholder="Enter Aadhar Number"
                   />
 
-                  {formik.errors.authorno ? (
-                    <div style={{ color: "red" }}>{formik.errors.authorno}</div>
+                  {formik.errors.aadharNumber ? (
+                    <div style={{ color: "red" }}>
+                      {formik.errors.aadharNumber}
+                    </div>
                   ) : null}
                 </div>
 
@@ -1132,48 +1139,6 @@ const CustomerForm = ({
                     </div>
                   ) : null}
                 </div>
-              </div>
-
-              <div className="grid grid-rows-1 md:grid-rows-1 lg:grid-cols-3 gap-6 border-gray-300 mt-8">
-                {/* Resume Upload Field */}
-                <div className="flex flex-col">
-                  <label className="text-gray-700 mb-1 font-medium">
-                    Upload Document
-                  </label>
-                  <div className="flex items-center gap-3 relative">
-                    <label
-                      htmlFor="id_proof"
-                      className="flex-1 border-2 border-[#f2f3f8] rounded-md px-3 py-2 cursor-pointer hover:bg-gray-50"
-                    >
-                      <p className="truncate text-[#b5b5b5]">
-                        {id_proof ? id_proof.name || id_proof : "Browse"}
-                      </p>
-                    </label>
-                    <div className="absolute right-0 top-0 bottom-0 h-full flex flex-row gap-2">
-                      <label
-                        htmlFor="id_proof"
-                        className="bg-blue-600 text-white px-4 flex items-center justify-center rounded-md cursor-pointer text-sm"
-                        style={{ backgroundColor: layout_color }}
-                      >
-                        Choose File
-                      </label>
-                    </div>
-                    <input
-                      className="hidden"
-                      id="id_proof"
-                      name="id_proof"
-                      type="file"
-                      accept=".pdf,.doc,.docx"
-                      onChange={handleFileChange}
-                      ref={id_proofInputRef}
-                    />
-                  </div>
-                  {formik.errors.id_proof ? (
-                    <div style={{ color: "red" }}>{formik.errors.id_proof}</div>
-                  ) : null}
-                </div>
-
-                {/* Image Upload Field */}
                 <div className="flex flex-col">
                   <label className="text-gray-700 mb-1 font-medium">
                     Upload Profile Image
@@ -1223,11 +1188,53 @@ const CustomerForm = ({
                 </div>
               </div>
 
+              <div className="grid grid-rows-1 md:grid-rows-1 lg:grid-cols-3 gap-6 border-gray-300 mt-8">
+                {/* Resume Upload Field */}
+                {/* <div className="flex flex-col">
+                  <label className="text-gray-700 mb-1 font-medium">
+                    Upload Document
+                  </label>
+                  <div className="flex items-center gap-3 relative">
+                    <label
+                      htmlFor="id_proof"
+                      className="flex-1 border-2 border-[#f2f3f8] rounded-md px-3 py-2 cursor-pointer hover:bg-gray-50"
+                    >
+                      <p className="truncate text-[#b5b5b5]">
+                        {id_proof ? id_proof.name || id_proof : "Browse"}
+                      </p>
+                    </label>
+                    <div className="absolute right-0 top-0 bottom-0 h-full flex flex-row gap-2">
+                      <label
+                        htmlFor="id_proof"
+                        className="bg-blue-600 text-white px-4 flex items-center justify-center rounded-md cursor-pointer text-sm"
+                        style={{ backgroundColor: layout_color }}
+                      >
+                        Choose File
+                      </label>
+                    </div>
+                    <input
+                      className="hidden"
+                      id="id_proof"
+                      name="id_proof"
+                      type="file"
+                      accept=".pdf,.doc,.docx"
+                      onChange={handleFileChange}
+                      ref={id_proofInputRef}
+                    />
+                  </div>
+                  {formik.errors.id_proof ? (
+                    <div style={{ color: "red" }}>{formik.errors.id_proof}</div>
+                  ) : null}
+                </div> */}
+
+                {/* Image Upload Field */}
+              </div>
+
               <div className="grid grid-rows-1 md:grid-rows-1 lg:grid-cols-1 gap-6 my-3">
                 <div className="flex flex-col gap-3 lg:mt-4">
                   <CheckboxToggle
                     checked={checked}
-                    label="To close & refund the account with OTP verification, kindly check the checkbox"
+                    label="Please check the checkbox to create a customer account with OTP verification."
                     onChange={handleOtpToggle}
                   />
 
@@ -1275,7 +1282,15 @@ const CustomerForm = ({
 
               <div>
                 <div className="bg-white mt-6">
-                  <div className="flex justify-end gap-2 mt-3">
+                  <div className="flex justify-end gap-5 mt-3">
+                  <button
+                      className="text-white rounded-md p-2 w-full lg:w-20"
+                      type="submit"
+                      style={{ backgroundColor: layout_color }}
+                      disabled={isLoading}
+                    >
+                      {isLoading ? <SpinLoading /> : id ? "Update" : "Save"}
+                    </button>
                     <button
                       className="bg-[#E2E8F0] text-black rounded-md p-2 w-full lg:w-20"
                       type="button"
@@ -1285,14 +1300,6 @@ const CustomerForm = ({
                       }}
                     >
                       Cancel
-                    </button>
-                    <button
-                      className="text-white rounded-md p-2 w-full lg:w-20"
-                      type="submit"
-                      style={{ backgroundColor: layout_color }}
-                      disabled={isLoading}
-                    >
-                      {isLoading ? <SpinLoading /> : id ? "Update" : "Save"}
                     </button>
                   </div>
                 </div>
@@ -1325,8 +1332,6 @@ const CustomerForm = ({
               )}
             </form>
           </>
-          {/* ); */}
-          {/* })()} */}
         </div>
       </div>
     </>

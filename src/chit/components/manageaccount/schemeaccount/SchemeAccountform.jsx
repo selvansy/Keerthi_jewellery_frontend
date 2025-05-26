@@ -1,4 +1,4 @@
-import React, { useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { CalendarDays, CloudFog, Search } from "lucide-react";
@@ -18,7 +18,7 @@ import {
   getSchemeAccountCount,
   getCustomerByMobile,
   getEmployeeByMobile,
-  getMetalRateByMetalId
+  getMetalRateByMetalId,
 } from "../../../api/Endpoints";
 import { useSelector, useDispatch } from "react-redux";
 import { customSelectStyles } from "../../Setup/purity/index";
@@ -28,8 +28,11 @@ import { closeModal } from "../../../../redux/modalSlice";
 import { eventEmitter } from "../../../../utils/EventEmitter";
 import Modal from "../../common/Modal";
 
-export function ExistingCustomer({ setCusData,handleCusData,openJoinScheme}) {
-
+export function ExistingCustomer({
+  setCusData,
+  handleCusData,
+  openJoinScheme,
+}) {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   const roledata = useSelector((state) => state.clientForm.roledata);
   const id_branch = roledata?.branch;
@@ -60,8 +63,8 @@ export function ExistingCustomer({ setCusData,handleCusData,openJoinScheme}) {
   }, [branchresponse]);
 
   const handleSearchmobile = () => {
-    if(!formData.mobile) {
-      return toast.error("Enter a mobile number to search")
+    if (!formData.mobile) {
+      return toast.error("Enter a mobile number to search");
     }
     setLoading(true);
     handlesearchcustomer({
@@ -76,7 +79,7 @@ export function ExistingCustomer({ setCusData,handleCusData,openJoinScheme}) {
       handleCusData(response.data);
       handleResData(response.data);
       setLoading(false);
-      openJoinScheme()
+      openJoinScheme();
     },
     onError: (error) => {
       toast.error(error?.response?.data?.message);
@@ -100,23 +103,55 @@ export function ExistingCustomer({ setCusData,handleCusData,openJoinScheme}) {
     });
   };
 
-//   useEffect(() => {
-//   const handleConfirmation = (data) => {
-//     if (data.paymentData) {
-//       navigate('/payment', { 
-//         state: { 
-//           paymentData: data.paymentData 
-//         } 
-//       });
-//     }
-//   };
+  //   useEffect(() => {
+  //   const handleConfirmation = (data) => {
+  //     if (data.paymentData) {
+  //       navigate('/payment', {
+  //         state: {
+  //           paymentData: data.paymentData
+  //         }
+  //       });
+  //     }
+  //   };
 
-//   eventEmitter.on('CONFIRMATION_SUBMIT', handleConfirmation);
+  //   eventEmitter.on('CONFIRMATION_SUBMIT', handleConfirmation);
 
-//   return () => {
-//     eventEmitter.off('CONFIRMATION_SUBMIT', handleConfirmation);
-//   };
-// }, [navigate]);
+  //   return () => {
+  //     eventEmitter.off('CONFIRMATION_SUBMIT', handleConfirmation);
+  //   };
+  // }, [navigate]);
+
+  const customStyles = (isReadOnly) => ({
+    control: (base, state) => ({
+      ...base,
+      minHeight: "42px",
+      backgroundColor: "white",
+      border: state.isFocused ? "1px solid black" : "2px solid #f2f3f8",
+      boxShadow: state.isFocused ? "0 0 0 1px black" : "none",
+      borderRadius: "0.375rem",
+      "&:hover": {
+        color: "#e2e8f0",
+      },
+      pointerEvents: !isReadOnly ? "none" : "auto",
+      opacity: !isReadOnly ? 1 : 1,
+    }),
+    indicatorSeparator: () => ({
+      display: "none",
+    }),
+    placeholder: (base) => ({
+      ...base,
+      color: "#858293",
+      fontWeight: "thin",
+      // fontStyle: "bold",
+    }),
+    dropdownIndicator: (provided, state) => ({
+      ...provided,
+      color: "#232323",
+      "&:hover": {
+        color: "#232323",
+      },
+    }),
+  });
 
   return (
     <div className="grid md:grid-cols-3 gap-2">
@@ -236,25 +271,58 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
   const [selectedScheme, setSelectedScheme] = useState("");
   const [acNumber, setAcNumber] = useState(1);
   const [referralName, setReferralName] = useState("");
+  // const referralRoles = [
+  //   { id: 1, role: "Employee", endpoint: getEmployeeByMobile },
+  //   { id: 2, role: "Customer", endpoint: getCustomerByMobile },
+  // ];
   const referralRoles = [
-    { id: 1, role: "Employee", endpoint: getEmployeeByMobile },
-    { id: 2, role: "Customer", endpoint: getCustomerByMobile },
-  ]; // keep this role format
+    { value: 1, label: "Employee", endpoint: getEmployeeByMobile },
+    { value: 2, label: "Customer", endpoint: getCustomerByMobile },
+  ];
+  // // keep this role format
   const [searchmobile, setSearchMobile] = useState("");
   const [selectedRole, setRole] = useState("");
   const [selectedClassification, setClassification] = useState("");
-  const [id_metal,setMetal]=useState('')
-  const [id_purity,setPurity]= useState('')
-  const [metalRate,setMetalRate]= useState(0)
-  const [referralId,setReferralid] = useState(null)
+  const [id_metal, setMetal] = useState("");
+  const [id_purity, setPurity] = useState("");
+  const [metalRate, setMetalRate] = useState(0);
+  const [referralId, setReferralid] = useState(null);
 
   //* TODO use formik insted of formData
+  // const [formData, setFormData] = React.useState({
+  //   id_customer: cusData.customerId || "",
+  //   mobile: cusData.mobile,
+  //   start_date: start_date,
+  //   id_classification: "",
+  //   // collectionuserid: "",
+  //   scheme_acc_number: "",
+  //   id_scheme: "",
+  //   id_branch: cusData.id_branch,
+  //   account_name: "",
+  //   address: cusData.address,
+  //   customer_name: cusData.customer_name,
+  //   fixedamount: "",
+  //   amount: null,
+  //   weight: null,
+  //   scheme_type: 0,
+  //   min_amount: 0,
+  //   max_amount: 0,
+  //   min_weight: 0,
+  //   max_weight: 0,
+  //   total_installments: total_installments,
+  //   maturity_period: maturity_period,
+  //   maturity_date: maturity_date,
+  //   referral_id: "",
+  //   referral_type: "",
+  //   installment_type: "",
+  //   code: 0,
+  //   scheme_count_number: "",
+  // });
   const [formData, setFormData] = React.useState({
     id_customer: cusData.customerId || "",
     mobile: cusData.mobile,
     start_date: start_date,
     id_classification: "",
-    // collectionuserid: "",
     scheme_acc_number: "",
     id_scheme: "",
     id_branch: cusData.id_branch,
@@ -269,14 +337,17 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
     max_amount: 0,
     min_weight: 0,
     max_weight: 0,
-    total_installments: total_installments,
-    maturity_period: maturity_period,
-    maturity_date: maturity_date,
+    total_installments: 0,
+    maturity_period: 0,
+    maturity_date: "",
     referral_id: "",
     referral_type: "",
     installment_type: "",
     code: 0,
     scheme_count_number: "",
+    noOfDays: "",
+    flexFixed: 0,
+    fixed: 0,
   });
 
   const { data: branchresponse, isLoading: branchloading } = useQuery({
@@ -434,9 +505,12 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
       );
 
       if (matchingRole) {
-        const data = await matchingRole.endpoint(searchmobile,cusData.customerId);
+        const data = await matchingRole.endpoint(
+          searchmobile,
+          cusData.customerId
+        );
         setReferralName(`${data.data.firstname} ${data.data.lastname}`);
-        setReferralid(data?.data?._id)
+        setReferralid(data?.data?._id);
         setFormData((prev) => ({
           ...prev,
           referral_type: matchingRole.role,
@@ -450,12 +524,11 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
     }
   };
 
-
   const { mutate: handlesearchcustomer } = useMutation({
     mutationFn: searchcustomermobile,
     onSuccess: (response) => {
       if (response) {
-        setReferralid
+        setReferralid;
         setFormData({
           id_customer: response.data._id,
           mobile: response.data.mobile,
@@ -481,9 +554,9 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
           referral_id: response?.data?.referral_id,
           code: 0,
           scheme_count_number: "",
-          noOfDays:"",
-          flexFixed:0,
-          fixed:0
+          noOfDays: "",
+          flexFixed: 0,
+          fixed: 0,
         });
       }
     },
@@ -515,10 +588,6 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
       }
     }
 
-    if (name === "id_classification") {
-      handleschemebyclassification(value);
-    }
-
     if (name === "id_scheme") {
       setFormData((prev) => ({ ...prev, [name]: value }));
       handleschemebyid(value);
@@ -527,7 +596,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
     if (name === "weight") {
       setErrors((prevState) => {
         const newErrors = { ...prevState };
-    
+
         if (value === "") {
           delete newErrors.weight;
         } else if (value < formData.min_weight) {
@@ -537,7 +606,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
         } else {
           delete newErrors.weight;
         }
-    
+
         return newErrors;
       });
     }
@@ -545,7 +614,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
     if (name === "amount" && selectedClassification === 3) {
       setErrors((prevState) => {
         const newErrors = { ...prevState };
-    
+
         if (value === "") {
           delete newErrors.amount;
         } else if (value < formData.min_amount) {
@@ -555,11 +624,10 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
         } else {
           delete newErrors.amount;
         }
-    
+
         return newErrors;
       });
     }
-    
   };
 
   // const handleschemebyid = async (id) => {
@@ -573,6 +641,8 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
   //     );
 
   //     if (schemeData) {
+  //       setMetal(schemeData?.id_metal);
+  //       setPurity(schemeData?.id_purity);
   //       setFormData((prevState) => ({
   //         ...prevState,
   //         scheme_type: schemeData?.scheme_type,
@@ -581,17 +651,28 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
   //         installment_type: schemeData?.installment_type,
   //         code: schemeData?.code,
   //       }));
-  //       if ([12, 3, 4, 2, 5, 6].includes(schemeData.scheme_type)) {
+
+  //       if ([12, 3, 4].includes(schemeData.scheme_type)) {
   //         setFormData((prevData) => ({
   //           ...prevData,
-  //           max_weight: schemeData?.max_weight,
   //           min_weight: schemeData?.min_weight,
+  //           max_weight: schemeData?.max_weight,
+  //           min_amount: 0,
+  //           max_amount: 0,
   //         }));
   //       } else {
+  //         if ([10, 14].includes(schemeData.scheme_type)) {
+  //           setFormData((prevData) => ({
+  //             ...prevData,
+  //             noOfDays: schemeData?.noOfDays,
+  //           }));
+  //         }
   //         setFormData((prevData) => ({
   //           ...prevData,
-  //           max_amount: schemeData?.max_amount,
   //           min_amount: schemeData?.min_amount,
+  //           max_amount: schemeData?.max_amount,
+  //           min_weight: 0,
+  //           max_weight: 0,
   //         }));
   //       }
   //     } else {
@@ -605,15 +686,25 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
     try {
       const countData = await getSchemeAccountCount(formData.mobile, id);
       const newAcNumber = countData.data !== 0 ? Number(countData.data) + 1 : 1;
-
       setAcNumber(newAcNumber);
+
       const schemeData = schemefilter.find(
         (item) => String(item._id) === String(id)
       );
 
       if (schemeData) {
-        setMetal(schemeData?.id_metal)
-        setPurity(schemeData?.id_purity)
+        setMetal(schemeData?.id_metal);
+        setPurity(schemeData?.id_purity);
+
+        // Update fixed amounts if scheme is fixed type
+        if (selectedScheme === "Fixed" && schemeData.fixed_amounts) {
+          const fixedAmounts = schemeData.fixed_amounts.map((amount) => ({
+            value: amount,
+            label: amount.toString(),
+          }));
+          setFixedAmt(fixedAmounts);
+        }
+
         setFormData((prevState) => ({
           ...prevState,
           scheme_type: schemeData?.scheme_type,
@@ -621,33 +712,12 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
           maturity_period: schemeData?.maturity_period,
           installment_type: schemeData?.installment_type,
           code: schemeData?.code,
+          min_weight: schemeData?.min_weight || 0,
+          max_weight: schemeData?.max_weight || 0,
+          min_amount: schemeData?.min_amount || 0,
+          max_amount: schemeData?.max_amount || 0,
+          noOfDays: schemeData?.noOfDays || "",
         }));
-
-        if ([12, 3, 4].includes(schemeData.scheme_type)) {
-          setFormData((prevData) => ({
-            ...prevData,
-            min_weight: schemeData?.min_weight,
-            max_weight: schemeData?.max_weight,
-            min_amount: 0,
-            max_amount: 0,
-          }));
-        } else {
-          if([10,14].includes(schemeData.scheme_type)){
-            setFormData((prevData) => ({
-              ...prevData,
-                noOfDays:schemeData?.noOfDays
-            }));
-          }
-          setFormData((prevData) => ({
-            ...prevData,
-            min_amount: schemeData?.min_amount,
-            max_amount: schemeData?.max_amount,
-            min_weight: 0,
-            max_weight: 0,
-          }));
-        }
-      } else {
-        console.warn("No matching scheme found for ID:", id);
       }
     } catch (error) {
       console.error("Error handling scheme by ID:", error);
@@ -660,7 +730,12 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
         (item) => String(item._id) === String(formData.id_scheme)
       );
 
-      setFixedAmt(filteredData[0]?.fixed_amounts);
+      const finalData = filteredData[0]?.fixed_amounts.map((item) => ({
+        value: item,
+        label: item,
+      }));
+
+      setFixedAmt(finalData);
     }
   }, [formData.id_scheme, schemefilter]);
 
@@ -727,13 +802,21 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
         setScheme(response.data);
       }
     },
+    onError: (error) => {
+      setScheme([]);
+    },
   });
 
   const { mutate: handleClassifyChange } = useMutation({
     mutationFn: getallbranchclassification,
     onSuccess: (response) => {
       if (response) {
-        setClassify(response.data);
+        const formatedClassification = response.data.map((item) => ({
+          value: item._id,
+          label: item.name,
+          order: item.order,
+        }));
+        setClassify(formatedClassification);
       }
     },
   });
@@ -744,14 +827,6 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
   };
 
   useEffect(() => {
-    // if (location.pathname === "/managecustomers/addschemeaccount/") {
-    //   setHeader("Add Scheme Account");
-    //   setReturnRoute("/managecustomers/customer/");
-    // }
-    // else if (location.pathname === "/manageaccount/digigold/add") {
-    //   setHeader("Add Digi Gold Account");
-    //   setReturnRoute("/manageaccount/digigold");
-    // }
     if (id) {
       setHeader("Edit Scheme Account");
     } else {
@@ -787,32 +862,30 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
   const handleStartDateChange = (date) => {
     setStartDate(date);
     setFormData((prev) => ({ ...prev, start_date: date }));
-  
+
     if (formData.scheme_type === 10 || formData.scheme_type === 14) {
       const currentDate = new Date(date);
       const maturityDate = new Date(currentDate);
       maturityDate.setDate(currentDate.getDate() + formData.noOfDays);
-  
+
       const day = String(maturityDate.getDate()).padStart(2, "0");
       const month = String(maturityDate.getMonth() + 1).padStart(2, "0");
       const year = maturityDate.getFullYear();
-  
+
       const formattedDate = `${day}-${month}-${year}`;
       setFormData((prev) => ({ ...prev, maturity_date: formattedDate }));
     } else {
       const start = new Date(date);
       start.setMonth(start.getMonth() + formData.maturity_period);
-  
+
       const day = String(start.getDate()).padStart(2, "0");
       const month = String(start.getMonth() + 1).padStart(2, "0");
       const year = start.getFullYear();
-  
+
       const formattedDate = `${day}-${month}-${year}`;
       setFormData((prev) => ({ ...prev, maturity_date: formattedDate }));
     }
   };
-  
-  
 
   const isValidForm = () => {
     const err = {};
@@ -891,7 +964,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
       };
       setFormData(updatedFormData);
       setLoading(true);
-    
+
       if (id) {
         updateSchemeaccount(updatedFormData);
       } else {
@@ -900,17 +973,15 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
     } else {
       console.log("Form has validation errors");
     }
-    
   };
 
   const { mutate: createSchemeaccount } = useMutation({
     mutationFn: addschemeaccount,
     onSuccess: (response) => {
-      console.log(response,'sl')
       toast.success(response.message);
       setLoading(false);
       handleClear();
-      handlePayment(response.id)
+      handlePayment(response.id);
       // navigate("/managecustomers/customerschemes");
     },
     onError: (error) => {
@@ -932,19 +1003,22 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
     },
   });
 
-  useEffect(()=>{
-    if(selectedClassification === 3 && [12,3,4].includes(formData.scheme_type)){
+  useEffect(() => {
+    if (
+      selectedClassification === 3 &&
+      [12, 3, 4].includes(formData.scheme_type)
+    ) {
       const fetchMetalRate = async () => {
         const branchId = formData.id_branch || id_branch;
-  
+
         try {
           const metalRate = await getMetalRateByMetalId(
-            id_metal|| "",
+            id_metal || "",
             id_purity || "",
             todaydate,
             branchId
           );
-  
+
           if (metalRate) {
             const rate = metalRate.data.rate;
             setMetalRate(rate);
@@ -956,29 +1030,33 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
       };
       fetchMetalRate();
     }
-  },[selectedClassification,formData.scheme_type])
+  }, [selectedClassification, formData.scheme_type]);
 
-  useEffect(()=>{
-    if(formData.weight && [12,3,4].includes(formData.scheme_type) && !errors.weight){
-      const outputAmount = metalRate * formData.weight
-       if(outputAmount > 0){
+  useEffect(() => {
+    if (
+      formData.weight &&
+      [12, 3, 4].includes(formData.scheme_type) &&
+      !errors?.weight
+    ) {
+      const outputAmount = metalRate * formData.weight;
+      if (outputAmount > 0) {
         setFormData((prev) => ({
           ...prev,
-           amount:outputAmount,
+          amount: outputAmount,
         }));
-       }else{
+      } else {
         setFormData((prev) => ({
           ...prev,
-           amount:0,
+          amount: 0,
         }));
-       }
-    }else{
+      }
+    } else {
       setFormData((prev) => ({
         ...prev,
-         amount:0,
+        amount: 0,
       }));
     }
-  },[formData.weight])
+  }, [formData.weight]);
 
   const handlePayment = (id) => {
     dispatch(
@@ -986,609 +1064,546 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
         modalType: "CONFIRMATION",
         header: "Proceed to payment",
         formData: {
-          message: "You're all set! Continue to the Payment Module to complete the process.",
+          message:
+            "You're all set! Continue to the Payment Module to complete the process.",
           redirectTo: `/payment/addschemepayment/${id}`,
-          onCancelRedirect: '/managecustomers/customerschemes'
+          onCancelRedirect: "/managecustomers/customerschemes",
         },
         buttons: {
           cancel: {
-            text: "No"
+            text: "No",
           },
           submit: {
-            text: "Yes"
+            text: "Yes",
           },
         },
       })
     );
   };
 
-  // useEffect(() => {
-  //   const { weight, flexFixed } = formData;
-  
-  //   if ((selectedClassification === 2 || selectedClassification === 3) && weight !== 0) {
-  //     setFormData((prev) => ({
-  //       ...prev,
-  //       flexFixed: weight,
-  //       weight: 0,
-  //     }));
-  //   }
-  // }, [formData.weight, selectedClassification]);
   useEffect(() => {
     const { weight, amount } = formData;
-  
-    if ((selectedClassification === 2 || selectedClassification === 3)) {
+
+    if (selectedClassification === 2 || selectedClassification === 3) {
       if (weight !== 0) {
         setFormData((prev) => ({
           ...prev,
           flexFixed: weight,
           weight: 0,
-          amount: 0
+          amount: 0,
         }));
       } else if (amount !== 0) {
         setFormData((prev) => ({
           ...prev,
           flexFixed: amount,
           weight: 0,
-          amount: 0
+          amount: 0,
         }));
       }
     }
   }, [formData.weight, formData.amount, selectedClassification]);
-  
-  
+
+  useEffect(() => {
+    if (selectedScheme === "Fixed" && formData.id_scheme) {
+      const scheme = schemefilter.find((s) => s._id === formData.id_scheme);
+      if (scheme?.fixed_amounts) {
+        setFixedAmt(
+          scheme.fixed_amounts.map((amount) => ({
+            value: amount,
+            label: amount.toString(),
+          }))
+        );
+      }
+    }
+  }, [formData.id_scheme, selectedScheme, schemefilter]);
 
   return (
     <>
-      <div className="flex flex-row justify-between">
-        {!cusData && (
-          <h2 className="text-2xl text-gray-900 font-bold justify-between">
-            {header}
-          </h2>
-        )}
-      </div>
-      <div
-        className={`w-full flex flex-col bg-white px-4  ${
-          !cusData && "border-[#023453] border-t-2 h-[calc(100vh-200px)]"
-        } overflow-y-auto scrollbar-hide `}
-      >
-        <div className="grid md:grid-cols-2 gap-2">
-          <div className="flex flex-col">
-            <label className="text-black mb-1 font-medium">
-              Branch<span className="text-red-400">*</span>
-            </label>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div>
+          <label className="text-black mb-1 font-normal">
+            Branch<span className="text-red-400">*</span>
+          </label>
 
-            <Select
-              options={branchData}
-              value={
-                branchData.find(
-                  (option) => option.value === cusData.id_branch
-                ) || formData.id_branch
-              }
-              onChange={(option) =>
-                formik.setFieldValue("id_branch", option?.value || "")
-              }
-              onKeyDown={(e) => e.key === "Enter" && e.preventDefault()}
-              styles={customSelectStyles}
-              isLoading={branchloading}
-              isDisabled={id_branch !== "0"}
-              placeholder="Select Branch"
-            />
+          <Select
+            options={branchData}
+            value={
+              branchData.find((option) => option.value === cusData.id_branch) ||
+              formData.id_branch
+            }
+            onChange={(option) =>
+              formik.setFieldValue("id_branch", option?.value || "")
+            }
+            onKeyDown={(e) => e.key === "Enter" && e.preventDefault()}
+            styles={customSelectStyles(true)}
+            isLoading={branchloading}
+            isDisabled={id_branch !== "0"}
+            placeholder="Select Branch"
+          />
 
-            {errors?.id_branch && (
-              <div style={{ color: "red" }}>{errors?.id_branch}</div>
-            )}
-          </div>
-
-          <div className="flex flex-col relative">
-            <label className="text-black mb-1 font-normal">
-              Mobile Number<span className="text-red-400">*</span>
-            </label>
-            <input
-              type="text"
-              value={cusData.mobile || formData.mobile}
-              name="mobile"
-              className="border-2 bg-[#e5e7eb] cursor-not-allowed border-gray-300 rounded-md p-2  focus:border-transparent"
-              placeholder="Enter Here"
-              readOnly
-            />
-          </div>
+          {errors?.id_branch && (
+            <div style={{ color: "red" }}>{errors?.id_branch}</div>
+          )}
         </div>
-
-        <form onSubmit={onSubmit} className="mt-5">
-          <div className="grid grid-rows md:grid-cols-2 gap-3">
-            <div className="flex flex-col">
-              <label className="text-black mb-1 font-normal">
-                Customer Name<span className="text-red-400">*</span>
-              </label>
-              <input
-                readOnly
-                type="text"
-                name="customer_name"
-                value={cusData.customer_name || formData.customer_name}
-                className="border-2 bg-[#e5e7eb] w-full order-gray-300 cursor-not-allowed rounded-md p-2 pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                placeholder="Enter name"
-              />
-              <p style={{ color: "red" }}>{errors?.customer_name}</p>
-            </div>
-
-            <div className="flex flex-col">
-              <label className="text-black mb-1 font-normal">Address</label>
-              <input
-                readOnly
-                type="text"
-                name="address"
-                value={cusData.address || formData.address}
-                className="border-2 bg-[#e5e7eb] border-gray-300 cursor-not-allowed rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                placeholder="Enter address"
-              />
-            </div>
-          </div>
-
-          <div className="flex flex-col mt-5">
-            <div className="grid grid-rows-2 md:grid-cols-2 gap-5">
-              <div className="flex flex-col">
-                <label className="text-black mb-1 font-normal">
-                  Scheme Classification<span className="text-red-400">*</span>
-                </label>
-                <div className="relative">
-                  <select
-                    name="id_classification"
-                    value={formData.id_classification}
-                    onChange={(e) => {
-                      const selectedId = e.target.value;
-                      const selectedOption = classifyfilter.find(
-                        (classify) => classify._id === selectedId
-                      );
-
-                      if (selectedOption) {
-                        setClassification(selectedOption.order);
-                        setSelectedScheme(selectedOption.name);
-                      }
-
-                      filterInputchange(e);
-                    }}
-                    className="appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                    defaultValue=""
-                  >
-                    <option value="">--Select--</option>
-                    {classifyfilter.map((classify) => (
-                      <option key={classify._id} value={classify._id}>
-                        {classify.name}
-                      </option>
-                    ))}
-                  </select>
-
-                  <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                    <svg
-                      className="h-4 w-4 text-gray-400"
-                      fill="none"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="3"
-                      viewBox="0 0 24 24"
-                      stroke="black"
-                    >
-                      <path d="M19 9l-7 7-7-7"></path>
-                    </svg>
-                  </div>
-                </div>
-                <p style={{ color: "red" }}>{errors?.id_classification}</p>
-              </div>
-              <div className="flex flex-col">
-                <label className="text-black mb-1 font-normal">
-                  Scheme<span className="text-red-400">*</span>
-                </label>
-                <div className="relative">
-                  <select
-                    name="id_scheme"
-                    value={formData.id_scheme}
-                    onChange={filterInputchange}
-                    className="appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                    defaultValue=""
-                  >
-                    <option value="">--Select--</option>
-                    {schemefilter.map((scheme) => {
-                      let displayValue = scheme.scheme_name;
-
-                      if (
-                        [3, 4, 12].includes(scheme.scheme_type) &&
-                        scheme.min_weight !== 0 &&
-                        scheme.max_weight !== 0
-                      ) {
-                        displayValue += ` (${scheme.min_weight} - ${scheme.max_weight} GRM)`;
-                      } else if (
-                        scheme.min_amount !== 0 &&
-                        scheme.max_amount !== 0
-                      ) {
-                        displayValue += ` (Rs. ${scheme.min_amount} - Rs. ${scheme.max_amount})`;
-                      } else if (scheme.amount !== null) {
-                        displayValue += ` (Rs. ${scheme.amount})`;
-                      }
-
-                      return (
-                        <option key={scheme._id} value={scheme._id}>
-                          {displayValue}
-                        </option>
-                      );
-                    })}
-                  </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                    <svg
-                      className="h-4 w-4 text-gray-400"
-                      fill="none"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="3"
-                      viewBox="0 0 24 24"
-                      stroke="black"
-                    >
-                      <path d="M19 9l-7 7-7-7"></path>
-                    </svg>
-                  </div>
-                </div>
-                <p style={{ color: "red" }}>{errors?.id_scheme}</p>
-              </div>
-              {selectedScheme === "Fixed" ? (
-                <div className="flex flex-col">
-                  <label className="text-black mb-1 font-normal">
-                    Scheme{" "}
-                    {[12, 3, 4].includes(formData.scheme_type)
-                      ? "Weights"
-                      : "Amounts"}
-                    <span className="text-red-400">*</span>
-                  </label>
-                  <div className="relative">
-                    <select
-                      name={
-                        [12, 3, 4].includes(formData.scheme_type)
-                          ? "weight"
-                          : "amount"
-                      }
-                      value={(() => {
-                        if ([12, 3, 4].includes(formData.scheme_type)) {
-                          return formData.weight || "";
-                        }
-                        return formData.amount || "";
-                      })()}
-                      onChange={(e) => filterInputchange(e)}
-                      className="appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                      defaultValue=""
-                    >
-                      <option value="">--Select--</option>
-                      {fixedamt?.map((amount) => (
-                        <option key={amount} value={amount}>
-                          {amount}
-                        </option>
-                      ))}
-                    </select>
-
-                    <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                      <svg
-                        className="h-4 w-4 text-gray-400"
-                        fill="none"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="3"
-                        viewBox="0 0 24 24"
-                        stroke="black"
-                      >
-                        <path d="M19 9l-7 7-7-7"></path>
-                      </svg>
-                    </div>
-                  </div>
-                  <p style={{ color: "red" }}>{errors?.id_classification}</p>
-                </div>
-              ) : (
-                <>
-                  {selectedClassification === 3 ? (
-                    <>
-                      {[12, 3, 4].includes(formData.scheme_type) ? (
-                        <div className="flex flex-col">
-                          <label className="text-black mb-1 font-normal">
-                            Weight<span className="text-red-400"> * </span>
-                            <span className="text-gray-400 text-sm">{`(min: ${formData.min_weight} - max: ${formData.max_weight})`}</span>
-                          </label>
-                          <input
-                            type="number"
-                            step="any"
-                            name="weight"
-                            defaultValue={""}
-                            value={formData.weight}
-                            onChange={(e) => filterInputchange(e)}
-                            onWheel={(e) => e.target.blur()}
-                            className="border-2 cursor-not-allowed border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                            placeholder="Enter weight"
-                          />
-                          <p className='text-sm mt-2' style={{ color: "red" }}>{errors?.weight}</p>
-                        </div>
-                      ) : (
-                        <div className="flex flex-col">
-                          <label className="text-black mb-1 font-normal">
-                            Amount<span className="text-red-400"> * </span>
-                            <span className="text-gray-400 text-sm">{`(min: ${formData.min_amount} - max: ${formData.max_amount})`}</span>
-                          </label>
-                          <input
-                            type="number"
-                            name="amount"
-                            defaultValue={""}
-                            value={formData.amount}
-                            onWheel={(e) => e.target.blur()}
-                            onChange={(e) => filterInputchange(e)}
-                            className="border-2 cursor-not-allowed border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                            placeholder="Enter amount"
-                          />
-                          <p className='text-sm mt-2' style={{ color: "red" }}>{errors?.amount}</p>
-                        </div>
-                      )}
-                    </>
-                  ) : (
-                    <>
-                      <div className="flex flex-col">
-                        <label className="text-black mb-1 font-normal">
-                          {[12, 3, 4].includes(formData.scheme_type)
-                            ? "Min weight"
-                            : "Min amount"}{" "}
-                          <span className="text-red-400">*</span>
-                        </label>
-                        <input
-                          type="text"
-                          name="total_installments"
-                          value={formData.min_amount || formData.min_weight}
-                          className="border-2 cursor-not-allowed border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                          placeholder="Enter Total Installment"
-                        />
-                        <p style={{ color: "red" }}>
-                          {errors?.total_installments}
-                        </p>
-                      </div>
-                      <div className="flex flex-col">
-                        <label className="text-black mb-1 font-normal">
-                          {[12, 3, 4].includes(formData.scheme_type)
-                            ? "Max weight"
-                            : "Max amount"}
-                          <span className="text-red-400">*</span>
-                        </label>
-                        <input
-                          type="text"
-                          name="total_installments"
-                          value={formData.max_amount || formData.max_weight}
-                          className="border-2 cursor-not-allowed border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                          placeholder="Enter Total Installment"
-                          disabled
-                        />
-                        <p style={{ color: "red" }}>
-                          {errors?.total_installments}
-                        </p>
-                      </div>
-                    </>
-                  )}
-                </>
+        <div>
+          <label className="text-black mb-1 font-normal">
+            Mobile Number<span className="text-red-400">*</span>
+          </label>
+          <input
+            type="text"
+            value={cusData.mobile || formData.mobile}
+            name="mobile"
+            className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+            placeholder="Customer Mobile"
+            disabled
+          />
+        </div>
+        <div>
+          <label className="text-black mb-1 font-normal">
+            Customer Name<span className="text-red-400">*</span>
+          </label>
+          <input
+            disabled
+            type="text"
+            name="customer_name"
+            value={cusData.customer_name || formData.customer_name}
+            className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+            placeholder="Customer Name"
+          />
+          <p style={{ color: "red" }}>{errors?.customer_name}</p>
+        </div>
+        <div>
+          <label className="text-black mb-1 font-normal">Address</label>
+          <input
+            disabled
+            type="text"
+            name="address"
+            value={cusData.address || formData.address}
+            className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+            placeholder="Customer Address"
+          />
+        </div>
+        <div>
+          <label className="text-black mb-1 font-normal">
+            Scheme Classification<span className="text-red-400">*</span>
+          </label>
+          <div className="relative">
+            <Select
+              styles={customSelectStyles(true)}
+              isClearable={true}
+              options={classifyfilter}
+              name="id_classification"
+              value={classifyfilter.find(
+                (item) => item.value === formData.id_classification
               )}
+              onChange={(selectedOption) => {
+                if (selectedOption) {
+                  setClassification(selectedOption.order);
+                  setSelectedScheme(selectedOption.label);
+                  setFormData((prev) => ({
+                    ...prev,
+                    id_classification: selectedOption.value,
+                  }));
+                  handleschemebyclassification(selectedOption.value);
+                } else {
+                  setClassification("");
+                  setSelectedScheme("");
+                  setFormData((prev) => ({
+                    ...prev,
+                    id_classification: "",
+                  }));
+                  setScheme([]);
+                }
+              }}
+            />
+          </div>
+          <p style={{ color: "red" }}>{errors?.id_classification}</p>
+        </div>
+        <div>
+          <label className="text-black mb-1 font-normal">
+            Scheme<span className="text-red-400">*</span>
+          </label>
+          <div className="relative">
+            <Select
+              styles={customSelectStyles(true)}
+              isClearable={true}
+              options={schemefilter.map((scheme) => {
+                let label = scheme.scheme_name;
+
+                if (
+                  [3, 4, 12].includes(scheme.scheme_type) &&
+                  scheme.min_weight !== 0 &&
+                  scheme.max_weight !== 0
+                ) {
+                  label += ` (${scheme.min_weight} - ${scheme.max_weight} GRM)`;
+                } else if (scheme.min_amount !== 0 && scheme.max_amount !== 0) {
+                  label += ` (Rs. ${scheme.min_amount} - Rs. ${scheme.max_amount})`;
+                } else if (scheme.amount !== null) {
+                  label += ` (Rs. ${scheme.amount})`;
+                }
+
+                return {
+                  value: scheme._id,
+                  label: label,
+                  ...scheme,
+                };
+              })}
+              name="id_scheme"
+              value={
+                schemefilter.find((scheme) => scheme._id === formData.id_scheme)
+                  ? {
+                      value: formData.id_scheme,
+                      label:
+                        schemefilter.find(
+                          (scheme) => scheme._id === formData.id_scheme
+                        )?.scheme_name || "",
+                    }
+                  : null
+              }
+              onChange={(selectedOption) => {
+                if (selectedOption) {
+                  setFormData((prev) => ({
+                    ...prev,
+                    id_scheme: selectedOption.value,
+                    scheme_type: selectedOption.scheme_type,
+                    total_installments: selectedOption.total_installments,
+                    maturity_period: selectedOption.maturity_period,
+                    installment_type: selectedOption.installment_type,
+                    min_amount: selectedOption.min_amount,
+                    max_amount: selectedOption.max_amount,
+                    min_weight: selectedOption.min_weight,
+                    max_weight: selectedOption.max_weight,
+                    code: selectedOption.code,
+                    noOfDays: selectedOption.noOfDays,
+                  }));
+                  if (selectedOption.id_metal) {
+                    setMetal(selectedOption.id_metal);
+                  }
+                  if (selectedOption.id_purity) {
+                    setPurity(selectedOption.id_purity);
+                  }
+                  if (
+                    selectedScheme === "Fixed" &&
+                    selectedOption.fixed_amounts
+                  ) {
+                    setFixedAmt(selectedOption.fixed_amounts);
+                  }
+                } else {
+                  setFormData((prev) => ({
+                    ...prev,
+                    id_scheme: "",
+                    scheme_type: 0,
+                    total_installments: 0,
+                    maturity_period: 0,
+                    installment_type: "",
+                    min_amount: 0,
+                    max_amount: 0,
+                    min_weight: 0,
+                    max_weight: 0,
+                    code: 0,
+                    noOfDays: "",
+                  }));
+                }
+              }}
+              isDisabled={!formData.id_classification}
+              placeholder={
+                formData.id_classification
+                  ? "Select Scheme"
+                  : "Select Classification First"
+              }
+            />
+          </div>
+          <p style={{ color: "red" }}>{errors?.id_scheme}</p>
+        </div>
+        {selectedScheme === "Fixed" ? (
+          <div>
+            <label className="text-black mb-1 font-normal">
+              {[12, 3, 4].includes(formData.scheme_type) ? "Weight" : "Amount"}
+              <span className="text-red-400">*</span>
+            </label>
+
+            {fixedamt && fixedamt.length > 0 ? (
+              <Select
+                styles={customSelectStyles(true)}
+                isClearable={true}
+                options={fixedamt}
+                name={
+                  [12, 3, 4].includes(formData.scheme_type)
+                    ? "weight"
+                    : "amount"
+                }
+                value={fixedamt.find((option) =>
+                  [12, 3, 4].includes(formData.scheme_type)
+                    ? option.value === formData.weight
+                    : option.value === formData.amount
+                )}
+                onChange={(selectedOption) => {
+                  const newValue = selectedOption?.value || null;
+                  setFormData((prev) => ({
+                    ...prev,
+                    ...([12, 3, 4].includes(prev.scheme_type)
+                      ? {
+                          weight: newValue,
+                          amount: newValue ? newValue * metalRate : 0,
+                        }
+                      : {
+                          amount: newValue,
+                          weight: 0,
+                        }),
+                  }));
+                }}
+                placeholder={`Select ${
+                  [12, 3, 4].includes(formData.scheme_type)
+                    ? "Weight"
+                    : "Amount"
+                }`}
+              />
+            ) : (
+              <div className="border-2 border-[#f2f3f8] rounded-md p-2 bg-gray-100 text-gray-500">
+                No fixed{" "}
+                {[12, 3, 4].includes(formData.scheme_type)
+                  ? "weights"
+                  : "amounts"}{" "}
+                available
+              </div>
+            )}
+
+            <p style={{ color: "red" }}>{errors?.weight || errors?.amount}</p>
+          </div>
+        ) : (
+          <>
+            {selectedClassification === 3 && schemefilter.length > 0 ? (
               <>
-                {selectedClassification === 3 &&
-                  [12, 3, 4].includes(formData.scheme_type) && (
-                    <div className="flex flex-col">
-                      <label className="text-black mb-1 font-normal">
-                        Payable Amount
-                      </label>
-                      <input
-                        type="text"
-                        name="amount"
-                        value={formData.amount}
-                        disabled
-                        className="border-2 cursor-not-allowed border-gray-300 rounded-md p-2 w-full pr-16 bg-gray-100 focus:outline-none"
-                        placeholder="Payable Amount"
-                      />
-                      {errors?.amount && (
-                        <p style={{ color: "red" }}>
-                          {errors.amount}
-                        </p>
-                      )}
-                    </div>
-                  )}
-              </>
-              <div className="flex flex-col relative group">
-                <label className="text-black mb-1 font-normal">
-                  Account Name<span className="text-red-400">*</span>
-                </label>
-                {/* <div className="relative w-full">
-                  <input
-                    type="text"
-                    name="account_name"
-                    onChange={(e) => filterInputchange(e)}
-                    value={formData.account_name}
-                    className="border-2 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-1 focus:ring-gray-500 focus:border focus:border-gray-500"
-                    placeholder="Enter Account Name"
-                  />
-                  <div
-                    className="text-black bg-white absolute flex items-center border-2 justify-center cursor-pointer inset-y-1/2 -translate-y-[22px] translate-x-[0px] right-0 rounded-r-lg w-10  
-      border-gray-300 group-focus-within:border group-focus-within:border-gray-500 group-focus-within:ring-1 group-focus-within:ring-gray-500"
-                  >
-                    AC{acNumber}
-                  </div>
-                </div> */}
-                <div className="relative">
-                  <input
-                    type="text"
-                    name="account_name"
-                    value={formData.account_name}
-                    onChange={(e) => filterInputchange(e)}
-                    onWheel={(e) => e.target.blur()}
-                    // onBlur={formik.handleBlur}
-                    className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                    placeholder="Enter Account Name"
-                    style={{ height: inputHeight }}
-                  />
-                  <span className="absolute right-0 top-0 w-9 h-full px-3 flex items-center justify-center text-black border-l">
-                    AC{acNumber}
-                  </span>
-                </div>
-                <p style={{ color: "red" }}>{errors?.account_name}</p>
-              </div>
-
-              <div className="flex flex-col">
-                <label className="text-black mb-1 font-normal">
-                  Total Installment<span className="text-red-400">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="total_installments"
-                  value={formData.total_installments}
-                  className="border-2 cursor-not-allowed border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                  placeholder="Enter Total Installment"
-                  disabled
-                />
-                <p style={{ color: "red" }}>{errors?.total_installments}</p>
-              </div>
-
-              <div className="flex flex-col">
-                <label className="text-black mb-1 font-normal">
-                  Maturity Period<span className="text-red-400">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="maturity_period"
-                  value={formData.maturity_period}
-                  className="border-2 cursor-not-allowed border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                  placeholder="Enter Maturity Month"
-                  disabled
-                />
-                <p style={{ color: "red" }}>{errors?.maturity_period}</p>
-              </div>
-
-              <div className="flex flex-col">
-                <label className="text-gray-700 mb-1 font-normal">
-                  Start Date<span className="text-red-400">*</span>
-                </label>
-                <div className="relative">
-                  <DatePicker
-                    selected={formData.start_date}
-                    onChange={handleStartDateChange}
-                    dateFormat="dd-MM-yyyy"
-                    placeholderText="Select Date"
-                    className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                    showMonthDropdown
-                    showYearDropdown
-                    dropdownMode="select"
-                    wrapperClassName="w-full"
-                  />
-                  <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-gray-500 w-14 h-[43px] justify-center items-center flex rounded-r-md pointer-events-none">
-                    <CalendarDays size={20} />
-                  </span>
-                </div>
-                <p style={{ color: "red" }}>{errors?.start_date}</p>
-              </div>
-              <div className="flex flex-col">
-                <label className="text-black mb-1 font-normal">
-                  Maturity Date<span className="text-red-400">*</span>
-                </label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    disabled
-                    name="maturity_date"
-                    value={formData.maturity_date}
-                    className="border-2 cursor-not-allowed border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                    placeholder="Enter Maturity Date"
-                  />
-                </div>
-                <p style={{ color: "red" }}>{errors?.maturity_date}</p>
-              </div>
-
-              {!id && formData.referral_id === null  && (
-                <>
+                {[12, 3, 4].includes(formData.scheme_type) ? (
                   <div className="flex flex-col">
                     <label className="text-black mb-1 font-normal">
-                      Referral By{" "}
-                      {referralName && (
-                        <span className="text-green-700">{referralName}</span>
-                      )}
-                    </label>
-                    <div className="relative">
-                      <select
-                        name="referral_type"
-                        value={selectedRole}
-                        onChange={(e) => setRole(e.target.value)}
-                        className="appearance-none border border-gray-300 rounded-md p-3 w-full bg-white pr-8 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                        defaultValue=""
-                      >
-                        <option value="">--Select--</option>
-                        {referralRoles.map((employee) => (
-                          <option key={employee.id} value={employee.id}>
-                            {employee.role}
-                          </option>
-                        ))}
-                      </select>
-                      <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                        <svg
-                          className="h-4 w-4 text-gray-400"
-                          fill="none"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="3"
-                          viewBox="0 0 24 24"
-                          stroke="black"
-                        >
-                          <path d="M19 9l-7 7-7-7"></path>
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex flex-col relative">
-                    <label className="text-black mb-1 font-normal">
-                      Search Refferral Number
-                      {/* <span className="text-red-400">*</span> */}
+                      Weight<span className="text-red-400"> * </span>
+                      <span className="text-gray-400 text-sm">{`(min: ${formData.min_weight} - max: ${formData.max_weight})`}</span>
                     </label>
                     <input
-                      type="text"
-                      maxLength={10}
-                      value={searchmobile}
-                      onChange={(e) => {
-                        if (Number(e.target.value) || e.target.value == "") {
-                          setSearchMobile(e.target.value);
-                        }
-                      }}
-                      className="border-2 border-gray-300 rounded-md p-2  focus:border-transparent"
-                      placeholder="Enter mobile number or referral code"
+                      type="number"
+                      step="any"
+                      name="weight"
+                      defaultValue={""}
+                      value={formData.weight}
+                      onChange={(e) => filterInputchange(e)}
+                      onWheel={(e) => e.target.blur()}
+                      className="border-2 cursor-not-allowed border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                      placeholder="Enter weight"
                     />
-
-                    {/* Search Icon */}
-                    <div
-                      disabled={searchmobile === ""}
-                      onClick={handleSearchmobile}
-                      className="absolute flex items-center justify-center cursor-pointer right-[0%] rounded-r-lg top-[68%] -translate-y-1/2 w-10 md:h-[43px] md:top-[50px] h-[62%] sm:right-0 sm:top-[68%] lg:right-[0%]"
-                      style={{ backgroundColor: layout_color }}
-                    >
-                      <Search size={20} className="text-white" />
-                    </div>
+                    <p className="text-sm mt-2" style={{ color: "red" }}>
+                      {errors?.weight}
+                    </p>
                   </div>
-                </>
-              )}
-            </div>
+                ) : (
+                  <div className="flex flex-col">
+                    <label className="text-black mb-1 font-normal">
+                      Amount<span className="text-red-400"> * </span>
+                      <span className="text-gray-400 text-sm">{`(min: ${formData.min_amount} - max: ${formData.max_amount})`}</span>
+                    </label>
+                    <input
+                      type="number"
+                      name="amount"
+                      defaultValue={""}
+                      value={formData.amount}
+                      onWheel={(e) => e.target.blur()}
+                      onChange={(e) => filterInputchange(e)}
+                      className="border-2 cursor-not-allowed border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                      placeholder="Enter amount"
+                    />
+                    <p className="text-sm mt-2" style={{ color: "red" }}>
+                      {errors?.amount}
+                    </p>
+                  </div>
+                )}
+              </>
+            ) : null}
+          </>
+        )}
+        <>
+          {selectedClassification === 3 &&
+            schemefilter.length > 0 &&
+            [12, 3, 4].includes(formData.scheme_type) && (
+              <div className="flex flex-col">
+                <label className="text-black mb-1 font-normal">
+                  Payable Amount
+                </label>
+                <input
+                  type="text"
+                  name="amount"
+                  value={formData.amount}
+                  disabled
+                  className="border-2 cursor-not-allowed border-gray-300 rounded-md p-2 w-full pr-16 bg-gray-100 focus:outline-none"
+                  placeholder="Payable Amount"
+                />
+                {errors?.amount && (
+                  <p style={{ color: "red" }}>{errors.amount}</p>
+                )}
+              </div>
+            )}
+        </>
+        <div className="flex flex-col relative group">
+          <label className="text-black mb-1 font-normal">
+            Account Name<span className="text-red-400">*</span>
+          </label>
+          <div className="relative">
+            <input
+              type="text"
+              name="account_name"
+              value={formData.account_name}
+              onChange={(e) => filterInputchange(e)}
+              onWheel={(e) => e.target.blur()}
+              className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+              placeholder="Enter Account Name"
+              style={{ height: inputHeight }}
+            />
+            <span className="absolute right-0 top-0 w-9 h-full px-3 flex items-center justify-center text-black border-l">
+              AC{acNumber}
+            </span>
           </div>
-
-          <div className="bg-white p-2  mt-4">
-            {/* border-t-2 border-gray-300 */}
-            <div className="flex justify-end gap-2 mt-3">
-              <button
-                className="bg-[#E2E8F0] text-black rounded-md p-2 w-full lg:w-20"
-                type="button"
-                onClick={handleCancel}
-              >
-                Cancel
-              </button>
-              <button
-                className=" text-white rounded-md p-2 w-full lg:w-20"
-                type="submit"
-                disabled={isLoading}
-                style={{ backgroundColor: layout_color }}
-              >
-                {isLoading ? <SpinLoading /> : id ? "Update" : "Save"}
-              </button>
-            </div>
+          <p style={{ color: "red" }}>{errors?.account_name}</p>
+        </div>
+        <div className="flex flex-col">
+          <label className="text-black mb-1 font-normal">
+            Total Installment<span className="text-red-400">*</span>
+          </label>
+          <input
+            type="text"
+            name="total_installments"
+            value={formData.total_installments}
+            className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+            placeholder="Enter Total Installment"
+            disabled
+          />
+          <p style={{ color: "red" }}>{errors?.total_installments}</p>
+        </div>
+        <div className="flex flex-col">
+          <label className="text-black mb-1 font-normal">
+            Maturity Period<span className="text-red-400">*</span>
+          </label>
+          <input
+            type="text"
+            name="maturity_period"
+            value={formData.maturity_period}
+            className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+            placeholder="Enter Maturity Month"
+            disabled
+          />
+          <p style={{ color: "red" }}>{errors?.maturity_period}</p>
+        </div>
+        <div>
+          <label className="text-gray-700 mb-1 font-normal">
+            Start Date<span className="text-red-400">*</span>
+          </label>
+          <div className="relative">
+            <DatePicker
+              selected={formData.start_date}
+              onChange={handleStartDateChange}
+              dateFormat="dd-MM-yyyy"
+              placeholderText="Select Date"
+              className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+              showMonthDropdown
+              showYearDropdown
+              dropdownMode="select"
+              wrapperClassName="w-full"
+            />
+            <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-gray-500 w-14 h-[43px] justify-center items-center flex rounded-r-md pointer-events-none">
+              <CalendarDays size={20} />
+            </span>
           </div>
-        </form>
-        <Modal/>
+          <p style={{ color: "red" }}>{errors?.start_date}</p>
+        </div>
+        {formData.id_scheme && (
+          <div>
+            <label className="text-black mb-1 font-normal">
+              Maturity Date<span className="text-red-400">*</span>
+            </label>
+            <div className="relative">
+              <input
+                type="text"
+                disabled
+                name="maturity_date"
+                value={formData.maturity_date}
+                className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                placeholder="Enter Maturity Date"
+              />
+            </div>
+            <p style={{ color: "red" }}>{errors?.maturity_date}</p>
+          </div>
+        )}
+        {!id && formData.referral_id === null && (
+          <>
+            <div>
+              <label className="text-black mb-1 font-normal">
+                Referral By{" "}
+                {referralName && (
+                  <span className="text-green-700">{referralName}</span>
+                )}
+              </label>
+              <Select
+                name="referral_type"
+                options={referralRoles}
+                value={referralRoles.find(
+                  (role) => role.value === selectedRole
+                )}
+                onChange={(selectedOption) => {
+                  setRole(selectedOption?.value || "");
+                  setReferralName(""); // Clear referral name when role changes
+                  setReferralid(null); // Clear referral ID when role changes
+                }}
+                styles={customSelectStyles(true)}
+                placeholder="Select Referral Type"
+              />
+            </div>
+            <div className="flex flex-col relative">
+              <label className="text-black mb-1 font-normal">
+                Search Referral Number
+              </label>
+              <div className="flex">
+                <input
+                  type="text"
+                  maxLength={10}
+                  value={searchmobile}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value === "" || /^\d+$/.test(value)) {
+                      setSearchMobile(value);
+                    }
+                  }}
+                  className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                  placeholder="Enter mobile number or referral code"
+                  disabled={!selectedRole}
+                />
+                <div
+                  disabled={searchmobile === ""}
+                  onClick={handleSearchmobile}
+                  className="absolute flex items-center justify-center cursor-pointer right-[0%] rounded-r-lg top-[68%] -translate-y-1/2 w-10 md:h-[43px] md:top-[50px] h-[62%] sm:right-0 sm:top-[68%] lg:right-[0%]"
+                >
+                  <Search size={20} className="text-[#6C7086]" />
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+      <div className="bg-white p-2  mt-4">
+        <div className="flex justify-end gap-2 mt-3">
+          <button
+            className=" text-white rounded-md p-2 w-full lg:w-20"
+            type="submit"
+            disabled={isLoading}
+            style={{ backgroundColor: layout_color }}
+          >
+            {isLoading ? <SpinLoading /> : id ? "Update" : "Save"}
+          </button>
+          <button
+            className="bg-[#E2E8F0] text-black rounded-md p-2 w-full lg:w-20"
+            type="button"
+            onClick={handleCancel}
+          >
+            Cancel
+          </button>
+        </div>
       </div>
     </>
   );

@@ -97,7 +97,7 @@ const Base = ({ renderContent: RenderContent }) => {
       if (!data || !Array.isArray(data)) return;
 
       const metals = ["Gold", "Silver"];
-      const goldPurityRegex = /^(24|22)\s?(k|c)t$/i;
+      const goldPurityRegex = /^(24|22)\s?(k|c)(t)?$/i;
 
       const filteredData = data.filter((item) => {
         const metalName = item?.id_metal?.metal_name;
@@ -159,7 +159,6 @@ const Base = ({ renderContent: RenderContent }) => {
         });
 
       if (sortedData && sortedData.length > 0) {
-        console.log(sortedData);
         setMetalRate(sortedData);
       }
     } catch (error) {

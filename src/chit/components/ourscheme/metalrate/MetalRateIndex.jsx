@@ -78,12 +78,14 @@ function MetalRateIndex({refresh}) {
     });
 
     setFormErrors(errors);
-    const formValues = formData.map((e) => ({
+    const formValues = formData?.map((e) => ({
       id_branch: branchId,
-      purity_id: e.purity_id._id,
-      material_type_id: e.material_type_id._id,
+      purity_id: e.purity_id?._id,
+      material_type_id: e.material_type_id?._id,
       rate: e.rate,
     }));
+
+    console.log(formValues)
 
     if (Object.keys(errors).length === 0) {
       setLoading(true);

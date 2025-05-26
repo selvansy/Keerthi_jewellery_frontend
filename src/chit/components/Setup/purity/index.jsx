@@ -17,12 +17,9 @@ import { toast } from "react-toastify";
 import { openModal } from "../../../../redux/modalSlice";
 import { eventEmitter } from "../../../../utils/EventEmitter";
 import { useSelector, useDispatch } from "react-redux";
-import { Formik } from "formik";
-import * as Yup from "yup";
 import ModelOne from "../../common/Modelone";
 import Modal from "../../common/Modal";
 import { useDebounce } from "../../../hooks/useDebounce";
-import { setid } from "../../../../redux/clientFormSlice";
 import Select from "react-select";
 import usePagination from "../../../hooks/usePagination";
 import SpinLoading from "../../common/spinLoading";
@@ -81,6 +78,7 @@ const Purity = () => {
   const [isLoading, setisLoading] = useState(true);
   const [searchLoading, setSearchLoading] = useState(false);
   const [totalDocuments, setTotalDocuments] = useState(0);
+  const [enableButton,setEnableButton]= useState(false)
 
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
@@ -123,6 +121,7 @@ const Purity = () => {
             label: metal.metal_name,
           }))
         );
+        setEnableButton(true)
       }
     },
   });
@@ -353,8 +352,8 @@ const Purity = () => {
             />
           </div>
 
-          {/* Add Metal Button */}
-          {purityData.length <= 3 && !Loading && (
+
+          {(purityData.length <= 3 && !Loading && enableButton ) && (
             <div className="w-full flex justify-end">
               <button
                 className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-[135px] sm:w-auto"
