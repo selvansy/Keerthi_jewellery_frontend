@@ -121,13 +121,17 @@ const CreateDigiGoldScheme = () => {
       min_amount: "",
       scheme_type: silver ? 14 : 10,
       noOfDays: null,
-      maxLimit:null,
+      maxLimit:null
     },
     validationSchema: Yup.object({
       scheme_name: Yup.string().required("Scheme name is required"),
       description: Yup.string().required("Description is required"),
       term_desc: Yup.string().required("Terms & conditions is required"),
-      id_branch: Yup.string().required("Branch is required"),
+      id_purity:Yup.string().required("Purity is required"),
+      // id_branch: Yup.string().required("Branch is required"),
+      id_branch:Yup.string()
+      .required("Branch is required")
+      .nullable(),
       bonus_type: Yup.number().when("$isBonus", {
         is: true,
         then: (schema) => schema.required("Bonus type is required"),
@@ -141,11 +145,11 @@ const CreateDigiGoldScheme = () => {
             .required("Count is required"),
         otherwise: (schema) => schema.notRequired(),
       }),
-      entry_type: Yup.number().when("$isBonus", {
-        is: true,
-        then: (schema) => schema.required("Entry type is required"),
-        otherwise: (schema) => schema.notRequired(),
-      }),
+      // entry_type: Yup.number().when("$isBonus", {
+      //   is: true,
+      //   then: (schema) => schema.required("Entry type is required"),
+      //   otherwise: (schema) => schema.notRequired(),
+      // }),
       values: Yup.array().of(
         Yup.object().shape({
           min: Yup.number().when(["$entry_type", "$isBonus"], {
@@ -177,25 +181,39 @@ const CreateDigiGoldScheme = () => {
             otherwise: (schema) => schema.notRequired(),
           })
       ),
-      buy_gst: Yup.number().optional("Buy GST is required"),
-      sell_gst: Yup.number().optional("Sell GST is required"),
+      // buy_gst: Yup.number().optional("Buy GST is required"),
+      // sell_gst: Yup.number().optional("Sell GST is required"),
       max_amount: Yup.number().required("Max Amount is required"),
       min_amount: Yup.number().required("Min Amount is required"),
       scheme_type: Yup.number().required("Scheme type is required"),
-      noOfDays:Yup.number().required("Maturity days required")
+      noOfDays:Yup.number().required("Maturity days required"),
+      main_image: Yup.mixed()
+      .test('required', 'Main image is required', (value) => {
+        return mainImage !== null && mainImage !== false;
+      })
+      // .test('fileSize', 'File too large', (value) => {
+      //   if (value && value.size) {
+      //     return value.size <= 1024 * 1024;
+      //   }
+      //   return true;
+      // }),
     }),
     context: { isBonus }, 
     // Replace the onSubmit function in your formik configuration
 // Replace the onSubmit function in your formik configuration
 onSubmit: async (values) => {
   setIsLoading(true);
+
+  if (!mainImage) {
+    formik.setFieldError('main_image', 'Main image is required');
+    setIsLoading(false);
+    return;
+  }
   
   try {
     const formData = new FormData();
 
-    // Append all simple fields
     Object.keys(values).forEach(key => {
-      // Skip arrays and objects (they'll be handled separately)
       if (key !== 'values' && key !== 'bonuses' && 
           key !== 'logo' && key !== 'desc_img' &&
           values[key] !== undefined && values[key] !== null) {
@@ -248,7 +266,6 @@ onSubmit: async (values) => {
 }
   });
  
-  console.log(formik.errors)
   //api calls
   const { data: branchData } = useQuery({
     queryKey: ["branches", accessBranch, id_branch],
@@ -680,29 +697,31 @@ onSubmit: async (values) => {
 
           {accessBranch === "0" && branch.length > 0 && !isLoading ? (
             <div>
-              <label className="block text-sm font-medium mb-1">
-                Branch <span className="text-red-500">*</span>
-              </label>
-              <Select
-                styles={customStyles(true)}
-                isClearable={true}
-                options={branch}
-                placeholder="Select Branch"
-                value={
-                  branch.find(
-                    (option) => option.value === formik.values.id_branch
-                  ) || ""
-                }
-                onChange={(option) =>
-                  formik.setFieldValue("id_branch", option ? option.value : "")
-                }
-              />
-              {formik.errors.id_branch && (
-                <div className="text-red-500 text-sm mt-1">
-                  {formik.errors.id_branch}
-                </div>
-              )}
-            </div>
+            <label className="block text-sm font-medium mb-1">
+              Branch <span className="text-red-500">*</span>
+            </label>
+            <Select
+              styles={customStyles(true)}
+              isClearable={true}
+              options={branch}
+              placeholder="Select Branch"
+              value={
+                branch.find(
+                  (option) => option.value === formik.values.id_branch
+                ) || null
+              }
+              onChange={(option) => {
+                formik.setFieldValue("id_branch", option ? option.value : "");
+                formik.setFieldTouched("id_branch", true); // Mark as touched when changed
+              }}
+              onBlur={() => formik.setFieldTouched("id_branch", true)} // Mark as touched on blur
+            />
+            {formik.touched.id_branch && formik.errors.id_branch && (
+              <div className="text-red-500 text-sm mt-1">
+                {formik.errors.id_branch}
+              </div>
+            )}
+          </div>
           ) : (
             <div>
               <label className="block text-sm font-medium mb-1">
@@ -891,6 +910,40 @@ onSubmit: async (values) => {
             )}
           </div>
 
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              Count 
+              {/* {!silver && <span className="text-red-400">*</span>} */}
+            </label>
+            <input
+              type="number"
+              name="count"
+              min={1}
+              max={10}
+              value={formik.values.count}
+              onChange={(e) => {
+                let value = parseInt(e.target.value, 10);
+
+                // Clamp value between 1 and 10
+                if (isNaN(value)) value = "";
+                if (value > 10) value = 10;
+                if (value < 1) value = "";
+
+                formik.setFieldValue("count", value);
+                formik.setFieldValue("values", Array(value).fill({}));
+                formik.setFieldValue("bonuses", Array(value).fill(0));
+              }}
+              onBlur={formik.handleBlur}
+              onWheel={(e) => e.target.blur()} // prevent scroll-changing
+              className="w-full border rounded-md px-3 py-2"
+            />
+            {formik.touched.count && formik.errors.count && (
+              <div className="text-red-500 text-sm mt-1">
+                {formik.errors.count}
+              </div>
+            )}
+          </div>
+
           <div className="flex flex-col ">
             <label className="block text-sm font-medium mb-1">
               Maturity / Instalments <span className="text-red-400"> *</span>
@@ -952,41 +1005,6 @@ onSubmit: async (values) => {
               </span>
             )}
           </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1">
-              Count 
-              {/* {!silver && <span className="text-red-400">*</span>} */}
-            </label>
-            <input
-              type="number"
-              name="count"
-              min={1}
-              max={10}
-              value={formik.values.count}
-              onChange={(e) => {
-                let value = parseInt(e.target.value, 10);
-
-                // Clamp value between 1 and 10
-                if (isNaN(value)) value = "";
-                if (value > 10) value = 10;
-                if (value < 1) value = "";
-
-                formik.setFieldValue("count", value);
-                formik.setFieldValue("values", Array(value).fill({}));
-                formik.setFieldValue("bonuses", Array(value).fill(0));
-              }}
-              onBlur={formik.handleBlur}
-              onWheel={(e) => e.target.blur()} // prevent scroll-changing
-              className="w-full border rounded-md px-3 py-2"
-            />
-            {formik.touched.count && formik.errors.count && (
-              <div className="text-red-500 text-sm mt-1">
-                {formik.errors.count}
-              </div>
-            )}
-          </div>
-
           <div></div>
           {generateFields()}
         </div>

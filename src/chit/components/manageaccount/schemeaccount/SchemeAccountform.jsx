@@ -1587,7 +1587,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
         )}
       </div>
       <div className="bg-white p-2  mt-4">
-        <div className="flex justify-end gap-2 mt-3">
+        <div className="flex justify-end gap-5 mt-3">
           <button
             className=" text-white rounded-md p-2 w-full lg:w-20"
             type="submit"
