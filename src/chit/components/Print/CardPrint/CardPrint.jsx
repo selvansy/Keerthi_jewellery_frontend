@@ -77,7 +77,7 @@ const CardPrint = () => {
     const stylecss = `
       @media print {
         #customers {
-          font-family: Arial, Helvetica, sans-serif;
+          fontfont-family: Inter, sans-serif;
           border-collapse: collapse;
           width: 100%;
           margin-top: 20px;
