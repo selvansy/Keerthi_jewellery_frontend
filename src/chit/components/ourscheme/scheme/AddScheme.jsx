@@ -34,6 +34,39 @@ import { schemeValidationSchema } from "../../../../utils/validations/schemeVali
 import SpinLoading from "../../common/spinLoading";
 import "react-datepicker/dist/react-datepicker.css";
 
+
+ export const customStyles = (isReadOnly) => ({
+    control: (base, state) => ({
+      ...base,
+      minHeight: "44px", //42px
+      backgroundColor: "white",
+      border: state.isFocused ? "1px solid #f2f2f9" : "1px solid #f2f2f9",
+      boxShadow: state.isFocused ? "0 0 0 1px #004181" : "none",
+      borderRadius: "0.5rem",
+      "&:hover": {
+        color: "#e2e8f0",
+      },
+      pointerEvents: !isReadOnly ? "none" : "auto",
+      opacity: !isReadOnly ? 1 : 1,
+    }),
+    indicatorSeparator: () => ({
+      display: "none",
+    }),
+    placeholder: (base) => ({
+      ...base,
+      color: "#6C7086",
+      fontWeight: "thin",
+      // fontStyle: "bold",
+    }),
+    dropdownIndicator: (provided, state) => ({
+      ...provided,
+      color: "#232323",
+      "&:hover": {
+        color: "#232323",
+      },
+    }),
+  });
+
 const SchemeForm = () => {
   // const { setFieldValue, validateForm, values } = useFormikContext();
   const navigate = useNavigate();
@@ -232,40 +265,10 @@ const SchemeForm = () => {
     }
   }, [id]);
 
-  // Customisations for react-select
-  const customStyles = (isReadOnly) => ({
-    control: (base, state) => ({
-      ...base,
-      minHeight: "42px", //42px
-      backgroundColor: "white",
-      border: state.isFocused ? "1px solid black" : "2px solid #f2f3f8",
-      boxShadow: state.isFocused ? "0 0 0 1px black" : "none",
-      borderRadius: "0.375rem",
-      "&:hover": {
-        color: "#e2e8f0",
-      },
-      pointerEvents: !isReadOnly ? "none" : "auto",
-      opacity: !isReadOnly ? 1 : 1,
-    }),
-    indicatorSeparator: () => ({
-      display: "none",
-    }),
-    placeholder: (base) => ({
-      ...base,
-      color: "#858293",
-      fontWeight: "thin",
-      // fontStyle: "bold",
-    }),
-    dropdownIndicator: (provided, state) => ({
-      ...provided,
-      color: "#232323",
-      "&:hover": {
-        color: "#232323",
-      },
-    }),
-  });
-
-  const inputHeight = "42px";
+  // Customisations for react-
+  
+  
+  const inputHeight = "44px";
 
   //query and mutations
   const { data: classificationData } = useQuery({

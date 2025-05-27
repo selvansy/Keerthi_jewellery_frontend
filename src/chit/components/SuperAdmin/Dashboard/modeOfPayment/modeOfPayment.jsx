@@ -7,6 +7,7 @@ import {
 import { useMutation } from "@tanstack/react-query";
 import { customSelectStyles } from "../../../Setup/purity";
 import { CalendarDays } from "lucide-react";
+import { customStyles } from "../../../ourscheme/scheme/AddScheme";
 const getStartOfDay = (date) => {
   const newDate = new Date(date);
   newDate.setHours(0, 0, 0, 0);
@@ -128,7 +129,7 @@ function ModeOfPayment({ id_branch }) {
     <div className="">
       <div className="bg-[#FFFFFF] pt-4  px-4 rounded-[16px]">
         <div className="flex justify-between items-center mb-[15px] ">
-          <h2 className="text-[#2F1C6A] font-semibold text-xl">
+          <h2 className="text-[#232323] font-semibold text-xl">
             Mode of Payment
           </h2>
 
@@ -139,7 +140,7 @@ function ModeOfPayment({ id_branch }) {
             placeholder="Select Date"
             className="react-select-container"
             classNamePrefix="react-select"
-            styles={customSelectStyles(true)}
+            styles={customStyles(true)}
             components={{ Control: CustomControl }}
           />
         </div>

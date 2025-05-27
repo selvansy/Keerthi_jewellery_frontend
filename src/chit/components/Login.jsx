@@ -80,13 +80,13 @@ const Login = () => {
       }}
     >
       <div className="w-full max-w-md bg-white shadow-lg rounded-[16px] p-6">
-        <div className="text-center mb-4 flex justify-center  py-3">
+        <div className="text-center mb-1  flex justify-center py-3">
           <img src={Logo} alt="" srcset="" />
         </div>
         <div className="text-center py-3">
           <h1 className="text-2xl font-bold text[#232323]">Sign-In</h1>
         </div>
-        <div className="flex justify-center mb-8">
+        <div className="flex justify-center mb-4 -mt-2">
           <p className="w-[320px] text-[#6C7086] text-center ">
             Access the Aupay panel using your email and password.
           </p>
@@ -94,10 +94,10 @@ const Login = () => {
         <form onSubmit={handleSubmit}>
           <div className="space-y-4">
               <div className="">
-              <label htmlFor="" className="ms-1">
-                Username <span className="text-[#F04438]">*</span>{" "}
+            <label htmlFor="" className="font-semibold text-[#232323]">
+                Username<span className="text-[#F04438]">*</span>{" "}
               </label>
-              <div className="flex items-center border rounded-lg p-2 bg-gray-50 mt-1">
+              <div className="flex items-center border border-[#f2f3f8] rounded-lg mt-1">
                 <input
                   type="text"
                   name="username"
@@ -105,15 +105,15 @@ const Login = () => {
                   value={formData.username}
                   onChange={handleChange}
                   required
-                  className="w-full p-2 bg-transparent border-0 focus:outline-none text-gray-700"
+                  className="w-full bg-transparent focus:ring-1 custom-height focus:ring-[#004181] outline-none  rounded-lg "
                 />
               </div>
             </div>
-            <div className="space-y-2">
-              <label htmlFor="" className="ms-1">
-                Password <span className="text-[#F04438]">*</span>{" "}
+            <div className="">
+              <label htmlFor="" className=" font-semibold text-[#232323]">
+                Password<span className="text-[#F04438]">*</span>{" "}
               </label>
-              <div className="flex items-center border rounded-lg p-2 bg-gray-50 relative">
+              <div className="flex items-center border border-[#f2f3f8] rounded-lg  relative mt-1">
                 <input
                   type={showPass ? "text" : "password"}
                   name="password"
@@ -121,10 +121,10 @@ const Login = () => {
                   value={formData.password}
                   onChange={handleChange}
                   required
-                  className="w-full p-2 bg-transparent border-0 focus:outline-none text-gray-700"
+                  className="w-full bg-transparent border-0 custom-height focus:ring-1 focus:ring-[#004181] outline-none rounded-lg "
                 />
                 <div
-                  className="absolute right-3 cursor-pointer text-gray-500"
+                  className="absolute right-3 text-[#6C7086] cursor-pointer"
                   onClick={() => setShowPass((prev) => !prev)}
                 >
                   {showPass ? <EyeOff size={20} /> : <Eye size={20} />}
@@ -135,7 +135,7 @@ const Login = () => {
           <div className="mt-6">
             <button
               type={!isLoading ? "submit" : undefined}
-              className="w-full  text-white py-2 rounded-lg bg-[#004181] transition duration-200"
+              className="btn-pd w-full text-white rounded-lg bg-[#004181] font-semibold transition duration-200"
             >
               {isLoading ? (
                 <div className="flex justify-center">

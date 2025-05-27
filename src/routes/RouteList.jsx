@@ -120,6 +120,8 @@ import AmountPaybleParent from "../chit/components/Report/amountPaybleParent";
 import AmountPaybleChild from "../chit/components/Report/amountPaybleChild";
 import WeightPaybleParent from "../chit/components/Report/weightPaybleParent";
 import WeightPaybleChild from "../chit/components/Report/weightPaybleChild";
+import { path } from "framer-motion/client";
+import Exisitingcustomer from "../chit/components/manageaccount/customer/Exisitingcustomer";
 
 const RouteList = [
 
@@ -351,10 +353,15 @@ const RouteList = [
 
   //Manage Customers
 
+  // {
+  //   name: "Existing customer",
+  //   path: '/managecustomers/customer',
+  //   element: <Base renderContent={ExistingCusTable} />
+  // },
   {
-    name: "Existing customer",
-    path: '/managecustomers/customer',
-    element: <Base renderContent={ExistingCusTable} />
+    name:"Existing Customer",
+    path:'/managecustomers/customer',
+    element:<Base renderContent={Exisitingcustomer}/>
   },
   {
     name: "Add Customer",
