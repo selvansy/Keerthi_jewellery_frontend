@@ -207,7 +207,7 @@ const Delist = () => {
       header: "Actions",
       cell: (row, rowIndex) => (
         <Action row={row} data={schemes} rowIndex={rowIndex} activeDropdown={activeDropdown} setActive={hanldeActiveDropDown}  
-        handleEdit={row.scheme_type !== 10 ? handleEdit : handleDigiGold}
+        handleEdit={ ![10, 14].includes(row.scheme_type) ? handleEdit : handleDigiGold}
          handleDelete={handleDelete}
          showEdit={row.is_accounts !== true}
          showDelete= {row.is_accounts !== true}
