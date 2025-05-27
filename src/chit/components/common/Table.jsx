@@ -226,56 +226,97 @@ const Table = ({
           </div>
 
           {showPagination && data.length >= 1 && (
-            <div className="p-4 flex items-center justify-between text-sm text-gray-600 border-t">
-              <div>
-                Showing {(currentPage - 1) * itemsPerPage + 1} to{" "}
-                {Math.min(currentPage * itemsPerPage, totalItems)} of{" "}
-                {totalItems} entries
-              </div>
+  <div className="p-4 flex items-center justify-between text-sm text-gray-600 border-t">
+    <div>
+      Showing {(currentPage - 1) * itemsPerPage + 1} to{" "}
+      {Math.min(currentPage * itemsPerPage, totalItems)} of{" "}
+      {totalItems} entries
+    </div>
 
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={currentPage === 1}
-                  className={`flex items-center px-3 py-1 rounded ${
-                    currentPage === 1
-                      ? "text-gray-400 cursor-not-allowed"
-                      : "text-blue-600 hover:bg-blue-50"
-                  }`}
-                >
-                  <ChevronLeft className="h-4 w-4 mr-1" /> Previous
-                </button>
+    <div className="flex items-center space-x-2">
+      <button
+        onClick={() => handlePageChange(currentPage - 1)}
+        disabled={currentPage === 1}
+        className={`flex items-center px-3 py-1 rounded ${
+          currentPage === 1
+            ? "text-gray-400 cursor-not-allowed"
+            : "text-blue-600 hover:bg-blue-50"
+        }`}
+      >
+        <ChevronLeft className="h-4 w-4 mr-1" /> Previous
+      </button>
 
-                {[...Array(Math.ceil(totalItems / itemsPerPage)).keys()].map(
-                  (page) => (
-                    <button
-                      key={page + 1}
-                      onClick={() => handlePageChange(page + 1)}
-                      className={`px-3 py-1 rounded ${
-                        currentPage === page + 1
-                          ? "bg-blue-600 text-white"
-                          : "text-blue-600 hover:bg-blue-50"
-                      }`}
-                    >
-                      {page + 1}
-                    </button>
-                  )
-                )}
+      {/* Always show first page */}
+      <button
+        onClick={() => handlePageChange(1)}
+        className={`px-3 py-1 rounded ${
+          currentPage === 1
+            ? "bg-blue-600 text-white"
+            : "text-blue-600 hover:bg-blue-50"
+        }`}
+      >
+        1
+      </button>
 
-                <button
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={currentPage >= Math.ceil(totalItems / itemsPerPage)}
-                  className={`flex items-center px-3 py-1 rounded ${
-                    currentPage >= Math.ceil(totalItems / itemsPerPage)
-                      ? "text-gray-400 cursor-not-allowed"
-                      : "text-blue-600 hover:bg-blue-50"
-                  }`}
-                >
-                  Next <ChevronRight className="h-4 w-4 ml-1" />
-                </button>
-              </div>
-            </div>
-          )}
+      {/* Show ellipsis if current page is far from start */}
+      {currentPage > 3 && (
+        <span className="px-2">...</span>
+      )}
+
+      {/* Show pages around current page */}
+      {[
+        currentPage - 1,
+        currentPage,
+        currentPage + 1
+      ].map((page) => (
+        page > 1 && page < Math.ceil(totalItems / itemsPerPage) && (
+          <button
+            key={page}
+            onClick={() => handlePageChange(page)}
+            className={`px-3 py-1 rounded ${
+              currentPage === page
+                ? "bg-blue-600 text-white"
+                : "text-blue-600 hover:bg-blue-50"
+            }`}
+          >
+            {page}
+          </button>
+        )
+      ))}
+
+      {/* Show ellipsis if current page is far from end */}
+      {currentPage < Math.ceil(totalItems / itemsPerPage) - 2 && (
+        <span className="px-2">...</span>
+      )}
+
+      {/* Always show last page if there's more than 1 page */}
+      {Math.ceil(totalItems / itemsPerPage) > 1 && (
+        <button
+          onClick={() => handlePageChange(Math.ceil(totalItems / itemsPerPage))}
+          className={`px-3 py-1 rounded ${
+            currentPage === Math.ceil(totalItems / itemsPerPage)
+              ? "bg-blue-600 text-white"
+              : "text-blue-600 hover:bg-blue-50"
+          }`}
+        >
+          {Math.ceil(totalItems / itemsPerPage)}
+        </button>
+      )}
+
+      <button
+        onClick={() => handlePageChange(currentPage + 1)}
+        disabled={currentPage >= Math.ceil(totalItems / itemsPerPage)}
+        className={`flex items-center px-3 py-1 rounded ${
+          currentPage >= Math.ceil(totalItems / itemsPerPage)
+            ? "text-gray-400 cursor-not-allowed"
+            : "text-blue-600 hover:bg-blue-50"
+        }`}
+      >
+        Next <ChevronRight className="h-4 w-4 ml-1" />
+      </button>
+    </div>
+  </div>
+)}
         </div>
       </div>
     </div>

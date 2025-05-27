@@ -36,8 +36,8 @@ function HeaderDashborder({ id_branch }) {
     {
       title: "Total Customer",
       subTitle: "Total Accounts",
-      value: cardData.totalAccounts || 0,
       sub_Value: cardData.totalCustomers || 0,
+      value: cardData.totalAccounts || 0,
       image: customer,
     },
     {

@@ -284,7 +284,7 @@ const ExistingCusTable = () => {
     },
     {
       header: "Referral No",
-      cell: (row) => `${row?.referral_code.toUpperCase()}`,
+      cell: (row) => `${row?.referral_code?.toUpperCase()}`,
     },
     {
       header: "Joined schemes",
