@@ -331,7 +331,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
     address: cusData.address,
     customer_name: cusData.customer_name,
     fixedamount: "",
-    amount: null,
+    amount: 0,
     weight: null,
     scheme_type: 0,
     min_amount: 0,
@@ -577,10 +577,10 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
 
   const filterInputchange = (e) => {
     const { name, value } = e.target;
-console.log('val ', value);
+    console.log('val ', value, 'e.target', e.target.name);
 
     setFormData((prev) => ({ ...prev, [name]: value }));
-console.log(formData[name]);
+    console.log(formData[name]);
 
     if (name === "referral_type") {
       setFormData((prev) => ({ ...prev, [name]: value }));
@@ -610,7 +610,7 @@ console.log(formData[name]);
         let wtValue = emptyToZero(value);
         formData.min_weight = emptyToZero(formData.min_weight);
         formData.max_weight = emptyToZero(formData.max_weight);
-        
+
         setTimeout(() => {
 
           if (wtValue === "") {
@@ -639,15 +639,15 @@ console.log(formData[name]);
         console.log(formData.max_amount);
         setTimeout(() => {
 
-        if (amtValue === "") {
-          delete newErrors.amount;
-        } else if (amtValue < formData.min_amount) {
-          newErrors.amount = "Amount can't be less than min amount";
-        } else if (amtValue > formData.max_amount) {
-          newErrors.amount = "Amount can't be more than max amount";
-        } else {
-          delete newErrors.amount;
-        }
+          if (amtValue === "") {
+            delete newErrors.amount;
+          } else if (amtValue < formData.min_amount) {
+            newErrors.amount = "Amount can't be less than min amount";
+          } else if (amtValue > formData.max_amount) {
+            newErrors.amount = "Amount can't be more than max amount";
+          } else {
+            delete newErrors.amount;
+          }
         }, 500);
 
         return newErrors;
@@ -1435,13 +1435,22 @@ console.log(formData[name]);
                     <input
                       type="number"
                       name="amount"
-                      defaultValue={""}
-                      value={formData.amount}
+                      value={formData.amount || ""}
                       onWheel={(e) => e.target.blur()}
+                      onChange={filterInputchange}
+                      className="border-2 border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                      placeholder="Enter amount"
+                    />
+
+                    {/* <input
+                      type="number"
+                      name="amount"
+                    value={formData.amount}   
+                   onWheel={(e) => e.target.blur()}
                       onChange={(e) => filterInputchange(e)}
                       className="border-2 cursor-not-allowed border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                       placeholder="Enter amount"
-                    />
+                    /> */}
                     <p className="text-sm mt-2" style={{ color: "red" }}>
                       {errors?.amount}
                     </p>
