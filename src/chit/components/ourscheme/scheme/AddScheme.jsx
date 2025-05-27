@@ -236,7 +236,7 @@ const SchemeForm = () => {
   const customStyles = (isReadOnly) => ({
     control: (base, state) => ({
       ...base,
-      minHeight: "42px",
+      minHeight: "42px", //42px
       backgroundColor: "white",
       border: state.isFocused ? "1px solid black" : "2px solid #f2f3f8",
       boxShadow: state.isFocused ? "0 0 0 1px black" : "none",

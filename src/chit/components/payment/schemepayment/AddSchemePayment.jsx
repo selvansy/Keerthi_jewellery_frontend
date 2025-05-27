@@ -112,17 +112,18 @@ const AddSchemePayment = () => {
       ...provided,
       paddingTop: 0,
       paddingBottom: 0,
-      maxHeight: showWeightInput ? "130px" : "209px",
+      maxHeight: showWeightInput  ? "130px" : "209px",
+      maxHeight: [2,5,6].includes(formik.values.scheme_type) ? "130px" : "209px",
     }),
     option: (provided, state) => ({
       ...provided,
       padding: "8px 12px",
       fontSize: "14px",
-      backgroundColor: state.isSelected
-        ? "#1E40AF"
-        : state.isFocused
-        ? "#EFF6FF"
-        : "white",
+      // backgroundColor: state.isSelected
+      //   ? "#1E40AF"
+      //   : state.isFocused
+      //   ? "#EFF6FF"
+      //   : "white",
       color: state.isSelected ? "white" : "#1F2937",
       "&:active": {
         backgroundColor: "#DBEAFE",
@@ -975,7 +976,6 @@ const AddSchemePayment = () => {
     }
   };
 
-  console.log(formik.values);
   return (
     <>
       <form
@@ -991,20 +991,20 @@ const AddSchemePayment = () => {
             Payment / <span className="text-black">Scheme Payment</span>
           </p>
 
-          <div className="flex flec-row gap-2">
+          <div className="flex flec-row gap-5">
+          <button
+              type="submit"
+              disabled={isLoading}
+              className="w-20 h-9 bg-blue-900 text-white rounded-md hover:bg-blue-800 flex justify-center items-center"
+            >
+              {isLoading ? <SpinLoading /> : "Save"}
+            </button>
             <button
               type="button"
               className="w-20 h-9 border-2 bg-[#F6F7F9] border-[#f2f3f8] rounded-md hover:bg-gray-50 flex justify-center items-center text-[#6C7086]"
               onClick={resetForm}
             >
               Clear
-            </button>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-20 h-9 bg-blue-900 text-white rounded-md hover:bg-blue-800 flex justify-center items-center"
-            >
-              {isLoading ? <SpinLoading /> : id && "Save"}
             </button>
           </div>
         </div>
