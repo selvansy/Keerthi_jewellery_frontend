@@ -31,7 +31,7 @@ import WastageChargeForm from "./wastageCharge";
 import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
 const AddProduct = () => {
   const roleData = useSelector((state) => state.clientForm.roledata);
-  const accessBranch = roleData?.branch;
+  const accessBranch = roleData?.id_branch || roleData?.branch;
   const naviagte = useNavigate();
   const { id } = useParams();
   const [branch, setBranch] = useState(() => (accessBranch === "0" ? [] : {}));
@@ -102,6 +102,7 @@ const AddProduct = () => {
         id_metal: formData.id_metal,
         id_purity: formData.id_purity,
         date: new Date(),
+        branch: accessBranch
       });
     }
   }, [formData.id_purity]);
@@ -155,8 +156,8 @@ const AddProduct = () => {
   ]);
 
   const { mutate: getTodayMetalRate } = useMutation({
-    mutationFn: ({ id_metal, id_purity, date }) =>
-      getMetalRateByMetalId(id_metal, id_purity, date),
+    mutationFn: ({ id_metal, id_purity, date,branch}) =>
+      getMetalRateByMetalId(id_metal, id_purity, date,branch),
     onSuccess: (response) => {
       const { data } = response;
       setCurrentRate(data.rate);
@@ -454,22 +455,19 @@ const AddProduct = () => {
     const formDataToSend = new FormData();
 
     Object.entries(formData).forEach(([key, value]) => {
-      if (
-        key === "wastageCharges[_id]" ||
-        key === "makingCharges[_id]" ||
-        key == "_id" ||
-        key == "pathurl"
-      ) {
-        return; // Skip these keys
+      if (key === "_id" || key === "pathurl" || key === "active") {
+        console.log("Skipping:", key);
+        return;
       }
-
+    
       if (typeof value === "object" && value !== null) {
         Object.entries(value).forEach(([subKey, subValue]) => {
           if (
             subKey === "_id" &&
             (key === "wastageCharges" || key === "makingCharges")
           ) {
-            return; // Skip subKey "_id" under wastageCharges and makingCharges
+            console.log("Skipping subKey _id inside:", key);
+            return;
           }
           formDataToSend.append(`${key}[${subKey}]`, subValue);
         });
@@ -477,6 +475,7 @@ const AddProduct = () => {
         formDataToSend.append(key, value);
       }
     });
+    
 
     if (product_image && product_image.length > 0) {
       product_image.forEach((image, index) => {

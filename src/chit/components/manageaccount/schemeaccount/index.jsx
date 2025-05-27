@@ -73,10 +73,6 @@ const Schemeaccount = () => {
     scheme_type: 0
   });
  
-
-  
-
-
   const handleReset = (e) => {
     setFromdate("");
     setTodate("");

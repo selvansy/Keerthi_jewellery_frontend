@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Table from "../../common/Table";
 import { Search } from "lucide-react";
-import { data, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   getallmetaltable,
   changemetalstatus,
@@ -10,20 +10,19 @@ import {
   updatemetal,
   addmetal,
 } from "../../../api/Endpoints";
-import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
-import { openModal } from "../../../../redux/modalSlice";
-import { eventEmitter } from "../../../../utils/EventEmitter";
-import { useSelector, useDispatch } from "react-redux";
-import { setid } from "../../../../redux/clientFormSlice";
 import Modal from "../../common/Modal";
 import ModelOne from "../../common/Modelone";
 import { useDebounce } from "../../../hooks/useDebounce";
 import SpinLoading from "../../common/spinLoading";
 import { label, metadata, tr } from "framer-motion/client";
 import Action from "../../common/action";
-import { closeModal } from "../../../../redux/modalSlice";
 import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
+import { useMutation } from "@tanstack/react-query";
+import { useSelector, useDispatch } from "react-redux";
+import { openModal } from "../../../../redux/modalSlice";
+import { closeModal } from "../../../../redux/modalSlice";
+import { eventEmitter } from "../../../../utils/EventEmitter";
 
 const Metal = () => {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
@@ -47,6 +46,7 @@ const Metal = () => {
   const [searchInput, setSearchInput] = useState("");
   const debouncedSearch = useDebounce(searchInput, 500);
   const [searchLoading, setSearchLoading] = useState("");
+  const [enableButton,setEnableButton]= useState(false)
 
   const limit = 10;
 
@@ -57,6 +57,7 @@ const Metal = () => {
         setMetalData(response.data);
         setTotalPages(response.totalPages);
         setTotalDocument(response.totalDocument);
+        setEnableButton(true)
       }
       setSearchLoading(false);
       setisLoading(false);
@@ -113,7 +114,7 @@ const Metal = () => {
         modalType: "CONFIRMATION",
         header: "Confirm Delete",
         formData: {
-          message: "Are you sure you want to delete your row?",
+          message: "Are you sure you want to delete this metal?",
           MetalId: id,
         },
         buttons: {
@@ -278,7 +279,8 @@ const Metal = () => {
           </div>
 
           {/* Add Metal Button */}
-          <div className="w-full flex justify-end">
+          {(MetalData && MetalData.length<=3 && enableButton)&&(
+            <div className="w-full flex justify-end">
             <button
               className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-[135px] sm:w-auto"
               onClick={handleaddmetal}
@@ -287,6 +289,7 @@ const Metal = () => {
               + Add Metal
             </button>
           </div>
+          )}
         </div>
 
         <div className="mt-4">
@@ -504,13 +507,6 @@ export const MetalForm = ({ setIsOpen, id, clearId }) => {
       </div>
 
       <Modal />
-
-      {/* <ModelOne isOpen={succNot} setIsOpen={setSuccNot} title="Success">
-        <div className="flex flex-col items-center">
-          <img src="/success-icon.png" alt="Success" className="w-16 h-16" />
-          <p className="text-lg font-semibold text-center mt-4">{successMessage}</p>
-        </div>
-      </ModelOne> */}
     </div>
   );
 };

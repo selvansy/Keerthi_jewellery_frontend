@@ -1,12 +1,8 @@
 import React, { useEffect, useState, useCallback, useMemo } from "react";
 import Table from "../../common/Table";
 import { useDebounce } from "../../../hooks/useDebounce";
-import {
-  SlidersHorizontal,
-  Search,
-  RefreshCcw,
-} from "lucide-react";
-import {useNavigate } from "react-router-dom";
+import { Search} from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import {
@@ -29,6 +25,7 @@ import { openModal } from "../../../../redux/modalSlice";
 import Modal from "../../../components/common/Modal";
 import FilterForm from "./FilterForm";
 import Action from "../../common/action";
+import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
 
 const Scheme = () => {
   const dispatch = useDispatch();
@@ -38,19 +35,9 @@ const Scheme = () => {
   const id_branch = roledata?.branch;
 
   const [isLoading, setisLoading] = useState(true);
-  const [filtered, SetFiltered] = useState(false);
-  const [classificationData, setClassification] = useState([]);
-  const [metalData, setMetalData] = useState([]);
-  const [purityData, setPurityData] = useState([]);
-  const [installmentTypeData, setInstallmentTypeData] = useState([]);
-  const [schemeTypeData, setSchemeTypeData] = useState([]);
-  const [gstTypeData, setgstTypeData] = useState([]);
-  const [wastageType, setWastage] = useState([]);
-  const [fundtype, setFundType] = useState([]);
-  const [metalid, setMetalid] = useState("");
   const [schemeData, setSchemeData] = useState([]);
-  const [search, setSearch] = useState("");
-  const debouncedSearch = useDebounce(search, 600);
+  const [searchInput, setSearchInput] = useState("");
+  const debouncedSearch = useDebounce(searchInput, 500);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalDocument, setTotalDocument] = useState(0);
@@ -59,7 +46,7 @@ const Scheme = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [from_date, setFromdate] = useState("");
   const [to_date, setTodate] = useState("");
-  const [branchList, setBranchList] = useState([]);
+  const [searchLoading, setSearchLoading] = useState(false);
   const [filters, setFilters] = useState({
     from_date: "",
     to_date: "",
@@ -99,7 +86,7 @@ const Scheme = () => {
       weekmonth: "",
       scheme_type: "",
     }));
-    SetFiltered(false);
+    // SetFiltered(false);
     toast.success("Filter is cleared");
     getSchemeTable({
       from_date: "",
@@ -120,9 +107,9 @@ const Scheme = () => {
     if (response) setBranchList(response.data);
   }, []);
 
-  useEffect(() => {
-    if (metalid) getPurity(metalid);
-  }, [metalid]);
+  // useEffect(() => {
+  //   if (metalid) getPurity(metalid);
+  // }, [metalid]);
 
   const { mutate: allbranchclassificationmuate } = useMutation({
     mutationFn: allbranchclassification,
@@ -253,6 +240,7 @@ const Scheme = () => {
         setSchemeData(response.data);
         setTotalDocument(response.totalDocument);
         setisLoading(false);
+        setSearchLoading(false)
       }
     },
     onError: (error) => {
@@ -270,35 +258,33 @@ const Scheme = () => {
 
   const handleStatusToggle = useCallback(
     async (id) => {
-        try {
-          const response = await changeschemestatus(id);
-          if (response) {
-            toast.success(response.message);
-            setSchemeData((prevData) =>
-              prevData.map((scheme) =>
-                scheme._id === id
-                  ? { ...scheme, active: !scheme.active }
-                  : scheme
-              )
-            );
-  
-            getSchemeDataTable({
-              from_date: from_date,
-              to_date: to_date,
-              search: debouncedSearch,
-              page: currentPage,
-              limit: itemsPerPage,
-              id_branch: filters.id_branch,
-              id_classification: filters.id_classification,
-              metalid: filters.metalid,
-              id_purity: filters.id_purity,
-              scheme_type: filters.scheme_type,
-            });
-          }
-        } catch (error) {
-          toast.error("Failed to toggle scheme status");
-          console.error("Error:", error);
+      try {
+        const response = await changeschemestatus(id);
+        if (response) {
+          toast.success(response.message);
+          setSchemeData((prevData) =>
+            prevData.map((scheme) =>
+              scheme._id === id ? { ...scheme, active: !scheme.active } : scheme
+            )
+          );
+
+          getSchemeDataTable({
+            from_date: from_date,
+            to_date: to_date,
+            search: debouncedSearch,
+            page: currentPage,
+            limit: itemsPerPage,
+            id_branch: filters.id_branch,
+            id_classification: filters.id_classification,
+            metalid: filters.metalid,
+            id_purity: filters.id_purity,
+            scheme_type: filters.scheme_type,
+          });
         }
+      } catch (error) {
+        toast.error("Failed to toggle scheme status");
+        console.error("Error:", error);
+      }
     },
     [from_date, to_date, debouncedSearch, currentPage, itemsPerPage, filters]
   );
@@ -396,31 +382,6 @@ const Scheme = () => {
         header: "S.No",
         cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
       },
-      
-      // {
-      //   header: "Scheme",
-      //   cell: (row) => {
-      //     const {
-      //       scheme_name,
-      //       amount,
-      //       min_amount,
-      //       max_amount,
-      //       min_weight,
-      //       max_weight,
-      //       scheme_type
-      //     } = row;
-
-      //     if (amount !== null && amount !== undefined) {
-      //       return `${scheme_name} (₹ ${amount})`;
-      //     } else if (min_weight !== null && max_weight !== null) {
-      //       return `${scheme_name} (GRM ${min_weight} - ${max_weight})`;
-      //     } else if (min_amount !== null && max_amount !== null) {
-      //       return `${scheme_name} (₹ ${min_amount} - ₹ ${max_amount})`;
-      //     } else {
-      //       return `${scheme_name} (Details Unavailable)`;
-      //     }
-      //   },
-      // },
       {
         header: "Scheme",
         cell: (row) => {
@@ -431,37 +392,63 @@ const Scheme = () => {
             max_amount,
             min_weight,
             max_weight,
-            scheme_type
+            scheme_type,
           } = row;
-      
+
           // Priority 1: Fixed amount
+          if (scheme_type === 10) {
+            return `${scheme_name} ( ₹ ${min_amount} - ₹ ${max_amount})`;
+          }
+
+          if (scheme_type === 14) {
+            return `${scheme_name} ( ₹ ${min_amount} - ₹ ${max_amount})`;
+          }
+
           if (amount !== null && amount !== undefined) {
             return `${scheme_name} (₹ ${amount})`;
           }
-      
+
           // Weight-based schemes (type 12, 3, 4)
           const isWeightBased = [12, 3, 4].includes(Number(scheme_type));
-      
+
           if (isWeightBased && min_weight !== null && max_weight !== null) {
-            return `${scheme_name} (GRM ${min_weight} - ${max_weight})`;
+            return `${scheme_name} ( ${min_weight} g - ${max_weight} g)`;
           }
-      
+
           // Amount-based schemes (default)
           if (!isWeightBased && min_amount !== null && max_amount !== null) {
             return `${scheme_name} ( ₹ ${min_amount} - ₹ ${max_amount})`;
           }
-      
+
+          // Amount-based schemes (default)
+          const digi = [11, 12].includes(Number(scheme_type));
+          if (digi) {
+            console.log(row);
+          }
+          if (!digi && min_amount !== null && max_amount !== null) {
+            return `${scheme_name} ( ₹ ${min_amount} - ₹ ${max_amount})`;
+          }
+
           // Fallback
           return `${scheme_name} (Details Unavailable)`;
         },
-      },      
+      },
       { header: "Code", cell: (row) => row?.code },
       {
         header: "Metal Name",
         cell: (row) => row.metal_name,
       },
       { header: "Installments", cell: (row) => row?.total_installments },
-      { header: "Maturity Month", cell: (row) => row?.maturity_period },
+      {
+        header: "Maturity Month",
+        cell: (row) => {
+          if (row.scheme_type !== 10 && row.scheme_type !== 14) {
+            return row?.maturity_period;
+          } else {
+            return row?.noOfDays;
+          }
+        },
+      },
       {
         header: "Scheme Type",
         cell: (row) => row.schemetype_name,
@@ -488,19 +475,31 @@ const Scheme = () => {
               checked={row?.active === true}
               onChange={() => handleStatusToggle(row?._id, row?.is_accounts)}
             />
-                        <div
- className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-[#E7EEF5] p-[2px] after:duration-300 after:bg-[#004181] ${
-              row?.active === true
-                ? "peer-checked:bg-[#E7EEF5] peer-checked:ring-[#E7EEF5]"
-                : "peer-checked:bg-[#E7EEF5] peer-checked:ring-gray-400"
-            } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-[${layout_color}] peer-hover:after:scale-95`}          ></div>
-        </label>
+            <div
+              className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-[#E7EEF5] p-[2px] after:duration-300 after:bg-[#004181] ${
+                row?.active === true
+                  ? "peer-checked:bg-[#E7EEF5] peer-checked:ring-[#E7EEF5]"
+                  : "peer-checked:bg-[#E7EEF5] peer-checked:ring-gray-400"
+              } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-[${layout_color}] peer-hover:after:scale-95`}
+            ></div>
+          </label>
         ),
       },
       {
         header: "Actions",
         cell: (row, rowIndex) => (
-          <Action row={row} data={purityData} rowIndex={rowIndex} activeDropdown={activeDropdown} setActive={hanldeActiveDropDown}   handleEdit={row.scheme_type !== 10?handleEdit:handleDigiGold} handleView={handleView} handleDelete={handleDelete}/>
+          <Action
+            row={row}
+            // data={purityData}
+            rowIndex={rowIndex}
+            activeDropdown={activeDropdown}
+            setActive={hanldeActiveDropDown}
+            // handleEdit={row.scheme_type !== 10 ? handleEdit : handleDigiGold}
+            handleView={handleView}
+            cancel={true}
+            showEdit={false}
+            showDelete={false}
+          />
         ),
         sticky: "right",
       },
@@ -516,86 +515,84 @@ const Scheme = () => {
     ]
   );
   return (
-    <div className="flex flex-col p-4">
-      <h2 className="text-2xl text-gray-900 font-bold">Schemes</h2>
-      <div className="flex flex-col gap-4 lg:flex-row lg:justify-end lg:items-center mt-4">
-        {/* <div className="relative w-full lg:w-1/3 min-w-[200px]">
-          <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-            <Search className="text-gray-500" />
+    <>
+      <Breadcrumb
+        items={[
+          { label: "Scheme" },
+          { label: "Existing Scheme", active: true },
+        ]}
+      />
+
+      <div className="flex flex-col p-4 bg-white border border-[#F2F2F9] rounded-[16px]">
+        <div className="flex flex-col gap-4 mt-4 sm:flex-row sm:justify-between sm:items-center">
+          <div className="flex flex-row w-full items-center justify-end gap-2">
+            {/* Search Box Second */}
+            <div className="relative w-full sm:mb-0 sm:order-2 sm:w-auto">
+              <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
+                {searchLoading ? (
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
+                ) : (
+                  <Search className="text-black" />
+                )}
+              </div>
+              <input
+                onChange={(e) => {
+                  setSearchLoading(true);
+                  setSearchInput(e.target.value);
+                }}
+                placeholder="Search"
+                className="px-4 py-2 ps-9 border-2 border-[#F2F2F9] rounded-[8px] w-full sm:w-[228px]"
+              />
+            </div>
+            {/* Button First */}
+            <button
+              className="rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
+              onClick={handleCreateSchemeClick}
+              style={{ backgroundColor: layout_color }}
+            >
+              + Add Scheme
+            </button>
           </div>
-          <input
-            placeholder="Search..."
-            className="p-3 pl-10 pr-3 border-2 bg-[#F5F5F5] border-gray-500 rounded-md w-full"
-            onChange={handleSearch}
+        </div>
+
+        {/* <FilterForm
+          isFilterOpen={isFilterOpen}
+          setIsFilterOpen={setIsFilterOpen}
+          from_date={from_date}
+          setFromdate={setFromdate}
+          to_date={to_date}
+          setTodate={setTodate}
+          // branchList={branchList}
+          filters={filters}
+          filterInputchange={filterInputchange}
+          // classificationData={classificationData}
+          // metalData={metalData}
+          // purityData={purityData}
+          // installmentTypeData={installmentTypeData}
+          // schemeTypeData={schemeTypeData}
+          // gstTypeData={gstTypeData}
+          // wastageType={wastageType}
+          // fundtype={fundtype}
+          applyfilterdatatable={applyfilterdatatable}
+        /> */}
+
+        <div className="mt-4">
+          <Table
+            data={schemeData}
+            columns={columns}
+            isLoading={isLoading}
+            currentPage={currentPage}
+            handlePageChange={handlePageChange}
+            itemsPerPage={itemsPerPage}
+            totalItems={totalDocument}
+            handleItemsPerPageChange={handleItemsPerPageChange}
+            debounceSearch={handleSearch}
           />
-        </div> */}
-        <div className="flex flex-row items-center justify-end gap-2">
-          <button
-            className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
-            onClick={handleCreateSchemeClick}
-            style={{ backgroundColor: layout_color }}
-          >
-            + Create Scheme
-          </button>
-          {filtered ? (
-            <button
-              id="filter"
-              className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
-              onClick={handleReset}
-              style={{ backgroundColor: layout_color }}
-            >
-              <RefreshCcw size={20} />
-            </button>
-          ) : (
-            <button
-              id="filter"
-              className="text-white w-10 h-10 flex items-center justify-center rounded-md hover:bg-[#034571] transition-colors flex-shrink-0"
-              onClick={handleClickfilter}
-              style={{ backgroundColor: layout_color }}
-            >
-              <SlidersHorizontal size={20} />
-            </button>
-          )}
         </div>
       </div>
 
-      <FilterForm
-        isFilterOpen={isFilterOpen}
-        setIsFilterOpen={setIsFilterOpen}
-        from_date={from_date}
-        setFromdate={setFromdate}
-        to_date={to_date}
-        setTodate={setTodate}
-        branchList={branchList}
-        filters={filters}
-        filterInputchange={filterInputchange}
-        classificationData={classificationData}
-        metalData={metalData}
-        purityData={purityData}
-        installmentTypeData={installmentTypeData}
-        schemeTypeData={schemeTypeData}
-        gstTypeData={gstTypeData}
-        wastageType={wastageType}
-        fundtype={fundtype}
-        applyfilterdatatable={applyfilterdatatable}
-      />
-
-      <div className="mt-4">
-        <Table
-          data={schemeData}
-          columns={columns}
-          isLoading={isLoading}
-          currentPage={currentPage}
-          handlePageChange={handlePageChange}
-          itemsPerPage={itemsPerPage}
-          totalItems={totalDocument}
-          handleItemsPerPageChange={handleItemsPerPageChange}
-          debounceSearch={handleSearch}
-        />
-      </div>
-
       <Modal />
-    </div>
+    </>
   );
 };
 

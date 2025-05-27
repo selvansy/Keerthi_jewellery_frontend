@@ -83,7 +83,7 @@ export const formatNumber = ({
   return new Intl.NumberFormat(locale, options).format(value);
 };
 
-export const formatDecimal = (value, decimalPlaces = 2) => {
+export const formatDecimal = (value, decimalPlaces = 3) => {
   value = emptyToZero(value);
   return parseFloat(value).toFixed(decimalPlaces);
 };

@@ -106,7 +106,7 @@ const { data: cityresponse, isFetching: loadingCities } = useQuery({
      useEffect(() => {
           if (countryresponse) {
               const data = countryresponse.data;
-              const country = data.map((country) => ({
+              const country = data?.map((country) => ({
                   value: country._id,
                   label: country.country_name,
               }));

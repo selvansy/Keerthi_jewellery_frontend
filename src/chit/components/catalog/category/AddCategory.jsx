@@ -103,7 +103,6 @@ const AddCategory = ({setIsOpen, id ,clearId}) => {
   const { mutate: getallbranchmuate } = useMutation({
     mutationFn: getallbranch,
     onSuccess: (response) => {
-      console.log(response)
       setBranches(response.data);
     },
     onError: (error) => {

@@ -31,6 +31,7 @@ const AddEmployee = () => {
   const roledata = useSelector((state) => state.clientForm.roledata);
   const branch = roledata?.branch;
   const branchId = roledata?.id_branch;
+  const isMounted = useRef(true);
 
   const descImageInputRef = useRef(null);
   const resumeInputRef = useRef(null);
@@ -40,6 +41,7 @@ const AddEmployee = () => {
     "lastname",
     "mobile",
     "address",
+    "id_country",
     "id_state",
     "id_city",
     "gender",
@@ -72,7 +74,6 @@ const AddEmployee = () => {
       ...base,
       color: "#858293",
       fontWeight: "thin",
-      // fontStyle: "bold",
     }),
     dropdownIndicator: (provided, state) => ({
       ...provided,
@@ -107,13 +108,14 @@ const AddEmployee = () => {
       id_country: "",
       id_state: "",
       id_city: "",
+      id_branch:"",
       address: "",
       pincode: "",
       pan: "",
       date_of_birth: null,
       date_of_join: null,
       aadharNumber: "",
-      // phone: "",
+      employeeIncentivePercentage: 0,
     },
     validationSchema: Yup.object({
       firstname: Yup.string()
@@ -137,6 +139,7 @@ const AddEmployee = () => {
       pincode: Yup.string()
         .matches(/^[0-9]{6}$/, "Pincode must be 6 digits")
         .required("Pincode is required"),
+        id_branch: Yup.string().required("Country is required"),
       id_state: Yup.string().required("State is required"),
       id_city: Yup.string().required("City is required"),
       id_country: Yup.string().required("Country is required"),
@@ -165,56 +168,71 @@ const AddEmployee = () => {
         otherwise: () => Yup.string().nullable(),
       }),
     }),
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
+      if (!isMounted.current) return;
+      
       setIsLoading(true);
-      const formData = new FormData();
+      try {
+        const formData = new FormData();
 
-      if (branch === "0") {
-        formData.append("id_branch", values.id_branch);
-      } else {
-        formData.append("id_branch", branchId);
-      }
-
-      if (values.date_of_birth) {
-        const formattedDOB = new Date(values.date_of_birth)
-          .toISOString()
-          .split("T")[0];
-        formData.append("date_of_birth", formattedDOB);
-      }
-
-      if (values.date_of_join) {
-        const formattedDOJ = new Date(values.date_of_join)
-          .toISOString()
-          .split("T")[0];
-        formData.append("date_of_join", formattedDOJ);
-      }
-
-      Object.keys(values).forEach((key) => {
-        if (
-          values[key] &&
-          typeof values[key] !== "object" &&
-          key !== "id_branch" &&
-          key !== "date_of_birth" &&
-          key !== "date_of_join"
-        ) {
-          formData.append(key, values[key]);
+        if (branch === "0") {
+          formData.append("id_branch", values.id_branch);
+        } else {
+          formData.append("id_branch", branchId);
         }
-      });
 
-      if (values.image) {
-        formData.append("image", values.image);
-      }
-      if (values.resume) {
-        formData.append("resume", values.resume);
-      }
+        if (values.date_of_birth) {
+          const formattedDOB = new Date(values.date_of_birth)
+            .toISOString()
+            .split("T")[0];
+          formData.append("date_of_birth", formattedDOB);
+        }
 
-      if (id) {
-        updateEmployeeMutate(formData);
-      } else {
-        addEmployeeMutate(formData);
+        if (values.date_of_join) {
+          const formattedDOJ = new Date(values.date_of_join)
+            .toISOString()
+            .split("T")[0];
+          formData.append("date_of_join", formattedDOJ);
+        }
+
+        Object.keys(values).forEach((key) => {
+          if (
+            values[key] &&
+            typeof values[key] !== "object" &&
+            key !== "id_branch" &&
+            key !== "date_of_birth" &&
+            key !== "date_of_join"
+          ) {
+            formData.append(key, values[key]);
+          }
+        });
+
+        if (values.image) {
+          formData.append("image", values.image);
+        }
+        if (values.resume) {
+          formData.append("resume", values.resume);
+        }
+
+        if (id) {
+          await updateEmployeeMutate(formData);
+        } else {
+          await addEmployeeMutate(formData);
+        }
+      } catch (error) {
+        if (isMounted.current) {
+          toast.error(error.message || "An error occurred");
+          setIsLoading(false);
+        }
       }
     },
   });
+
+  useEffect(() => {
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
 
   // Query and Mutation Hooks
   const { data: countryResponse } = useQuery({
@@ -238,17 +256,14 @@ const AddEmployee = () => {
 
   // Effects
   useEffect(() => {
-    if (countryResponse) {
-      // const countryId = countryResponse.data[0]._id;
-      console.log("kd");
-      const countryId = countryResponse.data.map((state) => ({
+    if (countryResponse && isMounted.current) {
+      const countryOptions = countryResponse.data.map((state) => ({
         value: state._id,
         label: state.country_name,
       }));
-      setSelectedCountry(countryId);
-      formik.setFieldValue("id_country", countryId);
+      setSelectedCountry(countryOptions);
     }
-    if (branchResponse) {
+    if (branchResponse && isMounted.current) {
       const branchData = branchResponse.data.map((branch) => ({
         value: branch._id,
         label: branch.branch_name,
@@ -258,7 +273,7 @@ const AddEmployee = () => {
   }, [countryResponse, branchResponse]);
 
   useEffect(() => {
-    if (employeeData?.data) {
+    if (employeeData?.data && isMounted.current) {
       const employee = employeeData.data;
 
       formik.setValues({
@@ -278,8 +293,11 @@ const AddEmployee = () => {
         date_of_birth: employee.date_of_birth
           ? new Date(employee.date_of_birth)
           : null,
-        aadharNumber: employee.aadhar_number || "",
+        aadharNumber: employee.aadharNumber || "",
         id_country: employee.id_country._id || country._id,
+        employeeIncentivePercentage: employee.employeeIncentivePercentage || 0,
+        pan: employee.pan || "",
+        whatsappNumber: employee.whatsappNumber || ""
       });
 
       setImagePreviews({
@@ -292,45 +310,37 @@ const AddEmployee = () => {
   const { mutate: addEmployeeMutate } = useMutation({
     mutationFn: addemployee,
     onSuccess: (response) => {
-      setIsLoading(false);
-      toast.success(response.message);
-      navigate("/employee/details/");
+      if (isMounted.current) {
+        setIsLoading(false);
+        toast.success(response.message);
+        navigate("/employee/details/");
+      }
     },
     onError: (error) => {
-      console.log(error);
-      setIsLoading(false);
-      toast.error(error.response.data.message);
+      if (isMounted.current) {
+        setIsLoading(false);
+        toast.error(error.response?.data?.message || "Failed to add employee");
+      }
     },
   });
 
   const { mutate: updateEmployeeMutate } = useMutation({
     mutationFn: (data) => updateemployee(id, data),
     onSuccess: (response) => {
-      setIsLoading(false);
-      toast.success(response.message);
-      navigate("/employee/details/");
+      if (isMounted.current) {
+        setIsLoading(false);
+        toast.success(response.message);
+        navigate("/employee/details/");
+      }
     },
     onError: (error) => {
-      setIsLoading(false);
-      toast.error(error.response.message);
+      if (isMounted.current) {
+        setIsLoading(false);
+        toast.error(error.response?.message || "Failed to update employee");
+      }
     },
   });
 
-  // const handleFileChange = (event) => {
-  //   const file = event.target.files[0];
-  //   const name = event.target.name;
-
-  //   if (file && file.size <= 500 * 1024) {
-  //     const previewUrl = URL.createObjectURL(file);
-  //     setImagePreviews((prev) => ({
-  //       ...prev,
-  //       [name]: { file, previewUrl },
-  //     }));
-  //     formik.setFieldValue(name, file);
-  //   } else {
-  //     toast.error("File size exceeded or file not found");
-  //   }
-  // };
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     const name = event.target.name;
@@ -351,22 +361,6 @@ const AddEmployee = () => {
     }
   };
 
-  // const handleCapture = () => {
-  //   const imageSrc = webcamRef.current.getScreenshot();
-  //   setImagePreviews((prev) => ({
-  //     ...prev,
-  //     profile: imageSrc,
-  //   }));
-  //   fetch(imageSrc)
-  //     .then((res) => res.blob())
-  //     .then((blob) => {
-  //       const file = new File([blob], "webcam-photo.jpg", {
-  //         type: "image/jpeg",
-  //       });
-  //       formik.setFieldValue("profile_image", file);
-  //     });
-  //   setShowWebcam(false);
-  // };
   const handleCapture = () => {
     const imageSrc = webcamRef.current.getScreenshot();
     const fileName = `webcam-capture-${new Date().getTime()}.jpg`;
@@ -419,14 +413,14 @@ const AddEmployee = () => {
   });
 
   useEffect(() => {
-    if (statesResponse) {
+    if (statesResponse && isMounted.current) {
       const states = statesResponse.data.map((state) => ({
         value: state._id,
         label: state.state_name,
       }));
       setStates(states);
     }
-    if (citiesResponse) {
+    if (citiesResponse && isMounted.current) {
       const cities = citiesResponse.data.map((city) => ({
         value: city._id,
         label: city.city_name,
@@ -521,7 +515,6 @@ const AddEmployee = () => {
       }
 
       return (
-        // field !== "id_country" &&
         field !== "resume" &&
         field !== "profile_image" &&
         field !== "date_of_join" &&
@@ -548,6 +541,8 @@ const AddEmployee = () => {
                 ? "Pan Number"
                 : field === "aadharNumber"
                 ? "Aadhar card number"
+                : field === "employeeIncentivePercentage"
+                ? "Employee Incentive Percentage"
                 : field
                     .replace(/_/g, " ")
                     .replace(/\b\w/g, (char) => char.toUpperCase())}
@@ -650,7 +645,7 @@ const AddEmployee = () => {
         </p>
       </div>
 
-      <div className="bg-[#FFFFFF] rounded-3xl p-6 shadow-sm border">
+      <div className="bg-[#FFFFFF] rounded-xl p-6 shadow-sm border">
         <h2 className="text-lg font-semibold mb-4 border-b pb-4">
           {id ? "Edit Employee" : "Add Employee"}
         </h2>
@@ -672,7 +667,10 @@ const AddEmployee = () => {
                   dateFormat="yyyy-MM-dd"
                   placeholderText="Select Date"
                   className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                  showMonthDropdown
+                  showYearDropdown
                   wrapperClassName="w-full"
+                  dropdownMode="select"
                 />
                 <span className="absolute right-0 top-0 h-full w-10 flex items-center justify-center pointer-events-none">
                   <CalendarDays size={20} className="text-gray-400" />
@@ -695,7 +693,7 @@ const AddEmployee = () => {
                 className="flex-1 border-2 border-[#f2f3f8] rounded-md px-3 py-2 cursor-pointer hover:bg-gray-50"
               >
                 <p className="truncate text-[#b5b5b5]">
-                  {formik.values.resume ? formik.values.resume.name : "Browse"}
+                  {imagePreviews.resume?.name || imagePreviews.resume || (formik.values.resume ? formik.values.resume.name : "Browse")}
                 </p>
               </label>
               <div className="absolute right-0 top-0 bottom-0 h-full flex flex-row gap-2">
@@ -723,7 +721,7 @@ const AddEmployee = () => {
           <div>
             <label className="block text-sm font-medium mb-1">
               Upload Profile Image{" "}
-              <span className="font-normal">(Maximum file size: 500KB)</span>
+              <span className="font-sm">(Maximum file size: 500KB)</span>
             </label>
             <div className="flex items-center gap-3 relative">
               <label
@@ -731,7 +729,7 @@ const AddEmployee = () => {
                 className="flex-1 border-2 border-[#f2f3f8] rounded-md px-3 py-2 cursor-pointer hover:bg-gray-50"
               >
                 <p className="truncate text-[#b5b5b5]">
-                  {imagePreviews.image?.name ||
+                  {imagePreviews.image?.name || imagePreviews.image ||
                     (formik.values.image ? formik.values.image.name : "Browse")}
                 </p>
               </label>
@@ -767,7 +765,7 @@ const AddEmployee = () => {
             </div>
           </div>
         </div>
-        <div className="flex justify-end space-x-4 mt-4">
+        <div className="flex justify-end space-x-4 mt-4 py-5">
           <button
             type="button"
             onClick={() => navigate("/employee/details/")}
@@ -777,8 +775,10 @@ const AddEmployee = () => {
           </button>
           <button
             type="submit"
-            disabled={isLoading}
-            className="w-20 h-9 bg-blue-900 text-white rounded-md hover:bg-blue-800 flex justify-center items-center"
+            disabled={isLoading || !formik.isValid}
+            className={`w-20 h-9 bg-[#004181] text-white rounded-md hover:from-[#072D2D] hover:to-[#072D2D] flex justify-center items-center ${
+              isLoading ? "opacity-50 cursor-not-allowed" : ""
+            }`}
           >
             {isLoading ? <SpinLoading /> : id ? "Update" : "Save"}
           </button>
@@ -796,7 +796,7 @@ const AddEmployee = () => {
             <div className="mt-4 flex justify-center gap-4">
               <button
                 onClick={handleCapture}
-                className="bg-[#61A375] text-white px-4 py-2 rounded-md"
+                className="bg-gradient-to-r from-[#091B1B] to-[#072D2D] text-white px-4 py-2 rounded-md"
               >
                 Capture
               </button>

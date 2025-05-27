@@ -1,21 +1,18 @@
 import React, { useEffect, useState } from "react";
 import Table from "../../components/common/Table";
 import { useMutation } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
-import jsPDF from "jspdf";
 import "jspdf-autotable";
 import ExportDropdown from "../../components/common/Dropdown/Export";
-import { ExportToExcel } from "../common/Dropdown/Excelexport";
-import { ExportToPDF } from "../common/Dropdown/ExportPdf";
 import {
-  dueReportSummary,
   preCloseSummary,
 } from "../../../chit/api/Endpoints";
-import { SlidersHorizontal, Search, X } from "lucide-react";
-import { CalendarDays, RefreshCcw } from "lucide-react";
 import "react-datepicker/dist/react-datepicker.css";
-import DatePicker from "react-datepicker";
 import { useSelector } from "react-redux";
+import { Breadcrumb } from "../common/breadCumbs/breadCumbs";
+import DateRangeSelector from "../common/calender";
+import { formatNumber } from "../../utils/commonFunction";
+import { formatDecimal } from "../../utils/commonFunction";
+import { formatDate } from "../../../utils/FormatDate";
 
 function PreCloseReport() {
   const roledata = localStorage.getItem("decoded");
@@ -29,17 +26,28 @@ function PreCloseReport() {
   const [preCloseData, setPreCloseData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [from_date,setfrom_date]=useState(new Date())
+  const [to_date,setto_date]=useState(new Date())
+  const [totalDocuments, setTotalDocuments] = useState(0);
+  const [processData,setProcessData]=useState([]);
 
   useEffect(() => {
-    getPreCloseData();
+    getPreCloseData({from_date,to_date});
   }, []);
 
+  useEffect(() => {
+    getPreCloseData({from_date,to_date});
+  }, [from_date,to_date]);
+
   const { mutate: getPreCloseData } = useMutation({
-    mutationFn: preCloseSummary,
+    mutationFn:({from_date,to_date})=> preCloseSummary({from_date,to_date}),
     onSuccess: (response) => {
-      const { data } = response;
-      setPreCloseData(data);
+      if(response){
+        setPreCloseData(response?.data);
+      setCurrentPage(response.currentPage)
+      setTotalDocuments(response.totalDocuments)
       setisLoading(false);
+      }
     },
     onError: (error) => {
       setisLoading(false);
@@ -47,18 +55,55 @@ function PreCloseReport() {
     },
   });
 
+  const handleItemsPerPageChange = (value) => {
+    setItemsPerPage(value);
+    setCurrentPage(1);
+  };
+
+  const handlePageChange = (page) => {
+    const pageNumber = Number(page);
+    if (
+      !pageNumber ||
+      isNaN(pageNumber) ||
+      pageNumber < 1 ||
+      pageNumber > totalPages
+    ) {
+      return;
+    }
+
+    setCurrentPage(pageNumber);
+  };
+
+  useEffect(() => {
+    const process = preCloseData.map((item, index) => ({
+      "S.No": index + 1,
+      "Name":item.customer_name,
+      "Customer Mobile":item.customer_mobile,
+      "Acc Name":item.account_name,
+      "Scheme Name":item.schemeName,
+      "Scheme Acc no":item.scheme_acc_number,
+      "Total Paid Installment":item.total_paid_installments,
+      "Total Installment":item.total_installments,
+      "Total amount":item.totalPaidAmount,
+      "Total Weight":item.totalPaidWeight,
+      // "Classifictaion Name":item.classification_name,
+      // "Created At":item.createdAt,
+      // "Maturity date":item.maturity_date,
+      // "Last Paid Date":item.last_paid_date,
+      // "Closed Date":item.closed_date,
+      "Bill Number":item.bill_no,
+      "Bill date":item.bill_date ? formatDate(item.bill_date) : '',
+      "Gift Issues":item.gift_issues,
+      "Closed by":item.closed_by,
+       
+    }));
+    setProcessData(process);
+  }, [preCloseData]);
+
   const columns = [
     {
       header: "S.No",
       cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
-    },
-    {
-      header: "Scheme",
-      cell: (row) => row?.scheme_name,
-    },
-    {
-      header: "Classification",
-      cell: (row) => row?.classification_name,
     },
     {
       header: "Customer",
@@ -69,50 +114,139 @@ function PreCloseReport() {
       cell: (row) => row?.customer_mobile,
     },
     {
-      header: "Total Chit Value",
-      cell: (row) => row?.totalChitValue,
+      header: "Accounter Name",
+      cell: (row) => row?.account_name,
     },
     {
-      header: "Total Paid Amount",
-      cell: (row) => row?.totalPaidAmount,
+      header: "Scheme Name",
+      cell: (row) => row?.scheme_name,
+    },
+    {
+      header: "scheme A/c No",
+      cell: (row) => row?.scheme_acc_number,
+    },
+    {
+      header: "Paid Installments",
+      cell: (row) => `${row?.total_paid_installments}/${row?.total_installments}`,
+    },
+    {
+      header: "Paid Amount",
+      // cell: (row) => row?.totalPaidAmount,
+      cell: (row) => (
+        <div style={{ textAlign: 'right' }}>
+          {formatNumber({value:row?.totalPaidAmount,decimalPlaces:0})}
+        </div>
+      ),
+    },
+    {
+      header: "Paid Weight",
+      cell: (row) => `${formatDecimal(row?.totalPaidWeight)} g`,
+    },
+    {
+      header: "Classification",
+      cell: (row) => row?.classification_name,
+    },
+    {
+      header: "Started date",
+      cell: (row) => formatDate(row.createdAt) 
+    },    
+    {
+      header: "Maturity Date",
+      cell: (row) => row?.maturity_date,
+    },
+    {
+      header: "Last paid Date",
+      // cell: (row) => row?.last_paid_date,
+      cell: (row) => {
+        const date = new Date(row?.last_paid_date);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}-${month}-${year}`;
+      }
+    },
+    {
+      header: "Closed Date",
+      cell: (row) => {
+        return new Date(row.closed_date).toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "numeric",
+          day: "numeric",
+        });
+      }
+    },
+    {
+      header: "Bill No ",
+      cell: (row) => row?.bill_no,
+    },
+    {
+      header: "Bill Date",
+      cell: (row) => {
+        return new Date(row.bill_date).toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "numeric",
+          day: "numeric",
+        });
+      }
+    },
+    {
+      header: "Gift Handover",
+      cell: (row) => (
+        <div style={{ textAlign: 'right' }}>
+          {row?.gift_issues}
+        </div>
+      ),
     },
     {
       header: "Closed By",
-      cell: (row) => row?.closedBy,
+      cell: (row) => row?.closed_by,
     },
-    {
-        header: "Closed Date",
-        cell: (row) => {
-          return new Date(row.closed_date).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "numeric",
-            day: "numeric",
-          });
-        }
-      }
+   
       
   ];
 
   return (
-    <div className="flex flex-col p-4">
-      <h2 className="text-2xl text-gray-900 font-bold">
-        Pre Close Summary
-      </h2>
+    <>
+    <Breadcrumb
+      items={[
+        { label: "Scheme Reports" },
+        { label: "Preclose Summary", active: true },
+      ]}
+    />
+    <div className="flex flex-col p-4 bg-white border-2 border-[#F2F2F9] rounded-[16px] ">
       <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
-        <div className="relative w-full lg:w-1/3 min-w-[200px]">
-          <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-            <Search className="text-gray-500" />
+        <div className="flex justify-between items-center w-full">
+          <div className="flex justify-start"></div>
+          <div className="flex justify-end items-center gap-4">
+            <DateRangeSelector
+              onChange={(range) => {
+                setfrom_date(range.startDate);
+                setto_date(range.endDate);
+              }}
+            />
+            <ExportDropdown
+              apiData={processData}
+              fileName={`Preclose${new Date().toLocaleDateString(
+                "en-GB"
+              )}`}
+            />
           </div>
-          <input
-            placeholder="Search..."
-            className="p-3 pl-10 pr-3 border-2 bg-[#F5F5F5] border-gray-500 rounded-md w-full"
-          />
         </div>
       </div>
       <div className="mt-4">
-        <Table data={preCloseData} columns={columns} isLoading={isLoading} />
+        <Table
+          data={preCloseData}
+          columns={columns}
+          loading={isLoading}
+          currentPage={currentPage}
+          handlePageChange={handlePageChange}
+          itemsPerPage={itemsPerPage}
+          totalItems={totalDocuments}
+          handleItemsPerPageChange={handleItemsPerPageChange}
+        />
       </div>
     </div>
+  </>
   );
 }
 

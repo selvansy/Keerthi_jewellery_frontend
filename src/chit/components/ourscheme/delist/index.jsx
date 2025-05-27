@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useCallback} from "react";
 import Table from "../../common/Table";
 import { useNavigate,useLocation} from "react-router-dom";
 
@@ -76,10 +76,10 @@ const Delist = () => {
     }
   };
 
-  const handleEdit = async (id) => {
-    setId(id)
-    setIsviewOpen(true);
-  };
+  const handleEdit = useCallback(
+    (id) => navigate(`/scheme/addscheme/${id}`),
+    [navigate]
+  );
 
   const clearId =()=>{
     setId('')
@@ -106,7 +106,6 @@ const Delist = () => {
     );
 
     eventEmitter.on("CONFIRMATION_SUBMIT", async (data) => {
-      console.log(data)
       try {
         let response = await deleteScheme(data.subid);
         toast.success(response.message);
@@ -147,6 +146,11 @@ const Delist = () => {
     document.addEventListener("click", handleClickOutside);
     return () => document.removeEventListener("click", handleClickOutside);
   }, [activeDropdown]);
+
+  const handleDigiGold = useCallback(
+    (id) => navigate(`/scheme/editdigigold/${id}`),
+    [navigate]
+  );
 
   const columns = [
 
@@ -202,7 +206,13 @@ const Delist = () => {
     {
       header: "Actions",
       cell: (row, rowIndex) => (
-        <Action showEdit={false} row={row} data={schemes} rowIndex={rowIndex} activeDropdown={activeDropdown} setActive={hanldeActiveDropDown}  handleEdit={handleEdit} handleDelete={handleDelete}/>
+        <Action row={row} data={schemes} rowIndex={rowIndex} activeDropdown={activeDropdown} setActive={hanldeActiveDropDown}  
+        handleEdit={ ![10, 14].includes(row.scheme_type) ? handleEdit : handleDigiGold}
+         handleDelete={handleDelete}
+         showEdit={row.is_accounts !== true}
+         showDelete= {row.is_accounts !== true}
+         cancel={row.is_accounts}
+         />
       ),
       sticky: "right",
     },

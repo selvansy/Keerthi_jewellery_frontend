@@ -159,7 +159,7 @@ const AccountSearchAndPrint = () => {
     font-weight: 600;
     font-size: 22px;
     text-align: center;
-    font-family: "Times New Roman", Times, serif;
+    font-family: Inter, sans-serif;
   }
 
   .paidamt {
@@ -167,12 +167,12 @@ const AccountSearchAndPrint = () => {
     font-weight: 600;
     margin-bottom: 5px;
     text-align: center;
-    font-family: "Times New Roman", Times, serif;
+    font-family: Inter, sans-serif;
   }
 
   p {
     margin: 0px;
-    font-family: "Times New Roman", Times, serif;
+    font-family: Inter, sans-serif;
   }
 
   .main_section {
@@ -180,7 +180,7 @@ const AccountSearchAndPrint = () => {
     width: 500px;
     margin: auto;
     text-align: center;
-    font-family: "Times New Roman", Times, serif;
+    font-family: Inter, sans-serif;
   }
 
   .meena_name {

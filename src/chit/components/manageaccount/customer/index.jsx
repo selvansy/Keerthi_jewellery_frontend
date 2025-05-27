@@ -276,11 +276,19 @@ const ExistingCusTable = () => {
     },
     {
       header: 'Customer Name',
-      cell: (row) => `${row?.firstname} ${row?.lastname}`,
+      cell: (row) => `${row?.firstname} ${row?.lastname || ""}`,
     },
     {
       header: "Mobile",
       cell: (row) => `${row?.mobile}`,
+    },
+    {
+      header: "Referral No",
+      cell: (row) => `${row?.referral_code?.toUpperCase()}`,
+    },
+    {
+      header: "Joined schemes",
+      cell: (row) => `${row?.schemesCount}`,
     },
     {
       header: "Create Date",

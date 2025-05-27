@@ -824,7 +824,7 @@ export const schemepaymentdatatable = async (data) => {
 
 export const schemePayment = async (data) => {
   const response = await Api.post(
-    `${import.meta.env.VITE_API_URL}/api/client/reports/paymentsummary`
+    `${import.meta.env.VITE_API_URL}/api/client/reports/paymentsummary`,data
   );
   return response.data;
 };
@@ -1375,6 +1375,7 @@ export const getallpaymentmode = async () => {
 
 //staff user
 export const getstaffusertable = async (data) => {
+  console.log(data,'kd')
   const response = await Api.post(
     `${import.meta.env.VITE_API_URL}/api/client/staff/table`,
     data
@@ -1390,6 +1391,7 @@ export const addstaff = async (data) => {
 };
 
 export const updatestaff = async (id, data) => {
+  console.log(id,data,"dk")
   const response = await Api.patch(
     `${import.meta.env.VITE_API_URL}/api/client/staff/${id}`,
     data
@@ -1924,7 +1926,7 @@ export const searchmobileschemeaccount = async (data) => {
   const response = await Api.get(
     `${import.meta.env.VITE_API_URL}/api/client/schemeaccount/branch/${
       data.id_branch
-    }/customer/search?mobile=${data.search_mobile}`
+    }/customer/search?mobile=${data.search_mobile}&state=${data.type}`
   );
   return response.data;
 };
@@ -1947,12 +1949,7 @@ export const geallschemebyclassification = async (data) => {
   );
   return response.data;
 };
-export const schemeaccountbyid = async (data) => {
-  const response = await Api.get(
-    `${import.meta.env.VITE_API_URL}/api/client/schemeaccount?cl${data.id}`
-  );
-  return response.data;
-};
+
 export const extendinstallment = async (data) => {
   const response = await Api.post(
     `${import.meta.env.VITE_API_URL}/api/client/extendinstallment`,
@@ -2477,6 +2474,16 @@ export const searchaccountnumber = async (data) => {
   return response.data;
 };
 
+export const searchPaymentBySchNo = async (data) => {
+  const response = await Api.get(
+    `${import.meta.env.VITE_API_URL}/api/client/payment/schacc?schAcc=${data.mobile}&limit=${data.limit}&page=${data.page}`
+  );
+  return response.data;
+};
+
+
+
+
 export const searchSchAccByMobile = async (data) => {
     const response = await Api.get(`${import.meta.env.VITE_API_URL}/api/client/schemeaccount/accnum/mobile/search?value=${data.value}&branchId=${data.branchId}`);
     return response.data;
@@ -2551,11 +2558,12 @@ export const getSchemeClassifications = async () => {
 };
 
 //get customer details by mobile number no branch Id needed
-export const getCustomerByMobile = async (number) => {
+export const getCustomerByMobile = async (number,customer) => {
+  console.log(number,customer)
   const response = await Api.get(
     `${
       import.meta.env.VITE_API_URL
-    }/api/client/customer/mobile/search?search=${number}`
+    }/api/client/customer/mobile/search?search=${number}&customer=${customer}`
   );
   return response.data;
 };
@@ -2706,7 +2714,7 @@ export const addPromotions = async (data) => {
 };
 
 export const getContentTypes = async (data) => {
-  const response = await Api.post(
+  const response = await Api.get(
     `${import.meta.env.VITE_API_URL}/api/client/content/all/type/${data.type}`,
     data.data
   );
@@ -2716,35 +2724,49 @@ export const getContentTypes = async (data) => {
 //
 export const dueReportSummary = async (data) => {
   const response = await Api.post(
-    `${import.meta.env.VITE_API_URL}/api/client/reports/overdue`
+    `${import.meta.env.VITE_API_URL}/api/client/reports/overdue`,data
   );
   return response.data;
 };
 
 export const preCloseSummary = async (data) => {
   const response = await Api.post(
-    `${import.meta.env.VITE_API_URL}/api/client/reports/preclosesummary`
+    `${import.meta.env.VITE_API_URL}/api/client/reports/preclosesummary`,data
   );
   return response.data;
 };
-export const Redeemptionsummary = async (data) => {
+export const closedSummary = async (data) => {
   const response = await Api.post(
-    `${import.meta.env.VITE_API_URL}/api/client/reports/redeemptionsummary`
+    `${import.meta.env.VITE_API_URL}/api/client/reports/closedsummary`,data
   );
   return response.data;
 };
 export const refundSummary = async (data) => {
   const response = await Api.post(
-    `${import.meta.env.VITE_API_URL}/api/client/reports/refundsummary`
+    `${import.meta.env.VITE_API_URL}/api/client/reports/refundsummary`,data
+  );
+  return response.data;
+};
+export const completedAccount = async (data) => {
+  const response = await Api.post(
+    `${import.meta.env.VITE_API_URL}/api/client/reports/account/completed`,data
   );
   return response.data;
 };
 export const getOverAllSummary = async (data) => {
   const response = await Api.post(
-    `${import.meta.env.VITE_API_URL}/api/client/reports/overallreport`
+    `${import.meta.env.VITE_API_URL}/api/client/reports/overallreport`,data
   );
   return response.data;
 };
+export const amountPayble = async (data) => {
+  console.log(data)
+  const response = await Api.post(
+    `${import.meta.env.VITE_API_URL}/api/client/reports/amountpayble`,data
+  );
+  return response.data;
+};
+
 export const getPaymentLedger = async (data) => {
   const response = await Api.post(
     `${import.meta.env.VITE_API_URL}/api/client/reports/paymentledger`,
@@ -2782,3 +2804,80 @@ export const getDelistedSchemes = async(data)=>{
 }
 
 
+// dashboard
+
+export const getOverAllDashboard = async(branchId)=>{ 
+  const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/dashboard/overall`,{branchId})
+  return response.data
+}
+
+export const getAccountReview = async(data)=>{ 
+  console.log(data)
+  const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/dashboard/accountreview`,data)
+  return response.data
+}
+
+export const accountStats = async(data)=>{ 
+  console.log(data)
+  const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/dashboard/account`,data)
+  return response.data
+}
+
+export const getSchemeByBrachId = async(id)=>{ 
+  const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/scheme/branch/${id}`)
+  return response.data
+}
+export const getActiveScheme = async()=>{ 
+  const response= await Api.get(`${import.meta.env.VITE_API_URL}/api/client/scheme`)
+  return response.data
+}
+export const paymentHistory = async(data)=>{ 
+  const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/dashboard/paymenthistory`,data)
+  return response.data
+}
+
+export const paymentModeHistory = async(data)=>{ 
+  const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/dashboard/paymentmodehistory`,data)
+  return response.data
+}
+
+export const getEmployeeRefferal = async(data)=>{ 
+  const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/reports/employeereffer`,data)
+  return response.data
+}
+export const getCustomerRefferal = async(data)=>{ 
+  const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/reports/customerreffer`,data)
+  return response.data
+}
+
+
+//!per user redeem history
+export const userRedeemHistory = async (data) => {
+  const response = await Api.get(
+    `${import.meta.env.VITE_API_URL}/api/client/wallet/history?id=${data.id}&page=${data.page}&limit=${data.limit}`,
+    data
+  );
+  return response.data;
+};
+
+
+//!drill down api
+
+export const getSchemeDetailedView = async(data)=>{ 
+  const response= await Api.get(`${import.meta.env.VITE_API_URL}/api/client/reports/scheme?schemeid=${data.id}&page=${data.page}&limit=${data.limit}&search=${data.search}`,)
+  return response.data
+}
+
+export const getSchemewiseAmount = async (data) => {
+  const response = await Api.post(
+    `${import.meta.env.VITE_API_URL}/api/client/reports/amount`,data
+  );
+  return response.data;
+};
+
+export const getSchemewiseWeight = async (data) => {
+  const response = await Api.post(
+    `${import.meta.env.VITE_API_URL}/api/client/reports/weight`,data
+  );
+  return response.data;
+};

@@ -7,8 +7,8 @@ import { Search, Trash2 } from 'lucide-react'
 import Select from "react-select";
 import Table from '../../common/Table';
 import { Breadcrumb } from '../../common/breadCumbs/breadCumbs';
-import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+import { useNavigate,useLocation } from 'react-router-dom';
 import { form } from 'framer-motion/client';
 //import customSelectStyles from '../../common/customSelectStyles';//
 
@@ -19,44 +19,50 @@ const customComponents = {
 };
 const customSelectStyles = (isReadOnly) => ({
     control: (base, state) => ({
-      ...base,
-      minHeight: "42px",
-      backgroundColor: "white",
-      border: state.isFocused ? "1px solid black" : "2px solid #f2f3f8",
-      boxShadow: state.isFocused ? "0 0 0 1px black" : "none",
-      borderRadius: "0.375rem",
-      "&:hover": {
-        color: "#e2e8f0",
-      },
-      pointerEvents: !isReadOnly ? "none" : "auto",
-      opacity: !isReadOnly ? 1 : 1,
+        ...base,
+        minHeight: "42px",
+        backgroundColor: "white",
+        border: state.isFocused ? "1px solid black" : "2px solid #f2f3f8",
+        boxShadow: state.isFocused ? "0 0 0 1px black" : "none",
+        borderRadius: "0.375rem",
+        "&:hover": {
+            color: "#e2e8f0",
+        },
+        pointerEvents: !isReadOnly ? "none" : "auto",
+        opacity: !isReadOnly ? 1 : 1,
     }),
     indicatorSeparator: () => ({
-      display: "none",
+        display: "none",
     }),
     placeholder: (base) => ({
-      ...base,
-      color: "#858293",
-      fontWeight: "thin",
-      // fontStyle: "bold",
+        ...base,
+        color: "#858293",
+        fontWeight: "thin",
     }),
     dropdownIndicator: (provided, state) => ({
-      ...provided,
-      color: "#232323",
-      "&:hover": {
+        ...provided,
         color: "#232323",
-      },
+        "&:hover": {
+            color: "#232323",
+        },
     }),
-  });
+});
 
-  const inputHeight = "42px";
+const inputHeight = "42px";
 
 
 
 function GiftHandOverForm() {
 
-    const [isLoading, setLoading] = useState(false);
 
+
+    
+    const navigate = useNavigate();
+    const roledata = useSelector((state) => state.clientForm.roledata);
+    const layout_color = useSelector((state) => state.clientForm.layoutColor);
+    const id_branch = roledata?.branch;
+    const branchaccess = roledata?.id_branch;
+    const [isLoading, setLoading] = useState(false);
     const [AddLoading, setAddLoading] = useState(false);
     const [visibleaccount, setVisibleaccount] = useState(false);
     const [searchGiftCode, setSearchGiftCode] = useState("");
@@ -75,19 +81,15 @@ function GiftHandOverForm() {
     const [customer_name, setCustomername] = useState('');
     const [address, setAddress] = useState('');
     const [noOfgifts, setNoGifts] = useState("")
-    const [alloted_gifts, setAllotedGifts] = useState("")
+    const [alloted_gifts, setAllotedGifts] = useState(0)
     const [schId, setSchId] = useState("");
     const [giftStock, setGiftStock] = useState("")
     const [addGift, setAddGift] = useState([])
 
 
-
-    const navigate = useNavigate();
-    const roledata = useSelector((state) => state.clientForm.roledata);
-    const layout_color = useSelector((state) => state.clientForm.layoutColor);
-    const id_branch = roledata?.branch;
-    const branchaccess = roledata?.id_branch;
-
+    const location = useLocation();
+    const data = location?.state?.data;
+    
     const [formData, setFormData] = useState({
         id_customer: "",
         mobile: null,
@@ -96,6 +98,78 @@ function GiftHandOverForm() {
         gift_issues: [],
         qty: "",
     });
+
+  
+    const scheme_gift = formData.issue_type;
+
+
+    useEffect(() => {
+        if(!data || scheme_gift === 2) return;
+        if (data) {
+            handlesearchScheme({ value: data.mobile, branchId: formData.id_branch })
+            handleSchemeAcc(1)
+            handleChangeSchemeAccount({value:data._id,label:data?.scheme_name,Allottedgifts:data?.allottedgifts})
+
+            // setVisibleaccount(true)
+            setFormData((prev) => ({
+                ...prev,
+                issue_type: 1,
+            }));
+        
+            setSchId(data._id)
+        } else {
+            setFormData({
+                id_customer: "",
+                mobile: null,
+                id_branch: "",
+                issue_type: null,
+                gift_issues: [],
+                qty: "",
+            })
+        }
+    }, [data,scheme_gift])
+
+
+    
+
+
+    useEffect(() => {
+
+        if (!roledata) return;
+        if (id_branch !== "0" || id_branch !== 0) {
+            setFormData(prev => ({
+                ...prev,
+                id_branch: branchaccess
+            }));
+            setIdbranch(branchaccess)
+        }
+
+    }, [branchaccess, roledata]);
+
+    useEffect(() => {
+        if (!schId) return;
+        const payload = {
+            page: currentPage,
+            limit: itemsPerPage,
+            search: "",
+            id: schId
+        }
+        handleGiftIssuesBySchId(payload)
+    }, [currentPage, itemsPerPage, schId, visibleaccount])
+
+
+    const { mutate: handleGiftIssuesBySchId } = useMutation({
+        mutationFn: (value) => giftIssueBySchId(value),
+        onSuccess: (response) => {
+            if (response) {
+                setGiftHis(response.giftsList)
+                setTotalPages(response.totalPages)
+                setCurrentPage(response.currentPage)
+                setTotalDocuments(response.totalDocument)
+            }
+        },
+    });
+
 
     const validateForm = () => {
         const errors = {};
@@ -199,31 +273,6 @@ function GiftHandOverForm() {
     }, [giftResponse, branchresponse, giftIssueResponse]);
 
 
-    useEffect(() => {
-
-        if (!roledata) return;
-        if (id_branch !== "0" || id_branch !== 0) {
-            setFormData(prev => ({
-                ...prev,
-                id_branch: branchaccess
-            }));
-            setIdbranch(branchaccess)
-        }
-
-    }, [branchaccess, roledata]);
-
-    useEffect(() => {
-        if (!schId) return;
-        const payload = {
-            page: currentPage,
-            limit: itemsPerPage,
-            search: "",
-            id: schId
-        }
-        handleGiftIssuesBySchId(payload)
-    }, [currentPage, itemsPerPage, schId, visibleaccount])
-
-
     const handleSearchmobile = () => {
 
         if (formData.mobile === "") {
@@ -247,45 +296,66 @@ function GiftHandOverForm() {
     }
 
 
+    // const { mutate: handlesearchScheme } = useMutation({
+    //     mutationFn: (data) => searchSchAccByMobile(data),
+    //     onSuccess: (response) => {
+
+    //         if (response) {
+    //             setCustomername(response.data[0].id_customer?.firstname + ' ' + response.data[0]?.id_customer?.lastname);
+    //             setAddress(response.data[0]?.id_customer?.address);
+    //             handleSchemeAccount(response.schemeSummary)
+    //             setFormData(prev => ({
+    //                 ...prev,
+    //                 id_customer: response.data[0].id_customer?._id,
+    //                 mobile: response.data[0].id_customer?.mobile,
+    //             }));
+
+    //             toast.success(response.message)
+    //         }
+    //     },
+    //     onError: (error) => {
+    //         toast.error(error.response.data.message)
+    //     }
+    // });
+
     const { mutate: handlesearchScheme } = useMutation({
         mutationFn: (data) => searchSchAccByMobile(data),
         onSuccess: (response) => {
-
-            if (response) {
-                setCustomername(response.data[0].id_customer?.firstname + ' ' + response.data[0]?.id_customer?.lastname);
-                setAddress(response.data[0]?.id_customer?.address);
-                handleSchemeAccount(response.schemeSummary)
-                setFormData(prev => ({
-                    ...prev,
-                    id_customer: response.data[0].id_customer?._id,
-                    mobile: response.data[0].id_customer?.mobile,
-                }));
-
-                toast.success(response.data.message)
-            }
+          if (!response?.data?.length) {
+            toast.error("No accounts found");
+            return;
+          }
+    
+          const eligibleAccounts = response.data.filter(
+            account => account.paidInstallments >= account.id_scheme.gift_minimum_paid_installment
+          );
+    
+          if (eligibleAccounts.length === 0) {
+            toast.error("No eligible accounts (insufficient paid installments)");
+            return;
+          }
+    
+          const account = eligibleAccounts[0];
+          setCustomername(`${account.id_customer?.firstname} ${account.id_customer?.lastname}`);
+          setAddress(account.id_customer?.address);
+          setSchId(account.id_scheme_account);
+    
+          setFormData(prev => ({
+            ...prev,
+            id_customer: account.id_customer?._id,
+            mobile: account.id_customer?.mobile,
+          }));
+    
+          handleschemeaccountbyBranch(eligibleAccounts);
+          toast.success(response.message);
         },
         onError: (error) => {
-            toast.error(error.response.data.message)
-        }
-    });
-
-
-    const { mutate: handleGiftIssuesBySchId } = useMutation({
-        mutationFn: (value) => giftIssueBySchId(value),
-        onSuccess: (response) => {
-            if (response) {
-                setGiftHis(response.giftsList)
-                setTotalPages(response.totalPages)
-                setCurrentPage(response.currentPage)
-                Setentries(response.totalDocument)
-            }
+          toast.error(error.response?.data?.message || "Failed to fetch scheme accounts");
         },
-        // onError: (error) => {
-        //     console.log("eror")
-        //     // toast.error(error.response.data.message)
-        // }
-    });
+      });
 
+
+ 
     const { mutate: handlesearchcustomer } = useMutation({
         mutationFn: (payload) => searchcustomermobile(payload),
         onSuccess: (response) => {
@@ -544,6 +614,15 @@ function GiftHandOverForm() {
         return `${day}/${month}/${year}`;
     };
 
+    const formatDate = (dateString) => {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+      };
+
 
     const columns = [
         {
@@ -565,7 +644,6 @@ function GiftHandOverForm() {
 
     ];
 
-
     const GiftCodecolumns = [
         {
             header: 'S.No',
@@ -578,6 +656,10 @@ function GiftHandOverForm() {
         {
             header: "No.Of Gifts",
             cell: (row) => row?.quantity,
+        },
+        {
+            header: "Issue Date",
+            cell: (row) =>  formatDate(new Date()),
         },
         {
             header: "Actions",
@@ -605,7 +687,6 @@ function GiftHandOverForm() {
                     <Breadcrumb items={[{ label: "Gift" }, { label: "GiftHandover", active: true }]} />
                 </div>
 
-                {/* Button - half width on mobile, moves to right on desktop */}
                 <div className="w-1/2 sm:hidden ">
                     <button
                         className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-full"
@@ -683,7 +764,7 @@ function GiftHandOverForm() {
 
                                         handleSchemeAcc(item.value);
                                     }}
-                                
+
                                     styles={customSelectStyles(true)}
                                     isLoading={loadingGiftItems}
                                     placeholder="Select scheme customer"
@@ -723,15 +804,12 @@ function GiftHandOverForm() {
                                     if (e.key === "Enter") {
                                         e.preventDefault();
                                         handleSearchmobile()
-                                        // handlesearchcustomer({
-                                        //     id_branch: formData.id_branch,
-                                        //     search_mobile: formData.mobile,
-                                        // });
+                                      
                                     }
                                 }}
                             />
-                           {/* Search Icon */}
-                           <div
+                            {/* Search Icon */}
+                            <div
                                 onClick={handleSearchmobile}
                                 className="absolute flex items-center justify-center cursor-pointer right-[0%] rounded-r-lg top-[70%] -translate-y-1/2 w-10 md:h-[40px] md:top-[48px] h-[18%] sm:right-0 sm:top-[68%] lg:right-[0%]"
                             >
@@ -741,18 +819,6 @@ function GiftHandOverForm() {
                                     <Search size={15} className="text-black" />
                                 )}
                             </div>
-                          
-
-                            {/* <div
-                                onClick={handleSearchmobile}
-                                className="absolute flex items-center justify-center cursor-pointer right-[0%] rounded-r-lg top-[70%] -translate-y-1/2 w-10 md:h-[42px] md:top-[50px] h-[20%] sm:right-0 sm:top-[68%] lg:right-[0%]"
-                            >
-                                {isLoading ? (
-                                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
-                                ) : (
-                                    <Search size={15} className="text-black" />
-                                )}
-                            </div> */}
                         </div>
 
                         {visibleaccount === true && (
@@ -830,12 +896,18 @@ function GiftHandOverForm() {
                                 value={GiftCodeNums.find(option => option.value === searchGiftCode) || ""}
                                 onChange={(selectedOption) => {
                                     setSearchGiftCode(selectedOption.value);
+                                    handleSearchGiftCode()
                                 }}
-                             
+
                                 components={customComponents}
-                                styles={customSelectStyles(true)}
+                                styles={{
+                                    ...customSelectStyles(true),
+                                    menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                                  }}
                                 isLoading={loadingGifts}
+                                menuPortalTarget={document.body}
                                 placeholder="Search/Select GiftCode"
+                               
                             />
                             {/* Search Icon */}
                             <div
@@ -848,7 +920,7 @@ function GiftHandOverForm() {
                                     <Search size={15} className="text-black" />
                                 )}
                             </div>
-                          
+
                         </div>
 
                         <div className="flex flex-col mt-2">
@@ -878,10 +950,16 @@ function GiftHandOverForm() {
                                     minLength={""}
                                     maxLength={"5"}
                                     onInput={(e) => {
+                                        if(Number(e.target.value > alloted_gifts)){
+                                            return toast.error("Not allowed to add gift more than allocated quantity")
+                                        }
                                         e.target.value = e.target.value.replace(/\D/g, "");
                                     }}
                                     value={formData.qty}
                                     onChange={(e) => {
+                                        if(Number(e.target.value) > alloted_gifts){
+                                            return 
+                                        }
                                         const value = e.target.value;
                                         setFormData((prev) => ({
                                             ...prev,
@@ -913,7 +991,6 @@ function GiftHandOverForm() {
                         </div>
                     </div>
                     {(GiftCodeData?.length > 0) && (
-
                         <div className="mt-6 p-3">
                             <div className="mb-2">
                                 <Table
@@ -928,7 +1005,14 @@ function GiftHandOverForm() {
                 </div>
 
                 <div className='bg-white border-gray-300'>
-                    <div className='flex justify-end gap-2'>
+                    <div className='flex justify-end gap-5'>
+                    <button
+                            className="w-20 h-9 bg-blue-900 text-white rounded-md hover:bg-blue-800 flex justify-center items-center"
+                            type='button'
+                            onClick={handleSubmit}
+                        >
+                            {isLoading ? <SpinLoading /> : 'Submit'}
+                        </button>
                         <button
                             className="w-20 h-9 border-2 bg-[#F6F7F9] border-[#f2f3f8] rounded-md hover:bg-gray-50 flex justify-center items-center text-[#6C7086]"
                             type='button'
@@ -936,20 +1020,13 @@ function GiftHandOverForm() {
                         >
                             Cancel
                         </button>
-                        <button
-                            className="w-20 h-9 bg-blue-900 text-white rounded-md hover:bg-blue-800 flex justify-center items-center"
-                            type='button'
-                            onClick={handleSubmit}
-                        >
-                            {isLoading ? <SpinLoading /> : 'Submit'}
-                        </button>
                     </div>
                 </div>
             </div>
 
 
             {((giftHis?.length > 0) && (visibleaccount === true)) && (
-            <div className="w-full flex flex-col bg-white border-2 border-[#f2f3f8] rounded-md p-6  mt-3 overflow-y-auto scrollbar-hide gap-8">
+                <div className="w-full flex flex-col bg-white border-2 border-[#f2f3f8] rounded-md p-6  mt-3 overflow-y-auto scrollbar-hide gap-8">
                     <div className="mt-6 p-3">
                         <div className="mb-2">
                             <h2 className='text-xl font-medium mb-4'>Gift HandOver History</h2>
@@ -965,8 +1042,8 @@ function GiftHandOverForm() {
                             />
                         </div>
                     </div>
-            </div>
-               )}
+                </div>
+            )}
 
 
 

@@ -108,25 +108,7 @@ export default function MakingChargesForm({ onChange, initialState }) {
           </div>
         </div>
 
-        {/* Discount Percentage */}
-        <div className="flex flex-col justify-end">
-          <label className="text-gray-700 font-medium mb-2">
-            Discount Percentage <span className="text-red-400">*</span>
-          </label>
-          <div className="relative h-[44px]">
-            <input
-              type="number"
-              value={formData.discountedPercentage}
-              onChange={handlediscountedPercentageChange}
-              className="border-2 border-[#F2F2F9] rounded-md pr-14 pl-3 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent h-full"
-              placeholder="Discount Percentage"
-              onKeyDown={(e) => e.key === "e" && e.preventDefault()}
-            />
-            <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center border-s-2 border-[#F2F2F9] rounded-r-md">
-              %
-            </span>
-          </div>
-        </div>
+       
 
         {/* Actual Value */}
         <div className="flex flex-col justify-end">
@@ -147,6 +129,26 @@ export default function MakingChargesForm({ onChange, initialState }) {
               placeholder="Actual Value"
               onKeyDown={(e) => e.key === "e" && e.preventDefault()}
             />
+          </div>
+        </div>
+
+         {/* Discount Percentage */}
+         <div className="flex flex-col justify-end">
+          <label className="text-gray-700 font-medium mb-2">
+            Discount Percentage <span className="text-red-400">*</span>
+          </label>
+          <div className="relative h-[44px]">
+            <input
+              type="number"
+              value={formData.discountedPercentage}
+              onChange={handlediscountedPercentageChange}
+              className="border-2 border-[#F2F2F9] rounded-md pr-14 pl-3 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent h-full"
+              placeholder="Discount Percentage"
+              onKeyDown={(e) => e.key === "e" && e.preventDefault()}
+            />
+            <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center border-s-2 border-[#F2F2F9] rounded-r-md">
+              %
+            </span>
           </div>
         </div>
       </div>

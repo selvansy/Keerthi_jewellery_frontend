@@ -138,7 +138,7 @@ const AddRvertAccount = () => {
     }
 
     if (searchmobile && branchId) {
-      handlesearchschemeaccount({ search_mobile: searchmobile, id_branch: branchId });
+      handlesearchschemeaccount({ search_mobile: searchmobile, id_branch: branchId});
     }
 
   }, [searchmobile, branchId]);
@@ -321,22 +321,22 @@ const AddRvertAccount = () => {
   });
 
 
-  const handleVerifyOtp = (num)=>{
+  // const handleVerifyOtp = (num)=>{
 
-    if(validateMobile(num)){
-      toast.error("Mobile must be 10 digits");
-      return;
-    }
+  //   if(validateMobile(num)){
+  //     toast.error("Mobile must be 10 digits");
+  //     return;
+  //   }
 
-    const payload = {
-      mobile: mobileNum || mobile,
-      otp: otpNumber,
-      branchId: branchId
-     }
-     postVerifyOtp(payload)
-     setTimer(60);
-     setCanResend(false);
-  }
+  //   const payload = {
+  //     mobile: mobileNum || mobile,
+  //     otp: otpNumber,
+  //     branchId: branchId
+  //    }
+  //    postVerifyOtp(payload)
+  //    setTimer(60);
+  //    setCanResend(false);
+  // }
 
   
   const { mutate: postVerifyOtp } = useMutation({
@@ -356,11 +356,7 @@ const AddRvertAccount = () => {
       toast.error('Please fill in all required fields');
       return;
     }
-
-    console.log("FormData----",formData)
-
     revertClose(formData);
-    
   }
 
   const { mutate: revertClose } = useMutation({

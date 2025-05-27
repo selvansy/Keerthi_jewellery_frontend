@@ -1,14 +1,14 @@
 import React from "react";
-
 import jsPDF from "jspdf";
-
-import "jspdf-autotable"; // For table support
+import "jspdf-autotable";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { FileSpreadsheet } from "lucide-react";
+import { body, style } from "framer-motion/client";
 
-export const ExportToPDF = ({ apiData = [], fileName = "ExportedData" }) => {
+export const ExportToPDF = ({ apiData, fileName = "ExportedData" }) => {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
+
 
   const exportToPDF = (data, fileName) => {
     if (!data || data.length === 0) {
@@ -16,27 +16,52 @@ export const ExportToPDF = ({ apiData = [], fileName = "ExportedData" }) => {
       return;
     }
 
-    const doc = new jsPDF();
+    
 
-    // Adding a title
-    doc.setFontSize(16);
-    doc.text("Exported Data", 14, 15);
+    const doc = new jsPDF('landscape');
+    
+    doc.setFontSize(15);
+    doc.text(`${fileName.slice(0,-10)}`, 120, 13);
 
-    // Extract table columns and rows
-    const tableColumn = Object.keys(data[0]);
-    const tableRows = data.map((item) => Object.values(item));
+    
+    const tableColumn = Object.keys(apiData[0]);
+    const tableRows = apiData.map((item) => Object.values(item));
 
-    // Generate the table
+    const lastColumnIndex = tableColumn.length - 1;
+
     doc.autoTable({
       head: [tableColumn],
       body: tableRows,
-      startY: 25,
+      startY: 20  ,
+      styles: {
+        fontSize: 10, 
+        lineHeight: 1.2,
+        cellPadding: { top: 5, right: 3, bottom: 4, left: 4 },
+        overflow: 'wrap',
+        // cellWidth:'wrap'
+        // overflow: 'linebreak'
+      },
+      headStyles: {
+       fontStyle: 'bold',
+       overflow: 'linebreak',
+      //  whiteSpace: 'wrap',
+       lineHeight:"20px",
+        fontSize: 9, 
+        align: 'middle',         
+        cellPadding: { top: 5, right: 1, bottom: 4, left: 5 },
+      },
+      columnStyles: {
+        0: { cellWidth: 'linebreak' },
+        1: { cellWidth: 'wrap' },
+        [lastColumnIndex]: { cellWidth: 'wrap' },
+      },
+      margin: { left: 3, right: 3,top:8 },
+      // pageBreak: 'auto',
     });
 
     // Save the PDF
     doc.save(`${fileName}.pdf`);
   };
-
   return (
     <button
       onClick={() => exportToPDF(apiData, fileName)}

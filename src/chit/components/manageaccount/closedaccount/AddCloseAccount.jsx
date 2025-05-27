@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { CalendarDays, Search, Send } from "lucide-react";
+import { Search } from "lucide-react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useDispatch, useSelector } from "react-redux";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import Select from "react-select";
 import { useFormik } from "formik";
@@ -17,14 +17,14 @@ import {
   getallpaymentmode,
   sendOtp,
   closeBill,
+  getmultipaymentmode,
   verifyOtp,
-  customSearchScheme
+  customSearchScheme,
 } from "../../../api/Endpoints";
 import RevertForm from "./RevertForm";
 import customSelectStyles from "../../common/customSelectStyles";
 import CalenderNew from "../../../../assets/icons/calendarNew.svg";
 import CheckboxToggle from "../../common/checkBox";
-// import Verified from "../../../../assets/icons/verified.svg";
 import ModelOne from "../../common/Modelone";
 import VerificationModal from "./VerificationModal";
 import OtpCompleted from "./OtpCompleted";
@@ -58,8 +58,53 @@ const AddCloseAccount = () => {
   const [otpSended, setSendOtp] = useState(false);
   const [otpCompleted, setOtpComplete] = useState(false);
   const [viewRevertForm, setReverView] = useState(false);
-  const [isLoading, setLoading] = useState(false);
-  const [isLoading1, setLoading1] = useState(false);
+  const [isSearchLoading, setSearchLoading] = useState(false);
+  const [isSendOtpLoading, setSendOtpLoading] = useState(false);
+  const [isSaveLoading, setSaveLoading] = useState(false);
+  const [bonusAmnt, setBonusAmnt] = useState(0);
+  const [bonustype, setBonusType] = useState(null);
+  const [calculatedTotal, setCalculatedTotal] = useState(0);
+  const [paymentmode, setPaymentmode] = useState([]);
+  const [ispaymode, setIspaymode] = useState(false);
+  const [multiplayModes, setMultiplayModes] = useState([]);
+  const [selectedMode, setSelectedMode] = useState(0);
+  const [multipaymode, setMultiPaymode] = useState([]);
+  const [multiPaymentValues, setMultiPaymentValues] = useState({});
+
+  const customStyles = (isReadOnly) => ({
+    control: (base, state) => ({
+      ...base,
+      minHeight: "42px",
+      backgroundColor: "white",
+      border: state.isFocused ? "1px solid black" : "2px solid #f2f3f8",
+      boxShadow: state.isFocused ? "0 0 0 1px black" : "none",
+      borderRadius: "0.375rem",
+      "&:hover": {
+        color: "#e2e8f0",
+      },
+      pointerEvents: !isReadOnly ? "none" : "auto",
+      opacity: !isReadOnly ? 1 : 1,
+    }),
+    indicatorSeparator: () => ({
+      display: "none",
+    }),
+    placeholder: (base) => ({
+      ...base,
+      color: "#858293",
+      fontWeight: "thin",
+    }),
+    dropdownIndicator: (provided, state) => ({
+      ...provided,
+      color: "#232323",
+      "&:hover": {
+        color: "#232323",
+      },
+    }),
+    menuPortal: (base) => ({
+      ...base,
+      zIndex: 9999,
+    }),
+  });
 
   // Format today's date
   const today = new Date();
@@ -72,12 +117,14 @@ const AddCloseAccount = () => {
       : Yup.number(),
     id_scheme_account: Yup.string().required("Scheme account is required"),
     id_branch: Yup.string().required("Branch is required"),
-    comments: Yup.string().required("Comments are required"),
     bill_no: Yup.string().required("Bill number is required"),
     bill_date: Yup.string().required("Bill date is required"),
-    mobile: Yup.string()
-      .required("Mobile is required")
-      .matches(/^\d{10}$/, "Mobile number must be 10 digits"),
+    mobile: Yup.string().required("Mobile number or Ac number required"),
+    // refund_paymenttype: Yup.string().when('status', {
+    //   is: (status) => status === 4,
+    //   then: Yup.string().required("Refund payment type is required"),
+    //   otherwise: Yup.string().notRequired()
+    // }),
     refund_paymenttype: refundtype
       ? Yup.string().required("Refund payment type is required")
       : Yup.string(),
@@ -98,6 +145,9 @@ const AddCloseAccount = () => {
       penalty_amount: "",
       total_paidamount: 0,
       otpMobile: "",
+      total_amount: 0,
+      bonusAmnt: "",
+      dynamic: false,
     },
     validationSchema,
     onSubmit: (values) => {
@@ -113,13 +163,87 @@ const AddCloseAccount = () => {
   });
 
   useEffect(() => {
+    formik.resetForm();
+    setSelectedScheme(null);
+    setSchemeData([]);
+    setBonusAmnt(0);
+    setBonusType(null);
+  }, [dynamic]);
+
+  useEffect(() => {
+    if (paymentModes) {
+      const data = paymentModes.data.map((item) => ({
+        mode: item.id_mode,
+        value: item._id,
+        label: item.mode_name,
+      }));
+      setPaymentmode(data);
+    }
+  }, [paymentModes]);
+
+  useEffect(() => {
+    const getMutliOptions = async () => {
+      const data = await getmultipaymentmode();
+      setMultiplayModes(data);
+    };
+
+    if (selectedMode === 7) {
+      getMutliOptions();
+    }
+  }, [selectedMode]);
+
+  // enable multipayment
+  useEffect(() => {
+    if (selectedMode === 7) {
+      if (multiplayModes?.data?.length > 0) {
+        setIspaymode(true);
+        const data = multiplayModes.data.map((item) => ({
+          value: item.parameter,
+          label: item.name,
+        }));
+        setMultiPaymode(data);
+
+        // Initialize multi payment values
+        const initialValues = {};
+        multiplayModes.data.forEach((mode) => {
+          initialValues[mode.parameter] = 0;
+        });
+        setMultiPaymentValues(initialValues);
+      }
+    } else {
+      setIspaymode(false);
+    }
+  }, [multiplayModes, selectedMode]);
+
+  useEffect(() => {
+    if (!selectedScheme) return;
+
+    const baseAmount = selectedScheme.total_paidamount || 0;
+    let calculatedAmount = baseAmount;
+
+    const bonus = Number(formik.values.bonusAmnt || 0);
+
+    if (bonustype === 1) {
+      calculatedAmount = baseAmount + bonus;
+    } else if (bonustype === 2) {
+      calculatedAmount = baseAmount + (baseAmount * bonus) / 100;
+    }
+
+    setCalculatedTotal(calculatedAmount);
+    formik.setFieldValue("total_paidamount", calculatedAmount);
+    formik.setFieldValue("total_amount", baseAmount);
+  }, [selectedScheme, bonustype, formik.values.bonusAmnt]);
+
+  useEffect(() => {
     const lastPart = location.pathname.substring(
       location.pathname.lastIndexOf("/") + 1
     );
     if (lastPart === "preclose") {
       setDynamic(true);
+      formik.setFieldValue("dynamic", true);
     } else {
       setDynamic(false);
+      formik.setFieldValue("dynamic", false);
     }
   }, [location.pathname]);
 
@@ -137,18 +261,6 @@ const AddCloseAccount = () => {
     }
   }, [paymentModes]);
 
-  useEffect(() => {
-    if (formik.values.total_paidamount) {
-      const newPayment = Number(formik.values.total_paidamount);
-      formik.setFieldValue("total_paidamount", newPayment);
-    } else if (
-      formik.values.penalty_amount <= 0 ||
-      formik.values.penalty_amount === ""
-    ) {
-      formik.setFieldValue("total_paidamount", totalAmount);
-    }
-  }, [formik.values.penalty_amount, totalAmount]);
-
   // Initial data loading
   useEffect(() => {
     getallbranchMutate();
@@ -162,16 +274,6 @@ const AddCloseAccount = () => {
     });
   }, []);
 
-  // Fetch scheme accounts when branch or mobile changes
-  // useEffect(() => {
-  //   if (formik.values.mobile && formik.values.id_branch) {
-  //     handlesearchschemeaccount({
-  //       search_mobile: formik.values.mobile,
-  //       id_branch: formik.values.id_branch
-  //     });
-  //   }
-  // }, [formik.values.mobile, formik.values.id_branch]);
-
   // Handle search mobile click
   const handleSearchMobile = () => {
     if (!formik.values.mobile) {
@@ -179,21 +281,16 @@ const AddCloseAccount = () => {
       return;
     }
 
-    if(!formik.values.id_branch){
-      return toast.error("Choose a branch first")
+    if (!formik.values.id_branch) {
+      return toast.error("Choose a branch first");
     }
 
-    if (formik.values.id_branch) {
-      setLoading1(true)
-      handlesearchschemeaccount({
-        search_mobile: formik.values.mobile,
-        id_branch: formik.values.id_branch,
-        status: !dynamic && 2
-      });
-    } else {
-      toast.error("Branch selection is required!");
-      formik.setFieldTouched("id_branch", true);
-    }
+    setSearchLoading(true);
+    handlesearchschemeaccount({
+      search_mobile: formik.values.mobile,
+      id_branch: formik.values.id_branch,
+      status: !dynamic ? [2] : [0],
+    });
   };
 
   // Branch API mutation
@@ -211,18 +308,20 @@ const AddCloseAccount = () => {
   });
 
   // Search scheme account API mutation
-  const { mutate: handlesearchschemeaccount} = useMutation({
+  const { mutate: handlesearchschemeaccount } = useMutation({
     mutationFn: customSearchScheme,
     onSuccess: (response) => {
-      if (response?.data) {
+      setSearchLoading(false);
+      if (response?.data && response.data.length > 0) {
         setSchemeData(response.data);
         toast.success(response.message);
-        setLoading1(false)
+      } else {
+        toast.error("No scheme account found");
       }
     },
     onError: (error) => {
-      console.log(error);
-      toast.error(error.response.data.message);
+      setSearchLoading(false);
+      toast.error(error.response?.data?.message || "Error searching accounts");
     },
   });
 
@@ -254,29 +353,15 @@ const AddCloseAccount = () => {
   const { mutate: postSendOtpMobile } = useMutation({
     mutationFn: sendOtp,
     onSuccess: (response) => {
+      setSendOtpLoading(false);
       if (response) {
         toast.success(response.message);
-        if (response && !otpSended) {
-          setSendOtp(!otpSended);
-          setLoading(false);
-        }
-      }
-    },
-  });
-
-  // Verify OTP API mutation
-  const { mutate: postVerifyOtp } = useMutation({
-    mutationFn: verifyOtp,
-    onSuccess: (response) => {
-      if (response) {
-        if (response.status) {
-          setSendOtp(false);
-        }
-        toast.success(response.message);
+        setSendOtp(true);
       }
     },
     onError: (error) => {
-      setValidity(true);
+      setSendOtpLoading(false);
+      toast.error(error.response?.data?.message || "Error sending OTP");
     },
   });
 
@@ -284,6 +369,7 @@ const AddCloseAccount = () => {
   const { mutate: BillClose } = useMutation({
     mutationFn: closeBill,
     onSuccess: (response) => {
+      setSaveLoading(false);
       if (response) {
         toast.success(response.message);
         if (formik.values.status === 1) {
@@ -294,6 +380,10 @@ const AddCloseAccount = () => {
           navigate("/report/refund/");
         }
       }
+    },
+    onError: (error) => {
+      setSaveLoading(false);
+      toast.error(error.response?.data?.message || "Error closing account");
     },
   });
 
@@ -314,28 +404,13 @@ const AddCloseAccount = () => {
       return;
     }
 
-    setLoading(true);
+    setSendOtpLoading(true);
     postSendOtpMobile({
       mobile: mobileToUse,
       otp: otpNumber,
       branchId: formik.values.id_branch,
     });
   };
-
-  // Verify OTP handler
-  // const handleVerifyOtp = (data) => {
-  //   if (!data) {
-  //     toast.error("OTP is required");
-  //     return;
-  //   }
-
-  //   postVerifyOtp({
-  //     mobile: mobileNum || formik.values.mobile,
-  //     otp: data,
-  //     type: dynamic ? "preclose" : "close",
-  //     branchId: formik.values.id_branch,
-  //   });
-  // };
 
   // Handle scheme account selection
   const handleSchemeAccountChange = (selectedOption) => {
@@ -347,9 +422,24 @@ const AddCloseAccount = () => {
     if (scheme) {
       setSelectedScheme(scheme);
       setAmount(scheme.total_paidamount);
-      formik.setFieldValue("total_paidamount", scheme.total_paidamount);
+
       if (scheme.id_customer?.mobile) {
         setMobileNum(scheme.id_customer.mobile);
+      }
+
+      if (scheme?.id_scheme?.bonus_type !== null) {
+        setBonusType(scheme.id_scheme.bonus_type);
+        if (scheme.id_scheme.bonus_type === 1) {
+          setBonusAmnt(scheme.id_scheme.bonus_amount);
+          formik.setFieldValue("bonusAmnt", scheme.id_scheme.bonus_amount);
+        } else if (scheme.id_scheme.bonus_type === 2) {
+          setBonusAmnt(scheme.id_scheme.bonus_percent);
+          formik.setFieldValue("bonusAmnt", scheme.id_scheme.bonus_percent);
+        }
+      } else {
+        setBonusType(null);
+        setBonusAmnt(0);
+        formik.setFieldValue("bonusAmnt", 0);
       }
     }
   };
@@ -357,13 +447,13 @@ const AddCloseAccount = () => {
   // Handle status change
   const handleStatusChange = (selectedOption) => {
     formik.setFieldValue("status", selectedOption.value);
+    formik.setFieldValue("refund_paymenttype", "");
+    setSelectedMode("");
 
-    // Show refund options if status is 4 (refund)
     if (selectedOption.value === 4) {
       setRefundType(true);
     } else {
       setRefundType(false);
-      formik.setFieldValue("refund_paymenttype", "");
     }
   };
 
@@ -382,18 +472,81 @@ const AddCloseAccount = () => {
     }
   };
 
+  // Calculate multi payment total
+  const calculateMultiPaymentTotal = () => {
+    if (!multiplayModes?.data) return 0;
+
+    return multiplayModes.data.reduce((total, mode) => {
+      const value = Number(multiPaymentValues[mode.parameter] || 0);
+      return total + value;
+    }, 0);
+  };
+
+  // Handle multi payment value change
+  const handleMultiPaymentChange = (param, value) => {
+    const newValue = Number(value) || 0;
+    const currentTotal = calculateMultiPaymentTotal();
+    const paidAmount = Number(formik.values.total_paidamount) || 0;
+
+    const newTotal =
+      currentTotal - Number(multiPaymentValues[param] || 0) + newValue;
+
+    if (newTotal > paidAmount) {
+      toast.error(
+        `Total payment modes (${newTotal}) cannot exceed paid amount (${paidAmount})`
+      );
+      return;
+    }
+
+    setMultiPaymentValues((prev) => ({
+      ...prev,
+      [param]: newValue,
+    }));
+  };
+
   // Submit form handler
   const handleSubmit = (values) => {
-    if (showVerification && !otpNumber) {
+    console.log(values, "line 505");
+    if (values.status === 4 && !values.refund_paymenttype) {
+      formik.setFieldTouched("refund_paymenttype", true);
+      toast.error("Payment mode is required for refund");
+      return;
+    }
+
+    if (ispaymode) {
+      const multiPaymentTotal = calculateMultiPaymentTotal();
+      const paidAmount = Number(values.total_paidamount) || 0;
+
+      if (multiPaymentTotal !== paidAmount) {
+        toast.error(
+          `Total payment modes must equal paid amount (${paidAmount})`
+        );
+        return;
+      }
+    }
+
+    if (checked && !otpCompleted) {
       toast.error("OTP verification is required");
       return;
     }
-    BillClose(values);
+
+    const submitData = {
+      ...values,
+      multiPaymentValues: ispaymode ? multiPaymentValues : undefined,
+    };
+
+    setSaveLoading(true);
+    BillClose(submitData);
   };
 
   // Filter scheme statuses to exclude status 2 and 0
   const schemeStatusOptions = schemestatus
-    .filter((status) => status.id_status !== 0 && status.id_status !== 2)
+    .filter(
+      (status) =>
+        status.id_status !== 0 &&
+        status.id_status !== 2 &&
+        status.id_status !== 7
+    )
     .map((status) => ({
       value: status.id_status,
       label: status.status_name,
@@ -401,20 +554,20 @@ const AddCloseAccount = () => {
 
   // Create scheme account options
   const schemeAccountOptions = schemedata.map((account) => {
-    let label = account.id_scheme.scheme_name;
+    let label = account?.id_scheme?.scheme_name;
 
-    if ([4, 5, 6, 7, 8, 9, 10].includes(account.id_scheme.scheme_type)) {
-      label += ` (Rs. ${account.id_scheme.min_amount} - Rs. ${account.id_scheme.max_amount})`;
-    } else if (account.id_scheme.scheme_type === 3) {
-      label += ` (${account.id_scheme.min_weight} - ${account.id_scheme.max_weight})`;
-    } else if ([0, 1, 2].includes(account.id_scheme.scheme_type)) {
-      label += ` (Rs. ${account.id_scheme.amount})`;
+    if ([4, 5, 6, 7, 8, 9, 10].includes(account?.id_scheme?.scheme_type)) {
+      label += ` (Rs. ${account?.id_scheme?.min_amount} - Rs. ${account?.id_scheme?.max_amount})`;
+    } else if (account?.id_scheme?.scheme_type === 3) {
+      label += ` (${account?.id_scheme?.min_weight} - ${account?.id_scheme?.max_weight})`;
+    } else if ([0, 1, 2].includes(account?.id_scheme?.scheme_type)) {
+      label += ` (Rs. ${account?.id_scheme?.amount})`;
     }
 
-    label += ` - (${account.scheme_acc_number || "Not Allocated"})`;
+    label += ` - (${account?.scheme_acc_number || "Not Allocated"})`;
 
     return {
-      value: account._id,
+      value: account?._id,
       label,
     };
   });
@@ -447,7 +600,6 @@ const AddCloseAccount = () => {
           <p className="text-sm text-gray-400 mb-3">
             Manage Customers /{" "}
             <span className="text-black">
-              {" "}
               {dynamic ? "Pre Close Account" : "Closed Accounts"}
             </span>
           </p>
@@ -461,7 +613,7 @@ const AddCloseAccount = () => {
             {!dynamic && (
               <div>
                 <button
-                  className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
+                  className="rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
                   onClick={(e) => handleOpenRevert(e)}
                   style={{ backgroundColor: layout_color }}
                 >
@@ -475,7 +627,7 @@ const AddCloseAccount = () => {
             {branchOptions.length > 0 && (
               <div>
                 <label className="block text-sm font-medium mb-1">
-                  Branche <span className="text-red-500">*</span>
+                  Branch <span className="text-red-500">*</span>
                 </label>
                 <Select
                   styles={customSelectStyles(true)}
@@ -516,16 +668,20 @@ const AddCloseAccount = () => {
                   value={formik.values.mobile}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleSearchMobile();
+                    }
+                  }}
                 />
                 <div
                   onClick={handleSearchMobile}
-                  disabled={isLoading1}
-                  className="absolute  flex items-center justify-center cursor-pointer right-0 top-0 h-full w-10 rounded-r-md"
+                  disabled={isSearchLoading}
+                  className="absolute flex items-center justify-center cursor-pointer right-0 top-0 h-full w-10 rounded-r-md"
                 >
-                  {isLoading1 ? (
-                    <SpinLoading 
-                    customCss="black"
-                    />
+                  {isSearchLoading ? (
+                    <SpinLoading customCss="black" />
                   ) : (
                     <Search size={22} className="text-[#6C7086]" />
                   )}
@@ -538,11 +694,13 @@ const AddCloseAccount = () => {
               )}
             </div>
           </div>
+
           <div className="mt-4">
             <h2 className="text-lg font-semibold mb-4 border-b pb-4">
               Scheme Account Details
             </h2>
           </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div>
               <label className="block text-sm font-medium mb-1">
@@ -604,11 +762,13 @@ const AddCloseAccount = () => {
               />
             </div>
           </div>
+
           <div className="mt-4">
             <h2 className="text-lg font-semibold mb-4 border-b pb-4">
               Customer Details
             </h2>
           </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div>
               <label className="block text-sm font-medium mb-1">
@@ -640,6 +800,7 @@ const AddCloseAccount = () => {
               Close Form Details
             </h2>
           </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div>
               <label className="block text-sm font-medium mb-1">
@@ -714,7 +875,13 @@ const AddCloseAccount = () => {
                 <input
                   disabled
                   type="text"
-                  value={formatNumber({value:selectedScheme?.total_paidamount,decimalPlaces:0,currency:null}) || ""}
+                  value={
+                    formatNumber({
+                      value: formik.values.total_amount,
+                      decimalPlaces: 0,
+                      currency: null,
+                    }) || ""
+                  }
                   className="border-2 border-[#f2f3f8] pl-10 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                   placeholder="Paid Amount"
                 />
@@ -723,6 +890,112 @@ const AddCloseAccount = () => {
                 </span>
               </div>
             </div>
+
+            {bonustype !== null && (
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  {bonustype === 1 ? "Bonus Amount" : "Bonus Percentage"}
+                </label>
+                <div className="relative">
+                  <input
+                    disabled={!dynamic}
+                    name="bonusAmnt"
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      const numericValue =
+                        value === "" ? 0 : Number(value.replace(/,/g, ""));
+
+                      if (dynamic) {
+                        if (bonustype === 1) {
+                          if (
+                            numericValue >
+                            selectedScheme?.id_scheme?.bonus_amount
+                          ) {
+                            toast.error(
+                              `Cannot exceed scheme bonus amount of ${formatNumber(
+                                {
+                                  value:
+                                    selectedScheme?.id_scheme?.bonus_amount,
+                                  decimalPlaces: 0,
+                                  currency: null,
+                                }
+                              )}`
+                            );
+                            return;
+                          }
+                        } else if (bonustype === 2) {
+                          if (
+                            numericValue >
+                            selectedScheme?.id_scheme?.bonus_percent
+                          ) {
+                            toast.error(
+                              `Cannot exceed scheme bonus percentage of ${selectedScheme?.id_scheme?.bonus_percent}%`
+                            );
+                            return;
+                          }
+                        }
+                      }
+
+                      formik.setFieldValue("bonusAmnt", numericValue);
+                      setBonusAmnt(numericValue);
+                    }}
+                    type="text"
+                    value={
+                      bonustype === 1
+                        ? formatNumber({
+                            value: formik.values.bonusAmnt,
+                            decimalPlaces: 0,
+                            currency: null,
+                          })
+                        : bonustype === 2
+                        ? formik.values.bonusAmnt
+                        : ""
+                    }
+                    className={`border-2 border-[#f2f3f8] ${
+                      bonustype == 1 && "pl-10"
+                    } rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent`}
+                    placeholder={
+                      bonustype === 1 ? "Bonus Amount" : "Bonus Percentage"
+                    }
+                  />
+                  <span
+                    className={`absolute ${
+                      bonustype == 1
+                        ? "left-0 top-0 px-3 border-r"
+                        : "right-0 top-0 border-l"
+                    } w-9 h-full  flex items-center justify-center text-black `}
+                  >
+                    {bonustype === 1 ? "₹" : "%"}
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {bonustype !== null && (
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Total Amount
+                </label>
+                <div className="relative">
+                  <input
+                    disabled
+                    type="text"
+                    value={
+                      formatNumber({
+                        value: formik.values.total_paidamount,
+                        decimalPlaces: 0,
+                        currency: null,
+                      }) || ""
+                    }
+                    className="border-2 border-[#f2f3f8] pl-10 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                    placeholder="Total Amount"
+                  />
+                  <span className="absolute left-0 top-0 w-9 h-full px-3 flex items-center justify-center text-black border-r">
+                    ₹
+                  </span>
+                </div>
+              </div>
+            )}
 
             <div>
               <label className="block text-sm font-medium mb-1">Remark</label>
@@ -741,8 +1014,96 @@ const AddCloseAccount = () => {
                 </div>
               )}
             </div>
-            <div></div>
-            <div></div>
+
+            {refundtype && (
+              <div className={`flex flex-col`}>
+                <label className="block text-sm font-medium mb-1">
+                  Payment Mode<span className="text-red-400"> *</span>
+                </label>
+                <Select
+                  styles={customStyles(true)}
+                  menuPortalTarget={document.body}
+                  isClearable={true}
+                  options={paymentmode}
+                  placeholder="Select payment mode"
+                  value={
+                    paymentmode?.find(
+                      (option) =>
+                        option.value === formik.values.refund_paymenttype
+                    ) || null
+                  }
+                  onChange={(option) => {
+                    formik.setFieldValue(
+                      "refund_paymenttype",
+                      option ? option.value : ""
+                    );
+                    formik.setFieldTouched("refund_paymenttype", true);
+
+                    if (!option) {
+                      setSelectedMode("");
+                      return;
+                    }
+
+                    if (Number(option?.mode) === 7) {
+                      setSelectedMode(option.mode);
+                    } else {
+                      setSelectedMode("");
+                    }
+                  }}
+                  onBlur={() =>
+                    formik.setFieldTouched("refund_paymenttype", true)
+                  }
+                />
+                {formik.touched.refund_paymenttype &&
+                  formik.errors.refund_paymenttype && (
+                    <div className="text-red-500 text-sm mt-1">
+                      {formik.errors.refund_paymenttype}
+                    </div>
+                  )}
+              </div>
+            )}
+
+            {ispaymode && (
+              <>
+                {multiplayModes?.data?.map((multipay) => (
+                  <div key={multipay.parameter} className="flex flex-col">
+                    <label className="block text-sm font-medium mb-1">
+                      {multipay.name}
+                    </label>
+                    <input
+                      type="number"
+                      name={multipay.parameter}
+                      value={multiPaymentValues[multipay.parameter] || ""}
+                      onChange={(e) => {
+                        const newValue = Number(e.target.value) || 0;
+                        const currentTotal = calculateMultiPaymentTotal(
+                          formik.values
+                        );
+                        const paidAmount =
+                          Number(formik.values.total_paidamount) || 0;
+
+                        // Calculate what the new total would be if we accept this change
+                        const newTotal =
+                          currentTotal -
+                          Number(formik.values[multipay.parameter] || 0) +
+                          newValue;
+
+                        if (newTotal > paidAmount) {
+                          toast.error(
+                            `Total payment modes (${newTotal}) cannot exceed paid amount (${paidAmount})`
+                          );
+                          return;
+                        }
+
+                        formik.setFieldValue(multipay.parameter, newValue);
+                      }}
+                      className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                      placeholder="Enter amount here"
+                    />
+                  </div>
+                ))}
+              </>
+            )}
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-6">
             <div className="flex flex-col gap-3 lg:mt-4">
@@ -762,48 +1123,45 @@ const AddCloseAccount = () => {
                       <input
                         type="number"
                         min="0"
-                        className="border-2 border-[#f2f3f8] rounded-md p-2 w-96 lg:w-[81%] focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent pr-24"
+                        className="border-2 border-[#f2f3f8] rounded-md p-2 w-96 lg:w-[46%] focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent pr-24"
                         placeholder="Enter mobile number"
                         value={formik.values.mobile || formik.values.otpMobile}
                         onChange={formik.handleChange}
                         name="otpMobile"
                       />
-                      <div className="absolute -right-2 top-1/2 -translate-y-1/2">
+                      <div className="absolute right-96 top-1/2 -translate-y-1/2">
                         <button
                           className="bg-[#004181] text-white rounded-md px-4 py-2"
                           onClick={(e) => sendOtpToMobile(e)}
-                          disabled={isLoading}
+                          disabled={isSendOtpLoading}
                         >
-                          {isLoading ? <SpinLoading /> : "Send OTP"}
+                          {isSendOtpLoading ? <SpinLoading /> : "Send OTP"}
                         </button>
                       </div>
                     </div>
                   </div>
-
-                  {/* Right (Narrower) */}
-                  <div className="flex items-end flex-[1]"></div>
                 </div>
               )}
             </div>
           </div>
         </div>
 
-        {/* <div className="flex justify-end space-x-4">
-        <button
-          type="button"
-          className="w-20 h-9 border-2 bg-[#F6F7F9] border-[#f2f3f8] rounded-md hover:bg-gray-50 flex justify-center items-center text-[#6C7086]"
-          onClick={() => formik.resetForm()}
-        >
-          Clear
-        </button>
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="w-20 h-9 bg-blue-900 text-white rounded-md hover:bg-blue-800 flex justify-center items-center"
-        >
-          {isLoading ? <SpinLoading /> : id ? "Update" : "Save"}
-        </button>
-      </div> */}
+        <div className="flex justify-end space-x-4">
+          <button
+            type="button"
+            className="w-20 h-9 border-2 bg-[#F6F7F9] border-[#f2f3f8] rounded-md hover:bg-gray-50 flex justify-center items-center text-[#6C7086]"
+            onClick={() => formik.resetForm()}
+          >
+            Clear
+          </button>
+          <button
+            type="submit"
+            disabled={isSaveLoading}
+            className="w-20 h-9 bg-blue-900 text-white rounded-md hover:bg-blue-800 flex justify-center items-center"
+          >
+            {isSaveLoading ? <SpinLoading /> : "Save"}
+          </button>
+        </div>
       </form>
       {otpSended && (
         <ModelOne

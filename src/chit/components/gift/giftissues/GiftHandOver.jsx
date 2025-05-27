@@ -143,7 +143,7 @@ const GiftHandOver = () => {
     {
       header: "Gift Name",
       cell: (row) => {
-        const gift_names = row?.gifts?.map((val) => val.id_gift.gift_name);
+        const gift_names = row?.gifts?.map((val) => val?.id_gift?.gift_name);
         return gift_names.join(", ");
       }
     },

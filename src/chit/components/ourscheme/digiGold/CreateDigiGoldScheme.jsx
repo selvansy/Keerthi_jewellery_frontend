@@ -4,7 +4,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import Select from "react-select";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { useSelector } from "react-redux";
 import {
   getBranchById,
@@ -119,15 +119,19 @@ const CreateDigiGoldScheme = () => {
       sell_gst: "",
       max_amount: "",
       min_amount: "",
-      scheme_type: 10,
+      scheme_type: silver ? 14 : 10,
       noOfDays: null,
-      maxLimit:null,
+      maxLimit:null
     },
     validationSchema: Yup.object({
       scheme_name: Yup.string().required("Scheme name is required"),
       description: Yup.string().required("Description is required"),
       term_desc: Yup.string().required("Terms & conditions is required"),
-      id_branch: Yup.string().required("Branch is required"),
+      id_purity:Yup.string().required("Purity is required"),
+      // id_branch: Yup.string().required("Branch is required"),
+      id_branch:Yup.string()
+      .required("Branch is required")
+      .nullable(),
       bonus_type: Yup.number().when("$isBonus", {
         is: true,
         then: (schema) => schema.required("Bonus type is required"),
@@ -141,11 +145,11 @@ const CreateDigiGoldScheme = () => {
             .required("Count is required"),
         otherwise: (schema) => schema.notRequired(),
       }),
-      entry_type: Yup.number().when("$isBonus", {
-        is: true,
-        then: (schema) => schema.required("Entry type is required"),
-        otherwise: (schema) => schema.notRequired(),
-      }),
+      // entry_type: Yup.number().when("$isBonus", {
+      //   is: true,
+      //   then: (schema) => schema.required("Entry type is required"),
+      //   otherwise: (schema) => schema.notRequired(),
+      // }),
       values: Yup.array().of(
         Yup.object().shape({
           min: Yup.number().when(["$entry_type", "$isBonus"], {
@@ -177,65 +181,89 @@ const CreateDigiGoldScheme = () => {
             otherwise: (schema) => schema.notRequired(),
           })
       ),
-      buy_gst: Yup.number().optional("Buy GST is required"),
-      sell_gst: Yup.number().optional("Sell GST is required"),
+      // buy_gst: Yup.number().optional("Buy GST is required"),
+      // sell_gst: Yup.number().optional("Sell GST is required"),
       max_amount: Yup.number().required("Max Amount is required"),
       min_amount: Yup.number().required("Min Amount is required"),
       scheme_type: Yup.number().required("Scheme type is required"),
-      noOfDays:Yup.number().required("Maturity days required")
+      noOfDays:Yup.number().required("Maturity days required"),
+      logo: Yup.mixed()
+      .test('required', 'Main image is required', (value) => {
+        return mainImage !== null && mainImage !== false;
+      })
+      // .test('fileSize', 'File too large', (value) => {
+      //   if (value && value.size) {
+      //     return value.size <= 1024 * 1024;
+      //   }
+      //   return true;
+      // }),
     }),
     context: { isBonus }, 
     // Replace the onSubmit function in your formik configuration
-onSubmit: (values) => {
-  const formData = new FormData();
+// Replace the onSubmit function in your formik configuration
+onSubmit: async (values) => {
+  setIsLoading(true);
+  
+  if (!mainImage) {
+    formik.setFieldError('logo', 'Main image is required');
+    setIsLoading(false);
+    return;
+  }
+  
+  try {
+    const formData = new FormData();
 
-  // Append simple fields
-  Object.keys(values).forEach((key) => {
-    if (
-      typeof values[key] !== 'object' || 
-      values[key] === null || 
-      key === 'scheme_type' ||
-      key === 'bonus_type' ||
-      key === 'entry_type'
-    ) {
-      formData.append(key, values[key]);
+    Object.keys(values).forEach(key => {
+      if (key !== 'values' && key !== 'bonuses' && 
+          key !== 'logo' && key !== 'desc_img' &&  key !== 'main_image' &&
+          values[key] !== undefined && values[key] !== null) {
+        formData.append(key, values[key]);
+      }
+    });
+
+    if (values.values && values.values.length > 0) {
+      values.values.forEach((item, index) => {
+        if (item.min !== undefined) formData.append(`values[${index}][min]`, item.min);
+        if (item.max !== undefined) formData.append(`values[${index}][max]`, item.max);
+        if (item.value !== undefined) formData.append(`values[${index}][value]`, item.value);
+      });
     }
-  });
 
-  // Handle values array - Convert to JSON string to preserve structure
-  if (values.values && values.values.length > 0) {
-    values.values.forEach((v, i) => {
-      if (v.min != null) formData.append(`values[${i}][min]`, v.min);
-      if (v.max != null) formData.append(`values[${i}][max]`, v.max);
-      if (v.value != null) formData.append(`values[${i}][value]`, v.value);
-    });
-  }
-  
-  
-  if (values.bonuses && values.bonuses.length > 0) {
-    // For arrays of primitive values, append each value separately with the same key
-    values.bonuses.forEach((bonus, index) => {
-      formData.append(`bonuses[${index}]`, bonus);
-    });
-  }
+    if (values.bonuses && values.bonuses.length > 0) {
+      values.bonuses.forEach((bonus, index) => {
+        formData.append(`bonuses[${index}]`, bonus);
+      });
+    }
 
-  // Handle image files
-  if (mainImage instanceof File) {
-    formData.append("logo", mainImage);
-  }
+    if (mainImage instanceof File) {
+      formData.append("logo", mainImage);
+    } else if (typeof mainImage === 'string') {
+      formData.append("logo", mainImage);
+    }
 
-  if (descriptionImage instanceof File) {
-    formData.append("desc_img", descriptionImage);
-  }
+    if (descriptionImage) {
+      if (descriptionImage instanceof File) {
+        formData.append("desc_img", descriptionImage);
+      } else if (typeof descriptionImage === 'string') {
+        formData.append("desc_img", descriptionImage);
+      }
+    }
 
-  if (id) {
-    updateSchemeData({ id, formData });
-  } else {
-    addNewScheme(formData);
+    if (id) {
+      // For update
+      updateSchemeData({ id, formData });
+    } else {
+      // For create
+      addNewScheme(formData);
+    }
+  } catch (error) {
+    console.error("Submission error:", error);
+    toast.error("Failed to submit form");
+    setIsLoading(false);
   }
 }
   });
-
+ 
   //api calls
   const { data: branchData } = useQuery({
     queryKey: ["branches", accessBranch, id_branch],
@@ -267,13 +295,14 @@ onSubmit: (values) => {
   const { mutate: addNewScheme } = useMutation({
     mutationFn: addscheme,
     onSuccess: (response) => {
-      setIsLoading(false);
+      setIsLoading(true);
       toast.success(response.message);
       navigate("/scheme/scheme/");
     },
     onError: (error) => {
+      console.log(error)
       setIsLoading(false);
-      toast.error(error.response.message);
+      toast.error(error.response?.data?.message);
     },
   });
 
@@ -340,6 +369,8 @@ onSubmit: (values) => {
         );
         setDescriptionImage(null)
         setMainImage(null)
+        formik.setFieldValue("scheme_type", 10);
+        formik.setFieldValue('code',"Digigold")
       } else {
         setStaticData(digigoldData.data);
         formik.setFieldValue('term_desc','')
@@ -356,6 +387,8 @@ onSubmit: (values) => {
         );
         setDescriptionImage(null)
         setMainImage(null)
+        formik.setFieldValue("scheme_type", 14);
+        formik.setFieldValue('code',"Digisilver")
       }
     }
   }, [digigoldData, silver]);
@@ -367,8 +400,8 @@ onSubmit: (values) => {
       description: schemeData?.data?.description || "",
       term_desc: schemeData?.data?.term_desc || "",
       id_branch: schemeData?.data?.id_branch || "",
-      id_metal: schemeData?.data?.id_metal._id || "",
-      id_purity: schemeData?.data?.id_purity._id || "",
+      id_metal: schemeData?.data?.id_metal?._id || "",
+      id_purity: schemeData?.data?.id_purity?._id || "",
       id_classification: schemeData?.data?.id_classification,
       bonus_type: schemeData?.data?.bonus_type || 0,
       count: schemeData?.data?.count || "",
@@ -662,29 +695,31 @@ onSubmit: (values) => {
 
           {accessBranch === "0" && branch.length > 0 && !isLoading ? (
             <div>
-              <label className="block text-sm font-medium mb-1">
-                Branch <span className="text-red-500">*</span>
-              </label>
-              <Select
-                styles={customStyles(true)}
-                isClearable={true}
-                options={branch}
-                placeholder="Select Branch"
-                value={
-                  branch.find(
-                    (option) => option.value === formik.values.id_branch
-                  ) || ""
-                }
-                onChange={(option) =>
-                  formik.setFieldValue("id_branch", option ? option.value : "")
-                }
-              />
-              {formik.errors.id_branch && (
-                <div className="text-red-500 text-sm mt-1">
-                  {formik.errors.id_branch}
-                </div>
-              )}
-            </div>
+            <label className="block text-sm font-medium mb-1">
+              Branch <span className="text-red-500">*</span>
+            </label>
+            <Select
+              styles={customStyles(true)}
+              isClearable={true}
+              options={branch}
+              placeholder="Select Branch"
+              value={
+                branch.find(
+                  (option) => option.value === formik.values.id_branch
+                ) || null
+              }
+              onChange={(option) => {
+                formik.setFieldValue("id_branch", option ? option.value : "");
+                formik.setFieldTouched("id_branch", true); // Mark as touched when changed
+              }}
+              onBlur={() => formik.setFieldTouched("id_branch", true)} // Mark as touched on blur
+            />
+            {formik.touched.id_branch && formik.errors.id_branch && (
+              <div className="text-red-500 text-sm mt-1">
+                {formik.errors.id_branch}
+              </div>
+            )}
+          </div>
           ) : (
             <div>
               <label className="block text-sm font-medium mb-1">
@@ -807,7 +842,8 @@ onSubmit: (values) => {
 
           <div>
             <label className="block text-sm font-medium mb-1">
-              Bonus Type <span className="text-red-400">*</span>
+              Bonus Type 
+              {/* {!silver && <span className="text-red-400">*</span>} */}
             </label>
             <Select
               styles={customStyles(true)}
@@ -837,7 +873,8 @@ onSubmit: (values) => {
 
           <div>
             <label className="block text-sm font-medium mb-1">
-              Entry Type<span className="text-red-400">*</span>
+              Entry Type 
+              {/* {!silver && <span className="text-red-400">*</span>} */}
             </label>
             <Select
               name="entry_type"
@@ -867,6 +904,40 @@ onSubmit: (values) => {
             {formik.touched.entry_type && formik.errors.entry_type && (
               <div className="text-red-500 text-sm mt-1">
                 {formik.errors.entry_type}
+              </div>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              Count 
+              {/* {!silver && <span className="text-red-400">*</span>} */}
+            </label>
+            <input
+              type="number"
+              name="count"
+              min={1}
+              max={10}
+              value={formik.values.count}
+              onChange={(e) => {
+                let value = parseInt(e.target.value, 10);
+
+                // Clamp value between 1 and 10
+                if (isNaN(value)) value = "";
+                if (value > 10) value = 10;
+                if (value < 1) value = "";
+
+                formik.setFieldValue("count", value);
+                formik.setFieldValue("values", Array(value).fill({}));
+                formik.setFieldValue("bonuses", Array(value).fill(0));
+              }}
+              onBlur={formik.handleBlur}
+              onWheel={(e) => e.target.blur()} // prevent scroll-changing
+              className="w-full border rounded-md px-3 py-2"
+            />
+            {formik.touched.count && formik.errors.count && (
+              <div className="text-red-500 text-sm mt-1">
+                {formik.errors.count}
               </div>
             )}
           </div>
@@ -904,7 +975,7 @@ onSubmit: (values) => {
 
           <div className="flex flex-col ">
             <label className="block text-sm font-medium mb-1">
-              Max Limit <span className="text-red-400"> *</span>
+              Max Limit
             </label>
             <div className="relative">
               <span className="absolute left-0 top-0 w-9 h-full px-3 flex items-center justify-center text-black border-r">
@@ -932,40 +1003,6 @@ onSubmit: (values) => {
               </span>
             )}
           </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1">
-              Count<span className="text-red-400">*</span>
-            </label>
-            <input
-              type="number"
-              name="count"
-              min={1}
-              max={10}
-              value={formik.values.count}
-              onChange={(e) => {
-                let value = parseInt(e.target.value, 10);
-
-                // Clamp value between 1 and 10
-                if (isNaN(value)) value = "";
-                if (value > 10) value = 10;
-                if (value < 1) value = "";
-
-                formik.setFieldValue("count", value);
-                formik.setFieldValue("values", Array(value).fill({}));
-                formik.setFieldValue("bonuses", Array(value).fill(0));
-              }}
-              onBlur={formik.handleBlur}
-              onWheel={(e) => e.target.blur()} // prevent scroll-changing
-              className="w-full border rounded-md px-3 py-2"
-            />
-            {formik.touched.count && formik.errors.count && (
-              <div className="text-red-500 text-sm mt-1">
-                {formik.errors.count}
-              </div>
-            )}
-          </div>
-
           <div></div>
           {generateFields()}
         </div>

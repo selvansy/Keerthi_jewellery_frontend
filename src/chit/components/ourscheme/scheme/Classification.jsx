@@ -40,14 +40,15 @@ const Classification = ({
   const handleFileRemove = (id) => {
     if (id === 1) {
       setMainImagePreview(null);
-      setMainImageName("");
+      setMainImageName(null);
       setMainImg(null);
+      formik.setFieldValue('')
       if (mainImageInputRef.current) {
         mainImageInputRef.current.value = "";
       }
     } else if (id === 2) {
       setDescImagePreview(null);
-      setDescImageName("");
+      setDescImageName(null);
       setDescImg(null);
       if (descImageInputRef.current) {
         descImageInputRef.current.value = "";
@@ -66,11 +67,11 @@ const Classification = ({
     <input
       type="text"
       readOnly
-      value={mainImageName || logo}
+      value={mainImageName || logo || ""}  // logo
       className="border rounded-l-md p-2 w-full bg-gray-50"
     />
     <label
-      htmlFor="mainImageInput"  // Changed to match the input id
+      htmlFor="mainImageInput" 
       className="absolute right-0 top-0 bottom-0 bg-blue-600 text-white px-4 flex items-center justify-center rounded-md cursor-pointer text-sm"
       style={{ backgroundColor: layout_color }}
     >
@@ -127,7 +128,7 @@ const Classification = ({
             <input
               type="text"
               readOnly
-              value={descImageName || desc_img}
+              value={descImageName || desc_img || ""} // desc_img
               className="border rounded-md p-2 w-full bg-gray-50"
             />
             <label
@@ -232,7 +233,7 @@ const Classification = ({
       {/* Classification Order */}
       <div className="mt-4">
         <label className="block mb-2">
-          Display Order (App) <span className="text-red-500">*</span>
+          Display Order (App)
         </label>
         <div className="relative flex justify-center w-full md:w-1/4 items-center">
           <input
@@ -242,6 +243,15 @@ const Classification = ({
             onChange={formik.handleChange}
             className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
             min="1"
+            onKeyDown={(e) => {
+              const current = parseInt(formik.values.classification_order || "0", 10);
+            
+              if (e.key === "ArrowUp") {
+                formik.setFieldValue("classification_order", current + 1);
+              } else if (e.key === "ArrowDown") {
+                formik.setFieldValue("classification_order", Math.max(0, current - 1));
+              }
+            }}            
           />
           <div className="absolute right-2 flex flex-col">
             <button
@@ -278,7 +288,7 @@ const Classification = ({
                     parseInt(formik.values.classification_order || 0) - 1
                   )
                 )
-              }
+              }      
               className="focus:outline-none"
             >
               <svg

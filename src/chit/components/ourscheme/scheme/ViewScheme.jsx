@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Suspense, lazy } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useFormik } from "formik";
 import { formatNumber } from "../../../utils/commonFunction";
 import {
@@ -25,12 +25,14 @@ import { toast } from "react-toastify";
 import { schemeValidationSchema } from "../../../../utils/validations/schemeValidationSchema";
 import SpinLoading from "../../common/spinLoading";
 import "react-datepicker/dist/react-datepicker.css";
+import { Eye, EyeOff } from "lucide-react";
 
 const ViewScheme = () => {
-  // const { setFieldValue, validateForm, values } = useFormikContext();
   const navigate = useNavigate();
 
   let { id } = useParams();
+  const popoverRef = useRef(null);
+
   //reduux
   const roleData = useSelector((state) => state.clientForm.roledata);
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
@@ -59,6 +61,7 @@ const ViewScheme = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [benefitMaking, setMaking] = useState([]);
   const [reward, setReward] = useState([]);
+  const [eyeOpen, setEye] = useState(false);
 
   const formik = useFormik({
     initialValues: {
@@ -102,23 +105,24 @@ const ViewScheme = () => {
       pending_installment: "",
       paid_installment: "",
       limit_customer: "",
-      gift_minimum_paid_installment: "",
+      gift_minimum_paid_installment: 0,
 
       //gift
       gift_type: 1,
       no_of_gifts: 0,
 
       bonus_type: "",
-      bonus_amount: "",
+      bonus_amount: 0,
       bonus_percent: "",
       not_paid_installment: "",
       convenience_fees: "",
       display_referral: false,
       display_Weight_in_ledger: false,
       wallet_redemption_onpayment: false,
-      pathUrl:'',
-      logo:'',
-      desc_img:''
+      pathUrl: "",
+      logo: "",
+      desc_img: "",
+      fixed_amounts: [],
     },
     validationSchema: schemeValidationSchema,
     onSubmit: (values) => {
@@ -347,10 +351,10 @@ const ViewScheme = () => {
         limit_installment: schemeData.data.limit_installment || "",
         pending_installment: schemeData.data.pending_installment || "",
         paid_installment: schemeData.data.allowed_minpaid || "",
-        limit_customer: schemeData.data.limit_customer || "",
+        limit_customer: schemeData.data.limit_customer || 0,
         gift_type: schemeData.data.gift_type || 1,
         no_of_gifts: schemeData.data.no_of_gifts || 0,
-        convenience_fees: schemeData.data.convenience_fees || "",
+        convenience_fees: schemeData.data.convenience_fees || 0,
         fine_amount: schemeData.data.fine_amount || 0,
         cumulative_fine_amount: schemeData.data.cumulative_fine_amount || "",
         display_referral: schemeData.data.display_referral || false,
@@ -359,9 +363,9 @@ const ViewScheme = () => {
         wallet_redemption_onpayment:
           schemeData.data.wallet_redemption_onpayment || false,
         gift_minimum_paid_installment:
-          schemeData.data.gift_minimum_paid_installment || "",
+          schemeData.data.gift_minimum_paid_installment || 0,
         bonus_type: schemeData.data.bonus_type || "",
-        bonus_amount: schemeData?.data?.bonus_amount || "",
+        bonus_amount: schemeData?.data?.bonus_amount || 0,
         bonus_percent: schemeData?.data?.bonus_percent || "",
         not_paid_installment: schemeData?.data?.not_paid_installment || "",
         benefit_min_installment_wst_mkg:
@@ -371,6 +375,7 @@ const ViewScheme = () => {
         final_join_date: schemeData?.data?.final_join_date || "",
         setMainImage: schemeData?.data?.logo || null,
         setDescriptionImage: schemeData?.data?.desc_img || null,
+        fixed_amounts: schemeData?.data?.fixed_amounts || [],
       });
       if (schemeData?.data?.logo) {
         setMainImage(schemeData?.data?.logo);
@@ -384,8 +389,8 @@ const ViewScheme = () => {
       if (schemeData?.data) {
         formik.setFieldValue("scheme_type", schemeData?.data?.scheme_type);
       }
-      if(schemeData?.data?.pathUrl){
-        formik.setFieldValue("pathUrl",schemeData?.data?.pathUrl)
+      if (schemeData?.data?.pathUrl) {
+        formik.setFieldValue("pathUrl", schemeData?.data?.pathUrl);
       }
     }
   }, [id, schemeData]);
@@ -632,13 +637,27 @@ const ViewScheme = () => {
 
   useEffect(() => {
     if (classificationData?.data?.length > 0) {
-      const value = classificationData?.data?.find((item)=> item._id === formik.values.id_classification)
-      if(value?.order === 2){
+      const value = classificationData?.data?.find(
+        (item) => item._id === formik.values.id_classification
+      );
+      if (value?.order === 2) {
         formik.setFieldValue("classType", true);
       }
     }
   }, [classificationData]);
-  
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (popoverRef.current && !popoverRef.current.contains(event.target)) {
+        setEye(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <>
@@ -659,7 +678,7 @@ const ViewScheme = () => {
       <div className="w-full flex flex-col gap-3 space-y-6">
         <div className="bg-[#FFFFFF] rounded-lg p-6 shadow-sm border">
           <h2 className="text-lg font-semibold mb-4 border-b pb-4">
-          View Scheme
+            View Scheme
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -696,9 +715,7 @@ const ViewScheme = () => {
             ) : (
               <div>
                 <label className="block text-sm font-medium mb-1">Branch</label>
-                <p className="text-[#72737e] pb-2">
-                    {branch?.branch_name}
-                  </p>
+                <p className="text-[#72737e] pb-2">{branch?.branch_name}</p>
                 {/* <input
                   type="text"
                   disabled
@@ -803,52 +820,137 @@ const ViewScheme = () => {
             {![12, 3, 4].includes(formik.values.scheme_type) ? (
               <>
                 {formik.values.classType ? (
-                    <div> need to add</div>
-                ):(
-                    <>
+                  <div className="relative">
+                    <label className="block text-sm font-medium mb-1">
+                      <span className="flex gap-2">
+                        Amount{" "}
+                        {eyeOpen ? (
+                          <EyeOff
+                            className="h-5 w-5 pt-1 cursor-pointer"
+                            onClick={() => setEye(false)}
+                          />
+                        ) : (
+                          <Eye
+                            className="h-5 w-5 pt-1 cursor-pointer"
+                            onClick={() => setEye(true)}
+                          />
+                        )}
+                      </span>
+                    </label>
+                    <p className="text-[#72737e] pb-2">
+                      {`${formatNumber({
+                        value: formik.values.min_amount,
+                        decimalPlaces: 0,
+                      })} - ${formatNumber({
+                        value: formik.values.max_amount,
+                        decimalPlaces: 0,
+                      })}`}
+                    </p>
+                    {eyeOpen && (
+                      <div
+                        ref={popoverRef}
+                        className="absolute z-10 mt-1 bg-white border border-gray-200 rounded-md shadow-lg p-2 w-48"
+                      >
+                        <div className="grid grid-cols-3 gap-1">
+                          {formik.values.fixed_amounts.map((amount, index) => (
+                            <div
+                              key={index}
+                              className="px-3 py-1 text-sm hover:bg-gray-100 rounded cursor-default"
+                            >
+                              {formatNumber({
+                                value: amount,
+                                decimalPlaces: 0,
+                              })}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <>
                     <div>
-                  <label className="block text-sm font-medium mb-1">
-                    Min Amount
-                  </label>
-                  <p className="text-[#72737e] pb-2">
-                    {formatNumber({value:formik.values.min_amount,decimalPlaces:0})}
-                  </p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">
-                    Max Amount
-                  </label>
-                  <p className="text-[#72737e] pb-2">
-                  {formatNumber({value:formik.values.max_amount,decimalPlaces:0})}</p>
-                </div>
-                </>
+                      <label className="block text-sm font-medium mb-1">
+                        Min Amount
+                      </label>
+                      <p className="text-[#72737e] pb-2">
+                        {formatNumber({
+                          value: formik.values.min_amount,
+                          decimalPlaces: 0,
+                        })}
+                      </p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-1">
+                        Max Amount
+                      </label>
+                      <p className="text-[#72737e] pb-2">
+                        {formatNumber({
+                          value: formik.values.max_amount,
+                          decimalPlaces: 0,
+                        })}
+                      </p>
+                    </div>
+                  </>
                 )}
               </>
             ) : (
               <>
                 {formik.values.classType ? (
-                    <>
-                    <di>
-                        need to add
-                    </di>
-                    </>
-                ):(
-                    <>
+                  <>
                     <div>
-                  <label className="block text-sm font-medium mb-1">
-                    Min Weight
-                  </label>
-                  <p className="text-[#72737e] pb-2">
-                    {formik.values.min_weight}
-                  </p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">
-                   Max Weight
-                  </label>
-                  <p className="text-[#72737e] pb-2">{formik.values.max_weight}</p>
-                </div>
-                    </>
+                      <label className="block text-sm font-medium mb-1">
+                        Weight
+                      </label>
+                      <p className="text-[#72737e] pb-2">
+                        {`${formatNumber({
+                          value: formik.values.min_weight,
+                          decimalPlaces: 0,
+                        })}-${formatNumber({
+                          value: formik.values.max_weight,
+                          decimalPlaces: 0,
+                        })})`}
+                      </p>
+                      {eyeOpen && (
+                        <div
+                          ref={popoverRef}
+                          className="absolute z-10 mt-1 bg-white border border-gray-200 rounded-md shadow-lg p-2 w-48"
+                        >
+                          <div className="grid grid-cols-1 gap-1">
+                            {formik.values.fixed_amounts.map(
+                              (amount, index) => (
+                                <div
+                                  key={index}
+                                  className="px-3 py-1 text-sm hover:bg-gray-100 rounded cursor-default"
+                                >
+                                  {amount}
+                                </div>
+                              )
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div>
+                      <label className="block text-sm font-medium mb-1">
+                        Min Weight
+                      </label>
+                      <p className="text-[#72737e] pb-2">
+                        {formik.values.min_weight}
+                      </p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-1">
+                        Max Weight
+                      </label>
+                      <p className="text-[#72737e] pb-2">
+                        {formik.values.max_weight}
+                      </p>
+                    </div>
+                  </>
                 )}
               </>
             )}
@@ -994,8 +1096,9 @@ const ViewScheme = () => {
               </label>
               <div className="">
                 <img
-                className="w-[36px] h-[40px] border rounded-md"
-                 src={`${formik.values.pathUrl}${mainImage}`}/>
+                  className="w-[36px] h-[40px] border rounded-md"
+                  src={`${formik.values.pathUrl}${mainImage}`}
+                />
               </div>
               <p className="text-[#72737e] pb-2">{formik.values?.logo}</p>
             </div>
@@ -1006,8 +1109,9 @@ const ViewScheme = () => {
               </label>
               <div className="">
                 <img
-                className="w-[36px] h-[40px] border rounded-md"
-                 src={`${formik.values.pathUrl}${descriptionImage}`}/>
+                  className="w-[36px] h-[40px] border rounded-md"
+                  src={`${formik.values.pathUrl}${descriptionImage}`}
+                />
               </div>
             </div>
 

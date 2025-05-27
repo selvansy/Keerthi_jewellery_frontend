@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+
 /* Remove number input spinners */
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
@@ -14,8 +15,17 @@ input[type="number"] {
 }
 
 
-body{
+
+
+/* body{
   font-family: "Roboto", serif;
+} */
+
+@layer base {
+  html {
+    font-family: Inter, sans-serif;
+    letter-spacing: 0.2px;
+  }
 }
 
 .color-display{
@@ -35,3 +45,59 @@ body{
   pointer-events: none;
 }
 
+/* New placeholder color */
+
+input::placeholder {
+   color:#6C7086;
+   font-size: 14px;
+}
+ 
+input::-webkit-input-placeholder { /* Chrome/Safari/Opera */
+   color:#6C7086;
+    font-size: 14px;
+}
+ 
+input::-moz-placeholder { /* Firefox 19+ */
+   color:#6C7086;
+    font-size: 14px;
+}
+ 
+input:-ms-input-placeholder { /* IE10+ */
+   color:#6C7086;
+    font-size: 14px;
+}
+ 
+input:-moz-placeholder { /* Firefox 18- */
+   color:#6C7086;
+  font-size: 14px;
+}
+textarea::placeholder {
+  color:#6C7086;
+   font-size: 14px;
+}
+ 
+select {
+   color:#6C7086;
+    font-size: 14px;
+}
+
+/* input, select{
+  height: 44px !important;
+  padding-left: 12px;
+  padding-right: 12px;
+} */
+
+.btn-pd{
+  padding: 10px 28px!important;
+}
+
+
+.custom-height{
+  height: 44px!important;
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+label{
+  font-size: 14px !important;
+}

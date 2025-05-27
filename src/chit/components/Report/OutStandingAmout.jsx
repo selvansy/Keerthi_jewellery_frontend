@@ -6,7 +6,7 @@ import {
     getbranchbyclient, getallbranchclassification, getallScheme, getallbranch,
     getallmetal, puritybymetal, allinstallmenttype, wastagetype, getallschemetypes, addscheme
 } from "../../../chit/api/Endpoints";
-import { todayMetalRate } from "../SuperAdmin/Dashboard/dasApi"
+// import { todayMetalRate } from "../SuperAdmin/Dashboard/dasApi"
 import { OutstandingTable } from "../common/OutStandingReport"
 import { OutStandingFilter } from "../common/OutStandingReport"
 

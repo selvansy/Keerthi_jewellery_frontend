@@ -51,8 +51,8 @@ export const entryTypeOptions = [
   ];
 
 
-export const sections = [
-      { id: 1, name: "Terms & Conditions" },
-      { id: 2, name: "Privacy Policy" },
-      { id: 4, name: "Refund Policy" }
-  ];
+// export const sections = [
+//       { id: 1, name: "Terms & Conditions" },
+//       { id: 2, name: "Privacy Policy" },
+//       { id: 4, name: "Refund Policy" }
+//   ];

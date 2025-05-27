@@ -1,13 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import Select from "react-select";
 import Table from "../common/Table"
-import { walletRedeemByUser, getRefferalpayment } from "../../api/Endpoints"
+import { walletRedeemByUser, getRefferalpayment,userRedeemHistory} from "../../api/Endpoints"
 import { useMutation } from '@tanstack/react-query';
 import { formatNumber } from '../../utils/commonFunction';
 
 
 export default function RedeemHisCard(userdata) {
-
     const { data } = userdata;
 
     const [currentPage, setCurrentPage] = useState(1);
@@ -21,19 +20,17 @@ export default function RedeemHisCard(userdata) {
     useEffect(() => {
         if (!data) return;
         const payload = { page: currentPage, limit: itemsPerPage, mobile: "" };
-        if (data?.id_customer) {
-            payload.mobile = data?.id_customer.mobile;
-        }
-
-        if (data?.id_employee) {
-            payload.mobile = data?.id_employee.mobile;
+        if(data._id){
+            payload.id = data._id
         }
 
         getallWalletData(payload);
     }, [currentPage, itemsPerPage, data]);
 
+
+
     const { mutate: getallWalletData } = useMutation({
-        mutationFn: (payload) => walletRedeemByUser(payload),
+        mutationFn: (payload) => userRedeemHistory(payload),
         onSuccess: (response) => {
             setwalletData(response.data)
             setTotalPages(response.totalPages)
@@ -102,7 +99,7 @@ export default function RedeemHisCard(userdata) {
                 <div className="flex flex-col pb-4 relative ">
                     <div className=" grid grid-rows-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-4 border-gray-300 overflow-y-scroll scrollbar-hide">
 
-                        <div className="flex flex-row gap-2 mb-4">
+                        <div className="flex flex-row mb-4 border-b">
                             <label className="text-gray-700 font-medium">
                                 Name
                             </label>
@@ -118,7 +115,7 @@ export default function RedeemHisCard(userdata) {
                             </div>
                         </div>
 
-                        <div className="flex flex-row gap-2 mb-4 ">
+                        <div className="flex flex-row gap-2 mb-4 border-b">
                             <label className="text-gray-700 font-medium">
                                 Mobile No
                             </label>
@@ -230,7 +227,6 @@ export function RefferalCusCard({ refData }) {
             setTotalDocuments(response.totalDocuments)
         },
         onError: (error) => {
-            console.log(error)
             setisLoading(false)
             setpaymentData([])
         }
@@ -330,7 +326,8 @@ export function RefferalCusCard({ refData }) {
 
                             <div className="relative">
                                 <div className='px-2  w-full text-[#6C7086]'>
-                                    {refData?.id_scheme_account?.paymentcount}/{refData?.id_scheme_account?.total_installments}
+                                    {/* {refData?.id_scheme_account?.paymentcount}/{refData?.id_scheme_account?.total_installments} */}
+                                    {paymentData[0]?.id_scheme_account?.paid_installments}/{refData?.id_scheme_account?.total_installments}
                                 </div>
                             </div>
                         </div>

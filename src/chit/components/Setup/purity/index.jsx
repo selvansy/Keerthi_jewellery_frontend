@@ -17,12 +17,9 @@ import { toast } from "react-toastify";
 import { openModal } from "../../../../redux/modalSlice";
 import { eventEmitter } from "../../../../utils/EventEmitter";
 import { useSelector, useDispatch } from "react-redux";
-import { Formik } from "formik";
-import * as Yup from "yup";
 import ModelOne from "../../common/Modelone";
 import Modal from "../../common/Modal";
 import { useDebounce } from "../../../hooks/useDebounce";
-import { setid } from "../../../../redux/clientFormSlice";
 import Select from "react-select";
 import usePagination from "../../../hooks/usePagination";
 import SpinLoading from "../../common/spinLoading";
@@ -61,6 +58,8 @@ export const customSelectStyles = (isReadOnly) => ({
   }),
 });
 
+const inputHeight = "42px";
+
 const Purity = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -77,8 +76,9 @@ const Purity = () => {
   const [isviewOpen, setIsviewOpen] = useState(false);
   const [selectMetal, setSelectMetal] = useState([]);
   const [isLoading, setisLoading] = useState(true);
-  const [searchLoading, setSearchLoading] = useState(true);
+  const [searchLoading, setSearchLoading] = useState(false);
   const [totalDocuments, setTotalDocuments] = useState(0);
+  const [enableButton,setEnableButton]= useState(false)
 
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
@@ -90,24 +90,26 @@ const Purity = () => {
     setId("");
   };
 
-  const { mutate: getallpuritytableMutate } = useMutation({
-    mutationFn: (payload) => getallpuritytable(payload),
-    onSuccess: (response) => {
-      if (response) {
-        setpurityData(response.data);
-        setTotalPages(response.totalPages);
-        setTotalDocuments(response.totalDocument);
-      }
-      setisLoading(false);
-      setSearchLoading(false);
-    },
-    onError: (error) => {
-      console.log(error.response.data);
-      setpurityData([]);
-      setSearchLoading(false);
-      setisLoading(false);
-    },
-  });
+  const { mutate: getallpuritytableMutate, isPending: Loading } = useMutation(
+    {
+      mutationFn: (payload) => getallpuritytable(payload),
+      onSuccess: (response) => {
+        if (response) {
+          setpurityData(response.data);
+          setTotalPages(response.totalPages);
+          setTotalDocuments(response.totalDocument);
+        }
+        setisLoading(false);
+        setSearchLoading(false);
+      },
+      onError: (error) => {
+        console.log(error.response.data);
+        setpurityData([]);
+        setSearchLoading(false);
+        setisLoading(false);
+      },
+    }
+  );
   const { mutate: getallmetalMutate } = useMutation({
     mutationFn: getallmetal,
     onSuccess: (response) => {
@@ -119,6 +121,7 @@ const Purity = () => {
             label: metal.metal_name,
           }))
         );
+        setEnableButton(true)
       }
     },
   });
@@ -274,7 +277,7 @@ const Purity = () => {
     {
       header: "Metal Name",
       cell: (row) => {
-        return row.id_metal.metal_name;
+        return row.id_metal?.metal_name;
       },
     },
     {
@@ -292,49 +295,6 @@ const Purity = () => {
       ),
       sticky: "right",
     },
-
-    // {
-    //   header: "Display App",
-    //   accessor: "display_app",
-    //   cell: (row) => (
-    //     <label className="relative inline-flex items-center cursor-pointer">
-    //       <input
-    //         type="checkbox"
-    //         className="sr-only peer"
-    //         checked={row?.display_app === true}
-    //         onChange={() => handleDisplayappToggle(row?._id, row?.display_app)}
-    //       />
-    //       <div
-    //         className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-black p-[2px] after:duration-300 after:bg-black ${
-    //           row.active === true
-    //             ? "peer-checked:bg-[#61A375] peer-checked:ring-[#61A375]"
-    //             : "peer-checked:bg-gray-400 peer-checked:ring-gray-400"
-    //         } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-white peer-hover:after:scale-95`}
-    //       ></div>
-    //     </label>
-    //   ),
-    // },
-    // {
-    //   header: "Status",
-    //   accessor: "active",
-    //   cell: (row) => (
-    //     <label className="relative inline-flex items-center cursor-pointer">
-    //       <input
-    //         type="checkbox"
-    //         className="sr-only peer"
-    //         checked={row?.active === true}
-    //         onChange={() => handleStatusToggle(row?._id, row?.active)}
-    //       />
-    //       <div
-    //         className={`z-0 group peer bg-white rounded-full duration-300 w-8 h-4 ring-1 ring-black p-[2px] after:duration-300 after:bg-black ${
-    //           row.active === true
-    //             ? "peer-checked:bg-[#61A375] peer-checked:ring-[#61A375]"
-    //             : "peer-checked:bg-gray-400 peer-checked:ring-gray-400"
-    //         } after:rounded-full after:absolute after:h-3 after:w-3 after:top-[2px] after:left-[2px] after:flex after:justify-center after:items-center peer-checked:after:translate-x-4 peer-checked:after:bg-white peer-hover:after:scale-95`}
-    //       ></div>
-    //     </label>
-    //   ),
-    // },
   ];
 
   const handleSearch = (e) => {
@@ -392,16 +352,18 @@ const Purity = () => {
             />
           </div>
 
-          {/* Add Metal Button */}
-          <div className="w-full flex justify-end">
-            <button
-              className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-[135px] sm:w-auto"
-              onClick={handleAddpurity}
-              style={{ backgroundColor: layout_color }}
-            >
-              + Add Purity
-            </button>
-          </div>
+
+          {(purityData.length <= 3 && !Loading && enableButton ) && (
+            <div className="w-full flex justify-end">
+              <button
+                className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-[135px] sm:w-auto"
+                onClick={handleAddpurity}
+                style={{ backgroundColor: layout_color }}
+              >
+                + Add Purity
+              </button>
+            </div>
+          )}
         </div>
 
         <div className="mt-4">

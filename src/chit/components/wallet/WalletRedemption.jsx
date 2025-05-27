@@ -2,7 +2,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import React, { useEffect, useRef, useState } from 'react'
 import { DatabaseBackupIcon, Search } from 'lucide-react'
 import { useSelector } from 'react-redux';
-import { toast } from 'react-toastify';
+import { toast } from 'sonner';
 import { mobilesearch, redeemType, getallwallet, walletRedeem, getallpaymentmode, RefferalByUser } from '../../../chit/api/Endpoints'
 import { formatNumber } from "../../utils/commonFunction"
 import SpinLoading from '../common/spinLoading';
@@ -16,8 +16,6 @@ import { useLocation } from 'react-router-dom';
 import More from "../../../assets/more.svg"
 import { createPortal } from 'react-dom';
 import eyeIcon from "../../../assets/icons/eye.svg"
-
-
 
 
 const customSelectStyles = (isReadOnly) => ({
@@ -88,7 +86,7 @@ function WalletRedemption() {
         bill_no: "",
         redeem_amt: "",
         wallet_id: "",
-        wallet_type: "Customer",
+        // wallet_type: "Customer",
         redeem_type: "",
         payment_mode: ""
     });
@@ -98,9 +96,6 @@ function WalletRedemption() {
     const location = useLocation();
 
     const data  = id ? location.state.data : null;
-    
-
-    console.log("cusdata--",cusdata)
 
     function closeIncommingModal() {
         setIsviewOpen(false);
@@ -180,7 +175,7 @@ function WalletRedemption() {
                 setWalletUser({
                     name: user?.firstname + "" + user.lastname,
                     mobile: user?.mobile,
-                    walletAmount: res?.total_reward_amt,
+                    walletAmount: res?.balance_amt,
                     redeem_amt: res?.redeem_amt,
                     bal_amt: res?.balance_amt,
                     total_reff: response?.totalDocuments
@@ -303,7 +298,7 @@ function WalletRedemption() {
         setFormData((prevData) => ({
             ...prevData,
             wallet_type: isCustomer ? "Customer" : "Employee",
-            wallet_id: isCustomer ? data?.customer._id : data?.employee._id,
+            wallet_id: data._id,
             redeem_amt: data?.balance_amt
         }));
     };
@@ -330,6 +325,9 @@ function WalletRedemption() {
         mutationFn: mobilesearch,
         onSuccess: (response) => {
             if (response) {
+                if(response?.data?.walletData === null){
+                    return toast.error('No wallet data')
+                }
                 handleWalletData(response.data.walletData)
             }
             setLoading(false)
@@ -396,24 +394,37 @@ function WalletRedemption() {
         {
             header: "Description",
             cell: (row) => {
-             const user = row?.id_scheme_account;
-
-             return `${row?.id_scheme?.scheme_name} ${row?.id_scheme?.description} ${row?.id_scheme?.code} 
-              ${user?.firstname} ${user.lastname}`
+             const user = row
+            return (
+                
+                <div className="flex flex-col">
+                  <span>{row?.id_scheme?.scheme_name} 
+                    {/* {row?.id_scheme?.code} */}
+                    </span>
+                  <span>
+                    
+                    {user?.id_scheme_account?.firstname && user?.id_scheme_account?.lastname
+                     &&  `${user?.id_scheme_account?.firstname || ''} ${user?.id_scheme_account?.lastname || ''}`}
+                  </span>
+                </div>
+              );
+              
 
             },
         },
         {
             header: "Mobile",
             cell: (row) => {
-             
-                const user = row?.id_scheme_account;
-                return `${user?.mobile}`
+                const user = row;
+                return <span>
+                  {user?.id_scheme_account?.mobile
+                     &&  `${user?.id_scheme_account?.mobile || ''}`}
+              </span>
             }
         },
         {
             header: "Refferral Reward",
-            cell: (row) => `${row?.id_scheme?.referralPercentage || "-"}%`,
+            cell: (row) => `₹ ${row?.credited_amount || "-"}`,
         },
         {
             header: "Join Date",

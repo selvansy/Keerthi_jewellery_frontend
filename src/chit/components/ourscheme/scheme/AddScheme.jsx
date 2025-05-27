@@ -21,9 +21,6 @@ import { useQuery, useQueries, useMutation } from "@tanstack/react-query";
 const PayableDetails = lazy(() => import("./PayableDetails"));
 const AdvancedSettings = lazy(() => import("./AdvancedSettings"));
 const Classification = lazy(() => import("./Classification"));
-// import CustomerDetails from "./CustomerDetails";
-// import AgentDetails from "./AgentDetails";
-// import Grace from "./GracePeriod";
 import {
   Accordion,
   AccordionContent,
@@ -32,10 +29,43 @@ import {
 } from "../../../../../components/ui/accordion";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { schemeValidationSchema } from "../../../../utils/validations/schemeValidationSchema";
 import SpinLoading from "../../common/spinLoading";
 import "react-datepicker/dist/react-datepicker.css";
+
+
+ export const customStyles = (isReadOnly) => ({
+    control: (base, state) => ({
+      ...base,
+      minHeight: "44px", //42px
+      backgroundColor: "white",
+      border: state.isFocused ? "1px solid #f2f2f9" : "1px solid #f2f2f9",
+      boxShadow: state.isFocused ? "0 0 0 1px #004181" : "none",
+      borderRadius: "0.5rem",
+      "&:hover": {
+        color: "#e2e8f0",
+      },
+      pointerEvents: !isReadOnly ? "none" : "auto",
+      opacity: !isReadOnly ? 1 : 1,
+    }),
+    indicatorSeparator: () => ({
+      display: "none",
+    }),
+    placeholder: (base) => ({
+      ...base,
+      color: "#6C7086",
+      fontWeight: "thin",
+      // fontStyle: "bold",
+    }),
+    dropdownIndicator: (provided, state) => ({
+      ...provided,
+      color: "#232323",
+      "&:hover": {
+        color: "#232323",
+      },
+    }),
+  });
 
 const SchemeForm = () => {
   // const { setFieldValue, validateForm, values } = useFormikContext();
@@ -70,10 +100,41 @@ const SchemeForm = () => {
   const [wastagedata, setWastageType] = useState([]);
   const [schemeTypeData, setSchemeTypeData] = useState([]);
   const [giftType, setGiftType] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
   const [spanText, setSpanText] = useState("");
   const [validation, setValidation] = useState({});
   const [pathUrl, setPathUrl] = useState("");
+
+  const { mutate: addNewScheme, isPending: isAdding } = useMutation({
+    mutationFn: addscheme,
+    onSuccess: (response) => {
+      // setIsLoading(false);
+      toast.success(response.message);
+      navigate("/scheme/scheme/");
+    },
+    onError: (error) => {
+      // setIsLoading(false);
+      toast.error(error.response?.data?.message);
+    },
+  });
+
+  const { mutate: updateSchemeData, isPending: isUpdating } = useMutation({
+    mutationFn: ({ id, data }) => updateScheme(id, data),
+    onSuccess: (response) => {
+      if (response.status === 200) {
+        // setIsLoading(false);
+        toast.success(response?.data?.message);
+        formik.resetForm();
+        navigate("/scheme/delist");
+      }
+    },
+    onError: () => {
+      // setIsLoading(false);
+      toast.error(response.message);
+    },
+  });
+
+  const isLoading = isAdding || isUpdating;
 
   const formik = useFormik({
     initialValues: {
@@ -93,7 +154,7 @@ const SchemeForm = () => {
       startingAmount: "",
       saving_type: "",
       final_join_date: "",
-      
+
       // PayableDetails fields
       amount: "", // no need to pass
       min_amount: "",
@@ -104,22 +165,21 @@ const SchemeForm = () => {
       benefit_min_installment_wst_mkg: "",
       wastagebenefit: "",
       benefit_making: "",
-      
-      
+
       //classification
       description: "",
       term_desc: "",
       classification_order: 0,
-    
+
       wastagetype: "", // no need to pass
-      
+
       // AdvancedSettings fields
-      limit_installment: "",
+      limit_installment: 1,
       pending_installment: "",
       paid_installment: "",
-      limit_customer: "",
-      gift_minimum_paid_installment: "",
-      referralPercentage:"",
+      limit_customer: 0,
+      gift_minimum_paid_installment: 0,
+      referralPercentage: "",
 
       //gift
       gift_type: 1,
@@ -129,13 +189,14 @@ const SchemeForm = () => {
       bonus_amount: "",
       bonus_percent: "",
       not_paid_installment: "",
-      convenience_fees: "",
+      convenience_fees: 0,
       display_referral: false,
       display_Weight_in_ledger: false,
       wallet_redemption_onpayment: false,
     },
     validationSchema: schemeValidationSchema,
     onSubmit: (values) => {
+      if (isLoading) return;
       const formData = new FormData();
 
       if (formik.values.classType) {
@@ -186,16 +247,13 @@ const SchemeForm = () => {
       }
 
       if (id) {
-        setIsLoading(true);
         updateSchemeData({ id, data: formData });
       } else {
-        setIsLoading(true);
         addNewScheme(formData);
+        return;
       }
     },
   });
-
-  console.log(formik.errors)
 
   useEffect(() => {
     if (!id) {
@@ -207,40 +265,10 @@ const SchemeForm = () => {
     }
   }, [id]);
 
-  // Customisations for react-select
-  const customStyles = (isReadOnly) => ({
-    control: (base, state) => ({
-      ...base,
-      minHeight: "42px",
-      backgroundColor: "white",
-      border: state.isFocused ? "1px solid black" : "2px solid #f2f3f8",
-      boxShadow: state.isFocused ? "0 0 0 1px black" : "none",
-      borderRadius: "0.375rem",
-      "&:hover": {
-        color: "#e2e8f0",
-      },
-      pointerEvents: !isReadOnly ? "none" : "auto",
-      opacity: !isReadOnly ? 1 : 1,
-    }),
-    indicatorSeparator: () => ({
-      display: "none",
-    }),
-    placeholder: (base) => ({
-      ...base,
-      color: "#858293",
-      fontWeight: "thin",
-      // fontStyle: "bold",
-    }),
-    dropdownIndicator: (provided, state) => ({
-      ...provided,
-      color: "#232323",
-      "&:hover": {
-        color: "#232323",
-      },
-    }),
-  });
-
-  const inputHeight = "42px";
+  // Customisations for react-
+  
+  
+  const inputHeight = "44px";
 
   //query and mutations
   const { data: classificationData } = useQuery({
@@ -248,19 +276,29 @@ const SchemeForm = () => {
     queryFn: getSchemeClassifications,
   });
 
-  const { data: branchData } = useQuery({
+  // const { data: branchData } = useQuery({
+  //   queryKey: ["branches", accessBranch, id_branch],
+  //   queryFn: async () => {
+  //     if (accessBranch === "0") {
+  //       setIsLoading(true);
+  //       return getallbranch();
+  //     }
+  //     setIsLoading(true);
+  //     return getBranchById(id_branch);
+  //   },
+  //   enabled: Boolean(accessBranch),
+  //   staleTime: 5 * 60 * 1000,
+  //   cacheTime: 10 * 60 * 1000,
+  // });
+  const { data: branchData, isLoading: isBranchLoading } = useQuery({
     queryKey: ["branches", accessBranch, id_branch],
     queryFn: async () => {
       if (accessBranch === "0") {
-        setIsLoading(true);
         return getallbranch();
       }
-      setIsLoading(true);
       return getBranchById(id_branch);
     },
     enabled: Boolean(accessBranch),
-    staleTime: 5 * 60 * 1000,
-    cacheTime: 10 * 60 * 1000,
   });
 
   const { data: schemeData } = useQuery({
@@ -297,39 +335,9 @@ const SchemeForm = () => {
     giftIssueResponse,
   ] = results.map((result) => result.data);
 
-  const { mutate: addNewScheme } = useMutation({
-    mutationFn: addscheme,
-    onSuccess: (response) => {
-      setIsLoading(false);
-      toast.success(response.message);
-      navigate("/scheme/scheme/");
-    },
-    onError: (error) => {
-      setIsLoading(false);
-      toast.error(error.response.message);
-    },
-  });
-
-  const { mutate: updateSchemeData } = useMutation({
-    mutationFn: ({ id, data }) => updateScheme(id, data),
-    onSuccess: (response) => {
-      if (response.status === 200) {
-        setIsLoading(false);
-        toast.success(response.message);
-        formik.resetForm();
-        navigate("/scheme/scheme/");
-      }
-    },
-    onError: () => {
-      setIsLoading(false);
-      toast.error(response.message);
-    },
-  });
-
   //useEffect
   useEffect(() => {
     if (id && schemeData) {
-      // Set the classification type first
       const classItem = classifications.find(
         (c) => c.value === schemeData.id_classification
       );
@@ -414,6 +422,7 @@ const SchemeForm = () => {
         final_join_date: schemeData?.data?.final_join_date || "",
         setMainImage: schemeData?.data?.logo || null,
         setDescriptionImage: schemeData?.data?.desc_img || null,
+        referralPercentage: schemeData?.data?.referralPercentage || "",
       });
       if (schemeData?.data?.logo) {
         setMainImage(schemeData?.data?.logo);
@@ -523,11 +532,11 @@ const SchemeForm = () => {
         label: item.branch_name,
       }));
       setBranch(formattedBranches);
-      setIsLoading(false);
+      // setIsLoading(false);
     } else if (branchData.data) {
       setBranch(branchData.data);
       formik.setFieldValue("id_branch", branchData.data._id);
-      setIsLoading(false);
+      // setIsLoading(false);
     }
   }, [branchData, accessBranch]);
 
@@ -604,7 +613,7 @@ const SchemeForm = () => {
   };
 
   const handleAmountSelect = (index) => {
-    console.log(index)
+    console.log(index);
     setSelectedAmount(index);
     setEditAmount(amounts[index]);
   };
@@ -696,6 +705,31 @@ const SchemeForm = () => {
     }
   };
 
+  useEffect(() => {
+    if (formik.values.maturity_period && formik.values.installment_type) {
+      let calculatedInstallments = 0;
+      const maturityMonths = Number(formik.values.maturity_period);
+
+      switch (formik.values.installment_type) {
+        case 1: // Monthly
+          calculatedInstallments = maturityMonths - 1;
+          break;
+        case 2: // Weekly
+          calculatedInstallments = Math.round(maturityMonths * 4.345 - 4.345);
+          break;
+        case 3: // Daily
+          calculatedInstallments = maturityMonths * 30 - 30;
+          break;
+        case 4: // Yearly
+          calculatedInstallments = 1;
+          break;
+        default:
+          calculatedInstallments = 0;
+      }
+
+      formik.setFieldValue("total_installments", calculatedInstallments);
+    }
+  }, [formik.values.maturity_period, formik.values.installment_type]);
 
   return (
     <form
@@ -708,7 +742,7 @@ const SchemeForm = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <div>
             <label className="block text-sm font-medium mb-1">
-              Scheme Name <span className="text-red-500">*</span>
+              Scheme Name<span className="text-red-500"> *</span>
             </label>
             <input
               type="text"
@@ -807,7 +841,7 @@ const SchemeForm = () => {
               styles={customStyles(true)}
               isClearable={true}
               options={metal}
-              placeholder="Select metal"
+              placeholder="Choose a metal"
               value={metal.find(
                 (option) => option.value === formik.values.id_metal
               )}
@@ -833,8 +867,8 @@ const SchemeForm = () => {
               isClearable={true}
               isDisabled={!formik.values.id_metal}
               placeholder={
-                !formik.values.id_metal
-                  ? "Choose a metal first"
+                !formik.values.id_metal ?
+                  "Choose a metal first"
                   : "Select purtiy type"
               }
               value={purity.find(
@@ -918,7 +952,7 @@ const SchemeForm = () => {
                 (option) => option.value === formik.values.installment_type
               )}
               onChange={(option) => {
-                formik.setFieldValue("maturity_period", "");
+                // formik.setFieldValue("maturity_period", "");
                 formik.setFieldValue(
                   "installment_type",
                   option ? option.value : null
@@ -929,7 +963,7 @@ const SchemeForm = () => {
                 } else if (option.value == 2) {
                   setValidation({ max: 52, maxLength: 2, val: "weeks" });
                 } else if (option.value === 3) {
-                  setValidation({ max: 336, maxLength: 3, val: "Days" });
+                  setValidation({ max: 365, maxLength: 3, val: "Days" });
                 } else {
                   setValidation({ max: 1, maxLength: 1, val: "year" });
                 }
@@ -1138,12 +1172,32 @@ const SchemeForm = () => {
                 </label>
                 <input
                   type="number"
-                  min={1}
+                  min={[12, 3, 4].includes(formik.values.scheme_type) ? 0.1 : 1}
+                  step={
+                    [12, 3, 4].includes(formik.values.scheme_type) ? "any" : "1"
+                  }
                   max={99999999999}
                   className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
-                  placeholder="Enter start amount"
+                  placeholder={
+                    [12, 3, 4].includes(formik.values.scheme_type)
+                      ? "Enter start weight (e.g. 0.1)"
+                      : "Enter start amount"
+                  }
                   {...formik.getFieldProps("startingAmount")}
-                  onBlur={formik.handleBlur}
+                  onBlur={(e) => {
+                    // Validate the value meets minimum requirement
+                    const value = parseFloat(e.target.value);
+                    if ([12, 3, 4].includes(formik.values.scheme_type)) {
+                      if (value < 0.1) {
+                        formik.setFieldValue("startingAmount", 0.1);
+                      }
+                    } else {
+                      if (value < 1) {
+                        formik.setFieldValue("startingAmount", 1);
+                      }
+                    }
+                    formik.handleBlur(e);
+                  }}
                   onInput={(e) => {
                     let value = e.target.value;
                     if (value.length > 11) {
@@ -1307,43 +1361,41 @@ const SchemeForm = () => {
 
         <AccordionItem value="payable" className="border rounded-lg bg-white">
           <AccordionTrigger className="px-6 py-4 ">
-           {/* <div className="w-full text-start text-lg font-semibold pb-4"> Payable Details</div> */}
-           Payable Details
+            {/* <div className="w-full text-start text-lg font-semibold pb-4"> Payable Details</div> */}
+            Payable Details
           </AccordionTrigger>
           <AccordionContent className="px-6">
             <div className="border-t pt-4">
-            <Suspense fallback={<SpinLoading />}>
-              <PayableDetails
-                formik={formik}
-                layout_color={layout_color}
-                gstTypeData={bygstdata || []}
-                wastagedata={wastagedata || []}
-                install_type={formik.values.installment_type}
-                classType={formik.values.classType}
-                maturity_period={formik.values.maturity_period}
-                scheme_type={formik.values.scheme_type}
-                customStyle={customStyles}
-              />
-            </Suspense>
+              <Suspense fallback={<SpinLoading />}>
+                <PayableDetails
+                  formik={formik}
+                  layout_color={layout_color}
+                  gstTypeData={bygstdata || []}
+                  wastagedata={wastagedata || []}
+                  install_type={formik.values.installment_type}
+                  classType={formik.values.classType}
+                  maturity_period={formik.values.maturity_period}
+                  scheme_type={formik.values.scheme_type}
+                  customStyle={customStyles}
+                />
+              </Suspense>
             </div>
           </AccordionContent>
         </AccordionItem>
 
         <AccordionItem value="advanced" className="border rounded-lg bg-white">
-          <AccordionTrigger className="px-6 py-4">
-            Installment
-          </AccordionTrigger>
+          <AccordionTrigger className="px-6 py-4">Installment</AccordionTrigger>
           <AccordionContent className="px-6">
-           <div className="border-t pt-4">
-           <Suspense fallback={<SpinLoading />}>
-              <AdvancedSettings
-                formik={formik}
-                layout_color={layout_color}
-                giftData={giftType}
-                installment_type={formik.values.installment_type}
-              />
-            </Suspense>
-           </div>
+            <div className="border-t pt-4">
+              <Suspense fallback={<SpinLoading />}>
+                <AdvancedSettings
+                  formik={formik}
+                  layout_color={layout_color}
+                  giftData={giftType}
+                  installment_type={formik.values.installment_type}
+                />
+              </Suspense>
+            </div>
           </AccordionContent>
         </AccordionItem>
 
@@ -1355,19 +1407,19 @@ const SchemeForm = () => {
             Classification Details
           </AccordionTrigger>
           <AccordionContent value="classification" className="px-6">
-          <div className="border-t pt-4">
-           <Suspense fallback={<SpinLoading />}>
-              <Classification
-                formik={formik}
-                layout_color={layout_color}
-                setMainImg={setMainImage}
-                setDescImg={setDescriptionImage}
-                pathurl={pathUrl}
-                logo={mainImage}
-                desc_img={descriptionImage}
-              />
-            </Suspense>
-           </div>
+            <div className="border-t pt-4">
+              <Suspense fallback={<SpinLoading />}>
+                <Classification
+                  formik={formik}
+                  layout_color={layout_color}
+                  setMainImg={setMainImage}
+                  setDescImg={setDescriptionImage}
+                  pathurl={pathUrl}
+                  logo={mainImage}
+                  desc_img={descriptionImage}
+                />
+              </Suspense>
+            </div>
           </AccordionContent>
         </AccordionItem>
       </Accordion>
@@ -1380,10 +1432,19 @@ const SchemeForm = () => {
         >
           Clear
         </button>
-        <button
+        {/* <button
           type="submit"
           disabled={isLoading}
           className="w-20 h-9 bg-blue-900 text-white rounded-md hover:bg-blue-800 flex justify-center items-center"
+        >
+          {isLoading ? <SpinLoading /> : id ? "Update" : "Save"}
+        </button> */}
+        <button
+          type="submit"
+          disabled={isLoading || !formik.isValid || !formik.dirty}
+          className={`w-20 h-9 bg-blue-900 text-white rounded-md flex justify-center items-center ${
+            isLoading ? "opacity-50" : "hover:bg-blue-800"
+          }`}
         >
           {isLoading ? <SpinLoading /> : id ? "Update" : "Save"}
         </button>

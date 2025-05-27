@@ -5,6 +5,7 @@ import { useParams } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { addTopup, getTopupByClient } from "../../../api/Endpoints";
+import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
 
 function Topup() {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
@@ -159,12 +160,18 @@ function Topup() {
     <>
       {/* <div className="flex flex-col p-4"> */}
       <>
-        <div className="flex flex-row justify-between items-center mb-4">
+        {/* <div className="flex flex-row justify-between items-center mb-4">
           <p className="text-sm text-gray-400 mt-4 mb-3">
             Settings / <span className="text-black">Top-Up</span>
           </p>
-        </div>
-        <div className="w-full flex flex-col bg-white border rounded-3xl p-4">
+        </div> */}
+        <Breadcrumb
+        items={[
+          { label: "Settings" },
+          { label: "Topup", active: true },
+        ]}
+      />
+        <div className="w-full flex flex-col bg-white border rounded-md p-4">
           <div className="flex flex-col p-4">
             <h2 className="text-lg font-medium ">Add Top-Up</h2>
             <div className="grid grid-rows-2 md:grid-cols-2 gap-5 border-gray-300 mb-10 mt-4">

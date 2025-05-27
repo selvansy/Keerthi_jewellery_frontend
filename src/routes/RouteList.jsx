@@ -1,11 +1,24 @@
 import Base from "../chit/components/common/Base";
 import Scheme from "../chit/components/ourscheme/scheme/Scheme";
 import AddScheme from "../chit/components/ourscheme/scheme/AddScheme";
-import MetalRate from "../chit/components/ourscheme/metalrate/index";
 import CreateMetalRate from "../chit/components/ourscheme/metalrate/Createmetalrate";
 import SchemeClassification from "../chit/components/ourscheme/classification/schemeClassification";
-import CreateSchemeClassificaton from "../chit/components/ourscheme/classification/CreateSchemeClassification";
-import DigiGoldScheme from "../chit/components/ourscheme/digiGold/DigiGoldScheme"
+// import AddGiftHandOver from "../chit/components/gift/giftissues/AddGiftHandOver";
+// import SchemePayment from "../chit/components/payment/schemepayment/SchemePayment";
+// import CloseAccount from "../chit/components/manageaccount/closedaccount/CloseAccount";
+// import CardPrint from "../chit/components/Print/CardPrint/CardPrint";
+// import PrecloseAccount from "../chit/components/manageaccount/preclose/PrecloseAccount";
+// import { path } from "framer-motion/client";
+// import TicketSubmissionForm from "../chit/components/help/Addticket";
+// import MetalRate from "../chit/components/ourscheme/metalrate/index";
+// import CreateSchemeClassificaton from "../chit/components/ourscheme/classification/CreateSchemeClassification";
+// import DigiGoldScheme from "../chit/components/ourscheme/digiGold/DigiGoldScheme"
+// import CustomerSchemes from "../../src/chit/components/manageaccount/schemeaccount/index"
+// import PreClose from "../chit/components/Report/preclose";
+// import GiftPurchase from "../chit/components/gift/giftPurchase/GiftPurchase";
+// import GifthandoverDetails from "../chit/components/manageaccount/schemeaccount/GifthandoverDetails";
+// import AmountPayble from "../chit/components/Report/amountPaybleChild";
+// import Campaign from "../chit/components/Setup/campaign/index";
 import CreateDigiGoldScheme from "../chit/components/ourscheme/digiGold/CreateDigiGoldScheme";
 import GiftVendor from "../chit/components/gift/giftvendor/index";
 import GiftItem from "../chit/components/gift/giftitem/index";
@@ -23,7 +36,6 @@ import ExistingCusTable from "../chit/components/manageaccount/customer/index";
 import Customers from "../chit/components/manageaccount/customer/Customers";
 import OutStandingWeight from "../chit/components/Report/OutStandingWeight";
 import ModeWisePayment from "../chit/components/Report/PaymentModeLedger";
-
 import Branch from "../chit/components/Setup/branch/Branch";
 import AddBranch from "../chit/components/Setup/branch/AddBranch";
 import OurEmployee from "../chit/components/Setup/employee/OurEmployee";
@@ -31,13 +43,9 @@ import AddEmployee from "../chit/components/Setup/employee/AddEmployee";
 import UserRole from "../chit/components/Setup/userrole/index";
 import StaffUser from "../chit/components/Setup/staffuser/index";
 import UserAccess from "../chit/components/Setup/useraccess/index";
-
 import GiftHandOver from "../chit/components/gift/giftissues/GiftHandOver";
-import AddGiftHandOver from "../chit/components/gift/giftissues/AddGiftHandOver";
-import SchemePayment from "../chit/components/payment/schemepayment/SchemePayment";
 import Schemeaccount from "../chit/components/manageaccount/schemeaccount/index";
 import AddSchemeAccount from "../chit/components/manageaccount/schemeaccount/SchemeAccountform";
-import CloseAccount from "../chit/components/manageaccount/closedaccount/CloseAccount";
 import AddCloseAccount from "../chit/components/manageaccount/closedaccount/AddCloseAccount";
 import AddRvertAccount from "../chit/components/manageaccount/closedaccount/AddRvertAccount";
 import CompleteAccount from "../chit/components/manageaccount/completedaccount/CompleteAccount";
@@ -65,7 +73,6 @@ import SchemeAccountReport from "../chit/components/Report/SchemeAccountReport";
 import AccountSummaryReport from "../chit/components/Report/AccountSummary";
 import OutStandingReport from "../chit/components/common/OutStandingReport";
 import OutStandingAmount from "../chit/components/Report/OutStandingAmout";
-import CardPrint from "../chit/components/Print/CardPrint/CardPrint";
 import AccountSearchAndPrint from "../chit/components/Print/ReceiptPrint/AccountSearchAndPrint";
 import NewArrivalsWhatsapp from "../chit/components/whatsapp/newarrivals/index";
 import ProductWhatsapp from "../chit/components/whatsapp/product/index";
@@ -80,14 +87,10 @@ import WalletHistory from "../chit/components/wallet/WalletHistory";
 import Addwallet from "../chit/components/wallet/Addwallet";
 import SchemeForm from "../chit/components/ourscheme/scheme/AddScheme";
 import RedeemHistory from "../chit/components/wallet/RedeemHistory";
-import PrecloseAccount from "../chit/components/manageaccount/preclose/PrecloseAccount";
-import { path } from "framer-motion/client";
-import TicketSubmissionForm from "../chit/components/help/Addticket";
 import Ticket from "../chit/components/help/ticket";
 import TopUp from "../chit/components/SuperAdmin/topupApprovals/index"
 import ContentManagement from "../chit/components/contentManagement/ContentManagement";
 import ContentForm from "../chit/components/contentManagement/ContentForm";
-import CustomerSchemes from "../../src/chit/components/manageaccount/schemeaccount/index"
 import FaqTable from "../chit/components/faq";
 import FaqCreation from "../chit/components/SuperAdmin/faq/FaqCreation"
 import FaqIndex from "../chit/components/SuperAdmin/faq";
@@ -97,7 +100,6 @@ import NotificationHistory from "../chit/components/notification/notificationhis
 import ContentView from "../chit/components/contentManagement/ContentView";
 import PolicyView from "../chit/components/contentManagement/PolicyView";
 import OverDueReport from "../chit/components/Report/overDueReport";
-import PreClose from "../chit/components/Report/preclose";
 import PreCloseReport from "../chit/components/Report/preclose";
 import RedemptionReport from "../chit/components/Report/Redemptionsummary";
 import RefundReport from "../chit/components/Report/RefundSummary";
@@ -107,12 +109,19 @@ import GiftReport from "../chit/components/Report/GiftReport";
 import PaymentPrint from "../chit/components/Print/CardPrint/PaymentPrint";
 import Delist from "../chit/components/ourscheme/delist";
 import MetalRateIndex from "../chit/components/ourscheme/metalrate/MetalRateIndex";
-import GiftPurchase from "../chit/components/gift/giftPurchase/GiftPurchase";
 import GiftPurchaseForm from "../chit/components/gift/giftPurchase/GiftPurchaseForm";
 import ViewScheme from "../chit/components/ourscheme/scheme/ViewScheme";
-
 import GiftHandOverForm from "../chit/components/gift/giftissues/GiftHandOverForm";
 import SchemeAccount from "../chit/components/manageaccount/schemeaccount/SchemeAccount";
+import EmployeeRefferal from "../chit/components/Report/employeeRefferal";
+import CustomerRefferal from "../chit/components/Report/customerRefferal";
+import DrilldownTable from "../chit/components/common/DrillDownTable";
+import AmountPaybleParent from "../chit/components/Report/amountPaybleParent";
+import AmountPaybleChild from "../chit/components/Report/amountPaybleChild";
+import WeightPaybleParent from "../chit/components/Report/weightPaybleParent";
+import WeightPaybleChild from "../chit/components/Report/weightPaybleChild";
+import { path } from "framer-motion/client";
+import Exisitingcustomer from "../chit/components/manageaccount/customer/Exisitingcustomer";
 
 const RouteList = [
 
@@ -120,6 +129,12 @@ const RouteList = [
     name: 'Login',
     path: '/',
     element: <Login />
+  },
+
+  {
+    name:"Campaign",
+    path:"/campaign",
+    element:<Base renderContent={Campaign}/>
   },
 
   {
@@ -247,22 +262,22 @@ const RouteList = [
   },
   {
     name: "Topup",
-    path: '/usersettings/topup',
+    path: '/settings/topup',
     element: <Base renderContent={Topup} />
   },
 
   {
     name: "Campaign Type",
-    path: '/masters/campaign',
+    path: '/promotions/campaign',
     element: <Base renderContent={Campaign} />
   },
 
   //Payment
-  {
-    name: "Scheme Payment",
-    path: '/payment/customerpayment',
-    element: <Base renderContent={SchemePayment} />
-  },
+  // {
+  //   name: "Scheme Payment",
+  //   path: '/payment/customerpayment',
+  //   element: <Base renderContent={SchemePayment} />
+  // },
   {
     name: "Add Scheme Payment",
     path: '/payment/addschemepayment',
@@ -338,10 +353,15 @@ const RouteList = [
 
   //Manage Customers
 
+  // {
+  //   name: "Existing customer",
+  //   path: '/managecustomers/customer',
+  //   element: <Base renderContent={ExistingCusTable} />
+  // },
   {
-    name: "Existing customer",
-    path: '/managecustomers/customer',
-    element: <Base renderContent={ExistingCusTable} />
+    name:"Existing Customer",
+    path:'/managecustomers/customer',
+    element:<Base renderContent={Exisitingcustomer}/>
   },
   {
     name: "Add Customer",
@@ -355,7 +375,7 @@ const RouteList = [
   },
   {
     name: "Completed Account",
-    path: '/managecustomers/completedaccount',
+    path: '/report/completedaccount',
     element: <Base renderContent={CompleteAccount} />
   },
   // {
@@ -551,7 +571,7 @@ const RouteList = [
   },
   {
     name: "Organisation",
-    path: '/usersettings/organisation',
+    path: '/settings/organisation',
     element: <Base renderContent={Organisation} />
   },
 
@@ -807,21 +827,64 @@ const RouteList = [
     element:<Base renderContent={overallReport} />
   },
   {
+    name:"Employee Refferal",
+    path:'/accountreport/employeereferrals',
+    element:<Base renderContent={EmployeeRefferal} />
+  },
+  {
+    name:"Employee Refferal",
+    path:'/accountreport/customerreferrals',
+    element:<Base renderContent={CustomerRefferal} />
+  },
+  {
     name:"Payment Ledger",
     path:'/report/paymentmodeledger',
     element:<Base renderContent={PaymentLedger} />
   },
-   {
-    name:"Customer Schemes",
-    path:"/managecustomers/customerschemes",
-    element:<Base renderContent={CustomerSchemes}/>
-  },
+  //  {
+  //   name:"Customer Schemes",
+  //   path:"/managecustomers/customerschemes",
+  //   element:<Base renderContent={CustomerSchemes}/>
+  // },
   
    {
     name:"Customer Schemes",
-    path:"/managecustomers/customerschemes/test",
+    path:"/managecustomers/customerschemes",
     element:<Base renderContent={SchemeAccount}/>
   },
+  {
+    name:"Amount Payble",
+    path:'/report/amountpayble',
+    element:<Base renderContent={AmountPaybleParent} />
+  },
+
+  {
+    name:"Weight Payble",
+    path:'/report/weightpayable',
+    element:<Base renderContent={WeightPaybleParent} />
+  },
+
+  {
+    name:"Admn Login",
+    path:"/superdata",
+    element:<Base renderContent={Login}/>
+  },
+
+  //! drill down table route
+  {
+    name:"Drill Down",
+    path:"/report/table",
+    element:<Base renderContent={DrilldownTable}/>
+  },
+  {
+    name:"Amount Payble",
+    path:'/report/schemewiseamount',
+    element:<Base renderContent={AmountPaybleChild} />
+  },{
+    name:"Amount Payble",
+    path:'/report/schemewiseweight',
+    element:<Base renderContent={WeightPaybleChild} />
+  }
  
 
 ];
