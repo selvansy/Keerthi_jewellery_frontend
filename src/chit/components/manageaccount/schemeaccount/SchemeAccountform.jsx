@@ -500,7 +500,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
       if (Number(searchmobile) === Number(cusData.mobile)) {
         return toast.error("Self referral is not allowed");
       }
-      console.log(selectedRole)
+
       const matchingRole = referralRoles.find(
         (element) => Number(selectedRole) === element.value
       );
@@ -511,9 +511,9 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
           cusData.customerId
         );
 
-        if(data && !data.data){
-          console.log("first")
-          return toast.error("No customer found or deleted customer")
+        if (data && !data.data) {
+          console.log("first");
+          return toast.error("No customer found or deleted customer");
         }
 
         setReferralName(`${data?.data?.firstname} ${data.data.lastname}`);
@@ -636,11 +636,11 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
       });
     }
   };
-  console.log(formData)
+  console.log(formData);
 
-  useEffect(()=>{
+  useEffect(() => {
     handleschemebyid(formData.id_scheme);
-  },[formData.id_scheme])
+  }, [formData.id_scheme]);
 
   // const handleschemebyid = async (id) => {
   //   try {
@@ -696,7 +696,6 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
   // };
   const handleschemebyid = async (id) => {
     try {
-      console.log(id)
       const countData = await getSchemeAccountCount(formData.mobile, id);
       const newAcNumber = countData.data !== 0 ? Number(countData.data) + 1 : 1;
       setAcNumber(newAcNumber);
@@ -722,7 +721,10 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
           ...prevState,
           scheme_type: schemeData?.scheme_type,
           total_installments: schemeData?.total_installments,
-          maturity_period: schemeData?.maturity_period,
+          maturity_period:
+            schemeData?.scheme_type == 10 || schemeData?.scheme_type == 14
+              ? schemeData?.noOfDays
+              : schemeData?.maturity_period,
           installment_type: schemeData?.installment_type,
           code: schemeData?.code,
           min_weight: schemeData?.min_weight || 0,
@@ -752,17 +754,32 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
     }
   }, [formData.id_scheme, schemefilter]);
 
+  function digigoldandsilverMaturity(startDateStr, noOfDays) {
+    const startDate = new Date(startDateStr);
+    const maturityDate = new Date(startDate);
+    maturityDate.setDate(maturityDate.getDate() + noOfDays);
+    return maturityDate.toISOString().split('T')[0];
+  }
+
   useEffect(() => {
     if (
       formData.start_date &&
       formData.maturity_period &&
       formData.installment_type
     ) {
+    if(formData.scheme_type != 10 && formData.scheme_type != 14){
       calculateMaturityDate(
         formData.start_date,
         formData.maturity_period,
         formData.installment_type
-      );
+      )
+    }else{
+      console.log("ker")
+      digigoldandsilverMaturity(
+        formData.start_date,
+        formData.maturity_period
+      )
+    }
     }
   }, [
     formData.id_scheme,
@@ -1072,13 +1089,14 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
   }, [formData.weight]);
 
   const handlePayment = (id) => {
-    console.log(id)
+    console.log(id);
     dispatch(
       openModal({
         modalType: "CONFIRMATION",
         header: "Proceed to payment",
         formData: {
-          message: "You're all set! Continue to the Payment Module to complete the process.",
+          message:
+            "You're all set! Continue to the Payment Module to complete the process.",
           redirectTo: `/payment/addschemepayment/${id}`,
           onCancelRedirect: "/managecustomers/customerschemes",
         },
@@ -1130,10 +1148,10 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
     }
   }, [formData.id_scheme, selectedScheme, schemefilter]);
 
-  console.log(errors)
+  console.log(errors);
 
   return (
-   <form onSubmit={onSubmit}>
+    <form onSubmit={onSubmit}>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div>
           <label className="text-black mb-1 font-normal">
@@ -1478,20 +1496,22 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
           </div>
           <p style={{ color: "red" }}>{errors?.account_name}</p>
         </div>
-        <div className="flex flex-col">
-          <label className="text-black mb-1 font-normal">
-            Total Installment<span className="text-red-400">*</span>
-          </label>
-          <input
-            type="text"
-            name="total_installments"
-            value={formData.total_installments}
-            className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
-            placeholder="Enter Total Installment"
-            disabled
-          />
-          <p style={{ color: "red" }}>{errors?.total_installments}</p>
-        </div>
+        {formData.scheme_type !== 10 && formData.scheme_type !== 14 && (
+          <div className="flex flex-col">
+            <label className="text-black mb-1 font-normal">
+              Total Installment<span className="text-red-400">*</span>
+            </label>
+            <input
+              type="text"
+              name="total_installments"
+              value={formData.total_installments}
+              className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+              placeholder="Enter Total Installment"
+              disabled
+            />
+            <p style={{ color: "red" }}>{errors?.total_installments}</p>
+          </div>
+        )}
         <div className="flex flex-col">
           <label className="text-black mb-1 font-normal">
             Maturity Period<span className="text-red-400">*</span>
@@ -1620,7 +1640,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
           </button>
         </div>
       </div>
-      <Modal/>
+      <Modal />
     </form>
   );
 };

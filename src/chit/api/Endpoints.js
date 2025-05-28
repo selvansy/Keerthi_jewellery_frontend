@@ -2850,6 +2850,14 @@ export const getCustomerRefferal = async(data)=>{
   return response.data
 }
 
+export const customerOverview = async (data) => {
+  const response = await Api.post(
+    `${import.meta.env.VITE_API_URL}/api/client/customer/overview`,
+    data
+  );
+  return response.data;
+};
+
 
 //!per user redeem history
 export const userRedeemHistory = async (data) => {
@@ -2859,6 +2867,8 @@ export const userRedeemHistory = async (data) => {
   );
   return response.data;
 };
+
+
 
 
 //!drill down api
