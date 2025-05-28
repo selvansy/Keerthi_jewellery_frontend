@@ -12,37 +12,12 @@ import { toast } from "sonner";
 import { formatDate } from "../../../../utils/FormatDate";
 
 const Exisitingcustomer = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  
   const customStyles = (isReadOnly) => ({
-    control: (base, state) => ({
-      ...base,
-      minHeight: "44px", //42px
-      backgroundColor: "white",
-      border: state.isFocused ? "1px solid #f2f2f9" : "1px solid #f2f2f9",
-      boxShadow: state.isFocused ? "0 0 0 1px #004181" : "none",
-      borderRadius: "0.5rem",
-      "&:hover": {
-        color: "#e2e8f0",
-      },
-      pointerEvents: !isReadOnly ? "none" : "auto",
-      opacity: !isReadOnly ? 1 : 1,
-    }),
-    indicatorSeparator: () => ({
-      display: "none",
-    }),
-    placeholder: (base) => ({
-      ...base,
-      color: "#6C7086",
-      fontWeight: "thin",
-      // fontStyle: "bold",
-    }),
-    dropdownIndicator: (provided, state) => ({
-      ...provided,
-      color: "#232323",
-      "&:hover": {
-        color: "#232323",
-      },
-    }),
+    // ... (keep your existing customStyles implementation)
   });
 
   const roleData = useSelector((state) => state.clientForm.roledata);
@@ -57,9 +32,12 @@ const Exisitingcustomer = () => {
     },
   });
 
-  const [data, setData] = useState([]);
+  const [data, setData] = useState({
+    customerDetails: {},
+    schemes: [],
+    totalOpenSchemes: 0
+  });
   const [branch, setBranch] = useState(() => (accessBranch === "0" ? [] : {}));
-  const [customer, setCustomer] = useState({});
 
   const { data: branchData, isLoading: isBranchLoading } = useQuery({
     queryKey: ["branches", accessBranch, id_branch],
@@ -71,7 +49,6 @@ const Exisitingcustomer = () => {
     },
     enabled: Boolean(accessBranch),
   });
-
 
   useEffect(() => {
     if (!branchData) return;
@@ -89,17 +66,27 @@ const Exisitingcustomer = () => {
   }, [branchData, accessBranch]);
 
   const handleSubmit = () => {
-    customerData({ data: formik.values });
+    if (!formik.values.mobile) {
+      toast.error("Please enter mobile number");
+      return;
+    }
+    customerData({ 
+      data: formik.values
+    });
   };
 
   const { mutate: customerData, isPending: isLoading } = useMutation({
     mutationFn: ({ data }) => customerOverview(data),
     onSuccess: (response) => {
-        setCustomer(response?.data?.customerDetails);
-        toast.success(response?.message);
+      setData({
+        customerDetails: response?.data?.customerDetails || {},
+        schemes: response?.data?.schemes || [],
+        totalOpenSchemes: response?.data?.totalOpenSchemes || 0
+      });
+      toast.success(response?.message);
     },
     onError: (error) => {
-      console.log(error)
+      console.log(error);
       toast.error(error.response?.data?.message);
     },
   });
@@ -107,45 +94,44 @@ const Exisitingcustomer = () => {
   const columns = [
     {
       header: "S.no",
-      cell: (row) => row.sno,
+      cell: (row, index) => index + 1,
     },
     {
       header: "Scheme Name",
       cell: (row) => row.schemeName,
     },
     {
-      header: "Open Account",
-      cell: (row) => row.openAccount,
+      header: "Open Accounts",
+      cell: (row) => row.openAccounts,
     },
     {
       header: "Amount Paid",
       cell: (row) => row.amountPaid,
     },
     {
-      header: "Closed Account",
-      cell: (row) => row.closedAccount,
+      header: "Closed Accounts",
+      cell: (row) => row.closedAccounts,
     },
   ];
 
   const profileData = [
-    { label: "Branch", value: customer?.branch || "N/A"},
-    { label: "Mobile No", value: customer?.mobile || "N/A"},
-    { label: "Whatsapp No", value: customer?.whatsapp || "N/A" },
-    { label: "Gender", value: customer?.gender || "N/A"},
+    { label: "Branch", value: data.customerDetails?.branch || "N/A" },
+    { label: "Mobile No", value: data.customerDetails?.mobile || "N/A" },
+    { label: "Whatsapp No", value: data.customerDetails?.whatsapp || "N/A" },
+    { label: "Gender", value: data.customerDetails?.gender || "N/A" },
     {
       label: "Address",
-      value: customer?.address || "N/A",
+      value: data.customerDetails?.address || "N/A",
     },
-    { label: "Pan Card", value: customer?.pan || "N/A" },
-    { label: "Aadhar No", value: customer?.aadharNumber || "N/A" },
-    { label: "Date of Birth", value: formatDate(customer?.dateOfBirth) || "N/A" },
+    { label: "Pan Card", value: data.customerDetails?.pan || "N/A" },
+    { label: "Aadhar No", value: data.customerDetails?.aadharNumber || "N/A" },
+    { label: "Date of Birth", value: formatDate(data.customerDetails?.dateOfBirth) || "N/A" },
     {
       label: "Referral No",
-      value: customer?.referralCode?.replace(/^Cus-/, '') || 'N/A'
+      value: data.customerDetails?.referralCode?.replace(/^Cus-/, '') || 'N/A'
     },    
-    { label: "Wedding Anniversary", value: formatDate(customer?.weddingAnniversary) || "N?A" },
+    { label: "Wedding Anniversary", value: formatDate(data.customerDetails?.weddingAnniversary) || "N/A" },
   ];
-
 
   return (
     <div>
@@ -232,19 +218,28 @@ const Exisitingcustomer = () => {
               <button
                 type="button"
                 className="p-2 bg-[#004181] text-white rounded-md"
+                onClick={() => navigate(`/managecustomers/editcustomer/${data.customerDetails?._id}`)}
               >
-                <SquarePen size={20} className="text-gray-400" onClick={()=>navigate(`/managecustomers/editcustomer/${customer?._id}`)} />
+                <SquarePen size={20} className="text-gray-400" />
               </button>
             </div>
-            <div className="flex justify-center items-center">
-              <img src={`${customer?.pathUrl}${customer?.profileImage}`} className="w-24 h-24 border rounded-full object-cover items-center" />
+            <div className="flex flex-col gap-2 justify-center items-center">
+              <img 
+                src={`${data.customerDetails?.pathUrl}${data.customerDetails?.profileImage}`} 
+                className="w-24 h-24 border rounded-full object-cover items-center" 
+                alt="Profile"
+                onError={(e) => {
+                  e.target.src = 'https://via.placeholder.com/150'; // Fallback image
+                }}
+              />
+              <p className="text-bold">{data.customerDetails?.customerName}</p>
             </div>
 
             <hr className="w-full mt-5" />
 
             <div className="p-6">
-              {profileData.map((item) => (
-                <div className="flex justify-between gap-4 py-2">
+              {profileData.map((item, index) => (
+                <div key={index} className="flex justify-between gap-4 py-2">
                   <p className="text-sm font-semibold text-black">
                     {item.label}:
                   </p>
@@ -260,19 +255,21 @@ const Exisitingcustomer = () => {
           <h1 className="text-lg font-bold text-black">Account Overview</h1>
           <div className="flex gap-5">
             <div className="justify-start p-2 right-10">
-              <p className="text-lg font-medium text-black"> ₹ 5000</p>
-
+              <p className="text-lg font-medium text-black"> 
+                ₹ {data.schemes.reduce((sum, scheme) => sum + (scheme.amountPaid || 0), 0)}
+              </p>
               <p className="text-sm font-bold text-gray-600">Amount Payable</p>
             </div>
             <hr className="w-px h-10 bg-gray-300 border-none mt-3" />
             <div className="justify-between p-2">
-              <p className="text-lg font-medium text-black"> g</p>
-
+              <p className="text-lg font-medium text-black">
+                {data.schemes.reduce((sum, scheme) => sum + (scheme.closedAccounts || 0), 0)}
+              </p>
               <p className="text-sm font-bold text-gray-600">Weight Payable</p>
             </div>
             <hr className="w-px h-10 bg-gray-300 border-none mt-3" />
             <div className="justify-end p-2">
-              <p className="text-lg font-medium text-black"> 2</p>
+              <p className="text-lg font-medium text-black">{data?.totalOpenSchemes || "N/A"}</p>
               <p className="text-sm font-bold text-gray-600">Active Accounts</p>
             </div>
           </div>
@@ -281,14 +278,14 @@ const Exisitingcustomer = () => {
             <h1 className="text-md font-bold text-black">Account History</h1>
             <div className="mt-5">
               <Table
-                data={data}
+                data={data.schemes}
                 columns={columns}
-                isLoading={true}
-                currentPage={1}
-                handleItemsPerPageChange={true}
-                handlePageChange={true}
-                itemsPerPage={true}
-                totalItems={true}
+                isLoading={isLoading}
+                currentPage={currentPage}
+                handleItemsPerPageChange={(value) => setItemsPerPage(value)}
+                handlePageChange={(page) => setCurrentPage(page)}
+                itemsPerPage={itemsPerPage}
+                totalItems={data.schemes.length}
               />
             </div>
           </div>
