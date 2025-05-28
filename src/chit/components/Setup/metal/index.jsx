@@ -274,7 +274,7 @@ const Metal = () => {
             <input
               onChange={handleSearch}
               placeholder="Search"
-              className="px-4 py-2 ps-9 border-2 border-[#F2F2F9] rounded-[8px] w-[228px]"
+              className="infocus px-4 py-2 ps-9 border-2 border-[#F2F2F9] rounded-[8px] w-[228px]"
             />
           </div>
 
@@ -477,7 +477,7 @@ export const MetalForm = ({ setIsOpen, id, clearId }) => {
           value={formData.metal_name}
           onChange={handleChange}
           placeholder="Enter Metal Name"
-          className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[#004181]"
         />
         {formErrors.metal_name && (
           <div className="text-red-500 text-sm">{formErrors.metal_name}</div>

@@ -15,6 +15,7 @@ import { useMutation } from "@tanstack/react-query";
 import NotificationCard from "./notification_payment/notification";
 import PaymentHistory from "./notification_payment/payment_history";
 import ModeOfPayment from "./modeOfPayment/modeOfPayment";
+import { customStyles } from "../../ourscheme/scheme/AddScheme";
 
 function Dashboard() {
   const roleData = useSelector((state) => state.clientForm.roledata);
@@ -102,35 +103,35 @@ function Dashboard() {
       </div>
 
       {/* top section */}
-      <div>
+      <div className="mb-[20px]">
         <HeaderDashborder id_branch={selectedBranch} />
       </div>
 
       {/* Account Review and account status */}
-      <div className="grid grid-cols-1 xl:grid-cols-7 gap-4">
-        <div className="md:col-span-4">
+      <div className="grid grid-cols-1 xl:grid-cols-7 gap-4 ">
+        <div className="md:col-span-4 mr-3 ">
           <AccountReview id_branch={selectedBranch} />
         </div>
-        <div className=" md:col-span-3">
+        <div className=" md:col-span-3 ">
           <AccountStatus id_branch={selectedBranch} />
         </div>
       </div>
 
       <div className="flex flex-col md:flex-row w-full">
   {/* Left side: Notification + PaymentHistory */}
-  <div className="w-full md:w-4/5 p-2">
+  <div className="w-full md:w-4/5 p-2 -ml-2">
     <div className="bg-white p-4 mb-4 border-2 border-[#F5F5F5] rounded-[20px]">
-      <h2 className="font-semibold text-xl p-4">Notification Limits</h2>
+      <h2 className="font-semibold text-xl p-4 text-[#232323]">Notification Limits</h2>
       <NotificationCard  />
     </div>
-    <div className="bg-white p-4 border-2 border-[#F5F5F5] rounded-[16px]">
+    <div className="bg-white p-4 border-2 border-[#F5F5F5] rounded-[20px]">
       <PaymentHistory id_branch={selectedBranch}/>
     </div>
   </div>
 
   {/* Right side: ModeOfPayment */}
-  <div className=" md:w-3/5 p-2">
-    <div className="bg-white p-4 h-full border-2 border-[#F5F5F5] rounded-[16px]">
+  <div className=" md:w-3/5 p-3 "> 
+    <div className="bg-white p-4 h-full border-2 border-[#F5F5F5] rounded-[20px]">
       <ModeOfPayment id_branch={selectedBranch}/>
     </div>
   </div>
