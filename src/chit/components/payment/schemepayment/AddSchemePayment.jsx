@@ -1052,13 +1052,11 @@ const AddSchemePayment = () => {
 
         <div>
           <div className="flex flex-col lg:flex-row w-full justify-between">
-            {/* Left column - form inputs */}
             <div className="lg:w-1/2 w-full bg-white border px-[18px] py-[20px] rounded-md">
               <h2 className="text-lg font-semibold mb-4 pb-4">
                 Customer Details
               </h2>
               <div className="grid lg:grid-cols-2 grid-cols-1 gap-4 lg:pr-2">
-                {/* Branch selection */}
                 {accessBranch === "0" && branch.length > 0 && !isLoading ? (
                   <div>
                     <label className="block text-sm font-medium mb-1">
