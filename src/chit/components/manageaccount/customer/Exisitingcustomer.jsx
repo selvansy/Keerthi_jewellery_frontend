@@ -9,8 +9,10 @@ import { useSelector } from "react-redux";
 import { useFormik } from "formik";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { formatDate } from "../../../../utils/FormatDate";
 
 const Exisitingcustomer = () => {
+  const navigate = useNavigate()
   const customStyles = (isReadOnly) => ({
     control: (base, state) => ({
       ...base,
@@ -94,7 +96,7 @@ const Exisitingcustomer = () => {
     mutationFn: ({ data }) => customerOverview(data),
     onSuccess: (response) => {
         setCustomer(response?.data?.customerDetails);
-        toast.success(response?.data?.message);
+        toast.success(response?.message);
     },
     onError: (error) => {
       console.log(error)
@@ -125,24 +127,26 @@ const Exisitingcustomer = () => {
     },
   ];
 
-  console.log(customer)
   const profileData = [
-    { label: "Branch", value: customer?.branch },
-    { label: "Mobile No", value: customer?.mobile },
-    { label: "Whatsapp No", value: customer?.whatsapp || "-" },
-    { label: "Gender", value: "Male" },
+    { label: "Branch", value: customer?.branch || "N/A"},
+    { label: "Mobile No", value: customer?.mobile || "N/A"},
+    { label: "Whatsapp No", value: customer?.whatsapp || "N/A" },
+    { label: "Gender", value: customer?.gender || "N/A"},
     {
       label: "Address",
-      value: "",
+      value: customer?.address || "N/A",
     },
-    { label: "Pan Card", value: "DLSPG7050M" },
-    { label: "Aadhar No", value: "3216 5478 9521" },
-    { label: "Date of Birth", value: "23-06-2000" },
-    { label: "Referral No", value: "RF0123" },
-    { label: "Wedding Anniversary", value: "23-06-2023" },
+    { label: "Pan Card", value: customer?.pan || "N/A" },
+    { label: "Aadhar No", value: customer?.aadharNumber || "N/A" },
+    { label: "Date of Birth", value: formatDate(customer?.dateOfBirth) || "N/A" },
+    {
+      label: "Referral No",
+      value: customer?.referralCode?.replace(/^Cus-/, '') || 'N/A'
+    },    
+    { label: "Wedding Anniversary", value: formatDate(customer?.weddingAnniversary) || "N?A" },
   ];
 
-  console.log(formik.values);
+
   return (
     <div>
       <Breadcrumb
@@ -229,11 +233,11 @@ const Exisitingcustomer = () => {
                 type="button"
                 className="p-2 bg-[#004181] text-white rounded-md"
               >
-                <SquarePen size={20} className="text-gray-400" />
+                <SquarePen size={20} className="text-gray-400" onClick={()=>navigate(`/managecustomers/editcustomer/${customer?._id}`)} />
               </button>
             </div>
             <div className="flex justify-center items-center">
-              <img className="w-24 h-24 border rounded-full object-cover items-center" />
+              <img src={`${customer?.pathUrl}${customer?.profileImage}`} className="w-24 h-24 border rounded-full object-cover items-center" />
             </div>
 
             <hr className="w-full mt-5" />
