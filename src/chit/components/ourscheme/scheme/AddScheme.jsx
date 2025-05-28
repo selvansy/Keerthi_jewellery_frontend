@@ -34,6 +34,7 @@ import { schemeValidationSchema } from "../../../../utils/validations/schemeVali
 import SpinLoading from "../../common/spinLoading";
 import "react-datepicker/dist/react-datepicker.css";
 import { color, hover } from "framer-motion";
+import { option } from "framer-motion/client";
 
 
  export const customStyles = (isReadOnly) => ({
@@ -73,6 +74,13 @@ import { color, hover } from "framer-motion";
       ...base,
       "input[type='text']:focus": { boxShadow: 'none' },
       }),
+      option:(base,state)=>({
+        ...base,
+        backgroundColor: state.isSelected ? "#F0F7FE" : state.isFocused ? "#F0F7FE" : "white",
+        color:"#232323",
+        fontWeight:"500",
+        fontSize:"14px"
+      })
     });
 
 

@@ -24,6 +24,7 @@ import { useSelector } from "react-redux";
 import { Breadcrumb } from "../common/breadCumbs/breadCumbs";
 import DateRangeSelector from "../common/calender";
 import { customSelectStyles } from "../Setup/purity";
+import { customStyles } from "../ourscheme/scheme/AddScheme";
 
 function overallReport() {
   const [isLoading, setisLoading] = useState(true);
@@ -171,7 +172,7 @@ function overallReport() {
             <div className="flex justify-start">
               <Select
                 className="mt-2 w-[219px]"
-                styles={customSelectStyles(true)}
+                styles={customStyles(true)}
                 options={schemeList || []}
                 value={schemeList.find(
                   (option) => option.value === selectedScheme

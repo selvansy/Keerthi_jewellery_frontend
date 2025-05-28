@@ -8,6 +8,7 @@ import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import SpinLoading from '../../common/spinLoading';
 import { toast } from 'react-toastify';
+import { customStyles } from '../../ourscheme/scheme/AddScheme';
 
 const customSelectStyles = (isReadOnly) => ({
     control: (base, state) => ({
@@ -430,7 +431,7 @@ function GiftPurchaseForm({ setIsviewOpen, isviewOpen, id, setId,refetchTable })
                                         }));
                                     }}
                                      className='border-2  border-[#F2F2F9] rounded-lg'
-                                    styles={customSelectStyles(true)}
+                                    styles={customStyles(true)}
                                     isLoading={loadingbranch}
                                     isDisabled={id_branch !== "0"}
                                     placeholder="Select"
@@ -458,7 +459,7 @@ function GiftPurchaseForm({ setIsviewOpen, isviewOpen, id, setId,refetchTable })
                                             gift_vendorid: vendor.value,
                                         }));
                                     }}
-                                    styles={customSelectStyles(true)}
+                                    styles={customStyles(true)}
                                      className='border-2  border-[#F2F2F9] rounded-lg'
                                     isLoading={loadingGiftVendor}
                                     isDisabled={vendorfilter.length === 0}
@@ -541,7 +542,7 @@ function GiftPurchaseForm({ setIsviewOpen, isviewOpen, id, setId,refetchTable })
                                         }));
                                     }}
                                     className='border-2 border-[#F2F2F9] rounded-lg'
-                                    styles={customSelectStyles(true)}
+                                    styles={customStyles(true)}
                                     isLoading={loadingGiftItems}
                                     isDisabled={giftitemfilter.length === 0}
                                     placeholder={giftitemfilter.length === 0 ? "No Records Found" : "Select GiftItems"}

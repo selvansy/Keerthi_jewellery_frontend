@@ -39,7 +39,7 @@ function PaymentHistory({ id_branch }) {
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-bold">Payment History</h2>
           <div className="flex items-center justify-center p-3 rounded-md cursor-pointer bg-[#004181]" onClick={()=>navigate('/payment/addschemepayment')}>
-            <img src={plus} alt="plus" className="w-3 h-3" />
+            <img src={plus} alt="plus" className="w-4 h-4" />
             <div className="text-white text-md font-sm px-2">Add Payment</div>
           </div>
         </div>

@@ -10,6 +10,7 @@ import { Breadcrumb } from '../../common/breadCumbs/breadCumbs';
 import { toast } from 'sonner';
 import { useNavigate,useLocation } from 'react-router-dom';
 import { form } from 'framer-motion/client';
+import { customStyles } from '../../ourscheme/scheme/AddScheme';
 //import customSelectStyles from '../../common/customSelectStyles';//
 
 
@@ -737,7 +738,7 @@ function GiftHandOverForm() {
                                     }}
 
                                     isDisabled={id_branch !== "0"}
-                                    styles={customSelectStyles(true)}
+                                    styles={customStyles(true)}
                                     isLoading={loadingbranch}
                                     placeholder="Select Branch"
                                 />
@@ -765,7 +766,7 @@ function GiftHandOverForm() {
                                         handleSchemeAcc(item.value);
                                     }}
 
-                                    styles={customSelectStyles(true)}
+                                    styles={customStyles(true)}
                                     isLoading={loadingGiftItems}
                                     placeholder="Select scheme customer"
                                 />
@@ -829,7 +830,7 @@ function GiftHandOverForm() {
                                         options={schemeaccount}
                                         value={schemeaccount.find(item => item.value === schId) || ""}
                                         onChange={(item) => handleChangeSchemeAccount(item)}
-                                        styles={customSelectStyles(true)}
+                                        styles={customStyles(true)}
                                         // isLoading={loadingSchAcc}
                                         placeholder="Select SchemeAccount Type"
                                     />
@@ -901,7 +902,7 @@ function GiftHandOverForm() {
 
                                 components={customComponents}
                                 styles={{
-                                    ...customSelectStyles(true),
+                                    ...customStyles(true),
                                     menuPortal: (base) => ({ ...base, zIndex: 9999 }),
                                   }}
                                 isLoading={loadingGifts}

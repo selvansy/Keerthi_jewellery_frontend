@@ -334,7 +334,7 @@ const AccountStatus = ({ id_branch }) => {
           <img
             src={AddAcc}
             alt={AddAcc}
-            className="h-[20px] w-[20px] me-[18px]"
+            className="h-[22px] w-[22px] me-[18px]"
           />
           <button className="text-white">Add Accounts</button>
         </div>

@@ -29,6 +29,7 @@ import {
 import MakingChargesForm from "./makingCharge";
 import WastageChargeForm from "./wastageCharge";
 import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
+import { customStyles } from "../../ourscheme/scheme/AddScheme";
 const AddProduct = () => {
   const roleData = useSelector((state) => state.clientForm.roledata);
   const accessBranch = roleData?.id_branch || roleData?.branch;
@@ -516,7 +517,7 @@ const AddProduct = () => {
                 </label>
                 <Select
                   className="mt-2"
-                  styles={customSelectStyles(true)}
+                  styles={customStyles(true)}
                   options={branch || []}
                   placeholder="Select Branch"
                   value={branch.find(
@@ -552,7 +553,7 @@ const AddProduct = () => {
                 Metal<span className="text-red-400">*</span>
               </label>
               <Select
-                styles={customSelectStyles(true)}
+                styles={customStyles(true)}
                 options={metals}
                 placeholder="Select Metal"
                 value={metals.find(
@@ -691,7 +692,7 @@ const AddProduct = () => {
                 Show Price<span className="text-red-400">*</span>
               </label>
               <Select
-                styles={customSelectStyles(true)}
+                styles={customStyles(true)}
                 options={[
                   { value: true, label: "Show" },
                   { value: false, label: "Hide" },

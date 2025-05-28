@@ -630,7 +630,7 @@ const AddCloseAccount = () => {
                   Branch <span className="text-red-500">*</span>
                 </label>
                 <Select
-                  styles={customSelectStyles(true)}
+                  styles={customStyles(true)}
                   isClearable={true}
                   options={branchOptions}
                   placeholder="Select Branch"
@@ -709,7 +709,7 @@ const AddCloseAccount = () => {
               <Select
                 name="id_scheme_account"
                 options={schemeAccountOptions}
-                styles={customSelectStyles(true)}
+                styles={customStyles(true)}
                 className="w-full"
                 placeholder="Select Scheme Account"
                 onChange={handleSchemeAccountChange}
@@ -732,7 +732,7 @@ const AddCloseAccount = () => {
                 </label>
                 <Select
                   name="status"
-                  styles={customSelectStyles(true)}
+                  styles={customStyles(true)}
                   options={schemeStatusOptions}
                   className="w-full"
                   placeholder="Select Close Type"

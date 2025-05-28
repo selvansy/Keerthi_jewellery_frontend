@@ -5,6 +5,7 @@ import { customSelectStyles } from '../../Setup/purity';
 import Table from '../../common/Table';
 import { header } from 'framer-motion/client';
 import { SquarePen } from 'lucide-react';
+import { customStyles } from '../../ourscheme/scheme/AddScheme';
 
 const Exisitingcustomer = () => {
 
@@ -95,7 +96,7 @@ const Exisitingcustomer = () => {
                     Branch <span className='text-red-600'>*</span>
                 </label>
                 <Select 
-                styles={customSelectStyles(true)}
+                styles={customStyles(true)}
                 placeholder="Select Branch"
                 
                 />

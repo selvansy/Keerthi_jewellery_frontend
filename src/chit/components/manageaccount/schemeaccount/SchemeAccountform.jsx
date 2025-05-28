@@ -27,6 +27,7 @@ import { openModal } from "../../../../redux/modalSlice";
 import { closeModal } from "../../../../redux/modalSlice";
 import { eventEmitter } from "../../../../utils/EventEmitter";
 import Modal from "../../common/Modal";
+import { customStyles } from "../../ourscheme/scheme/AddScheme";
 
 export function ExistingCustomer({
   setCusData,
@@ -174,7 +175,7 @@ export function ExistingCustomer({
             setBranch(branch.value);
           }}
           styles={{
-            ...customSelectStyles(true),
+            ...customStyles(true),
             menuPortal: (base) => ({ ...base, zIndex: 9999 }),
           }}
           isLoading={branchloading}
@@ -1149,7 +1150,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
               formik.setFieldValue("id_branch", option?.value || "")
             }
             onKeyDown={(e) => e.key === "Enter" && e.preventDefault()}
-            styles={customSelectStyles(true)}
+            styles={customStyles(true)}
             isLoading={branchloading}
             isDisabled={id_branch !== "0"}
             placeholder="Select Branch"
@@ -1203,7 +1204,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
           </label>
           <div className="relative">
             <Select
-              styles={customSelectStyles(true)}
+              styles={customStyles(true)}
               isClearable={true}
               options={classifyfilter}
               name="id_classification"
@@ -1239,7 +1240,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
           </label>
           <div className="relative">
             <Select
-              styles={customSelectStyles(true)}
+              styles={customStyles(true)}
               isClearable={true}
               options={schemefilter.map((scheme) => {
                 let label = scheme.scheme_name;
@@ -1338,7 +1339,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
 
             {fixedamt && fixedamt.length > 0 ? (
               <Select
-                styles={customSelectStyles(true)}
+                styles={customStyles(true)}
                 isClearable={true}
                 options={fixedamt}
                 name={
@@ -1565,7 +1566,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
                   setReferralName(""); // Clear referral name when role changes
                   setReferralid(null); // Clear referral ID when role changes
                 }}
-                styles={customSelectStyles(true)}
+                styles={customStyles(true)}
                 placeholder="Select Referral Type"
               />
             </div>

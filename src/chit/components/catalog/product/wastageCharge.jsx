@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { customSelectStyles } from "../../Setup/purity";
 import Select from "react-select"
+import { customStyles } from "../../ourscheme/scheme/AddScheme";
 export default function WastageChargeForm({ onChange,initialState }) {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   
@@ -84,7 +85,7 @@ export default function WastageChargeForm({ onChange,initialState }) {
           </label>
           <div className="h-[44px]">
             <Select
-              styles={customSelectStyles(true)}
+              styles={customStyles(true)}
               options={options}
               value={options.find((option) => option.value === formData.mode)}
               onChange={(selectedOption) =>

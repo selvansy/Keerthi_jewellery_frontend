@@ -24,6 +24,7 @@ import { useDispatch, useSelector } from "react-redux";
 import SpinLoading from "../../common/spinLoading";
 import { formatNumber } from "../../../utils/commonFunction";
 import { formatDecimal } from "../../../utils/commonFunction";
+import { customStyles } from "../../ourscheme/scheme/AddScheme";
 
 const AddSchemePayment = () => {
   const navigate = useNavigate();
@@ -71,65 +72,65 @@ const AddSchemePayment = () => {
   const [selectKey, setSelectKey] = useState(0);
 
   // Customisations for react-select
-  const customStyles = (isReadOnly) => ({
-    control: (base, state) => ({
-      ...base,
-      minHeight: "42px",
-      backgroundColor: "white",
-      border: state.isFocused ? "1px solid black" : "2px solid #f2f3f8",
-      boxShadow: state.isFocused ? "0 0 0 1px black" : "none",
-      borderRadius: "0.375rem",
-      "&:hover": {
-        color: "#e2e8f0",
-      },
-      pointerEvents: !isReadOnly ? "none" : "auto",
-      opacity: !isReadOnly ? 1 : 1,
-    }),
-    indicatorSeparator: () => ({
-      display: "none",
-    }),
-    placeholder: (base) => ({
-      ...base,
-      color: "#858293",
-      fontWeight: "thin",
-    }),
-    dropdownIndicator: (provided, state) => ({
-      ...provided,
-      color: "#232323",
-      "&:hover": {
-        color: "#232323",
-      },
-    }),
+  // const customStyles = (isReadOnly) => ({
+  //   control: (base, state) => ({
+  //     ...base,
+  //     minHeight: "42px",
+  //     backgroundColor: "white",
+  //     border: state.isFocused ? "1px solid black" : "2px solid #f2f3f8",
+  //     boxShadow: state.isFocused ? "0 0 0 1px black" : "none",
+  //     borderRadius: "0.375rem",
+  //     "&:hover": {
+  //       color: "#e2e8f0",
+  //     },
+  //     pointerEvents: !isReadOnly ? "none" : "auto",
+  //     opacity: !isReadOnly ? 1 : 1,
+  //   }),
+  //   indicatorSeparator: () => ({
+  //     display: "none",
+  //   }),
+  //   placeholder: (base) => ({
+  //     ...base,
+  //     color: "#858293",
+  //     fontWeight: "thin",
+  //   }),
+  //   dropdownIndicator: (provided, state) => ({
+  //     ...provided,
+  //     color: "#232323",
+  //     "&:hover": {
+  //       color: "#232323",
+  //     },
+  //   }),
 
-    menu: (provided) => ({
-      ...provided,
-      marginTop: "0",
-      boxShadow:
-        "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
-      borderRadius: "0.375rem",
-    }),
-    menuList: (provided) => ({
-      ...provided,
-      paddingTop: 0,
-      paddingBottom: 0,
-      maxHeight: showWeightInput  ? "130px" : "209px",
-      maxHeight: [2,5,6].includes(formik.values.scheme_type) ? "130px" : "209px",
-    }),
-    option: (provided, state) => ({
-      ...provided,
-      padding: "8px 12px",
-      fontSize: "14px",
-      // backgroundColor: state.isSelected
-      //   ? "#1E40AF"
-      //   : state.isFocused
-      //   ? "#EFF6FF"
-      //   : "white",
-      color: state.isSelected ? "white" : "#1F2937",
-      "&:active": {
-        backgroundColor: "#DBEAFE",
-      },
-    }),
-  });
+  //   menu: (provided) => ({
+  //     ...provided,
+  //     marginTop: "0",
+  //     boxShadow:
+  //       "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+  //     borderRadius: "0.375rem",
+  //   }),
+  //   menuList: (provided) => ({
+  //     ...provided,
+  //     paddingTop: 0,
+  //     paddingBottom: 0,
+  //     maxHeight: showWeightInput  ? "130px" : "209px",
+  //     maxHeight: [2,5,6].includes(formik.values.scheme_type) ? "130px" : "209px",
+  //   }),
+  //   option: (provided, state) => ({
+  //     ...provided,
+  //     padding: "8px 12px",
+  //     fontSize: "14px",
+  //     // backgroundColor: state.isSelected
+  //     //   ? "#1E40AF"
+  //     //   : state.isFocused
+  //     //   ? "#EFF6FF"
+  //     //   : "white",
+  //     color: state.isSelected ? "white" : "#1F2937",
+  //     "&:active": {
+  //       backgroundColor: "#DBEAFE",
+  //     },
+  //   }),
+  // });
   const formik = useFormik({
     initialValues: {
       id_customer: "",
@@ -1093,7 +1094,7 @@ const AddSchemePayment = () => {
                     styles={customStyles(true)}
                     isClearable={true}
                     options={schemedata}
-                    placeholder="Choose scheme Account"
+                    placeholder="Choose Account"
                     value={schemedata?.find(
                       (option) =>
                         option.value === formik.values.id_scheme_account

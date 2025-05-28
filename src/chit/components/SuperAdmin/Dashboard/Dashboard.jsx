@@ -77,7 +77,7 @@ function Dashboard() {
           <Select
             isClearable={true}
             className="mt-2 min-w-[190px]"
-            styles={customSelectStyles(true)}
+            styles={customStyles(true)}
             options={branch || []}
             placeholder="Over All"
             value={branch.find((option) => option.value === selectedBranch) || null}
