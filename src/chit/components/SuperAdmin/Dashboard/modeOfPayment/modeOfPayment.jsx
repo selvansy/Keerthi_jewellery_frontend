@@ -145,8 +145,8 @@ function ModeOfPayment({ id_branch }) {
           />
         </div>
         <div className="relative overflow-x-auto">
-          <table className="w-full text-sm text-left rtl:text-right text-gray-500  my-5">
-            <thead className="text-xs text-gray-700 uppercase bg-gray-50  ">
+          <table className="w-full text-sm text-left rtl:text-right text-[#6C7086]  my-5">
+            <thead className="text-xs text-[#6C7086] uppercase bg-[#E7EEF5]  ">
               <tr>
                 <th scope="col" className="px-6 py-3">
                   Payment Mode
@@ -169,7 +169,7 @@ function ModeOfPayment({ id_branch }) {
                     >
                       {item.payment_mode || "Cash Free"}
                     </th>
-                    <td className="px-6 py-4">{item.totalAmount}</td>
+                    <td className="px-6 py-4"> {item.totalAmount}</td>
                   </tr>
                 ))
               ) : (

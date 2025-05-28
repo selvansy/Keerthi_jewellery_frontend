@@ -39,14 +39,14 @@ function PaymentHistory({ id_branch }) {
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-bold">Payment History</h2>
           <div className="flex items-center justify-center p-3 rounded-md cursor-pointer bg-[#004181]" onClick={()=>navigate('/payment/addschemepayment')}>
-            <img src={plus} alt="plus" className="w-6 h-6" />
-            <div className="text-white text-md font-medium px-2">Add Payment</div>
+            <img src={plus} alt="plus" className="w-3 h-3" />
+            <div className="text-white text-md font-sm px-2">Add Payment</div>
           </div>
         </div>
 
         <div className="relative overflow-x-auto">
           <table className="w-full text-sm text-left text-gray-500">
-            <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+            <thead className="text-xs text-[#6C7086] border-b uppercase bg-[#E7EEF5]">
               <tr>
                 <th className="px-6 py-3">S.no</th>
                 <th className="px-6 py-3">Customer Name</th>
@@ -57,7 +57,7 @@ function PaymentHistory({ id_branch }) {
             </thead>
             <tbody>
               {paymentData.map((item, index) => (
-                <tr key={item._id} className="bg-white border-b hover:bg-gray-50">
+                <tr key={item._id} className="bg-white border-b text-[#232323] hover:bg-gray-50 font-semibold">
                   <td className="px-6 py-4">{(page - 1) * limit + index + 1}</td>
                   <td className="px-6 py-4">{item?.id_customer?.firstname} {item?.id_customer?.lastname}</td>
                   <td className="px-6 py-4">{item?.id_scheme?.scheme_name}</td>

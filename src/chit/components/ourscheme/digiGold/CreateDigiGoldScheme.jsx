@@ -110,7 +110,7 @@ const CreateDigiGoldScheme = () => {
       id_metal: "",
       id_purity: "",
       id_classification: "",
-      bonus_type: "",
+      bonus_type: 2,
       count: "",
       entry_type: 0,
       values: [],
@@ -405,7 +405,7 @@ onSubmit: async (values) => {
       id_metal: schemeData?.data?.id_metal?._id || "",
       id_purity: schemeData?.data?.id_purity?._id || "",
       id_classification: schemeData?.data?.id_classification,
-      bonus_type: schemeData?.data?.bonus_type || 0,
+      bonus_type: schemeData?.data?.bonus_type || 2,
       count: schemeData?.data?.count || "",
       entry_type: schemeData?.data?.entry_type || 0,
       values: schemeData?.data?.values || [],
@@ -534,6 +534,18 @@ onSubmit: async (values) => {
   //   return fields;
   // };
   // Function to generate dynamic fields
+  const getLabel = (id)=> {
+    // console.log('bonus type ',formik.values.bonus_type);
+    
+    const data = bonusTypeOptions.filter((e)=> e.id == id); //formik.values.bonus_type
+    console.log('data', data);
+    
+    if(data.length > 0){
+      
+      return data[0]; 
+    }
+    return null;
+  }
   const generateFields = () => {
     const count = formik.values.count;
 
@@ -550,7 +562,7 @@ onSubmit: async (values) => {
         fields.push(
           <div key={`value-min-${i}`}>
             <label className="block text-sm font-medium mb-1">
-              Min Value {i + 1} <span className="text-red-400">*</span>
+              Min {getLabel(formik.values.bonus_type)?.code} {i + 1} <span className="text-red-400">*</span>
             </label>
             <input
               type="number"
@@ -575,7 +587,7 @@ onSubmit: async (values) => {
         fields.push(
           <div key={`value-max-${i}`}>
             <label className="block text-sm font-medium mb-1">
-              Max Value {i + 1} <span className="text-red-400">*</span>
+              Max {getLabel(formik.values.bonus_type)?.code} {i + 1} <span className="text-red-400">*</span>
             </label>
             <input
               type="number"
@@ -600,7 +612,7 @@ onSubmit: async (values) => {
         fields.push(
           <div key={`value-${i}`}>
             <label className="block text-sm font-medium mb-1">
-              Value {i + 1} <span className="text-red-400">*</span>
+               {getLabel(formik.values.bonus_type)?.code} {i + 1} <span className="text-red-400">*</span>
             </label>
             <input
               type="number"
