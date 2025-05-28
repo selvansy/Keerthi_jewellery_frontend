@@ -875,7 +875,7 @@ onSubmit: async (values) => {
 
           <div className="flex flex-col ">
             <label className="block text-sm font-medium mb-1">
-              Maturity / Instalments <span className="text-red-400"> *</span>
+              Maturity <span className="text-red-400"> *</span>
             </label>
             <div className="relative">
               <span className="absolute right-0 top-0 w-14 h-full bg-[#004181] px-3 flex items-center justify-center text-white border-l rounded-r-md">

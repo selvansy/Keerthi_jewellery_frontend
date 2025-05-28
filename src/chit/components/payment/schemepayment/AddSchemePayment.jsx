@@ -3,7 +3,7 @@ import Select from "react-select";
 import { useFormik } from "formik";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
-import { CalendarDays, ChevronDown, ChevronUp,Search } from "lucide-react";
+import { CalendarDays, ChevronDown, ChevronUp, Search } from "lucide-react";
 import Calender from "../../../../assets/icons/calender.svg";
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
@@ -204,6 +204,25 @@ const AddSchemePayment = () => {
       payment_mode: Yup.string().required("Payment mode is required"),
       itr_utr: Yup.string(),
       remark: Yup.string(),
+      // installments: Yup.number()
+      //   .required("Installments is required")
+      //   .min(1, "At least 1 installment is required")
+      //   .test(
+      //     "max-installments",
+      //     "Installments exceed remaining scheme installments",
+      //     function (value) {
+      //       if (!selectedScheme) return true;
+
+      //       const schemeType = selectedScheme?.id_scheme?.scheme_type;
+      //       if (schemeType === 10 || schemeType === 14) return true;
+
+      //       const totalPaid = selectedScheme.total_paidinstallments || 0;
+      //       const totalInstallments =
+      //         selectedScheme?.id_scheme?.total_installments;
+
+      //       return value <= totalInstallments - totalPaid;
+      //     }
+      //   ),
       installments: Yup.number()
         .required("Installments is required")
         .min(1, "At least 1 installment is required")
@@ -923,18 +942,38 @@ const AddSchemePayment = () => {
   //   }
   // };
   const handleInstallmentChange = (value) => {
+    // if (!selectedScheme) return;
+
+    // const totalPaid = selectedScheme.total_paidinstallments || 0;
+    // const totalInstallments = selectedScheme?.id_scheme?.total_installments;
+    // const remainingInstallments = totalInstallments - totalPaid;
+
+    // if (value > remainingInstallments) {
+    //   value = remainingInstallments;
+    //   toast.error(`Cannot exceed remaining installments`);
+    // } else if (value < 1) {
+    //   value = 1;
+    //   toast.error("Minimum 1 installment required");
+    // }
+
+    // const prevInstallments = formik.values.installments || 1;
+    // formik.setFieldValue("installments", value);
     if (!selectedScheme) return;
 
-    const totalPaid = selectedScheme.total_paidinstallments || 0;
-    const totalInstallments = selectedScheme?.id_scheme?.total_installments;
-    const remainingInstallments = totalInstallments - totalPaid;
+    const schemeType = selectedScheme?.id_scheme?.scheme_type;
 
-    if (value > remainingInstallments) {
-      value = remainingInstallments;
-      toast.error(`Cannot exceed remaining installments`);
-    } else if (value < 1) {
-      value = 1;
-      toast.error("Minimum 1 installment required");
+    if (schemeType !== 10 && schemeType !== 14) {
+      const totalPaid = selectedScheme.total_paidinstallments || 0;
+      const totalInstallments = selectedScheme?.id_scheme?.total_installments;
+      const remainingInstallments = totalInstallments - totalPaid;
+
+      if (value > remainingInstallments) {
+        value = remainingInstallments;
+        toast.error(`Cannot exceed remaining installments`);
+      } else if (value < 1) {
+        value = 1;
+        toast.error("Minimum 1 installment required");
+      }
     }
 
     const prevInstallments = formik.values.installments || 1;
@@ -1084,7 +1123,10 @@ const AddSchemePayment = () => {
                     }}
                   />
                   <span className="absolute right-0 top-3 w-9 h-full px-3 flex items-center justify-center text-black">
-                    <Search className="w-6 h-6 hover:cursor-pointer" onClick={()=>handleSearch()} />
+                    <Search
+                      className="w-6 h-6 hover:cursor-pointer"
+                      onClick={() => handleSearch()}
+                    />
                   </span>
                 </div>
 
@@ -1106,6 +1148,7 @@ const AddSchemePayment = () => {
                     onChange={(option) => {
                       formik.setFieldValue("payment_amount", "");
                       formik.setFieldValue("metal_weight", "");
+                      formik.setFieldValue("installments", 1);
 
                       if (option?.value) {
                         formik.setFieldValue("id_scheme_account", option.value);
@@ -1348,7 +1391,10 @@ const AddSchemePayment = () => {
                       className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                       min="1"
                       max={
-                        selectedScheme
+                        selectedScheme &&
+                        ![10, 14].includes(
+                          selectedScheme?.id_scheme?.scheme_type
+                        )
                           ? selectedScheme.total_installments -
                             (selectedScheme.total_paidinstallments || 0)
                           : undefined
@@ -1421,8 +1467,9 @@ const AddSchemePayment = () => {
                     <div className="text-xs text-gray-500 mt-1">
                       {selectedScheme &&
                         schemedata.length > 0 &&
-                        selectedScheme?.scheme_type !== 10 &&
-                        selectedScheme?.scheme_type !== 14 && (
+                        ![10, 14].includes(
+                          selectedScheme?.id_scheme?.scheme_type
+                        ) && (
                           <div className="text-xs text-gray-500 mt-1">
                             {`Remaining installments: ${
                               selectedScheme?.id_scheme?.total_installments -
@@ -1529,7 +1576,7 @@ const AddSchemePayment = () => {
                           value={formik.values.payment_amount}
                           min={minAmount}
                           onBlur={formik.handleBlur}
-                          max={maxAmount}
+                          max={maxAmount * formik.installments}
                           step="0.01"
                           onWheel={(e) => e.target.blur()}
                           onChange={handleAmountChange}
