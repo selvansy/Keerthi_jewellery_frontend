@@ -59,11 +59,11 @@ function HeaderDashborder({ id_branch }) {
 
   return (
     <div className="flex flex-col gap-5 py-3 overflow-y-auto scrollbar-hide">
-      <div className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-4 gap-4 text-[#232323]">
         {cards.map((card, idx) => (
           <div
             key={idx}
-            className="bg-white rounded-2xl p-4 border-2 border-[#F5F5F5] flex flex-col gap-4"
+            className="bg-white rounded-[20px] p-4 border-2 border-[#F5F5F5] flex flex-col gap-4"
           >
             <img src={card.image} alt={card.title} className="h-10 w-10" />
             <div className="flex flex-col gap-1">
@@ -71,14 +71,14 @@ function HeaderDashborder({ id_branch }) {
                 <>
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex flex-col items-start">
-                      <p className="text-2xl font-semibold">{card.sub_Value}</p>
+                      <p className="text-xl font-semibold">{card.sub_Value}</p>
                       <p className="text-[#6C7086] text-sm font-medium">
                         {card.subTitle}
                       </p>
                     </div>
                     <div className="text-[#F5F5F5] text-xl font-semibold border-s-2 boder-[#F5F5F5] h-[50px]"></div>
                     <div className="flex flex-col items-start">
-                      <p className="text-2xl font-semibold"> {card.value} </p>
+                      <p className="text-xl font-semibold"> {card.value} </p>
                       <p className="text-[#6C7086] text-sm font-medium">
                         {card.title}
                       </p>
@@ -87,7 +87,7 @@ function HeaderDashborder({ id_branch }) {
                 </>
               ) : (
                 <>
-                  <p className="text-2xl font-semibold">
+                  <p className="text-xl font-semibold">
                     {card.title == "Total Payment"
                       ? formatNumber({ value: card.value, decimalPlaces: 0 })
                       : card.value}

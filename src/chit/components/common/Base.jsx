@@ -676,7 +676,7 @@ const Base = ({ renderContent: RenderContent }) => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="fixed top-0 right-0 lg:left-64 left-0 bg-[#FBFCF8] shadow-md z-50 h-16 ">
+      <header className="fixed top-0 right-0 lg:left-64 left-0 bg-[#FBFCF8] border-b z-50 h-16 ">
         <div className="flex justify-between items-center h-full px-4">
           {/* Left side of header with burger menu and section title */}
           <div className="flex flex-row gap-4">
@@ -750,8 +750,8 @@ const Base = ({ renderContent: RenderContent }) => {
             </div>
 
             {/* Notification and user menu */}
-            <div className="flex items-center space-x-1 sm:space-x-2">
-              <button className="p-1 sm:p-2 text-gray-900">
+            <div className="flex items-center space-x-1 sm:space-x-2 ">
+              <button className="p-1 sm:p-2 text-gray-900 border rounded-3xl">
                 <img
                   src={notification}
                   alt="Notifications"
@@ -771,7 +771,7 @@ const Base = ({ renderContent: RenderContent }) => {
                     >
                       {role}
                     </span>
-                    <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4 text-gray-700" />
+                    {/* <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4 text-gray-700" /> */}
                   </button>
 
                   {isOpen && (
@@ -801,7 +801,7 @@ const Base = ({ renderContent: RenderContent }) => {
         ref={sidebarRef}
         className={`fixed top-0 left-0 h-full w-64 lg:w-64 scrollbar-hide transform transition-transform duration-300 ease-in-out ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } lg:translate-x-0 z-50 pt-16 lg:pt-4 overflow-auto flex flex-col`}
+        } lg:translate-x-0 z-50 pt-16 lg:pt-4 overflow-auto flex flex-col border-r`}
         style={{ backgroundColor: sidebar_color }}
       >
         <div className="flex justify-center items-center mb-10">
