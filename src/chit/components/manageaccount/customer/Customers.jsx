@@ -67,6 +67,10 @@ function Customers() {
     setOpenAcc(isCustomer ? ["existingCus"] : ["customer"]);
   }, [isCustomer]);
 
+  // useEffect(() => {
+  //   console.log('parent render');
+  // });
+  
   const handleClear = () => {
     setCusImg("");
     setPathurl("");
@@ -148,6 +152,7 @@ function Customers() {
                   Join Scheme
                 </AccordionTrigger>
                 <AccordionContent className="px-6 py-4 text-[16px]">
+                  {/* <p>Check render : {JSON.stringify(cusData)}</p> */}
                   <AddSchemeAccount
                     cusData={cusData}
                     handleClear={handleClear}
