@@ -1,43 +1,118 @@
-import React from 'react'
+import React,{useEffect, useState} from 'react'
 import { Breadcrumb } from '../../common/breadCumbs/breadCumbs';
 import Select from "react-select";
-import { customSelectStyles } from '../../Setup/purity';
 import Table from '../../common/Table';
-import { header } from 'framer-motion/client';
 import { SquarePen } from 'lucide-react';
+import {getallbranch} from '../../../api/Endpoints'
+import { useQuery } from '@tanstack/react-query';
+import { useSelector } from 'react-redux';
+import { useFormik } from "formik";
+import { useNavigate } from 'react-router-dom';
 
 const Exisitingcustomer = () => {
+  const customStyles = (isReadOnly) => ({
+    control: (base, state) => ({
+      ...base,
+      minHeight: "44px", //42px
+      backgroundColor: "white",
+      border: state.isFocused ? "1px solid #f2f2f9" : "1px solid #f2f2f9",
+      boxShadow: state.isFocused ? "0 0 0 1px #004181" : "none",
+      borderRadius: "0.5rem",
+      "&:hover": {
+        color: "#e2e8f0",
+      },
+      pointerEvents: !isReadOnly ? "none" : "auto",
+      opacity: !isReadOnly ? 1 : 1,
+    }),
+    indicatorSeparator: () => ({
+      display: "none",
+    }),
+    placeholder: (base) => ({
+      ...base,
+      color: "#6C7086",
+      fontWeight: "thin",
+      // fontStyle: "bold",
+    }),
+    dropdownIndicator: (provided, state) => ({
+      ...provided,
+      color: "#232323",
+      "&:hover": {
+        color: "#232323",
+      },
+    }),
+  });
 
-    const data = [
-  {
-    sno: 1,
-    schemeName: "Gold Savings Scheme",
-    openAccount: "12 ",
-    amountPaid: "₹24,000",
-    closedAccount: "4 ",
-  },
-  {
-    sno: 2,
-    schemeName: "Platinum Plan",
-    openAccount: "8 ",
-    amountPaid: "₹18,000",
-    closedAccount: "2 ",
-  },
-  {
-    sno: 3,
-    schemeName: "Diamond Saver",
-    openAccount: "15 ",
-    amountPaid: "₹35,000",
-    closedAccount: "5 ",
-  },
-  {
-    sno: 4,
-    schemeName: "Monthly Deposit Plan",
-    openAccount: "10 ",
-    amountPaid: "₹20,000",
-    closedAccount: "3 ",
-  }
-];
+  const roleData = useSelector((state) => state.clientForm.roledata);
+  const layout_color = useSelector((state) => state.clientForm.layoutColor);
+  const id_branch = roleData?.id_branch;
+  const accessBranch = roleData?.branch;
+
+  const formik = useFormik({
+    initialValues:{
+      id_branch: id_branch ? id_branch : "",
+      mobile:""
+    }
+  })
+
+  const [data,setData]= useState([])
+  const [branch, setBranch] = useState(() => (accessBranch === "0" ? [] : {}));
+
+  const { data: branchData, isLoading: isBranchLoading } = useQuery({
+    queryKey: ["branches", accessBranch, id_branch],
+    queryFn: async () => {
+      if (accessBranch === "0") {
+        return getallbranch();
+      }
+      return getBranchById(id_branch);
+    },
+    enabled: Boolean(accessBranch),
+  });
+
+  useEffect(() => {
+    if (!branchData) return;
+
+    if (accessBranch === "0" && branchData.data) {
+      const formattedBranches = branchData.data.map((item) => ({
+        value: item._id,
+        label: item.branch_name,
+      }));
+      setBranch(formattedBranches);
+    } else if (branchData.data) {
+      setBranch(branchData.data);
+      formik.setFieldValue("id_branch", branchData.data._id);
+    }
+  }, [branchData, accessBranch])
+
+//     const data = [
+//   {
+//     sno: 1,
+//     schemeName: "Gold Savings Scheme",
+//     openAccount: "12 ",
+//     amountPaid: "₹24,000",
+//     closedAccount: "4 ",
+//   },
+//   {
+//     sno: 2,
+//     schemeName: "Platinum Plan",
+//     openAccount: "8 ",
+//     amountPaid: "₹18,000",
+//     closedAccount: "2 ",
+//   },
+//   {
+//     sno: 3,
+//     schemeName: "Diamond Saver",
+//     openAccount: "15 ",
+//     amountPaid: "₹35,000",
+//     closedAccount: "5 ",
+//   },
+//   {
+//     sno: 4,
+//     schemeName: "Monthly Deposit Plan",
+//     openAccount: "10 ",
+//     amountPaid: "₹20,000",
+//     closedAccount: "3 ",
+//   }
+// ];
 
 
  const columns = [
@@ -90,17 +165,49 @@ const Exisitingcustomer = () => {
     <div className='border rounded-lg bg-white my-3 p-4'>
             <h1 className='text-black font-bold'>Customer Details</h1>
         <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5  mt-5'>
+        {accessBranch === "0" && branch.length > 0 && !isBranchLoading ? (
             <div>
-                <label className='text-sm font-medium text-black' >
-                    Branch <span className='text-red-600'>*</span>
-                </label>
-                <Select 
-                styles={customSelectStyles(true)}
+              <label className="block text-sm font-medium mb-1">
+                Branches <span className="text-red-500">*</span>
+              </label>
+              <Select
+                styles={customStyles(true)}
+                isClearable={true}
+                options={branch}
                 placeholder="Select Branch"
-                
-                />
-
+                value={
+                  branch.find(
+                    (option) => option.value === formik.values.id_branch
+                  ) || ""
+                }
+                onChange={(option) =>
+                  formik.setFieldValue("id_branch", option ? option.value : "")
+                }
+              />
+              {formik.errors.id_branch && (
+                <div className="text-red-500 text-sm mt-1">
+                  {formik.errors.id_branch}
+                </div>
+              )}
             </div>
+          ) : (
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Branch <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                disabled
+                value={branch?.branch_name || ""}
+                className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2 text-gray-500"
+              />
+              {formik.errors.id_branch && (
+                <div className="text-red-500 text-sm mt-1">
+                  {formik.errors.id_branch}
+                </div>
+              )}
+            </div>
+          )}
             <div className='relative'>
                 <label className='text-sm font-medium text-black'>
                     Mobile Number

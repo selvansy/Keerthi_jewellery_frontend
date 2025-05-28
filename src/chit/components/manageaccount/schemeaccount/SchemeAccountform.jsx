@@ -636,6 +636,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
       });
     }
   };
+  console.log(formData)
 
   useEffect(()=>{
     handleschemebyid(formData.id_scheme);
@@ -1398,11 +1399,11 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
                       type="number"
                       step="any"
                       name="weight"
-                      defaultValue={""}
+                      // defaultValue={value}
                       value={formData.weight}
                       onChange={(e) => filterInputchange(e)}
                       onWheel={(e) => e.target.blur()}
-                      className="border-2 cursor-not-allowed border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                      className="border-2 border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                       placeholder="Enter weight"
                     />
                     <p className="text-sm mt-2" style={{ color: "red" }}>
@@ -1418,11 +1419,11 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
                     <input
                       type="number"
                       name="amount"
-                      defaultValue={""}
+                      // defaultValue={value}
                       value={formData.amount}
                       onWheel={(e) => e.target.blur()}
                       onChange={(e) => filterInputchange(e)}
-                      className="border-2 cursor-not-allowed border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                      className="border-2  border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                       placeholder="Enter amount"
                     />
                     <p className="text-sm mt-2" style={{ color: "red" }}>
