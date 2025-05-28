@@ -723,7 +723,7 @@ const Base = ({ renderContent: RenderContent }) => {
                 <span className="ml-1">
                   {formatNumber({
                     value: getGold24Rate(),
-                    decimalPlaces: 0,
+                    decimalPlaces: 2,
                   })}
                 </span>
               </div>
@@ -733,7 +733,7 @@ const Base = ({ renderContent: RenderContent }) => {
                 <span className="ml-1">
                   {formatNumber({
                     value: getGold22Rate(),
-                    decimalPlaces: 0,
+                    decimalPlaces: 2,
                   })}
                 </span>
               </div>
@@ -743,7 +743,7 @@ const Base = ({ renderContent: RenderContent }) => {
                 <span className="ml-1">
                   {formatNumber({
                     value: getSilverRate(),
-                    decimalPlaces: 0,
+                    decimalPlaces: 2,
                   })}
                 </span>
               </div>
