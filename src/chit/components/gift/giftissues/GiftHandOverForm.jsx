@@ -8,15 +8,13 @@ import Select from "react-select";
 import Table from '../../common/Table';
 import { Breadcrumb } from '../../common/breadCumbs/breadCumbs';
 import { toast } from 'sonner';
-import { useNavigate,useLocation } from 'react-router-dom';
-import { form } from 'framer-motion/client';
-//import customSelectStyles from '../../common/customSelectStyles';//
-
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const customComponents = {
     DropdownIndicator: () => null,
     IndicatorSeparator: () => null,
 };
+
 const customSelectStyles = (isReadOnly) => ({
     control: (base, state) => ({
         ...base,
@@ -48,20 +46,17 @@ const customSelectStyles = (isReadOnly) => ({
     }),
 });
 
-const inputHeight = "42px";
-
-
-
 function GiftHandOverForm() {
-
-
-
-    
     const navigate = useNavigate();
+    const location = useLocation();
+    const data = location?.state?.data;
+    
     const roledata = useSelector((state) => state.clientForm.roledata);
     const layout_color = useSelector((state) => state.clientForm.layoutColor);
     const id_branch = roledata?.branch;
     const branchaccess = roledata?.id_branch;
+    
+    // State declarations
     const [isLoading, setLoading] = useState(false);
     const [AddLoading, setAddLoading] = useState(false);
     const [visibleaccount, setVisibleaccount] = useState(false);
@@ -77,7 +72,7 @@ function GiftHandOverForm() {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
     const [itemsPerPage, setItemsPerPage] = useState(10);
-    const [entries, Setentries] = useState(0);
+    const [entries, setEntries] = useState(0); // Fixed typo
     const [customer_name, setCustomername] = useState('');
     const [address, setAddress] = useState('');
     const [noOfgifts, setNoGifts] = useState("")
@@ -85,11 +80,8 @@ function GiftHandOverForm() {
     const [schId, setSchId] = useState("");
     const [giftStock, setGiftStock] = useState("")
     const [addGift, setAddGift] = useState([])
+    const [totalDocuments, setTotalDocuments] = useState(0); // Added missing state
 
-
-    const location = useLocation();
-    const data = location?.state?.data;
-    
     const [formData, setFormData] = useState({
         id_customer: "",
         mobile: null,
@@ -99,53 +91,64 @@ function GiftHandOverForm() {
         qty: "",
     });
 
-  
     const scheme_gift = formData.issue_type;
 
-
+    // Fixed useEffect for handling passed data
     useEffect(() => {
-        if(!data || scheme_gift === 2) return;
-        if (data) {
-            handlesearchScheme({ value: data.mobile, branchId: formData.id_branch })
-            handleSchemeAcc(1)
-            handleChangeSchemeAccount({value:data._id,label:data?.scheme_name,Allottedgifts:data?.allottedgifts})
-
-            // setVisibleaccount(true)
-            setFormData((prev) => ({
-                ...prev,
-                issue_type: 1,
-            }));
+        console.log('Data from navigation:', data);
         
-            setSchId(data._id)
-        } else {
-            setFormData({
-                id_customer: "",
-                mobile: null,
-                id_branch: "",
-                issue_type: null,
-                gift_issues: [],
-                qty: "",
-            })
+        if (!data) return;
+        
+        // Set form data immediately when data is available
+        setFormData((prev) => ({
+            ...prev,
+            id_customer: data.id_customer || "",
+            mobile: data.mobile || data.id_customer?.mobile || "",
+            issue_type: 1, // Set to scheme type
+        }));
+        
+        // Set customer details
+        if (data.id_customer) {
+            const firstName = data.id_customer.firstname || "";
+            const lastName = data.id_customer.lastname || "";
+            setCustomername(`${firstName} ${lastName}`.trim());
+            setAddress(data.id_customer.address || "");
         }
-    }, [data,scheme_gift])
+        
+        // Set scheme account details
+        if (data._id) {
+            setSchId(data._id);
+            setAllotedGifts(data.allottedgifts || data.Allottedgifts || 0);
+            
+            // Create scheme account option
+            const schemeOption = {
+                value: data._id,
+                label: data.scheme_name,
+                Allottedgifts: data.allottedgifts || data.Allottedgifts || 0
+            };
+            setSchemeaccount([schemeOption]);
+        }
+        
+        // Show account selection for scheme type
+        setVisibleaccount(true);
+        
+    }, [data]);
 
-
-    
-
-
+    // Branch setup effect
     useEffect(() => {
-
         if (!roledata) return;
-        if (id_branch !== "0" || id_branch !== 0) {
+        
+        const branchToSet = branchaccess || id_branch;
+        if (branchToSet && branchToSet !== "0" && branchToSet !== 0) {
             setFormData(prev => ({
                 ...prev,
-                id_branch: branchaccess
+                id_branch: branchToSet
             }));
-            setIdbranch(branchaccess)
+            setIdbranch(branchToSet);
         }
+    }, [branchaccess, roledata, id_branch]);
 
-    }, [branchaccess, roledata]);
-
+    // Gift issues history effect
     useEffect(() => {
         if (!schId) return;
         const payload = {
@@ -157,211 +160,87 @@ function GiftHandOverForm() {
         handleGiftIssuesBySchId(payload)
     }, [currentPage, itemsPerPage, schId, visibleaccount])
 
-
+    // API calls and mutations
     const { mutate: handleGiftIssuesBySchId } = useMutation({
         mutationFn: (value) => giftIssueBySchId(value),
         onSuccess: (response) => {
             if (response) {
-                setGiftHis(response.giftsList)
-                setTotalPages(response.totalPages)
-                setCurrentPage(response.currentPage)
-                setTotalDocuments(response.totalDocument)
+                setGiftHis(response.giftsList || [])
+                setTotalPages(response.totalPages || 0)
+                setCurrentPage(response.currentPage || 1)
+                setTotalDocuments(response.totalDocument || 0)
+                setEntries(response.totalDocument || 0) // Fixed
             }
         },
     });
 
-
-    const validateForm = () => {
-        const errors = {};
-
-        if (formData.issue_type === "1") {
-            if (!formData.id_scheme_account) errors.id_scheme_account = 'Scheme Account is required';
-        }
-
-        if (!id_branch) errors.id_branch = 'Branch is required';
-        if (!formData.mobile) errors.mobile = 'Mobile Number is required';
-        if (!formData.issue_type) errors.issue_type = 'Issue Type is required';
-        // if (!formData.qty) errors.qty = "Gift Quantity is required"
-
-        if (!formData.gift_issues || formData.gift_issues.length === 0) {
-            errors.gift_issues = 'No gifts selected';
-            toast.error('To Handover Gift is required!');
-        }
-
-        setFormErrors(errors);
-        return Object.keys(errors).length === 0;
-    };
-
-
-
-
-    const handleSubmit = () => {
-        try {
-            setLoading(true);
-
-            let updatedFormData = { ...formData };
-
-            if (formData.issue_type === "1" || formData.issue_type === 1) {
-                updatedFormData.id_scheme_account = schId;
-            } else {
-                updatedFormData.id_scheme_account = "";
-            }
-
-            if (!validateForm()) {
-                setLoading(false);
-                return;
-            }
-
-            createGiftissuesMutate(updatedFormData);
-
-        } catch (error) {
-            setLoading(false);
-        }
-    };
-
-
-
-    const { data: branchresponse, isLoading: loadingbranch } = useQuery({
-        queryKey: ["branch"],
-        queryFn: getallbranch,
-    });
-
-    const { data: giftResponse, isLoading: loadingGifts } = useQuery({
-        queryKey: ["GiftCode", branchId],
-        queryFn: () => getallgiftInwardByBranch(branchId),
-        enabled: !!branchId
-    });
-
-    const { data: giftIssueResponse, isLoading: loadingGiftItems } = useQuery({
-        queryKey: ["giftissues", branchId],
-        queryFn: giftissuetype,
-        enabled: !!branchId
-    });
-
-
-    useEffect(() => {
-
-        if (giftResponse?.data) {
-            const GiftCodes = giftResponse.data.map((item) => ({
-                value: (item?.id_gift?.gift_code),
-                label: `${item?.id_gift?.gift_code} - ${item.id_gift?.gift_name}`,
-            }));
-
-            setGiftCodeNums(GiftCodes);
-        }
-
-        if (branchresponse) {
-            const data = branchresponse.data
-
-            const branch = data.map((branch) => ({
-                value: branch._id,
-                label: branch.branch_name,
-            }));
-            setBranchList(branch);
-        }
-
-        if (giftIssueResponse) {
-            const data = giftIssueResponse.data
-
-            const giftitem = data.map((giftitem) => ({
-                value: giftitem.id,
-                label: giftitem.name,
-            }));
-            setIssuetype(giftitem);
-        }
-
-    }, [giftResponse, branchresponse, giftIssueResponse]);
-
-
-    const handleSearchmobile = () => {
-
-        if (formData.mobile === "") {
-            toast.error('Mobile Number is required!');
-        }
-
-        if (formData.issue_type === "1" || formData.issue_type === 1) {
-            handlesearchScheme({ value: formData.mobile, branchId: formData.id_branch })
-        } else {
-            handlesearchcustomer({ search: formData.mobile, id_branch: formData.id_branch });
-        }
-    };
-
-    const handleSchemeAccount = (data) => {
-        const SchemeSummary = data.map((item) => ({
-            value: item.scheme_acc_id,
-            label: item.scheme_name,
-            Allottedgifts: item.Allottedgifts,
-        }));
-        setSchemeaccount(SchemeSummary)
-    }
-
-
-    // const { mutate: handlesearchScheme } = useMutation({
-    //     mutationFn: (data) => searchSchAccByMobile(data),
-    //     onSuccess: (response) => {
-
-    //         if (response) {
-    //             setCustomername(response.data[0].id_customer?.firstname + ' ' + response.data[0]?.id_customer?.lastname);
-    //             setAddress(response.data[0]?.id_customer?.address);
-    //             handleSchemeAccount(response.schemeSummary)
-    //             setFormData(prev => ({
-    //                 ...prev,
-    //                 id_customer: response.data[0].id_customer?._id,
-    //                 mobile: response.data[0].id_customer?.mobile,
-    //             }));
-
-    //             toast.success(response.message)
-    //         }
-    //     },
-    //     onError: (error) => {
-    //         toast.error(error.response.data.message)
-    //     }
-    // });
-
+    // Fixed scheme search mutation
     const { mutate: handlesearchScheme } = useMutation({
         mutationFn: (data) => searchSchAccByMobile(data),
         onSuccess: (response) => {
-          if (!response?.data?.length) {
-            toast.error("No accounts found");
-            return;
-          }
-    
-          const eligibleAccounts = response.data.filter(
-            account => account.paidInstallments >= account.id_scheme.gift_minimum_paid_installment
-          );
-    
-          if (eligibleAccounts.length === 0) {
-            toast.error("No eligible accounts (insufficient paid installments)");
-            return;
-          }
-    
-          const account = eligibleAccounts[0];
-          setCustomername(`${account.id_customer?.firstname} ${account.id_customer?.lastname}`);
-          setAddress(account.id_customer?.address);
-          setSchId(account.id_scheme_account);
-    
-          setFormData(prev => ({
-            ...prev,
-            id_customer: account.id_customer?._id,
-            mobile: account.id_customer?.mobile,
-          }));
-    
-          handleschemeaccountbyBranch(eligibleAccounts);
-          toast.success(response.message);
+            console.log('Scheme search response:', response);
+            const accounts = response?.data;
+
+            if (!Array.isArray(accounts) || accounts.length === 0) {
+                toast.error("No accounts found");
+                return;
+            }
+
+            // Filter eligible accounts
+            const eligibleAccounts = accounts.filter(
+                (account) => {
+                    const minPaidInstallments = account.id_scheme?.gift_minimum_paid_installment || 0;
+                    return account.paidInstallments >= minPaidInstallments;
+                }
+            );
+
+            if (eligibleAccounts.length === 0) {
+                toast.error("No eligible accounts (insufficient paid installments)");
+                return;
+            }
+
+            const account = eligibleAccounts[0];
+
+            // Set customer details
+            const firstName = account.id_customer?.firstname || "";
+            const lastName = account.id_customer?.lastname || "";
+            setCustomername(`${firstName} ${lastName}`.trim());
+            setAddress(account.id_customer?.address || "");
+
+            // Set form data
+            setFormData((prev) => ({
+                ...prev,
+                id_customer: account.id_customer?._id,
+                mobile: account.id_customer?.mobile,
+            }));
+
+            // Handle scheme accounts
+            handleschemeaccountbyBranch(eligibleAccounts);
+            toast.success(response.message || "Accounts fetched successfully");
         },
         onError: (error) => {
-          toast.error(error.response?.data?.message || "Failed to fetch scheme accounts");
+            toast.error(error.response?.data?.message || "Failed to fetch scheme accounts");
         },
-      });
+    });
 
+    // Fixed scheme account handler
+    const handleschemeaccountbyBranch = (accounts) => {
+        const schemeSummary = accounts.map((account) => ({
+            value: account._id || account.id_scheme_account,
+            label: account.scheme_name,
+            Allottedgifts: account.id_scheme?.no_of_gifts || 0,
+        }));
+        setSchemeaccount(schemeSummary);
+    };
 
- 
     const { mutate: handlesearchcustomer } = useMutation({
         mutationFn: (payload) => searchcustomermobile(payload),
         onSuccess: (response) => {
             if (response) {
-                setCustomername(response.data.firstname + ' ' + response.data.lastname);
-                setAddress(response.data.address);
+                const firstName = response.data.firstname || "";
+                const lastName = response.data.lastname || "";
+                setCustomername(`${firstName} ${lastName}`.trim());
+                setAddress(response.data.address || "");
                 setFormData(prev => ({
                     ...prev,
                     id_customer: response.data._id,
@@ -389,40 +268,6 @@ function GiftHandOverForm() {
         }
     });
 
-
-    const inputChange = (e) => {
-
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
-        if (name === "id_branch") {
-            setIdbranch(value);
-        }
-    };
-
-    const handleSearchGiftCode = () => {
-
-        if (!searchGiftCode) {
-            toast.error('GiftCode Number is required!');
-            return;
-        }
-
-        if (totalGifts >= alloted_gifts && (formData.issue_type === "1" || formData.issue_type === 1)) {
-            toast.error("Gift limit reached");
-        } else {
-            handlegiftGiftCodeno(
-                {
-                    GiftCode:
-                    {
-                        search: searchGiftCode
-                    }, id_branch: formData.id_branch
-                });
-        }
-    }
-
-
-    const totalGifts = GiftCodeData.reduce((acc, curr) => acc + curr.quantity, 0);
-
-
     const { mutate: handlegiftGiftCodeno } = useMutation({
         mutationFn: (payload) => searchGiftCodenumber(payload),
         onSuccess: (response) => {
@@ -436,6 +281,164 @@ function GiftHandOverForm() {
             toast.error("Failed to fetch GiftCode data");
         },
     });
+
+    // Queries
+    const { data: branchresponse, isLoading: loadingbranch } = useQuery({
+        queryKey: ["branch"],
+        queryFn: getallbranch,
+    });
+
+    const { data: giftResponse, isLoading: loadingGifts } = useQuery({
+        queryKey: ["GiftCode", branchId],
+        queryFn: () => getallgiftInwardByBranch(branchId),
+        enabled: !!branchId
+    });
+
+    const { data: giftIssueResponse, isLoading: loadingGiftItems } = useQuery({
+        queryKey: ["giftissues", branchId],
+        queryFn: giftissuetype,
+        enabled: !!branchId
+    });
+
+    // Process query responses
+    useEffect(() => {
+        if (giftResponse?.data) {
+            const GiftCodes = giftResponse.data.map((item) => ({
+                value: (item?.id_gift?.gift_code),
+                label: `${item?.id_gift?.gift_code} - ${item.id_gift?.gift_name}`,
+            }));
+            setGiftCodeNums(GiftCodes);
+        }
+
+        if (branchresponse) {
+            const branch = branchresponse.data.map((branch) => ({
+                value: branch._id,
+                label: branch.branch_name,
+            }));
+            setBranchList(branch);
+        }
+
+        if (giftIssueResponse) {
+            const giftitem = giftIssueResponse.data.map((giftitem) => ({
+                value: giftitem.id,
+                label: giftitem.name,
+            }));
+            setIssuetype(giftitem);
+        }
+    }, [giftResponse, branchresponse, giftIssueResponse]);
+
+    // Validation
+    const validateForm = () => {
+        const errors = {};
+
+        if (formData.issue_type === "1" || formData.issue_type === 1) {
+            if (!schId) errors.id_scheme_account = 'Scheme Account is required';
+        }
+
+        if (!formData.id_branch) errors.id_branch = 'Branch is required';
+        if (!formData.mobile) errors.mobile = 'Mobile Number is required';
+        if (!formData.issue_type) errors.issue_type = 'Issue Type is required';
+
+        if (!formData.gift_issues || formData.gift_issues.length === 0) {
+            errors.gift_issues = 'No gifts selected';
+            toast.error('To Handover Gift is required!');
+        }
+
+        setFormErrors(errors);
+        return Object.keys(errors).length === 0;
+    };
+
+    // Event handlers
+    const handleSubmit = () => {
+        try {
+            setLoading(true);
+
+            let updatedFormData = { ...formData };
+
+            if (formData.issue_type === "1" || formData.issue_type === 1) {
+                updatedFormData.id_scheme_account = schId;
+            } else {
+                updatedFormData.id_scheme_account = "";
+            }
+
+            if (!validateForm()) {
+                setLoading(false);
+                return;
+            }
+
+            createGiftissuesMutate(updatedFormData);
+
+        } catch (error) {
+            setLoading(false);
+        }
+    };
+
+    const handleSearchmobile = () => {
+        if (formData.mobile === "" || !formData.mobile) {
+            toast.error('Mobile Number is required!');
+            return;
+        }
+
+        if (formData.issue_type === "1" || formData.issue_type === 1) {
+            handlesearchScheme({ value: formData.mobile, branchId: formData.id_branch })
+        } else {
+            handlesearchcustomer({ search: formData.mobile, id_branch: formData.id_branch });
+        }
+    };
+
+    const handleSchemeAcc = (value) => {
+        if (value === "1" || value === 1) {
+            setVisibleaccount(true);
+        } else {
+            setVisibleaccount(false);
+            setSchemeaccount([])
+            setSchId("")
+            setCustomername("");
+            setAddress("");
+            setAllotedGifts(0);
+        }
+        
+        // Clear customer data when changing issue type
+        if (!data) { // Only clear if not coming from navigation
+            setCustomername("");
+            setAddress("");
+        }
+    }
+
+    const handleChangeSchemeAccount = (item) => {
+        setSchId(item.value)
+        setFormData(prev => ({
+            ...prev,
+            id_scheme_account: item.value
+        }))
+        setAllotedGifts(item.Allottedgifts)
+        setGiftHis([]);
+    }
+
+    const inputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+        if (name === "id_branch") {
+            setIdbranch(value);
+        }
+    };
+
+    const handleSearchGiftCode = () => {
+        if (!searchGiftCode) {
+            toast.error('GiftCode Number is required!');
+            return;
+        }
+
+        const totalGifts = GiftCodeData.reduce((acc, curr) => acc + curr.quantity, 0);
+        if (totalGifts >= alloted_gifts && (formData.issue_type === "1" || formData.issue_type === 1)) {
+            toast.error("Gift limit reached");
+        } else {
+            handlegiftGiftCodeno({
+                GiftCode: { search: searchGiftCode },
+                id_branch: formData.id_branch
+            });
+        }
+    }
 
     const updateGiftCodeData = (GiftCodeData, giftQty = 1) => {
         if (giftQty <= 0) {
@@ -492,7 +495,6 @@ function GiftHandOverForm() {
                         qty: newQty,
                     };
                 } else {
-                    // toast.error("Gift Stock limit reached");
                     return prevFormData;
                 }
             } else {
@@ -524,48 +526,24 @@ function GiftHandOverForm() {
         setSearchGiftCode("");
     };
 
-
-
     const removeRowById = (idToRemove) => {
         setGiftCodeData((prevData) => prevData.filter((_, index) => index !== idToRemove));
-
         setFormData((prevFormData) => {
             const updatedGiftIssues = prevFormData.gift_issues.filter((_, index) => index !== idToRemove);
             return { ...prevFormData, gift_issues: updatedGiftIssues };
         });
     };
 
-
-    const handleSchemeAcc = (value) => {
-
-        if (value === "1" || value === 1) {
-            setVisibleaccount(true);
-            setCustomername("");
-            setAddress("")
-
-        } else {
-            setVisibleaccount(false);
-            setSchemeaccount([])
-            setSchId("")
-            setCustomername("");
-            setAddress("");
-            setNoGifts(null)
-
+    const handleAdd = () => {
+        setAddLoading(true);
+        if (!addGift) {
+            toast.error("No giftCode data found")
+            setAddLoading(false);
+            return;
         }
+        const giftQty = Number(formData.qty);
+        updateGiftCodeData(addGift, giftQty);
     }
-
-
-    const handleChangeSchemeAccount = (item) => {
-        setSchId(item.value)
-        setFormData(prev => ({
-            ...prev,
-            id_scheme_account: item.value
-        }))
-        setAllotedGifts(item.Allottedgifts)
-        setGiftHis([]);
-    }
-
-
 
     const handleItemsPerPageChange = (value) => {
         setItemsPerPage(value);
@@ -573,29 +551,12 @@ function GiftHandOverForm() {
     };
 
     const handlePageChange = (page) => {
-
         const pageNumber = Number(page);
         if (!pageNumber || isNaN(pageNumber) || pageNumber < 1 || pageNumber > totalPages) {
             return;
         }
-
         setCurrentPage(pageNumber);
-
     };
-
-    const handleAdd = () => {
-
-        setAddLoading(true);
-        if (!addGift) {
-            toast.error("No giftCode data found")
-            setAddLoading(false);
-        }
-        const giftQty = Number(formData.qty);
-        updateGiftCodeData(addGift, giftQty);
-        // updateFormData(addGift);
-
-    }
-
 
     const handleAddCustomer = () => {
         navigate('/managecustomers/addcustomer')
@@ -605,6 +566,7 @@ function GiftHandOverForm() {
         navigate('/gift/gifthandover')
     }
 
+    // Utility functions
     const format = (dateString) => {
         if (!dateString) return '';
         const date = new Date(dateString);
@@ -621,9 +583,9 @@ function GiftHandOverForm() {
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const year = date.getFullYear();
         return `${day}/${month}/${year}`;
-      };
+    };
 
-
+    // Table columns
     const columns = [
         {
             header: 'S.No',
@@ -641,13 +603,12 @@ function GiftHandOverForm() {
             header: "Issues Date",
             cell: (row) => format(row?.giftIssueDate),
         },
-
     ];
 
     const GiftCodecolumns = [
         {
             header: 'S.No',
-            cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
+            cell: (_, index) => index + 1,
         },
         {
             header: "Gift Name",
@@ -659,7 +620,7 @@ function GiftHandOverForm() {
         },
         {
             header: "Issue Date",
-            cell: (row) =>  formatDate(new Date()),
+            cell: (row) => formatDate(new Date()),
         },
         {
             header: "Actions",
@@ -674,15 +635,11 @@ function GiftHandOverForm() {
                 </div>
             ),
         }
-
-
-    ]
+    ];
 
     return (
         <>
             <div className="flex flex-row justify-between items-center w-full sm:order-1 sm:w-auto sm:mr-auto md:order-1 md:w-auto md:mr-auto ">
-                {/* ActiveDropdown - half width on mobile */}
-
                 <div className="w-1/2 sm:w-auto me-1 mt-2">
                     <Breadcrumb items={[{ label: "Gift" }, { label: "GiftHandover", active: true }]} />
                 </div>
@@ -694,12 +651,9 @@ function GiftHandOverForm() {
                         style={{ backgroundColor: layout_color }} >
                         + Add Customer
                     </button>
-
                 </div>
 
-                {/* Desktop-only button - appears on the right side */}
                 <div className="hidden sm:block sm:order-3 mt-2">
-
                     <button
                         className="rounded-md px-4 py-2 text-white text-nowrap hover:bg-[#034571] transition-colors "
                         onClick={handleAddCustomer}
@@ -707,7 +661,6 @@ function GiftHandOverForm() {
                         + Add Customer
                     </button>
                 </div>
-
             </div>
 
             <div className='w-full flex flex-col bg-white border-2 border-[#f2f3f8] rounded-md p-6  mt-3 overflow-y-auto scrollbar-hide gap-8'>
@@ -722,12 +675,7 @@ function GiftHandOverForm() {
                             <div className="relative">
                                 <Select
                                     options={branchList}
-                                    value={
-                                        id_branch !== "0"
-                                            ? branchList.find(branch => branch.value === id_branch) || ""
-                                            : branchList.find(branch => branch.value === formData.id_branch) || ""
-                                    }
-                                    // value={branchList.find(branch => branch.value === formData.id_branch) || branchId}
+                                    value={branchList.find(branch => branch.value === formData.id_branch) || ""}
                                     onChange={(branch) => {
                                         setFormData((prev) => ({
                                             ...prev,
@@ -735,18 +683,12 @@ function GiftHandOverForm() {
                                         }));
                                         setIdbranch(branch.value)
                                     }}
-
                                     isDisabled={id_branch !== "0"}
                                     styles={customSelectStyles(true)}
                                     isLoading={loadingbranch}
                                     placeholder="Select Branch"
                                 />
                                 {formErrors.id_branch && <span className="text-red-500 text-sm mt-1">{formErrors.id_branch}</span>}
-                                <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                                    <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
-                                        <path d="M19 9l-7 7-7-7"></path>
-                                    </svg>
-                                </div>
                             </div>
                         </div>
 
@@ -761,21 +703,12 @@ function GiftHandOverForm() {
                                             ...prev,
                                             issue_type: item.value,
                                         }));
-
                                         handleSchemeAcc(item.value);
                                     }}
-
                                     styles={customSelectStyles(true)}
                                     isLoading={loadingGiftItems}
                                     placeholder="Select scheme customer"
                                 />
-
-
-                                <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                                    <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
-                                        <path d="M19 9l-7 7-7-7"></path>
-                                    </svg>
-                                </div>
                             </div>
                             {formErrors.issue_type && <span className="text-red-500 text-sm mt-1">{formErrors.issue_type}</span>}
                         </div>
@@ -786,7 +719,7 @@ function GiftHandOverForm() {
                             </label>
                             <input
                                 type="text"
-                                value={formData.mobile}
+                                value={formData.mobile || ""}
                                 onChange={(e) => {
                                     const value = e.target.value;
                                     setFormData((prev) => ({
@@ -804,11 +737,9 @@ function GiftHandOverForm() {
                                     if (e.key === "Enter") {
                                         e.preventDefault();
                                         handleSearchmobile()
-                                      
                                     }
                                 }}
                             />
-                            {/* Search Icon */}
                             <div
                                 onClick={handleSearchmobile}
                                 className="absolute flex items-center justify-center cursor-pointer right-[0%] rounded-r-lg top-[70%] -translate-y-1/2 w-10 md:h-[40px] md:top-[48px] h-[18%] sm:right-0 sm:top-[68%] lg:right-[0%]"
@@ -819,6 +750,7 @@ function GiftHandOverForm() {
                                     <Search size={15} className="text-black" />
                                 )}
                             </div>
+                            {formErrors.mobile && <span className="text-red-500 text-sm mt-1">{formErrors.mobile}</span>}
                         </div>
 
                         {visibleaccount === true && (
@@ -830,15 +762,9 @@ function GiftHandOverForm() {
                                         value={schemeaccount.find(item => item.value === schId) || ""}
                                         onChange={(item) => handleChangeSchemeAccount(item)}
                                         styles={customSelectStyles(true)}
-                                        // isLoading={loadingSchAcc}
                                         placeholder="Select SchemeAccount Type"
                                     />
                                     {formErrors.id_scheme_account && <span className="text-red-500 text-sm mt-1">{formErrors.id_scheme_account}</span>}
-                                    <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                                        <svg className="h-4 w-4 text-gray-400" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="black">
-                                            <path d="M19 9l-7 7-7-7"></path>
-                                        </svg>
-                                    </div>
                                 </div>
                             </div>
                         )}
@@ -896,7 +822,7 @@ function GiftHandOverForm() {
                                 value={GiftCodeNums.find(option => option.value === searchGiftCode) || ""}
                                 onChange={(selectedOption) => {
                                     setSearchGiftCode(selectedOption.value);
-                                    handleSearchGiftCode()
+                                    // handleSearchGiftCode()
                                 }}
 
                                 components={customComponents}
