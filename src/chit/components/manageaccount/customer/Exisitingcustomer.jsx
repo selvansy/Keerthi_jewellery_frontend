@@ -225,12 +225,8 @@ const Exisitingcustomer = () => {
             </div>
             <div className="flex flex-col gap-2 justify-center items-center">
               <img 
-                src={`${data.customerDetails?.pathUrl}${data.customerDetails?.profileImage}`} 
+                src={ data.customerDetails?.profileImage ? `${data.customerDetails?.pathUrl}${data.customerDetails?.profileImage}` : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"} 
                 className="w-24 h-24 border rounded-full object-cover items-center" 
-                alt="Profile"
-                onError={(e) => {
-                  e.target.src = 'https://via.placeholder.com/150'; // Fallback image
-                }}
               />
               <p className="text-bold">{data.customerDetails?.customerName}</p>
             </div>
