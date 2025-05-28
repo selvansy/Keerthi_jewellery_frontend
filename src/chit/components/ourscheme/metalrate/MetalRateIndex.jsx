@@ -336,7 +336,8 @@ function MetalRateIndex({refresh}) {
                       styles={customStyles(true)}
                       isLoading={loadingbranch}
                       placeholder="Select Branch"
-                      className="border-2 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent border-[#F2F2F9]"
+                      className="mt-1"
+                      // className="border-2 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent border-[#F2F2F9]"
                     />
                     {formErrors.id_branch && (
                       <span className="text-red-500 text-sm mt-1">

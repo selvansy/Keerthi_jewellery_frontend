@@ -39,10 +39,10 @@ import { color, hover } from "framer-motion";
  export const customStyles = (isReadOnly) => ({
     control: (base, state) => ({
       ...base,
-      minHeight: "44px", //42px
+      minHeight: "42px", //42px
       backgroundColor: "white",
       color:"#232323",
-      fontWeight:600,
+      // fontWeight:600,
       border: state.isFocused ? "1px solid #f2f2f9" : "1px solid #f2f2f9",
       boxShadow: state.isFocused ? "0 0 0 1px #004181" : "none",
       borderRadius: "0.5rem",
