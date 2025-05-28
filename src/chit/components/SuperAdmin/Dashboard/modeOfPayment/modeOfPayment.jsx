@@ -6,7 +6,7 @@ import {
 } from "../../../../api/Endpoints";
 import { useMutation } from "@tanstack/react-query";
 import { customSelectStyles } from "../../../Setup/purity";
-import { CalendarDays } from "lucide-react";
+import { CalendarDays, CalendarSearch } from "lucide-react";
 import { customStyles } from "../../../ourscheme/scheme/AddScheme";
 const getStartOfDay = (date) => {
   const newDate = new Date(date);
@@ -48,7 +48,7 @@ const options = [
 
 const CustomControl = (props) => (
   <components.Control {...props}>
-    <CalendarDays className="ml-2 mr-2 text-gray-500 w-4 h-4" />
+    <CalendarSearch className="ml-2 mr-2 text-gray-500 w-4 h-4" />
     {props.children}
   </components.Control>
 );

@@ -69,7 +69,7 @@ function Dashboard() {
   });
 
   return (
-    <div className="px-4">
+    <div className="px-1 -ml-2">
       {/* branch selection */}
       <div className="flex justify-end">
         {accessBranch == "0" && branch.length > 0 ? (

@@ -31,7 +31,7 @@ function NotificationCard() {
           <img src={whatsapp} alt="whatsapp" className="h-[40px] w-[40px]" />
         </div>
         <div className="flex flex-col py-[8px] ms-1">
-          <h5 className="text-xl font-semibold">
+          <h5 className="text-xl font-bold">
             {topupData?.WhatsApp || 0}
           </h5>
           <h5 className="text-[#6C7086] text-md   ">WhatsApp Limit</h5>
@@ -43,7 +43,7 @@ function NotificationCard() {
           <img src={sms} alt="sms" className="h-[40px] w-[40px]" />
         </div>
         <div className="flex flex-col py-[8px] ms-1">
-          <h5 className="text-xl font-semibold">{topupData?.SMS || 0}</h5>
+          <h5 className="text-xl font-bold">{topupData?.SMS || 0}</h5>
           <h5 className="text-[#6C7086] text-md   ">SMS Limit</h5>
         </div>
       </div>
