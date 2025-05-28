@@ -438,7 +438,13 @@ const Scheme = () => {
         header: "Metal Name",
         cell: (row) => row.metal_name,
       },
-      { header: "Installments", cell: (row) => row?.total_installments },
+      { header: "Installments", cell: (row) => {
+        if (row.scheme_type !== 10 && row.scheme_type !== 14) {
+          return row?.maturity_period;
+        } else {
+          return row?.noOfDays;
+        }
+      }, },
       {
         header: "Maturity Month",
         cell: (row) => {
@@ -448,6 +454,10 @@ const Scheme = () => {
             return row?.noOfDays;
           }
         },
+      },
+      {
+        header: "Display Order",
+        cell: (row) => row?.classification_order || "-"
       },
       {
         header: "Scheme Type",

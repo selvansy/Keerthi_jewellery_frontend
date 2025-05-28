@@ -3,7 +3,7 @@ import Select from "react-select";
 import { useFormik } from "formik";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
-import { CalendarDays, ChevronDown, ChevronUp } from "lucide-react";
+import { CalendarDays, ChevronDown, ChevronUp,Search } from "lucide-react";
 import Calender from "../../../../assets/icons/calender.svg";
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
@@ -112,8 +112,10 @@ const AddSchemePayment = () => {
       ...provided,
       paddingTop: 0,
       paddingBottom: 0,
-      maxHeight: showWeightInput  ? "130px" : "209px",
-      maxHeight: [2,5,6].includes(formik.values.scheme_type) ? "130px" : "209px",
+      maxHeight: showWeightInput ? "130px" : "209px",
+      maxHeight: [2, 5, 6].includes(formik.values.scheme_type)
+        ? "130px"
+        : "209px",
     }),
     option: (provided, state) => ({
       ...provided,
@@ -992,7 +994,7 @@ const AddSchemePayment = () => {
           </p>
 
           <div className="flex flec-row gap-5">
-          <button
+            <button
               type="submit"
               disabled={isLoading}
               className="w-20 h-9 bg-blue-900 text-white rounded-md hover:bg-blue-800 flex justify-center items-center"
@@ -1061,7 +1063,7 @@ const AddSchemePayment = () => {
                 )}
 
                 {/* Mobile number search */}
-                <div>
+                <div className="relative">
                   <label className="block text-sm font-medium mb-1">
                     Search AC No/ Mob No
                     <span className="text-red-400">*</span>
@@ -1072,7 +1074,7 @@ const AddSchemePayment = () => {
                     value={formik.values.mobile || ""}
                     onChange={handleInputChange}
                     onPaste={handlePaste}
-                    className="w-full border-2 border-[#f2f3f8] rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                    className="w-full border-2 border-[#f2f3f8] rounded-md p-2 pr-10 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                     placeholder="Enter Mobile No or Scheme AC No (e.g., F-FLMVC4319)"
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
@@ -1081,6 +1083,9 @@ const AddSchemePayment = () => {
                       }
                     }}
                   />
+                  <span className="absolute right-0 top-3 w-9 h-full px-3 flex items-center justify-center text-black">
+                    <Search className="w-6 h-6 hover:cursor-pointer" onClick={()=>handleSearch()} />
+                  </span>
                 </div>
 
                 {/* Scheme account selection */}
@@ -1565,7 +1570,10 @@ const AddSchemePayment = () => {
                           disabled
                           value={
                             selectedScheme?.id_classification?.order === 1 &&
-                            `${formatDecimal(formik.values.payment_amount / formik.values.metal_rate)} g`
+                            `${formatDecimal(
+                              formik.values.payment_amount /
+                                formik.values.metal_rate
+                            )} g`
                           }
                           className="border-2 border-[#f2f3f8] rounded-md p-2 w-full bg-gray-100"
                         />
@@ -1574,7 +1582,7 @@ const AddSchemePayment = () => {
 
                     {/* Payment mode */}
                     <div
-                      className={`flex flex-col ${(!showWeightInput) && "mt-4"} `}
+                      className={`flex flex-col ${!showWeightInput && "mt-4"} `}
                     >
                       <label className="block text-sm font-medium mb-1">
                         Payment Mode<span className="text-red-400"> *</span>
@@ -1643,7 +1651,12 @@ const AddSchemePayment = () => {
 
                     {/* ITR/UTR ID */}
                     <div className="flex flex-col">
-                      <label className={`block text-sm font-medium mb-1 ${[2,5,6].includes(formik.values.scheme_type) && "mt-4"}`}>
+                      <label
+                        className={`block text-sm font-medium mb-1 ${
+                          [2, 5, 6].includes(formik.values.scheme_type) &&
+                          "mt-4"
+                        }`}
+                      >
                         ITR/UTR ID
                       </label>
                       <input
