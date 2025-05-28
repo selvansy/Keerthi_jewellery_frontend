@@ -8,6 +8,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
 import { useFormik } from "formik";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const Exisitingcustomer = () => {
   const customStyles = (isReadOnly) => ({
@@ -95,8 +96,9 @@ const Exisitingcustomer = () => {
         setCustomer(response?.data?.customerDetails);
         toast.success(response?.data?.message);
     },
-    onError: () => {
-      toast.error(response.message);
+    onError: (error) => {
+      console.log(error)
+      toast.error(error.response?.data?.message);
     },
   });
 
