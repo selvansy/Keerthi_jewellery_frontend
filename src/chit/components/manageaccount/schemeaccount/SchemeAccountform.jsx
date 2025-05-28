@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { CalendarDays, CloudFog, Search } from "lucide-react";
@@ -351,6 +351,25 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
     fixed: 0,
   });
 
+  //    const prevFormData = useRef(formData);
+
+  // useEffect(() => {
+  //   const prev = prevFormData.current;
+  //   const changedFields = Object.keys(formData).filter(
+  //     key => formData[key] !== prev[key]
+  //   );
+
+  //   if (changedFields.length > 0) {
+  //     console.log("🔄 Changed fields:");
+  //     changedFields.forEach((key) => {
+  //       console.log(`→ ${key}:`, prev[key], "→", formData[key]);
+  //     });
+  //   }
+
+  //   // Update ref for next comparison
+  //   prevFormData.current = formData;
+  // }, [formData]);
+
   const { data: branchresponse, isLoading: branchloading } = useQuery({
     queryKey: ["branch"],
     queryFn: getallbranch,
@@ -497,6 +516,8 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
   // };
 
   const handleSearchmobile = async () => {
+    console.log('handle search');
+
     try {
       if (Number(searchmobile) === Number(cusData.mobile)) {
         return toast.error("Self referral is not allowed");
@@ -576,11 +597,30 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
   // };
 
   const filterInputchange = (e) => {
-    const { name, value } = e.target;
-console.log('val ', value);
+    console.log('calling', e.target.name);
 
-    setFormData((prev) => ({ ...prev, [name]: value }));
-console.log(formData[name]);
+    const { name, value } = e.target;
+    console.log('val ', value);
+
+    // setFormData((prev) => {
+    //   console.log('prev', prev);
+    //   console.log('Updated', { ...prev, [name]: value });
+
+    //   return { ...prev, [name]: value }}
+    //   );
+    const newValue = value === "" ? "" : isNaN(value) ? value : +value;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: newValue,
+    }));
+
+    //   setFormData((prev) => ({
+    //   ...prev,
+    //   [name]: value,
+    // }));
+
+    console.log(name, formData[name]);
 
     if (name === "referral_type") {
       setFormData((prev) => ({ ...prev, [name]: value }));
@@ -610,7 +650,7 @@ console.log(formData[name]);
         let wtValue = emptyToZero(value);
         formData.min_weight = emptyToZero(formData.min_weight);
         formData.max_weight = emptyToZero(formData.max_weight);
-        
+
         setTimeout(() => {
 
           if (wtValue === "") {
@@ -632,12 +672,13 @@ console.log(formData[name]);
       let amtValue = emptyToZero(value);
       formData.min_amount = emptyToZero(formData.min_amount);
       formData.max_amount = emptyToZero(formData.max_amount);
+      console.log('amtValue', amtValue);
 
       setErrors((prevState) => {
         const newErrors = { ...prevState };
-        console.log(formData.min_amount);
+        console.log('formData.min_amount ', formData.min_amount);
         console.log(formData.max_amount);
-        setTimeout(() => {
+        // setTimeout(() => {
 
         if (amtValue === "") {
           delete newErrors.amount;
@@ -648,13 +689,13 @@ console.log(formData[name]);
         } else {
           delete newErrors.amount;
         }
-        }, 500);
+        // }, 500);
 
         return newErrors;
       });
     }
   };
-  console.log(formData);
+  // console.log(formData);
 
   useEffect(() => {
     handleschemebyid(formData.id_scheme);
@@ -785,19 +826,19 @@ console.log(formData[name]);
       formData.maturity_period &&
       formData.installment_type
     ) {
-    if(formData.scheme_type != 10 && formData.scheme_type != 14){
-      calculateMaturityDate(
-        formData.start_date,
-        formData.maturity_period,
-        formData.installment_type
-      )
-    }else{
-      console.log("ker")
-      digigoldandsilverMaturity(
-        formData.start_date,
-        formData.maturity_period
-      )
-    }
+      if (formData.scheme_type != 10 && formData.scheme_type != 14) {
+        calculateMaturityDate(
+          formData.start_date,
+          formData.maturity_period,
+          formData.installment_type
+        )
+      } else {
+        console.log("ker")
+        digigoldandsilverMaturity(
+          formData.start_date,
+          formData.maturity_period
+        )
+      }
     }
   }, [
     formData.id_scheme,
@@ -1001,12 +1042,34 @@ console.log(formData[name]);
 
   const inputHeight = "42px";
 
+  const updateAmtWtValue = (payload) => {
+    const { weight, amount } = payload;
+console.log('selectedClassification', selectedClassification, 'weight', weight, 'amount', amount);
+
+    if (selectedClassification === 2 || selectedClassification === 3) {
+      if (weight !== 0) {
+        payload.flexFixed = weight;
+        payload.weight = 0;
+        payload.amount = 0;
+      } else if (amount !== 0) {
+        payload.flexFixed = amount;
+        payload.weight = 0;
+        payload.amount = 0;
+      }
+    }
+    return payload;
+  }
   const onSubmit = (e) => {
     e.preventDefault();
 
+
     if (isValidForm()) {
+      console.log('formData', formData);
+      let payload = updateAmtWtValue(formData);
+      console.log('payload', payload);
+      
       const updatedFormData = {
-        ...formData,
+        ...payload,
         referral_id: referralId,
         scheme_count_number: acNumber,
       };
@@ -1150,7 +1213,8 @@ console.log(formData[name]);
         }));
       }
     }
-  }, [formData.weight, formData.amount, selectedClassification]);
+  }, [selectedClassification]);
+  // }, [formData.weight, formData.amount, selectedClassification]);
 
   useEffect(() => {
     if (selectedScheme === "Fixed" && formData.id_scheme) {
@@ -1166,7 +1230,7 @@ console.log(formData[name]);
     }
   }, [formData.id_scheme, selectedScheme, schemefilter]);
 
-  console.log(errors);
+  // console.log(errors);
 
   return (
     <form onSubmit={onSubmit}>
@@ -1451,6 +1515,7 @@ console.log(formData[name]);
                       Amount<span className="text-red-400"> * </span>
                       <span className="text-gray-400 text-sm">{`(min: ${formData.min_amount} - max: ${formData.max_amount})`}</span>
                     </label>
+                    {/* <p>Form data amount : {formData.amount}</p> */}
                     <input
                       type="number"
                       name="amount"
