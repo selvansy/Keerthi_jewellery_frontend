@@ -71,7 +71,7 @@ function HeaderDashborder({ id_branch }) {
                 <>
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex flex-col items-start">
-                      <p className="text-xl font-semibold">{card.sub_Value}</p>
+                      <p className="text-xl font-bold">{card.sub_Value}</p>
                       <p className="text-[#6C7086] text-sm font-medium">
                         {card.subTitle}
                       </p>
@@ -87,7 +87,7 @@ function HeaderDashborder({ id_branch }) {
                 </>
               ) : (
                 <>
-                  <p className="text-xl font-semibold">
+                  <p className="text-xl font-bold">
                     {card.title == "Total Payment"
                       ? formatNumber({ value: card.value, decimalPlaces: 0 })
                       : card.value}

@@ -103,12 +103,12 @@ function Dashboard() {
       </div>
 
       {/* top section */}
-      <div className="mb-[20px]">
+      <div className="mb-[10px]">
         <HeaderDashborder id_branch={selectedBranch} />
       </div>
 
       {/* Account Review and account status */}
-      <div className="grid grid-cols-1 xl:grid-cols-7 gap-4 ">
+      <div className="grid grid-cols-1 xl:grid-cols-7 gap-2 ">
         <div className="md:col-span-4 mr-3 ">
           <AccountReview id_branch={selectedBranch} />
         </div>

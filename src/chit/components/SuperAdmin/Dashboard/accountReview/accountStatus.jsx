@@ -181,13 +181,11 @@ const AccountStatus = ({ id_branch }) => {
     <div className="border-2 border-[#F5F5F5] p-5 rounded-[20px] lg:col-span-2 bg-white text-[#232323]">
       <div className="flex justify-between items-center mb-8">
         <h2 className="text-gray-800 font-bold text-lg">Account</h2>
-
         <Select
           options={options}
           value={selectedOption}
           onChange={handleDateChange}
           defaultValue={options[0]}
-          
           // styles={{
           //   control: (base) => ({
           //     ...base,
@@ -336,7 +334,7 @@ const AccountStatus = ({ id_branch }) => {
           <img
             src={AddAcc}
             alt={AddAcc}
-            className="h-[25px] w-[25px] me-[18px]"
+            className="h-[20px] w-[20px] me-[18px]"
           />
           <button className="text-white">Add Accounts</button>
         </div>

@@ -593,10 +593,10 @@ const Base = ({ renderContent: RenderContent }) => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="fixed top-0 right-0 lg:left-64 left-0 bg-[#FBFCF8] border-b z-50 h-16 ">
+      <header className="fixed top-0 right-0 lg:left-64 left-0 bg-[#FFFFFF] border-b z-50 h-16 ">
         <div className="flex justify-between items-center h-full px-4">
           {/* Left side of header with burger menu and section title */}
-          <div className="flex flex-row gap-4">
+          <div className="flex flex-rodw gap-4">
             <div className="flex items-center">
               {/* Burger menu button - positioned on the left for mobile */}
               <button
