@@ -40,9 +40,9 @@ export const rewardType = [
 ]
 
 export const bonusTypeOptions = [
-    { id:1, value: "installment-wise", label: "Installment Wise" },
-    { id:2, value: "date-wise", label: "Date Wise" },
-    { id:3, value: "amount-wise", label: "Amount Wise" },
+    { id:1, value: "installment-wise", label: "Installment Wise" , code: 'Installment'},
+    { id:2, value: "date-wise", label: "Date Wise" , code: 'Date'},
+    { id:3, value: "amount-wise", label: "Amount Wise" , code: "Amount"},
   ];
 
 export const entryTypeOptions = [
