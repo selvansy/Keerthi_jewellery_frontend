@@ -41,7 +41,7 @@ export const withMobileNumberValidation = (Component, maxLength = 10) => {
 };
 
 export const emptyToZero = (value) => {
-  if (value === undefined || value === null || value === "" || typeof value === "string") {
+  if (value === undefined || value === null || value === "" ) {
     return 0.00;
   }
 

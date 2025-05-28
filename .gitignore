@@ -26,4 +26,5 @@ backup.jsx
 *.njsproj
 *.sln
 *.sw?
+frontend.zip
 .vercel

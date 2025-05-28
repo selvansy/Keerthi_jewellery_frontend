@@ -27,6 +27,7 @@ import { openModal } from "../../../../redux/modalSlice";
 import { closeModal } from "../../../../redux/modalSlice";
 import { eventEmitter } from "../../../../utils/EventEmitter";
 import Modal from "../../common/Modal";
+import { emptyToZero } from "../../../utils/commonFunction";
 
 export function ExistingCustomer({
   setCusData,
@@ -204,15 +205,15 @@ export function ExistingCustomer({
           maxLength={"10"}
           className="border-2 border-[#f2f3f8] rounded-md p-2  focus:border-transparent"
           placeholder="Enter Here"
-          // onKeyDown={(e) => {
-          //   if (e.key === "Enter") {
-          //     e.preventDefault();
-          //     handlesearchcustomer({
-          //       id_branch: formData.id_branch,
-          //       search_mobile: formData.mobile,
-          //     });
-          //   }
-          // }}
+        // onKeyDown={(e) => {
+        //   if (e.key === "Enter") {
+        //     e.preventDefault();
+        //     handlesearchcustomer({
+        //       id_branch: formData.id_branch,
+        //       search_mobile: formData.mobile,
+        //     });
+        //   }
+        // }}
         />
 
         {/* Search Icon */}
@@ -512,8 +513,8 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
         );
 
         if (data && !data.data) {
-          console.log("first");
-          return toast.error("No customer found or deleted customer");
+          console.log("first")
+          return toast.error("No customer found or deleted customer")
         }
 
         setReferralName(`${data?.data?.firstname} ${data.data.lastname}`);
@@ -576,8 +577,10 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
 
   const filterInputchange = (e) => {
     const { name, value } = e.target;
+console.log('val ', value);
 
     setFormData((prev) => ({ ...prev, [name]: value }));
+console.log(formData[name]);
 
     if (name === "referral_type") {
       setFormData((prev) => ({ ...prev, [name]: value }));
@@ -604,33 +607,48 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
       setErrors((prevState) => {
         const newErrors = { ...prevState };
 
-        if (value === "") {
-          delete newErrors.weight;
-        } else if (value < formData.min_weight) {
-          newErrors.weight = "Weight can't be less than min weight";
-        } else if (value > formData.max_weight) {
-          newErrors.weight = "Weight can't be more than max weight";
-        } else {
-          delete newErrors.weight;
-        }
+        let wtValue = emptyToZero(value);
+        formData.min_weight = emptyToZero(formData.min_weight);
+        formData.max_weight = emptyToZero(formData.max_weight);
+        
+        setTimeout(() => {
+
+          if (wtValue === "") {
+            delete newErrors.weight;
+          } else if (wtValue < formData.min_weight) {
+            newErrors.weight = "Weight can't be less than min weight";
+          } else if (wtValue > formData.max_weight) {
+            newErrors.weight = "Weight can't be more than max weight";
+          } else {
+            delete newErrors.weight;
+          }
+        }, 500);
 
         return newErrors;
       });
     }
 
     if (name === "amount" && selectedClassification === 3) {
+      let amtValue = emptyToZero(value);
+      formData.min_amount = emptyToZero(formData.min_amount);
+      formData.max_amount = emptyToZero(formData.max_amount);
+
       setErrors((prevState) => {
         const newErrors = { ...prevState };
+        console.log(formData.min_amount);
+        console.log(formData.max_amount);
+        setTimeout(() => {
 
-        if (value === "") {
+        if (amtValue === "") {
           delete newErrors.amount;
-        } else if (value < formData.min_amount) {
+        } else if (amtValue < formData.min_amount) {
           newErrors.amount = "Amount can't be less than min amount";
-        } else if (value > formData.max_amount) {
+        } else if (amtValue > formData.max_amount) {
           newErrors.amount = "Amount can't be more than max amount";
         } else {
           delete newErrors.amount;
         }
+        }, 500);
 
         return newErrors;
       });
@@ -640,7 +658,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
 
   useEffect(() => {
     handleschemebyid(formData.id_scheme);
-  }, [formData.id_scheme]);
+  }, [formData.id_scheme])
 
   // const handleschemebyid = async (id) => {
   //   try {
@@ -1285,12 +1303,12 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
               value={
                 schemefilter.find((scheme) => scheme._id === formData.id_scheme)
                   ? {
-                      value: formData.id_scheme,
-                      label:
-                        schemefilter.find(
-                          (scheme) => scheme._id === formData.id_scheme
-                        )?.scheme_name || "",
-                    }
+                    value: formData.id_scheme,
+                    label:
+                      schemefilter.find(
+                        (scheme) => scheme._id === formData.id_scheme
+                      )?.scheme_name || "",
+                  }
                   : null
               }
               onChange={(selectedOption) => {
@@ -1376,20 +1394,19 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
                     ...prev,
                     ...([12, 3, 4].includes(prev.scheme_type)
                       ? {
-                          weight: newValue,
-                          amount: newValue ? newValue * metalRate : 0,
-                        }
+                        weight: newValue,
+                        amount: newValue ? newValue * metalRate : 0,
+                      }
                       : {
-                          amount: newValue,
-                          weight: 0,
-                        }),
+                        amount: newValue,
+                        weight: 0,
+                      }),
                   }));
                 }}
-                placeholder={`Select ${
-                  [12, 3, 4].includes(formData.scheme_type)
-                    ? "Weight"
-                    : "Amount"
-                }`}
+                placeholder={`Select ${[12, 3, 4].includes(formData.scheme_type)
+                  ? "Weight"
+                  : "Amount"
+                  }`}
               />
             ) : (
               <div className="border-2 border-[#f2f3f8] rounded-md p-2 bg-gray-100 text-gray-500">
