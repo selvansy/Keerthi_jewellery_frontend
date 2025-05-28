@@ -188,7 +188,7 @@ function AccountReview({id_branch}) {
           >
             <img src={data.img} alt={data.title} className="h-10 w-10 ml-3" />
             <div className="flex flex-col items-start px-[12px]">
-              <p className="text-xl font-semibold  pt-[24px] pb-[8px] ">
+              <p className="text-xl font-bold  pt-[24px] pb-[8px] ">
                 {data.value}
               </p>
               <p className="text-[#6C7086] text-sm font-medium pt-[5px]">
