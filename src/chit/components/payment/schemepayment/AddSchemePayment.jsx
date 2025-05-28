@@ -1017,6 +1017,19 @@ const AddSchemePayment = () => {
     }
   };
 
+  const [weightSaved, setWeightSaved] = useState(0);
+
+  useEffect(() => {
+    const { payment_amount, metal_rate, scheme_type } = formik.values;
+  
+    if ([2, 5, 6].includes(scheme_type) && payment_amount && metal_rate && Number(metal_rate) !== 0) {
+      setWeightSaved(Number(payment_amount) / Number(metal_rate));
+    } else {
+      setWeightSaved(0);
+    }
+  }, [formik.values.payment_amount, formik.values.metal_rate, formik.values.scheme_type, selectedScheme]);
+  
+
   return (
     <>
       <form
@@ -1613,12 +1626,9 @@ const AddSchemePayment = () => {
                         <input
                           type="text"
                           disabled
-                          value={
-                            selectedScheme?.id_classification?.order === 1 &&
-                            `${formatDecimal(
-                              formik.values.payment_amount /
-                                formik.values.metal_rate
-                            )} g`
+                          value={ `${formatDecimal(
+                                weightSaved
+                                )}`
                           }
                           className="border-2 border-[#f2f3f8] rounded-md p-2 w-full bg-gray-100"
                         />
