@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
 import Select, { components } from "react-select";
-import { MoreHorizontal } from "lucide-react";
+import { CalendarSearch, MoreHorizontal } from "lucide-react";
 import { CalendarDays } from "lucide-react";
 import AddAcc from "../../../../../assets/dashboard/addAcc.svg";
 import { useNavigate } from "react-router-dom";
 import { accountStats } from "../../../../api/Endpoints";
 import { useMutation } from "@tanstack/react-query";
+import { customStyles } from "../../../ourscheme/scheme/AddScheme";
 const CustomControl = (props) => (
   <components.Control {...props}>
-    <CalendarDays className="ml-2 mr-2 text-gray-500 w-4 h-4" />
+    <CalendarSearch className="ml-4 mr-2 text-[#232323] w-5 h-5" />
     {props.children}
   </components.Control>
 );
@@ -177,29 +178,31 @@ const AccountStatus = ({ id_branch }) => {
 
   const navigate = useNavigate();
   return (
-    <div className="border-2 border-[#F5F5F5] p-6 rounded-lg lg:col-span-2 bg-white">
+    <div className="border-2 border-[#F5F5F5] p-5 rounded-[20px] lg:col-span-2 bg-white text-[#232323]">
       <div className="flex justify-between items-center mb-8">
-        <h2 className="text-gray-800 font-semibold text-xl">Account</h2>
+        <h2 className="text-gray-800 font-bold text-lg">Account</h2>
 
         <Select
           options={options}
           value={selectedOption}
           onChange={handleDateChange}
           defaultValue={options[0]}
-          styles={{
-            control: (base) => ({
-              ...base,
-              backgroundColor: "white",
-              border: "2px solid #f2f3f8",
-              borderRadius: "8px",
-              borderColor: "#F5F5F5",
-              padding: "2px",
-              cursor: "pointer",
-            }),
-            indicatorSeparator: () => ({
-              display: "none",
-            }),
-          }}
+          
+          // styles={{
+          //   control: (base) => ({
+          //     ...base,
+          //     backgroundColor: "white",
+          //     border: "2px solid #f2f3f8",
+          //     borderRadius: "8px",
+          //     borderColor: "#F5F5F5",
+          //     padding: "2px",
+          //     cursor: "pointer",
+          //   }),
+          //   indicatorSeparator: () => ({
+          //     display: "none",
+          //   }),
+          // }}
+          styles={customStyles(true)}
           components={{ Control: CustomControl }}
         />
       </div>
@@ -263,7 +266,7 @@ const AccountStatus = ({ id_branch }) => {
             {hoveredSegment ? (
               <>
                 <span className="text-sm text-gray-500">{hoveredSegment}</span>
-                <span className="text-4xl font-medium text-gray-400">
+                <span className="text-xl font-medium text-gray-400">
                   {
                     statusData.find((item) => item.label === hoveredSegment)
                       ?.percentage
@@ -273,7 +276,7 @@ const AccountStatus = ({ id_branch }) => {
             ) : (
               <>
                 <span className="text-sm text-gray-500">Total</span>
-                <span className="text-4xl font-medium text-gray-400">
+                <span className="text-xl font-medium text-gray-400">
                   {totalAccounts.percentage}
                 </span>
               </>

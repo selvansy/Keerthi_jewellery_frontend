@@ -9,14 +9,15 @@ import receiveAmt from "../../../../../assets/dashboard/receivedAmt.svg";
 import receiveWgt from "../../../../../assets/dashboard/receivedWgt.svg";
 import Select, { components } from "react-select";
 import { customSelectStyles } from "../../../Setup/purity";
-import { CalendarDays } from "lucide-react";
+import { CalendarDays, CalendarSearch } from "lucide-react";
 import { formatDecimal, formatNumber } from "../../../../utils/commonFunction";
 import { getAccountReview } from "../../../../api/Endpoints";
 import { useMutation } from "@tanstack/react-query";
+import { customStyles } from "../../../ourscheme/scheme/AddScheme";
 
 const CustomControl = (props) => (
   <components.Control {...props}>
-    <CalendarDays className="ml-2 mr-2 text-gray-500 w-4 h-4" />
+    <CalendarSearch className="ml-4 mr-2 text-[#232323] w-5 h-5" />
     {props.children}
   </components.Control>
 );
@@ -160,11 +161,11 @@ function AccountReview({id_branch}) {
   };
 
   return (
-    <div className="bg-white rounded-lg p-5 lg:col-span-3 border-2 border-[#F5F5F5]">
+    <div className="bg-white rounded-[20px] p-5 lg:col-span-3 border-2 border-[#F5F5F5] text-[#232323]">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="font-medium text-xl">Account Overview</h2>
+        <h2 className="font-bold text-lg">Account Overview</h2>
         <div className="flex items-center gap-2">
-          <div className="text-[#004181]">
+          <div className="text-[#232323]">
             <Select
               options={options}
               value={selectedOption}
@@ -172,7 +173,7 @@ function AccountReview({id_branch}) {
               placeholder="Select Date"
               className="react-select-container"
               classNamePrefix="react-select"
-              styles={customSelectStyles(true)}
+              styles={customStyles(true)}
               components={{ Control: CustomControl }}
             />
           </div>
@@ -183,11 +184,11 @@ function AccountReview({id_branch}) {
         {accountData.map((data, index) => (
           <div
             key={index}
-            className="py-[20px] rounded-lg border-2 border-[#F0F7FE]"
+            className="py-[20px] rounded-[20px] border-2 border-[#F0F7FE]"
           >
-            <img src={data.img} alt={data.title} className="h-12 w-[70px] " />
+            <img src={data.img} alt={data.title} className="h-10 w-10 ml-3" />
             <div className="flex flex-col items-start px-[12px]">
-              <p className="text-2xl font-semibold  pt-[24px] pb-[8px] ">
+              <p className="text-xl font-semibold  pt-[24px] pb-[8px] ">
                 {data.value}
               </p>
               <p className="text-[#6C7086] text-sm font-medium pt-[5px]">

@@ -24,6 +24,7 @@ import { openModal } from "../../../../redux/modalSlice";
 import Down from "../../../../assets/down.svg";
 import UP from "../../../../assets/up.svg";
 import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
+import { customStyles } from "../scheme/AddScheme";
 
 function MetalRateIndex({refresh}) {
   const [purityData, setPurityData] = useState([]);
@@ -332,10 +333,10 @@ function MetalRateIndex({refresh}) {
                         ) || branch
                       }
                       onChange={handleChange}
-                      styles={customSelectStyles(true)}
+                      styles={customStyles(true)}
                       isLoading={loadingbranch}
                       placeholder="Select Branch"
-                      className="border-1 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent border-[#F2F2F9]"
+                      className="border-2 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent border-[#F2F2F9]"
                     />
                     {formErrors.id_branch && (
                       <span className="text-red-500 text-sm mt-1">

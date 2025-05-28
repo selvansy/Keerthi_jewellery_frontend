@@ -75,7 +75,8 @@ textarea::placeholder {
   color:#6C7086;
    font-size: 14px;
 }
- 
+
+
 select {
    color:#6C7086;
     font-size: 14px;
@@ -101,3 +102,15 @@ select {
 label{
   font-size: 14px !important;
 }
+
+
+.infocus:focus {
+  box-shadow: 0 0 0 1px #004181;
+  outline: none;
+}
+
+input:focus{
+  box-shadow: 0 0 0 1px #004181;
+  outline: none;
+}
+  

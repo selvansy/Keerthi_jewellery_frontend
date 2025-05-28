@@ -55,7 +55,7 @@ const PayableDetails = ({
                 onChange={formik.handleChange}
                 onWheel={(e) => e.target.blur()}
                 onBlur={formik.handleBlur}
-                className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-1 focus:ring-[#004181] focus:border-transparent"
                 placeholder="Enter Min Weight"
                 style={{ height: inputHeight }}
               />
@@ -81,7 +81,7 @@ const PayableDetails = ({
                 onWheel={(e) => e.target.blur()}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-1 focus:ring-[#004181] focus:border-transparent"
                 placeholder="Enter Max Weight"
                 style={{ height: inputHeight }}
               />
@@ -118,12 +118,13 @@ const PayableDetails = ({
                 value={formik.values.min_amount}
                 onChange={(e) => {
                   if (e.target.value.length <= 11) {
+                    // focus:ring-1 custom-height focus:ring-[#004181] outline-none
                     formik.handleChange(e);
                   }
                 }}
                 onWheel={(e) => e.target.blur()}
                 onBlur={formik.handleBlur}
-                className="border-2 border-[#f2f3f8] rounded-md p-2 w-full text-start pl-10 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                className="border-2 border-[#f2f3f8] rounded-md p-2 w-full text-start pl-10 focus:outline-none focus:ring-1  focus:ring-[#004181]"
                 placeholder="Enter Min Amount"
                 style={{ height: inputHeight }}
               />
@@ -153,7 +154,7 @@ const PayableDetails = ({
                   }
                 }}
                 onBlur={formik.handleBlur}
-                className="border-2 border-[#f2f3f8] rounded-md p-2 w-full pl-10 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                className="border-2 border-[#f2f3f8] rounded-md p-2 w-full pl-10 focus:outline-none focus:ring-1 focus:ring-[#004181] focus:border-transparent"
                 placeholder="Enter Max Amount"
                 style={{ height: inputHeight }}
               />
@@ -337,7 +338,7 @@ const PayableDetails = ({
           onWheel={(e) => e.target.blur()}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
-          className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+          className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-1 focus:ring-[#004181] focus:border-transparent"
           placeholder="Enter Min Installments"
           style={{ height: inputHeight }}
         />

@@ -25,26 +25,26 @@ function NotificationCard() {
     }, [topUpFileds]);
 
   return (
-    <div className="grid grid-cols-2  gap-4  ">
-      <div className="bg-white rounded-[16px] pt-[20px] pb-[25px] px-[12px] border-2 border-[#F5F5F5] ">
-        <div className="rounded-md">
+    <div className="grid grid-cols-2  gap-4 text-[#232323]">
+      <div className="bg-white rounded-[16px] py-[20px] pl-[10px] border-2 border-[#F5F5F5]  ">
+        <div className="rounded-md pb-3">
           <img src={whatsapp} alt="whatsapp" className="h-[40px] w-[40px]" />
         </div>
-        <div className="flex flex-col py-[12px] ms-1">
-          <h5 className="text-2xl font-semibold">
+        <div className="flex flex-col py-[8px] ms-1">
+          <h5 className="text-xl font-semibold">
             {topupData?.WhatsApp || 0}
           </h5>
-          <h5 className="text-[#6C7086] text-md mt-2">WhatsApp Limit</h5>
+          <h5 className="text-[#6C7086] text-md   ">WhatsApp Limit</h5>
         </div>
       </div>
 
-      <div className="bg-white rounded-[16px] pt-[20px] pb-[25px] px-[12px] border-2 border-[#F5F5F5]">
-        <div className="rounded-md">
+      <div className="bg-white rounded-[16px] py-[20px] pl-[10px] border-2 border-[#F5F5F5]">
+        <div className="rounded-md pb-3">
           <img src={sms} alt="sms" className="h-[40px] w-[40px]" />
         </div>
-        <div className="flex flex-col py-[12px] ms-1">
-          <h5 className="text-2xl font-semibold">{topupData?.SMS || 0}</h5>
-          <h5 className="text-[#6C7086] text-md mt-2">SMS Limit</h5>
+        <div className="flex flex-col py-[8px] ms-1">
+          <h5 className="text-xl font-semibold">{topupData?.SMS || 0}</h5>
+          <h5 className="text-[#6C7086] text-md   ">SMS Limit</h5>
         </div>
       </div>
 

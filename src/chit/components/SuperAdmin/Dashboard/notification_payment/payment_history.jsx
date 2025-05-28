@@ -35,9 +35,9 @@ function PaymentHistory({ id_branch }) {
   const navigate=useNavigate()
   return (
     <div>
-      <div className="bg-white rounded-[16px] mt-6">
+      <div className="bg-white rounded-[16px] mt-6 text-[#232323]">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold">Payment History</h2>
+          <h2 className="text-lg font-bold">Payment History</h2>
           <div className="flex items-center justify-center p-3 rounded-md cursor-pointer bg-[#004181]" onClick={()=>navigate('/payment/addschemepayment')}>
             <img src={plus} alt="plus" className="w-6 h-6" />
             <div className="text-white text-md font-medium px-2">Add Payment</div>
