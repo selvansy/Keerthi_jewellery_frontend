@@ -198,7 +198,7 @@ function Customers() {
                 className="border rounded-lg bg-white my-3"
               >
                 <AccordionTrigger className="px-6 py-4 text-[18px]">
-                  Join Scheme
+                  Add To Scheme
                 </AccordionTrigger>
                 <AccordionContent className="px-6 py-4 text-[16px]">
                   <AddSchemeAccount cusData={cusData} />

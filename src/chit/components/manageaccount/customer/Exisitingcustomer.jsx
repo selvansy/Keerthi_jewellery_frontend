@@ -10,15 +10,51 @@ import { useFormik } from "formik";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { formatDate } from "../../../../utils/FormatDate";
+import { formatDecimal } from "../../../utils/commonFunction";
 
 const Exisitingcustomer = () => {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  
+
   const customStyles = (isReadOnly) => ({
-    // ... (keep your existing customStyles implementation)
-  });
+    control: (base, state) => ({
+      ...base,
+      minHeight: "42px", //42px
+      backgroundColor: "white",
+      color:"#232323",
+      // fontWeight:600,
+      border: state.isFocused ? "1px solid #f2f2f9" : "1px solid #f2f2f9",
+      boxShadow: state.isFocused ? "0 0 0 1px #004181" : "none",
+      borderRadius: "0.5rem",
+      "&:hover": {
+        color: "#e2e8f0",
+      },
+      pointerEvents: !isReadOnly ? "none" : "auto",
+      opacity: !isReadOnly ? 1 : 1,
+      cursor: isReadOnly ? "pointer" : "default", 
+    }),
+    indicatorSeparator: () => ({
+      display: "none",
+    }),
+    placeholder: (base) => ({
+      ...base,
+      color: "#6C7086",
+      fontWeight: "thin",
+      // fontStyle: "bold",
+    }),
+    dropdownIndicator: (provided, state) => ({
+      ...provided,
+      color: "#232323",
+      "&:hover": {
+        color: "#232323",
+      },
+    }),
+     input: (base) => ({
+      ...base,
+      "input[type='text']:focus": { boxShadow: 'none' },
+      }),
+    });
 
   const roleData = useSelector((state) => state.clientForm.roledata);
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
@@ -35,7 +71,7 @@ const Exisitingcustomer = () => {
   const [data, setData] = useState({
     customerDetails: {},
     schemes: [],
-    totalOpenSchemes: 0
+    totalOpenSchemes: 0,
   });
   const [branch, setBranch] = useState(() => (accessBranch === "0" ? [] : {}));
 
@@ -70,8 +106,8 @@ const Exisitingcustomer = () => {
       toast.error("Please enter mobile number");
       return;
     }
-    customerData({ 
-      data: formik.values
+    customerData({
+      data: formik.values,
     });
   };
 
@@ -81,12 +117,13 @@ const Exisitingcustomer = () => {
       setData({
         customerDetails: response?.data?.customerDetails || {},
         schemes: response?.data?.schemes || [],
-        totalOpenSchemes: response?.data?.totalOpenSchemes || 0
+        totalOpenSchemes: response?.data?.totalOpenSchemes || 0,
+        totalWeightPayable:response?.data?.totalWeightPayable || 0,
+        totalAmountPayable:response?.data?.totalAmountPayable || 0
       });
       toast.success(response?.message);
     },
     onError: (error) => {
-      console.log(error);
       toast.error(error.response?.data?.message);
     },
   });
@@ -125,12 +162,18 @@ const Exisitingcustomer = () => {
     },
     { label: "Pan Card", value: data.customerDetails?.pan || "N/A" },
     { label: "Aadhar No", value: data.customerDetails?.aadharNumber || "N/A" },
-    { label: "Date of Birth", value: formatDate(data.customerDetails?.dateOfBirth) || "N/A" },
+    {
+      label: "Date of Birth",
+      value: formatDate(data.customerDetails?.dateOfBirth) || "N/A",
+    },
     {
       label: "Referral No",
-      value: data.customerDetails?.referralCode?.replace(/^Cus-/, '') || 'N/A'
-    },    
-    { label: "Wedding Anniversary", value: formatDate(data.customerDetails?.weddingAnniversary) || "N/A" },
+      value: data.customerDetails?.referralCode?.replace(/^Cus-/, "") || "N/A",
+    },
+    {
+      label: "Wedding Anniversary",
+      value: formatDate(data.customerDetails?.weddingAnniversary) || "N/A",
+    },
   ];
 
   return (
@@ -153,10 +196,9 @@ const Exisitingcustomer = () => {
                 styles={customStyles(true)}
                 isClearable={true}
                 options={branch}
-                name="branch"
                 placeholder="Select Branch"
                 value={
-                  branch.find(
+                  branch?.find(
                     (option) => option.value === formik.values.branch
                   ) || ""
                 }
@@ -218,15 +260,23 @@ const Exisitingcustomer = () => {
               <button
                 type="button"
                 className="p-2 bg-[#004181] text-white rounded-md"
-                onClick={() => navigate(`/managecustomers/editcustomer/${data.customerDetails?._id}`)}
+                onClick={() =>
+                  navigate(
+                    `/managecustomers/editcustomer/${data.customerDetails?._id}`
+                  )
+                }
               >
                 <SquarePen size={20} className="text-gray-400" />
               </button>
             </div>
             <div className="flex flex-col gap-2 justify-center items-center">
-              <img 
-                src={ data.customerDetails?.profileImage ? `${data.customerDetails?.pathUrl}${data.customerDetails?.profileImage}` : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"} 
-                className="w-24 h-24 border rounded-full object-cover items-center" 
+              <img
+                src={
+                  data.customerDetails?.profileImage
+                    ? `${data.customerDetails?.pathUrl}${data.customerDetails?.profileImage}`
+                    : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
+                }
+                className="w-24 h-24 border rounded-full object-cover items-center"
               />
               <p className="text-bold">{data.customerDetails?.customerName}</p>
             </div>
@@ -251,21 +301,24 @@ const Exisitingcustomer = () => {
           <h1 className="text-lg font-bold text-black">Account Overview</h1>
           <div className="flex gap-5">
             <div className="justify-start p-2 right-10">
-              <p className="text-lg font-medium text-black"> 
-                ₹ {data.schemes.reduce((sum, scheme) => sum + (scheme.amountPaid || 0), 0)}
+              <p className="text-lg font-medium text-black">
+                ₹{" "}
+                {data?.totalAmountPayable}
               </p>
-              <p className="text-sm font-bold text-gray-600">Amount Payable</p>
+              <p className="text-sm font-bold text-gray-600">Amount Paid</p>
             </div>
             <hr className="w-px h-10 bg-gray-300 border-none mt-3" />
             <div className="justify-between p-2">
               <p className="text-lg font-medium text-black">
-                {data.schemes.reduce((sum, scheme) => sum + (scheme.closedAccounts || 0), 0)}
+                {`${formatDecimal(data?.totalWeightPayable)} g`}
               </p>
-              <p className="text-sm font-bold text-gray-600">Weight Payable</p>
+              <p className="text-sm font-bold text-gray-600">Weight Paid</p>
             </div>
             <hr className="w-px h-10 bg-gray-300 border-none mt-3" />
             <div className="justify-end p-2">
-              <p className="text-lg font-medium text-black">{data?.totalOpenSchemes || "N/A"}</p>
+              <p className="text-lg font-medium text-black">
+                {data?.totalOpenSchemes || "N/A"}
+              </p>
               <p className="text-sm font-bold text-gray-600">Active Accounts</p>
             </div>
           </div>
