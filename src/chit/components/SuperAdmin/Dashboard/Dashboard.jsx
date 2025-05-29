@@ -120,18 +120,18 @@ function Dashboard() {
       <div className="flex flex-col md:flex-row w-full">
   {/* Left side: Notification + PaymentHistory */}
   <div className="w-full md:w-4/5 p-2 -ml-2">
-    <div className="bg-white p-4 mb-4 border-2 border-[#F5F5F5] rounded-[20px]">
+    <div className="bg-white p-4 mb-4 border-[1px] border-[#F5F5F5] rounded-[20px]">
       <h2 className="font-semibold text-xl p-4 text-[#232323]">Notification Limits</h2>
       <NotificationCard  />
     </div>
-    <div className="bg-white p-4 border-2 border-[#F5F5F5] rounded-[20px]">
+    <div className="bg-white p-4 border-[1px] border-[#F5F5F5] rounded-[20px]">
       <PaymentHistory id_branch={selectedBranch}/>
     </div>
   </div>
 
   {/* Right side: ModeOfPayment */}
   <div className=" md:w-3/5 p-3 "> 
-    <div className="bg-white p-4 h-full border-2 border-[#F5F5F5] rounded-[20px]">
+    <div className="bg-white p-4 h-full border-[1px] border-[#F5F5F5] rounded-[20px]">
       <ModeOfPayment id_branch={selectedBranch}/>
     </div>
   </div>

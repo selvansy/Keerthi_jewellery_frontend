@@ -161,11 +161,11 @@ function ModeOfPayment({ id_branch }) {
                 paymentModeData.map((item, index) => (
                   <tr
                     key={index}
-                    className="bg-white border-b   border-gray-200"
+                    className="bg-white border-b border-gray-200"
                   >
                     <th
                       scope="row"
-                      className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                      className="px-6 py-4 font-medium text-[#434446] whitespace-nowrap"
                     >
                       {item.payment_mode || "Cash Free"}
                     </th>
@@ -176,7 +176,7 @@ function ModeOfPayment({ id_branch }) {
                 <tr>
                   <td
                     colSpan="2"
-                    className="px-6 py-4 text-center text-gray-500"
+                    className="px-6 py-4 text-center text-[#434446]"
                   >
                     No data available for the selected date range.
                   </td>

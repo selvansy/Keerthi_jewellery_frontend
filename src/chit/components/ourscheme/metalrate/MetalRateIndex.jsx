@@ -274,10 +274,10 @@ function MetalRateIndex({refresh}) {
         <Breadcrumb items={[
             { label: "Masters" },
             { label: "Metal Rate",active:true },
-            
+
         ]}/>
     </div>
-      <div className="flex flex-col p-4">
+      <div className="flex flex-col p-1 -ml-1">
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {metalValue?.slice(0,4).map((e) => (
             <div className="bg-white rounded-[16px] py-2 px-[10px] border border-[#F2F2F9]">
@@ -310,15 +310,15 @@ function MetalRateIndex({refresh}) {
           ))}
         </div>
 
-        <div className="w-full flex flex-col bg-white mt-8 overflow-y-auto scrollbar-hide  border border-[#F2F2F9] rounded-[16px]">
-          <div className="flex flex-col p-4  relative  ">
-            <div className="flex flex-row justify-between py-7">
+        <div className="w-full flex flex-col bg-white mt-7 overflow-y-auto scrollbar-hide  border border-[#F2F2F9] rounded-[16px]">
+          <div className="flex flex-col p-6 relative ">
+            <div className="flex flex-row justify-between py-2">
               <h5 className="text-lg text-[#282829] font-bold justify-between">
                 Update Metal Rate
               </h5>
             </div>
 
-            <div className="grid grid-rows-2 md:grid-cols-3 gap-5  border-gray-300 mb-10 ">
+            <div className="grid grid-rows-2 md:grid-cols-3 gap-5  border-gray-300 mb-10 mt-3 ">
               {id_branch === "0" && (
                 <div className="flex flex-col mt-2">
                   <label className="text-black mb-1 font-medium">

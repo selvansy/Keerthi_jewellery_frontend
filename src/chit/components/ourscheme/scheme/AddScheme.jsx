@@ -40,7 +40,7 @@ import { option } from "framer-motion/client";
  export const customStyles = (isReadOnly) => ({
     control: (base, state) => ({
       ...base,
-      minHeight: "42px", //42px
+      minHeight: "44px", //42px
       backgroundColor: "white",
       color:"#232323",
       // fontWeight:600,
@@ -60,7 +60,8 @@ import { option } from "framer-motion/client";
     placeholder: (base) => ({
       ...base,
       color: "#6C7086",
-      fontWeight: "thin",
+      // fontWeight: "thin",
+      fontSize: "14px",
       // fontStyle: "bold",
     }),
     dropdownIndicator: (provided, state) => ({
@@ -755,7 +756,7 @@ const SchemeForm = () => {
       onSubmit={formik.handleSubmit}
       className="w-full mx-auto p-6 space-y-6"
     >
-      <div className="bg-[#FFFFFF] rounded-lg p-6 shadow-sm border">
+      <div className="bg-[#FFFFFF] rounded-lg p-6 shadow-sm border text-[#232323]">
         <h2 className="text-lg font-semibold mb-4 border-b pb-4">Add Scheme</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -1380,8 +1381,8 @@ const SchemeForm = () => {
         </AccordionItem> */}
 
         <AccordionItem value="payable" className="border rounded-lg bg-white">
-          <AccordionTrigger className="px-6 py-4 ">
-            {/* <div className="w-full text-start text-lg font-semibold pb-4"> Payable Details</div> */}
+          <AccordionTrigger className="px-6 py-4 text-[#232323] font-semibold text-lg">
+            {/* <div className="w-full text-start text-lg font-semisemibold pb-4"> Payable Details</div> */}
             Payable Details
           </AccordionTrigger>
           <AccordionContent className="px-6">
@@ -1404,7 +1405,7 @@ const SchemeForm = () => {
         </AccordionItem>
 
         <AccordionItem value="advanced" className="border rounded-lg bg-white">
-          <AccordionTrigger className="px-6 py-4">Installment</AccordionTrigger>
+          <AccordionTrigger className="px-6 py-4 text-[#232323] font-semibold text-lg">Installment</AccordionTrigger>
           <AccordionContent className="px-6">
             <div className="border-t pt-4">
               <Suspense fallback={<SpinLoading />}>
@@ -1423,7 +1424,7 @@ const SchemeForm = () => {
           value="classification"
           className="border rounded-lg bg-white"
         >
-          <AccordionTrigger className="px-6">
+          <AccordionTrigger className="px-6 text-[#232323] font-semibold text-lg">
             Classification Details
           </AccordionTrigger>
           <AccordionContent value="classification" className="px-6">

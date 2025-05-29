@@ -40,7 +40,7 @@ const PayableDetails = ({
   const showAmountFields = !classType && !isSpecialSchemeType;
 
   return (
-    <div className="grid grid-rows-2 md:grid-cols-3 lg:grid-col-3 gap-5">
+    <div className="grid grid-rows-2 md:grid-cols-3 lg:grid-col-3 gap-5 text-[#232323]">
       {showWeightFields ? (
         <>
           <div className="flex flex-col lg:mt-2">

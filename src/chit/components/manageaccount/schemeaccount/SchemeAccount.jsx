@@ -393,7 +393,7 @@ const SchemeAccount = () => {
             <div className="w-full sm:w-auto">
               <button
                 type="button"
-                className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-full"
+                className="rounded-md px-4 h-[36px] text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-full"
                 style={{ backgroundColor: layout_color }}
                 onClick={handleClick}
               >

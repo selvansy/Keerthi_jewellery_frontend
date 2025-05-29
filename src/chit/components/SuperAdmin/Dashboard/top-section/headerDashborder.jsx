@@ -63,7 +63,7 @@ function HeaderDashborder({ id_branch }) {
         {cards.map((card, idx) => (
           <div
             key={idx}
-            className="bg-white rounded-[20px] p-4 border-2 border-[#F5F5F5] flex flex-col gap-4"
+            className="bg-white rounded-[20px] p-4 border-[1px] border-[#F5F5F5] flex flex-col gap-4"
           >
             <img src={card.image} alt={card.title} className="h-10 w-10" />
             <div className="flex flex-col gap-1">
@@ -76,7 +76,7 @@ function HeaderDashborder({ id_branch }) {
                         {card.subTitle}
                       </p>
                     </div>
-                    <div className="text-[#F5F5F5] text-xl font-semibold border-s-2 boder-[#F5F5F5] h-[50px]"></div>
+                    <div className="text-[#F5F5F5] text-xl font-semibold border-s-2 border-[#F5F5F5] h-[50px]"></div>
                     <div className="flex flex-col items-start">
                       <p className="text-xl font-semibold"> {card.value} </p>
                       <p className="text-[#6C7086] text-sm font-medium">

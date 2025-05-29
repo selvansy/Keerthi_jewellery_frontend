@@ -30,6 +30,7 @@ import VerificationModal from "./VerificationModal";
 import OtpCompleted from "./OtpCompleted";
 import SpinLoading from "../../common/spinLoading";
 import { formatNumber } from "../../../utils/commonFunction";
+import { customStyles } from "../../ourscheme/scheme/AddScheme";
 
 const AddCloseAccount = () => {
   const dispatch = useDispatch();
@@ -71,40 +72,40 @@ const AddCloseAccount = () => {
   const [multipaymode, setMultiPaymode] = useState([]);
   const [multiPaymentValues, setMultiPaymentValues] = useState({});
 
-  const customStyles = (isReadOnly) => ({
-    control: (base, state) => ({
-      ...base,
-      minHeight: "42px",
-      backgroundColor: "white",
-      border: state.isFocused ? "1px solid black" : "2px solid #f2f3f8",
-      boxShadow: state.isFocused ? "0 0 0 1px black" : "none",
-      borderRadius: "0.375rem",
-      "&:hover": {
-        color: "#e2e8f0",
-      },
-      pointerEvents: !isReadOnly ? "none" : "auto",
-      opacity: !isReadOnly ? 1 : 1,
-    }),
-    indicatorSeparator: () => ({
-      display: "none",
-    }),
-    placeholder: (base) => ({
-      ...base,
-      color: "#858293",
-      fontWeight: "thin",
-    }),
-    dropdownIndicator: (provided, state) => ({
-      ...provided,
-      color: "#232323",
-      "&:hover": {
-        color: "#232323",
-      },
-    }),
-    menuPortal: (base) => ({
-      ...base,
-      zIndex: 9999,
-    }),
-  });
+  // const customStyles = (isReadOnly) => ({
+  //   control: (base, state) => ({
+  //     ...base,
+  //     minHeight: "42px",
+  //     backgroundColor: "white",
+  //     border: state.isFocused ? "1px solid black" : "2px solid #f2f3f8",
+  //     boxShadow: state.isFocused ? "0 0 0 1px black" : "none",
+  //     borderRadius: "0.375rem",
+  //     "&:hover": {
+  //       color: "#e2e8f0",
+  //     },
+  //     pointerEvents: !isReadOnly ? "none" : "auto",
+  //     opacity: !isReadOnly ? 1 : 1,
+  //   }),
+  //   indicatorSeparator: () => ({
+  //     display: "none",
+  //   }),
+  //   placeholder: (base) => ({
+  //     ...base,
+  //     color: "#858293",
+  //     fontWeight: "thin",
+  //   }),
+  //   dropdownIndicator: (provided, state) => ({
+  //     ...provided,
+  //     color: "#232323",
+  //     "&:hover": {
+  //       color: "#232323",
+  //     },
+  //   }),
+  //   menuPortal: (base) => ({
+  //     ...base,
+  //     zIndex: 9999,
+  //   }),
+  // });
 
   // Format today's date
   const today = new Date();

@@ -268,13 +268,13 @@ const Metal = () => {
               {searchLoading ? (
                 <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
               ) : (
-                <Search className="text-black" />
+                <Search className="text-[#6C7086] h-5 w-5" />
               )}
             </div>
             <input
               onChange={handleSearch}
               placeholder="Search"
-              className="infocus px-4 py-2 ps-9 border-2 border-[#F2F2F9] rounded-[8px] w-[228px]"
+              className="infocus px-4 py-2 ps-9 border-2 border-[#F2F2F9] text-[#6C7086] text-md rounded-[8px] w-[219px] h-[36px]"
             />
           </div>
 
@@ -282,7 +282,7 @@ const Metal = () => {
           {(MetalData && MetalData.length<=3 && enableButton)&&(
             <div className="w-full flex justify-end">
             <button
-              className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-[135px] sm:w-auto"
+              className="rounded-md px-7 py-2 text-sm font-semibold text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-[219px] h-[36px] sm:w-auto "
               onClick={handleaddmetal}
               style={{ backgroundColor: layout_color }}
             >
@@ -477,7 +477,7 @@ export const MetalForm = ({ setIsOpen, id, clearId }) => {
           value={formData.metal_name}
           onChange={handleChange}
           placeholder="Enter Metal Name"
-          className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[#004181]"
+          className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[#004181] h-[44px]"
         />
         {formErrors.metal_name && (
           <div className="text-red-500 text-sm">{formErrors.metal_name}</div>

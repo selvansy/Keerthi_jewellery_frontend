@@ -161,7 +161,7 @@ function AccountReview({id_branch}) {
   };
 
   return (
-    <div className="bg-white rounded-[20px] p-5 lg:col-span-3 border-2 border-[#F5F5F5] text-[#232323]">
+    <div className="bg-white rounded-[20px] p-5 lg:col-span-3 border-[1px] border-[#F5F5F5] text-[#232323]">
       <div className="flex justify-between items-center mb-4">
         <h2 className="font-bold text-lg">Account Overview</h2>
         <div className="flex items-center gap-2">
@@ -184,7 +184,7 @@ function AccountReview({id_branch}) {
         {accountData.map((data, index) => (
           <div
             key={index}
-            className="py-[20px] rounded-[20px] border-2 border-[#F0F7FE]"
+            className="py-[20px] rounded-[20px] border-[1px] border-[#F0F7FE]"
           >
             <img src={data.img} alt={data.title} className="h-10 w-10 ml-3" />
             <div className="flex flex-col items-start px-[12px]">

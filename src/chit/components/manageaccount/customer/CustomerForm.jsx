@@ -653,7 +653,7 @@ const CustomerForm = ({
                     </div> */}
                 {accessBranch === "0" && branchData.length > 0 && !isLoading ? (
                   <div>
-                    <label className="block text-sm font-medium mb-2">
+                    <label className="block text-sm font-medium mb-1">
                       Branches <span className="text-red-500">*</span>
                     </label>
                     <Select
