@@ -20,7 +20,7 @@ import DatePicker from "react-datepicker";
 import { useSelector } from "react-redux";
 import { Breadcrumb } from "../common/breadCumbs/breadCumbs";
 import DateRangeSelector from "../common/calender";
-import { formatNumber } from "../../utils/commonFunction";
+import { formatDecimal, formatNumber } from "../../utils/commonFunction";
 
 function WeightPaybleParent() {
   const roledata = localStorage.getItem("decoded");
@@ -122,7 +122,7 @@ function WeightPaybleParent() {
     //   },
       {
         header: "Total Paid Weight",
-        cell: (row) => `${row?.totalCollectedAmount} g`,
+        cell: (row) => `${formatDecimal(row?.totalCollectedAmount)} g`,
       },
   ];
 

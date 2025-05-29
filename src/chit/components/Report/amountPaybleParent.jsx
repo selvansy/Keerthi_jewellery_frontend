@@ -20,6 +20,7 @@ import DatePicker from "react-datepicker";
 import { useSelector } from "react-redux";
 import { Breadcrumb } from "../common/breadCumbs/breadCumbs";
 import DateRangeSelector from "../common/calender";
+import { formatNumber } from "../../utils/commonFunction";
 
 function AmountPaybleParent() {
   const roledata = localStorage.getItem("decoded");
@@ -84,43 +85,9 @@ function AmountPaybleParent() {
       header: "Classification",
       cell: (row) => row?.classificationName,
     },
-    // {
-    //   header: "Customer",
-    //   cell: (row) => row?.customer_name,
-    // },
-    // {
-    //   header: "Mobile Number",
-    //   cell: (row) => row?.customer_mobile,
-    // },
-    // {
-    //   header: "Accounter Name",
-    //   cell: (row) => row?.account_name,
-    // },
-    // {
-    //   header: "scheme A/c No ",
-    //   cell: (row) => row?.scheme_acc_number,
-    // },
-    // {
-    //     header: "joined Date ",
-    //     cell: (row) => {
-    //       return new Date(row.createdAt).toLocaleDateString("en-US", {
-    //         year: "numeric",
-    //         month: "numeric",
-    //         day: "numeric",
-    //       });
-    //     }
-    //   },
-    //   {
-    //     header: "Maturity Date ",
-    //     cell: (row) => row?.maturity_date,
-    //   },
-    //   {
-    //     header: "Paid Installment",
-    //     cell: (row) => `${row?.totalPaidCount}/${row?.total_installments}`,
-    //   },
       {
         header: "Total Paid Amount",
-        cell: (row) => row?.totalCollectedAmount,
+        cell: (row) => formatNumber({value:row?.totalCollectedAmount,decimalPlaces:0}),
       },
   ];
 
