@@ -3,7 +3,7 @@ import Select from "react-select";
 import { useFormik } from "formik";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
-import { CalendarDays, ChevronDown, ChevronUp } from "lucide-react";
+import { CalendarDays, ChevronDown, ChevronUp, Search } from "lucide-react";
 import Calender from "../../../../assets/icons/calender.svg";
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
@@ -203,6 +203,25 @@ const AddSchemePayment = () => {
       payment_mode: Yup.string().required("Payment mode is required"),
       itr_utr: Yup.string(),
       remark: Yup.string(),
+      // installments: Yup.number()
+      //   .required("Installments is required")
+      //   .min(1, "At least 1 installment is required")
+      //   .test(
+      //     "max-installments",
+      //     "Installments exceed remaining scheme installments",
+      //     function (value) {
+      //       if (!selectedScheme) return true;
+
+      //       const schemeType = selectedScheme?.id_scheme?.scheme_type;
+      //       if (schemeType === 10 || schemeType === 14) return true;
+
+      //       const totalPaid = selectedScheme.total_paidinstallments || 0;
+      //       const totalInstallments =
+      //         selectedScheme?.id_scheme?.total_installments;
+
+      //       return value <= totalInstallments - totalPaid;
+      //     }
+      //   ),
       installments: Yup.number()
         .required("Installments is required")
         .min(1, "At least 1 installment is required")
@@ -922,18 +941,38 @@ const AddSchemePayment = () => {
   //   }
   // };
   const handleInstallmentChange = (value) => {
+    // if (!selectedScheme) return;
+
+    // const totalPaid = selectedScheme.total_paidinstallments || 0;
+    // const totalInstallments = selectedScheme?.id_scheme?.total_installments;
+    // const remainingInstallments = totalInstallments - totalPaid;
+
+    // if (value > remainingInstallments) {
+    //   value = remainingInstallments;
+    //   toast.error(`Cannot exceed remaining installments`);
+    // } else if (value < 1) {
+    //   value = 1;
+    //   toast.error("Minimum 1 installment required");
+    // }
+
+    // const prevInstallments = formik.values.installments || 1;
+    // formik.setFieldValue("installments", value);
     if (!selectedScheme) return;
 
-    const totalPaid = selectedScheme.total_paidinstallments || 0;
-    const totalInstallments = selectedScheme?.id_scheme?.total_installments;
-    const remainingInstallments = totalInstallments - totalPaid;
+    const schemeType = selectedScheme?.id_scheme?.scheme_type;
 
-    if (value > remainingInstallments) {
-      value = remainingInstallments;
-      toast.error(`Cannot exceed remaining installments`);
-    } else if (value < 1) {
-      value = 1;
-      toast.error("Minimum 1 installment required");
+    if (schemeType !== 10 && schemeType !== 14) {
+      const totalPaid = selectedScheme.total_paidinstallments || 0;
+      const totalInstallments = selectedScheme?.id_scheme?.total_installments;
+      const remainingInstallments = totalInstallments - totalPaid;
+
+      if (value > remainingInstallments) {
+        value = remainingInstallments;
+        toast.error(`Cannot exceed remaining installments`);
+      } else if (value < 1) {
+        value = 1;
+        toast.error("Minimum 1 installment required");
+      }
     }
 
     const prevInstallments = formik.values.installments || 1;
@@ -977,6 +1016,19 @@ const AddSchemePayment = () => {
     }
   };
 
+  const [weightSaved, setWeightSaved] = useState(0);
+
+  useEffect(() => {
+    const { payment_amount, metal_rate, scheme_type } = formik.values;
+  
+    if ([2, 5, 6].includes(scheme_type) && payment_amount && metal_rate && Number(metal_rate) !== 0) {
+      setWeightSaved(Number(payment_amount) / Number(metal_rate));
+    } else {
+      setWeightSaved(0);
+    }
+  }, [formik.values.payment_amount, formik.values.metal_rate, formik.values.scheme_type, selectedScheme]);
+  
+
   return (
     <>
       <form
@@ -993,7 +1045,7 @@ const AddSchemePayment = () => {
           </p>
 
           <div className="flex flec-row gap-5">
-          <button
+            <button
               type="submit"
               disabled={isLoading}
               className="w-20 h-9 bg-blue-900 text-white rounded-md hover:bg-blue-800 flex justify-center items-center"
@@ -1012,13 +1064,11 @@ const AddSchemePayment = () => {
 
         <div>
           <div className="flex flex-col lg:flex-row w-full justify-between">
-            {/* Left column - form inputs */}
             <div className="lg:w-1/2 w-full bg-white border px-[18px] py-[20px] rounded-md">
               <h2 className="text-lg font-semibold mb-4 pb-4">
                 Customer Details
               </h2>
               <div className="grid lg:grid-cols-2 grid-cols-1 gap-4 lg:pr-2">
-                {/* Branch selection */}
                 {accessBranch === "0" && branch.length > 0 && !isLoading ? (
                   <div>
                     <label className="block text-sm font-medium mb-1">
@@ -1062,7 +1112,7 @@ const AddSchemePayment = () => {
                 )}
 
                 {/* Mobile number search */}
-                <div>
+                <div className="relative">
                   <label className="block text-sm font-medium mb-1">
                     Search AC No/ Mob No
                     <span className="text-red-400">*</span>
@@ -1073,7 +1123,7 @@ const AddSchemePayment = () => {
                     value={formik.values.mobile || ""}
                     onChange={handleInputChange}
                     onPaste={handlePaste}
-                    className="w-full border-2 border-[#f2f3f8] rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                    className="w-full border-2 border-[#f2f3f8] rounded-md p-2 pr-10 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                     placeholder="Enter Mobile No or Scheme AC No (e.g., F-FLMVC4319)"
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
@@ -1082,6 +1132,12 @@ const AddSchemePayment = () => {
                       }
                     }}
                   />
+                  <span className="absolute right-0 top-3 w-9 h-full px-3 flex items-center justify-center text-black">
+                    <Search
+                      className="w-6 h-6 hover:cursor-pointer"
+                      onClick={() => handleSearch()}
+                    />
+                  </span>
                 </div>
 
                 {/* Scheme account selection */}
@@ -1102,6 +1158,7 @@ const AddSchemePayment = () => {
                     onChange={(option) => {
                       formik.setFieldValue("payment_amount", "");
                       formik.setFieldValue("metal_weight", "");
+                      formik.setFieldValue("installments", 1);
 
                       if (option?.value) {
                         formik.setFieldValue("id_scheme_account", option.value);
@@ -1344,7 +1401,10 @@ const AddSchemePayment = () => {
                       className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                       min="1"
                       max={
-                        selectedScheme
+                        selectedScheme &&
+                        ![10, 14].includes(
+                          selectedScheme?.id_scheme?.scheme_type
+                        )
                           ? selectedScheme.total_installments -
                             (selectedScheme.total_paidinstallments || 0)
                           : undefined
@@ -1417,8 +1477,9 @@ const AddSchemePayment = () => {
                     <div className="text-xs text-gray-500 mt-1">
                       {selectedScheme &&
                         schemedata.length > 0 &&
-                        selectedScheme?.scheme_type !== 10 &&
-                        selectedScheme?.scheme_type !== 14 && (
+                        ![10, 14].includes(
+                          selectedScheme?.id_scheme?.scheme_type
+                        ) && (
                           <div className="text-xs text-gray-500 mt-1">
                             {`Remaining installments: ${
                               selectedScheme?.id_scheme?.total_installments -
@@ -1525,7 +1586,7 @@ const AddSchemePayment = () => {
                           value={formik.values.payment_amount}
                           min={minAmount}
                           onBlur={formik.handleBlur}
-                          max={maxAmount}
+                          max={maxAmount * formik.installments}
                           step="0.01"
                           onWheel={(e) => e.target.blur()}
                           onChange={handleAmountChange}
@@ -1564,9 +1625,9 @@ const AddSchemePayment = () => {
                         <input
                           type="text"
                           disabled
-                          value={
-                            selectedScheme?.id_classification?.order === 1 &&
-                            `${formatDecimal(formik.values.payment_amount / formik.values.metal_rate)} g`
+                          value={ `${formatDecimal(
+                                weightSaved
+                                )}`
                           }
                           className="border-2 border-[#f2f3f8] rounded-md p-2 w-full bg-gray-100"
                         />
@@ -1575,7 +1636,7 @@ const AddSchemePayment = () => {
 
                     {/* Payment mode */}
                     <div
-                      className={`flex flex-col ${(!showWeightInput) && "mt-4"} `}
+                      className={`flex flex-col ${!showWeightInput && "mt-4"} `}
                     >
                       <label className="block text-sm font-medium mb-1">
                         Payment Mode<span className="text-red-400"> *</span>
@@ -1644,7 +1705,12 @@ const AddSchemePayment = () => {
 
                     {/* ITR/UTR ID */}
                     <div className="flex flex-col">
-                      <label className={`block text-sm font-medium mb-1 ${[2,5,6].includes(formik.values.scheme_type) && "mt-4"}`}>
+                      <label
+                        className={`block text-sm font-medium mb-1 ${
+                          [2, 5, 6].includes(formik.values.scheme_type) &&
+                          "mt-4"
+                        }`}
+                      >
                         ITR/UTR ID
                       </label>
                       <input

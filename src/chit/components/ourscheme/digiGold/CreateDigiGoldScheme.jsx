@@ -111,7 +111,7 @@ const CreateDigiGoldScheme = () => {
       id_metal: "",
       id_purity: "",
       id_classification: "",
-      bonus_type: "",
+      bonus_type: 2,
       count: "",
       entry_type: 0,
       values: [],
@@ -126,8 +126,10 @@ const CreateDigiGoldScheme = () => {
     },
     validationSchema: Yup.object({
       scheme_name: Yup.string().required("Scheme name is required"),
-      description: Yup.string().required("Description is required"),
-      term_desc: Yup.string().required("Terms & conditions is required"),
+      description: Yup.string().required("Description is required")
+      .max(850, "Description cannot exceed 850 characters"),
+      term_desc: Yup.string().required("Terms & conditions is required")
+      .max(850, "Terms & conditions cannot exceed 850 characters"),
       id_purity:Yup.string().required("Purity is required"),
       // id_branch: Yup.string().required("Branch is required"),
       id_branch:Yup.string()
@@ -404,7 +406,7 @@ onSubmit: async (values) => {
       id_metal: schemeData?.data?.id_metal?._id || "",
       id_purity: schemeData?.data?.id_purity?._id || "",
       id_classification: schemeData?.data?.id_classification,
-      bonus_type: schemeData?.data?.bonus_type || 0,
+      bonus_type: schemeData?.data?.bonus_type || 2,
       count: schemeData?.data?.count || "",
       entry_type: schemeData?.data?.entry_type || 0,
       values: schemeData?.data?.values || [],
@@ -533,6 +535,18 @@ onSubmit: async (values) => {
   //   return fields;
   // };
   // Function to generate dynamic fields
+  const getLabel = (id)=> {
+    // console.log('bonus type ',formik.values.bonus_type);
+    
+    const data = bonusTypeOptions.filter((e)=> e.id == id); //formik.values.bonus_type
+    console.log('data', data);
+    
+    if(data.length > 0){
+      
+      return data[0]; 
+    }
+    return null;
+  }
   const generateFields = () => {
     const count = formik.values.count;
 
@@ -549,7 +563,7 @@ onSubmit: async (values) => {
         fields.push(
           <div key={`value-min-${i}`}>
             <label className="block text-sm font-medium mb-1">
-              Min Value {i + 1} <span className="text-red-400">*</span>
+              Min {getLabel(formik.values.bonus_type)?.code} {i + 1} <span className="text-red-400">*</span>
             </label>
             <input
               type="number"
@@ -574,7 +588,7 @@ onSubmit: async (values) => {
         fields.push(
           <div key={`value-max-${i}`}>
             <label className="block text-sm font-medium mb-1">
-              Max Value {i + 1} <span className="text-red-400">*</span>
+              Max {getLabel(formik.values.bonus_type)?.code} {i + 1} <span className="text-red-400">*</span>
             </label>
             <input
               type="number"
@@ -599,7 +613,7 @@ onSubmit: async (values) => {
         fields.push(
           <div key={`value-${i}`}>
             <label className="block text-sm font-medium mb-1">
-              Value {i + 1} <span className="text-red-400">*</span>
+               {getLabel(formik.values.bonus_type)?.code} {i + 1} <span className="text-red-400">*</span>
             </label>
             <input
               type="number"
@@ -872,6 +886,68 @@ onSubmit: async (values) => {
             )}
           </div>
 
+          <div className="flex flex-col ">
+            <label className="block text-sm font-medium mb-1">
+              Maturity <span className="text-red-400"> *</span>
+            </label>
+            <div className="relative">
+              <span className="absolute right-0 top-0 w-14 h-full bg-[#004181] px-3 flex items-center justify-center text-white border-l rounded-r-md">
+                Days
+              </span>
+              <input
+                type="number"
+                name="noOfDays"
+                value={formik.values.noOfDays}
+                onChange={(e) => {
+                  if (e.target.value.length <= 11) {
+                    formik.handleChange(e);
+                  }
+                }}
+                onWheel={(e) => e.target.blur()}
+                onBlur={formik.handleBlur}
+                className="border-2 border-[#f2f3f8] rounded-md p-2 w-full text-start focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                placeholder="Enter no of days"
+                style={{ height: inputHeight }}
+              />
+            </div>
+            {formik.touched.noOfDays && formik.errors.noOfDays && (
+              <span className="text-red-500 text-sm mt-1">
+                {formik.errors.noOfDays}
+              </span>
+            )}
+          </div>
+
+          <div className="flex flex-col ">
+            <label className="block text-sm font-medium mb-1">
+              Max Limit
+            </label>
+            <div className="relative">
+              <span className="absolute left-0 top-0 w-9 h-full px-3 flex items-center justify-center text-black border-r">
+                ₹
+              </span>
+              <input
+                type="number"
+                name="maxLimit"
+                value={formik.values.maxLimit}
+                onChange={(e) => {
+                  if (e.target.value.length <= 8) {
+                    formik.handleChange(e);
+                  }
+                }}
+                onWheel={(e) => e.target.blur()}
+                onBlur={formik.handleBlur}
+                className="border-2 border-[#f2f3f8] rounded-md p-2 w-full text-start pl-10 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                placeholder="Enter max limit"
+                style={{ height: inputHeight }}
+              />
+            </div>
+            {formik.touched.maxLimit && formik.errors.maxLimit && (
+              <span className="text-red-500 text-sm mt-1">
+                {formik.errors.maxLimit}
+              </span>
+            )}
+          </div>
+
           <div>
             <label className="block text-sm font-medium mb-1">
               Entry Type 
@@ -943,67 +1019,6 @@ onSubmit: async (values) => {
             )}
           </div>
 
-          <div className="flex flex-col ">
-            <label className="block text-sm font-medium mb-1">
-              Maturity / Instalments <span className="text-red-400"> *</span>
-            </label>
-            <div className="relative">
-              <span className="absolute right-0 top-0 w-14 h-full bg-[#004181] px-3 flex items-center justify-center text-white border-l rounded-r-md">
-                Days
-              </span>
-              <input
-                type="number"
-                name="noOfDays"
-                value={formik.values.noOfDays}
-                onChange={(e) => {
-                  if (e.target.value.length <= 11) {
-                    formik.handleChange(e);
-                  }
-                }}
-                onWheel={(e) => e.target.blur()}
-                onBlur={formik.handleBlur}
-                className="border-2 border-[#f2f3f8] rounded-md p-2 w-full text-start focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                placeholder="Enter no of days"
-                style={{ height: inputHeight }}
-              />
-            </div>
-            {formik.touched.noOfDays && formik.errors.noOfDays && (
-              <span className="text-red-500 text-sm mt-1">
-                {formik.errors.noOfDays}
-              </span>
-            )}
-          </div>
-
-          <div className="flex flex-col ">
-            <label className="block text-sm font-medium mb-1">
-              Max Limit
-            </label>
-            <div className="relative">
-              <span className="absolute left-0 top-0 w-9 h-full px-3 flex items-center justify-center text-black border-r">
-                ₹
-              </span>
-              <input
-                type="number"
-                name="maxLimit"
-                value={formik.values.maxLimit}
-                onChange={(e) => {
-                  if (e.target.value.length <= 8) {
-                    formik.handleChange(e);
-                  }
-                }}
-                onWheel={(e) => e.target.blur()}
-                onBlur={formik.handleBlur}
-                className="border-2 border-[#f2f3f8] rounded-md p-2 w-full text-start pl-10 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                placeholder="Enter max limit"
-                style={{ height: inputHeight }}
-              />
-            </div>
-            {formik.touched.maxLimit && formik.errors.maxLimit && (
-              <span className="text-red-500 text-sm mt-1">
-                {formik.errors.maxLimit}
-              </span>
-            )}
-          </div>
           <div></div>
           {generateFields()}
         </div>

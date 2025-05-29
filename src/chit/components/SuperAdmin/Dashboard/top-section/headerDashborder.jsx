@@ -34,10 +34,10 @@ function HeaderDashborder({ id_branch }) {
 
   const cards = [
     {
-      title: "Total Customer",
+      title: "Total Customers",
       subTitle: "Total Accounts",
-      value: cardData.totalAccounts || 0,
-      sub_Value: cardData.totalCustomers || 0,
+      value: cardData.totalCustomers || 0,
+      sub_Value: cardData.totalAccounts || 0,
       image: customer,
     },
     {

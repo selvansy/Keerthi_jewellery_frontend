@@ -207,7 +207,7 @@ const Delist = () => {
       header: "Actions",
       cell: (row, rowIndex) => (
         <Action row={row} data={schemes} rowIndex={rowIndex} activeDropdown={activeDropdown} setActive={hanldeActiveDropDown}  
-        handleEdit={row.scheme_type !== 10 ? handleEdit : handleDigiGold}
+        handleEdit={ ![10, 14].includes(row.scheme_type) ? handleEdit : handleDigiGold}
          handleDelete={handleDelete}
          showEdit={row.is_accounts !== true}
          showDelete= {row.is_accounts !== true}
@@ -257,7 +257,7 @@ useEffect(() => {
         <div>Loading...</div>
       ) : (
         <>
-          <h6 className="text-gray-900 font-bold mb-4">{bred}</h6>
+          <h6 className="text-gray-900 font-normal mb-4">{bred}</h6>
           {/* <div className="flex flex-col gap-4 lg:flex-row lg:justify-end lg:items-center mt-4">
             <div className="flex flex-row items-center justify-end gap-2">
               <button

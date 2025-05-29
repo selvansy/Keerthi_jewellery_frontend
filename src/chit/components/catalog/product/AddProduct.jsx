@@ -59,7 +59,7 @@ const AddProduct = () => {
     id_metal: "",
     weight: "0",
     id_purity: "",
-    gst: "0",
+    gst: "3",
     showprice: "",
     makingCharges: {
       mode: "amount",

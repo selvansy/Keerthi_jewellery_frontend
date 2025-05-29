@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { CalendarDays, CloudFog, Search } from "lucide-react";
@@ -27,6 +27,7 @@ import { openModal } from "../../../../redux/modalSlice";
 import { closeModal } from "../../../../redux/modalSlice";
 import { eventEmitter } from "../../../../utils/EventEmitter";
 import Modal from "../../common/Modal";
+import { emptyToZero } from "../../../utils/commonFunction";
 import { customStyles } from "../../ourscheme/scheme/AddScheme";
 
 export function ExistingCustomer({
@@ -205,15 +206,15 @@ export function ExistingCustomer({
           maxLength={"10"}
           className="border-2 border-[#f2f3f8] rounded-md p-2  focus:border-transparent"
           placeholder="Enter Here"
-          // onKeyDown={(e) => {
-          //   if (e.key === "Enter") {
-          //     e.preventDefault();
-          //     handlesearchcustomer({
-          //       id_branch: formData.id_branch,
-          //       search_mobile: formData.mobile,
-          //     });
-          //   }
-          // }}
+        // onKeyDown={(e) => {
+        //   if (e.key === "Enter") {
+        //     e.preventDefault();
+        //     handlesearchcustomer({
+        //       id_branch: formData.id_branch,
+        //       search_mobile: formData.mobile,
+        //     });
+        //   }
+        // }}
         />
 
         {/* Search Icon */}
@@ -350,6 +351,25 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
     flexFixed: 0,
     fixed: 0,
   });
+
+  //    const prevFormData = useRef(formData);
+
+  // useEffect(() => {
+  //   const prev = prevFormData.current;
+  //   const changedFields = Object.keys(formData).filter(
+  //     key => formData[key] !== prev[key]
+  //   );
+
+  //   if (changedFields.length > 0) {
+  //     console.log("🔄 Changed fields:");
+  //     changedFields.forEach((key) => {
+  //       console.log(`→ ${key}:`, prev[key], "→", formData[key]);
+  //     });
+  //   }
+
+  //   // Update ref for next comparison
+  //   prevFormData.current = formData;
+  // }, [formData]);
 
   const { data: branchresponse, isLoading: branchloading } = useQuery({
     queryKey: ["branch"],
@@ -497,11 +517,13 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
   // };
 
   const handleSearchmobile = async () => {
+    console.log('handle search');
+
     try {
       if (Number(searchmobile) === Number(cusData.mobile)) {
         return toast.error("Self referral is not allowed");
       }
-      console.log(selectedRole)
+
       const matchingRole = referralRoles.find(
         (element) => Number(selectedRole) === element.value
       );
@@ -512,7 +534,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
           cusData.customerId
         );
 
-        if(data && !data.data){
+        if (data && !data.data) {
           console.log("first")
           return toast.error("No customer found or deleted customer")
         }
@@ -576,9 +598,30 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
   // };
 
   const filterInputchange = (e) => {
-    const { name, value } = e.target;
+    console.log('calling', e.target.name);
 
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const { name, value } = e.target;
+    console.log('val ', value);
+
+    // setFormData((prev) => {
+    //   console.log('prev', prev);
+    //   console.log('Updated', { ...prev, [name]: value });
+
+    //   return { ...prev, [name]: value }}
+    //   );
+    const newValue = value === "" ? "" : isNaN(value) ? value : +value;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: newValue,
+    }));
+
+    //   setFormData((prev) => ({
+    //   ...prev,
+    //   [name]: value,
+    // }));
+
+    console.log(name, formData[name]);
 
     if (name === "referral_type") {
       setFormData((prev) => ({ ...prev, [name]: value }));
@@ -605,42 +648,59 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
       setErrors((prevState) => {
         const newErrors = { ...prevState };
 
-        if (value === "") {
-          delete newErrors.weight;
-        } else if (value < formData.min_weight) {
-          newErrors.weight = "Weight can't be less than min weight";
-        } else if (value > formData.max_weight) {
-          newErrors.weight = "Weight can't be more than max weight";
-        } else {
-          delete newErrors.weight;
-        }
+        let wtValue = emptyToZero(value);
+        formData.min_weight = emptyToZero(formData.min_weight);
+        formData.max_weight = emptyToZero(formData.max_weight);
+
+        setTimeout(() => {
+
+          if (wtValue === "") {
+            delete newErrors.weight;
+          } else if (wtValue < formData.min_weight) {
+            newErrors.weight = "Weight can't be less than min weight";
+          } else if (wtValue > formData.max_weight) {
+            newErrors.weight = "Weight can't be more than max weight";
+          } else {
+            delete newErrors.weight;
+          }
+        }, 500);
 
         return newErrors;
       });
     }
 
     if (name === "amount" && selectedClassification === 3) {
+      let amtValue = emptyToZero(value);
+      formData.min_amount = emptyToZero(formData.min_amount);
+      formData.max_amount = emptyToZero(formData.max_amount);
+      console.log('amtValue', amtValue);
+
       setErrors((prevState) => {
         const newErrors = { ...prevState };
+        console.log('formData.min_amount ', formData.min_amount);
+        console.log(formData.max_amount);
+        // setTimeout(() => {
 
-        if (value === "") {
+        if (amtValue === "") {
           delete newErrors.amount;
-        } else if (value < formData.min_amount) {
+        } else if (amtValue < formData.min_amount) {
           newErrors.amount = "Amount can't be less than min amount";
-        } else if (value > formData.max_amount) {
+        } else if (amtValue > formData.max_amount) {
           newErrors.amount = "Amount can't be more than max amount";
         } else {
           delete newErrors.amount;
         }
+        // }, 500);
 
         return newErrors;
       });
     }
   };
+  // console.log(formData);
 
-  useEffect(()=>{
+  useEffect(() => {
     handleschemebyid(formData.id_scheme);
-  },[formData.id_scheme])
+  }, [formData.id_scheme])
 
   // const handleschemebyid = async (id) => {
   //   try {
@@ -696,7 +756,6 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
   // };
   const handleschemebyid = async (id) => {
     try {
-      console.log(id)
       const countData = await getSchemeAccountCount(formData.mobile, id);
       const newAcNumber = countData.data !== 0 ? Number(countData.data) + 1 : 1;
       setAcNumber(newAcNumber);
@@ -722,7 +781,10 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
           ...prevState,
           scheme_type: schemeData?.scheme_type,
           total_installments: schemeData?.total_installments,
-          maturity_period: schemeData?.maturity_period,
+          maturity_period:
+            schemeData?.scheme_type == 10 || schemeData?.scheme_type == 14
+              ? schemeData?.noOfDays
+              : schemeData?.maturity_period,
           installment_type: schemeData?.installment_type,
           code: schemeData?.code,
           min_weight: schemeData?.min_weight || 0,
@@ -752,17 +814,32 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
     }
   }, [formData.id_scheme, schemefilter]);
 
+  function digigoldandsilverMaturity(startDateStr, noOfDays) {
+    const startDate = new Date(startDateStr);
+    const maturityDate = new Date(startDate);
+    maturityDate.setDate(maturityDate.getDate() + noOfDays);
+    return maturityDate.toISOString().split('T')[0];
+  }
+
   useEffect(() => {
     if (
       formData.start_date &&
       formData.maturity_period &&
       formData.installment_type
     ) {
-      calculateMaturityDate(
-        formData.start_date,
-        formData.maturity_period,
-        formData.installment_type
-      );
+      if (formData.scheme_type != 10 && formData.scheme_type != 14) {
+        calculateMaturityDate(
+          formData.start_date,
+          formData.maturity_period,
+          formData.installment_type
+        )
+      } else {
+        console.log("ker")
+        digigoldandsilverMaturity(
+          formData.start_date,
+          formData.maturity_period
+        )
+      }
     }
   }, [
     formData.id_scheme,
@@ -966,12 +1043,34 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
 
   const inputHeight = "42px";
 
+  const updateAmtWtValue = (payload) => {
+    const { weight, amount } = payload;
+console.log('selectedClassification', selectedClassification, 'weight', weight, 'amount', amount);
+
+    if (selectedClassification === 2 || selectedClassification === 3) {
+      if (weight !== 0) {
+        payload.flexFixed = weight;
+        payload.weight = 0;
+        payload.amount = 0;
+      } else if (amount !== 0) {
+        payload.flexFixed = amount;
+        payload.weight = 0;
+        payload.amount = 0;
+      }
+    }
+    return payload;
+  }
   const onSubmit = (e) => {
     e.preventDefault();
 
+
     if (isValidForm()) {
+      console.log('formData', formData);
+      let payload = updateAmtWtValue(formData);
+      console.log('payload', payload);
+      
       const updatedFormData = {
-        ...formData,
+        ...payload,
         referral_id: referralId,
         scheme_count_number: acNumber,
       };
@@ -1072,13 +1171,14 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
   }, [formData.weight]);
 
   const handlePayment = (id) => {
-    console.log(id)
+    console.log(id);
     dispatch(
       openModal({
         modalType: "CONFIRMATION",
         header: "Proceed to payment",
         formData: {
-          message: "You're all set! Continue to the Payment Module to complete the process.",
+          message:
+            "You're all set! Continue to the Payment Module to complete the process.",
           redirectTo: `/payment/addschemepayment/${id}`,
           onCancelRedirect: "/managecustomers/customerschemes",
         },
@@ -1114,7 +1214,8 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
         }));
       }
     }
-  }, [formData.weight, formData.amount, selectedClassification]);
+  }, [selectedClassification]);
+  // }, [formData.weight, formData.amount, selectedClassification]);
 
   useEffect(() => {
     if (selectedScheme === "Fixed" && formData.id_scheme) {
@@ -1130,10 +1231,10 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
     }
   }, [formData.id_scheme, selectedScheme, schemefilter]);
 
-  console.log(errors)
+  // console.log(errors);
 
   return (
-   <form onSubmit={onSubmit}>
+    <form onSubmit={onSubmit}>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div>
           <label className="text-black mb-1 font-normal">
@@ -1267,12 +1368,12 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
               value={
                 schemefilter.find((scheme) => scheme._id === formData.id_scheme)
                   ? {
-                      value: formData.id_scheme,
-                      label:
-                        schemefilter.find(
-                          (scheme) => scheme._id === formData.id_scheme
-                        )?.scheme_name || "",
-                    }
+                    value: formData.id_scheme,
+                    label:
+                      schemefilter.find(
+                        (scheme) => scheme._id === formData.id_scheme
+                      )?.scheme_name || "",
+                  }
                   : null
               }
               onChange={(selectedOption) => {
@@ -1358,20 +1459,19 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
                     ...prev,
                     ...([12, 3, 4].includes(prev.scheme_type)
                       ? {
-                          weight: newValue,
-                          amount: newValue ? newValue * metalRate : 0,
-                        }
+                        weight: newValue,
+                        amount: newValue ? newValue * metalRate : 0,
+                      }
                       : {
-                          amount: newValue,
-                          weight: 0,
-                        }),
+                        amount: newValue,
+                        weight: 0,
+                      }),
                   }));
                 }}
-                placeholder={`Select ${
-                  [12, 3, 4].includes(formData.scheme_type)
-                    ? "Weight"
-                    : "Amount"
-                }`}
+                placeholder={`Select ${[12, 3, 4].includes(formData.scheme_type)
+                  ? "Weight"
+                  : "Amount"
+                  }`}
               />
             ) : (
               <div className="border-2 border-[#f2f3f8] rounded-md p-2 bg-gray-100 text-gray-500">
@@ -1399,11 +1499,11 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
                       type="number"
                       step="any"
                       name="weight"
-                      defaultValue={""}
+                      // defaultValue={value}
                       value={formData.weight}
                       onChange={(e) => filterInputchange(e)}
                       onWheel={(e) => e.target.blur()}
-                      className="border-2 cursor-not-allowed border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                      className="border-2 border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                       placeholder="Enter weight"
                     />
                     <p className="text-sm mt-2" style={{ color: "red" }}>
@@ -1416,14 +1516,15 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
                       Amount<span className="text-red-400"> * </span>
                       <span className="text-gray-400 text-sm">{`(min: ${formData.min_amount} - max: ${formData.max_amount})`}</span>
                     </label>
+                    {/* <p>Form data amount : {formData.amount}</p> */}
                     <input
                       type="number"
                       name="amount"
-                      defaultValue={""}
+                      // defaultValue={value}
                       value={formData.amount}
                       onWheel={(e) => e.target.blur()}
                       onChange={(e) => filterInputchange(e)}
-                      className="border-2 cursor-not-allowed border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                      className="border-2  border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                       placeholder="Enter amount"
                     />
                     <p className="text-sm mt-2" style={{ color: "red" }}>
@@ -1478,20 +1579,22 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
           </div>
           <p style={{ color: "red" }}>{errors?.account_name}</p>
         </div>
-        <div className="flex flex-col">
-          <label className="text-black mb-1 font-normal">
-            Total Installment<span className="text-red-400">*</span>
-          </label>
-          <input
-            type="text"
-            name="total_installments"
-            value={formData.total_installments}
-            className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
-            placeholder="Enter Total Installment"
-            disabled
-          />
-          <p style={{ color: "red" }}>{errors?.total_installments}</p>
-        </div>
+        {formData.scheme_type !== 10 && formData.scheme_type !== 14 && (
+          <div className="flex flex-col">
+            <label className="text-black mb-1 font-normal">
+              Total Installment<span className="text-red-400">*</span>
+            </label>
+            <input
+              type="text"
+              name="total_installments"
+              value={formData.total_installments}
+              className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+              placeholder="Enter Total Installment"
+              disabled
+            />
+            <p style={{ color: "red" }}>{errors?.total_installments}</p>
+          </div>
+        )}
         <div className="flex flex-col">
           <label className="text-black mb-1 font-normal">
             Maturity Period<span className="text-red-400">*</span>
@@ -1620,7 +1723,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
           </button>
         </div>
       </div>
-      <Modal/>
+      <Modal />
     </form>
   );
 };

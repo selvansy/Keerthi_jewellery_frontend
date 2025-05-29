@@ -145,7 +145,7 @@ const SchemeForm = () => {
         // setIsLoading(false);
         toast.success(response?.data?.message);
         formik.resetForm();
-        navigate("/scheme/scheme/");
+        navigate("/scheme/delist");
       }
     },
     onError: () => {

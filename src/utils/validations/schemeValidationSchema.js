@@ -265,8 +265,13 @@ export const schemeValidationSchema = Yup.object({
             ),
       }),
   }),
-  description: Yup.string().required("Description is required"),
-  term_desc: Yup.string().required("Terms and conditions is required"),
+  description: Yup.string()
+    .required("Description is required")
+    .max(850, "Description cannot exceed 850 characters"),
+  
+  term_desc: Yup.string()
+    .required("Terms and conditions is required")
+    .max(850, "Terms and conditions cannot exceed 850 characters"),
   classification_order: Yup.number(),
   min_weight: Yup.number().when(["scheme_type", "classType"], {
     is: (scheme_type, classType) => 

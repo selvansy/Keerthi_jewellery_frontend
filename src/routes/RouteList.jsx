@@ -166,7 +166,7 @@ const RouteList = [
   },
   {
     name: "Delist",
-    path: "/scheme/delist",
+    path: "/scheme/delisted",
     element: <Base renderContent={Delist} />,
   },
   {
@@ -262,7 +262,7 @@ const RouteList = [
   },
   {
     name: "Topup",
-    path: '/settings/topup',
+    path: '/usersettings/topup',
     element: <Base renderContent={Topup} />
   },
 
@@ -571,7 +571,7 @@ const RouteList = [
   },
   {
     name: "Organisation",
-    path: '/settings/organisation',
+    path: '/usersettings/organisation',
     element: <Base renderContent={Organisation} />
   },
 

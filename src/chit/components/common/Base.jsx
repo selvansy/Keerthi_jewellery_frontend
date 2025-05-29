@@ -403,6 +403,79 @@ const Base = ({ renderContent: RenderContent }) => {
     );
   };
 
+  // const MenuItem = ({
+  //   text,
+  //   menuIcon,
+  //   hasSubmenu = false,
+  //   onClick,
+  //   children,
+  // }) => {
+  //   const menuKey = text.toLowerCase().replace(/\s+/g, "");
+  //   const isOpen = activeMenu === menuKey;
+  //   const isSelected = hasSubmenu
+  //     ? selectedParentSection === text
+  //     : selectedSection === text && selectedParentSection === text;
+
+  //   return (
+  //     <div className="w-full px-3 py-1 relative">
+  //       <div
+  //         className={`w-full flex items-center px-4 py-3 cursor-pointer rounded-md transition-colors
+  //           ${
+  //             isSelected
+  //               ? "border-2 border-[#004181] bg-[#004181] text-white"
+  //               : "hover:bg-[#004181] hover:text-white border-2 border-transparent text-[#6b7086]"
+  //           }`}
+  //         onClick={() => {
+  //           if (hasSubmenu) {
+  //             setSelectedParentSection(text);
+  //             toggleMenu(menuKey);
+  //           } else {
+  //             setSelectedSection(text);
+  //             setSelectedParentSection(text);
+  //             setSelectedSubSection("");
+  //             onClick && onClick();
+  //           }
+  //         }}
+  //       >
+  //         <img
+  //           className={`w-6 h-6 ${
+  //             isSelected ? "fill-white" : "fill-current"
+  //           } hover:fill-white`}
+  //           src={`${import.meta.env.VITE_API_URL}/${menuIcon}`}
+  //           alt="Menu Icon"
+  //           style={{
+  //             filter: isSelected ? "brightness(0) invert(1)" : "none",
+  //           }}
+  //         />
+
+  //         <span className={`flex-1 text-left ml-2`}>{text}</span>
+  //         {hasSubmenu && (
+  //           <span className="ml-auto transition-transform duration-300">
+  //             {isOpen ? (
+  //               <ChevronDown className="w-4 h-4" />
+  //             ) : (
+  //               <ChevronRight className="w-4 h-4" />
+  //             )}
+  //           </span>
+  //         )}
+  //       </div>
+
+  //       <div
+  //         className={`relative overflow-y-auto overflow-hidden transition-all scrollbar-hide duration-300 ease-in-out
+  //         ${isOpen ? "max-h-[60vh] opacity-100 mt-2" : "max-h-0 opacity-0"}`}
+  //       >
+  //         {React.Children.map(children, (child, index) => {
+  //           if (!child) return null;
+  //           return React.cloneElement(child, {
+  //             isFirst: index === 0,
+  //             isLast: index === React.Children.count(children) - 1,
+  //             parentSection: text,
+  //           });
+  //         })}
+  //       </div>
+  //     </div>
+  //   );
+  // };
   const MenuItem = ({
     text,
     menuIcon,
@@ -415,7 +488,7 @@ const Base = ({ renderContent: RenderContent }) => {
     const isSelected = hasSubmenu
       ? selectedParentSection === text
       : selectedSection === text && selectedParentSection === text;
-
+  
     return (
       <div className="w-full px-3 py-1 relative">
         <div
@@ -437,17 +510,27 @@ const Base = ({ renderContent: RenderContent }) => {
             }
           }}
         >
-          <img
-            className={`w-6 h-6 ${
-              isSelected ? "fill-white" : "fill-current"
-            } hover:fill-white`}
-            src={`${import.meta.env.VITE_API_URL}/${menuIcon}`}
-            alt="Menu Icon"
-            style={{
-              filter: isSelected ? "brightness(0) invert(1)" : "none",
-            }}
-          />
-
+          {menuIcon ? (
+            <img
+              className={`w-6 h-6 ${
+                isSelected ? "fill-white" : "fill-current"
+              } hover:fill-white`}
+              src={`${import.meta.env.VITE_API_URL}/${menuIcon}`}
+              alt="Menu Icon"
+              style={{
+                filter: isSelected ? "brightness(0) invert(1)" : "none",
+              }}
+            />
+          ) : (
+            <img 
+              src={Dashboard} 
+              alt="Dashboard Icon" 
+              className={`w-6 h-6 ${
+                isSelected ? "filter brightness-0 invert" : ""
+              }`}
+            />
+          )}
+  
           <span className={`flex-1 text-left ml-2`}>{text}</span>
           {hasSubmenu && (
             <span className="ml-auto transition-transform duration-300">
@@ -459,7 +542,7 @@ const Base = ({ renderContent: RenderContent }) => {
             </span>
           )}
         </div>
-
+  
         <div
           className={`relative overflow-y-auto overflow-hidden transition-all scrollbar-hide duration-300 ease-in-out
           ${isOpen ? "max-h-[60vh] opacity-100 mt-2" : "max-h-0 opacity-0"}`}
@@ -645,7 +728,7 @@ const Base = ({ renderContent: RenderContent }) => {
                 <span className="ml-1">
                   {formatNumber({
                     value: getGold24Rate(),
-                    decimalPlaces: 0,
+                    decimalPlaces: 2,
                   })}
                 </span>
               </div>
@@ -655,7 +738,7 @@ const Base = ({ renderContent: RenderContent }) => {
                 <span className="ml-1">
                   {formatNumber({
                     value: getGold22Rate(),
-                    decimalPlaces: 0,
+                    decimalPlaces: 2,
                   })}
                 </span>
               </div>
@@ -665,7 +748,7 @@ const Base = ({ renderContent: RenderContent }) => {
                 <span className="ml-1">
                   {formatNumber({
                     value: getSilverRate(),
-                    decimalPlaces: 0,
+                    decimalPlaces: 2,
                   })}
                 </span>
               </div>
