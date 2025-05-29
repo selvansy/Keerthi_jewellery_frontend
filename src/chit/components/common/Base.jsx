@@ -732,7 +732,7 @@ const Base = ({ renderContent: RenderContent }) => {
                   })}
                 </span>
               </div>
-              <div className="bg-[#FFE28D] flex px-2 py-1 sm:px-3 sm:py-1.5 rounded-[8px] text-xs sm:text-sm">
+              <div className="bg-[#FFE28D] flex px-2 py-1 sm:px-3 sm:py-1.5 text-[#232323] rounded-[8px] text-[12px] sm:text-sm">
                 <span className="hidden sm:inline">Gold (22K):</span>
                 <span className="sm:hidden">G22:</span>
                 <span className="ml-1">

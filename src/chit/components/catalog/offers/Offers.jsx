@@ -416,7 +416,7 @@ const Offers = () => {
           {/* Desktop-only button - appears on the right side */}
           <div className="hidden sm:block sm:order-3">
             <button
-              className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-[135px]"
+              className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-[145px]"
                onClick={handleClick}
               style={{ backgroundColor: layout_color }}
             >
