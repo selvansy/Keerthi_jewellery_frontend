@@ -79,11 +79,11 @@ function Action({ row, data, rowIndex, activeDropdown, setActive, handleEdit, ha
               filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.15))",
             }}
           >
-            <div className="w-32 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+            <div className="w-32 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 ">
               <div className="py-1">
                 {handleView && (
                   <button
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-[#E7EEF5] flex items-center gap-2"
                     onClick={() => {
                       handleView(row._id);
                       setActive(null);
@@ -95,7 +95,7 @@ function Action({ row, data, rowIndex, activeDropdown, setActive, handleEdit, ha
 
                 {showEdit && (
                   <button
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-[#E7EEF5] flex items-center gap-2"
                     onClick={() => {
                       handleEdit(row._id);
                       setActive(null);
@@ -106,7 +106,7 @@ function Action({ row, data, rowIndex, activeDropdown, setActive, handleEdit, ha
                 )}
                 {showDelete && (
                   <button
-                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
+                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-[#E7EEF5] flex items-center gap-2"
                     onClick={() => {
                       handleDelete(row._id);
                       setActive(null);

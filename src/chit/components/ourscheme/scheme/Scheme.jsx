@@ -542,7 +542,7 @@ const Scheme = () => {
                 {searchLoading ? (
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
                 ) : (
-                  <Search className="text-black" />
+                  <Search className="text-[#6C7086] h-5 w-5" />
                 )}
               </div>
               <input
@@ -551,16 +551,17 @@ const Scheme = () => {
                   setSearchInput(e.target.value);
                 }}
                 placeholder="Search"
-                className="px-4 py-2 ps-9 border-2 border-[#F2F2F9] rounded-[8px] w-full sm:w-[228px]"
+                className="px-4 py-2 ps-9 border-2 border-[#F2F2F9] rounded-[8px] w-full h-[36px] sm:w-[228px]"
               />
             </div>
             {/* Button First */}
             <button
-              className="rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
+              className="rounded-md px-5 py-1 text-sm font-semibold text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] w-[158px] h-[36px] transition-colors"
               onClick={handleCreateSchemeClick}
               style={{ backgroundColor: layout_color }}
             >
-              + Add Scheme
+              <span className="text-lg mr-2">+</span> 
+               Add Scheme
             </button>
           </div>
         </div>

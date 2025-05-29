@@ -19,6 +19,7 @@ import { customSelectStyles } from "../../Setup/purity";
 import { title } from "framer-motion/client";
 import SpinLoading from "../../common/spinLoading";
 import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
+import { customStyles } from "../../ourscheme/scheme/AddScheme";
 
 const AddOffers = () => {
   const { id } = useParams();
@@ -328,7 +329,7 @@ const AddOffers = () => {
                   Branches <span className="text-red-500">*</span>
                 </label>
                 <Select
-                  styles={customSelectStyles(true)}
+                  styles={customStyles(true)}
                   options={Array.isArray(branch) ? branch : []}
                   placeholder="Select Branch"
                   value={
@@ -376,7 +377,7 @@ const AddOffers = () => {
                 <Select
                   options={offersType}
                   className="z-30"
-                  styles={customSelectStyles(true)}
+                  styles={customStyles(true)}
                   placeholder="Select Type"
                   onChange={(data) => {
                     setFormData((prev) => ({

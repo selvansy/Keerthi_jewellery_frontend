@@ -25,6 +25,7 @@ import usePagination from "../../../hooks/usePagination";
 import SpinLoading from "../../common/spinLoading";
 import Action from "../../common/action";
 import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
+import { customStyles } from "../../ourscheme/scheme/AddScheme";
 
 export const customSelectStyles = (isReadOnly) => ({
   control: (base, state) => ({
@@ -342,13 +343,13 @@ const Purity = () => {
               {searchLoading ? (
                 <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
               ) : (
-                <Search className="text-black" />
+                <Search className="text-[#6C7086] h-5 w-5" />
               )}
             </div>
             <input
               onChange={handleSearch}
               placeholder="Search"
-              className="px-4 py-2 ps-9 border-2 border-[#F2F2F9] rounded-[8px] w-[228px]"
+              className="px-4 py-2 ps-9 border-2 border-[#F2F2F9] rounded-[8px] w-[219px] h-[36px]"
             />
           </div>
 
@@ -356,7 +357,7 @@ const Purity = () => {
           {(purityData.length <= 3 && !Loading && enableButton ) && (
             <div className="w-full flex justify-end">
               <button
-                className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-[135px] sm:w-auto"
+                className="rounded-md text-sm font-semibold px-7 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-[219px] h-[36px] sm:w-auto"
                 onClick={handleAddpurity}
                 style={{ backgroundColor: layout_color }}
               >
@@ -545,7 +546,7 @@ export const PurityForm = ({ setIsOpen, metals, clearId, id }) => {
           value={formData.purity_name}
           onChange={handleChange}
           placeholder="Enter Purity Name"
-          className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="p-3 border border-gray-300 h-[44px] w-full rounded-md focus:ring-1 custom-height focus:ring-[#004181] outline-none"
         />
         {formErrors.purity_name && (
           <div className="text-red-500 text-sm">{formErrors.purity_name}</div>
@@ -561,6 +562,7 @@ export const PurityForm = ({ setIsOpen, metals, clearId, id }) => {
           options={metals}
           value={formData.id_metal} // Corrected to show selected metal
           onChange={handleSelect}
+          styles={customStyles(true)}
           placeholder="Select Metal"
           className="react-select-container"
           classNamePrefix="react-select"

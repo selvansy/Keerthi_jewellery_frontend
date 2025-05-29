@@ -75,9 +75,42 @@ select {
 label{
   font-size: 14px !important;
 }
+input::placeholder {
+   color:#6C7086;
+   font-size: 14px;
+}
+ 
+input::-webkit-input-placeholder { /* Chrome/Safari/Opera */
+   color:#6C7086;
+    font-size: 14px;
+}
+ 
+input::-moz-placeholder { /* Firefox 19+ */
+   color:#6C7086;
+    font-size: 14px;
+}
+ 
+input:-ms-input-placeholder { /* IE10+ */
+   color:#6C7086;
+    font-size: 14px;
+}
+ 
+input:-moz-placeholder { /* Firefox 18- */
+   color:#6C7086;
+  font-size: 14px;
+}
+textarea::placeholder {
+  color:#6C7086;
+   font-size: 14px;
+}
+
 
 
 input:focus{
   box-shadow: 0 0 0 1px #004181;
   outline: none;
-} 
+}
+
+label{
+  color: #232323;
+}

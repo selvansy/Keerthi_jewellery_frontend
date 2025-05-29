@@ -12,6 +12,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Loading from '../common/Loading';
 import { Breadcrumb } from '../common/breadCumbs/breadCumbs';
+import { customStyles } from '../ourscheme/scheme/AddScheme';
 
 function ContentForm() {
     const navigate = useNavigate();
@@ -146,7 +147,7 @@ function ContentForm() {
                                         }));
                                     }}
                                     isDisabled={isViewMode}
-                                    styles={customSelectStyles(true)}
+                                    styles={customStyles(true)}
                                     isLoading={loadingContent}
                                     placeholder="Select Content"
                                 />

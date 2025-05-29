@@ -11,6 +11,11 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { formatDate } from "../../../../utils/FormatDate";
 import { formatDecimal } from "../../../utils/commonFunction";
+import { customSelectStyles } from '../../Setup/purity';
+import Table from '../../common/Table';
+import { header } from 'framer-motion/client';
+import { SquarePen } from 'lucide-react';
+import { customStyles } from '../../ourscheme/scheme/AddScheme';
 
 const Exisitingcustomer = () => {
   const navigate = useNavigate();
@@ -189,13 +194,11 @@ const Exisitingcustomer = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5  mt-5">
           {accessBranch === "0" && branch.length > 0 && !isBranchLoading ? (
             <div>
-              <label className="block text-sm font-medium mb-1">
-                Branch <span className="text-red-500">*</span>
-              </label>
-              <Select
+                <label className='text-sm font-medium text-black' >
+                    Branch <span className='text-red-600'>*</span>
+                </label>
+                <Select 
                 styles={customStyles(true)}
-                isClearable={true}
-                options={branch}
                 placeholder="Select Branch"
                 value={
                   branch?.find(

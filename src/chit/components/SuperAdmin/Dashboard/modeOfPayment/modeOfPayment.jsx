@@ -48,7 +48,7 @@ const options = [
 
 const CustomControl = (props) => (
   <components.Control {...props}>
-    <CalendarSearch className="ml-2 mr-2 text-gray-500 w-4 h-4" />
+    <CalendarSearch className="ml-2 mr-2 text-[#232323] w-5 h-5" />
     {props.children}
   </components.Control>
 );
@@ -127,7 +127,7 @@ function ModeOfPayment({ id_branch }) {
 
   return (
     <div className="">
-      <div className="bg-[#FFFFFF] pt-2  p-5 rounded-[16px]">
+      <div className="bg-[#FFFFFF] pt-4 p-5 rounded-[16px]">
         <div className="flex justify-between items-center mb-[15px] ">
           <h2 className="text-[#232323] font-bold text-lg">
             Mode of Payment
@@ -161,11 +161,11 @@ function ModeOfPayment({ id_branch }) {
                 paymentModeData.map((item, index) => (
                   <tr
                     key={index}
-                    className="bg-white border-b   border-gray-200"
+                    className="bg-white border-b border-gray-200"
                   >
                     <th
                       scope="row"
-                      className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                      className="px-6 py-4 font-medium text-[#434446] whitespace-nowrap"
                     >
                       {item.payment_mode || "Cash Free"}
                     </th>
@@ -176,7 +176,7 @@ function ModeOfPayment({ id_branch }) {
                 <tr>
                   <td
                     colSpan="2"
-                    className="px-6 py-4 text-center text-gray-500"
+                    className="px-6 py-4 text-center text-[#434446]"
                   >
                     No data available for the selected date range.
                   </td>

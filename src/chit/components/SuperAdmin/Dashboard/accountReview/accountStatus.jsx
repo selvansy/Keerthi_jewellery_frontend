@@ -178,7 +178,7 @@ const AccountStatus = ({ id_branch }) => {
 
   const navigate = useNavigate();
   return (
-    <div className="border-2 border-[#F5F5F5] p-5 rounded-[20px] lg:col-span-2 bg-white text-[#232323]">
+    <div className="border-[1px] border-[#F5F5F5] p-5 rounded-[20px] lg:col-span-2 bg-white text-[#232323]">
       <div className="flex justify-between items-center mb-8">
         <h2 className="text-gray-800 font-bold text-lg">Account</h2>
         <Select
@@ -334,7 +334,7 @@ const AccountStatus = ({ id_branch }) => {
           <img
             src={AddAcc}
             alt={AddAcc}
-            className="h-[20px] w-[20px] me-[18px]"
+            className="h-[22px] w-[22px] me-[18px]"
           />
           <button className="text-white">Add Accounts</button>
         </div>

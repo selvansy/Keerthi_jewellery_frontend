@@ -16,6 +16,7 @@ import { useLocation } from 'react-router-dom';
 import More from "../../../assets/more.svg"
 import { createPortal } from 'react-dom';
 import eyeIcon from "../../../assets/icons/eye.svg"
+import { customStyles } from '../ourscheme/scheme/AddScheme';
 
 
 const customSelectStyles = (isReadOnly) => ({
@@ -644,7 +645,7 @@ function WalletRedemption() {
                                                         handleInputChange({ target: { name: 'redeem_type', value: selectedOption?.value } })
                                                     }
                                                     options={redeem_type}
-                                                    styles={customSelectStyles(true)}
+                                                    styles={customStyles(true)}
                                                     menuPlacement="top"
                                                     placeholder="-- Select --"
                                                 />
@@ -674,7 +675,7 @@ function WalletRedemption() {
                                                 }))
                                             }
                                             options={paymentData}
-                                            styles={customSelectStyles(true)}
+                                            styles={customStyles(true)}
                                             menuPlacement="top"
                                             placeholder="-- Select --"
                                         />

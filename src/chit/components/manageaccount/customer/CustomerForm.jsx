@@ -30,6 +30,7 @@ import CheckboxToggle from "../../common/checkBox";
 import ModelOne from "../../common/Modelone";
 import VerificationModal from "../closedaccount/VerificationModal";
 import OtpCompleted from "../../manageaccount/closedaccount/OtpCompleted";
+import { customStyles } from "../../ourscheme/scheme/AddScheme";
 
 const customSelectStyles = (isReadOnly) => ({
   control: (base, state) => ({
@@ -652,11 +653,11 @@ const CustomerForm = ({
                     </div> */}
                 {accessBranch === "0" && branchData.length > 0 && !isLoading ? (
                   <div>
-                    <label className="block text-sm font-medium mb-2">
+                    <label className="block text-sm font-medium mb-1">
                       Branches <span className="text-red-500">*</span>
                     </label>
                     <Select
-                      styles={customSelectStyles(true)}
+                      styles={customStyles(true)}
                       isClearable={true}
                       options={branchData}
                       placeholder="Select Branch"
@@ -815,7 +816,7 @@ const CustomerForm = ({
                       setCountry(ctry.value);
                       formik.setFieldTouched("id_country", false);
                     }}
-                    styles={customSelectStyles(true)}
+                    styles={customStyles(true)}
                     isLoading={loadingCountries}
                     placeholder="Select Country"
                   />
@@ -838,7 +839,7 @@ const CustomerForm = ({
                       setState(e.value);
                       formik.setFieldTouched("id_state", false);
                     }}
-                    styles={customSelectStyles(true)}
+                    styles={customStyles(true)}
                     isLoading={loadingStates}
                     value={
                       stateData.find(
@@ -865,7 +866,7 @@ const CustomerForm = ({
                       setCity(e.value);
                       formik.setFieldTouched("id_city", false);
                     }}
-                    styles={customSelectStyles(true)}
+                    styles={customStyles(true)}
                     isLoading={loadingCities}
                     value={
                       cityData.find(

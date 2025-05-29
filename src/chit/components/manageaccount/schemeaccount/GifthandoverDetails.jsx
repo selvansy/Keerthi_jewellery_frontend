@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux';
 import { Search, Trash2 } from 'lucide-react'
 import { useLocation } from 'react-router-dom';
 import Table from '../../common/Table';
+import { customStyles } from '../../ourscheme/scheme/AddScheme';
 
 const customComponents = {
     DropdownIndicator: () => null,
@@ -223,7 +224,7 @@ function GifthandoverDetails() {
                                         // value={schemeaccount.find(item => item.value === schId) || ""}
                                         value=""
 
-                                        styles={customSelectStyles(true)}
+                                        styles={customStyles(true)}
                                         placeholder="Select SchemeAccount Type"
                                     />
 
@@ -291,7 +292,7 @@ function GifthandoverDetails() {
                               
                              
                                 components={customComponents}
-                                styles={customSelectStyles(true)}
+                                styles={customStyles(true)}
                                
                                 placeholder="Search/Select GiftCode"
                             />

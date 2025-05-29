@@ -15,6 +15,7 @@ import Select from "react-select";
 import { customSelectStyles } from "../Setup/purity";
 import { Breadcrumb } from "../common/breadCumbs/breadCumbs";
 import DateRangeSelector from "../common/calender";
+import { customStyles } from "../ourscheme/scheme/AddScheme";
 
 function PaymentLedger() {
   const roleData = useSelector((state) => state.clientForm.roledata);
@@ -164,7 +165,7 @@ function PaymentLedger() {
             <div className="flex justify-start">
               <Select
                 className="mt-2 w-[219px]"
-                styles={customSelectStyles(true)}
+                styles={customStyles(true)}
                 options={paymentmode || []}
                 value={paymentmode.find(
                   (option) => option.value === selectedMode

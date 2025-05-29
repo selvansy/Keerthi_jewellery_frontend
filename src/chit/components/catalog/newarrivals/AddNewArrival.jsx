@@ -19,6 +19,7 @@ import SpinLoading from "../../common/spinLoading";
 import { useNavigate, useParams } from "react-router-dom";
 import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
 import { CalendarDays } from "lucide-react";
+import { customStyles } from "../../ourscheme/scheme/AddScheme";
 
 function AddNewArrival() {
   const { id } = useParams();
@@ -293,7 +294,7 @@ function AddNewArrival() {
                     </label>
                     <Select
                       options={Array.isArray(branch) ? branch : [branch]} // Ensures 'branch' is treated as an array
-                      styles={customSelectStyles(true)}
+                      styles={customStyles(true)}
                       placeholder="Select Branch"
                       onChange={handleBranchChange}
                       value={
@@ -323,7 +324,7 @@ function AddNewArrival() {
                   </label>
                   <Select
                     options={products}
-                    styles={customSelectStyles(true)}
+                    styles={customStyles(true)}
                     placeholder="Select Product"
                     onChange={(data) => {
                       setFormData((prev) => ({

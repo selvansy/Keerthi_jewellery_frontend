@@ -696,20 +696,25 @@ const Base = ({ renderContent: RenderContent }) => {
               </div>
             </div>
 
+             <div className="text-[#F5F5F5] text-xl font-semibold border-s-2 border-[#F5F5F5] mt-2 h-[28px]"></div>
+
             {/* Search component */}
             <div
-              className="se flex justify-center items-center w-[120px] h-[50px] gap-5 border text-[#F2F2F9] rounded-[8px]"
+              className="se flex justify-center items-center pl-3 pr-4 w-[90px] h-[40px] mt-1 gap-3 border text-[#F2F2F9] rounded-[8px]"
               onClick={() => setIsModalOpen(true)}
             >
+              
               <div className="search">
-                <img src={Search} alt="" className="w-7 h-7" />
+                <img src={Search} alt="" className="w-8 h-8 " />
               </div>
-
+              {/* <hr className="w-px h-[28px] bg-gray-300 font-semibold  border-none mt-2" /> */}
               <div className="command flex ps-2">
-                <img src={Command} alt="" className="w-7 h-7" />
-                <span className="text-black ms-1">F</span>
+                <img src={Command} alt="" className="w-6 h-6" />
+                <span className="text-black">F</span>
               </div>
             </div>
+
+          
           </div>
 
           {/* Right side with settings, notifications and user menu */}

@@ -28,6 +28,7 @@ import { closeModal } from "../../../../redux/modalSlice";
 import { eventEmitter } from "../../../../utils/EventEmitter";
 import Modal from "../../common/Modal";
 import { emptyToZero } from "../../../utils/commonFunction";
+import { customStyles } from "../../ourscheme/scheme/AddScheme";
 
 export function ExistingCustomer({
   setCusData,
@@ -175,7 +176,7 @@ export function ExistingCustomer({
             setBranch(branch.value);
           }}
           styles={{
-            ...customSelectStyles(true),
+            ...customStyles(true),
             menuPortal: (base) => ({ ...base, zIndex: 9999 }),
           }}
           isLoading={branchloading}
@@ -1250,7 +1251,7 @@ console.log('selectedClassification', selectedClassification, 'weight', weight, 
               formik.setFieldValue("id_branch", option?.value || "")
             }
             onKeyDown={(e) => e.key === "Enter" && e.preventDefault()}
-            styles={customSelectStyles(true)}
+            styles={customStyles(true)}
             isLoading={branchloading}
             isDisabled={id_branch !== "0"}
             placeholder="Select Branch"
@@ -1304,7 +1305,7 @@ console.log('selectedClassification', selectedClassification, 'weight', weight, 
           </label>
           <div className="relative">
             <Select
-              styles={customSelectStyles(true)}
+              styles={customStyles(true)}
               isClearable={true}
               options={classifyfilter}
               name="id_classification"
@@ -1340,7 +1341,7 @@ console.log('selectedClassification', selectedClassification, 'weight', weight, 
           </label>
           <div className="relative">
             <Select
-              styles={customSelectStyles(true)}
+              styles={customStyles(true)}
               isClearable={true}
               options={schemefilter.map((scheme) => {
                 let label = scheme.scheme_name;
@@ -1439,7 +1440,7 @@ console.log('selectedClassification', selectedClassification, 'weight', weight, 
 
             {fixedamt && fixedamt.length > 0 ? (
               <Select
-                styles={customSelectStyles(true)}
+                styles={customStyles(true)}
                 isClearable={true}
                 options={fixedamt}
                 name={
@@ -1668,7 +1669,7 @@ console.log('selectedClassification', selectedClassification, 'weight', weight, 
                   setReferralName(""); // Clear referral name when role changes
                   setReferralid(null); // Clear referral ID when role changes
                 }}
-                styles={customSelectStyles(true)}
+                styles={customStyles(true)}
                 placeholder="Select Referral Type"
               />
             </div>
