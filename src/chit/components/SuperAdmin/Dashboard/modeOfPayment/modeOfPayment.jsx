@@ -127,7 +127,7 @@ function ModeOfPayment({ id_branch }) {
 
   return (
     <div className="">
-      <div className="bg-[#FFFFFF] pt-4 p-5 rounded-[16px]">
+      <div className="bg-[#FFFFFF] pt-2 p-5 rounded-[16px]">
         <div className="flex justify-between items-center mb-[15px] ">
           <h2 className="text-[#232323] font-bold text-lg">
             Mode of Payment

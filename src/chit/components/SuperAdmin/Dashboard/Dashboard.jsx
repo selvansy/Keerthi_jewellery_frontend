@@ -108,7 +108,7 @@ function Dashboard() {
       </div>
 
       {/* Account Review and account status */}
-      <div className="grid grid-cols-1 xl:grid-cols-7 gap-2 ">
+      <div className="grid grid-cols-1 xl:grid-cols-7 gap-2 mb-[9px] ">
         <div className="md:col-span-4 mr-3 ">
           <AccountReview id_branch={selectedBranch} />
         </div>
@@ -124,14 +124,14 @@ function Dashboard() {
       <h2 className="font-semibold text-xl p-4 text-[#232323]">Notification Limits</h2>
       <NotificationCard  />
     </div>
-    <div className="bg-white p-4 border-[1px] border-[#F5F5F5] rounded-[20px]">
+    <div className="bg-white p-4 border-[1px] border-[#F5F5F5] rounded-[20px] mt-[10px]">
       <PaymentHistory id_branch={selectedBranch}/>
     </div>
   </div>
 
   {/* Right side: ModeOfPayment */}
-  <div className=" md:w-3/5 p-3 "> 
-    <div className="bg-white p-4 h-full border-[1px] border-[#F5F5F5] rounded-[20px]">
+  <div className="md:w-3/5 p-3 "> 
+    <div className="bg-white p-4 h-full border-[1px] border-[#F5F5F5] -mt-1 rounded-[20px]">
       <ModeOfPayment id_branch={selectedBranch}/>
     </div>
   </div>

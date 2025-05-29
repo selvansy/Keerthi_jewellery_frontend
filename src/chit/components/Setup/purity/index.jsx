@@ -357,7 +357,8 @@ const Purity = () => {
           {(purityData.length <= 3 && !Loading && enableButton ) && (
             <div className="w-full flex justify-end">
               <button
-                className="rounded-md text-sm font-semibold px-7 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-[219px] h-[36px] sm:w-auto"
+              type="button"
+                className="rounded-md px-7 py-2 text-sm font-semibold text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-[219px] h-[36px] sm:w-auto"
                 onClick={handleAddpurity}
                 style={{ backgroundColor: layout_color }}
               >
