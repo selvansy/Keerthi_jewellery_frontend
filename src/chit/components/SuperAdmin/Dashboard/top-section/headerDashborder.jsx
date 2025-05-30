@@ -63,7 +63,7 @@ function HeaderDashborder({ id_branch }) {
         {cards.map((card, idx) => (
           <div
             key={idx}
-            className="bg-white rounded-[20px] p-4 pb-2 border-[1px] border-[#F5F5F5] flex flex-col gap-4"
+            className="bg-white rounded-[20px] p-4 border-[1px] border-[#F5F5F5] flex flex-col gap-4"
           >
             <img src={card.image} alt={card.title} className="h-10 w-10" />
             <div className="flex flex-col gap-1">
