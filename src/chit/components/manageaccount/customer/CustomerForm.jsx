@@ -1242,7 +1242,7 @@ const CustomerForm = ({
                   {checked && (
                     <div className="flex flex-row justify-between w-full mt-2">
                       <div className="flex flex-col flex-[0.9]">
-                        <label className="block text-sm  mb-1">
+                        <label className="block text-sm  mb-1 text-[#232323] font-semibold">
                           Mobile Number
                           <span className="text-red-400"> *</span>
                         </label>

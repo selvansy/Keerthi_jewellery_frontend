@@ -304,7 +304,7 @@ const GiftItem = () => {
               {searchLoading ? (
                 <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
               ) : (
-                <Search className="text-[#6C7086] h-5 w-5" />
+                <Search className=" text-[#6C7086] h-5 w-5" />
               )}
             </div>
             <input
