@@ -12,6 +12,7 @@ import nonchitReceived from "../../../../../src/assets/icons/nonchitReceived.svg
 import chitReceivedGift from "../../../../../src/assets/icons/chitReceivedGift.svg"
 import totalbal from "../../../../../src/assets/icons/totalbal.svg"
 import { Breadcrumb } from '../../common/breadCumbs/breadCumbs';
+import plus from "../../../../assets/plus.svg";
 
 // \src\assets\totalbal.svg
 const GiftHandOver = () => {
@@ -214,7 +215,7 @@ const GiftHandOver = () => {
                       className="h-[40px] w-[40px]"
                     />
                     <div className="flex flex-col  ms-1 mt-2 pt-4">
-                      <h5 className="text-2xl font-semibold">
+                      <h5 className="text-xl font-bold text-[#232323]">
                         {e.countValue || 0}
                       </h5>
                       <h5 className="text-[#6C7086] font-[500] text-[16px] pt-1" style={{ fontFamily: "Inter, sans-serif" }} >{e.label}</h5>
@@ -238,7 +239,7 @@ const GiftHandOver = () => {
               {searchLoading ? (
                 <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
               ) : (
-                <Search className="text-black" />
+                <Search className="text-[#6C7086] h-5 w-5" />
               )}
             </div>
             <input
@@ -254,11 +255,12 @@ const GiftHandOver = () => {
           {/* Add Button */}
           <div className="w-full sm:w-auto">
             <button
-              className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors   min-w-[135px]"
+              className="flex rounded-lg px-[20px] py-[8px] text-sm font-semibold text-white items-center whitespace-nowrap hover:bg-[#034571] transition-colors sm:w-auto"
               onClick={handleClick}
               style={{ backgroundColor: layout_color }}
             >
-              + Add GiftHandOver
+              <img src={plus} alt="plus" className="w-4 h-4 me-[10px]" />
+               Add GiftHandOver
             </button>
           </div>
         </div>
