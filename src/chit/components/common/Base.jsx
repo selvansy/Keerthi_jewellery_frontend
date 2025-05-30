@@ -696,11 +696,11 @@ const Base = ({ renderContent: RenderContent }) => {
               </div>
             </div>
 
-             <div className="text-[#F5F5F5] text-xl font-semibold border-s-2 border-[#F5F5F5] mt-2 h-[28px]"></div>
+             <div className="text-[#F5F5F5] text-xl font-semibold border-s-2 mt-1 border-[#F5F5F5] h-[28px]"></div>
 
             {/* Search component */}
             <div
-              className="se flex justify-center items-center pl-3 pr-4 w-[90px] h-[40px] mt-1 gap-3 border text-[#F2F2F9] rounded-[8px]"
+              className="se flex justify-center items-center pl-3 pr-5 w-[90px]  gap-3 border text-[#F2F2F9] h-[35px] rounded-[8px]"
               onClick={() => setIsModalOpen(true)}
             >
               
