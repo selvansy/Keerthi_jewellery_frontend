@@ -207,7 +207,7 @@ const GiftHandOver = () => {
           <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {
               cardData.map((e) => (
-                <div className="bg-white border-2 border-[#F5F5F5] rounded-[16px] px-[12px]" key={e.label}>
+                <div className="bg-white border-[1px] border-[#F5F5F5] rounded-[16px] px-[12px]" key={e.label}>
                   <div className="rounded-md py-5">
                     <img
                       src={e.img}
@@ -218,7 +218,7 @@ const GiftHandOver = () => {
                       <h5 className="text-xl font-bold text-[#232323]">
                         {e.countValue || 0}
                       </h5>
-                      <h5 className="text-[#6C7086] font-[500] text-[16px] pt-1" style={{ fontFamily: "Inter, sans-serif" }} >{e.label}</h5>
+                      <h5 className="text-[#6C7086] font-medium text-[14px] pt-1" style={{ fontFamily: "Inter, sans-serif" }} >{e.label}</h5>
                     </div>
                   </div>
 
@@ -248,7 +248,7 @@ const GiftHandOver = () => {
                 setSearchInput(e.target.value);
               }}
               placeholder="Search Customer/ Mobile No"
-              className="px-4 py-2 ps-9 border-2 border-[#F2F2F9] rounded-[8px] w-full"
+              className="px-4 py-2 ps-9 border-2 border-[#F2F2F9] rounded-[8px] w-full h-[36px]"
             />
           </div>
 
