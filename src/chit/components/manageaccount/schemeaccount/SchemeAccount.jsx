@@ -20,6 +20,7 @@ import eyeIcon from "../../../../assets/icons/eye.svg";
 import More from "../../../../assets/icons/more.svg";
 import gift from "../../../../assets/icons/gift.svg";
 import { formatDate } from '../../../../utils/FormatDate';
+import plus from "../../../../assets/plus.svg";
 
 const statusStyles = {
   Open: {
@@ -335,7 +336,7 @@ const SchemeAccount = () => {
             <div className="w-full">
               <div className="relative w-full">
                 <select
-                  className="appearance-none border-2 border-[#F2F2F9] rounded-[8px] p-2 w-full bg-white pr-8 text-gray-700"
+                  className="appearance-none border-2 focus:ring-1  focus:ring-[#004181] outline-none  border-[#F2F2F9] rounded-[8px] p-1 w-full h-[36px] bg-white text-gray-700"
                   value={selectedValue}
                   onChange={(e) => handleSelect(e.target.value)}
                 >
@@ -367,7 +368,7 @@ const SchemeAccount = () => {
                 {searchLoading ? (
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
                 ) : (
-                  <Search className="text-black" />
+                  <Search className="text-[#6C7086] h-5 w-5" />
                 )}
               </div>
               <input
@@ -376,7 +377,7 @@ const SchemeAccount = () => {
                   setSearch(e.target.value);
                 }}
                 placeholder="Search"
-                className="px-4 py-2 ps-9 border-2 border-[#F2F2F9] rounded-[8px] w-full"
+                className="px-4 py-2 ps-9 border-2 border-[#F2F2F9] rounded-[8px] w-full h-[36px]"
               />
             </div>
           </div>
@@ -393,11 +394,12 @@ const SchemeAccount = () => {
             <div className="w-full sm:w-auto">
               <button
                 type="button"
-                className="rounded-md px-4 h-[36px] text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-full"
+                className="flex rounded-lg px-[20px] py-[8px] text-sm font-semibold text-white items-center whitespace-nowrap hover:bg-[#034571] transition-colors sm:w-auto"
                 style={{ backgroundColor: layout_color }}
                 onClick={handleClick}
               >
-                + Add Customer
+              <img src={plus} alt="plus" className="w-4 h-4 me-[10px]" />
+                 Add Customer
               </button>
             </div>
           </div>

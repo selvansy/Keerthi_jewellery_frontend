@@ -158,7 +158,7 @@ export function ExistingCustomer({
   return (
     <div className="grid md:grid-cols-3 gap-2">
       <div className="flex flex-col">
-        <label className="text-black mb-1 font-normal">
+        <label className="text-black mb-1 font-semibold">
           Branch<span className="text-red-400">*</span>
         </label>
         <Select
@@ -186,7 +186,7 @@ export function ExistingCustomer({
       </div>
 
       <div className="flex flex-col relative">
-        <label className="text-black mb-1 font-normal">
+        <label className="text-black mb-1 font-semibold">
           Search Mobile Number<span className="text-red-400">*</span>
         </label>
         <input
@@ -231,7 +231,7 @@ export function ExistingCustomer({
       </div>
 
       <div className="flex flex-col">
-        <label className="text-black mb-1 font-normal">
+        <label className="text-black mb-1 font-semibold">
           Customer Name<span className="text-red-400">*</span>
         </label>
         <input
@@ -1237,7 +1237,7 @@ console.log('selectedClassification', selectedClassification, 'weight', weight, 
     <form onSubmit={onSubmit}>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div>
-          <label className="text-black mb-1 font-normal">
+          <label className="text-sm text-[#232323] mb-1 font-semibold">
             Branch<span className="text-red-400">*</span>
           </label>
 
@@ -1262,7 +1262,7 @@ console.log('selectedClassification', selectedClassification, 'weight', weight, 
           )}
         </div>
         <div>
-          <label className="text-black mb-1 font-normal">
+          <label className="text-sm text-[#232323] mb-1 font-semibold">
             Mobile Number<span className="text-red-400">*</span>
           </label>
           <input
@@ -1275,7 +1275,7 @@ console.log('selectedClassification', selectedClassification, 'weight', weight, 
           />
         </div>
         <div>
-          <label className="text-black mb-1 font-normal">
+          <label className="text-sm text-[#232323] mb-1 font-semibold">
             Customer Name<span className="text-red-400">*</span>
           </label>
           <input
@@ -1289,7 +1289,7 @@ console.log('selectedClassification', selectedClassification, 'weight', weight, 
           <p style={{ color: "red" }}>{errors?.customer_name}</p>
         </div>
         <div>
-          <label className="text-black mb-1 font-normal">Address</label>
+          <label className="text-sm text-[#232323] mb-1 font-semibold">Address</label>
           <input
             disabled
             type="text"
@@ -1300,7 +1300,7 @@ console.log('selectedClassification', selectedClassification, 'weight', weight, 
           />
         </div>
         <div>
-          <label className="text-black mb-1 font-normal">
+          <label className="text-sm text-[#232323] mb-1 font-semibold">
             Scheme Classification<span className="text-red-400">*</span>
           </label>
           <div className="relative">
@@ -1336,7 +1336,7 @@ console.log('selectedClassification', selectedClassification, 'weight', weight, 
           <p style={{ color: "red" }}>{errors?.id_classification}</p>
         </div>
         <div>
-          <label className="text-black mb-1 font-normal">
+          <label className="text-sm text-[#232323] mb-1 font-semibold">
             Scheme<span className="text-red-400">*</span>
           </label>
           <div className="relative">
@@ -1433,7 +1433,7 @@ console.log('selectedClassification', selectedClassification, 'weight', weight, 
         </div>
         {selectedScheme === "Fixed" ? (
           <div>
-            <label className="text-black mb-1 font-normal">
+            <label className="text-sm text-[#232323] mb-1 font-semibold">
               {[12, 3, 4].includes(formData.scheme_type) ? "Weight" : "Amount"}
               <span className="text-red-400">*</span>
             </label>
@@ -1491,7 +1491,7 @@ console.log('selectedClassification', selectedClassification, 'weight', weight, 
               <>
                 {[12, 3, 4].includes(formData.scheme_type) ? (
                   <div className="flex flex-col">
-                    <label className="text-black mb-1 font-normal">
+                    <label className="text-sm text-[#232323] mb-1 font-semibold">
                       Weight<span className="text-red-400"> * </span>
                       <span className="text-gray-400 text-sm">{`(min: ${formData.min_weight} - max: ${formData.max_weight})`}</span>
                     </label>
@@ -1512,7 +1512,7 @@ console.log('selectedClassification', selectedClassification, 'weight', weight, 
                   </div>
                 ) : (
                   <div className="flex flex-col">
-                    <label className="text-black mb-1 font-normal">
+                    <label className="text-sm text-[#232323] mb-1 font-semibold">
                       Amount<span className="text-red-400"> * </span>
                       <span className="text-gray-400 text-sm">{`(min: ${formData.min_amount} - max: ${formData.max_amount})`}</span>
                     </label>
@@ -1541,7 +1541,7 @@ console.log('selectedClassification', selectedClassification, 'weight', weight, 
             schemefilter.length > 0 &&
             [12, 3, 4].includes(formData.scheme_type) && (
               <div className="flex flex-col">
-                <label className="text-black mb-1 font-normal">
+                <label className="text-sm text-[#232323] mb-1 font-semibold">
                   Payable Amount
                 </label>
                 <input
@@ -1559,7 +1559,7 @@ console.log('selectedClassification', selectedClassification, 'weight', weight, 
             )}
         </>
         <div className="flex flex-col relative group">
-          <label className="text-black mb-1 font-normal">
+          <label className="text-sm text-[#232323] mb-1 font-semibold">
             Account Name<span className="text-red-400">*</span>
           </label>
           <div className="relative">
@@ -1573,7 +1573,7 @@ console.log('selectedClassification', selectedClassification, 'weight', weight, 
               placeholder="Enter Account Name"
               style={{ height: inputHeight }}
             />
-            <span className="absolute right-0 top-0 w-9 h-full px-3 flex items-center justify-center text-black border-l">
+            <span className="absolute right-0 top-0 w-9 h-full px-3 flex items-center justify-center text-sm text-[#232323] border-l">
               AC{acNumber}
             </span>
           </div>
@@ -1581,7 +1581,7 @@ console.log('selectedClassification', selectedClassification, 'weight', weight, 
         </div>
         {formData.scheme_type !== 10 && formData.scheme_type !== 14 && (
           <div className="flex flex-col">
-            <label className="text-black mb-1 font-normal">
+            <label className="text-sm text-[#232323] mb-1 font-semibold">
               Total Installment<span className="text-red-400">*</span>
             </label>
             <input
@@ -1596,7 +1596,7 @@ console.log('selectedClassification', selectedClassification, 'weight', weight, 
           </div>
         )}
         <div className="flex flex-col">
-          <label className="text-black mb-1 font-normal">
+          <label className="text-sm text-[#232323] mb-1 font-semibold">
             Maturity Period<span className="text-red-400">*</span>
           </label>
           <input
@@ -1610,7 +1610,7 @@ console.log('selectedClassification', selectedClassification, 'weight', weight, 
           <p style={{ color: "red" }}>{errors?.maturity_period}</p>
         </div>
         <div>
-          <label className="text-gray-700 mb-1 font-normal">
+          <label className="text-sm text-[#232323] mb-1 font-semibold">
             Start Date<span className="text-red-400">*</span>
           </label>
           <div className="relative">
@@ -1633,7 +1633,7 @@ console.log('selectedClassification', selectedClassification, 'weight', weight, 
         </div>
         {formData.id_scheme && (
           <div>
-            <label className="text-black mb-1 font-normal">
+            <label className="text-sm text-[#232323] mb-1 font-semibold">
               Maturity Date<span className="text-red-400">*</span>
             </label>
             <div className="relative">
@@ -1652,7 +1652,7 @@ console.log('selectedClassification', selectedClassification, 'weight', weight, 
         {!id && formData.referral_id === null && (
           <>
             <div>
-              <label className="text-black mb-1 font-normal">
+              <label className="text-sm text-[#232323] mb-1 font-semibold">
                 Referral By{" "}
                 {referralName && (
                   <span className="text-green-700">{referralName}</span>
@@ -1674,7 +1674,7 @@ console.log('selectedClassification', selectedClassification, 'weight', weight, 
               />
             </div>
             <div className="relative">
-              <label className="text-black mb-1 font-normal">
+              <label className="text-sm text-[#232323] mb-1 font-semibold">
                 Search Referral Number
               </label>
               <div className="flex">
@@ -1715,7 +1715,7 @@ console.log('selectedClassification', selectedClassification, 'weight', weight, 
             {isLoading ? <SpinLoading /> : id ? "Update" : "Save"}
           </button>
           <button
-            className="bg-[#E2E8F0] text-black rounded-md p-2 w-full lg:w-20"
+            className="bg-[#E2E8F0] text-sm text-[#6C7086] rounded-md p-2 w-full lg:w-20"
             type="button"
             onClick={handleCancel}
           >
