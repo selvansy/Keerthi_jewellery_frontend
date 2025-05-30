@@ -297,7 +297,7 @@ const AccountStatus = ({ id_branch }) => {
                   className="w-4 h-4 rounded-sm mr-2"
                   style={{ backgroundColor: color }}
                 ></div>
-                <span className="text-sm">{label}</span>
+                <span className="text-md">{label}</span>
                 <span className="text-sm ml-2 text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity">
                   {percentage}
                 </span>
@@ -334,9 +334,9 @@ const AccountStatus = ({ id_branch }) => {
           <img
             src={AddAcc}
             alt={AddAcc}
-            className="h-[22px] w-[22px] me-[18px]"
+            className="h-[22px] w-[22px] me-[10px]"
           />
-          <button className="text-white">Add Accounts</button>
+          <button className="text-white font-semibold">Add Accounts</button>
         </div>
       </div>
     </div>
