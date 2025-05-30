@@ -35,6 +35,7 @@ import SpinLoading from "../../common/spinLoading";
 import "react-datepicker/dist/react-datepicker.css";
 import { color, hover } from "framer-motion";
 import { option } from "framer-motion/client";
+import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
 
 
  export const customStyles = (isReadOnly) => ({
@@ -754,7 +755,7 @@ const SchemeForm = () => {
   return (
     <form
       onSubmit={formik.handleSubmit}
-      className="w-full mx-auto p-6 space-y-6"
+      className="w-full mx-auto p-2 space-y-6"
     >
       <div className="bg-[#FFFFFF] rounded-lg p-6 shadow-sm border text-[#232323]">
         <h2 className="text-lg font-semibold mb-4 border-b pb-4">Add Scheme</h2>
