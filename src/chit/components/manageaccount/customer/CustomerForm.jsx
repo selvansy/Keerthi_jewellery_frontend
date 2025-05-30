@@ -576,7 +576,7 @@ const CustomerForm = ({
             >
               <div className="grid grid-rows-1 md:grid-cols-2 lg:grid-cols-3 gap-6 border-gray-300">
                 <div className="flex flex-col">
-                  <label className="text-gray-700 mb-1 font-medium">
+                  <label className="text-[#232323] font-semibold text-sm mb-1 ">
                     First Name<span className="text-red-400"> *</span>
                   </label>
                   <input
@@ -598,7 +598,7 @@ const CustomerForm = ({
                 </div>
 
                 <div className="flex flex-col">
-                  <label className="text-gray-700 mb-1 font-medium">
+                  <label className="text-[#232323] font-semibold text-sm mb-1 ">
                     Last Name
                   </label>
                   <input
@@ -618,7 +618,7 @@ const CustomerForm = ({
                 </div>
 
                 {/* <div className="flex flex-col">
-                      <label className="text-black mb-1 font-medium">
+                      <label className="text-black mb-1 ">
                         Branch<span className="text-red-400">*</span>
                       </label>
 
@@ -653,7 +653,7 @@ const CustomerForm = ({
                     </div> */}
                 {accessBranch === "0" && branchData.length > 0 && !isLoading ? (
                   <div>
-                    <label className="block text-sm font-medium mb-1">
+                    <label className="block text-sm  mb-1 text-[#232323] font-semibold">
                       Branches <span className="text-red-500">*</span>
                     </label>
                     <Select
@@ -681,7 +681,7 @@ const CustomerForm = ({
                   </div>
                 ) : (
                   <div>
-                    <label className="block text-sm font-medium mb-2">
+                    <label className="block text-sm  mb-2">
                       Branch <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -700,7 +700,7 @@ const CustomerForm = ({
                 )}
 
                 <div className="flex flex-col">
-                  <label className="text-gray-700 mb-1 font-medium">
+                  <label className="text-[#232323] font-semibold text-sm mb-1 ">
                     Mobile<span className="text-red-400"> *</span>
                   </label>
                   <input
@@ -736,7 +736,7 @@ const CustomerForm = ({
                 </div>
 
                 <div className="flex flex-col">
-                  <label className="text-gray-700 mb-1 font-medium">
+                  <label className="text-[#232323] font-semibold text-sm mb-1 ">
                     Whatsapp Number
                   </label>
                   <input
@@ -762,7 +762,7 @@ const CustomerForm = ({
                 </div>
 
                 <div className="flex flex-col">
-                  <label className="text-black mb-1 font-medium">
+                  <label className=" mb-1 text-[#232323] text-sm font-semibold">
                     Gender<span className="text-red-400"> *</span>
                   </label>
                   <div className="flex flex-row gap-6 justify-start">
@@ -800,7 +800,7 @@ const CustomerForm = ({
                 </div>
 
                 <div className="flex flex-col">
-                  <label className="text-black mb-1 font-medium">
+                  <label className="text-[#232323] text-sm font-semibold mb-1 ">
                     Country<span className="text-red-400"> *</span>
                   </label>
 
@@ -828,7 +828,7 @@ const CustomerForm = ({
                 </div>
 
                 <div className="flex flex-col">
-                  <label className="text-black mb-1 font-medium">
+                  <label className="text-[#232323] text-sm font-semibold mb-1 ">
                     State<span className="text-red-400"> *</span>
                   </label>
 
@@ -855,7 +855,7 @@ const CustomerForm = ({
                 </div>
 
                 <div className="flex flex-col">
-                  <label className="text-black mb-1 font-medium">
+                  <label className="text-[#232323] text-sm font-semibold mb-1 ">
                     City<span className="text-red-400"> *</span>
                   </label>
 
@@ -882,7 +882,7 @@ const CustomerForm = ({
                 </div>
 
                 <div className="flex flex-col">
-                  <label className="text-gray-700 mb-1 font-medium">
+                  <label className="text-[#232323] font-semibold text-sm mb-1 ">
                     Address<span className="text-red-400"> *</span>
                   </label>
                   <input
@@ -903,7 +903,7 @@ const CustomerForm = ({
                 </div>
 
                 <div className="flex flex-col">
-                  <label className="text-gray-700 mb-1 font-medium">
+                  <label className="text-[#232323] font-semibold text-sm mb-1 ">
                     Pincode<span className="text-red-400"> *</span>
                   </label>
                   <input
@@ -929,7 +929,7 @@ const CustomerForm = ({
                 </div>
 
                 <div className="flex flex-col">
-                  <label className="text-black mb-1 font-medium">
+                  <label className="text-[#232323] font-semibold text-sm  mb-1 ">
                     Pan Number
                   </label>
                   <input
@@ -952,7 +952,7 @@ const CustomerForm = ({
                 </div>
 
                 <div className="flex flex-col">
-                  <label className="text-gray-700 mb-1 font-medium">
+                  <label className="text-[#232323] font-semibold text-sm mb-1 ">
                     Aadhar Card Number<span className="text-red-400"> *</span>
                   </label>
                   <input
@@ -978,7 +978,7 @@ const CustomerForm = ({
                 </div>
 
                 <div className="flex flex-col">
-                  <label className="text-gray-700 mb-1 font-medium">
+                  <label className="text-[#232323] font-semibold text-sm mb-1 ">
                     Date Of Wedding
                   </label>
 
@@ -1016,7 +1016,7 @@ const CustomerForm = ({
                 </div>
 
                 <div className="flex flex-col">
-                  <label className="text-gray-700 mb-1 font-medium">
+                  <label className="text-[#232323] font-semibold text-sm mb-1 ">
                     Date Of Birth
                   </label>
                   <div className="relative">
@@ -1053,7 +1053,7 @@ const CustomerForm = ({
                 </div>
 
                 <div className="flex flex-col">
-                  <label className="text-gray-700 mb-1 font-medium">
+                  <label className="text-[#232323] font-semibold text-sm mb-1 ">
                     Password
                   </label>
 
@@ -1096,7 +1096,7 @@ const CustomerForm = ({
                 </div>
 
                 <div className="flex flex-col">
-                  <label className="text-gray-700 mb-1 font-medium">
+                  <label className="text-[#232323] font-semibold text-sm mb-1 ">
                     Confirm Password
                   </label>
 
@@ -1141,7 +1141,7 @@ const CustomerForm = ({
                   ) : null}
                 </div>
                 <div className="flex flex-col">
-                  <label className="text-gray-700 mb-1 font-medium">
+                  <label className="text-[#232323] font-semibold text-sm mb-1 ">
                     Upload Profile Image
                     <span className="font-normal">
                       (Maximum file size: 500KB)
@@ -1192,7 +1192,7 @@ const CustomerForm = ({
               <div className="grid grid-rows-1 md:grid-rows-1 lg:grid-cols-3 gap-6 border-gray-300 mt-8">
                 {/* Resume Upload Field */}
                 {/* <div className="flex flex-col">
-                  <label className="text-gray-700 mb-1 font-medium">
+                  <label className="text-[#232323] font-semibold text-sm mb-1 ">
                     Upload Document
                   </label>
                   <div className="flex items-center gap-3 relative">
@@ -1242,7 +1242,7 @@ const CustomerForm = ({
                   {checked && (
                     <div className="flex flex-row justify-between w-full mt-2">
                       <div className="flex flex-col flex-[0.9]">
-                        <label className="block text-sm font-medium mb-1">
+                        <label className="block text-sm  mb-1">
                           Mobile Number
                           <span className="text-red-400"> *</span>
                         </label>

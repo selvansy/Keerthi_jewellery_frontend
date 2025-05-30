@@ -91,7 +91,7 @@ function Customers() {
   return (
     <div className="flex flex-col">
       {!id && (
-        <div className="flex items-center bg-gray-200 my-6 border border-black rounded-xl w-fit mt-3 overflow-hidden">
+        <div className="flex items-center bg-gray-200 my-6 border border-[#004181] rounded-xl w-fit mt-3 overflow-hidden">
           {["Customer", "Existing Customer"].map((label, index) => (
             <button
               key={label}
@@ -102,8 +102,8 @@ function Customers() {
                   : "bg-gray-300 text-gray-700 dark:bg-white dark:text-black"
               } ${
                 index === 0
-                  ? "rounded-l-lg border-r border-black"
-                  : "rounded-r-lg border-l border-black"
+                  ? "rounded-l-lg border-r border-[#004181]"
+                  : "rounded-r-lg border-l border-[#004181]"
               }`}
             >
               {label}
@@ -148,7 +148,7 @@ function Customers() {
                 value="join-scheme"
                 className="border rounded-lg bg-white my-3"
               >
-                <AccordionTrigger className="px-6 py-4 text-[18px]">
+                <AccordionTrigger className="px-6 py-4 text-sm">
                  Add To Scheme
                 </AccordionTrigger>
                 <AccordionContent className="px-6 py-4 text-[16px]">
