@@ -634,7 +634,7 @@ const Modal = () => {
             <div className={`bg-white rounded-2xl shadow-md ${modalType !== 'SUCCESS' ? "lg:w-[550px]" : "lg:w-[400px]"}`}>
                 {header && (
                     <div className={`flex items-center justify-between p-4 ${modalType !== 'SUCCESS' ? "border-b" : ""}`}>
-                    <h2 className="text-lg font-semibold mx-3">{header}</h2>
+                    <h2 className="text-lg font-semibold mx-3 text-[#232323]">{header}</h2>
                     <button
                         onClick={() => dispatch(closeModal())}
                         className="flex items-center justify-center text-gray-500 hover:text-gray-700 bg-[#E6E6E670] rounded-full w-6 h-6 px-1 py-1 text-center"
@@ -647,17 +647,7 @@ const Modal = () => {
                     {renderForm()}
                 </div>
                 <div className="flex justify-end space-x-3 py-4 px-9">
-                    {buttons?.cancel && (
-                        <button
-                            onClick={handleCancel}
-                            className={`px-4 py-2 rounded-md
-                                ${modalType === 'CONFIRMATION' || modalType === 'SENDCONFIRMATION' || modalType === 'NAVIGATION'
-                                    ? 'bg-[#F6F7F9] text-gray-800 hover:bg-gray-400'
-                                    : 'bg-[#F6F7F9] text-gray-800 hover:bg-red-400'}`}
-                        >
-                            {buttons.cancel.text || 'Cancel'}
-                        </button>
-                    )}
+                    
                     {buttons?.submit && (
                         <button
                             onClick={handleSubmit}
@@ -669,6 +659,17 @@ const Modal = () => {
                             {buttons.submit.text || 
                                 (modalType === 'CONFIRMATION' ? 'Confirm' : 
                                  modalType === 'SENDCONFIRMATION' ? 'Send' : 'Submit')}
+                        </button>
+                    )}
+                    {buttons?.cancel && (
+                        <button
+                            onClick={handleCancel}
+                            className={`px-4 py-2 rounded-md
+                                ${modalType === 'CONFIRMATION' || modalType === 'SENDCONFIRMATION' || modalType === 'NAVIGATION'
+                                    ? 'bg-[#F6F7F9] text-gray-800 hover:bg-gray-400'
+                                    : 'bg-[#F6F7F9] text-gray-800 hover:bg-red-400'}`}
+                        >
+                            {buttons.cancel.text || 'Cancel'}
                         </button>
                     )}
                 </div>
