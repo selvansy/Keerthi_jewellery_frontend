@@ -10,7 +10,7 @@ const CheckboxToggle = ({ checked, label = "", onChange }) => {
         onChange={()=>onChange()}
       />
       <div
-        className={`h-5 w-5 flex items-center justify-center rounded-md border border-black transition
+        className={`h-5 w-5 flex items-center justify-center rounded-md border-[1px]  transition
         ${checked ? "bg-[#004181]" : "bg-white"}`}
       >
         <svg

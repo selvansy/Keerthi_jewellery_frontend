@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import Select from "react-select";
 import customSelectStyles from "../../common/customSelectStyles";
 import SpinLoading from "../../common/spinLoading";
-import { CalendarDays, Search, Send } from "lucide-react";
+import { CalendarDays, CalendarSearch, Search, Send } from "lucide-react";
 
 function RevertForm({ setIsOpen, isviewOpen }) {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
@@ -20,27 +20,31 @@ function RevertForm({ setIsOpen, isviewOpen }) {
   const [fullData, setFullData] = useState([]);
 
   // Customisations for react-select
-  const customStyles = (isReadOnly) => ({
+ const customStyles = (isReadOnly) => ({
     control: (base, state) => ({
       ...base,
-      minHeight: "42px",
+      minHeight: "44px", //42px
       backgroundColor: "white",
-      border: state.isFocused ? "1px solid black" : "2px solid #f2f3f8",
-      boxShadow: state.isFocused ? "0 0 0 1px black" : "none",
-      borderRadius: "0.375rem",
+      color:"#232323",
+      // fontWeight:600,
+      border: state.isFocused ? "1px solid #f2f2f9" : "1px solid #f2f2f9",
+      boxShadow: state.isFocused ? "0 0 0 1px #004181" : "none",
+      borderRadius: "0.5rem",
       "&:hover": {
         color: "#e2e8f0",
       },
       pointerEvents: !isReadOnly ? "none" : "auto",
       opacity: !isReadOnly ? 1 : 1,
+      cursor: isReadOnly ? "pointer" : "default", 
     }),
     indicatorSeparator: () => ({
       display: "none",
     }),
     placeholder: (base) => ({
       ...base,
-      color: "#858293",
-      fontWeight: "thin",
+      color: "#6C7086",
+      // fontWeight: "thin",
+      fontSize: "14px",
       // fontStyle: "bold",
     }),
     dropdownIndicator: (provided, state) => ({
@@ -50,7 +54,19 @@ function RevertForm({ setIsOpen, isviewOpen }) {
         color: "#232323",
       },
     }),
-  });
+     input: (base) => ({
+      ...base,
+      "input[type='text']:focus": { boxShadow: 'none' },
+      }),
+      option:(base,state)=>({
+        ...base,
+        backgroundColor: state.isSelected ? "#F0F7FE" : state.isFocused ? "#F0F7FE" : "white",
+        color:"#232323",
+        fontWeight:"500",
+        fontSize:"14px"
+      })
+    });
+
 
   // Form validation schema
   const validationSchema = Yup.object({
@@ -216,14 +232,14 @@ function RevertForm({ setIsOpen, isviewOpen }) {
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               placeholder="Enter Mobile Number"
-              className="p-3 pr-12 border-2 border-[#f2f3f8] rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600 w-full"
+              className=" px-4 py-2  border-2 border-[#f2f3f8] rounded-md focus:ring-1 focus:ring-[#004181] outline-none w-full h-[44px]"
               maxLength="10"
             />
             <div
               onClick={handleSearchMobile}
               className="absolute inset-y-0 right-0 flex items-center justify-center cursor-pointer w-10 rounded-r-md"
             >
-              <Search size={22} className="text-black" />
+              <Search size={22} className="text-[#6C7086] h-5 w-5" />
             </div>
           </div>
           {customerName !== "" && <span className="mt-2">Customer name: <span className="text-green-500">{customerName}</span></span>}
@@ -279,7 +295,7 @@ function RevertForm({ setIsOpen, isviewOpen }) {
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             placeholder="Enter Bill Number"
-            className="p-3 border-2 border-[#f2f3f8] rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600"
+            className="px-4 py-2 h-[44px] border-2 border-[#f2f3f8] rounded-md focus:ring-1 focus:ring-[#004181] outline-none"
           />
           {formik.touched.bill_no && formik.errors.bill_no && (
             <span className="text-red-500 text-sm mt-1">
@@ -299,8 +315,9 @@ function RevertForm({ setIsOpen, isviewOpen }) {
             value={formik.values.bill_date ? formik.values.bill_date.split("T")[0] : ""}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            className="p-3 border-2 border-[#f2f3f8] rounded-md focus:outline-none focus:ring-2 focus:ring-gray-600"
+            className="px-3 py-2 border-2 border-[#f2f3f8] rounded-md focus:ring-1 focus:ring-[#004181] outline-none h-[44px]"
           />
+         
           {formik.touched.bill_date && formik.errors.bill_date && (
             <span className="text-red-500 text-sm mt-1">
               {formik.errors.bill_date}
