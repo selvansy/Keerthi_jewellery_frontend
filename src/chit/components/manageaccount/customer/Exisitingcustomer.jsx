@@ -11,11 +11,6 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { formatDate } from "../../../../utils/FormatDate";
 import { formatDecimal } from "../../../utils/commonFunction";
-import { customSelectStyles } from '../../Setup/purity';
-import Table from '../../common/Table';
-import { header } from 'framer-motion/client';
-import { SquarePen } from 'lucide-react';
-import { customStyles } from '../../ourscheme/scheme/AddScheme';
 
 const Exisitingcustomer = () => {
   const navigate = useNavigate();
@@ -197,8 +192,10 @@ const Exisitingcustomer = () => {
                 <label className='text-sm font-medium text-black' >
                     Branch <span className='text-red-600'>*</span>
                 </label>
-                <Select 
+                <Select
                 styles={customStyles(true)}
+                isClearable={true}
+                options={branch}
                 placeholder="Select Branch"
                 value={
                   branch?.find(
