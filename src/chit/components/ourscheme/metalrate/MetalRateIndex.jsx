@@ -393,7 +393,7 @@ function MetalRateIndex({refresh}) {
               <div className="flex justify-end gap-4">
                
                 <button
-                  className=" text-white text-sm rounded-lg h-[36px] w-full lg:w-24"
+                  className=" text-white text-sm rounded-lg h-[36px] w-full md:w-24"
                   type="button"
                   disabled={isLoading}
                   onClick={handleSubmit}
@@ -402,7 +402,7 @@ function MetalRateIndex({refresh}) {
                   {isLoading ? <SpinLoading /> : "Update"}
                 </button>
                  <button
-                  className="bg-[#E2E8F0] text-black text-sm rounded-lg h-[36px] w-full lg:w-24"
+                  className="bg-[#E2E8F0] text-black text-sm rounded-lg h-[36px] w-full md:w-24"
                   type="button"
                   onClick={handleClear}
                 >

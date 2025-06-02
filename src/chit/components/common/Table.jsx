@@ -190,7 +190,7 @@ const Table = ({
                                 {column.cell ? (
                                   column.cell(row, rowIndex)
                                 ) : (
-                                  <div className="inline-block h-5 w-5 rounded-full bg-gray-200"></div>
+                                  <div className="inline-block h-5 w-5 rounded-full  bg-gray-200"></div>
                                 )}
                               </td>
                             );
@@ -200,7 +200,7 @@ const Table = ({
                           return (
                             <td
                               key={columnIndex}
-                              className="px-4 py-3 whitespace-nowrap "
+                              className="px-4 py-3 text-[#232323] text-xs font-medium whitespace-nowrap "
                             >
                               {column.cell
                                 ? column.cell(row, rowIndex)
