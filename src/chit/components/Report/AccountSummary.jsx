@@ -2,58 +2,47 @@ import React, { useEffect, useState } from "react";
 import Table from "../../components/common/Table";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import jsPDF from "jspdf";
-import "jspdf-autotable";
 import ExportDropdown from "../../components/common/Dropdown/Export";
-import { ExportToExcel } from "../common/Dropdown/Excelexport";
-import { ExportToPDF } from "../common/Dropdown/ExportPdf";
-import {
-  dueReportSummary,
-  getOverAllSummary,
-  preCloseSummary,
-} from "../../../chit/api/Endpoints";
-import { SlidersHorizontal, Search, X } from "lucide-react";
-import { CalendarDays, RefreshCcw } from "lucide-react";
-import "react-datepicker/dist/react-datepicker.css";
-import DatePicker from "react-datepicker";
 import { useSelector } from "react-redux";
 import { Breadcrumb } from "../common/breadCumbs/breadCumbs";
 import DateRangeSelector from "../common/calender";
-
+import { getOverAllSummary } from "../../../chit/api/Endpoints";
 
 function AccountSummaryReport() {
-  const roledata = localStorage.getItem("decoded");
-  const navigate = useNavigate()
+  const roledata = JSON.parse(localStorage.getItem("decoded"));
+  const navigate = useNavigate();
 
-  const id_role = roledata?.id_role?.id_role;
-  const id_client = roledata?.id_client;
-  const id_branch = roledata?.branch;
-  const layout_color = useSelector((state) => state.clientForm.layoutColor);
-
-  const [isLoading, setisLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [overAllData, setOverAllData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [totalPages,  setTotalPages] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
   const [totalDocuments, setTotalDocuments] = useState(0);
-  const [from_date,setfrom_date]=useState()
-  const [to_date,setto_date]=useState()
+  const [fromDate, setFromDate] = useState(null);
+  const [toDate, setToDate] = useState(null);
 
+  // Fetch data when any of these dependencies change
   useEffect(() => {
-    getOverAllReport({from_date,to_date});
-  }, [from_date,to_date]);
+    fetchData();
+  }, [fromDate, toDate, currentPage, itemsPerPage]);
 
-  const { mutate: getOverAllReport } = useMutation({
-    mutationFn:({from_date,to_date})=> getOverAllSummary({from_date,to_date}),
+  const { mutate: fetchData } = useMutation({
+    mutationFn: () => 
+      getOverAllSummary({ 
+        from_date: fromDate, 
+        to_date: toDate,
+        page: currentPage,
+        limit: itemsPerPage
+      }),
     onSuccess: (response) => {
       setOverAllData(response.data);
-      setisLoading(false);
-      setTotalDocuments(response.totalDocs)
-      setTotalPages(response.totalDocs)
+      setTotalDocuments(response.totalDocs);
+      setTotalPages(Math.ceil(response.totalDocs / itemsPerPage));
+      setIsLoading(false);
     },
     onError: (error) => {
-      setisLoading(false);
-      console.error("Error fetching metal rate:", error);
+      console.error("Error fetching data:", error);
+      setIsLoading(false);
     },
   });
 
@@ -70,8 +59,6 @@ function AccountSummaryReport() {
       }
     });
   };
-  
-  
 
   const columns = [
     {
@@ -83,8 +70,7 @@ function AccountSummaryReport() {
       cell: (row) => (
         <span
           className="cursor-pointer hover:underline font-semibold"
-          onClick={() => 
-            handleSchemeClick(row)}
+          onClick={() => handleSchemeClick(row)}
         >
           {row?.scheme_name}
         </span>
@@ -95,7 +81,7 @@ function AccountSummaryReport() {
       cell: (row) => row?.code,
     },
     {
-      header: "open Accounts",
+      header: "OPEN ACCOUNTS",
       cell: (row) => row?.totalOpenAccount,
     },
     {
@@ -107,29 +93,27 @@ function AccountSummaryReport() {
       cell: (row) => row?.totalPaidAccounts,
     },
     {
-      header: "REFUND ACCOUNT ",
+      header: "REFUND ACCOUNT",
       cell: (row) => row?.totalRefundAccount,
     },
   ];
 
-
   const handlePageChange = (page) => {
     const pageNumber = Number(page);
-    if (
-      !pageNumber ||
-      isNaN(pageNumber) ||
-      pageNumber < 1 ||
-      pageNumber > totalPages
-    ) {
-      return;
+    if (!isNaN(pageNumber) && pageNumber >= 1 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
     }
-
-    setCurrentPage(pageNumber);
   };
 
   const handleItemsPerPageChange = (value) => {
-    setItemsPerPage(value);
-    setCurrentPage(1);
+    setItemsPerPage(Number(value));
+    setCurrentPage(1); // Reset to first page when items per page changes
+  };
+
+  const handleDateRangeChange = (range) => {
+    setFromDate(range.startDate);
+    setToDate(range.endDate);
+    setCurrentPage(1); // Reset to first page when date range changes
   };
 
   return (
@@ -140,26 +124,23 @@ function AccountSummaryReport() {
           { label: "Account Summary", active: true },
         ]}
       />
-      <div className="flex flex-col p-4 bg-white border-2 border-[#F2F2F9] rounded-[16px] ">
+      
+      <div className="flex flex-col p-4 bg-white border-2 border-[#F2F2F9] rounded-[16px]">
         <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
           <div className="flex justify-between items-center w-full">
             <div className="flex justify-start"></div>
             <div className="flex justify-end items-center gap-4">
-              <DateRangeSelector
-                onChange={(range) => {
-                  setfrom_date(range.startDate);
-                  setto_date(range.endDate);
-                }}
+              <DateRangeSelector 
+                onChange={handleDateRangeChange} 
               />
               <ExportDropdown
                 apiData={overAllData}
-                fileName={`Overall report ${new Date().toLocaleDateString(
-                  "en-GB"
-                )}`}
+                fileName={`Account-Summary-Report-${new Date().toISOString().split('T')[0]}`}
               />
             </div>
           </div>
         </div>
+
         <div className="mt-4">
           <Table
             data={overAllData}
@@ -170,6 +151,7 @@ function AccountSummaryReport() {
             itemsPerPage={itemsPerPage}
             totalItems={totalDocuments}
             handleItemsPerPageChange={handleItemsPerPageChange}
+            noDataMessage="No account summary data available"
           />
         </div>
       </div>
@@ -178,4 +160,3 @@ function AccountSummaryReport() {
 }
 
 export default AccountSummaryReport;
-
