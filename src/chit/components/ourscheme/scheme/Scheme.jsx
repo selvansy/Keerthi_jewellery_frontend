@@ -533,7 +533,7 @@ const Scheme = () => {
         ]}
       />
 
-      <div className="flex flex-col p-4 bg-white border border-[#F2F2F9] rounded-[16px]">
+      <div className="flex flex-col p-4 -ml-1 bg-white border border-[#F2F2F9] rounded-[16px]">
         <div className="flex flex-col gap-4 mt-4 sm:flex-row sm:justify-between sm:items-center">
           <div className="flex flex-row w-full items-center justify-end gap-2">
             {/* Search Box Second */}
@@ -555,7 +555,9 @@ const Scheme = () => {
               />
             </div>
             {/* Button First */}
-            <button
+           
+          </div>
+           <button
               className="rounded-md px-5 py-1 text-sm font-semibold text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] w-[158px] h-[36px] transition-colors"
               onClick={handleCreateSchemeClick}
               style={{ backgroundColor: layout_color }}
@@ -563,7 +565,6 @@ const Scheme = () => {
               <span className="text-lg mr-2">+</span> 
                Add Scheme
             </button>
-          </div>
         </div>
 
         {/* <FilterForm

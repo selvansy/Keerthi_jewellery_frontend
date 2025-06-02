@@ -11,7 +11,7 @@ import AddSchemeAccount from "../schemeaccount/SchemeAccountform";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
-function Customers() {
+function  Customers() {
   const [isCustomer, setIsCustomer] = useState(false);
   const [openAcc, setOpenAcc] = useState(["customer"]);
   const [joinScheme, setJoinScheme] = useState(["add-customer"]);
@@ -91,19 +91,19 @@ function Customers() {
   return (
     <div className="flex flex-col">
       {!id && (
-        <div className="flex items-center bg-gray-200 my-6 border border-black rounded-xl w-fit mt-3 overflow-hidden">
+        <div className="flex items-center bg-gray-200 my-6 border border-[#004181] rounded-xl w-fit mt-3 overflow-hidden">
           {["Customer", "Existing Customer"].map((label, index) => (
             <button
               key={label}
               onClick={() => handleToggleCustomer(index === 1)}
-              className={`px-4 py-1 transition-all ${
+              className={`px-4 h-[36px] transition-all ${
                 isCustomer === (index === 1)
                   ? `bg-[${layoutColor}] text-white`
-                  : "bg-gray-300 text-gray-700 dark:bg-white dark:text-black"
+                  : "bg-gray-300 text-gray-700 dark:bg-white text-sm font-semibold dark:text-[#09090F]"
               } ${
                 index === 0
-                  ? "rounded-l-lg border-r border-black"
-                  : "rounded-r-lg border-l border-black"
+                  ? "rounded-l-lg border-r border-[#004181]"
+                  : "rounded-r-lg border-l border-[#004181]"
               }`}
             >
               {label}
@@ -130,7 +130,7 @@ function Customers() {
                 value="existingCus"
                 className="border rounded-lg bg-white"
               >
-                <AccordionTrigger className="px-6">
+                <AccordionTrigger className="px-6 text-lg text-[#232323] font-bold">
                   Existing Customer
                 </AccordionTrigger>
                 <AccordionContent value="existingCus" className="px-6">
@@ -148,7 +148,7 @@ function Customers() {
                 value="join-scheme"
                 className="border rounded-lg bg-white my-3"
               >
-                <AccordionTrigger className="px-6 py-4 text-[18px]">
+                <AccordionTrigger className="px-6 py-4 text-lg font-bold text-[#232323]">
                  Add To Scheme
                 </AccordionTrigger>
                 <AccordionContent className="px-6 py-4 text-[16px]">
@@ -171,7 +171,7 @@ function Customers() {
               value="add-customer"
               className="border rounded-lg bg-white"
             >
-              <AccordionTrigger className="px-6 py-4 text-[18px]">
+              <AccordionTrigger className="px-6 py-4 text-[18px] text-[#232323] font-bold">
                 {id ? "Edit Customer" : "Add Customer"}
               </AccordionTrigger>
               <AccordionContent className="px-6 py-4 text-[16px]">
@@ -197,7 +197,7 @@ function Customers() {
                 value="join-scheme"
                 className="border rounded-lg bg-white my-3"
               >
-                <AccordionTrigger className="px-6 py-4 text-[18px]">
+                <AccordionTrigger className="px-6 py-4 text-[18px] text-[#232323] font-bold">
                   Add To Scheme
                 </AccordionTrigger>
                 <AccordionContent className="px-6 py-4 text-[16px]">

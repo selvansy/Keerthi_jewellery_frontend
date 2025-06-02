@@ -35,12 +35,12 @@ function PaymentHistory({ id_branch }) {
   const navigate=useNavigate()
   return (
     <div>
-      <div className="bg-white rounded-[16px] mt-6 text-[#232323]">
+      <div className="bg-white rounded-[16px] mt-2 text-[#232323] font-semibold">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-bold">Payment History</h2>
-          <div className="flex items-center justify-center p-3 rounded-md cursor-pointer bg-[#004181]" onClick={()=>navigate('/payment/addschemepayment')}>
-            <img src={plus} alt="plus" className="w-4 h-4" />
-            <div className="text-white text-md font-sm px-2">Add Payment</div>
+          <div className="flex items-center justify-center px-[24px] py-[12px] rounded-[8px] cursor-pointer bg-[#004181]" onClick={()=>navigate('/payment/addschemepayment')}>
+            <img src={plus} alt="plus" className="w-4 h-4 me-[10px]" />
+            <div className="text-white text-md font-sm">Add Payment</div>
           </div>
         </div>
 
@@ -57,12 +57,12 @@ function PaymentHistory({ id_branch }) {
             </thead>
             <tbody>
               {paymentData.map((item, index) => (
-                <tr key={item._id} className="bg-white border-b text-[#232323] hover:bg-gray-50 font-semibold">
-                  <td className="px-6 py-4">{(page - 1) * limit + index + 1}</td>
-                  <td className="px-6 py-4">{item?.id_customer?.firstname} {item?.id_customer?.lastname}</td>
-                  <td className="px-6 py-4">{item?.id_scheme?.scheme_name}</td>
-                  <td className="px-6 py-4">{item?.payment_amount}</td>
-                  <td className="px-6 py-4">{new Date(item?.createdAt).toLocaleDateString()}</td>
+                <tr key={item._id} className="bg-white border-b text-[#232323] hover:bg-gray-50 text-[12px] font-medium">
+                  <td className="px-5 py-2">{(page - 1) * limit + index + 1}</td>
+                  <td className="px-5 py-2">{item?.id_customer?.firstname} {item?.id_customer?.lastname}</td>
+                  <td className="px-5 py-2">{item?.id_scheme?.scheme_name}</td>
+                  <td className="px-5 py-2">{item?.payment_amount}</td>
+                  <td className="px-5 py-2">{new Date(item?.createdAt).toLocaleDateString()}</td>
                 </tr>
               ))}
             </tbody>

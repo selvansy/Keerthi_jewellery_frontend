@@ -23,6 +23,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { openModal } from "../../../../redux/modalSlice";
 import { closeModal } from "../../../../redux/modalSlice";
 import { eventEmitter } from "../../../../utils/EventEmitter";
+import plus from "../../../../assets/plus.svg";
 
 const Metal = () => {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
@@ -261,7 +262,7 @@ const Metal = () => {
         items={[{ label: "Masters" }, { label: "Metal", active: true }]}
       />
       <div className="flex flex-col p-4 relative bg-white border border-[#F2F2F9]  rounded-[16px]">
-        <div className="grid gap-4 mt-4 grid-cols-2 lg:items-center">
+        <div className="flex justify-end gap-4 mt-4 lg:items-center">
           {/* Search Input */}
           <div className="relative ">
             <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
@@ -280,13 +281,14 @@ const Metal = () => {
 
           {/* Add Metal Button */}
           {(MetalData && MetalData.length<=3 && enableButton)&&(
-            <div className="w-full flex justify-end">
+            <div className="flex justify-end items-center ">
             <button
-              className="rounded-md px-7 py-2 text-sm font-semibold text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-[219px] h-[36px] sm:w-auto "
+              className="flex rounded-lg px-[20px] py-[8px] text-sm font-semibold text-white items-center whitespace-nowrap hover:bg-[#034571] transition-colors sm:w-auto"
               onClick={handleaddmetal}
               style={{ backgroundColor: layout_color }}
             >
-              + Add Metal
+              <img src={plus} alt="plus" className="w-4 h-4 me-[10px]" />
+              Add Metal
             </button>
           </div>
           )}
@@ -308,7 +310,7 @@ const Metal = () => {
 
         <ModelOne
           title={id ? "Edit Metal Details" : "Add Metal Details"}
-          extraClassName="w-[450px]"
+          extraClassName="w-[420px]"
           setIsOpen={setIsviewOpen}
           isOpen={isviewOpen}
           closeModal={closeIncommingModal}
@@ -343,7 +345,7 @@ export const MetalForm = ({ setIsOpen, id, clearId }) => {
         modalType: "SUCCESS",
         header: "",
         formData: {
-          message: "The metal was added Successfully",
+          message: "Metal added Successfully",
         },
       })
     );
@@ -468,7 +470,7 @@ export const MetalForm = ({ setIsOpen, id, clearId }) => {
   return (
     <div className="space-y-4">
       <div className="flex flex-col space-y-2">
-        <label className="font-medium text-gray-700">
+        <label className="font-semibold text-sm text-[#232323] ">
           Metal Name<span className="text-red-400"> *</span>
         </label>
         <input
@@ -484,24 +486,23 @@ export const MetalForm = ({ setIsOpen, id, clearId }) => {
         )}
       </div>
 
-      <div className="bg-white p-2 mt-6">
-        <div className="flex justify-end gap-2 mt-3">
-          <button
-            type="button"
-            className="bg-[#E2E8F0] text-black rounded-md p-2 w-full lg:w-20"
-            onClick={handleCancel}
-          >
-            Cancel
-          </button>
-
+      <div className="bg-white p-1 ">
+        <div className="flex justify-end gap-2 ">
           <button
             type="button"
             onClick={handleSubmit}
             disabled={isLoading}
-            className=" text-white rounded-md p-2 w-full lg:w-20"
+            className=" text-white rounded-lg text-sm font-semibold px-6 py-2 items-center justify-center w-full md:w-20"
             style={{ backgroundColor: layout_color }}
           >
             {isLoading ? <SpinLoading /> : id ? "Update" : "Save"}
+          </button>
+           <button
+            type="button"
+            className="bg-[#E2E8F0] text-[#6C7086] text-sm font-semibold rounded-lg  w-full md:w-20"
+            onClick={handleCancel}
+          >
+            Cancel
           </button>
         </div>
       </div>

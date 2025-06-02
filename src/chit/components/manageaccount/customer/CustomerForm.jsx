@@ -576,7 +576,7 @@ const CustomerForm = ({
             >
               <div className="grid grid-rows-1 md:grid-cols-2 lg:grid-cols-3 gap-6 border-gray-300">
                 <div className="flex flex-col">
-                  <label className="text-gray-700 mb-1 font-medium">
+                  <label className="text-[#232323] font-semibold text-sm mb-1 ">
                     First Name<span className="text-red-400"> *</span>
                   </label>
                   <input
@@ -587,7 +587,7 @@ const CustomerForm = ({
                       formik.handleChange(e);
                       formik.setFieldTouched("firstname", false);
                     }}
-                    className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                    className="w-full border-2 border-[#f2f3f8] rounded-lg px-3 py-2"
                     placeholder="Enter Here"
                   />
                   {formik.errors.firstname ? (
@@ -598,7 +598,7 @@ const CustomerForm = ({
                 </div>
 
                 <div className="flex flex-col">
-                  <label className="text-gray-700 mb-1 font-medium">
+                  <label className="text-[#232323] font-semibold text-sm mb-1 ">
                     Last Name
                   </label>
                   <input
@@ -609,7 +609,7 @@ const CustomerForm = ({
                       formik.handleChange(e);
                       formik.setFieldTouched("lastname", false);
                     }}
-                    className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                    className="w-full border-2 border-[#f2f3f8] rounded-lg px-3 py-2"
                     placeholder="Enter Here"
                   />
                   {formik.errors.lastname ? (
@@ -618,7 +618,7 @@ const CustomerForm = ({
                 </div>
 
                 {/* <div className="flex flex-col">
-                      <label className="text-black mb-1 font-medium">
+                      <label className="text-black mb-1 ">
                         Branch<span className="text-red-400">*</span>
                       </label>
 
@@ -653,7 +653,7 @@ const CustomerForm = ({
                     </div> */}
                 {accessBranch === "0" && branchData.length > 0 && !isLoading ? (
                   <div>
-                    <label className="block text-sm font-medium mb-1">
+                    <label className="block text-sm  mb-1 text-[#232323] font-semibold">
                       Branches <span className="text-red-500">*</span>
                     </label>
                     <Select
@@ -681,7 +681,7 @@ const CustomerForm = ({
                   </div>
                 ) : (
                   <div>
-                    <label className="block text-sm font-medium mb-2">
+                    <label className="block text-sm  mb-2">
                       Branch <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -689,7 +689,7 @@ const CustomerForm = ({
                       disabled
                       style={{ height: inputHeight }}
                       value={branchData?.branch_name || ""}
-                      className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2 text-gray-500"
+                      className="w-full border-2 border-[#f2f3f8] rounded-lg px-3 py-2 text-gray-500"
                     />
                     {formik.errors.id_branch && (
                       <div className="text-red-500 text-sm mt-1">
@@ -700,7 +700,7 @@ const CustomerForm = ({
                 )}
 
                 <div className="flex flex-col">
-                  <label className="text-gray-700 mb-1 font-medium">
+                  <label className="text-[#232323] font-semibold text-sm mb-1 ">
                     Mobile<span className="text-red-400"> *</span>
                   </label>
                   <input
@@ -726,7 +726,7 @@ const CustomerForm = ({
                         e.preventDefault();
                       }
                     }}
-                    className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                    className="w-full border-2 border-[#f2f3f8] rounded-lg px-3 py-2"
                     placeholder="Enter Mobile Number"
                   />
 
@@ -736,7 +736,7 @@ const CustomerForm = ({
                 </div>
 
                 <div className="flex flex-col">
-                  <label className="text-gray-700 mb-1 font-medium">
+                  <label className="text-[#232323] font-semibold text-sm mb-1 ">
                     Whatsapp Number
                   </label>
                   <input
@@ -753,7 +753,7 @@ const CustomerForm = ({
                     }}
                     pattern="\d{10}"
                     maxLength={"10"}
-                    className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                    className="w-full border-2 border-[#f2f3f8] rounded-lg px-3 py-2"
                     placeholder="Enter Whatsapp Number"
                   />
                   {formik.errors.whatsapp ? (
@@ -762,7 +762,7 @@ const CustomerForm = ({
                 </div>
 
                 <div className="flex flex-col">
-                  <label className="text-black mb-1 font-medium">
+                  <label className=" mb-1 text-[#232323] text-sm font-semibold">
                     Gender<span className="text-red-400"> *</span>
                   </label>
                   <div className="flex flex-row gap-6 justify-start">
@@ -774,7 +774,7 @@ const CustomerForm = ({
                       <button
                         key={gender.value}
                         type="button"
-                        className={`rounded-md w-20 h-10 flex items-center justify-center border-2 border-black transition-colors duration-200 ${
+                        className={`rounded-lg w-20 h-10 flex items-center justify-center border-2 border-black transition-colors duration-200 ${
                           formik.values.gender === gender.value
                             ? "text-[#004181]"
                             : " text-[#6C7086]"
@@ -800,7 +800,7 @@ const CustomerForm = ({
                 </div>
 
                 <div className="flex flex-col">
-                  <label className="text-black mb-1 font-medium">
+                  <label className="text-[#232323] text-sm font-semibold mb-1 ">
                     Country<span className="text-red-400"> *</span>
                   </label>
 
@@ -828,7 +828,7 @@ const CustomerForm = ({
                 </div>
 
                 <div className="flex flex-col">
-                  <label className="text-black mb-1 font-medium">
+                  <label className="text-[#232323] text-sm font-semibold mb-1 ">
                     State<span className="text-red-400"> *</span>
                   </label>
 
@@ -855,7 +855,7 @@ const CustomerForm = ({
                 </div>
 
                 <div className="flex flex-col">
-                  <label className="text-black mb-1 font-medium">
+                  <label className="text-[#232323] text-sm font-semibold mb-1 ">
                     City<span className="text-red-400"> *</span>
                   </label>
 
@@ -882,7 +882,7 @@ const CustomerForm = ({
                 </div>
 
                 <div className="flex flex-col">
-                  <label className="text-gray-700 mb-1 font-medium">
+                  <label className="text-[#232323] font-semibold text-sm mb-1 ">
                     Address<span className="text-red-400"> *</span>
                   </label>
                   <input
@@ -894,7 +894,7 @@ const CustomerForm = ({
                       formik.handleChange(e);
                       formik.setFieldTouched("address", false);
                     }}
-                    className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                    className="w-full border-2 border-[#f2f3f8] rounded-lg px-3 py-2"
                     placeholder="Enter Here"
                   />
                   {formik.errors.address ? (
@@ -903,7 +903,7 @@ const CustomerForm = ({
                 </div>
 
                 <div className="flex flex-col">
-                  <label className="text-gray-700 mb-1 font-medium">
+                  <label className="text-[#232323] font-semibold text-sm mb-1 ">
                     Pincode<span className="text-red-400"> *</span>
                   </label>
                   <input
@@ -920,7 +920,7 @@ const CustomerForm = ({
                     }}
                     pattern="\d{6}"
                     maxLength={"6"}
-                    className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                    className="w-full border-2 border-[#f2f3f8] rounded-lg px-3 py-2"
                     placeholder="Enter Pincode"
                   />
                   {formik.errors.pincode ? (
@@ -929,7 +929,7 @@ const CustomerForm = ({
                 </div>
 
                 <div className="flex flex-col">
-                  <label className="text-black mb-1 font-medium">
+                  <label className="text-[#232323] font-semibold text-sm  mb-1 ">
                     Pan Number
                   </label>
                   <input
@@ -942,7 +942,7 @@ const CustomerForm = ({
                         .replace(/[^A-Z0-9]/g, "");
                       formik.setFieldValue("pan", value);
                     }}
-                    className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                    className="w-full border-2 border-[#f2f3f8] rounded-lg px-3 py-2"
                     placeholder="ABCDE1234F"
                     maxLength="10"
                   />
@@ -952,7 +952,7 @@ const CustomerForm = ({
                 </div>
 
                 <div className="flex flex-col">
-                  <label className="text-gray-700 mb-1 font-medium">
+                  <label className="text-[#232323] font-semibold text-sm mb-1 ">
                     Aadhar Card Number<span className="text-red-400"> *</span>
                   </label>
                   <input
@@ -966,7 +966,7 @@ const CustomerForm = ({
                     maxLength="12"
                     inputMode="numeric"
                     onChange={formik.handleChange}
-                    className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                    className="w-full border-2 border-[#f2f3f8] rounded-lg px-3 py-2"
                     placeholder="Enter Aadhar Number"
                   />
 
@@ -978,7 +978,7 @@ const CustomerForm = ({
                 </div>
 
                 <div className="flex flex-col">
-                  <label className="text-gray-700 mb-1 font-medium">
+                  <label className="text-[#232323] font-semibold text-sm mb-1 ">
                     Date Of Wedding
                   </label>
 
@@ -996,7 +996,7 @@ const CustomerForm = ({
                         }
                       }}
                       dateFormat="yyyy-MM-dd"
-                      className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                      className="w-full border-2 border-[#f2f3f8] rounded-lg px-3 py-2"
                       placeholderText="Select Date"
                       wrapperClassName="w-full"
                       showMonthDropdown
@@ -1016,7 +1016,7 @@ const CustomerForm = ({
                 </div>
 
                 <div className="flex flex-col">
-                  <label className="text-gray-700 mb-1 font-medium">
+                  <label className="text-[#232323] font-semibold text-sm mb-1 ">
                     Date Of Birth
                   </label>
                   <div className="relative">
@@ -1033,7 +1033,7 @@ const CustomerForm = ({
                         }
                       }}
                       dateFormat="yyyy-MM-dd"
-                      className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                      className="w-full border-2 border-[#f2f3f8] rounded-lg px-3 py-2"
                       placeholderText="Select Date"
                       wrapperClassName="w-full"
                       showMonthDropdown
@@ -1053,7 +1053,7 @@ const CustomerForm = ({
                 </div>
 
                 <div className="flex flex-col">
-                  <label className="text-gray-700 mb-1 font-medium">
+                  <label className="text-[#232323] font-semibold text-sm mb-1 ">
                     Password
                   </label>
 
@@ -1063,7 +1063,7 @@ const CustomerForm = ({
                       name="password"
                       value={formik.values.password}
                       onChange={formik.handleChange}
-                      className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                      className="w-full border-2 border-[#f2f3f8] rounded-lg px-3 py-2"
                       placeholder="Enter password"
                     />
                     {showpassword ? (
@@ -1096,7 +1096,7 @@ const CustomerForm = ({
                 </div>
 
                 <div className="flex flex-col">
-                  <label className="text-gray-700 mb-1 font-medium">
+                  <label className="text-[#232323] font-semibold text-sm mb-1 ">
                     Confirm Password
                   </label>
 
@@ -1106,7 +1106,7 @@ const CustomerForm = ({
                       name="confirmpassword"
                       value={formik.values.confirmpassword}
                       onChange={formik.handleChange}
-                      className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                      className="w-full border-2 border-[#f2f3f8] rounded-lg px-3 py-2"
                       placeholder="Confirm Password"
                     />
 
@@ -1141,7 +1141,7 @@ const CustomerForm = ({
                   ) : null}
                 </div>
                 <div className="flex flex-col">
-                  <label className="text-gray-700 mb-1 font-medium">
+                  <label className="text-[#232323] font-semibold text-sm mb-1 ">
                     Upload Profile Image
                     <span className="font-normal">
                       (Maximum file size: 500KB)
@@ -1150,7 +1150,7 @@ const CustomerForm = ({
                   <div className="flex items-center gap-3 relative">
                     <label
                       htmlFor="image"
-                      className="flex-1 border-2 border-[#f2f3f8] rounded-md px-3 py-2 cursor-pointer hover:bg-gray-50"
+                      className="flex-1 border-2 border-[#f2f3f8] rounded-lg px-3 py-2 cursor-pointer hover:bg-gray-50"
                     >
                       <p className="truncate text-[#b5b5b5] w-1/2">
                         {cus_img ? cus_img.name || cus_img : "Browse"}
@@ -1159,13 +1159,13 @@ const CustomerForm = ({
                     <div className="absolute right-0 top-0 bottom-0 h-full flex flex-row gap-2">
                       <label
                         htmlFor="image"
-                        className="bg-blue-600 text-white px-4 flex items-center justify-center rounded-md cursor-pointer text-sm"
+                        className="bg-blue-600 text-white px-4 flex items-center justify-center rounded-lg cursor-pointer text-sm"
                         style={{ backgroundColor: layout_color }}
                       >
                         Choose File
                       </label>
                       <div
-                        className="w-11 h-11 flex items-center justify-center rounded-md cursor-pointer"
+                        className="w-11 h-11 flex items-center justify-center rounded-lg cursor-pointer"
                         style={{ backgroundColor: layout_color }}
                         onClick={() => setShowWebcam(true)}
                       >
@@ -1192,13 +1192,13 @@ const CustomerForm = ({
               <div className="grid grid-rows-1 md:grid-rows-1 lg:grid-cols-3 gap-6 border-gray-300 mt-8">
                 {/* Resume Upload Field */}
                 {/* <div className="flex flex-col">
-                  <label className="text-gray-700 mb-1 font-medium">
+                  <label className="text-[#232323] font-semibold text-sm mb-1 ">
                     Upload Document
                   </label>
                   <div className="flex items-center gap-3 relative">
                     <label
                       htmlFor="id_proof"
-                      className="flex-1 border-2 border-[#f2f3f8] rounded-md px-3 py-2 cursor-pointer hover:bg-gray-50"
+                      className="flex-1 border-2 border-[#f2f3f8] rounded-lg px-3 py-2 cursor-pointer hover:bg-gray-50"
                     >
                       <p className="truncate text-[#b5b5b5]">
                         {id_proof ? id_proof.name || id_proof : "Browse"}
@@ -1207,7 +1207,7 @@ const CustomerForm = ({
                     <div className="absolute right-0 top-0 bottom-0 h-full flex flex-row gap-2">
                       <label
                         htmlFor="id_proof"
-                        className="bg-blue-600 text-white px-4 flex items-center justify-center rounded-md cursor-pointer text-sm"
+                        className="bg-blue-600 text-white px-4 flex items-center justify-center rounded-lg cursor-pointer text-sm"
                         style={{ backgroundColor: layout_color }}
                       >
                         Choose File
@@ -1242,7 +1242,7 @@ const CustomerForm = ({
                   {checked && (
                     <div className="flex flex-row justify-between w-full mt-2">
                       <div className="flex flex-col flex-[0.9]">
-                        <label className="block text-sm font-medium mb-1">
+                        <label className="block text-sm  mb-1 text-[#232323] font-semibold">
                           Mobile Number
                           <span className="text-red-400"> *</span>
                         </label>
@@ -1250,7 +1250,7 @@ const CustomerForm = ({
                           <input
                             type="number"
                             min="0"
-                            className="border-2 border-[#f2f3f8] rounded-md p-2 w-96 lg:w-[81%] focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent pr-24"
+                            className="border-2 border-[#f2f3f8] rounded-lg p-2 px-3 py-2 focus:ring-1 focus:ring-[#004181] outline-none pr-24"
                             placeholder="Enter mobile number"
                             value={formik.values.mobile}
                             onChange={formik.handleChange}
@@ -1263,9 +1263,9 @@ const CustomerForm = ({
                             </span>
                           )}
 
-                          <div className="absolute -right-2 top-1/2 -translate-y-1/2">
+                          <div className="absolute right-8 top-1/2 -translate-y-1/2">
                             <button
-                              className="bg-[#004181] text-white rounded-md px-4 py-2"
+                              className="bg-[#004181] text-white rounded-lg text-sm font-semibold h-[36px] w-full  md:w-24"
                               onClick={(e) => sendOtpToMobile(e)}
                             >
                               Send OTP
@@ -1285,7 +1285,7 @@ const CustomerForm = ({
                 <div className="bg-white mt-6">
                   <div className="flex justify-end gap-5 mt-3">
                   <button
-                      className="text-white rounded-md p-2 w-full lg:w-20"
+                      className="text-white rounded-lg text-sm font-semibold h-[36px] w-full md:w-24"
                       type="submit"
                       style={{ backgroundColor: layout_color }}
                       disabled={isLoading}
@@ -1293,7 +1293,7 @@ const CustomerForm = ({
                       {isLoading ? <SpinLoading /> : id ? "Update" : "Save"}
                     </button>
                     <button
-                      className="bg-[#E2E8F0] text-black rounded-md p-2 w-full lg:w-20"
+                      className="bg-[#E2E8F0] text-gray-500 rounded-lg h-[36px] w-full text-sm font-semibold md:w-24"
                       type="button"
                       onClick={() => {
                         handleClear();

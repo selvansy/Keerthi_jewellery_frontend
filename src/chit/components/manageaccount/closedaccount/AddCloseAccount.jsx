@@ -31,6 +31,7 @@ import OtpCompleted from "./OtpCompleted";
 import SpinLoading from "../../common/spinLoading";
 import { formatNumber } from "../../../utils/commonFunction";
 import { customStyles } from "../../ourscheme/scheme/AddScheme";
+import plus from "../../../../assets/plus.svg";
 
 const AddCloseAccount = () => {
   const dispatch = useDispatch();
@@ -600,7 +601,7 @@ const AddCloseAccount = () => {
         <div className="flex flex-row justify-between items-center mt-4 mb-4">
           <p className="text-sm text-gray-400 mb-3">
             Manage Customers /{" "}
-            <span className="text-black">
+            <span className="text-[#232323] font-semibold text-sm">
               {dynamic ? "Pre Close Account" : "Closed Accounts"}
             </span>
           </p>
@@ -608,17 +609,18 @@ const AddCloseAccount = () => {
 
         <div className="bg-[#FFFFFF] rounded-xl p-6 shadow-sm border">
           <div className="flex flex-row justify-between mb-4 border-b pb-4">
-            <h2 className="text-lg font-semibold ">
+            <h2 className="text-lg font-semibold text-[#232323] ">
               {dynamic ? "Pre Close Account" : "Closed Accounts"}
             </h2>
             {!dynamic && (
               <div>
                 <button
-                  className="rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
+                  className="flex rounded-lg px-[20px] py-[8px] text-sm font-semibold text-white items-center whitespace-nowrap hover:bg-[#034571] transition-colors sm:w-auto"
                   onClick={(e) => handleOpenRevert(e)}
                   style={{ backgroundColor: layout_color }}
                 >
-                  + Revert account
+                   <img src={plus} alt="plus" className="w-4 h-4 me-[10px]" />
+                   Revert account
                 </button>
               </div>
             )}
@@ -697,7 +699,7 @@ const AddCloseAccount = () => {
           </div>
 
           <div className="mt-4">
-            <h2 className="text-lg font-semibold mb-4 border-b pb-4">
+            <h2 className="text-lg font-semibold mb-4 border-b pb-4 text-[#232323]">
               Scheme Account Details
             </h2>
           </div>
@@ -797,7 +799,7 @@ const AddCloseAccount = () => {
           </div>
 
           <div className="mt-4">
-            <h2 className="text-lg font-semibold mb-4 border-b pb-4">
+            <h2 className="text-lg font-semibold mb-4 border-b pb-4 text-[#232323]">
               Close Form Details
             </h2>
           </div>

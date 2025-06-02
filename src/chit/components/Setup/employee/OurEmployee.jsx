@@ -258,19 +258,19 @@ const OurEmployee = () => {
             {isLoading ? (
               <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
             ) : (
-              <Search className="text-gray-500" />
+              <Search className="text-[#6C7086] h-5 w-5" />
             )}
           </div>
           <input
             placeholder="Search..."
-            className="p-3 pl-10 pr-3 border-2 bg-[#F5F5F5] border-gray-500 rounded-md w-full"
+            className="px-4 py-2 ps-9 border-2 border-[#F2F2F9] rounded-[8px] w-full h-[36px] sm:w-[228px]"
             value={searchInput}
             onChange={handleSearch}
           />
         </div>
         <div className="flex flex-row items-center justify-end gap-2">
           <button
-            className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
+            className="rounded-md px-5 py-1 text-sm font-semibold text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] w-[158px] h-[36px] transition-colors"
             onClick={handleAddEmployeeClick}
             style={{ backgroundColor: layout_color }}
           >

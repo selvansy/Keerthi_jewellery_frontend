@@ -298,11 +298,11 @@ function MetalRateIndex({refresh}) {
                 )}
               </div>
               <div className="flex flex-col py-[6px] ms-1">
-                <h3 className="text-xl font-semibold">
+                <h3 className="text-lg text-[#232323] font-semibold">
                   {e.purity} {e.name}/g
                 </h3>
                 <h5 className="text-[#6C7086] text-md"></h5>
-                <h5 className="text-[#282829] text-md font-medium">
+                <h5 className="text-[#232323] text-sm font-semibold">
                   {formatNumber({ value: e.value, decimalPlaces: 0 })}
                 </h5>
               </div>
@@ -313,7 +313,7 @@ function MetalRateIndex({refresh}) {
         <div className="w-full flex flex-col bg-white mt-7 overflow-y-auto scrollbar-hide  border border-[#F2F2F9] rounded-[16px]">
           <div className="flex flex-col p-6 relative ">
             <div className="flex flex-row justify-between py-2">
-              <h5 className="text-lg text-[#282829] font-bold justify-between">
+              <h5 className="text-lg text-[#232323] font-bold justify-between">
                 Update Metal Rate
               </h5>
             </div>
@@ -321,7 +321,7 @@ function MetalRateIndex({refresh}) {
             <div className="grid grid-rows-2 md:grid-cols-3 gap-5  border-gray-300 mb-10 mt-3 ">
               {id_branch === "0" && (
                 <div className="flex flex-col mt-2">
-                  <label className="text-black mb-1 font-medium">
+                  <label className="text-[#232323] text-sm font-semibold mb-1">
                     Branch<span className="text-red-400">*</span>
                   </label>
                   <div className="relative">
@@ -350,12 +350,12 @@ function MetalRateIndex({refresh}) {
 
               {purityData.map((item, index) => (
                 <div className="flex flex-col mt-2" key={index}>
-                  <label className="text-black mb-2 font-semibold">
+                  <label className="text-[#232323] mb-2 text-sm font-semibold">
                     {`${item.id_metal?.metal_name} ( ${item?.purity_name} )`}/g
                     <span className="text-[#F04438]"> *</span>
                   </label>
                   <div className="relative w-full">
-                    <span className="absolute left-0 top-0 h-full w-10 flex items-center justify-center text-black border-r-2 border-[#F2F2F9]">
+                    <span className="absolute left-0 top-0 h-full w-10 flex items-center justify-center text-black border-r-2 border-[#F2F2F9] ">
                       <IndianRupee size={16} />
                     </span>
                     <input
@@ -376,7 +376,7 @@ function MetalRateIndex({refresh}) {
                           e.preventDefault();
                         }
                       }}
-                      className="border-2 border-[#F2F2F9] rounded-md p-2 w-full pl-12 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                      className="border-2 border-[#F2F2F9] rounded-lg p-2 w-full pl-12 focus:ring-1 focus:ring-[#004181] outline-none"
                       placeholder={`Enter ${item.purity_name} Rate`}
                     />
                   </div>
@@ -391,21 +391,22 @@ function MetalRateIndex({refresh}) {
             </div>
             <div>
               <div className="flex justify-end gap-4">
+               
                 <button
-                  className="bg-[#E2E8F0] text-black rounded-md p-2 w-full lg:w-24"
-                  type="button"
-                  onClick={handleClear}
-                >
-                  Clear
-                </button>
-                <button
-                  className=" text-white rounded-md p-2 w-full lg:w-24"
+                  className=" text-white text-sm rounded-lg h-[36px] w-full md:w-24"
                   type="button"
                   disabled={isLoading}
                   onClick={handleSubmit}
                   style={{ backgroundColor: layout_color }}
                 >
                   {isLoading ? <SpinLoading /> : "Update"}
+                </button>
+                 <button
+                  className="bg-[#E2E8F0] text-black text-sm rounded-lg h-[36px] w-full md:w-24"
+                  type="button"
+                  onClick={handleClear}
+                >
+                  Clear
                 </button>
               </div>
             </div>

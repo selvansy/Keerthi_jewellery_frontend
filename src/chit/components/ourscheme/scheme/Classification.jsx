@@ -57,7 +57,7 @@ const Classification = ({
   };
 
   return (
-    <div className="p-6 mb-6">
+    <div className="p-1 mb-6 text-[#232323] font-semibold">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
         <div className="mb-4">
           <label className="block mb-2">
@@ -93,7 +93,7 @@ const Classification = ({
       }
     />
   </div>
-          <div className="mt-2 relative">
+          <div className="mt-5 relative">
             <img
               src={
                 mainImagePreview ||
@@ -155,7 +155,7 @@ const Classification = ({
               }
             />
           </div>
-          <div className="mt-2 relative">
+          <div className="mt-5 relative">
             <img
               src={
                 descImagePreview ||

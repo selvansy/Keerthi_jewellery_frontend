@@ -12,6 +12,7 @@ import Modal from '../../../components/common/Modal';
 import { eventEmitter } from '../../../../utils/EventEmitter';
 import { openModal } from '../../../../redux/modalSlice';
 import { setid } from "../../../../redux/clientFormSlice"
+import plus from "../../../../assets/plus.svg";
 
 import {
   getoffersTable, getBranchById, allofferstype, activateoffers, deleteoffers, allmetal, getallbranch
@@ -384,13 +385,13 @@ const Offers = () => {
               {searchLoading ? (
                 <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
               ) : (
-                <Search className="text-black" />
+                <Search className="text-[#6C7086] h-5 w-5" />
               )}
             </div>
             <input
                onChange={handleSearch}
               placeholder="Search"
-              className="px-4 py-2 ps-9 border-2 border-[#F2F2F9] rounded-[8px] w-full sm:w-[228px]"
+              className="px-4 py-2 ps-9 border-2 border-[#F2F2F9] rounded-[8px] w-full h-[36px] text-md sm:w-[228px]"
             />
           </div>
 
@@ -416,11 +417,12 @@ const Offers = () => {
           {/* Desktop-only button - appears on the right side */}
           <div className="hidden sm:block sm:order-3">
             <button
-              className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-[135px]"
+              className="flex rounded-lg px-[20px] py-[8px] text-sm font-semibold text-white items-center whitespace-nowrap hover:bg-[#034571] transition-colors sm:w-auto"
                onClick={handleClick}
               style={{ backgroundColor: layout_color }}
             >
-              + Create offers
+              <img src={plus} alt="plus" className="w-4 h-4 me-[10px]" />
+               Create offers
             </button>
           </div>
         </div>

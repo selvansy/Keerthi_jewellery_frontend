@@ -311,7 +311,7 @@ const Modal = () => {
                                 />
                             </svg>
                         </div>
-                        <p className="text-lg text-gray-700">
+                        <p className="text-sm font-semibold text-[#6C7086]">
                             {formData.message}
                         </p>
                     </div>
@@ -320,7 +320,7 @@ const Modal = () => {
             case 'CONFIRMATION':
                 return (
                     <div className="text-start py-4 px-4">
-                        <p className="text-lg text-gray-700">
+                        <p className="text-sm font-semibold text-[#6C7086]">
                             {formData.message}
                         </p>
                     </div>
@@ -344,7 +344,7 @@ const Modal = () => {
                         <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" strokeLinejoin="round" className="lucide lucide-message-circle-reply"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" /><path d="m10 15-3-3 3-3" /><path d="M7 12h7a2 2 0 0 1 2 2v1" /></svg>
                         </div>
-                        <p className="text-lg text-gray-700">
+                        <p className="text-sm text-[#6C7086]">
                             {formData.message}
                         </p>
                     </div>
@@ -634,7 +634,7 @@ const Modal = () => {
             <div className={`bg-white rounded-2xl shadow-md ${modalType !== 'SUCCESS' ? "lg:w-[550px]" : "lg:w-[400px]"}`}>
                 {header && (
                     <div className={`flex items-center justify-between p-4 ${modalType !== 'SUCCESS' ? "border-b" : ""}`}>
-                    <h2 className="text-lg font-semibold mx-3">{header}</h2>
+                    <h2 className="text-lg font-semibold mx-3 text-[#232323]">{header}</h2>
                     <button
                         onClick={() => dispatch(closeModal())}
                         className="flex items-center justify-center text-gray-500 hover:text-gray-700 bg-[#E6E6E670] rounded-full w-6 h-6 px-1 py-1 text-center"
@@ -643,32 +643,33 @@ const Modal = () => {
                     </button>
                 </div>
                 )}
-                <div className="p-3 mx-3">
+                <div className="p-3 mx-3 ">
                     {renderForm()}
                 </div>
                 <div className="flex justify-end space-x-3 py-4 px-9">
-                    {buttons?.cancel && (
-                        <button
-                            onClick={handleCancel}
-                            className={`px-4 py-2 rounded-md
-                                ${modalType === 'CONFIRMATION' || modalType === 'SENDCONFIRMATION' || modalType === 'NAVIGATION'
-                                    ? 'bg-[#F6F7F9] text-gray-800 hover:bg-gray-400'
-                                    : 'bg-[#F6F7F9] text-gray-800 hover:bg-red-400'}`}
-                        >
-                            {buttons.cancel.text || 'Cancel'}
-                        </button>
-                    )}
+                    
                     {buttons?.submit && (
                         <button
                             onClick={handleSubmit}
-                            className={`px-4 py-2 rounded-md
+                            className={`px-6 py-2 rounded-lg
                                 ${modalType === 'CONFIRMATION' || modalType === 'SENDCONFIRMATION'
-                                    ? 'bg-red-600 text-white hover:bg-red-700'
+                                    ? 'bg-red-600 text-sm text-white hover:bg-red-700'
                                     : 'bg-[#61A375] text-white hover:bg-[#528f63]'}`}
                         >
                             {buttons.submit.text || 
                                 (modalType === 'CONFIRMATION' ? 'Confirm' : 
                                  modalType === 'SENDCONFIRMATION' ? 'Send' : 'Submit')}
+                        </button>
+                    )}
+                    {buttons?.cancel && (
+                        <button
+                            onClick={handleCancel}
+                            className={`px-6 py-2 rounded-lg
+                                ${modalType === 'CONFIRMATION' || modalType === 'SENDCONFIRMATION' || modalType === 'NAVIGATION'
+                                    ? 'bg-[#F6F7F9] text-sm text-gray-800 hover:bg-gray-400'
+                                    : 'bg-[#F6F7F9] text-gray-800 hover:bg-red-400'}`}
+                        >
+                            {buttons.cancel.text || 'Cancel'}
                         </button>
                     )}
                 </div>

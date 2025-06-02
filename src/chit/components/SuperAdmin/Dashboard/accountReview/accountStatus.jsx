@@ -179,7 +179,7 @@ const AccountStatus = ({ id_branch }) => {
   const navigate = useNavigate();
   return (
     <div className="border-[1px] border-[#F5F5F5] p-5 rounded-[20px] lg:col-span-2 bg-white text-[#232323]">
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex justify-between items-center mb-2">
         <h2 className="text-gray-800 font-bold text-lg">Account</h2>
         <Select
           options={options}
@@ -297,7 +297,7 @@ const AccountStatus = ({ id_branch }) => {
                   className="w-4 h-4 rounded-sm mr-2"
                   style={{ backgroundColor: color }}
                 ></div>
-                <span className="text-sm">{label}</span>
+                <span className="text-md">{label}</span>
                 <span className="text-sm ml-2 text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity">
                   {percentage}
                 </span>
@@ -334,9 +334,9 @@ const AccountStatus = ({ id_branch }) => {
           <img
             src={AddAcc}
             alt={AddAcc}
-            className="h-[22px] w-[22px] me-[18px]"
+            className="h-[22px] w-[22px] me-[10px]"
           />
-          <button className="text-white">Add Accounts</button>
+          <button className="text-white font-semibold">Add Accounts</button>
         </div>
       </div>
     </div>
