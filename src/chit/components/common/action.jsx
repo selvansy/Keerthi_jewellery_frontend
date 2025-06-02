@@ -115,14 +115,14 @@ function Action({ row, data, rowIndex, activeDropdown, setActive, handleEdit, ha
                     Delete
                   </button>
                 )}
-                {cancel && (
+                {/* {cancel && (
                   <button
                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
                     onClick={() => setActive(null)}
                   >
                     Cancel
                   </button>
-                )}
+                )} */}
               </div>
             </div>
           </div>,
