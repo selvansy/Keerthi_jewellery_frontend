@@ -753,11 +753,15 @@ const SchemeForm = () => {
   }, [formik.values.maturity_period, formik.values.installment_type]);
 
   return (
+    <div>
+    <Breadcrumb
+            items={[{ label: "Scheme" }, { label: "Add scheme", active: true }]}
+          />
     <form
       onSubmit={formik.handleSubmit}
-      className="w-full mx-auto p-2 space-y-6"
+      className="w-full mx-auto mt-3 space-y-6"
     >
-      <div className="bg-[#FFFFFF] rounded-lg p-6 shadow-sm border text-[#232323]">
+      <div className="bg-[#FFFFFF] rounded-lg p-5 shadow-sm border text-[#232323]">
         <h2 className="text-lg font-semibold mb-4 border-b pb-4">Add Scheme</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -1447,9 +1451,19 @@ const SchemeForm = () => {
       </Accordion>
 
       <div className="flex justify-end space-x-4">
+         <button
+          type="submit"
+          disabled={isLoading || !formik.isValid || !formik.dirty}
+          className={`px-9 h-[36px] text-sm font-semibold bg-blue-900 text-white rounded-lg flex justify-center items-center lg:h-[36px] ${
+            isLoading ? "opacity-50" : "hover:bg-blue-800"
+          }`}
+        >
+          {isLoading ? <SpinLoading /> : id ? "Update" : "Save"}
+        </button>
+        
         <button
           type="button"
-          className="w-20 h-9 border-2 bg-[#F6F7F9] border-[#f2f3f8] rounded-md hover:bg-gray-50 flex justify-center items-center text-[#6C7086]"
+          className="px-9 h-[36px] font-semibold text-sm border-2 bg-[#F6F7F9] border-[#f2f3f8] rounded-lg hover:bg-gray-50 flex justify-center items-center text-[#6C7086] lg:h-[36px]"
           onClick={() => formik.resetForm()}
         >
           Clear
@@ -1461,17 +1475,10 @@ const SchemeForm = () => {
         >
           {isLoading ? <SpinLoading /> : id ? "Update" : "Save"}
         </button> */}
-        <button
-          type="submit"
-          disabled={isLoading || !formik.isValid || !formik.dirty}
-          className={`w-20 h-9 bg-blue-900 text-white rounded-md flex justify-center items-center ${
-            isLoading ? "opacity-50" : "hover:bg-blue-800"
-          }`}
-        >
-          {isLoading ? <SpinLoading /> : id ? "Update" : "Save"}
-        </button>
+       
       </div>
     </form>
+    </div>
   );
 };
 
