@@ -1263,7 +1263,7 @@ const CustomerForm = ({
                             </span>
                           )}
 
-                          <div className="absolute -right-2 top-1/2 -translate-y-1/2">
+                          <div className="absolute -right-8 top-1/2 -translate-y-1/2">
                             <button
                               className="bg-[#004181] text-white rounded-md px-4 py-2"
                               onClick={(e) => sendOtpToMobile(e)}

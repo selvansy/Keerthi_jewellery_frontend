@@ -11,7 +11,7 @@ import AddSchemeAccount from "../schemeaccount/SchemeAccountform";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
-function Customers() {
+function  Customers() {
   const [isCustomer, setIsCustomer] = useState(false);
   const [openAcc, setOpenAcc] = useState(["customer"]);
   const [joinScheme, setJoinScheme] = useState(["add-customer"]);
@@ -96,10 +96,10 @@ function Customers() {
             <button
               key={label}
               onClick={() => handleToggleCustomer(index === 1)}
-              className={`px-4 py-1 transition-all ${
+              className={`px-4 h-[36px] transition-all ${
                 isCustomer === (index === 1)
                   ? `bg-[${layoutColor}] text-white`
-                  : "bg-gray-300 text-gray-700 dark:bg-white dark:text-black"
+                  : "bg-gray-300 text-gray-700 dark:bg-white text-sm font-semibold dark:text-[#09090F]"
               } ${
                 index === 0
                   ? "rounded-l-lg border-r border-[#004181]"
