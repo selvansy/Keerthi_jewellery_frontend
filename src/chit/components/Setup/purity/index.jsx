@@ -583,14 +583,14 @@ export const PurityForm = ({ setIsOpen, metals, clearId, id }) => {
             type="button"
             onClick={handleSubmit}
             disabled={isLoading}
-            className="text-white rounded-lg text-sm font-semibold h-[36px] items-center justify-center w-full lg:w-20"
+            className="text-white rounded-lg text-sm font-semibold h-[36px] items-center justify-center w-full md:w-20"
             style={{ backgroundColor: layout_color }}
           >
             {isLoading ? <SpinLoading /> : id ? "Update" : "Submit"}
           </button>
           <button
             type="button"
-            className="bg-[#E2E8F0] text-sm font-semibold text-[#232323] rounded-md  w-full lg:w-20"
+            className="bg-[#E2E8F0] text-sm font-semibold text-[#232323] rounded-md  w-full md:w-20"
             onClick={handleCancel}
           >
             Cancel

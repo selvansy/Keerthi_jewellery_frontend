@@ -492,14 +492,14 @@ export const MetalForm = ({ setIsOpen, id, clearId }) => {
             type="button"
             onClick={handleSubmit}
             disabled={isLoading}
-            className=" text-white rounded-lg text-sm font-semibold px-6 py-2 items-center justify-center w-full lg:w-20"
+            className=" text-white rounded-lg text-sm font-semibold px-6 py-2 items-center justify-center w-full md:w-20"
             style={{ backgroundColor: layout_color }}
           >
             {isLoading ? <SpinLoading /> : id ? "Update" : "Save"}
           </button>
            <button
             type="button"
-            className="bg-[#E2E8F0] text-[#6C7086] text-sm font-semibold rounded-lg  w-full lg:w-20"
+            className="bg-[#E2E8F0] text-[#6C7086] text-sm font-semibold rounded-lg  w-full md:w-20"
             onClick={handleCancel}
           >
             Cancel
