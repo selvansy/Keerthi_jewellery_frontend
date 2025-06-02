@@ -587,7 +587,7 @@ const CustomerForm = ({
                       formik.handleChange(e);
                       formik.setFieldTouched("firstname", false);
                     }}
-                    className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                    className="w-full border-2 border-[#f2f3f8] rounded-lg px-3 py-2"
                     placeholder="Enter Here"
                   />
                   {formik.errors.firstname ? (
@@ -609,7 +609,7 @@ const CustomerForm = ({
                       formik.handleChange(e);
                       formik.setFieldTouched("lastname", false);
                     }}
-                    className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                    className="w-full border-2 border-[#f2f3f8] rounded-lg px-3 py-2"
                     placeholder="Enter Here"
                   />
                   {formik.errors.lastname ? (
@@ -689,7 +689,7 @@ const CustomerForm = ({
                       disabled
                       style={{ height: inputHeight }}
                       value={branchData?.branch_name || ""}
-                      className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2 text-gray-500"
+                      className="w-full border-2 border-[#f2f3f8] rounded-lg px-3 py-2 text-gray-500"
                     />
                     {formik.errors.id_branch && (
                       <div className="text-red-500 text-sm mt-1">
@@ -726,7 +726,7 @@ const CustomerForm = ({
                         e.preventDefault();
                       }
                     }}
-                    className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                    className="w-full border-2 border-[#f2f3f8] rounded-lg px-3 py-2"
                     placeholder="Enter Mobile Number"
                   />
 
@@ -753,7 +753,7 @@ const CustomerForm = ({
                     }}
                     pattern="\d{10}"
                     maxLength={"10"}
-                    className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                    className="w-full border-2 border-[#f2f3f8] rounded-lg px-3 py-2"
                     placeholder="Enter Whatsapp Number"
                   />
                   {formik.errors.whatsapp ? (
@@ -774,7 +774,7 @@ const CustomerForm = ({
                       <button
                         key={gender.value}
                         type="button"
-                        className={`rounded-md w-20 h-10 flex items-center justify-center border-2 border-black transition-colors duration-200 ${
+                        className={`rounded-lg w-20 h-10 flex items-center justify-center border-2 border-black transition-colors duration-200 ${
                           formik.values.gender === gender.value
                             ? "text-[#004181]"
                             : " text-[#6C7086]"
@@ -894,7 +894,7 @@ const CustomerForm = ({
                       formik.handleChange(e);
                       formik.setFieldTouched("address", false);
                     }}
-                    className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                    className="w-full border-2 border-[#f2f3f8] rounded-lg px-3 py-2"
                     placeholder="Enter Here"
                   />
                   {formik.errors.address ? (
@@ -920,7 +920,7 @@ const CustomerForm = ({
                     }}
                     pattern="\d{6}"
                     maxLength={"6"}
-                    className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                    className="w-full border-2 border-[#f2f3f8] rounded-lg px-3 py-2"
                     placeholder="Enter Pincode"
                   />
                   {formik.errors.pincode ? (
@@ -942,7 +942,7 @@ const CustomerForm = ({
                         .replace(/[^A-Z0-9]/g, "");
                       formik.setFieldValue("pan", value);
                     }}
-                    className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                    className="w-full border-2 border-[#f2f3f8] rounded-lg px-3 py-2"
                     placeholder="ABCDE1234F"
                     maxLength="10"
                   />
@@ -966,7 +966,7 @@ const CustomerForm = ({
                     maxLength="12"
                     inputMode="numeric"
                     onChange={formik.handleChange}
-                    className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                    className="w-full border-2 border-[#f2f3f8] rounded-lg px-3 py-2"
                     placeholder="Enter Aadhar Number"
                   />
 
@@ -996,7 +996,7 @@ const CustomerForm = ({
                         }
                       }}
                       dateFormat="yyyy-MM-dd"
-                      className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                      className="w-full border-2 border-[#f2f3f8] rounded-lg px-3 py-2"
                       placeholderText="Select Date"
                       wrapperClassName="w-full"
                       showMonthDropdown
@@ -1033,7 +1033,7 @@ const CustomerForm = ({
                         }
                       }}
                       dateFormat="yyyy-MM-dd"
-                      className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                      className="w-full border-2 border-[#f2f3f8] rounded-lg px-3 py-2"
                       placeholderText="Select Date"
                       wrapperClassName="w-full"
                       showMonthDropdown
@@ -1063,7 +1063,7 @@ const CustomerForm = ({
                       name="password"
                       value={formik.values.password}
                       onChange={formik.handleChange}
-                      className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                      className="w-full border-2 border-[#f2f3f8] rounded-lg px-3 py-2"
                       placeholder="Enter password"
                     />
                     {showpassword ? (
@@ -1106,7 +1106,7 @@ const CustomerForm = ({
                       name="confirmpassword"
                       value={formik.values.confirmpassword}
                       onChange={formik.handleChange}
-                      className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                      className="w-full border-2 border-[#f2f3f8] rounded-lg px-3 py-2"
                       placeholder="Confirm Password"
                     />
 
@@ -1150,7 +1150,7 @@ const CustomerForm = ({
                   <div className="flex items-center gap-3 relative">
                     <label
                       htmlFor="image"
-                      className="flex-1 border-2 border-[#f2f3f8] rounded-md px-3 py-2 cursor-pointer hover:bg-gray-50"
+                      className="flex-1 border-2 border-[#f2f3f8] rounded-lg px-3 py-2 cursor-pointer hover:bg-gray-50"
                     >
                       <p className="truncate text-[#b5b5b5] w-1/2">
                         {cus_img ? cus_img.name || cus_img : "Browse"}
@@ -1159,13 +1159,13 @@ const CustomerForm = ({
                     <div className="absolute right-0 top-0 bottom-0 h-full flex flex-row gap-2">
                       <label
                         htmlFor="image"
-                        className="bg-blue-600 text-white px-4 flex items-center justify-center rounded-md cursor-pointer text-sm"
+                        className="bg-blue-600 text-white px-4 flex items-center justify-center rounded-lg cursor-pointer text-sm"
                         style={{ backgroundColor: layout_color }}
                       >
                         Choose File
                       </label>
                       <div
-                        className="w-11 h-11 flex items-center justify-center rounded-md cursor-pointer"
+                        className="w-11 h-11 flex items-center justify-center rounded-lg cursor-pointer"
                         style={{ backgroundColor: layout_color }}
                         onClick={() => setShowWebcam(true)}
                       >
@@ -1198,7 +1198,7 @@ const CustomerForm = ({
                   <div className="flex items-center gap-3 relative">
                     <label
                       htmlFor="id_proof"
-                      className="flex-1 border-2 border-[#f2f3f8] rounded-md px-3 py-2 cursor-pointer hover:bg-gray-50"
+                      className="flex-1 border-2 border-[#f2f3f8] rounded-lg px-3 py-2 cursor-pointer hover:bg-gray-50"
                     >
                       <p className="truncate text-[#b5b5b5]">
                         {id_proof ? id_proof.name || id_proof : "Browse"}
@@ -1207,7 +1207,7 @@ const CustomerForm = ({
                     <div className="absolute right-0 top-0 bottom-0 h-full flex flex-row gap-2">
                       <label
                         htmlFor="id_proof"
-                        className="bg-blue-600 text-white px-4 flex items-center justify-center rounded-md cursor-pointer text-sm"
+                        className="bg-blue-600 text-white px-4 flex items-center justify-center rounded-lg cursor-pointer text-sm"
                         style={{ backgroundColor: layout_color }}
                       >
                         Choose File
@@ -1250,7 +1250,7 @@ const CustomerForm = ({
                           <input
                             type="number"
                             min="0"
-                            className="border-2 border-[#f2f3f8] rounded-md p-2 w-96 lg:w-[81%] focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent pr-24"
+                            className="border-2 border-[#f2f3f8] rounded-lg p-2 px-3 py-2 focus:ring-1 focus:ring-[#004181] outline-none pr-24"
                             placeholder="Enter mobile number"
                             value={formik.values.mobile}
                             onChange={formik.handleChange}
@@ -1263,9 +1263,9 @@ const CustomerForm = ({
                             </span>
                           )}
 
-                          <div className="absolute -right-8 top-1/2 -translate-y-1/2">
+                          <div className="absolute right-8 top-1/2 -translate-y-1/2">
                             <button
-                              className="bg-[#004181] text-white rounded-md px-4 py-2"
+                              className="bg-[#004181] text-white rounded-lg text-sm font-semibold h-[36px] w-full  md:w-24"
                               onClick={(e) => sendOtpToMobile(e)}
                             >
                               Send OTP
@@ -1285,7 +1285,7 @@ const CustomerForm = ({
                 <div className="bg-white mt-6">
                   <div className="flex justify-end gap-5 mt-3">
                   <button
-                      className="text-white rounded-md p-2 w-full lg:w-20"
+                      className="text-white rounded-lg text-sm font-semibold h-[36px] w-full md:w-24"
                       type="submit"
                       style={{ backgroundColor: layout_color }}
                       disabled={isLoading}
@@ -1293,7 +1293,7 @@ const CustomerForm = ({
                       {isLoading ? <SpinLoading /> : id ? "Update" : "Save"}
                     </button>
                     <button
-                      className="bg-[#E2E8F0] text-black rounded-md p-2 w-full lg:w-20"
+                      className="bg-[#E2E8F0] text-gray-500 rounded-lg h-[36px] w-full text-sm font-semibold md:w-24"
                       type="button"
                       onClick={() => {
                         handleClear();

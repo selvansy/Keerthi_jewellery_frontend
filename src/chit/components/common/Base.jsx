@@ -722,30 +722,30 @@ const Base = ({ renderContent: RenderContent }) => {
           <div className="flex items-center space-x-1 xl:space-x-3 flex-wrap justify-end">
             {/* Metal rates - will stack vertically on small screens */}
             <div className="flex flex-col sm:flex-row gap-1 sm:gap-2">
-              <div className="bg-[#FFE28D] flex px-2 py-1 sm:px-3 sm:py-1.5 rounded-[8px] text-xs sm:text-sm">
+              <div className="bg-[#FFE28D] flex px-2 py-1 sm:px-3 sm:py-1.5 rounded-[8px] text-[#232323] font-medium sm:text-sm">
                 <span className="hidden sm:inline">Gold (24K):</span>
                 <span className="sm:hidden">G24:</span>
-                <span className="ml-1">
+                <span className="ml-1 font-bold">
                   {formatNumber({
                     value: getGold24Rate(),
                     decimalPlaces: 2,
                   })}
                 </span>
               </div>
-              <div className="bg-[#FFE28D] flex px-2 py-1 sm:px-3 sm:py-1.5 text-[#232323] rounded-[8px] text-[12px] sm:text-sm">
+              <div className="bg-[#FFE28D] flex px-2 py-1 sm:px-3 sm:py-1.5 text-[#232323] text-sm font-medium rounded-lg text-[12px] sm:text-sm">
                 <span className="hidden sm:inline">Gold (22K):</span>
                 <span className="sm:hidden">G22:</span>
-                <span className="ml-1">
+                <span className="ml-1 font-bold">
                   {formatNumber({
                     value: getGold22Rate(),
                     decimalPlaces: 2,
                   })}
                 </span>
               </div>
-              <div className="bg-[#C0C0C0] flex px-2 py-1 sm:px-3 sm:py-1.5 rounded-[8px] text-xs sm:text-sm">
+              <div className="bg-[#C0C0C0] flex px-2 py-1 sm:px-3 sm:py-1.5 text-[#232323] rounded-[8px] text-xs sm:text-sm">
                 <span className="hidden sm:inline">Silver:</span>
                 <span className="sm:hidden">S:</span>
-                <span className="ml-1">
+                <span className="ml-1 font-bold ">
                   {formatNumber({
                     value: getSilverRate(),
                     decimalPlaces: 2,
