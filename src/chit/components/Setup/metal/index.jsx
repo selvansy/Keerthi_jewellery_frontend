@@ -310,7 +310,7 @@ const Metal = () => {
 
         <ModelOne
           title={id ? "Edit Metal Details" : "Add Metal Details"}
-          extraClassName="w-[450px]"
+          extraClassName="w-[420px]"
           setIsOpen={setIsviewOpen}
           isOpen={isviewOpen}
           closeModal={closeIncommingModal}
