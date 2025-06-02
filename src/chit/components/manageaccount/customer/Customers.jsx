@@ -171,7 +171,7 @@ function  Customers() {
               value="add-customer"
               className="border rounded-lg bg-white"
             >
-              <AccordionTrigger className="px-6 py-4 text-[18px]">
+              <AccordionTrigger className="px-6 py-4 text-[18px] text-[#232323] font-bold">
                 {id ? "Edit Customer" : "Add Customer"}
               </AccordionTrigger>
               <AccordionContent className="px-6 py-4 text-[16px]">
@@ -197,7 +197,7 @@ function  Customers() {
                 value="join-scheme"
                 className="border rounded-lg bg-white my-3"
               >
-                <AccordionTrigger className="px-6 py-4 text-[18px]">
+                <AccordionTrigger className="px-6 py-4 text-[18px] text-[#232323] font-bold">
                   Add To Scheme
                 </AccordionTrigger>
                 <AccordionContent className="px-6 py-4 text-[16px]">

@@ -126,24 +126,28 @@ export function ExistingCustomer({
   const customStyles = (isReadOnly) => ({
     control: (base, state) => ({
       ...base,
-      minHeight: "42px",
+      minHeight: "44px", //42px
       backgroundColor: "white",
-      border: state.isFocused ? "1px solid black" : "2px solid #f2f3f8",
-      boxShadow: state.isFocused ? "0 0 0 1px black" : "none",
-      borderRadius: "0.375rem",
+      color:"#232323",
+      // fontWeight:600,
+      border: state.isFocused ? "1px solid #f2f2f9" : "1px solid #f2f2f9",
+      boxShadow: state.isFocused ? "0 0 0 1px #004181" : "none",
+      borderRadius: "0.5rem",
       "&:hover": {
         color: "#e2e8f0",
       },
       pointerEvents: !isReadOnly ? "none" : "auto",
       opacity: !isReadOnly ? 1 : 1,
+      cursor: isReadOnly ? "pointer" : "default", 
     }),
     indicatorSeparator: () => ({
       display: "none",
     }),
     placeholder: (base) => ({
       ...base,
-      color: "#858293",
-      fontWeight: "thin",
+      color: "#6C7086",
+      // fontWeight: "thin",
+      fontSize: "14px",
       // fontStyle: "bold",
     }),
     dropdownIndicator: (provided, state) => ({
@@ -153,12 +157,23 @@ export function ExistingCustomer({
         color: "#232323",
       },
     }),
-  });
+     input: (base) => ({
+      ...base,
+      "input[type='text']:focus": { boxShadow: 'none' },
+      }),
+      option:(base,state)=>({
+        ...base,
+        backgroundColor: state.isSelected ? "#F0F7FE" : state.isFocused ? "#F0F7FE" : "white",
+        color:"#232323",
+        fontWeight:"500",
+        fontSize:"14px"
+      })
+    });
 
   return (
     <div className="grid md:grid-cols-3 gap-2">
       <div className="flex flex-col">
-        <label className="text-black mb-1 font-semibold">
+        <label className="text-[#232323] text-sm mb-1 font-semibold">
           Branch<span className="text-red-400">*</span>
         </label>
         <Select
@@ -186,7 +201,7 @@ export function ExistingCustomer({
       </div>
 
       <div className="flex flex-col relative">
-        <label className="text-black mb-1 font-semibold">
+        <label className="text-sm text-[#232323] mb-1 font-semibold">
           Search Mobile Number<span className="text-red-400">*</span>
         </label>
         <input
@@ -231,7 +246,7 @@ export function ExistingCustomer({
       </div>
 
       <div className="flex flex-col">
-        <label className="text-black mb-1 font-semibold">
+        <label className="text-[#232323] text-sm mb-1 font-semibold">
           Customer Name<span className="text-red-400">*</span>
         </label>
         <input
@@ -1707,7 +1722,7 @@ console.log('selectedClassification', selectedClassification, 'weight', weight, 
       <div className="bg-white p-2  mt-4">
         <div className="flex justify-end gap-5 mt-3">
           <button
-            className=" text-white rounded-md p-2 w-full lg:w-20"
+            className=" text-white rounded-md text-sm font-semibold h-[36px] w-full  md:w-24"
             type="submit"
             disabled={isLoading}
             style={{ backgroundColor: layout_color }}
@@ -1715,7 +1730,7 @@ console.log('selectedClassification', selectedClassification, 'weight', weight, 
             {isLoading ? <SpinLoading /> : id ? "Update" : "Save"}
           </button>
           <button
-            className="bg-[#E2E8F0] text-sm text-[#6C7086] rounded-md p-2 w-full lg:w-20"
+            className="bg-[#E2E8F0] text-sm text-[#6C7086] font-semibold rounded-md h-[36px] w-full md:w-24"
             type="button"
             onClick={handleCancel}
           >
