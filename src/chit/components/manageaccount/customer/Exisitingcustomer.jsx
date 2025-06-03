@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
 import Select from "react-select";
-// import Table from "../../common/Table";
-// import { SquarePen } from "lucide-react";
+import Table from "../../common/Table";
+import { SquarePen } from "lucide-react";
 import { getallbranch, customerOverview } from "../../../api/Endpoints";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
