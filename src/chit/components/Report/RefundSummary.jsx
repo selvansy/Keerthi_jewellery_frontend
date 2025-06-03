@@ -27,19 +27,23 @@ function RefundReport() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [totalDocuments, setTotalDocuments] = useState(0);
+  const [totalPages,setTotalPages]= useState(0)
   const [from_date,setfrom_date]=useState()
   const [to_date,setto_date]=useState()
 
   useEffect(() => {
     getRefunData({from_date,to_date});
-  }, [from_date,to_date]);
+  }, [from_date,to_date,itemsPerPage,currentPage]);
 
   const { mutate: getRefunData } = useMutation({
-    mutationFn:({from_date,to_date})=> refundSummary({from_date,to_date}),
+    mutationFn:({from_date,to_date})=> refundSummary({from_date,to_date, page: currentPage,
+      limit: itemsPerPage}),
     onSuccess: (response) => {
       const { data } = response;
       setRefunData(data);
       setisLoading(false);
+      setTotalDocuments(response.totalDocuments);
+      setTotalPages(response.totalPages)
     },
     onError: (error) => {
       setisLoading(false);

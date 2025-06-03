@@ -30,6 +30,7 @@ function PreCloseReport() {
   const [to_date,setto_date]=useState(new Date())
   const [totalDocuments, setTotalDocuments] = useState(0);
   const [processData,setProcessData]=useState([]);
+  const [totalPages,setTotalPages]=useState(0)
 
   useEffect(() => {
     getPreCloseData({from_date,to_date});
@@ -37,15 +38,16 @@ function PreCloseReport() {
 
   useEffect(() => {
     getPreCloseData({from_date,to_date});
-  }, [from_date,to_date]);
+  }, [from_date,to_date,currentPage,itemsPerPage]);
 
   const { mutate: getPreCloseData } = useMutation({
-    mutationFn:({from_date,to_date})=> preCloseSummary({from_date,to_date}),
+    mutationFn:({from_date,to_date})=> preCloseSummary({from_date,to_date,page:currentPage,limit:itemsPerPage}),
     onSuccess: (response) => {
       if(response){
         setPreCloseData(response?.data);
       setCurrentPage(response.currentPage)
-      setTotalDocuments(response.totalDocuments)
+      setTotalDocuments(response.totalDocuments);
+      setTotalPages(response.totalPages)
       setisLoading(false);
       }
     },
@@ -167,13 +169,7 @@ function PreCloseReport() {
     },
     {
       header: "Closed Date",
-      cell: (row) => {
-        return new Date(row.closed_date).toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "numeric",
-          day: "numeric",
-        });
-      }
+      cell: (row) => formatDate(row?.closedDate)
     },
     {
       header: "Bill No ",

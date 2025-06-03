@@ -849,7 +849,6 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
           formData.installment_type
         )
       } else {
-        console.log("ker")
         digigoldandsilverMaturity(
           formData.start_date,
           formData.maturity_period
