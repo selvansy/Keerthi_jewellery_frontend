@@ -13,7 +13,7 @@ import { formatDate } from "../../../../utils/FormatDate";
 import { formatDecimal } from "../../../utils/commonFunction";
 import { head, header, label } from "framer-motion/client";
 
-const Exisitingcustomer = () => {
+const Existcusomer = () => {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -281,12 +281,12 @@ const walletdata=[{
           { label: "Customer Overview", active: true },
         ]}
       />
-      <div className="border rounded-lg bg-white my-3 p-4">
-        <h1 className="text-black font-bold">Customer Details</h1>
+       <div className="border rounded-lg bg-white my-3 p-4">
+        <h1 className="text-[#232323] font-bold">Customer Details</h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5  mt-5">
           {accessBranch === "0" && branch.length > 0 && !isBranchLoading ? (
             <div>
-                <label className='text-sm font-medium text-black' >
+                <label className='text-sm font-medium text-[#232323]' >
                     Branch <span className='text-red-600'>*</span>
                 </label>
                 <Select
@@ -328,7 +328,7 @@ const walletdata=[{
             </div>
           )}
           <div className="relative">
-            <label className="text-sm font-medium text-black">
+            <label className="text-sm font-medium text-[#232323]">
               Mobile Number
             </label>
             <div className="relative">
@@ -350,96 +350,24 @@ const walletdata=[{
         </div>
       </div>
 
-      <div className="flex flex-cols lg:flex-cols-2 sm:flex-cols-2 gap-3 h-full">
-        <div className="border w-3/4 rounded-lg bg-white my-3 p-4 h-full">
-          <div className="flex flex-col h-full">
-            <div className="flex flex-row gap-3 justify-end">
-              <button
-                type="button"
-                className="p-2 bg-[#004181] text-white rounded-md"
-                onClick={() =>
-                  navigate(
-                    `/managecustomers/editcustomer/${data.customerDetails?._id}`
-                  )
-                }
-              >
-                <SquarePen size={20} className="text-gray-400" />
-              </button>
-            </div>
-            <div className="flex flex-col gap-2 justify-center items-center">
-              <img
-                src={
-                  data.customerDetails?.profileImage
-                    ? `${data.customerDetails?.pathUrl}${data.customerDetails?.profileImage}`
-                    : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
-                }
-                className="w-24 h-24 border rounded-full object-cover items-center"
-              />
-              <p className="text-bold">{data.customerDetails?.customerName}</p>
-            </div>
-
-            <hr className="w-full mt-5" />
-
-            <div className="p-6">
-              {profileData.map((item, index) => (
-                <div key={index} className="flex justify-between gap-4 py-2">
-                  <p className="text-sm font-semibold text-black">
-                    {item.label}:
-                  </p>
-                  <p className="text-sm font-semibold text-gray-400">
-                    {item.value}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-        <div className="border w-full rounded-lg bg-white my-3 p-5 h-full">
-          <h1 className="text-lg font-bold text-black">Account Overview</h1>
-          <div className="flex gap-5">
-            <div className="justify-start p-2 right-10">
-              <p className="text-lg font-medium text-black">
-                ₹{" "}
-                {data?.totalAmountPayable}
-              </p>
-              <p className="text-sm font-bold text-gray-600">Amount Paid</p>
-            </div>
-            <hr className="w-px h-10 bg-gray-300 border-none mt-3" />
-            <div className="justify-between p-2">
-              <p className="text-lg font-medium text-black">
-                {`${formatDecimal(data?.totalWeightPayable)} g`}
-              </p>
-              <p className="text-sm font-bold text-gray-600">Weight Paid</p>
-            </div>
-            <hr className="w-px h-10 bg-gray-300 border-none mt-3" />
-            <div className="justify-end p-2">
-              <p className="text-lg font-medium text-black">
-                {data?.totalOpenSchemes || "N/A"}
-              </p>
-              <p className="text-sm font-bold text-gray-600">Active Accounts</p>
-            </div>
-          </div>
-
-          <div className="mt-3">
-            <h1 className="text-md font-bold text-black">Account History</h1>
-            <div className="mt-5">
-              <Table
-                data={data.schemes}
-                columns={columns}
-                isLoading={isLoading}
-                currentPage={currentPage}
-                handleItemsPerPageChange={(value) => setItemsPerPage(value)}
-                handlePageChange={(page) => setCurrentPage(page)}
-                itemsPerPage={itemsPerPage}
-                totalItems={data.schemes.length}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
       <div className="border rounded-lg bg-white my-3 p-4">
-         <h1 className="text-md font-bold text-black">Account Overview</h1>
-          <hr className="w-full mt-5" />
+        <div className="flex flex-row justify-between items-center">
+         <h1 className="text-md font-bold text-[#232323]">Account Overview</h1>
+          <div>
+                       <button
+                         type="button"
+                         className="px-6 py-2 text-sm bg-[#004181] text-white rounded-md"
+                         onClick={() =>
+                           navigate(
+                             `/managecustomers/editcustomer/${data.customerDetails?._id}`
+                           )
+                         }
+                       >
+                         Edit Profile
+                       </button>
+                     </div>
+                     </div>
+          <hr className="w-full mt-2" />
         <div className="grid grid-cols-3 ">
             <div className="flex flex-col gap-2 justify-center items-center">
               <img
@@ -456,7 +384,7 @@ const walletdata=[{
             <div className="p-6">
               {profileData.slice(0,5).map((item, index) => (
                 <div key={index} className="flex justify-between gap-4 py-2">
-                  <p className="text-sm font-semibold text-black">
+                  <p className="text-sm font-semibold text-[#232323]">
                     {item.label}:
                   </p>
                   <p className="text-sm font-semibold text-gray-400">
@@ -469,7 +397,7 @@ const walletdata=[{
              <div className="p-6">
               {profileData.slice(5,10).map((item, index) => (
                 <div key={index} className="flex justify-between gap-4 py-2">
-                  <p className="text-sm font-semibold text-black">
+                  <p className="text-sm font-semibold text-[#232323]">
                     {item.label}:
                   </p>
                   <p className="text-sm font-semibold text-gray-400">
@@ -481,42 +409,42 @@ const walletdata=[{
         </div>
          <div className="grid grid-cols-2 gap-5">
               <div className="border rounded-lg bg-white my-3 p-4">
-                <h1 className="text-md font-bold text-black">Scheme Details</h1>
+                <h1 className="text-md font-bold text-[#232323]">Scheme Details</h1>
                  <hr className="w-full mt-5" />
                  <div className="grid grid-cols-3 gap-5 p-5">
               <div className="justify-start"> 
-                  <p className="text-lg font-medium text-black">
+                  <p className="text-lg font-medium text-[#232323]">
                     ₹{" "}
                     {data?.totalAmountPayable}
                   </p>
                   <p className="text-sm font-bold text-gray-600">Amount Payable</p>
               </div>
               <div className="justify-between"> 
-                  <p className="text-lg font-medium text-black">
+                  <p className="text-lg font-medium text-[#232323]">
                       {`${formatDecimal(data?.totalWeightPayable)} g`}
                   </p>
                   <p className="text-sm font-bold text-gray-600">Weight payble</p>
               </div>
               <div className="justify-end"> 
-                  <p className="text-lg font-medium text-black">
+                  <p className="text-lg font-medium text-[#232323]">
                     {data?.totalOpenSchemes || "N/A"}
                   </p>
                   <p className="text-sm font-bold text-gray-600">Active Accounts</p>
               </div>
              <div className="justify-start"> 
-                      <p className="text-lg font-medium text-black">
+                      <p className="text-lg font-medium text-[#232323]">
                         --
                   </p>
                   <p className="text-sm font-bold text-gray-600">Closed Schemes</p>
               </div>
               <div className="justify-between"> 
-                        <p className="text-lg font-medium text-black">
+                        <p className="text-lg font-medium text-[#232323]">
                           --
                            </p>
                   <p className="text-sm font-bold text-gray-600">Pre closed</p>
              </div>
              <div className="justify-end"> 
-                  <p className="text-lg font-medium text-black">
+                  <p className="text-lg font-medium text-[#232323]">
                     --
                   </p>
                   <p className="text-sm font-bold text-gray-600">Refund</p>
@@ -524,11 +452,11 @@ const walletdata=[{
            </div>
               </div>
               <div className="border rounded-lg bg-white my-3 p-4">
-                <h1 className="text-md font-bold text-black">Referal</h1>
+                <h1 className="text-md font-bold text-[#232323]">Referal</h1>
                  <hr className="w-full mt-5 mb-3" />
                 {referdata.map((item,index)=>(
                    <div key={index} className="flex items-center gap-5 py-2">
-                  <p className="text-sm font-semibold text-black w-32">
+                  <p className="text-sm font-semibold text-[#232323] w-32">
                     {item.label}
                   </p>
                   <p className="text-sm font-semibold text-gray-400">
@@ -541,11 +469,11 @@ const walletdata=[{
             </div>
             <div className="grid grid-cols-3 gap-5">
               <div className="border rounded-lg bg-white my-3 p-4">
-                <h1 className="text-md font-bold text-black">Gift</h1>
+                <h1 className="text-md font-bold text-[#232323]">Gift</h1>
                  <hr className="w-full mt-5 mb-2" />
                  {walletdata.map((item,index)=>(
                    <div key={index} className="flex items-center gap-9 py-2">
-                  <p className="text-sm font-semibold text-black w-32">
+                  <p className="text-sm font-semibold text-[#232323] w-32">
                     {item.label}
                   </p>
                   <p className="text-sm font-semibold text-gray-400">
@@ -557,11 +485,11 @@ const walletdata=[{
                 
               </div>
               <div className="border rounded-lg bg-white my-3 p-4">
-                <h1 className="text-md font-bold text-black">Over Dues</h1>
+                <h1 className="text-md font-bold text-[#232323]">Over Dues</h1>
                  <hr className="w-full mt-5 mb-2" />
                  {overduedata.map((item,index)=>(
                    <div key={index} className="flex items-center gap-9 py-2">
-                  <p className="text-sm font-semibold text-black w-32">
+                  <p className="text-sm font-semibold text-[#232323] w-32">
                     {item.label}
                   </p>
                   <p className="text-sm font-semibold text-gray-400">
@@ -572,11 +500,11 @@ const walletdata=[{
                  ))}
               </div>
               <div className="border rounded-lg bg-white my-3 p-4">
-                <h1 className="text-md font-bold text-black">Completed Schemes</h1>
+                <h1 className="text-md font-bold text-[#232323]">Completed Schemes</h1>
                  <hr className="w-full mt-5 mb-2" />
                  {overduedata.map((item,index)=>(
                    <div key={index} className="flex items-center gap-9 py-2">
-                  <p className="text-sm font-semibold text-black w-32">
+                  <p className="text-sm font-semibold text-[#232323] w-32">
                     {item.label}
                   </p>
                   <p className="text-sm font-semibold text-gray-400">
@@ -589,8 +517,8 @@ const walletdata=[{
             </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-1">
-      <div className="border rounded-lg bg-white my-3 p-4">
-         <h1 className="text-lg font-bold text-black mb-2">Active schemes</h1>
+      <div className="border-[1px] rounded-lg bg-white my-3 p-4">
+         <h1 className="text-md font-bold text-[#232323] mb-2">Active schemes</h1>
         <Table
                 data={data}
                 columns={columns1}
@@ -603,7 +531,7 @@ const walletdata=[{
               />
       </div>
       <div className="border rounded-lg bg-white my-3 p-4">
-        <h1 className="text-lg font-bold text-black mb-2">Redeemed Schemes</h1>
+        <h1 className="text-md font-bold text-[#232323] mb-2">Redeemed Schemes</h1>
         <Table
                 data={data}
                 columns={columns2}
@@ -620,4 +548,4 @@ const walletdata=[{
   );
 };
 
-export default Exisitingcustomer;
+export default Existcusomer;

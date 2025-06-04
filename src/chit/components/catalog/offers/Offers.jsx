@@ -391,7 +391,7 @@ const Offers = () => {
             <input
                onChange={handleSearch}
               placeholder="Search"
-              className="px-4 py-2 ps-9 border-2 border-[#F2F2F9] rounded-[8px] w-full h-[36px] text-md sm:w-[228px]"
+              className="px-4 py-2 ps-9 border-2 border-[#F2F2F9] rounded-lg w-full h-[36px] text-md sm:w-[228px]"
             />
           </div>
 

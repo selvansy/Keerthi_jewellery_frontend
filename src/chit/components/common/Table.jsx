@@ -200,7 +200,7 @@ const Table = ({
                           return (
                             <td
                               key={columnIndex}
-                              className="px-4 py-3 text-[#232323] text-xs font-medium whitespace-nowrap "
+                              className="px-4 py-3 text-[#232323] text-sm font-medium whitespace-nowrap "
                             >
                               {column.cell
                                 ? column.cell(row, rowIndex)
