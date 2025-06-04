@@ -692,7 +692,7 @@ const Base = ({ renderContent: RenderContent }) => {
 
               {/* Section title - hidden on mobile */}
               <div className="title lg:flex justify-center items-center hidden">
-                <h1 className="text-lg font-semibold">{sectionName}</h1>
+                <h1 className="text-lg font-semibold ml-2">{sectionName}</h1>
               </div>
             </div>
 

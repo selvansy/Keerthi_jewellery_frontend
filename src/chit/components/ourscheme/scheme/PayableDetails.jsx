@@ -154,7 +154,7 @@ const PayableDetails = ({
                   }
                 }}
                 onBlur={formik.handleBlur}
-                className="border-2 border-[#f2f3f8] rounded-md p-2 w-full pl-10 focus:outline-none focus:ring-1 focus:ring-[#004181] focus:border-transparent"
+                className="border-[1px] border-[#f2f3f8] rounded-md w-full pl-10  focus:outline-none focus:ring-1 focus:ring-[#004181] focus:border-transparent"
                 placeholder="Enter Max Amount"
                 style={{ height: inputHeight }}
               />
