@@ -15,6 +15,8 @@ import { useDispatch, useSelector } from "react-redux";
 import Modal from "../../common/Modal";
 import { useDebounce } from "../../../hooks/useDebounce";
 import Action from "../../common/action";
+import plus from "../../../../assets/plus.svg";
+import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
 
 const OurEmployee = () => {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
@@ -250,8 +252,13 @@ const OurEmployee = () => {
   };
 
   return (
-    <div className="flex flex-col p-4">
-      <h2 className="text-2xl text-gray-900 font-bold">Our Employee</h2>
+    <div className="flex flex-col">
+       <Breadcrumb items={[
+              {label:"Employee"},
+              {label:"Employee Details",active:true}
+            ]}/>
+      {/* <h2 className="text-2xl text-gray-900 font-bold">Our Employee</h2> */}
+       <div className="bg-[#FFFFFF] rounded-[16px] p-6  border-[1px]">
       <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
         <div className="relative w-full lg:w-1/3 min-w-[200px]">
           <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
@@ -270,11 +277,13 @@ const OurEmployee = () => {
         </div>
         <div className="flex flex-row items-center justify-end gap-2">
           <button
-            className="rounded-md px-5 py-1 text-sm font-semibold text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] w-[158px] h-[36px] transition-colors"
+            className="flex rounded-lg px-[20px] py-[8px] text-sm font-semibold text-white items-center whitespace-nowrap hover:bg-[#034571] 
+            transition-colors sm:w-auto"
             onClick={handleAddEmployeeClick}
             style={{ backgroundColor: layout_color }}
           >
-            + Add Employee
+              <img src={plus} alt="plus" className="w-4 h-4 me-[10px]" />
+             Add Employee
           </button>
         </div>
       </div>
@@ -283,6 +292,7 @@ const OurEmployee = () => {
       <Table data={employeeData} currentPage={currentPage} handleItemsPerPageChange={handleItemsPerPageChange} handlePageChange={handlePageChange} itemsPerPage={itemsPerPage} totalItems={totalDocuments} columns={columns} loading={isLoading} />
       </div>
       <Modal />
+    </div>
     </div>
   );
 };
