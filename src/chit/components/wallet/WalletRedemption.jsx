@@ -502,14 +502,14 @@ function WalletRedemption() {
                 </div>
             </div>
 
-            <div className='w-full flex flex-col bg-white border-2 border-[#f2f3f8] rounded-md px-6 p-3 overflow-y-auto scrollbar-hide gap-x-8'>
-                <h2 className='text-xl font-medium mb-4'>{id ? "Refferal History" : "Add Wallet Redemption"}</h2>
+            <div className='w-full flex flex-col bg-white border-[1px] border-[#f2f3f8] rounded-md px-6 overflow-y-auto scrollbar-hide gap-x-8 p-5'>
+                <h2 className='text-md font-bold text-[#232323] mb-4'>{id ? "Refferal History" : "Add Wallet Redemption"}</h2>
                 {
                     !id && (
                         <>
 
-                            <div className='flex flex-col mt-2 relative '>
-                                <label className='text-black mb-1 font-normal'>Phone Number<span className='text-red-400'> *</span></label>
+                            <div className='flex flex-col mt-5 relative '>
+                                <label className='text-[#232323] mb-1 font-semibold text-sm '>Phone Number<span className='text-red-400'> *</span></label>
                                 <input
                                     type='text'
                                     value={mobile}
@@ -527,7 +527,7 @@ function WalletRedemption() {
                                         }
                                     }}
                                     maxLength={"10"}
-                                    className="max-w-[300px] border-2 border-[#F2F2F9] rounded-md pr-3 py-2 pl-[45px]"
+                                    className="max-w-[300px] border-2 border-[#F2F2F9] rounded-lg px-4 py-2 ps-9"
                                     placeholder='Enter Here'
                                 />
 
@@ -539,7 +539,7 @@ function WalletRedemption() {
                                     {isLoading ? (
                                         <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
                                     ) : (
-                                        <Search size={20} className="text-black" />
+                                        <Search className="text-[#6C7086] h-5 mb-1 w-5" />
                                     )}
                                 </div>
 
@@ -554,7 +554,7 @@ function WalletRedemption() {
                                 <div className="py-3 my-5 rounded-lg min-w-full">
                                     <table className="min-w-[600px] table-auto my-3 w-full">
                                         <thead>
-                                            <tr className="text-gray-600 text-sm md:text-base">
+                                            <tr className="text-[#232323] font-semibold text-sm md:text-base">
                                                 <th className="text-start px-4 py-2">Name</th>
                                                 <th className="text-start px-4 py-2">Mobile</th>
                                                 <th className="text-start px-4 py-2">Wallet Amount</th>
@@ -587,7 +587,7 @@ function WalletRedemption() {
                                 <div className="py-3 my-5 rounded-lg min-w-full">
                                     <table className="min-w-[600px] table-auto my-3 w-full">
                                         <thead>
-                                            <tr className="text-gray-600 text-sm md:text-base">
+                                            <tr className="text-sm text-[#232323] font-semibold md:text-base">
                                                 <th className="text-start px-4 py-2">Name</th>
                                                 <th className="text-start px-4 py-2">Phone Number</th>
                                                 <th className="text-start px-4 py-2">Active Scheme</th>
@@ -616,7 +616,7 @@ function WalletRedemption() {
                             <div className='grid grid-col-2 md:grid-cols-3 gap-6 mt-8 md:mt-0'>
 
                                 <div className='flex flex-col gap-2'>
-                                    <label className='text-gray-700 font-medium'>Redeem Amount<span className='text-red-400'> *</span></label>
+                                    <label className='text-[#232323] text-sm font-semibold'>Redeem Amount<span className='text-red-400'> *</span></label>
                                     <input
                                         type='text'
                                         name='redeem_amt'
@@ -634,7 +634,7 @@ function WalletRedemption() {
                                     ((!isCustomer || (formData.redeem_type === "1" || formData.redeem_type === 1)) &&
                                         <>
                                             <div className='flex flex-col gap-2'>
-                                                <label className='text-gray-700 font-medium'>
+                                                <label className='text-[#232323] font-semibold text-sm'>
                                                     Payment Mode<span className='text-red-400'> *</span>
                                                 </label>
 
@@ -660,7 +660,7 @@ function WalletRedemption() {
 
                                 {(!isCustomer && (formData.redeem_type === "1" || formData.redeem_type === 1)) && (
                                     <div className='flex flex-col gap-2'>
-                                        <label className='text-gray-700 font-medium'>
+                                        <label className='text-[#232323] font-semibold text-sm'>
                                             Payment Mode<span className='text-red-400'>*</span>
                                         </label>
 
@@ -691,7 +691,7 @@ function WalletRedemption() {
                                         <>
 
                                             <div className='flex flex-col gap-2'>
-                                                <label className='text-gray-700 font-medium'>Bill no<span className='text-red-400'></span></label>
+                                                <label className='text-[#232323] font-semibold text-sm'>Bill no<span className='text-red-400'></span></label>
                                                 <input
                                                     type='text'
                                                     name='bill_no'
@@ -717,19 +717,20 @@ function WalletRedemption() {
                             <div className='bg-white border-gray-300 mt-4'>
                                 <div className='flex justify-end gap-x-2'>
                                     <button
-                                        className="w-20 h-9 border-2 bg-[#F6F7F9] border-[#f2f3f8] rounded-md hover:bg-gray-50 flex justify-center items-center text-[#6C7086]"
-                                        type='button'
-                                        onClick={handleCancel}
-                                    >
-                                        Cancel
-                                    </button>
-                                    <button
-                                        className="w-20 h-9 bg-blue-900 text-white rounded-md hover:bg-blue-800 flex justify-center items-center"
+                                        className=" bg-blue-900 text-white h-[36px] w-full md:w-24 rounded-lg text-sm font-semibold hover:bg-blue-800 flex justify-center items-center"
                                         type='button'
                                         onClick={handleSave}
                                     >
                                         {isLoading ? <SpinLoading /> : 'Submit'}
                                     </button>
+                                    <button
+                                        className="w-full h-[36px] border-2 bg-[#F6F7F9] border-[#f2f3f8] rounded-lg text-sm font-semibold hover:bg-gray-50 flex justify-center items-center text-[#6C7086] md:w-24 "
+                                        type='button'
+                                        onClick={handleCancel}
+                                    >
+                                        Cancel
+                                    </button>
+                                    
                                 </div>
                             </div>
 
