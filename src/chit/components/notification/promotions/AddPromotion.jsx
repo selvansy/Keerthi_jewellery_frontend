@@ -12,24 +12,28 @@ import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
 const customStyles = (isReadOnly) => ({
     control: (base, state) => ({
       ...base,
-      minHeight: "42px",
+      minHeight: "44px", //42px
       backgroundColor: "white",
-      border: state.isFocused ? "1px solid black" : "2px solid #f2f3f8",
-      boxShadow: state.isFocused ? "0 0 0 1px black" : "none",
-      borderRadius: "0.375rem",
+      color:"#232323",
+      // fontWeight:600,
+      border: state.isFocused ? "1px solid #f2f2f9" : "1px solid #f2f2f9",
+      boxShadow: state.isFocused ? "0 0 0 1px #004181" : "none",
+      borderRadius: "0.5rem",
       "&:hover": {
         color: "#e2e8f0",
       },
       pointerEvents: !isReadOnly ? "none" : "auto",
       opacity: !isReadOnly ? 1 : 1,
+      cursor: isReadOnly ? "pointer" : "default", 
     }),
     indicatorSeparator: () => ({
       display: "none",
     }),
     placeholder: (base) => ({
       ...base,
-      color: "#858293",
-      fontWeight: "thin",
+      color: "#6C7086",
+      // fontWeight: "thin",
+      fontSize: "14px",
       // fontStyle: "bold",
     }),
     dropdownIndicator: (provided, state) => ({
@@ -39,7 +43,18 @@ const customStyles = (isReadOnly) => ({
         color: "#232323",
       },
     }),
-  });
+     input: (base) => ({
+      ...base,
+      "input[type='text']:focus": { boxShadow: 'none' },
+      }),
+      option:(base,state)=>({
+        ...base,
+        backgroundColor: state.isSelected ? "#F0F7FE" : state.isFocused ? "#F0F7FE" : "white",
+        color:"#232323",
+        fontWeight:"500",
+        fontSize:"14px"
+      })
+    });
 
 function AddPromotion() {
 
@@ -306,7 +321,7 @@ function AddPromotion() {
                     <Breadcrumb items={[{ label: "Promotions " }, { label: "Promotions Creation", active: true }]} />
                 </div>
             </div>
-        <div className="bg-[#FFFFFF] rounded-lg p-6 shadow-sm border">
+        <div className="bg-[#FFFFFF] rounded-[16px] p-6 border-[1px]">
         <h2 className="text-lg font-semibold mb-4 border-b pb-4">Add Promotions</h2>
 
         {/* Notification Options */}
@@ -390,7 +405,7 @@ function AddPromotion() {
                 </div>
 
                 <div className="flex flex-col">
-                    <label className="font-medium text-gray-700">
+                    <label className="font-mediaum text-gray-700">
                         Title <span className="text-red-400">*</span>
                     </label>
                     <Select
@@ -471,9 +486,8 @@ function AddPromotion() {
 
          {/* Buttons */}
          <div className="flex justify-end mt-12 space-x-4">
-                <button type="button" className="bg-gray-300 px-4 py-2 rounded-md" onClick={handleClear}>Clear</button>
-                <button
-                    className=" text-white rounded-md p-2  lg:w-20"
+            <button
+                    className=" text-white rounded-lg p-2 text-sm font-semibold lg:w-24"
                     type='submit'
                     onClick={handleSubmit}
                     style={{ backgroundColor: layout_color }}
@@ -481,6 +495,7 @@ function AddPromotion() {
                 >
                     {isLoading ? <SpinLoading /> : 'Save'}
                 </button>
+                <button type="button" className="bg-gray-300 px-4 py-2 rounded-lg lg:w-24 font-semibold text-sm text-gray-600" onClick={handleClear}>Clear</button>
             </div>
       </div>
         </>
