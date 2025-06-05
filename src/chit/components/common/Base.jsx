@@ -17,7 +17,7 @@ import {
   Menu,
 } from "lucide-react";
 
-import logo from "../../../assets/logo1.png";
+import logo from "../../../assets/logo(3).svg";
 import RouteList from "../../../routes/RouteList";
 import { useLocation, useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
@@ -806,11 +806,11 @@ const Base = ({ renderContent: RenderContent }) => {
         ref={sidebarRef}
         className={`fixed top-0 left-0 h-full w-64 lg:w-64 scrollbar-hide transform transition-transform duration-300 ease-in-out ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } lg:translate-x-0 z-50 pt-16 lg:pt-4 overflow-auto flex flex-col border-r`}
+        } lg:translate-x-0 z-50 lg:pt-4 overflow-auto flex flex-col border-r`}
         style={{ backgroundColor: sidebar_color }}
       >
-        <div className="flex justify-center items-center mb-10">
-          <img src={logo} alt="Logo" className="h-28 w-52 object-fill" />
+        <div className="flex justify-center items-center mb-3">
+          <img src={logo} alt="Logo" className="h-18 w-32 object-fill" />
         </div>
 
         <nav className="flex-1 text-white scrollbar-hide overflow-y-auto">

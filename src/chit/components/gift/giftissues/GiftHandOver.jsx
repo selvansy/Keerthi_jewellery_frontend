@@ -201,7 +201,7 @@ const GiftHandOver = () => {
         items={[{ label: "Gift" }, { label: "GiftHandOver", active: true }]}
       />
 
-      <div className="flex flex-col p-4">
+      <div className="flex flex-col mb-5">
         <div className='flex flex-col gap-3'>
           {/* Cards Section */}
           <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -230,7 +230,7 @@ const GiftHandOver = () => {
         </div>
       </div>
 
-      <div className="flex flex-col p-4  bg-white border border-[#F2F2F9]  rounded-[16px]">
+      <div className="flex flex-col p-7  bg-white border border-[#F2F2F9]  rounded-[16px]">
 
         <div className="flex flex-col sm:flex-row w-full justify-between gap-2 sm:gap-4">
           {/* Search Input */}
