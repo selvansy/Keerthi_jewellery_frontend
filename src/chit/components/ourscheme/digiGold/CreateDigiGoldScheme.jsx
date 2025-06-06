@@ -812,7 +812,7 @@ onSubmit: async (values) => {
                 }}
                 onWheel={(e) => e.target.blur()}
                 onBlur={formik.handleBlur}
-                className="border-2 border-[#f2f3f8] rounded-md p-2 w-full text-start pl-10 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                className="border-2 border-[#f2f3f8] rounded-md p-2 w-full text-start pl-10 focus:outline-none focus:ring-1 focus:ring-[#004181] focus:border-transparent"
                 placeholder="Enter min amount"
                 style={{ height: inputHeight }}
               />
@@ -843,7 +843,7 @@ onSubmit: async (values) => {
                 }}
                 onWheel={(e) => e.target.blur()}
                 onBlur={formik.handleBlur}
-                className="border-2 border-[#f2f3f8] rounded-md p-2 w-full text-start pl-10 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                className="border-2 border-[#f2f3f8] rounded-md p-2 w-full text-start pl-10 focus:outline-none  focus:ring-1 focus:ring-[#004181] focus:border-transparent"
                 placeholder="Enter max amount"
                 style={{ height: inputHeight }}
               />
@@ -905,7 +905,7 @@ onSubmit: async (values) => {
                 }}
                 onWheel={(e) => e.target.blur()}
                 onBlur={formik.handleBlur}
-                className="border-2 border-[#f2f3f8] rounded-md p-2 w-full text-start focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                className="border-2 border-[#f2f3f8] rounded-md p-2 w-full text-start focus:outline-none focus:ring-1 focus:ring-[#004181] focus:border-transparent"
                 placeholder="Enter no of days"
                 style={{ height: inputHeight }}
               />
@@ -936,7 +936,7 @@ onSubmit: async (values) => {
                 }}
                 onWheel={(e) => e.target.blur()}
                 onBlur={formik.handleBlur}
-                className="border-2 border-[#f2f3f8] rounded-md p-2 w-full text-start pl-10 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                className="border-2 border-[#f2f3f8] rounded-md p-2 w-full text-start pl-10 focus:outline-none focus:ring-1 focus:ring-[#004181] focus:border-transparent"
                 placeholder="Enter max limit"
                 style={{ height: inputHeight }}
               />

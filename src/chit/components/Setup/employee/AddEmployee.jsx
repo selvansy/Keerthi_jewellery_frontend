@@ -475,7 +475,7 @@ const AddEmployee = () => {
                 className={`px-4 py-2 rounded-md text-sm border ${
                   formik.values.gender === 1
                     ? "bg-white text-[#004181] border-[#004181]"
-                    : "bg-white text-[#6C7086] border hover:bg-gray-50"
+                    : "bg-white text-[#6C7086] border-[1px] hover:bg-gray-50"
                 }`}
               >
                 Male
@@ -603,7 +603,7 @@ const AddEmployee = () => {
                 value={formik.values[field]}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                className="w-full border-[1px] border-[#f2f3f8] rounded-md px-3 py-2"
                 placeholder={`Enter whatsapp number`}
               />
             ) : field === "pan" ? (
@@ -613,7 +613,7 @@ const AddEmployee = () => {
                 value={formik.values[field]}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                className="w-full border-[1px] border-[#f2f3f8] rounded-md px-3 py-2"
                 placeholder={`Enter pancard number`}
               />
             ) : (
@@ -623,7 +623,7 @@ const AddEmployee = () => {
                 value={formik.values[field]}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                className="w-full border-[1px] border-[#f2f3f8] rounded-md px-3 py-2"
                 placeholder={`Enter ${field.replace(/_/g, " ")}`}
               />
             )}
@@ -667,7 +667,7 @@ const AddEmployee = () => {
                   onBlur={formik.handleBlur}
                   dateFormat="yyyy-MM-dd"
                   placeholderText="Select Date"
-                  className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                  className="w-full border-[1px] border-[#f2f3f8] rounded-md px-3 py-2"
                   showMonthDropdown
                   showYearDropdown
                   wrapperClassName="w-full"
@@ -691,7 +691,7 @@ const AddEmployee = () => {
             <div className="flex items-center gap-3 relative">
               <label
                 htmlFor="resume"
-                className="flex-1 border-2 border-[#f2f3f8] rounded-md px-3 py-2 cursor-pointer hover:bg-gray-50"
+                className="flex-1 border-[1px] border-[#f2f3f8] rounded-md px-3 py-2 cursor-pointer hover:bg-gray-50"
               >
                 <p className="truncate text-[#b5b5b5]">
                   {imagePreviews.resume?.name || imagePreviews.resume || (formik.values.resume ? formik.values.resume.name : "Browse")}
@@ -727,7 +727,7 @@ const AddEmployee = () => {
             <div className="flex items-center gap-3 relative">
               <label
                 htmlFor="image"
-                className="flex-1 border-2 border-[#f2f3f8] rounded-md px-3 py-2 cursor-pointer hover:bg-gray-50"
+                className="flex-1 border-[1px] border-[#f2f3f8] rounded-md px-3 py-2 cursor-pointer hover:bg-gray-50"
               >
                 <p className="truncate text-[#b5b5b5]">
                   {imagePreviews.image?.name || imagePreviews.image ||
@@ -780,7 +780,7 @@ const AddEmployee = () => {
           <button
             type="button"
             onClick={() => navigate("/employee/details/")}
-            className="w-24 h-9 border-2 bg-[#F6F7F9] font-semibold border-[#f2f3f8] text-sm rounded-lg hover:bg-gray-50 flex justify-center items-center text-[#6C7086]"
+            className="w-24 h-9 border-[1px] bg-[#F6F7F9] font-semibold border-[#f2f3f8] text-sm rounded-lg hover:bg-gray-50 flex justify-center items-center text-[#6C7086]"
           >
             Cancel
           </button>

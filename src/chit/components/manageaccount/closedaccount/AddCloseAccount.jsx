@@ -666,7 +666,7 @@ const AddCloseAccount = () => {
                 <input
                   type="text"
                   name="mobile"
-                  className="w-full border-2 border-[#f2f3f8] rounded-md p-2"
+                  className="w-full border-[1px] border-[#f2f3f8] rounded-md p-2"
                   placeholder="Enter Mobile No / AC No"
                   value={formik.values.mobile}
                   onChange={formik.handleChange}
@@ -758,7 +758,7 @@ const AddCloseAccount = () => {
               </label>
               <input
                 type="text"
-                className="border-2 border-[#f2f3f8] rounded-md p-2 w-full"
+                className="border-[1px] border-[#f2f3f8] rounded-md p-2 w-full"
                 placeholder="Scheme"
                 value={selectedScheme?.scheme_acc_number || ""}
                 readOnly
@@ -781,7 +781,7 @@ const AddCloseAccount = () => {
                 readOnly
                 type="text"
                 value={selectedScheme?.account_name || ""}
-                className="border-2 border-[#f2f3f8] rounded-md p-2 w-full"
+                className="border-[1px] border-[#f2f3f8] rounded-md p-2 w-full"
                 placeholder="Customer Name"
               />
             </div>
@@ -792,7 +792,7 @@ const AddCloseAccount = () => {
                 readOnly
                 type="text"
                 value={selectedScheme?.id_customer?.address || ""}
-                className="border-2 border-[#f2f3f8] rounded-md p-2 w-full"
+                className="border-[1px] border-[#f2f3f8] rounded-md p-2 w-full"
                 placeholder="Customer Address"
               />
             </div>
@@ -811,7 +811,7 @@ const AddCloseAccount = () => {
               </label>
               <input
                 type="text"
-                className="border-2 border-[#f2f3f8] rounded-md p-2 w-full"
+                className="border-[1px] border-[#f2f3f8] rounded-md p-2 w-full"
                 placeholder="Bill No"
                 name="bill_no"
                 onChange={formik.handleChange}
@@ -839,7 +839,7 @@ const AddCloseAccount = () => {
                   onChange={handleDatePaymentChange}
                   dateFormat="dd-MM-yyyy"
                   placeholderText="Select Date"
-                  className="border-2 border-[#f2f3f8] rounded-md p-2 w-full"
+                  className="border-[1px] border-[#f2f3f8] rounded-md p-2 w-full"
                   showMonthDropdown
                   showYearDropdown
                   dropdownMode="select"
@@ -865,7 +865,7 @@ const AddCloseAccount = () => {
                 disabled
                 type="text"
                 value={selectedScheme?.total_paidinstallments || ""}
-                className="border-2 border-[#f2f3f8] rounded-md p-2 w-full"
+                className="border-[1px] border-[#f2f3f8] rounded-md p-2 w-full"
                 placeholder="Paid Installments"
               />
             </div>
@@ -885,7 +885,7 @@ const AddCloseAccount = () => {
                       currency: null,
                     }) || ""
                   }
-                  className="border-2 border-[#f2f3f8] pl-10 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                  className="border-[1px] border-[#f2f3f8] pl-10 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                   placeholder="Paid Amount"
                 />
                 <span className="absolute left-0 top-0 w-9 h-full px-3 flex items-center justify-center text-black border-r">
@@ -954,7 +954,7 @@ const AddCloseAccount = () => {
                         ? formik.values.bonusAmnt
                         : ""
                     }
-                    className={`border-2 border-[#f2f3f8] ${
+                    className={`border-[1px] border-[#f2f3f8] ${
                       bonustype == 1 && "pl-10"
                     } rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent`}
                     placeholder={
@@ -990,7 +990,7 @@ const AddCloseAccount = () => {
                         currency: null,
                       }) || ""
                     }
-                    className="border-2 border-[#f2f3f8] pl-10 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                    className="border-[1px] border-[#f2f3f8] pl-10 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                     placeholder="Total Amount"
                   />
                   <span className="absolute left-0 top-0 w-9 h-full px-3 flex items-center justify-center text-black border-r">
@@ -1004,7 +1004,7 @@ const AddCloseAccount = () => {
               <label className="block text-sm font-medium mb-1">Remark</label>
               <input
                 type="text"
-                className="border-2 border-[#f2f3f8] rounded-md p-2 w-full"
+                className="border-[1px] border-[#f2f3f8] rounded-md p-2 w-full"
                 placeholder="Remarks"
                 name="comments"
                 onChange={formik.handleChange}
@@ -1100,7 +1100,7 @@ const AddCloseAccount = () => {
 
                         formik.setFieldValue(multipay.parameter, newValue);
                       }}
-                      className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                      className="border-[1px] border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                       placeholder="Enter amount here"
                     />
                   </div>
@@ -1126,7 +1126,7 @@ const AddCloseAccount = () => {
                       <input
                         type="number"
                         min="0"
-                        className="border-2 border-[#f2f3f8] rounded-md p-2 w-96 lg:w-[46%] focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent pr-24"
+                        className="border-[1px] border-[#f2f3f8] rounded-md p-2 w-96 lg:w-[46%] focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent pr-24"
                         placeholder="Enter mobile number"
                         value={formik.values.mobile || formik.values.otpMobile}
                         onChange={formik.handleChange}
@@ -1159,7 +1159,7 @@ const AddCloseAccount = () => {
           </button>
           <button
             type="button"
-            className="px-9 h-[36px] font-semibold text-sm border-2 bg-[#F6F7F9] border-[#f2f3f8] rounded-lg hover:bg-gray-50 flex justify-center items-center text-[#6C7086] lg:h-[36px]"
+            className="px-9 h-[36px] font-semibold text-sm border-[1px] bg-[#F6F7F9] border-[#f2f3f8] rounded-lg hover:bg-gray-50 flex justify-center items-center text-[#6C7086] lg:h-[36px]"
             onClick={() => formik.resetForm()}
           >
             Clear
