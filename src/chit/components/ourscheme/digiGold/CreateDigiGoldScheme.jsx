@@ -678,7 +678,7 @@ onSubmit: async (values) => {
       onSubmit={formik.handleSubmit}
       className="w-full mx-auto mt-3 space-y-6"
     >
-      <div className="bg-[#FFFFFF] rounded-lg p-6 shadow-sm border">
+      <div className="bg-[#FFFFFF] rounded-[16px] p-6 border-[1px]">
         <h2 className="text-lg font-semibold mb-4 border-b pb-4">{header}</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -1027,7 +1027,7 @@ onSubmit: async (values) => {
       <Accordion type="multiple" collapsible className="space-y-4">
         <AccordionItem
           value="classification"
-          className="border rounded-lg bg-white"
+          className="border-[1px] rounded-[16px] bg-white"
         >
           <AccordionTrigger className="px-6">
             Classification Details

@@ -762,7 +762,7 @@ const SchemeForm = () => {
       onSubmit={formik.handleSubmit}
       className="w-full mx-auto mt-3 space-y-6"
     >
-      <div className="bg-[#FFFFFF] rounded-lg p-5 shadow-sm border text-[#232323]">
+      <div className="bg-[#FFFFFF] rounded-[16px] p-5 border-[1px] text-[#232323]">
         <h2 className="text-lg font-semibold mb-4 border-b pb-4">Add Scheme</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -1386,7 +1386,7 @@ const SchemeForm = () => {
           </AccordionContent>
         </AccordionItem> */}
 
-        <AccordionItem value="payable" className="border rounded-lg bg-white">
+        <AccordionItem value="payable" className=" rounded-[16px] border-[1px] bg-white">
           <AccordionTrigger className="px-6 py-4 text-[#232323] font-semibold text-lg">
             {/* <div className="w-full text-start text-lg font-semisemibold pb-4"> Payable Details</div> */}
             Payable Details
@@ -1410,7 +1410,7 @@ const SchemeForm = () => {
           </AccordionContent>
         </AccordionItem>
 
-        <AccordionItem value="advanced" className="border rounded-lg bg-white">
+        <AccordionItem value="advanced" className="border-[1px] rounded-[16px] bg-white">
           <AccordionTrigger className="px-6 py-4 text-[#232323] font-semibold text-lg">Installment</AccordionTrigger>
           <AccordionContent className="px-6">
             <div className="border-t pt-4">
@@ -1428,7 +1428,7 @@ const SchemeForm = () => {
 
         <AccordionItem
           value="classification"
-          className="border rounded-lg bg-white"
+          className="border-[1px] rounded-[16px] bg-white"
         >
           <AccordionTrigger className="px-6 text-[#232323] font-semibold text-lg">
             Classification Details
