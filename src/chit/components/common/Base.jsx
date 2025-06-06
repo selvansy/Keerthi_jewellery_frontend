@@ -388,10 +388,10 @@ const Base = ({ renderContent: RenderContent }) => {
             }`}
           />
           <div
-            className={`w-full flex items-start px-4 rounded-md py-2  transition-colors cursor-pointer my-1 text-sm font-semibold
+            className={`w-full flex items-start px-4 rounded-md py-2  transition-colors cursor-pointer my-1 text-sm font-medium
                     ${
                       selectedSubSection === text
-                        ? "bg-[#004181] text-white"
+                        ? "bg-[#004181] text-white font-semibold"
                         : "text-[#6C7086] hover:bg-[#004181] hover:text-white"
                     }`}
             onClick={handleLeftClick}
@@ -531,7 +531,7 @@ const Base = ({ renderContent: RenderContent }) => {
             />
           )}
   
-          <span className={`flex-1 text-left ml-2`}>{text}</span>
+          <span className={`flex-1 text-left text-[14px] font-medium ml-2`}>{text}</span>
           {hasSubmenu && (
             <span className="ml-auto transition-transform duration-300">
               {isOpen ? (
