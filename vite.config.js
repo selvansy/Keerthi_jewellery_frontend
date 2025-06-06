@@ -6,7 +6,10 @@ export default defineConfig({
   build: {
     outDir: 'dist',
   },
-  base: '/',
+ base: '/',
+  server: {
+    historyApiFallback: true, // Add this for Vite dev server
+  },
   server: {
     host: true
   }

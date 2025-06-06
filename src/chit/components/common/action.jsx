@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import More from "../../../assets/more.svg";
+import { useSelector } from 'react-redux';
 
 // Custom hook for detecting clicks outside
 const useOutsideClick = (ref, callback) => {
@@ -29,6 +30,8 @@ function Action({ row, data, rowIndex, activeDropdown, setActive, handleEdit, ha
       setActive(null);
     }
   });
+  const roledata = useSelector((state) => state.clientForm.roledata);
+  console.log(roledata)
 
   const calculatePosition = () => {
     if (activeDropdown === row?._id && buttonRef.current) {
@@ -104,7 +107,7 @@ function Action({ row, data, rowIndex, activeDropdown, setActive, handleEdit, ha
                     Edit
                   </button>
                 )}
-                {showDelete && (
+                {(showDelete && roledata.id_role.id_role == 1) && (
                   <button
                     className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-[#E7EEF5] flex items-center gap-2"
                     onClick={() => {

@@ -316,20 +316,19 @@ function Topup() {
               <div className="flex items-center justify-end gap-4">
                 <button
                   type="button"
-                  className="bg-[#E2E8F0] text-black rounded-md p-2 w-full lg:w-20"
-                  onClick={handleCancel}
-                >
-                  Clear
-                </button>
-
-                <button
-                  type="button"
                   onClick={handleSubmit}
                   disabled={isLoading}
                   className=" text-white rounded-md p-2 w-full lg:w-20"
                   style={{ backgroundColor: layout_color }}
                 >
                   {isLoading ? <SpinLoading /> : id ? "Update" : "Save"}
+                </button>
+                 <button
+                  type="button"
+                  className="bg-[#E2E8F0] text-black rounded-md p-2 w-full lg:w-20"
+                  onClick={handleCancel}
+                >
+                  Clear
                 </button>
               </div>
             </div>
