@@ -58,9 +58,9 @@ const PolicyView = () => {
           + Add
         </button>
       </div>
-      <div className="w-full mx-auto p-6 border rounded-md bg-white shadow-sm">
+      <div className="w-full mx-auto p-6 border-[1px] rounded-[16px] bg-white">
         {/* Title */}
-        <h1 className="text-center font-semibold text-lg mb-6">Policies</h1>
+        <h1 className="text-center font-bold text-lg mb-6">Policies</h1>
 
         {/* Tabs */}
         <div className="flex justify-center mb-8">
@@ -70,10 +70,10 @@ const PolicyView = () => {
                 <button
                   type="button"
                   onClick={() => setActiveTab(id)}
-                  className={`px-4 py-2 rounded-lg transition-colors text-sm md:text-base ${
+                  className={`px-4 py-2 rounded-lg border transition-colors md:text-base  ${
                     activeTab === id
-                      ? "text-white"
-                      : "bg-gray-200 text-black hover:bg-gray-300"
+                      ? "text-white font-semibold"
+                      : "bg-gray-200 text-[#232323] text-sm hover:bg-gray-300"
                   }`}
                   style={{
                     ...(activeTab === id && { backgroundColor: layout_color }),

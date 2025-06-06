@@ -219,7 +219,7 @@ export function ExistingCustomer({
           onInput={(e) => (e.target.value = e.target.value.replace(/\D/g, ""))}
           pattern="\d{10}"
           maxLength={"10"}
-          className="border-2 border-[#f2f3f8] rounded-md p-2  focus:border-transparent"
+          className="border-[1px] border-[#f2f3f8] rounded-md p-2  focus:border-transparent"
           placeholder="Enter Here"
         // onKeyDown={(e) => {
         //   if (e.key === "Enter") {
@@ -254,7 +254,7 @@ export function ExistingCustomer({
           type="text"
           name="customer_name"
           value={formData.customer_name}
-          className="border-2 border-[#f2f3f8] w-full bg-[#F4F4F4]  cursor-not-allowed rounded-md p-2 pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+          className="border-[1px] border-[#f2f3f8] w-full bg-[#F4F4F4]  cursor-not-allowed rounded-md p-2 pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
           placeholder="Enter name"
         />
       </div>
@@ -1283,7 +1283,7 @@ console.log('selectedClassification', selectedClassification, 'weight', weight, 
             type="text"
             value={cusData.mobile || formData.mobile}
             name="mobile"
-            className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+            className="w-full border-[1px] border-[#f2f3f8] rounded-md px-3 py-2"
             placeholder="Customer Mobile"
             disabled
           />
@@ -1297,7 +1297,7 @@ console.log('selectedClassification', selectedClassification, 'weight', weight, 
             type="text"
             name="customer_name"
             value={cusData.customer_name || formData.customer_name}
-            className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+            className="w-full border-[1px] border-[#f2f3f8] rounded-md px-3 py-2"
             placeholder="Customer Name"
           />
           <p style={{ color: "red" }}>{errors?.customer_name}</p>
@@ -1309,7 +1309,7 @@ console.log('selectedClassification', selectedClassification, 'weight', weight, 
             type="text"
             name="address"
             value={cusData.address || formData.address}
-            className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+            className="w-full border-[1px] border-[#f2f3f8] rounded-md px-3 py-2"
             placeholder="Customer Address"
           />
         </div>
@@ -1488,7 +1488,7 @@ console.log('selectedClassification', selectedClassification, 'weight', weight, 
                   }`}
               />
             ) : (
-              <div className="border-2 border-[#f2f3f8] rounded-md p-2 bg-gray-100 text-gray-500">
+              <div className="border-[1px] border-[#f2f3f8] rounded-md p-2 bg-gray-100 text-gray-500">
                 No fixed{" "}
                 {[12, 3, 4].includes(formData.scheme_type)
                   ? "weights"
@@ -1517,7 +1517,7 @@ console.log('selectedClassification', selectedClassification, 'weight', weight, 
                       value={formData.weight}
                       onChange={(e) => filterInputchange(e)}
                       onWheel={(e) => e.target.blur()}
-                      className="border-2 border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                      className="border-[1px] border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                       placeholder="Enter weight"
                     />
                     <p className="text-sm mt-2" style={{ color: "red" }}>
@@ -1538,7 +1538,7 @@ console.log('selectedClassification', selectedClassification, 'weight', weight, 
                       value={formData.amount}
                       onWheel={(e) => e.target.blur()}
                       onChange={(e) => filterInputchange(e)}
-                      className="border-2  border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                      className="border-[1px]  border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                       placeholder="Enter amount"
                     />
                     <p className="text-sm mt-2" style={{ color: "red" }}>
@@ -1563,7 +1563,7 @@ console.log('selectedClassification', selectedClassification, 'weight', weight, 
                   name="amount"
                   value={formData.amount}
                   disabled
-                  className="border-2 cursor-not-allowed border-gray-300 rounded-md p-2 w-full pr-16 bg-gray-100 focus:outline-none"
+                  className="border-[1px] cursor-not-allowed border-gray-300 rounded-md p-2 w-full pr-16 bg-gray-100 focus:outline-none"
                   placeholder="Payable Amount"
                 />
                 {errors?.amount && (
@@ -1583,7 +1583,7 @@ console.log('selectedClassification', selectedClassification, 'weight', weight, 
               value={formData.account_name}
               onChange={(e) => filterInputchange(e)}
               onWheel={(e) => e.target.blur()}
-              className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+              className="border-[1px] border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
               placeholder="Enter Account Name"
               style={{ height: inputHeight }}
             />
@@ -1602,7 +1602,7 @@ console.log('selectedClassification', selectedClassification, 'weight', weight, 
               type="text"
               name="total_installments"
               value={formData.total_installments}
-              className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+              className="w-full border-[1px] border-[#f2f3f8] rounded-md px-3 py-2"
               placeholder="Enter Total Installment"
               disabled
             />
@@ -1617,7 +1617,7 @@ console.log('selectedClassification', selectedClassification, 'weight', weight, 
             type="text"
             name="maturity_period"
             value={formData.maturity_period}
-            className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+            className="w-full border-[1px] border-[#f2f3f8] rounded-md px-3 py-2"
             placeholder="Enter Maturity Month"
             disabled
           />
@@ -1633,7 +1633,7 @@ console.log('selectedClassification', selectedClassification, 'weight', weight, 
               onChange={handleStartDateChange}
               dateFormat="dd-MM-yyyy"
               placeholderText="Select Date"
-              className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+              className="w-full border-[1px] border-[#f2f3f8] rounded-md px-3 py-2"
               showMonthDropdown
               showYearDropdown
               dropdownMode="select"
@@ -1656,7 +1656,7 @@ console.log('selectedClassification', selectedClassification, 'weight', weight, 
                 disabled
                 name="maturity_date"
                 value={formData.maturity_date}
-                className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                className="w-full border-[1px] border-[#f2f3f8] rounded-md px-3 py-2"
                 placeholder="Enter Maturity Date"
               />
             </div>
@@ -1702,7 +1702,7 @@ console.log('selectedClassification', selectedClassification, 'weight', weight, 
                       setSearchMobile(value);
                     }
                   }}
-                  className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                  className="w-full border-[1px] border-[#f2f3f8] rounded-md px-3 py-2"
                   placeholder="Enter mobile number or referral code"
                   disabled={!selectedRole}
                 />

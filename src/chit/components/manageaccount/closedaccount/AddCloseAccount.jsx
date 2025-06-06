@@ -1132,7 +1132,7 @@ const AddCloseAccount = () => {
                         onChange={formik.handleChange}
                         name="otpMobile"
                       />
-                      <div className="absolute right-96 top-1/2 -translate-y-1/2">
+                      <div className="absolute right-6 sm:right-4 md:right-96  top-1/2 -translate-y-1/2">
                         <button
                           className="bg-[#004181] text-white rounded-md px-4 py-2"
                           onClick={(e) => sendOtpToMobile(e)}
@@ -1151,19 +1151,20 @@ const AddCloseAccount = () => {
 
         <div className="flex justify-end space-x-4">
           <button
+            type="submit"
+            disabled={isSaveLoading}
+            className="px-9 h-[36px] text-sm font-semibold bg-blue-900 text-white rounded-lg flex justify-center items-center lg:h-[36px] "
+          >
+            {isSaveLoading ? <SpinLoading /> : "Save"}
+          </button>
+          <button
             type="button"
-            className="w-20 h-9 border-2 bg-[#F6F7F9] border-[#f2f3f8] rounded-md hover:bg-gray-50 flex justify-center items-center text-[#6C7086]"
+            className="px-9 h-[36px] font-semibold text-sm border-2 bg-[#F6F7F9] border-[#f2f3f8] rounded-lg hover:bg-gray-50 flex justify-center items-center text-[#6C7086] lg:h-[36px]"
             onClick={() => formik.resetForm()}
           >
             Clear
           </button>
-          <button
-            type="submit"
-            disabled={isSaveLoading}
-            className="w-20 h-9 bg-blue-900 text-white rounded-md hover:bg-blue-800 flex justify-center items-center"
-          >
-            {isSaveLoading ? <SpinLoading /> : "Save"}
-          </button>
+          
         </div>
       </form>
       {otpSended && (
