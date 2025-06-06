@@ -64,8 +64,8 @@ function ContentView() {
                         <Loading />
                     ) : (
                         <>
-                            <div className='flex flex-col justify-center  items-start gap-5 border-gray-300'>
-                                <div className='flex flex-col'>
+                            <div className='flex flex-col justify-center  items-start gap-5 border-gray-300 border-[1px]'>
+                                <div className='flex flex-col '>
                                     <div className='text-gray-700 mb-1 mx-2'>
                                         
                                         <div className='text-black mb-1 text-lg mx-2'>

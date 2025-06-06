@@ -202,7 +202,7 @@ function AccountSummaryReport() {
           { label: "Scheme Payment", active: true },
         ]}
       />
-      <div className="flex flex-col p-4 bg-white border-2 border-[#F2F2F9] rounded-[16px] ">
+      <div className="flex flex-col p-4 bg-white border-[1px] border-[#F2F2F9] rounded-[16px] ">
       <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4 w-full">
          <div className="flex justify-start">
               {/* <div className="w-60">
@@ -219,14 +219,14 @@ function AccountSummaryReport() {
                  {searchLoading ? (
                     <div className="absolute left-2 top-1/2 transform -translate-y-1/2 animate-spin rounded-full w-5 h-5 border-b-2 border-gray-900" />
                    ) : (
-                   <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-black w-5 h-5" />
+                   <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
                       )}
                    <input
                       onChange={(e) => {
                        setSearchLoading(true);
                         }}
                         placeholder="Search"
-                        className="pl-8 pr-4 py-2 border-2 border-[#F2F2F9] rounded-[8px] w-full"
+                        className="pl-8 pr-4 py-1 border-2 border-[#F2F2F9] rounded-[8px] w-full"
                         />
                   </div>
             </div>
