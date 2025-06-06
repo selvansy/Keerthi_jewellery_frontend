@@ -2858,6 +2858,21 @@ export const customerOverview = async (data) => {
   return response.data;
 };
 
+export const activeSchemes = async (data) => {
+  const response = await Api.post(
+    `${import.meta.env.VITE_API_URL}/api/client/reports/activeaccounts`,
+    data
+  );
+  return response.data;
+};
+
+export const redeemedSchemes = async (data) => {
+  const response = await Api.post(
+    `${import.meta.env.VITE_API_URL}/api/client/reports/redeemedaccounts`,
+    data
+  );
+  return response.data;
+};
 
 //!per user redeem history
 export const userRedeemHistory = async (data) => {
