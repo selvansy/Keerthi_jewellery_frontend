@@ -357,8 +357,8 @@ const Classification = ({
             />
             <label
               htmlFor="mainImageInput"
-              className="absolute right-0 top-0 bottom-0 bg-blue-600 text-white px-4 flex items-center justify-center rounded-md cursor-pointer text-sm"
-              style={{ backgroundColor: layout_color }}
+              className="absolute right-0 top-0 bottom-0 bg-[#004181] text-white px-4 flex items-center justify-center rounded-md cursor-pointer text-sm"
+              // style={{ backgroundColor: layout_color }}
             >
               Choose File
             </label>
@@ -419,8 +419,8 @@ const Classification = ({
             />
             <label
               htmlFor="descImageInput"
-              className="absolute right-0 top-0 bottom-0 bg-blue-600 text-white px-4 flex items-center justify-center rounded-md cursor-pointer text-sm"
-              style={{ backgroundColor: layout_color }}
+              className="absolute right-0 top-0 bottom-0 bg-[#004181] text-white px-4 flex items-center justify-center rounded-md cursor-pointer text-sm"
+              // style={{ backgroundColor: layout_color }}
             >
               Choose File
             </label>

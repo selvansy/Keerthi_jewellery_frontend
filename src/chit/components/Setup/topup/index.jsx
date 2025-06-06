@@ -171,12 +171,12 @@ function Topup() {
           { label: "Topup", active: true },
         ]}
       />
-        <div className="w-full flex flex-col bg-white border rounded-md p-4">
+        <div className="w-full flex flex-col bg-white border-[1px] rounded-[16px] p-4">
           <div className="flex flex-col p-4">
-            <h2 className="text-lg font-medium ">Add Top-Up</h2>
+            <h2 className="text-lg font-semibold text-[#232323] ">Add Top-Up</h2>
             <div className="grid grid-rows-2 md:grid-cols-2 gap-5 border-gray-300 mb-10 mt-4">
               <div className="flex flex-col space-y-2 my-2">
-                <label className="text-black mb-1 text-sm font-medium">
+                <label className="text-[#232323] mb-1 text-sm font-semibold">
                   Notifications Type<span className="text-red-400">*</span>
                 </label>
                 <div className="flex flex-row gap-6 justify-start">
@@ -239,7 +239,7 @@ function Topup() {
                 </div>
               </div>
               <div className="flex flex-col space-y-2">
-                <label className="text-black mb-1 text-sm font-medium">
+                <label className="text-[#232323] mb-1 text-sm font-semibold">
                   Purchase Limit<span className="text-red-400"> *</span>
                 </label>
                 <input
@@ -249,7 +249,7 @@ function Topup() {
                   onChange={handleChange}
                   placeholder="Enter purchase limit"
                   maxLength={10}
-                  className="p-3 border-2 border-[#f2f3f8] rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
                 />
 
                 {formErrors.limitRequest && (
@@ -272,7 +272,7 @@ function Topup() {
                   minLength={"2"}
                   readOnly
                   placeholder="Enter available limit"
-                  className="p-3 border-2 border-[#f2f3f8] rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
                 />
               </div>
 
@@ -288,7 +288,7 @@ function Topup() {
                   minLength={"2"}
                   readOnly
                   placeholder="Enter limit rate"
-                  className="p-3 border-2 border-[#f2f3f8] rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
                 />
               </div>
 
@@ -316,21 +316,22 @@ function Topup() {
               <div className="flex items-center justify-end gap-4">
                 <button
                   type="button"
-                  className="bg-[#E2E8F0] text-black rounded-md p-2 w-full lg:w-20"
+                  onClick={handleSubmit}
+                  disabled={isLoading}
+                  className=" px-9 h-[36px] text-sm font-semibold text-white rounded-lg flex justify-center items-center lg:h-[36px]"
+                  style={{ backgroundColor: layout_color }}
+                >
+                  {isLoading ? <SpinLoading /> : id ? "Update" : "Save"}
+                </button>
+                <button
+                  type="button"
+                  className="bg-[#E2E8F0] text-gray-600 px-9 h-[36px] text-sm font-semibold rounded-lg flex justify-center items-center lg:h-[36px]"
                   onClick={handleCancel}
                 >
                   Clear
                 </button>
 
-                <button
-                  type="button"
-                  onClick={handleSubmit}
-                  disabled={isLoading}
-                  className=" text-white rounded-md p-2 w-full lg:w-20"
-                  style={{ backgroundColor: layout_color }}
-                >
-                  {isLoading ? <SpinLoading /> : id ? "Update" : "Save"}
-                </button>
+                
               </div>
             </div>
           </div>

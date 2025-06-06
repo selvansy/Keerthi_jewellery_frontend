@@ -1054,7 +1054,7 @@ onSubmit: async (values) => {
         <button
           type="submit"
           disabled={isLoading}
-          className="px-9 h-[36px] text-sm font-semibold bg-blue-900 text-white rounded-md hover:bg-blue-800 flex justify-center items-center"
+          className="px-9 h-[36px] text-sm font-semibold bg-[#004181] text-white rounded-md  flex justify-center items-center"
         >
           {isLoading ? <SpinLoading /> : id ? "Update" : "Save"}
         </button>

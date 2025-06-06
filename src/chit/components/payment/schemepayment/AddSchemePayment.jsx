@@ -1054,7 +1054,7 @@ const AddSchemePayment = () => {
             </button>
             <button
               type="button"
-              className="w-24 h-9 border-2 bg-[#F6F7F9] border-[#f2f3f8] text-sm font-semibold rounded-lg hover:bg-gray-50 flex justify-center items-center text-[#6C7086]"
+              className="w-24 h-9 border-[1px] bg-[#F6F7F9] border-[#f2f3f8] text-sm font-semibold rounded-lg hover:bg-gray-50 flex justify-center items-center text-[#6C7086]"
               onClick={resetForm}
             >
               Clear
@@ -1123,7 +1123,7 @@ const AddSchemePayment = () => {
                     value={formik.values.mobile || ""}
                     onChange={handleInputChange}
                     onPaste={handlePaste}
-                    className="w-full border-2 border-[#f2f3f8] rounded-lg p-2 pr-10 focus:outline-none focus:ring-1 focus:ring-[#004181] outline-none"
+                    className="w-full border-[1px] border-[#f2f3f8] rounded-lg p-2 pr-10 focus:outline-none focus:ring-1 focus:ring-[#004181] outline-none"
                     placeholder="Enter Mobile No or Scheme AC No (e.g., F-FLMVC4319)"
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
@@ -1354,11 +1354,12 @@ const AddSchemePayment = () => {
                   <div className="relative">
                     <DatePicker
                       name="date_payment"
+              
                       readOnly
                       selected={formik.values.date_payment}
                       dateFormat="dd-MM-yyyy"
                       placeholderText="Select Date"
-                      className="border-2 border-[#f2f3f8] rounded-lg p-2 w-full focus:ring-1 focus:ring-[#004181] outline-none focus:border-transparent"
+                      className="border-[1px] border-[#f2f3f8] text-[14px] rounded-lg p-2 w-full focus:ring-1 focus:ring-[#004181] outline-none focus:border-transparent"
                       showMonthDropdown
                       showYearDropdown
                       dropdownMode="select"
@@ -1380,7 +1381,7 @@ const AddSchemePayment = () => {
                     disabled
                     value={formik.values.metal_rate}
                     type="text"
-                    className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                    className="border-[1px] border-[#f2f3f8] rounded-md p-2 w-full text-[14px] focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                     placeholder=""
                   />
                   <p style={{ color: "red" }}>{errors?.metal_rate}</p>
@@ -1398,7 +1399,7 @@ const AddSchemePayment = () => {
                       onChange={(e) =>
                         handleInstallmentChange(parseInt(e.target.value))
                       }
-                      className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-1 focus:ring-[#004181] outline-none focus:border-transparent"
+                      className="border-[1px] border-[#f2f3f8] rounded-md text-[14px]  p-2 w-full focus:outline-none focus:ring-1 focus:ring-[#004181] outline-none focus:border-transparent"
                       min="1"
                       max={
                         selectedScheme &&
@@ -1551,7 +1552,7 @@ const AddSchemePayment = () => {
                                 e.preventDefault();
                               }
                             }}
-                            className="border-2 border-[#f2f3f8]  rounded-md p-2 w-full focus:outline-none focus:ring-1 focus:ring-[#004181] outline-none focus:border-transparent"
+                            className="border-[1px] border-[#f2f3f8]  rounded-md p-2 w-full focus:outline-none focus:ring-1 focus:ring-[#004181] outline-none focus:border-transparent"
                             placeholder="Enter weight in grams"
                           />
                           <span className="absolute right-0 top-0 w-9 h-full px-3 flex items-center justify-center text-[#232323] border-l">
@@ -1602,7 +1603,7 @@ const AddSchemePayment = () => {
                               e.preventDefault();
                             }
                           }}
-                          className="border-2 border-[#f2f3f8] pl-10 rounded-md p-2 w-full focus:outline-none focus:ring-1 focus:ring-[#004181] outline-none focus:border-transparent"
+                          className="border-[1px] border-[#f2f3f8] pl-10 rounded-md p-2 w-full focus:outline-none focus:ring-1 focus:ring-[#004181] outline-none focus:border-transparent"
                           placeholder="Enter amount"
                         />
                         <span className="absolute left-0 top-0 w-9 h-full px-3 flex items-center justify-center text-[#232323] border-r">
@@ -1629,7 +1630,7 @@ const AddSchemePayment = () => {
                                 weightSaved
                                 )}`
                           }
-                          className="border-2 border-[#f2f3f8] rounded-md p-2 w-full bg-gray-100"
+                          className="border-[1px] border-[#f2f3f8] rounded-md p-2 w-full bg-gray-100"
                         />
                       </div>
                     )}
@@ -1695,7 +1696,7 @@ const AddSchemePayment = () => {
                                   Number(e.target.value) || ""
                                 );
                               }}
-                              className="border-2 border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                              className="border-[1px] border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                               placeholder="Enter amount here"
                             />
                           </div>
@@ -1718,7 +1719,7 @@ const AddSchemePayment = () => {
                         name="itr_utr"
                         value={formik.values.itr_utr}
                         onChange={formik.handleChange}
-                        className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-1 focus:ring-[#004181] outline-none focus:border-transparent"
+                        className="border-[1px] border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-1 focus:ring-[#004181] outline-none focus:border-transparent"
                         placeholder="Enter ITR/UTR ID"
                       />
                     </div>
@@ -1732,7 +1733,7 @@ const AddSchemePayment = () => {
                         name="remark"
                         value={formik.values.remark}
                         onChange={formik.handleChange}
-                        className="border-2 border-[#f2f3f8] rounded-md p-2 max-h-32 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                        className="border-[1px] border-[#f2f3f8] rounded-md p-2 max-h-32 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                         placeholder="Enter remarks"
                       />
                     </div>

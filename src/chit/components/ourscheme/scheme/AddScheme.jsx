@@ -68,6 +68,7 @@ import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
     dropdownIndicator: (provided, state) => ({
       ...provided,
       color: "#232323",
+      fontSize:"14px",
       "&:hover": {
         color: "#232323",
       },
@@ -81,7 +82,7 @@ import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
         backgroundColor: state.isSelected ? "#F0F7FE" : state.isFocused ? "#F0F7FE" : "white",
         color:"#232323",
         fontWeight:"500",
-        fontSize:"14px"
+        fontSize:"14px",
       })
     });
 

@@ -128,7 +128,7 @@ function  Customers() {
             >
               <AccordionItem
                 value="existingCus"
-                className="border rounded-lg bg-white"
+                className="border-[1px] rounded-[16px] bg-white"
               >
                 <AccordionTrigger className="px-6 text-lg text-[#232323] font-bold">
                   Existing Customer
@@ -146,7 +146,7 @@ function  Customers() {
 
               <AccordionItem
                 value="join-scheme"
-                className="border rounded-lg bg-white my-3"
+                className="border-[1px] rounded-[16px] bg-white my-3"
               >
                 <AccordionTrigger className="px-6 py-4 text-lg font-bold text-[#232323]">
                  Add To Scheme
@@ -166,10 +166,11 @@ function  Customers() {
             type="multiple"
             value={joinScheme}
             onValueChange={setJoinScheme}
+            
           >
             <AccordionItem
               value="add-customer"
-              className="border rounded-lg bg-white"
+              className="border-[1px] rounded-[16px] bg-white"
             >
               <AccordionTrigger className="px-6 py-4 text-[18px] text-[#232323] font-bold">
                 {id ? "Edit Customer" : "Add Customer"}
@@ -195,7 +196,7 @@ function  Customers() {
             {!id && (
               <AccordionItem
                 value="join-scheme"
-                className="border rounded-lg bg-white my-3"
+                className="border-[1px] rounded-[16px] bg-white my-3"
               >
                 <AccordionTrigger className="px-6 py-4 text-[18px] text-[#232323] font-bold">
                   Add To Scheme

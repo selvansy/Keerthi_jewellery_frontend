@@ -57,7 +57,7 @@ function PaymentHistory({ id_branch }) {
             </thead>
             <tbody>
               {paymentData.map((item, index) => (
-                <tr key={item._id} className="bg-white border-b text-[#232323] hover:bg-gray-50 text-[12px] font-medium">
+                <tr key={item._id} className="bg-white border-b text-[#232323] hover:bg-gray-50 text-[14px] font-medium">
                   <td className="px-5 py-2">{(page - 1) * limit + index + 1}</td>
                   <td className="px-5 py-2">{item?.id_customer?.firstname} {item?.id_customer?.lastname}</td>
                   <td className="px-5 py-2">{item?.id_scheme?.scheme_name}</td>
@@ -74,11 +74,11 @@ function PaymentHistory({ id_branch }) {
     Showing {(page - 1) * limit + 1}–{Math.min(page * limit, totalRecords)} of {totalRecords}
   </span>
 
-  <div className="flex gap-2 items-center">
+  <div className="flex gap-2 items-center text-sm">
     <button
       onClick={() => page > 1 && setPage((prev) => prev - 1)}
       disabled={page === 1}
-      className="px-3 py-1 border rounded disabled:opacity-50"
+      className="px-3 py-1 border rounded disabled:opacity-50 text-sm"
     >
       Previous
     </button>
@@ -88,7 +88,7 @@ function PaymentHistory({ id_branch }) {
       <>
         {page > 2 && (
           <>
-            <button onClick={() => setPage(1)} className="px-3 py-1 border rounded">
+            <button onClick={() => setPage(1)} className="px-3 py-1 border rounded text-sm">
               1
             </button>
             {page > 3 && <span className="px-2">...</span>}

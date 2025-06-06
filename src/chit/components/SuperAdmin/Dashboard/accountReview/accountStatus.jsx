@@ -328,7 +328,7 @@ const AccountStatus = ({ id_branch }) => {
         </div>
 
         <div
-          className="bg-[#004181] px-[16px] py-[10px] rounded-[8px]  flex items-center justify-center cursor-pointer"
+          className="bg-[#004181] px-[24px] py-[12px] rounded-[8px]  flex items-center justify-center cursor-pointer"
           onClick={() => navigate("/managecustomers/addcustomer")}
         >
           <img
