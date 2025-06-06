@@ -24,6 +24,7 @@ import Loading from "../../common/Loading";
 import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
 import DateRangeSelector from "../../common/calender";
 import ExportDropdown from "../../common/Dropdown/Export";
+import plus from "../../../../assets/plus.svg";
 
 
 function PromotionSummary() {
@@ -183,7 +184,7 @@ function PromotionSummary() {
           { label: "Promotions Summary", active: true },
         ]}
       />
-      <div className="flex flex-col p-4 bg-white border-2 border-[#F2F2F9] rounded-[16px] ">
+      <div className="flex flex-col p-4 bg-white border-[1px] border-[#F2F2F9] rounded-[16px] ">
         <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
           <div className="flex justify-between items-center w-full">
             <div className="flex justify-start">
@@ -203,11 +204,12 @@ function PromotionSummary() {
                 )}`}
               /> */}
               <button
-              className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-[135px]"
+              className="flex rounded-lg px-[20px] py-[8px] text-sm font-semibold text-white items-center whitespace-nowrap hover:bg-[#034571] transition-colors sm:w-auto"
               onClick={handleClick}
               style={{ backgroundColor: layout_color }}
             >
-              + Add Category
+              <img src={plus} alt="plus" className="w-4 h-4 me-[10px]" />
+               Add Category
             </button>
             </div>
           </div>

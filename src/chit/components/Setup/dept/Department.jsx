@@ -24,6 +24,7 @@ import Loading from "../../common/Loading";
 import Action from "../../common/action";
 import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
 import ActiveDropdown from "../../common/ActiveDropdown";
+import plus from "../../../../assets/plus.svg";
 
 const Department = () => {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
@@ -258,7 +259,7 @@ const Department = () => {
       items={[{ label: "Settings" }, { label: "Department", active: true }]}
       />
 
-      <div className="flex flex-col p-4  bg-white border border-[#F2F2F9]  rounded-[16px]">
+      <div className="flex flex-col p-4  bg-white border-[1px] border-[#F2F2F9]  rounded-[16px]">
 
         <div className="flex flex-col gap-4 mt-4 sm:flex-row sm:justify-between sm:items-center">
           {/* Search Input - Full width on mobile, moves to right side on desktop */}
@@ -267,7 +268,7 @@ const Department = () => {
               {searchLoading ? (
                 <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
               ) : (
-                <Search className="text-black" />
+                <Search className="text-[#6C7086] h-5 w-5" />
               )}
             </div>
             <input
@@ -276,14 +277,14 @@ const Department = () => {
                 setSearchInput(e.target.value);
               }}
               placeholder="Search"
-              className="px-4 py-2 ps-9 border-2 border-[#F2F2F9] rounded-[8px] w-full sm:w-[228px]"
+              className="px-4 py-2 ps-9 border-2 border-[#F2F2F9] rounded-[8px] w-full h-[36px] sm:w-[228px]"
             />
           </div>
 
           {/* Container for ActiveDropdown and Add Category button */}
           <div className="flex flex-row w-full sm:order-1 sm:w-auto sm:mr-auto">
             {/* ActiveDropdown - half width on mobile */}
-            <div className="w-1/2 sm:w-auto me-1">
+            <div className="w-1/2 sm:w-auto me-1 ">
               <ActiveDropdown setActiveFilter={setActiveFilter} />
             </div>
 
@@ -305,10 +306,11 @@ const Department = () => {
           <div className="hidden sm:block sm:order-3">
             <button
               type="button"
-              className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-full" style={{ backgroundColor: layout_color }}
+              className="flex rounded-lg px-[20px] py-[8px] text-sm font-semibold text-white items-center whitespace-nowrap hover:bg-[#034571] transition-colors sm:w-auto" style={{ backgroundColor: layout_color }}
               onClick={handleaddDept}
             >
-              + Add Department
+               <img src={plus} alt="plus" className="w-4 h-4 me-[10px]" />
+               Add Department
             </button>
           </div>
         </div>

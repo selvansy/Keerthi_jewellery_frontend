@@ -12,6 +12,8 @@ import { useDebounce } from "../../hooks/useDebounce";
 import TicketSubmissionForm from "./Addticket";
 import { Button } from "@headlessui/react";
 import DescriptionModal from "./discriptionModal";
+import plus from "../../../assets/plus.svg";
+import { Breadcrumb } from "../common/breadCumbs/breadCumbs";
 
 const Ticket = () => {
 
@@ -126,20 +128,25 @@ const Ticket = () => {
 
   return (
     <>
+    <Breadcrumb items={[
+            {label:"Help"},
+            {label:"Ticket Raise",active:true}
+          ]}/>
+    <div className="flex flex-col p-4 bg-white border-[1px] border-[#F2F2F9] rounded-[16px]">
       <div className="flex flex-col p-4">
-        <h2 className="text-2xl text-gray-900 font-bold">Tickets</h2>
+        {/* <h2 className="text-2xl text-gray-900 font-bold">Tickets</h2> */}
         <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
           <div className="relative w-full lg:w-1/3 min-w-[200px]">
             <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
               {searchLoading ? (
-                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2" />
               ) : (
-                <Search className="text-gray-500" />
+                <Search className="text-gray-500 w-5 h-5" />
               )}
             </div>
             <input
               placeholder="Search..."
-              className="p-3 pl-10 pr-3 border-2 bg-[#F5F5F5] border-gray-500 rounded-md w-full"
+              className="px-4 py-2 ps-9 border-2 border-[#F2F2F9] rounded-lg w-full h-[36px] text-md sm:w-[228px]"
               onChange={(e) => {
                 setSearchLoading(true);
                 setSearchInput(e.target.value);
@@ -149,11 +156,12 @@ const Ticket = () => {
           <div className="flex flex-row items-center justify-end gap-2">
             <button
               type="button"
-              className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 transition-colors"
+              className=" flex rounded-lg px-[20px] py-[8px] text-sm font-semibold text-white items-center whitespace-nowrap hover:bg-[#034571] transition-colors sm:w-auto"
               onClick={() => setModalOpen(true)}
               style={{ backgroundColor: layout_color }}
             >
-              + Create a Ticket
+              <img src={plus} alt="plus" className="w-4 h-4 me-[10px]" />
+              Create a Ticket
             </button>
           </div>
         </div>
@@ -177,6 +185,7 @@ const Ticket = () => {
             onClose={() => setModalOpen(false)}
           />
         </div>
+      </div>
       </div>
     </>
   );

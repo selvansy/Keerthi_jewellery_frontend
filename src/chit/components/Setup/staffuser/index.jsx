@@ -16,6 +16,7 @@ import StaffuserForm from "./StaffuserForm";
 import Action from "../../common/action";
 import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
 import ActiveDropdown from "../../common/ActiveDropdown";
+import plus from "../../../../assets/plus.svg";
 
 const StaffUser = () => {
   const dispatch = useDispatch();
@@ -259,7 +260,7 @@ const StaffUser = () => {
               {searchLoading ? (
                 <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
               ) : (
-                <Search className="text-black" />
+                <Search className="text-[#6C7086] h-5 w-5" />
               )}
             </div>
             <input
@@ -268,7 +269,7 @@ const StaffUser = () => {
                 setSearchInput(e.target.value);
               }}
               placeholder="Search"
-              className="px-4 py-2 ps-9 border-2 border-[#F2F2F9] rounded-[8px] w-full sm:w-[228px]"
+              className="px-4 py-2 ps-9 border-2 border-[#F2F2F9] rounded-lg w-full h-[36px] text-md sm:w-[228px]"
             />
           </div>
 
@@ -287,6 +288,7 @@ const StaffUser = () => {
                 style={{ backgroundColor: layout_color }}
                 onClick={handleAddEmployeeClick}
               >
+                 
                 + Add User
               </button>
             </div>
@@ -295,11 +297,12 @@ const StaffUser = () => {
           <div className="hidden sm:block sm:order-3">
             <button
               type="button"
-              className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors w-full" 
+              className="flex rounded-lg px-[20px] py-[8px] text-sm font-semibold text-white items-center whitespace-nowrap hover:bg-[#034571] transition-colors sm:w-auto" 
               style={{ backgroundColor: layout_color }}
               onClick={handleAddEmployeeClick}
             >
-              + Add User
+              <img src={plus} alt="plus" className="w-4 h-4 me-[10px]" />
+              Add User
             </button>
           </div>
         </div>
