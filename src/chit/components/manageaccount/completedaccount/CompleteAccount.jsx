@@ -12,10 +12,7 @@ import {
   dueReportSummary,
   preCloseSummary,
 } from "../../../../chit/api/Endpoints";
-import { SlidersHorizontal, Search, X } from "lucide-react";
-import { CalendarDays, RefreshCcw } from "lucide-react";
 import "react-datepicker/dist/react-datepicker.css";
-import DatePicker from "react-datepicker";
 import { useSelector } from "react-redux";
 import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
 import DateRangeSelector from "../../common/calender";

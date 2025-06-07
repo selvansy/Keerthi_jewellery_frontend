@@ -930,7 +930,7 @@ const CustomerForm = ({
 
                 <div className="flex flex-col">
                   <label className="text-[#232323] font-semibold text-sm  mb-1 ">
-                    Pan Number
+                    Pan Number<span className="text-red-400"> *</span>
                   </label>
                   <input
                     type="text"

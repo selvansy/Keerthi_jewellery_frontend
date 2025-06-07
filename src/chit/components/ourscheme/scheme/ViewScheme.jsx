@@ -376,6 +376,7 @@ const ViewScheme = () => {
         setMainImage: schemeData?.data?.logo || null,
         setDescriptionImage: schemeData?.data?.desc_img || null,
         fixed_amounts: schemeData?.data?.fixed_amounts || [],
+        referralPercentage:schemeData?.data?.referralPercentage || 0
       });
       if (schemeData?.data?.logo) {
         setMainImage(schemeData?.data?.logo);
@@ -993,7 +994,7 @@ const ViewScheme = () => {
                 </label>
                 <div className="relative">
                   <p className="text-[#72737e] pb-2">
-                    <span className="text-[#72737e]">₹ </span>
+                    <span className="text-[#72737e]">₹</span>
                     {formik.values.bonus_amount}
                   </p>
                 </div>
@@ -1057,7 +1058,7 @@ const ViewScheme = () => {
                 Convenience Fee
               </label>
               <p className="text-[#72737e] pb-2">
-                <span className="text-[#72737e]">₹ </span>
+                <span className="text-[#72737e]">₹</span>
                 {formik.values.convenience_fees}
               </p>
             </div>
@@ -1069,7 +1070,7 @@ const ViewScheme = () => {
                 Referral Percentage (Monthly)
               </label>
               <p className="text-[#72737e] pb-2">
-                {formik.values?.referralPercentage || 0}
+                {`${formik.values?.referralPercentage} %`}
               </p>
             </div>
             <div>

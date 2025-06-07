@@ -488,7 +488,7 @@ const Base = ({ renderContent: RenderContent }) => {
     const isSelected = hasSubmenu
       ? selectedParentSection === text
       : selectedSection === text && selectedParentSection === text;
-  
+
     return (
       <div className="w-full px-3 py-1 relative">
         <div
@@ -522,16 +522,16 @@ const Base = ({ renderContent: RenderContent }) => {
               }}
             />
           ) : (
-            <img 
-              src={Dashboard} 
-              alt="Dashboard Icon" 
+            <img
+              src={Dashboard}
+              alt="Dashboard Icon"
               className={`w-6 h-6 ${
                 isSelected ? "filter brightness-0 invert" : ""
               }`}
             />
           )}
-  
-          <span className={`flex-1 text-left text-[14px] font-medium ml-2`}>{text}</span>
+
+          <span className={`flex-1 text-left ml-2`}>{text}</span>
           {hasSubmenu && (
             <span className="ml-auto transition-transform duration-300">
               {isOpen ? (
@@ -542,7 +542,7 @@ const Base = ({ renderContent: RenderContent }) => {
             </span>
           )}
         </div>
-  
+
         <div
           className={`relative overflow-y-auto overflow-hidden transition-all scrollbar-hide duration-300 ease-in-out
           ${isOpen ? "max-h-[60vh] opacity-100 mt-2" : "max-h-0 opacity-0"}`}
@@ -696,14 +696,13 @@ const Base = ({ renderContent: RenderContent }) => {
               </div>
             </div>
 
-             <div className="text-[#F5F5F5] text-xl font-semibold border-s-2 mt-1 border-[#F5F5F5] h-[28px]"></div>
+            <div className="text-[#F5F5F5] text-xl font-semibold border-s-2 mt-1 border-[#F5F5F5] h-[28px]"></div>
 
             {/* Search component */}
             <div
               className="se flex justify-center items-center pl-3 pr-5 w-[90px]  gap-3 border text-[#F2F2F9] h-[35px] rounded-[8px]"
               onClick={() => setIsModalOpen(true)}
             >
-              
               <div className="search">
                 <img src={Search} alt="" className="w-8 h-8 " />
               </div>
@@ -713,8 +712,6 @@ const Base = ({ renderContent: RenderContent }) => {
                 <span className="text-black">F</span>
               </div>
             </div>
-
-          
           </div>
 
           {/* Right side with settings, notifications and user menu */}
@@ -722,7 +719,7 @@ const Base = ({ renderContent: RenderContent }) => {
           <div className="flex items-center space-x-1 xl:space-x-3 flex-wrap justify-end">
             {/* Metal rates - will stack vertically on small screens */}
             <div className="flex flex-col sm:flex-row gap-1 sm:gap-2">
-              <div className="bg-[#FFE28D] flex px-2 py-1 sm:px-3 sm:py-1.5 rounded-[8px] text-[#232323] font-medium sm:text-sm">
+              <div className="bg-[#FFE28D] flex px-2 py-1 sm:px-3 sm:py-1.5 rounded-[8px] text-[#232323] font-medium sm:text-sm hidden md:flex">
                 <span className="hidden sm:inline">Gold (24K):</span>
                 <span className="sm:hidden">G24:</span>
                 <span className="ml-1 font-bold">
@@ -732,7 +729,7 @@ const Base = ({ renderContent: RenderContent }) => {
                   })}
                 </span>
               </div>
-              <div className="bg-[#FFE28D] flex px-2 py-1 sm:px-3 sm:py-1.5 text-[#232323] text-sm font-medium rounded-lg text-[12px] sm:text-sm">
+              <div className="bg-[#FFE28D] flex px-2 py-1 sm:px-3 sm:py-1.5 text-[#232323] text-sm font-medium rounded-lg text-[12px] sm:text-sm hidden md:flex">
                 <span className="hidden sm:inline">Gold (22K):</span>
                 <span className="sm:hidden">G22:</span>
                 <span className="ml-1 font-bold">
@@ -742,7 +739,7 @@ const Base = ({ renderContent: RenderContent }) => {
                   })}
                 </span>
               </div>
-              <div className="bg-[#C0C0C0] flex px-2 py-1 sm:px-3 sm:py-1.5 text-[#232323] rounded-[8px] text-xs sm:text-sm">
+              <div className="bg-[#C0C0C0] flex px-2 py-1 sm:px-3 sm:py-1.5 text-[#232323] rounded-[8px] text-xs sm:text-sm hidden md:flex">
                 <span className="hidden sm:inline">Silver:</span>
                 <span className="sm:hidden">S:</span>
                 <span className="ml-1 font-bold ">
