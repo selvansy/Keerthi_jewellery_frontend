@@ -398,7 +398,7 @@ function WalletHistory() {
         items={[{ label: "Wallet" }, { label: "Wallet History", active: true }]}
       />
 
-         <div className="flex flex-col p-4">
+         <div className="flex flex-col mb-5">
         <div className='flex flex-col gap-3'>
           {/* Cards Section */}
           <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -411,11 +411,11 @@ function WalletHistory() {
                       alt="totalGift"
                       className="h-[40px] w-[40px]"
                     />
-                    <div className="flex flex-col  ms-1 mt-2 pt-4">
-                      <h5 className="text-2xl font-semibold">
+                    <div className="flex flex-col ms-1 mt-2 pt-4">
+                      <h5 className="text-lg text-[#232323] font-semibold">
                         {e.countValue || 0}
                       </h5>
-                      <h5 className="text-[#6C7086] font-[500] text-[16px] pt-1" style={{ fontFamily: "Inter, sans-serif" }} >{e.label}</h5>
+                      <h5 className="text-[#6C7086] font-[500] text-sm pt-1" style={{ fontFamily: "Inter, sans-serif" }} >{e.label}</h5>
                     </div>
                   </div>
 
@@ -437,7 +437,7 @@ function WalletHistory() {
               {searchLoading ? (
                 <div className="absolute left-3 top-1/2 transform -translate-y-1/2 animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
               ) : (
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-black" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5" />
               )}
               <input
                 onChange={(e) => {
@@ -445,17 +445,16 @@ function WalletHistory() {
                   setSearchInput(e.target.value);
                 }}
                 placeholder="Search"
-                className="pl-9 pr-4 py-2 border-2 border-[#F2F2F9] rounded-[8px] w-[200px]"
+                className="px-4 py-2 ps-9 rounded-lg border-2 border-[#F2F2F9] w-full h-[36px] text-md sm:w-[228px]"
               />
             </div>
           </div>
 
           {/* Export Button */}
           <div className="ml-auto flex justify-between items-center gap-2">
-
             <div className="relative flex items-center gap-2">
               <CalendarDays className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
-              <div className="flex items-center pl-8 border-2 border-[#F2F2F9] rounded-[8px] px-3 py-2 bg-white text-sm">
+              <div className="flex items-center pl-8 border-2 border-[#F2F2F9] rounded-[8px] px-3 py-2 h-[36px] bg-white text-sm">
                 <DatePicker
                   selected={startDate}
                   onChange={(date) => setStartDate(date)}

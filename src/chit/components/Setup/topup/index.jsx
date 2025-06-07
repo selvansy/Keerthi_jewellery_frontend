@@ -171,12 +171,12 @@ function Topup() {
           { label: "Topup", active: true },
         ]}
       />
-        <div className="w-full flex flex-col bg-white border rounded-md p-4">
+        <div className="w-full flex flex-col bg-white border-[1px] rounded-[16px] p-4">
           <div className="flex flex-col p-4">
-            <h2 className="text-lg font-medium ">Add Top-Up</h2>
+            <h2 className="text-lg font-semibold text-[#232323] ">Add Top-Up</h2>
             <div className="grid grid-rows-2 md:grid-cols-2 gap-5 border-gray-300 mb-10 mt-4">
               <div className="flex flex-col space-y-2 my-2">
-                <label className="text-black mb-1 text-sm font-medium">
+                <label className="text-[#232323] mb-1 text-sm font-semibold">
                   Notifications Type<span className="text-red-400">*</span>
                 </label>
                 <div className="flex flex-row gap-6 justify-start">
@@ -239,7 +239,7 @@ function Topup() {
                 </div>
               </div>
               <div className="flex flex-col space-y-2">
-                <label className="text-black mb-1 text-sm font-medium">
+                <label className="text-[#232323] mb-1 text-sm font-semibold">
                   Purchase Limit<span className="text-red-400"> *</span>
                 </label>
                 <input
@@ -249,7 +249,7 @@ function Topup() {
                   onChange={handleChange}
                   placeholder="Enter purchase limit"
                   maxLength={10}
-                  className="p-3 border-2 border-[#f2f3f8] rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
                 />
 
                 {formErrors.limitRequest && (
@@ -272,7 +272,7 @@ function Topup() {
                   minLength={"2"}
                   readOnly
                   placeholder="Enter available limit"
-                  className="p-3 border-2 border-[#f2f3f8] rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
                 />
               </div>
 
@@ -288,7 +288,7 @@ function Topup() {
                   minLength={"2"}
                   readOnly
                   placeholder="Enter limit rate"
-                  className="p-3 border-2 border-[#f2f3f8] rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
                 />
               </div>
 

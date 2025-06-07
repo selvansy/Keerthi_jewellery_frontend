@@ -678,7 +678,7 @@ onSubmit: async (values) => {
       onSubmit={formik.handleSubmit}
       className="w-full mx-auto mt-3 space-y-6"
     >
-      <div className="bg-[#FFFFFF] rounded-lg p-6 shadow-sm border">
+      <div className="bg-[#FFFFFF] rounded-[16px] p-6 border-[1px]">
         <h2 className="text-lg font-semibold mb-4 border-b pb-4">{header}</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -812,7 +812,7 @@ onSubmit: async (values) => {
                 }}
                 onWheel={(e) => e.target.blur()}
                 onBlur={formik.handleBlur}
-                className="border-2 border-[#f2f3f8] rounded-md p-2 w-full text-start pl-10 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                className="border-2 border-[#f2f3f8] rounded-md p-2 w-full text-start pl-10 focus:outline-none focus:ring-1 focus:ring-[#004181] focus:border-transparent"
                 placeholder="Enter min amount"
                 style={{ height: inputHeight }}
               />
@@ -843,7 +843,7 @@ onSubmit: async (values) => {
                 }}
                 onWheel={(e) => e.target.blur()}
                 onBlur={formik.handleBlur}
-                className="border-2 border-[#f2f3f8] rounded-md p-2 w-full text-start pl-10 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                className="border-2 border-[#f2f3f8] rounded-md p-2 w-full text-start pl-10 focus:outline-none  focus:ring-1 focus:ring-[#004181] focus:border-transparent"
                 placeholder="Enter max amount"
                 style={{ height: inputHeight }}
               />
@@ -905,7 +905,7 @@ onSubmit: async (values) => {
                 }}
                 onWheel={(e) => e.target.blur()}
                 onBlur={formik.handleBlur}
-                className="border-2 border-[#f2f3f8] rounded-md p-2 w-full text-start focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                className="border-2 border-[#f2f3f8] rounded-md p-2 w-full text-start focus:outline-none focus:ring-1 focus:ring-[#004181] focus:border-transparent"
                 placeholder="Enter no of days"
                 style={{ height: inputHeight }}
               />
@@ -936,7 +936,7 @@ onSubmit: async (values) => {
                 }}
                 onWheel={(e) => e.target.blur()}
                 onBlur={formik.handleBlur}
-                className="border-2 border-[#f2f3f8] rounded-md p-2 w-full text-start pl-10 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                className="border-2 border-[#f2f3f8] rounded-md p-2 w-full text-start pl-10 focus:outline-none focus:ring-1 focus:ring-[#004181] focus:border-transparent"
                 placeholder="Enter max limit"
                 style={{ height: inputHeight }}
               />
@@ -1027,7 +1027,7 @@ onSubmit: async (values) => {
       <Accordion type="multiple" collapsible className="space-y-4">
         <AccordionItem
           value="classification"
-          className="border rounded-lg bg-white"
+          className="border-[1px] rounded-[16px] bg-white"
         >
           <AccordionTrigger className="px-6">
             Classification Details
@@ -1054,7 +1054,7 @@ onSubmit: async (values) => {
         <button
           type="submit"
           disabled={isLoading}
-          className="px-9 h-[36px] text-sm font-semibold bg-blue-900 text-white rounded-md hover:bg-blue-800 flex justify-center items-center"
+          className="px-9 h-[36px] text-sm font-semibold bg-[#004181] text-white rounded-md  flex justify-center items-center"
         >
           {isLoading ? <SpinLoading /> : id ? "Update" : "Save"}
         </button>

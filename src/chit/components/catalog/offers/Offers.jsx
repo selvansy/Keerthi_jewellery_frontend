@@ -422,7 +422,7 @@ const Offers = () => {
               style={{ backgroundColor: layout_color }}
             >
               <img src={plus} alt="plus" className="w-4 h-4 me-[10px]" />
-               Create offers
+               Create Offers
             </button>
           </div>
         </div>

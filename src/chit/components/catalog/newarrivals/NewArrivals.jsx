@@ -434,7 +434,7 @@ const NewArrivals = () => {
                 onClick={handleClick}
                 style={{ backgroundColor: layout_color }}
               >
-                + Create newarrivals
+                + Create New Arrivals
               </button>
             </div>
           </div>
@@ -447,7 +447,7 @@ const NewArrivals = () => {
               style={{ backgroundColor: layout_color }}
             >
                 <img src={plus} alt="plus" className="w-4 h-4 me-[10px]" />
-               Create newarrivals
+               Create New Arrivals
             </button>
           </div>
         </div>

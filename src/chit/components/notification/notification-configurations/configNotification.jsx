@@ -242,16 +242,17 @@ const ConfigNotification = () => {
 
           {/* Buttons */}
           <div className="flex flex-row justify-end border-t-2 p-3 mt-8">
-            <div className="flex flex-row gap-6 justify-center">
-              <button className="bg-[#E2E8F0] rounded-md p-2 text-black" onClick={handleFetch}>Cancel</button>
+            <div className="flex flex-row gap-4 justify-center">
               <button
-                className="text-white w-16 h-10 text-center p-2 rounded-md"
+                className="text-white w-24 h-[36px] text-center text-sm font-semibold rounded-lg"
                 style={{ backgroundColor: layout_color || "#007BFF" }}
                 disabled={isLoading}
                 onClick={handleSubmit}
               >
                 Save
               </button>
+              <button className="bg-[#E2E8F0] rounded-lg w-24 h-[36px] text-sm text-black" onClick={handleFetch}>Cancel</button>
+              
             </div>
           </div>
         </>

@@ -38,27 +38,32 @@ const Organisation = () => {
   const [states, setStates] = useState([]);
   const [city, setCity] = useState([]);
 
-  const customStyles = (isReadOnly) => ({
+ const customStyles = (isReadOnly) => ({
     control: (base, state) => ({
       ...base,
-      minHeight: "42px",
+      minHeight: "44px", //42px
       backgroundColor: "white",
-      border: state.isFocused ? "1px solid black" : "2px solid #f2f3f8",
-      boxShadow: state.isFocused ? "0 0 0 1px black" : "none",
-      borderRadius: "0.375rem",
+      color:"#232323",
+      // fontWeight:600,
+      border: state.isFocused ? "1px solid #f2f2f9" : "1px solid #f2f2f9",
+      boxShadow: state.isFocused ? "0 0 0 1px #004181" : "none",
+      borderRadius: "0.5rem",
       "&:hover": {
         color: "#e2e8f0",
       },
       pointerEvents: !isReadOnly ? "none" : "auto",
       opacity: !isReadOnly ? 1 : 1,
+      cursor: isReadOnly ? "pointer" : "default", 
     }),
     indicatorSeparator: () => ({
       display: "none",
     }),
     placeholder: (base) => ({
       ...base,
-      color: "#858293",
-      fontWeight: "thin",
+      color: "#6C7086",
+      // fontWeight: "thin",
+      fontSize: "14px",
+      // fontStyle: "bold",
     }),
     dropdownIndicator: (provided, state) => ({
       ...provided,
@@ -67,7 +72,19 @@ const Organisation = () => {
         color: "#232323",
       },
     }),
-  });
+     input: (base) => ({
+      ...base,
+      "input[type='text']:focus": { boxShadow: 'none' },
+      }),
+      option:(base,state)=>({
+        ...base,
+        backgroundColor: state.isSelected ? "#F0F7FE" : state.isFocused ? "#F0F7FE" : "white",
+        color:"#232323",
+        fontWeight:"500",
+        fontSize:"14px"
+      })
+    });
+
 console.log(orgData,'kd')
   const formik = useFormik({
     initialValues: {
@@ -298,8 +315,8 @@ console.log(orgData,'kd')
       <form onSubmit={formik.handleSubmit}>
         <div className="flex flex-col bg-white border-2 border-[#F2F2F9] rounded-[10px] px-4 pb-4">
           <div className="p-4">
-            <h2 className="text-lg font-semibold mb-4 border-b pb-4">Company Information</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <h2 className="text-lg text-[#232323] font-semibold mb-4 border-b pb-4">Company Information</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
               {/* First Row */}
               <div className="flex flex-col">
                 <label className="text-black mb-1 text-sm font-medium">
@@ -311,7 +328,7 @@ console.log(orgData,'kd')
                   value={formik.values.company_name}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  className="border-2 border-[#f2f3f8] rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black h-[50px] text-sm"
+                  className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
                   placeholder="Enter company name"
                 />
                 {formik.touched.company_name && formik.errors.company_name && (
@@ -331,7 +348,7 @@ console.log(orgData,'kd')
                   value={formik.values.short_code}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  className="border-2 border-[#f2f3f8] rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black h-[50px] text-sm"
+                  className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
                   placeholder="Enter short code"
                 />
                 {formik.touched.short_code && formik.errors.short_code && (
@@ -351,7 +368,7 @@ console.log(orgData,'kd')
                   value={formik.values.email}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  className="border-2 border-[#f2f3f8] rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black h-[50px] text-sm"
+                  className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
                   placeholder="Enter email"
                 />
                 {formik.touched.email && formik.errors.email && (
@@ -372,7 +389,7 @@ console.log(orgData,'kd')
                   value={formik.values.mobile}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  className="border-2 border-[#f2f3f8] rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black h-[50px] text-sm"
+                  className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
                   placeholder="Enter mobile number"
                 />
                 {formik.touched.mobile && formik.errors.mobile && (
@@ -392,7 +409,7 @@ console.log(orgData,'kd')
                   value={formik.values.address}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  className="border-2 border-[#f2f3f8] rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black h-[50px] text-sm"
+                  className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
                   placeholder="Enter address"
                 />
                 {formik.touched.address && formik.errors.address && (
@@ -412,7 +429,7 @@ console.log(orgData,'kd')
                   value={formik.values.pincode}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  className="border-2 border-[#f2f3f8] rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black h-[50px] text-sm"
+                  className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
                   placeholder="Enter pincode"
                 />
                 {formik.touched.pincode && formik.errors.pincode && (
@@ -503,7 +520,7 @@ console.log(orgData,'kd')
                   value={formik.values.website}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  className="border-2 border-[#f2f3f8] rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black h-[50px] text-sm"
+                  className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
                   placeholder="Enter website url"
                 />
                 {formik.touched.website && formik.errors.website && (
@@ -523,7 +540,7 @@ console.log(orgData,'kd')
                   value={formik.values.whatsapp_no}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  className="border-2 border-[#f2f3f8] rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black h-[50px] text-sm"
+                  className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
                   placeholder="Enter whatsapp number"
                 />
                 {formik.touched.whatsapp_no && formik.errors.whatsapp_no && (
@@ -538,13 +555,13 @@ console.log(orgData,'kd')
                   Upload Image
                 </label>
                 {!imagePreviews.logo && (
-                  <div className="relative flex items-center justify-between border-2 border-[#f2f3f8] rounded-md hover:bg-gray-50 cursor-pointer w-full h-[50px]">
-                    <span className="ml-2 text-sm text-gray-900 truncate">
+                  <div className="relative flex items-center justify-between border-2 border-[#f2f3f8] rounded-md hover:bg-gray-50 cursor-pointer w-full h-[43px]">
+                    <span className="ml-2 text-sm text-gray-600 truncate">
                       {formik.values.logo ? formik.values.logo.name : "Browse"}
                     </span>
                     <label
                       htmlFor="logo"
-                      className="text-white px-3 py-1 rounded-md cursor-pointer h-full flex items-center text-sm"
+                      className="text-white px-3 py-1 rounded-lg cursor-pointer h-full flex items-center text-sm"
                       style={{ backgroundColor: layout_color }}
                     >
                       Choose File
@@ -583,19 +600,20 @@ console.log(orgData,'kd')
         </div>
         <div className="flex flex-row justify-end mt-4 mb-2 gap-3">
           <button
-            type="button"
-            onClick={handleClear}
-            className="bg-gray-300 text-gray-700 rounded-md px-4 py-1 text-sm h-[36px]"
-          >
-            Clear
-          </button>
-          <button
             type="submit"
-            className="text-white rounded-md px-4 py-1 text-sm h-[36px]"
+            className="px-9 h-[36px] text-sm font-semibold text-white rounded-lg flex justify-center items-center lg:h-[36px]"
             style={{ backgroundColor: layout_color }}
           >
             Update
           </button>
+          <button
+            type="button"
+            onClick={handleClear}
+            className="px-9 h-[36px] font-semibold text-sm border-2 bg-[#F6F7F9] border-[#f2f3f8] rounded-lg hover:bg-gray-50 flex justify-center items-center text-[#6C7086] lg:h-[36px]"
+          >
+            Clear
+          </button>
+          
         </div>
       </form>
     </>

@@ -18,6 +18,7 @@ import { useDebounce } from "../../../hooks/useDebounce";
 import { setid } from "../../../../redux/clientFormSlice";
 import usePagination from "../../../hooks/usePagination";
 import Action from "../../common/action";
+import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
 
 const Delist = () => {
   const navigate = useNavigate();
@@ -252,12 +253,12 @@ useEffect(() => {
   }, [location.pathname]);
 
   return (
-    <div className="flex flex-col p-4 relative">
+    <div className="flex flex-col relative">
       {isLoading ? (
         <div>Loading...</div>
       ) : (
         <>
-          <h6 className="text-gray-900 font-normal mb-4">{bred}</h6>
+          {/* <h6 className="text-gray-900 font-normal mb-4">{bred}</h6> */}
           {/* <div className="flex flex-col gap-4 lg:flex-row lg:justify-end lg:items-center mt-4">
             <div className="flex flex-row items-center justify-end gap-2">
               <button
@@ -269,7 +270,13 @@ useEffect(() => {
               </button>
             </div>
           </div>  */}
-
+          <Breadcrumb
+                          items={[
+                            { label: "Settings" },
+                            { label: "Menu", active: true },
+                          ]}
+                        />
+                    <div className="w-full flex flex-col bg-white border-[1px] rounded-[16px] p-4">
           <div className="mt-4">
             <Table
               data={schemes}
@@ -282,7 +289,7 @@ useEffect(() => {
               loading={isLoading}
             />
           </div>
-        
+        </div>
         </>
       )}
       {/* <Modal /> */}
@@ -303,7 +310,9 @@ useEffect(() => {
         /> */}
       </ModelOne>
       <Modal />
+      
     </div>
+    
   );
 };
 

@@ -464,7 +464,7 @@ const AddEmployee = () => {
       if (field === "gender") {
         return (
           <div key={field}>
-            <label className="block text-sm font-medium mb-1">
+            <label className="block text-sm  mb-1">
               Gender <span className="text-red-500">*</span>
             </label>
             <div className="flex flex-row gap-3">
@@ -475,7 +475,7 @@ const AddEmployee = () => {
                 className={`px-4 py-2 rounded-md text-sm border ${
                   formik.values.gender === 1
                     ? "bg-white text-[#004181] border-[#004181]"
-                    : "bg-white text-[#6C7086] border hover:bg-gray-50"
+                    : "bg-white text-[#6C7086] border-[1px] hover:bg-gray-50"
                 }`}
               >
                 Male
@@ -523,7 +523,7 @@ const AddEmployee = () => {
         (field !== "id_branch" ||
           (field === "id_branch" && branch === "0")) && (
           <div key={field}>
-            <label className="block text-sm font-medium mb-1">
+            <label className="block text-sm  mb-1">
               {field === "id_state"
                 ? "State"
                 : field === "id_branch"
@@ -603,7 +603,7 @@ const AddEmployee = () => {
                 value={formik.values[field]}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                className="w-full border-[1px] border-[#f2f3f8] rounded-md px-3 py-2"
                 placeholder={`Enter whatsapp number`}
               />
             ) : field === "pan" ? (
@@ -613,7 +613,7 @@ const AddEmployee = () => {
                 value={formik.values[field]}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                className="w-full border-[1px] border-[#f2f3f8] rounded-md px-3 py-2"
                 placeholder={`Enter pancard number`}
               />
             ) : (
@@ -623,7 +623,7 @@ const AddEmployee = () => {
                 value={formik.values[field]}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                className="w-full border-[1px] border-[#f2f3f8] rounded-md px-3 py-2"
                 placeholder={`Enter ${field.replace(/_/g, " ")}`}
               />
             )}
@@ -642,11 +642,11 @@ const AddEmployee = () => {
     <form onSubmit={formik.handleSubmit} className="w-full mx-auto space-y-6">
       <div className="flex flex-row justify-between items-center mb-4">
         <p className="text-sm text-gray-400 mt-4 mb-3">
-          Employee / <span className="text-black">Employee Creation</span>
+          Employee / <span className="text-[#232323] font-semibold text-sm">Employee Creation</span>
         </p>
       </div>
-
-      <div className="bg-[#FFFFFF] rounded-xl p-6 shadow-sm border">
+      
+      <div className="bg-[#FFFFFF] rounded-[16px] p-6  border-[1px]">
         <h2 className="text-lg font-semibold mb-4 border-b pb-4">
           {id ? "Edit Employee" : "Add Employee"}
         </h2>
@@ -656,7 +656,7 @@ const AddEmployee = () => {
 
           {["date_of_join", "date_of_birth"].map((field) => (
             <div key={field}>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm  mb-1">
                 {field === "date_of_join" ? "Date of Joining" : "Date of Birth"}
                 <span className="text-red-500"> *</span>
               </label>
@@ -667,7 +667,7 @@ const AddEmployee = () => {
                   onBlur={formik.handleBlur}
                   dateFormat="yyyy-MM-dd"
                   placeholderText="Select Date"
-                  className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                  className="w-full border-[1px] border-[#f2f3f8] rounded-md px-3 py-2"
                   showMonthDropdown
                   showYearDropdown
                   wrapperClassName="w-full"
@@ -687,11 +687,11 @@ const AddEmployee = () => {
 
           {/* Resume Upload Field */}
           <div>
-            <label className="block text-sm font-medium mb-1">Resume</label>
+            <label className="block text-sm  mb-1">Resume</label>
             <div className="flex items-center gap-3 relative">
               <label
                 htmlFor="resume"
-                className="flex-1 border-2 border-[#f2f3f8] rounded-md px-3 py-2 cursor-pointer hover:bg-gray-50"
+                className="flex-1 border-[1px] border-[#f2f3f8] rounded-md px-3 py-2 cursor-pointer hover:bg-gray-50"
               >
                 <p className="truncate text-[#b5b5b5]">
                   {imagePreviews.resume?.name || imagePreviews.resume || (formik.values.resume ? formik.values.resume.name : "Browse")}
@@ -720,14 +720,14 @@ const AddEmployee = () => {
 
           {/* Image Upload Field */}
           <div>
-            <label className="block text-sm font-medium mb-1">
+            <label className="block text-sm  mb-1">
               Upload Profile Image{" "}
               <span className="font-sm">(Maximum file size: 500KB)</span>
             </label>
             <div className="flex items-center gap-3 relative">
               <label
                 htmlFor="image"
-                className="flex-1 border-2 border-[#f2f3f8] rounded-md px-3 py-2 cursor-pointer hover:bg-gray-50"
+                className="flex-1 border-[1px] border-[#f2f3f8] rounded-md px-3 py-2 cursor-pointer hover:bg-gray-50"
               >
                 <p className="truncate text-[#b5b5b5]">
                   {imagePreviews.image?.name || imagePreviews.image ||
@@ -743,7 +743,7 @@ const AddEmployee = () => {
                   Choose File
                 </label>
                 <div
-                  className="w-11 h-11 flex items-center justify-center rounded-md cursor-pointer"
+                  className="w-11 h-10 flex items-center justify-center rounded-md cursor-pointer"
                   style={{ backgroundColor: layout_color }}
                   onClick={() => setShowWebcam(true)}
                 >
@@ -767,21 +767,22 @@ const AddEmployee = () => {
           </div>
         </div>
         <div className="flex justify-end space-x-4 mt-4 py-5">
-          <button
-            type="button"
-            onClick={() => navigate("/employee/details/")}
-            className="w-20 h-9 border-2 bg-[#F6F7F9] border-[#f2f3f8] rounded-md hover:bg-gray-50 flex justify-center items-center text-[#6C7086]"
-          >
-            Cancel
-          </button>
+          
           <button
             type="submit"
             disabled={isLoading || !formik.isValid}
-            className={`w-20 h-9 bg-[#004181] text-white rounded-md hover:from-[#072D2D] hover:to-[#072D2D] flex justify-center items-center ${
+            className={`w-24 h-9 bg-[#004181] text-sm text-white font-semibold rounded-lg hover:from-[#072D2D] hover:to-[#072D2D] flex justify-center items-center ${
               isLoading ? "opacity-50 cursor-not-allowed" : ""
             }`}
           >
             {isLoading ? <SpinLoading /> : id ? "Update" : "Save"}
+          </button>
+          <button
+            type="button"
+            onClick={() => navigate("/employee/details/")}
+            className="w-24 h-9 border-[1px] bg-[#F6F7F9] font-semibold border-[#f2f3f8] text-sm rounded-lg hover:bg-gray-50 flex justify-center items-center text-[#6C7086]"
+          >
+            Cancel
           </button>
         </div>
       </div>
@@ -797,13 +798,13 @@ const AddEmployee = () => {
             <div className="mt-4 flex justify-center gap-4">
               <button
                 onClick={handleCapture}
-                className="bg-gradient-to-r from-[#091B1B] to-[#072D2D] text-white px-4 py-2 rounded-md"
+                className="bg-[#004181] text-sm text-white px-4 py-2 rounded-md"
               >
                 Capture
               </button>
               <button
                 onClick={() => setShowWebcam(false)}
-                className="bg-gray-500 text-white px-4 py-2 rounded-md"
+                className="bg-gray-500 text-sm text-white px-4 py-2 rounded-md"
               >
                 Cancel
               </button>

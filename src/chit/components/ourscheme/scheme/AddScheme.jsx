@@ -68,6 +68,7 @@ import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
     dropdownIndicator: (provided, state) => ({
       ...provided,
       color: "#232323",
+      fontSize:"14px",
       "&:hover": {
         color: "#232323",
       },
@@ -81,7 +82,7 @@ import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
         backgroundColor: state.isSelected ? "#F0F7FE" : state.isFocused ? "#F0F7FE" : "white",
         color:"#232323",
         fontWeight:"500",
-        fontSize:"14px"
+        fontSize:"14px",
       })
     });
 
@@ -761,7 +762,7 @@ const SchemeForm = () => {
       onSubmit={formik.handleSubmit}
       className="w-full mx-auto mt-3 space-y-6"
     >
-      <div className="bg-[#FFFFFF] rounded-lg p-5 shadow-sm border text-[#232323]">
+      <div className="bg-[#FFFFFF] rounded-[16px] p-5 border-[1px] text-[#232323]">
         <h2 className="text-lg font-semibold mb-4 border-b pb-4">Add Scheme</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -772,7 +773,7 @@ const SchemeForm = () => {
             <input
               type="text"
               maxLength={30}
-              className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+              className="w-full border-[1px] border-[#f2f3f8] rounded-md px-3 py-2"
               placeholder="Enter scheme name"
               {...formik.getFieldProps("scheme_name")}
             />
@@ -799,7 +800,7 @@ const SchemeForm = () => {
             <input
               type="text"
               maxLength={15}
-              className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+              className="w-full border-[1px] border-[#f2f3f8] rounded-md px-3 py-2"
               placeholder="Enter scheme code"
               {...formik.getFieldProps("code")}
             />
@@ -849,7 +850,7 @@ const SchemeForm = () => {
                 type="text"
                 disabled
                 value={branch?.branch_name || ""}
-                className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2 text-gray-500"
+                className="w-full border-[1px] border-[#f2f3f8] rounded-md px-3 py-2 text-gray-500"
               />
               {formik.errors.id_branch && (
                 <div className="text-red-500 text-sm mt-1">
@@ -1034,7 +1035,7 @@ const SchemeForm = () => {
                   formik.setFieldError("maturity_period", "");
                   formik.handleChange(e);
                 }}
-                className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                className="w-full border-[1px] border-[#f2f3f8] rounded-md px-3 py-2"
                 placeholder="Enter Maturity Period"
                 {...formik.getFieldProps("maturity_period")}
               />
@@ -1077,7 +1078,7 @@ const SchemeForm = () => {
                 }
               }}
               onBlur={formik.handleBlur}
-              className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+              className="w-full border-[1px] border-[#f2f3f8] rounded-md px-3 py-2"
               placeholder="Total installments"
               style={{ height: inputHeight }}
             />
@@ -1152,7 +1153,7 @@ const SchemeForm = () => {
                   type="number"
                   min={0}
                   max={50}
-                  className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                  className="w-full border-[1px] border-[#f2f3f8] rounded-md px-3 py-2"
                   placeholder="Enter total count"
                   {...formik.getFieldProps("totalCountAmount")}
                   onBlur={formik.handleBlur}
@@ -1203,7 +1204,7 @@ const SchemeForm = () => {
                     [12, 3, 4].includes(formik.values.scheme_type) ? "any" : "1"
                   }
                   max={99999999999}
-                  className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                  className="w-full border-[1px] border-[#f2f3f8] rounded-md px-3 py-2"
                   placeholder={
                     [12, 3, 4].includes(formik.values.scheme_type)
                       ? "Enter start weight (e.g. 0.1)"
@@ -1251,7 +1252,7 @@ const SchemeForm = () => {
                   type="number"
                   min={1}
                   max={99999999999}
-                  className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                  className="w-full border-[1px] border-[#f2f3f8] rounded-md px-3 py-2"
                   placeholder="Enter increment rate"
                   onChange={generateAmounts}
                   {...formik.getFieldProps("incrementRate")}
@@ -1321,7 +1322,7 @@ const SchemeForm = () => {
                       ? "Add weight"
                       : "Add amount"
                   }
-                  className="flex-1 border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                  className="flex-1 border-[1px] border-[#f2f3f8] rounded-md px-3 py-2"
                   value={newAmount}
                   onChange={(e) => setNewAmount(e.target.value)}
                   onKeyDown={handleKeyDown}
@@ -1343,7 +1344,7 @@ const SchemeForm = () => {
                     {isEditMode && selectedAmount === index ? (
                       <input
                         type="number"
-                        className="px-4 py-2 border-2 border-[#f2f3f8] rounded-md w-20"
+                        className="px-4 py-2 border-[1px] border-[#f2f3f8] rounded-md w-20"
                         value={editAmount}
                         onChange={handleAmountChange}
                         onKeyDown={(e) => handleKeyDown(e, index)}
@@ -1385,7 +1386,7 @@ const SchemeForm = () => {
           </AccordionContent>
         </AccordionItem> */}
 
-        <AccordionItem value="payable" className="border rounded-lg bg-white">
+        <AccordionItem value="payable" className=" rounded-[16px] border-[1px] bg-white">
           <AccordionTrigger className="px-6 py-4 text-[#232323] font-semibold text-lg">
             {/* <div className="w-full text-start text-lg font-semisemibold pb-4"> Payable Details</div> */}
             Payable Details
@@ -1409,7 +1410,7 @@ const SchemeForm = () => {
           </AccordionContent>
         </AccordionItem>
 
-        <AccordionItem value="advanced" className="border rounded-lg bg-white">
+        <AccordionItem value="advanced" className="border-[1px] rounded-[16px] bg-white">
           <AccordionTrigger className="px-6 py-4 text-[#232323] font-semibold text-lg">Installment</AccordionTrigger>
           <AccordionContent className="px-6">
             <div className="border-t pt-4">
@@ -1427,7 +1428,7 @@ const SchemeForm = () => {
 
         <AccordionItem
           value="classification"
-          className="border rounded-lg bg-white"
+          className="border-[1px] rounded-[16px] bg-white"
         >
           <AccordionTrigger className="px-6 text-[#232323] font-semibold text-lg">
             Classification Details
@@ -1463,7 +1464,7 @@ const SchemeForm = () => {
         
         <button
           type="button"
-          className="px-9 h-[36px] font-semibold text-sm border-2 bg-[#F6F7F9] border-[#f2f3f8] rounded-lg hover:bg-gray-50 flex justify-center items-center text-[#6C7086] lg:h-[36px]"
+          className="px-9 h-[36px] font-semibold text-sm border-[1px] bg-[#F6F7F9] border-[#f2f3f8] rounded-lg hover:bg-gray-50 flex justify-center items-center text-[#6C7086] lg:h-[36px]"
           onClick={() => formik.resetForm()}
         >
           Clear

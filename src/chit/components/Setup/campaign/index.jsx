@@ -25,6 +25,7 @@ import SpinLoading from "../../common/spinLoading";
 import Loading from "../../common/Loading";
 import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
 import Action from "../../common/action";
+import plus from "../../../../assets/plus.svg";
 
 
 function Campaign() {
@@ -241,8 +242,7 @@ function Campaign() {
         items={[{ label: "Promotions" }, { label: "Campaign Type", active: true }]}
       />
 
-      <div className="flex flex-col p-4  bg-white border border-[#F2F2F9]  rounded-[16px]">
-
+      <div className="flex flex-col p-4  bg-white border-[1px] border-[#F2F2F9]  rounded-[16px]">
         <div className="flex flex-col sm:flex-row w-full justify-between gap-2 sm:gap-4">
           {/* Search Input */}
           <div className="w-full sm:w-[308px]  relative">
@@ -250,7 +250,7 @@ function Campaign() {
               {searchLoading ? (
                 <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
               ) : (
-                <Search className="text-black" />
+                <Search className="text-[#6C7086] h-5 w-5" />
               )}
             </div>
             <input
@@ -259,18 +259,19 @@ function Campaign() {
                 setSearchInput(e.target.value);
               }}
               placeholder="Search Customer/ Mobile No"
-              className="px-4 py-2 ps-9 border-2 border-[#F2F2F9] rounded-[8px] w-full"
+              className="px-4 py-2 ps-9 border-2 border-[#F2F2F9] rounded-lg w-full h-[36px] text-md sm:w-[228px]"
             />
           </div>
 
           {/* Add Button */}
           <div className="w-full sm:w-auto">
             <button
-              className="rounded-md px-4 py-2 text-white whitespace-nowrap hover:bg-[#034571] transition-colors   min-w-[135px]"
+              className="flex rounded-lg px-[20px] py-[8px] text-sm font-semibold text-white items-center whitespace-nowrap hover:bg-[#034571] transition-colors sm:w-auto"
               onClick={handleaddDept}
               style={{ backgroundColor: layout_color }}
             >
-              + Add campaign
+              <img src={plus} alt="plus" className="w-4 h-4 me-[10px]" />
+               Add campaign
             </button>
           </div>
         </div>

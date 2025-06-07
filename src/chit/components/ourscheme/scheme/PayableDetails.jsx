@@ -55,7 +55,7 @@ const PayableDetails = ({
                 onChange={formik.handleChange}
                 onWheel={(e) => e.target.blur()}
                 onBlur={formik.handleBlur}
-                className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-1 focus:ring-[#004181] focus:border-transparent"
+                className="border-[1px] border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-1 focus:ring-[#004181] focus:border-transparent"
                 placeholder="Enter Min Weight"
                 style={{ height: inputHeight }}
               />
@@ -81,7 +81,7 @@ const PayableDetails = ({
                 onWheel={(e) => e.target.blur()}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-1 focus:ring-[#004181] focus:border-transparent"
+                className="border-[1px] border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-1 focus:ring-[#004181] focus:border-transparent"
                 placeholder="Enter Max Weight"
                 style={{ height: inputHeight }}
               />
@@ -124,7 +124,7 @@ const PayableDetails = ({
                 }}
                 onWheel={(e) => e.target.blur()}
                 onBlur={formik.handleBlur}
-                className="border-2 border-[#f2f3f8] rounded-md p-2 w-full text-start pl-10 focus:outline-none focus:ring-1  focus:ring-[#004181]"
+                className="border-[1px] border-[#f2f3f8] rounded-md p-2 w-full text-start pl-10 focus:outline-none focus:ring-1  focus:ring-[#004181]"
                 placeholder="Enter Min Amount"
                 style={{ height: inputHeight }}
               />
@@ -288,7 +288,7 @@ const PayableDetails = ({
             value={formik.values.bonus_amount}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            className="w-full border-2 border-[#f2f3f8] pl-10 rounded-md px-3 py-2"
+            className="w-full border-[1px] border-[#f2f3f8] pl-10 rounded-md px-3 py-2"
             placeholder="Enter bonus amount"
           />
         </div>
@@ -312,7 +312,7 @@ const PayableDetails = ({
             value={formik.values.bonus_percent}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+            className="w-full border-[1px] border-[#f2f3f8] rounded-md px-3 py-2"
             placeholder="Enter Bonus Percent"
           />
            <span className="absolute right-0 top-0 w-9 h-full px-3 flex items-center justify-center text-black border-l">
@@ -338,7 +338,7 @@ const PayableDetails = ({
           onWheel={(e) => e.target.blur()}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
-          className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-1 focus:ring-[#004181] focus:border-transparent"
+          className="border-[1px] border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-1 focus:ring-[#004181] focus:border-transparent"
           placeholder="Enter Min Installments"
           style={{ height: inputHeight }}
         />

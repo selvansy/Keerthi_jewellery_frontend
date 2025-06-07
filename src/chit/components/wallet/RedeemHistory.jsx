@@ -214,7 +214,7 @@ function RedeemHistory() {
      <Breadcrumb
         items={[{ label: "Wallet" }, { label: "Redeem History", active: true }]}
       />
-      <div className="p-4 bg-white border border-[#F2F2F9] rounded-[16px] shadow-sm">
+      <div className="p-4 bg-white border-[1px] border-[#F2F2F9] rounded-[16px] ">
         {/* Header Controls */}
         <div className="flex flex-wrap gap-4 justify-between items-center">
           {/* Left Side Controls */}
@@ -224,7 +224,7 @@ function RedeemHistory() {
               {searchLoading ? (
                 <div className="absolute left-3 top-1/2 transform -translate-y-1/2 animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
               ) : (
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-black" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               )}
               <input
                 onChange={(e) => {
@@ -232,18 +232,18 @@ function RedeemHistory() {
                   setSearchInput(e.target.value);
                 }}
                 placeholder="Search"
-                className="pl-9 pr-4 py-2 border-2 border-[#F2F2F9] rounded-[8px] w-[350px]"
+                className="px-4 py-2 ps-9 border-2 border-[#F2F2F9] rounded-[8px] w-full h-[36px] sm:w-[228px]"
               />
             </div>
 
           </div>
 
           {/* Export Button */}
-          <div className="ml-auto flex justify-between items-center">
+          <div className="ml-auto flex justify-between items-center gap-5">
             
           <div className="relative flex items-center gap-2">
               <CalendarDays className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
-              <div className="flex items-center pl-8 border border-[#F2F2F9] rounded-[8px] px-3 py-2 bg-white text-sm">
+              <div className="flex items-center pl-8 border-[1px] border-[#F2F2F9] rounded-[8px] h-[36px] px-3 py-2 bg-white text-sm">
                 <DatePicker
                   selected={startDate}
                   onChange={(date) => setStartDate(date)}

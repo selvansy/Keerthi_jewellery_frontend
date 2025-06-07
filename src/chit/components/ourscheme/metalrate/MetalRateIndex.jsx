@@ -393,7 +393,7 @@ function MetalRateIndex({refresh}) {
               <div className="flex justify-end gap-4">
                
                 <button
-                  className=" text-white text-sm rounded-lg h-[36px] w-full md:w-24"
+                  className=" text-white text-sm rounded-lg h-[36px] w-full hover:bg-blue-800 md:w-24"
                   type="button"
                   disabled={isLoading}
                   onClick={handleSubmit}

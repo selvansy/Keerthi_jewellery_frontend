@@ -125,7 +125,7 @@ function AccountSummaryReport() {
         ]}
       />
       
-      <div className="flex flex-col p-4 bg-white border-2 border-[#F2F2F9] rounded-[16px]">
+      <div className="flex flex-col p-4 bg-white border-[1px] border-[#F2F2F9] rounded-[16px]">
         <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
           <div className="flex justify-between items-center w-full">
             <div className="flex justify-start"></div>

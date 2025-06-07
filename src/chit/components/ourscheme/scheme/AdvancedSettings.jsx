@@ -41,7 +41,7 @@ const AdvancedSettings = ({ formik, layout_color, installment_type }) => {
             value={formik.values.limit_installment}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+            className="border-[1px] border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-1 focus:ring-[#004181] focus:border-transparent"
             placeholder="Enter Limit Installment"
           />
         </div>
@@ -66,7 +66,7 @@ const AdvancedSettings = ({ formik, layout_color, installment_type }) => {
             value={formik.values.limit_customer}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+            className="border-[1px] border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-1 focus:ring-[#004181] focus:border-transparent"
             placeholder="Enter Scheme Customer Limit"
           />
         </div>
@@ -90,7 +90,7 @@ const AdvancedSettings = ({ formik, layout_color, installment_type }) => {
             value={formik.values.gift_minimum_paid_installment}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+            className="border-[1px] border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-1 focus:ring-[#004181] focus:border-transparent"
             placeholder="Enter Paid Installment"
           />
         </div>
@@ -114,7 +114,7 @@ const AdvancedSettings = ({ formik, layout_color, installment_type }) => {
             value={formik.values.no_of_gifts}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+            className="border-[1px] border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-1 focus:ring-[#004181] focus:border-transparent"
             placeholder="Enter Number of Gifts"
           />
         </div>
@@ -140,7 +140,7 @@ const AdvancedSettings = ({ formik, layout_color, installment_type }) => {
             value={formik.values.convenience_fees}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+            className="border-[1px] border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-1 focus:ring-[#004181] focus:border-transparent"
             placeholder="Enter Convenience Fee"
           />
           <span className="absolute right-0 top-0 w-9 h-full px-3 flex items-center justify-center text-black border-l">
@@ -168,7 +168,7 @@ const AdvancedSettings = ({ formik, layout_color, installment_type }) => {
             value={formik.values.referralPercentage}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            className="border-2 border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+            className="border-[1px] border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-1 focus:ring-[#004181] focus:border-transparent"
             placeholder="Enter Referral Percentage"
           />
           <span className="absolute right-0 top-0 w-9 h-full px-3 flex items-center justify-center text-black border-l">

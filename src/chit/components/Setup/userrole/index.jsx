@@ -24,6 +24,7 @@ import * as Yup from "yup";
 import Loading from "../../common/Loading";
 import usePagination from "../../../hooks/usePagination";
 import Action from "../../common/action";
+import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
 
 const Userrole = () => {
   const dispatch = useDispatch();
@@ -252,22 +253,28 @@ const Userrole = () => {
  
 
   return (
-    <div className="flex flex-col p-4 relative">
+    <>
+     <Breadcrumb items={[
+            {label:"Settings"},
+            {label:"User Roles",active:true}
+          ]}/>
+     <div className="flex flex-col p-4  bg-white border-[1px] border-[#F2F2F9]  rounded-[16px]">
+    <div className="flex flex-col relative">
       <>
-        <h2 className="text-2xl text-gray-900 font-bold">User Role</h2>
+        {/* <h2 className="text-2xl text-gray-900 font-bold">User Role</h2> */}
         <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
           <div className="relative w-full lg:w-1/3 min-w-[200px]">
             <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
               {searchLoading ? (
                 <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900" />
               ) : (
-                <Search className="text-gray-500" />
+                <Search className="text-[#6C7086] h-5 w-5" />
               )}
             </div>
             <input
               onChange={handleSearch}
               placeholder="Search..."
-              className="p-3 pl-10 pr-3 border-2 bg-[#F5F5F5] border-gray-500 rounded-md w-full"
+              className="px-4 py-2 ps-9 border-2 border-[#F2F2F9] rounded-lg w-full h-[36px] text-md sm:w-[228px]"
             />
           </div>
           {/* <div className="flex flex-row items-center justify-end gap-2">
@@ -300,6 +307,8 @@ const Userrole = () => {
       </Modelone>
       <Modal />
     </div>
+    </div>
+    </>
   );
 };
 

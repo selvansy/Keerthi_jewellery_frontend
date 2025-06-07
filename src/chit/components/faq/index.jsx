@@ -10,6 +10,7 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "../../../../components/ui/accordion";
+import { Breadcrumb } from "../common/breadCumbs/breadCumbs";
 
 function FaqTable() {
     const [activeCategory, setActiveCategory] = useState("");
@@ -56,11 +57,16 @@ function FaqTable() {
     }, [activeCategory]);
 
     return (
-        <div className="bg-white text-black min-h-screen p-8">
-            <h1 className="text-4xl font-bold text-center mb-6">FAQS</h1>
+        <>
+        <Breadcrumb
+                  items={[{ label: "Help" }, { label: "FAQ", active: true }]}
+                />
+        <div className="bg-white text-black min-h-screen">
+            <div className="w-full mx-auto p-6 border-[1px] rounded-[16px]">
+            <h1 className="text-xl font-bold  text-center mb-6">Frequently asked questions?</h1>
 
             <div className="max-w-3xl mx-auto">
-                <h2 className="text-2xl font-bold text-center mb-4">
+                <h2 className="text-md font-bold text-center mb-4">
                     {categoryresponse?.data?.find((cat) => cat.id === activeCategory)?.name || "FAQs"}
                 </h2>
 
@@ -70,8 +76,8 @@ function FaqTable() {
                         <button
                             key={category.id}
                             style={activeCategory === category.id ? { backgroundColor: layout_color, color: "white" } : {}}
-                            className={`px-4 py-2 border rounded-md transition ${
-                                activeCategory === category.id ? "font-semibold" : "border-black text-black hover:bg-gray-200"
+                            className={`px-4 py-2 border rounded-lg transition ${
+                                activeCategory === category.id ? "font-semibold" : "text-[#232323] text-sm font-semibold hover:bg-gray-200"
                             }`}
                             onClick={() => setActiveCategory(category.id)}
                         >
@@ -98,7 +104,9 @@ function FaqTable() {
                     )}
                 </Accordion>
             </div>
+            </div>
         </div>
+        </>
     );
 }
 

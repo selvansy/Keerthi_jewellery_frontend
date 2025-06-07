@@ -18,6 +18,8 @@ import MenuForm from "./MenuForm";
 import Modal from "../../../components/common/Modal";
 import usePagination from "../../../hooks/usePagination";
 import Action from "../../common/action";
+import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
+import plus from "../../../../assets/plus.svg";
 
 const MenuComp = () => {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
@@ -217,30 +219,38 @@ const MenuComp = () => {
   };
 
   return (
-    <div className="flex flex-col p-4 relative">
+    <div className="flex flex-col relative">
       {isLoading ? (
         <div>Loading...</div>
       ) : (
         <>
-          <h2 className="text-2xl text-gray-900 font-bold">Menu</h2>
-          <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
+        <Breadcrumb
+                items={[
+                  { label: "Settings" },
+                  { label: "Menu", active: true },
+                ]}
+              />
+          <div className="w-full flex flex-col bg-white border-[1px] rounded-[16px] p-4">
+          {/* <h2 className="text-2xl text-gray-900 font-bold">Menu</h2> */}
+          <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4 p-2">
             <div className="relative w-full lg:w-1/3 min-w-[200px]">
               <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                <Search className="text-gray-500" />
+                <Search className="text-[#6C7086] h-5 w-5" />
               </div>
               <input
                 onChange={handleSearch}
                 placeholder="Search..."
-                className="p-3 pl-10 pr-3 border-2 bg-[#F5F5F5] border-gray-500 rounded-md w-full"
+                className="px-4 py-2 ps-9 border-2 border-[#F2F2F9] rounded-lg w-full h-[36px] text-md sm:w-[228px]"
               />
             </div>
             <div className="flex flex-row items-center justify-end gap-2">
               <button
-                className=" rounded-md px-4 py-2 text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] transition-colors"
+                className="flex rounded-lg px-[20px] py-[8px] text-sm font-semibold text-white items-center whitespace-nowrap hover:bg-[#034571] transition-colors sm:w-auto"
                 onClick={handleAddMenu}
                 style={{ backgroundColor: layout_color }}
               >
-                + Add Menu
+                <img src={plus} alt="plus" className="w-4 h-4 me-[10px]" />
+                 Add Menu
               </button>
             </div>
           </div>
@@ -257,7 +267,7 @@ const MenuComp = () => {
               loading={isLoading}
             />
           </div>
-        
+        </div>
         </>
       )}
       <Modal />
@@ -271,6 +281,7 @@ const MenuComp = () => {
         <MenuForm setIsOpen={setIsviewOpen} />
       </ModelOne>
     </div>
+    
   );
 };
 

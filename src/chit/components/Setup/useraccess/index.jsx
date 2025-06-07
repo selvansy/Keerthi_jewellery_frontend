@@ -13,6 +13,8 @@ import { useDispatch } from "react-redux";
 import { openModal } from "../../../../redux/modalSlice";
 import { eventEmitter } from "../../../../utils/EventEmitter";
 import Modal from "../../common/Modal";
+import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
+import { customStyles } from "../../ourscheme/scheme/AddScheme";
 
 const UserAccessForm = () => {
   const [activeProfile, setActiveProfile] = useState(1);
@@ -194,8 +196,14 @@ const UserAccessForm = () => {
   }, []);
 
   return (
+    <>   
+       <Breadcrumb
+            items={[{ label: "Settings" }, { label: "User Access", active: true }]}
+          />
+    
+          <div className="flex flex-col p-4  bg-white border border-[#F2F2F9]  rounded-[16px]">
     <div className="w-full p-4">
-      <div className="flex justify-between py-5">
+      <div className="flex justify-between">
         <div className="w-1/3">
           <div className="relative">
             <input
@@ -203,7 +211,7 @@ const UserAccessForm = () => {
               placeholder="Search menu..."
               value={searchTerm}
               onChange={handleSearch}
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-[#004181] outline-none h-[36px]"
             />
             <span className="absolute right-3 top-2.5 text-gray-400">
               {/* You can add a search icon here if needed */}
@@ -228,12 +236,12 @@ const UserAccessForm = () => {
             value={selectRoleData.find((option) => option.value === id_role)}
             onChange={showAccess}
             placeholder="Select Role"
-            styles={customSelectStyles}
+            styles={customStyles(true)}
             classNamePrefix="react-select"
           />
         </div>
       </div>
-      <div className="bg-white shadow rounded-md">
+      <div className="bg-white shadow rounded-[16px]">
         <div className="flex flex-wrap">
           <div className="w-full p-4">
             <div className="bg-gray-50 rounded-md p-4">
@@ -350,6 +358,9 @@ const UserAccessForm = () => {
       </div>
       <Modal/>
     </div>
+    </div>
+    </>
+ 
   );
 };
 
