@@ -173,17 +173,17 @@ function OverallReport() {
             <div className="flex justify-start">
               <Select
                 className="mt-2 w-[219px]"
-                styles={customStyles(true)}
+                styles={customSelectStyles(true)}
                 options={schemeList || []}
-                value={schemeList.find(
-                  (option) => option.value === selectedScheme
-                )}
+                isClearable={true}
+                value={
+                  schemeList.find(
+                    (option) => option.value === selectedScheme
+                  ) || null
+                }
                 onChange={(option) => {
-                  setSelectedScheme(option?.value);
-                  setCurrentPage(1);
+                  setSelectedScheme(option ? option.value : null);
                 }}
-                placeholder="Select Scheme"
-                isClearable
               />
             </div>
             <div className="flex justify-end items-center gap-4">
