@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Table from "../common/Table";
 import { useMutation } from "@tanstack/react-query";
-import { useLocation } from "react-router-dom";
+import { useLocation,useNavigate} from "react-router-dom";
 import "jspdf-autotable";
 import ExportDropdown from "../common/Dropdown/Export";
 import {
@@ -9,7 +9,6 @@ import {
 } from "../../api/Endpoints";
 import "react-datepicker/dist/react-datepicker.css";
 import { formatDate } from "../../../utils/FormatDate";
-
 import { Breadcrumb } from "../common/breadCumbs/breadCumbs";
 import DateRangeSelector from "../common/calender";
 
@@ -29,9 +28,11 @@ function WeightPaybleChild() {
   const [processData,setProcessData]=useState([]);
   const type= 'weight'
 
+  const navigate = useNavigate()
+
   useEffect(() => {
     getAmountPayble({id:id,page:currentPage,limit:itemsPerPage,from_date,to_date});
-  }, [from_date,to_date]);
+  }, [from_date,to_date,currentPage,itemsPerPage]);
 
   const { mutate: getAmountPayble } = useMutation({
     mutationFn:({id,page,limit,from_date,to_date})=> getSchemewiseAmount({id,page,limit,from_date,to_date,type}),
@@ -61,6 +62,11 @@ function WeightPaybleChild() {
     setProcessData(process);
   }, [paybleData]);
 
+  const handleClick =(row)=>{
+    console.log(row)
+    navigate(`/managecustomers/customer/${row._id}`)
+  }
+
   const columns = [
     {
       header: "S.No",
@@ -79,9 +85,18 @@ function WeightPaybleChild() {
       cell: (row) => {
         const customer = row?.customer || "";
         const mobile = row?.mobile || "";
-        return mobile ? `${customer} (${mobile})` : customer;
+        const customerName =mobile ? `${customer} (${mobile})` : customer;
+
+        return (
+          <span
+            className="cursor-pointer hover:underline font-semibold"
+            onClick={() => handleClick?.(row)}
+          >
+            {customerName}
+          </span>
+        );
       },
-    },    
+    },  
     {
       header: "Accounter Name",
       cell: (row) => {

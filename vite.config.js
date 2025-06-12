@@ -8,11 +8,8 @@ export default defineConfig({
   },
  base: '/',
   server: {
-    historyApiFallback: true, // Add this for Vite dev server
+    historyApiFallback: true,
   },
-  server: {
-    host: true
-  }
 
 })
 

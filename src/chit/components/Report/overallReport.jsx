@@ -35,7 +35,7 @@ function OverallReport() {
   useEffect(() => {
     if (!roleData) return;
     if (accessBranch === 0) {
-      fetchActiveSchemes();
+      getAllScheme();
     }
   }, [roleData]);
 
@@ -43,8 +43,8 @@ function OverallReport() {
     fetchOverallReport();
   }, [fromDate, toDate, selectedScheme, currentPage, itemsPerPage]);
 
-  const { mutate: fetchActiveSchemes } = useMutation({
-    mutationFn: getActiveScheme,
+  const { mutate: getAllScheme } = useMutation({
+    mutationFn: () => getActiveScheme(),
     onSuccess: (response) => {
       setSchemeList(
         response.data.map((item) => ({
@@ -55,7 +55,7 @@ function OverallReport() {
     },
     onError: (error) => {
       setIsLoading(false);
-      console.error("Error fetching schemes:", error);
+      console.error("Error fetching payment data:", error);
     },
   });
 
@@ -101,7 +101,7 @@ function OverallReport() {
 
   const handleItemsPerPageChange = (value) => {
     setItemsPerPage(value);
-    setCurrentPage(1); // Reset to first page when changing items per page
+    setCurrentPage(1);
   };
 
   const columns = [
@@ -180,7 +180,7 @@ function OverallReport() {
                 )}
                 onChange={(option) => {
                   setSelectedScheme(option?.value);
-                  setCurrentPage(1); // Reset to first page when changing scheme
+                  setCurrentPage(1);
                 }}
                 placeholder="Select Scheme"
                 isClearable
@@ -191,7 +191,7 @@ function OverallReport() {
                 onChange={(range) => {
                   setFromDate(range.startDate);
                   setToDate(range.endDate);
-                  setCurrentPage(1); // Reset to first page when changing date range
+                  setCurrentPage(1);
                 }}
               />
               <button

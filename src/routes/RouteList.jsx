@@ -366,7 +366,7 @@ const RouteList = [
   // },
   {
    name:"Existing Customer",
-    path:'/managecustomers/customer',
+   path: "/managecustomers/customer/:cusid?",
     element:<Base renderContent={Existcusomer}/> 
   },
   {

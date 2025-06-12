@@ -2,38 +2,61 @@ import React, { useEffect, useState } from "react";
 import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
 import Select from "react-select";
 import Table from "../../common/Table";
-import { getallbranch, customerOverview,activeSchemes,redeemedSchemes} from "../../../api/Endpoints";
+import { getallbranch, customerOverview, activeSchemes, redeemedSchemes } from "../../../api/Endpoints";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useFormik } from "formik";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { formatDate } from "../../../../utils/FormatDate";
 import { formatDecimal } from "../../../utils/commonFunction";
-import { useDispatch,useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setid } from "../../../../redux/clientFormSlice";
-import { form } from "framer-motion/client";
 
 const Existcusomer = () => {
   const navigate = useNavigate();
+  const { cusid } = useParams();
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(4);
-  const [totalPage,setTotalPages] = useState(0);
+  const [totalPage, setTotalPages] = useState(0);
   const [totalDocument, setTotalDocument] = useState(0);
   const [activeSchemesTable, setActiveSchemesTable] = useState([]);
 
-   const [currentPage1, setCurrentPage1] = useState(1);
+  const [currentPage1, setCurrentPage1] = useState(1);
   const [itemsPerPage1, setItemsPerPage1] = useState(4);
-   const [totalPage1,setTotalPages1] = useState(0);
+  const [totalPage1, setTotalPages1] = useState(0);
   const [totalDocument1, setTotalDocument1] = useState(0);
   const [redeemedSchemesTable, setRedeemedSchemesTable] = useState([]);
+
+  // Reset state when customer changes
+  const resetState = () => {
+    setData({
+      customerDetails: {},
+      schemes: [],
+      totalOpenSchemes: 0,
+      totalClosedSchemes: 0,
+      totalPrecloseSchemes: 0,
+      refundSchemes: 0,
+      referralData: {},
+      chitrecievedGift: 0,
+      nonChit: 0,
+      pendingGift: 0,
+      schemeCount: 0,
+      accountCount: 0,
+      schemeAmount: 0,
+    });
+    setActiveSchemesTable([]);
+    setRedeemedSchemesTable([]);
+    formik.setFieldValue("mobile", "");
+    setCurrentPage(1);
+    setCurrentPage1(1);
+  };
 
   const customStyles = (isReadOnly) => ({
     control: (base, state) => ({
       ...base,
-      minHeight: "42px", //42px
+      minHeight: "42px",
       backgroundColor: "white",
       color: "#232323",
-      // fontWeight:600,
       border: state.isFocused ? "1px solid #f2f2f9" : "1px solid #f2f2f9",
       boxShadow: state.isFocused ? "0 0 0 1px #004181" : "none",
       borderRadius: "0.5rem",
@@ -51,7 +74,6 @@ const Existcusomer = () => {
       ...base,
       color: "#6C7086",
       fontWeight: "thin",
-      // fontStyle: "bold",
     }),
     dropdownIndicator: (provided, state) => ({
       ...provided,
@@ -77,7 +99,7 @@ const Existcusomer = () => {
     initialValues: {
       branch: id_branch ? id_branch : "",
       mobile: "",
-      idCustomer:""
+      idCustomer: ""
     },
   });
 
@@ -85,17 +107,18 @@ const Existcusomer = () => {
     customerDetails: {},
     schemes: [],
     totalOpenSchemes: 0,
-    totalClosedSchemes:0,
-    totalPrecloseSchemes:0,
-    refundSchemes:0,
+    totalClosedSchemes: 0,
+    totalPrecloseSchemes: 0,
+    refundSchemes: 0,
     referralData: {},
-    chitrecievedGift:0,
-    nonChit:0,
-    pendingGift:0,
+    chitrecievedGift: 0,
+    nonChit: 0,
+    pendingGift: 0,
     schemeCount: 0,
     accountCount: 0,
     schemeAmount: 0,
   });
+
   const [branch, setBranch] = useState(() => (accessBranch === "0" ? [] : {}));
 
   const { data: branchData, isLoading: isBranchLoading } = useQuery({
@@ -120,7 +143,7 @@ const Existcusomer = () => {
       setBranch(formattedBranches);
     } else if (branchData.data) {
       setBranch(branchData.data);
-      formik.setFieldValue("id_branch", branchData.data._id);
+      formik.setFieldValue("branch", branchData.data._id);
     }
   }, [branchData, accessBranch]);
 
@@ -134,23 +157,32 @@ const Existcusomer = () => {
     });
   };
 
+  // Handle initial load and cusid changes
   useEffect(() => {
-    if (userId && formik.values.mobile === "") {
+    if (cusid) {
+      resetState();
+      const inputdata = {
+        idCustomer: cusid
+      };
+      customerData({ data: inputdata });
+    } else if (userId) {
+      resetState();
       const inputdata = {
         idCustomer: userId
       };
-      customerData({ data:inputdata });
+      customerData({ data: inputdata });
     }
-  }, [userId]);
+  }, [cusid, userId]);
 
+  // Fetch schemes when customer data changes
   useEffect(() => {
-    const inputData = {};
-    if (userId) {
-      inputData.id_customer = userId;
+    const customerId = data.customerDetails?._id;
+    if (customerId) {
+      const inputData = { id_customer: customerId };
       activeSchemesData({ data: inputData });
-      redeemedSchemeData({data:inputData})
+      redeemedSchemeData({ data: inputData });
     }
-  }, [data]);
+  }, [data.customerDetails]);
 
   const { mutate: activeSchemesData, isPending: isLoading1 } = useMutation({
     mutationFn: ({ data }) => activeSchemes(data),
@@ -179,10 +211,8 @@ const Existcusomer = () => {
   const { mutate: customerData, isPending: isLoading } = useMutation({
     mutationFn: ({ data }) => customerOverview(data),
     onSuccess: (response) => {
-
-      if(formik.values.mobile === "" && userId){
-        console.log(response.data.customerDetails)
-        formik.setFieldValue("mobile", response?.data?.customerDetails?.mobile || "");
+      if (response?.data?.customerDetails?.mobile) {
+        formik.setFieldValue("mobile", response.data.customerDetails.mobile);
       }
 
       setData({
@@ -192,12 +222,12 @@ const Existcusomer = () => {
         totalClosedSchemes: response?.data?.totalClosedSchemes || 0,
         totalWeightPayable: response?.data?.totalWeightPayable || 0,
         totalAmountPayable: response?.data?.totalAmountPayable || 0,
-        totalPrecloseSchemes:response?.data?.precloseAccounts || 0,
-        refundSchemes:response?.data?.refundSchemes || 0 ,
-        referralData: response?.data?.referralDetails || 0,
-        chitrecievedGift:response?.data?.totalSchemeGifts || 0,
-        nonChit:response?.data?.totalNonSchemeGifts || 0,
-        pendingGift:response?.data?.totalGiftsLeftToReceive || 0,
+        totalPrecloseSchemes: response?.data?.precloseAccounts || 0,
+        refundSchemes: response?.data?.refundSchemes || 0,
+        referralData: response?.data?.referralDetails || {},
+        chitrecievedGift: response?.data?.totalSchemeGifts || 0,
+        nonChit: response?.data?.totalNonSchemeGifts || 0,
+        pendingGift: response?.data?.totalGiftsLeftToReceive || 0,
         schemeCount: response?.data?.uniqueSchemesCount || 0,
         accountCount: response?.data?.totalSchemeAccounts || 0,
         schemeAmount: response?.data?.schemeAmount || 0,
@@ -209,7 +239,6 @@ const Existcusomer = () => {
       toast.error(error.response?.data?.message);
     },
   });
-
 
   const columns1 = [
     {
@@ -289,9 +318,6 @@ const Existcusomer = () => {
       header: "Amount Paid",
       cell: (row) => `₹${row.amountPaid || row.totalAmountPaid || 0}`,
     },
-    // {
-    //   header: "Over Dues",
-    // },
   ];
 
   const referdata = [
@@ -319,7 +345,7 @@ const Existcusomer = () => {
       value: data?.chitrecievedGift || "-",
     },
     { label: "Non-Chit Received Gifts", value: data?.nonChit || "-" },
-    { label: "Pending Gifts", value:data?.pendingGift || "-" },
+    { label: "Pending Gifts", value: data?.pendingGift || "-" },
   ];
 
   const overduedata = [
@@ -331,8 +357,9 @@ const Existcusomer = () => {
   const completedata = [
     { label: "Scheme Count", value: data.schemeCount || "-" },
     { label: "Account Count", value: data.accountCount || "-" },
-    { label: "Scheme Amount", value: `₹${data?.totalAmountPayable }` || "-" },
+    { label: "Scheme Amount", value: `₹${data?.totalAmountPayable}` || "-" },
   ];
+
   const profileData = [
     { label: "Branch", value: data.customerDetails?.branch || "-" },
     { label: "Mobile No", value: data.customerDetails?.mobile || "-" },
@@ -361,13 +388,13 @@ const Existcusomer = () => {
   const handlePageChange = (page) => {
     const pageNumber = Number(page);
     if (!pageNumber || isNaN(pageNumber)) return;
-    setCurrentPage(Math.max(1, Math.min(pageNumber, totalPages)));
+    setCurrentPage(Math.max(1, Math.min(pageNumber, totalPage)));
   };
 
   const handlePageChange1 = (page) => {
     const pageNumber = Number(page);
     if (!pageNumber || isNaN(pageNumber)) return;
-    setCurrentPage(Math.max(1, Math.min(pageNumber, totalPages)));
+    setCurrentPage1(Math.max(1, Math.min(pageNumber, totalPage1)));
   };
 
   return (
@@ -439,7 +466,7 @@ const Existcusomer = () => {
               />
               <button
                 onClick={handleSubmit}
-                className=" absolute right-0 bg-[#004181] top-0 h-full w-1/3 flex items-center justify-center  text-sm text-white rounded-r-md"
+                className="absolute right-0 bg-[#004181] top-0 h-full w-1/3 flex items-center justify-center text-sm text-white rounded-r-md"
               >
                 Search
               </button>
@@ -474,7 +501,7 @@ const Existcusomer = () => {
                   ? `${data.customerDetails?.pathUrl}${data.customerDetails?.profileImage}`
                   : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
               }
-              className="w-24 h-24 border rounded-full object-cover items-center"
+              className="w-24 h-24 border rounded-md object-cover items-center"
             />
 
             <p className="text-bold">{data.customerDetails?.customerName}</p>
@@ -637,7 +664,7 @@ const Existcusomer = () => {
             columns={columns2}
             isLoading={isLoading2}
             currentPage={currentPage1}
-            handleItemsPerPageChange={(value) => setCurrentPage1(value)}
+            handleItemsPerPageChange={(value) => setItemsPerPage1(value)}
             handlePageChange={handlePageChange1}
             itemsPerPage={itemsPerPage1}
             totalItems={totalDocument1}

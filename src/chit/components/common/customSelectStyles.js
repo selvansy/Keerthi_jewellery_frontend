@@ -1,5 +1,3 @@
-
-
 const customSelectStyles = (isReadOnly) => ({
   control: (base, state) => ({
     ...base,
@@ -33,5 +31,3 @@ const customSelectStyles = (isReadOnly) => ({
 });
 
 export default customSelectStyles;
-
-

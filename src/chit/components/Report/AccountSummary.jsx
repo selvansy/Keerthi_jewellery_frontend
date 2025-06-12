@@ -107,13 +107,13 @@ function AccountSummaryReport() {
 
   const handleItemsPerPageChange = (value) => {
     setItemsPerPage(Number(value));
-    setCurrentPage(1); // Reset to first page when items per page changes
+    setCurrentPage(1); 
   };
 
   const handleDateRangeChange = (range) => {
     setFromDate(range.startDate);
     setToDate(range.endDate);
-    setCurrentPage(1); // Reset to first page when date range changes
+    setCurrentPage(1);
   };
 
   return (

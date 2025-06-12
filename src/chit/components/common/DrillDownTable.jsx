@@ -1,19 +1,13 @@
-import React, { useEffect, useState } from "react";
 import Table from "../../components/common/Table";
-import { useMutation } from "@tanstack/react-query";
-import jsPDF from "jspdf";
+import { useState,useEffect} from "react";
 import "jspdf-autotable";
 import ExportDropdown from "../../components/common/Dropdown/Export";
-import { SlidersHorizontal, Search, X } from "lucide-react";
-import { CalendarDays, RefreshCcw } from "lucide-react";
 import "react-datepicker/dist/react-datepicker.css";
-import DatePicker from "react-datepicker";
-import { useSelector } from "react-redux";
 import { Breadcrumb } from "../common/breadCumbs/breadCumbs";
 import DateRangeSelector from "../common/calender";
 import { getSchemeDetailedView } from "../../api/Endpoints";
-import { useLocation } from "react-router-dom";
-import { schemeColumns } from "../../../utils/DrillDownColums";
+import { useLocation, useNavigate } from "react-router-dom";
+// import { schemeColumns } from "../../../utils/DrillDownColums";
 
 function DrilldownTable({
   fetchDataFunction,
@@ -41,10 +35,19 @@ function DrilldownTable({
   const [setData,dataToPass]= useState([])
   const [column,setColumn] = useState()
 
+  const formatDate = (dateString) => {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+};
+
   const location = useLocation();
   const { id, type,showBreadcrumb,breadcrumbItems} = location.state || {};
+  const navigate = useNavigate()
  
-  console.log(showBreadcrumb,'kd')
   useEffect(()=>{
     const fetchData =async()=>{
         switch (type) {
@@ -98,6 +101,52 @@ function DrilldownTable({
     setCurrentPage(1);
   };
 
+  const handleClick =(row)=>{
+    navigate(`/managecustomers/customer/${row._id}`)
+  }
+
+const schemeColumns = (currentPage, itemsPerPage, handleClick) => [
+  {
+    header: "S.No",
+    cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
+  },
+  {
+    header: "Customer name and Mobile",
+    cell: (row) => (
+      <span
+        className="cursor-pointer hover:underline font-semibold"
+        onClick={() => handleClick?.(row)}
+      >
+        {row?.customerName}
+      </span>
+    ),
+  },
+  {
+    header: "Scheme Accounter Name",
+    cell: (row) => `${row?.accounter_fname} ${row?.accounter_lname}`,
+  },
+  {
+    header: "Scheme Acc No",
+    cell: (row) => row?.schemeAccNumber,
+  },
+  {
+    header: "Paid Installments",
+    cell: (row) => row?.paidInstallments,
+  },
+  {
+    header: "Start Date",
+    cell: (row) => formatDate(row?.startDate),
+  },
+  {
+    header: "Maturity Date",
+    cell: (row) => row?.maturityDate,
+  },
+  {
+    header: "Overdues",
+    cell: (row) => row?.due_months,
+  },
+];
+
   return (
     <>
       {showBreadcrumb && breadcrumbItems && (
@@ -132,7 +181,7 @@ function DrilldownTable({
         <div className="mt-4">
           <Table
             data={setData}
-            columns={schemeColumns(currentPage, itemsPerPage)}
+            columns={schemeColumns(currentPage, itemsPerPage,handleClick)}
             loading={isLoading}
             currentPage={currentPage}
             handlePageChange={handlePageChange}
