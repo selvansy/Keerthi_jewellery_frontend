@@ -1,11 +1,23 @@
 import React, { useEffect, useState } from "react";
 import Table from "../../components/common/Table";
 import { useMutation } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import Select from "react-select";
+import Modal from "../common/Modal";
+import ModelOne from "../common/Modelone";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import ExportDropdown from "../../components/common/Dropdown/Export";
-import { SlidersHorizontal, Search, X } from "lucide-react";
+import { ExportToExcel } from "../common/Dropdown/Excelexport";
+import { ExportToPDF } from "../common/Dropdown/ExportPdf";
+import {
+  dueReportSummary,
+  getActiveScheme,
+  getallScheme,
+  getOverAllSummary,
+  preCloseSummary,
+} from "../../../chit/api/Endpoints";
+import { SlidersHorizontal, Search, X, Columns3 } from "lucide-react";
 import { CalendarDays, RefreshCcw } from "lucide-react";
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
@@ -13,35 +25,72 @@ import { useSelector } from "react-redux";
 import { Breadcrumb } from "../common/breadCumbs/breadCumbs";
 import DateRangeSelector from "../common/calender";
 import { customSelectStyles } from "../Setup/purity";
-import { customStyles } from "../ourscheme/scheme/AddScheme";
-import { getActiveScheme, getOverAllSummary } from "../../../chit/api/Endpoints";
+// import Managetables from "./managetables";
 
-function OverallReport() {
-  const [isLoading, setIsLoading] = useState(true);
+function overallReport() {
+  const [isLoading, setisLoading] = useState(true);
   const [overAllData, setOverAllData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [totalPages, setTotalPages] = useState(0);
   const [totalDocuments, setTotalDocuments] = useState(0);
-  const [fromDate, setFromDate] = useState(null);
-  const [toDate, setToDate] = useState(null);
-  const [schemeList, setSchemeList] = useState([]);
-  const [selectedScheme, setSelectedScheme] = useState(null);
+  const [from_date, setfrom_date] = useState();
+  const [to_date, setto_date] = useState();
+  const [processData, setProcessData] = useState([]);
+  const [column, setcolum] = useState(false);
+  const [model, setmodel] = useState([]);
 
   const roleData = useSelector((state) => state.clientForm.roledata);
   const accessBranch = roleData?.branch;
-  const idBranch = roleData?.id_branch;
+  const id_branch = roleData?.id_branch;
+
+  const [schemeList, setSchemeList] = useState([]);
+  const [selectedScheme, setSelectedScheme] = useState();
+
+  const closemodal = () => {
+    setcolum(false);
+  };
+
+  const openmodal = () => {
+    setcolum(true);
+  };
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    getOverAllReport({
+      from_date,
+      to_date,
+      id_branch,
+      id_scheme: selectedScheme,
+    });
+  }, [from_date, to_date, selectedScheme]);
 
   useEffect(() => {
     if (!roleData) return;
-    if (accessBranch === 0) {
+    if (accessBranch == 0) {
       getAllScheme();
     }
   }, [roleData]);
 
   useEffect(() => {
-    fetchOverallReport();
-  }, [fromDate, toDate, selectedScheme, currentPage, itemsPerPage]);
+    const process = overAllData.map((item, index) => ({
+      "S.no": index + 1,
+      "Scheme Name": item.scheme_name,
+      "Total Open Accounts": item.totalOpenAccount,
+      "Total Paid Accounts": item.totalPaidAccounts,
+      "Toatal Open Amount": item.totalOpenAmount,
+      "Total Close Account": item.totalCloseAccount,
+      "Total Close Amount": item.totalCloseAmount,
+      "Closed Weight": item.closedWeight,
+      "Total Pre CLose Account": item.totalPreCloseAccount,
+      "Total Pre Close Amount": item.totalPreCloseAmount,
+      // "Total Refund Amount":item.totalRefundAccount,
+      "Total Refund Amount": item.totalRefundAmount,
+      "Branch name": item.Branch_name,
+    }));
+    setProcessData(process);
+  }, [overAllData]);
 
   const { mutate: getAllScheme } = useMutation({
     mutationFn: () => getActiveScheme(),
@@ -54,55 +103,25 @@ function OverallReport() {
       );
     },
     onError: (error) => {
-      setIsLoading(false);
+      setisLoading(false);
       console.error("Error fetching payment data:", error);
     },
   });
 
-  const { mutate: fetchOverallReport } = useMutation({
-    mutationFn: () =>
-      getOverAllSummary({
-        from_date: fromDate,
-        to_date: toDate,
-        id_branch: idBranch,
-        id_scheme: selectedScheme,
-        page: currentPage,
-        limit: itemsPerPage,
-      }),
+  const { mutate: getOverAllReport } = useMutation({
+    mutationFn: ({ from_date, to_date, id_scheme: selectedScheme }) =>
+      getOverAllSummary({ from_date, to_date, id_scheme: selectedScheme }),
     onSuccess: (response) => {
       setOverAllData(response.data);
+      setisLoading(false);
       setTotalDocuments(response.totalDocs);
-      setTotalPages(response.totalPages);
-      setIsLoading(false);
+      setTotalPages(response.totalDocs);
     },
     onError: (error) => {
-      setIsLoading(false);
-      console.error("Error fetching report data:", error);
+      setisLoading(false);
+      console.error("Error fetching metal rate:", error);
     },
   });
-
-  const handleRefresh = () => {
-    setIsLoading(true);
-    fetchOverallReport();
-  };
-
-  const handlePageChange = (page) => {
-    const pageNumber = Number(page);
-    if (
-      !pageNumber ||
-      isNaN(pageNumber) ||
-      pageNumber < 1 ||
-      pageNumber > totalPages
-    ) {
-      return;
-    }
-    setCurrentPage(pageNumber);
-  };
-
-  const handleItemsPerPageChange = (value) => {
-    setItemsPerPage(value);
-    setCurrentPage(1);
-  };
 
   const columns = [
     {
@@ -112,6 +131,15 @@ function OverallReport() {
     {
       header: "SCHEME NAME",
       cell: (row) => row?.scheme_name,
+      //   (
+      //   <span
+      //     className="cursor-pointer hover:underline font-semibold"
+      //     onClick={() =>
+      //       handleSchemeClick(row)}
+      //   >
+      //     {row?.scheme_name}
+      //   </span>
+      // ),
     },
     {
       header: "NEW JOIN",
@@ -159,6 +187,31 @@ function OverallReport() {
     },
   ];
 
+  const handleSchemeClick = (row) => {
+    navigate("/report/table", {
+      state: { id: row._id, type: "scheme" },
+    });
+  };
+
+  const handlePageChange = (page) => {
+    const pageNumber = Number(page);
+    if (
+      !pageNumber ||
+      isNaN(pageNumber) ||
+      pageNumber < 1 ||
+      pageNumber > totalPages
+    ) {
+      return;
+    }
+
+    setCurrentPage(pageNumber);
+  };
+
+  const handleItemsPerPageChange = (value) => {
+    setItemsPerPage(value);
+    setCurrentPage(1);
+  };
+
   return (
     <>
       <Breadcrumb
@@ -167,7 +220,9 @@ function OverallReport() {
           { label: "Overall Report", active: true },
         ]}
       />
-      <div className="flex flex-col p-4 bg-white border-[1px] border-[#F2F2F9] rounded-[16px]">
+      <div className="flex flex-col p-4 bg-white border-2 border-[#F2F2F9] rounded-[16px] ">
+       
+        {/* <hr className="mt-2"/> */}
         <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
           <div className="flex justify-between items-center w-full">
             <div className="flex justify-start">
@@ -189,21 +244,16 @@ function OverallReport() {
             <div className="flex justify-end items-center gap-4">
               <DateRangeSelector
                 onChange={(range) => {
-                  setFromDate(range.startDate);
-                  setToDate(range.endDate);
-                  setCurrentPage(1);
+                  console.log(range);
+                  setfrom_date(range.startDate);
+                  setto_date(range.endDate);
                 }}
               />
-              <button
-                onClick={handleRefresh}
-                className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200"
-                title="Refresh"
-              >
-                <RefreshCcw size={18} />
-              </button>
               <ExportDropdown
-                apiData={overAllData}
-                fileName={`Overall_report_${new Date().toISOString().slice(0, 10)}`}
+                apiData={processData}
+                fileName={`Overall report ${new Date().toLocaleDateString(
+                  "en-GB"
+                )}`}
               />
             </div>
           </div>
@@ -218,12 +268,33 @@ function OverallReport() {
             itemsPerPage={itemsPerPage}
             totalItems={totalDocuments}
             handleItemsPerPageChange={handleItemsPerPageChange}
-            totalPages={totalPages}
           />
         </div>
+        <Modal />
+        <ModelOne
+          title={
+            <div>
+              <h1 className="text-md font-medium text-black mt-2">
+                Want to Manage Tables?
+              </h1>
+              <p className="text-sm text-gray-400 mt-2">
+                Please Drag and Drop your column to reorder your table and
+                enable see options you want
+              </p>
+            </div>
+          }
+          isOpen={column}
+          extraClassName="w-1/3"
+          setIsOpen={setcolum}
+          closeModal={closemodal}
+        >
+          {/* <div>
+            <Managetables setIsOpen={setcolum} />
+          </div> */}
+        </ModelOne>
       </div>
     </>
   );
 }
 
-export default OverallReport;
+export default overallReport;
