@@ -322,7 +322,7 @@ const ViewScheme = () => {
         // buy_gst: schemeData.data.buy_gst || 0,
         // buygsttype: schemeData?.data?.buygsttype || 1,
         wastagebenefit: schemeData.data.wastagebenefit || "",
-        total_installments: schemeData.data.total_installments || "",
+        total_installments: schemeData.data.total_installments || schemeData?.data?.noOfDays || "",
         benefit_making: schemeData.data.makingcharge || "",
 
         // Grace period
@@ -376,7 +376,7 @@ const ViewScheme = () => {
         setMainImage: schemeData?.data?.logo || null,
         setDescriptionImage: schemeData?.data?.desc_img || null,
         fixed_amounts: schemeData?.data?.fixed_amounts || [],
-        referralPercentage:schemeData?.data?.referralPercentage || 0
+        referralPercentage: schemeData?.data?.referralPercentage || 0,
       });
       if (schemeData?.data?.logo) {
         setMainImage(schemeData?.data?.logo);
@@ -771,7 +771,9 @@ const ViewScheme = () => {
               </p>
             </div>
 
-            <div>
+            {formik.values.scheme_type !== 10 && formik.values.scheme_type !== 14 && (
+              <>
+              <div>
               <label className="block text-sm font-medium mb-1">
                 Installment Type
               </label>
@@ -800,6 +802,8 @@ const ViewScheme = () => {
                 )?.label || "N/A"}
               </p>
             </div>
+              </>
+            )}
 
             <div>
               <label className="block text-sm font-medium mb-1">
@@ -955,7 +959,9 @@ const ViewScheme = () => {
                 )}
               </>
             )}
-            <div>
+            {formik.values.scheme_type !==10 && formik.values.scheme_type !== 14 && (
+              <>
+              <div>
               <label className="block text-sm font-medium mb-1">
                 Benefit Wastage
               </label>
@@ -1010,10 +1016,14 @@ const ViewScheme = () => {
                 </p>
               </div>
             )}
+              </>
+            )}
           </div>
         </div>
 
-        <div className="bg-[#FFFFFF] rounded-lg p-6 shadow-sm border">
+        {formik.values.scheme_type !== 10 && formik.values.scheme_type !== 14 && (
+          <>
+          <div className="bg-[#FFFFFF] rounded-lg p-6 shadow-sm border">
           <h2 className="text-lg font-semibold mb-4 border-b pb-4">
             Installment
           </h2>
@@ -1083,6 +1093,8 @@ const ViewScheme = () => {
             </div>
           </div>
         </div>
+          </>
+        )}
 
         {/* classification */}
         <div className="bg-[#FFFFFF] rounded-lg p-6 shadow-sm border">
@@ -1138,14 +1150,17 @@ const ViewScheme = () => {
               </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Display Order
-              </label>
-              <p className="text-[#72737e] pb-2">
-                {formik.values?.classification_order}
-              </p>
-            </div>
+            {formik.values?.scheme_type !== 10 &&
+              formik.values?.scheme_type !== 14 && (
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                    Display Order
+                  </label>
+                  <p className="text-[#72737e] pb-2">
+                    {formik.values?.classification_order}
+                  </p>
+                </div>
+              )}
           </div>
         </div>
       </div>
