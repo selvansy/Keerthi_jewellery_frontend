@@ -667,13 +667,13 @@ const ViewScheme = () => {
           Scheme / <span className="text-black">View</span>
         </p>
         <div className="flex justify-end space-x-4">
-          <button
+          {/* <button
             type="submit"
             onClick={() => navigate(`/scheme/addscheme/${id}`)}
             className="w-20 h-9 bg-blue-900 text-white rounded-md hover:bg-blue-800 flex justify-center items-center"
           >
             Edit
-          </button>
+          </button> */}
         </div>
       </div>
       <div className="w-full flex flex-col gap-3 space-y-6">
