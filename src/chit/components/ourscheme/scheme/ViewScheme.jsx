@@ -286,115 +286,93 @@ const ViewScheme = () => {
     setMaking(data);
   }, [benefiMakingCharge]);
 
-  useEffect(() => {
+ useEffect(() => {
     if (id && schemeData) {
       // Set the classification type first
-      const classItem = classifications.find(
-        (c) => c.value === schemeData.id_classification
+      const classItem = classifications?.find(
+        (c) => c?.value === schemeData?.id_classification
       );
       if (classItem) {
-        handleClassChange({ value: classItem.value, id: classItem.id });
+        handleClassChange({ value: classItem?.value, id: classItem?.id });
       }
 
       // Set field values
       formik.setValues({
         ...formik.values,
-        scheme_name: schemeData.data.scheme_name || "",
-        code: schemeData.data.code || "",
-        id_classification: schemeData.data.id_classification._id || "",
+        scheme_name: schemeData.data?.scheme_name || "",
+        code: schemeData.data?.code || "",
+        id_classification: schemeData.data?.id_classification?._id || "",
         id_branch: schemeData?.data?.id_branch || "",
         id_metal: schemeData?.data?.id_metal?._id || "",
         id_purity: schemeData?.data?.id_purity?._id || "",
-        installment_type: schemeData.data.installment_type || "",
-        maturity_period: schemeData.data.maturity_period || "",
-        saving_type: schemeData.data.saving_type || "",
-
-        // Fixed scheme specific fields
+        installment_type: schemeData.data?.installment_type || "",
+        maturity_period: schemeData.data?.maturity_period || "",
+        saving_type: schemeData.data?.saving_type || "",
         totalCountAmount: schemeData?.data?.totalCountAmount || "",
-        incrementRate: schemeData.data.incrementRate || "",
-        startingAmount: schemeData.data.startingAmount || "",
-
-        // PayableDetails fields
-        min_amount: schemeData.data.min_amount || 0,
-        max_amount: schemeData.data.max_amount || 0,
-        min_weight: schemeData.data.min_weight || 0,
-        max_weight: schemeData.data.max_weight || 0,
-        // buy_gst: schemeData.data.buy_gst || 0,
-        // buygsttype: schemeData?.data?.buygsttype || 1,
-        wastagebenefit: schemeData.data.wastagebenefit || "",
-        total_installments: schemeData.data.total_installments || schemeData?.data?.noOfDays || "",
-        benefit_making: schemeData.data.makingcharge || "",
-
-        // Grace period
-        grace_type: schemeData.data.grace_type || "",
-        grace_period: schemeData.data.grace_period || "",
-        grace_fine: schemeData.data.grace_fine || "",
-
-        // Classification
-        description: schemeData.data.description || "",
-        term_desc: schemeData.data.term_desc || "",
-
-        // Customer referral
-        customer_referral_per: schemeData.data.customer_referral_per || "",
-        customer_incentive_per: schemeData.data.customer_incentive_per || "",
-        customer_ref_remarks: schemeData.data.customer_ref_remarks || "",
-
-        // Agent referral
-        agent_referral_percentage:
-          schemeData.data.agent_referral_percentage || "",
-        agent_incentive: schemeData.data.agent_incentive || "",
-        agent_target_per: schemeData.data.agent_target_per || "",
-        agent_partial_per: schemeData.data.agent_partial_per || "",
-        agent_remark: schemeData.data.agent_remark || false,
-
-        // AdvancedSettings
-        limit_installment: schemeData.data.limit_installment || "",
-        pending_installment: schemeData.data.pending_installment || "",
-        paid_installment: schemeData.data.allowed_minpaid || "",
-        limit_customer: schemeData.data.limit_customer || 0,
-        gift_type: schemeData.data.gift_type || 1,
-        no_of_gifts: schemeData.data.no_of_gifts || 0,
-        convenience_fees: schemeData.data.convenience_fees || 0,
-        fine_amount: schemeData.data.fine_amount || 0,
-        cumulative_fine_amount: schemeData.data.cumulative_fine_amount || "",
-        display_referral: schemeData.data.display_referral || false,
-        display_Weight_in_ledger:
-          schemeData?.data?.display_Weight_in_ledger || false,
-        wallet_redemption_onpayment:
-          schemeData.data.wallet_redemption_onpayment || false,
-        gift_minimum_paid_installment:
-          schemeData.data.gift_minimum_paid_installment || 0,
-        bonus_type: schemeData.data.bonus_type || "",
+        incrementRate: schemeData.data?.incrementRate || "",
+        startingAmount: schemeData.data?.startingAmount || "",
+        min_amount: schemeData.data?.min_amount || 0,
+        max_amount: schemeData.data?.max_amount || 0,
+        min_weight: schemeData.data?.min_weight || 0,
+        max_weight: schemeData.data?.max_weight || 0,
+        wastagebenefit: schemeData.data?.wastagebenefit || "",
+        total_installments: schemeData.data?.total_installments || schemeData?.data?.noOfDays || "",
+        benefit_making: schemeData.data?.makingcharge || "",
+        grace_type: schemeData.data?.grace_type || "",
+        grace_period: schemeData.data?.grace_period || "",
+        grace_fine: schemeData.data?.grace_fine || "",
+        description: schemeData.data?.description || "",
+        term_desc: schemeData.data?.term_desc || "",
+        customer_referral_per: schemeData.data?.customer_referral_per || "",
+        customer_incentive_per: schemeData.data?.customer_incentive_per || "",
+        customer_ref_remarks: schemeData.data?.customer_ref_remarks || "",
+        agent_referral_percentage: schemeData.data?.agent_referral_percentage || "",
+        agent_incentive: schemeData.data?.agent_incentive || "",
+        agent_target_per: schemeData.data?.agent_target_per || "",
+        agent_partial_per: schemeData.data?.agent_partial_per || "",
+        agent_remark: schemeData.data?.agent_remark || false,
+        limit_installment: schemeData.data?.limit_installment || "",
+        pending_installment: schemeData.data?.pending_installment || "",
+        paid_installment: schemeData.data?.allowed_minpaid || "",
+        limit_customer: schemeData.data?.limit_customer || 0,
+        gift_type: schemeData.data?.gift_type || 1,
+        no_of_gifts: schemeData.data?.no_of_gifts || 0,
+        convenience_fees: schemeData.data?.convenience_fees || 0,
+        fine_amount: schemeData.data?.fine_amount || 0,
+        cumulative_fine_amount: schemeData.data?.cumulative_fine_amount || "",
+        display_referral: schemeData.data?.display_referral || false,
+        display_Weight_in_ledger: schemeData?.data?.display_Weight_in_ledger || false,
+        wallet_redemption_onpayment: schemeData.data?.wallet_redemption_onpayment || false,
+        gift_minimum_paid_installment: schemeData.data?.gift_minimum_paid_installment || 0,
+        bonus_type: schemeData.data?.bonus_type || "",
         bonus_amount: schemeData?.data?.bonus_amount || 0,
         bonus_percent: schemeData?.data?.bonus_percent || "",
         not_paid_installment: schemeData?.data?.not_paid_installment || "",
-        benefit_min_installment_wst_mkg:
-          schemeData?.data?.benefit_min_installment_wst_mkg || "",
+        benefit_min_installment_wst_mkg: schemeData?.data?.benefit_min_installment_wst_mkg || "",
         classification_order: schemeData?.data?.classification_order,
         grace_fine_amount: schemeData?.data?.grace_fine_amount || false,
         final_join_date: schemeData?.data?.final_join_date || "",
-        setMainImage: schemeData?.data?.logo || null,
-        setDescriptionImage: schemeData?.data?.desc_img || null,
+        pathUrl: schemeData?.data?.pathUrl || "",
+        logo: schemeData?.data?.logo || "",
+        desc_img: schemeData?.data?.desc_img || "",
         fixed_amounts: schemeData?.data?.fixed_amounts || [],
         referralPercentage: schemeData?.data?.referralPercentage || 0,
       });
+
       if (schemeData?.data?.logo) {
         setMainImage(schemeData?.data?.logo);
       }
       if (schemeData?.data?.desc_img) {
         setDescriptionImage(schemeData?.data?.desc_img);
       }
-      if (schemeData?.data?.fixed_amounts.length > 0) {
+      if (schemeData?.data?.fixed_amounts?.length > 0) {
         formik.setFieldValue("classType", true);
       }
       if (schemeData?.data) {
         formik.setFieldValue("scheme_type", schemeData?.data?.scheme_type);
       }
-      if (schemeData?.data?.pathUrl) {
-        formik.setFieldValue("pathUrl", schemeData?.data?.pathUrl);
-      }
     }
-  }, [id, schemeData]);
+  }, [id, schemeData, classifications]);
 
   useEffect(() => {
     if (schemeData?.data && Array.isArray(schemeData.data.fixed_amounts)) {
@@ -454,10 +432,10 @@ const ViewScheme = () => {
 
   useEffect(() => {
     if (classificationData) {
-      const data = classificationData.data.map((item) => ({
-        value: item._id,
-        label: item.name,
-        id: item.order,
+      const data = classificationData?.data?.map((item) => ({
+        value: item?._id,
+        label: item?.name,
+        id: item?.order,
       }));
       setClassifications(data);
     }
@@ -505,9 +483,9 @@ const ViewScheme = () => {
   // useEffect for metals
   useEffect(() => {
     if (metalResponse) {
-      const data = metalResponse.data.map((item) => ({
-        value: item._id,
-        label: item.metal_name,
+      const data = metalResponse?.data?.map((item) => ({
+        value: item?._id,
+        label: item?.metal_name,
       }));
       setMetal(data);
     }
