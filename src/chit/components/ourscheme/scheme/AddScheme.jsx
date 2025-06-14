@@ -41,7 +41,7 @@ import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
  export const customStyles = (isReadOnly) => ({
     control: (base, state) => ({
       ...base,
-      minHeight: "44px", //42px
+      minHeight: "42px", //42px
       backgroundColor: "white",
       color:"#232323",
       // fontWeight:600,
@@ -85,9 +85,6 @@ import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
         fontSize:"14px",
       })
     });
-
-
-
 
 const SchemeForm = () => {
   // const { setFieldValue, validateForm, values } = useFormikContext();

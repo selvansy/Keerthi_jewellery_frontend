@@ -24,7 +24,7 @@ import { useDispatch, useSelector } from "react-redux";
 import SpinLoading from "../../common/spinLoading";
 import { formatNumber } from "../../../utils/commonFunction";
 import { formatDecimal } from "../../../utils/commonFunction";
-import { customStyles } from "../../ourscheme/scheme/AddScheme";
+// import { customStyles } from "../../ourscheme/scheme/AddScheme";
 
 const AddSchemePayment = () => {
   const navigate = useNavigate();
@@ -71,66 +71,7 @@ const AddSchemePayment = () => {
   const [baseAmount, setBaseAmount] = useState(0);
   const [selectKey, setSelectKey] = useState(0);
 
-  // Customisations for react-select
-  // const customStyles = (isReadOnly) => ({
-  //   control: (base, state) => ({
-  //     ...base,
-  //     minHeight: "42px",
-  //     backgroundColor: "white",
-  //     border: state.isFocused ? "1px solid black" : "2px solid #f2f3f8",
-  //     boxShadow: state.isFocused ? "0 0 0 1px black" : "none",
-  //     borderRadius: "0.375rem",
-  //     "&:hover": {
-  //       color: "#e2e8f0",
-  //     },
-  //     pointerEvents: !isReadOnly ? "none" : "auto",
-  //     opacity: !isReadOnly ? 1 : 1,
-  //   }),
-  //   indicatorSeparator: () => ({
-  //     display: "none",
-  //   }),
-  //   placeholder: (base) => ({
-  //     ...base,
-  //     color: "#858293",
-  //     fontWeight: "thin",
-  //   }),
-  //   dropdownIndicator: (provided, state) => ({
-  //     ...provided,
-  //     color: "#232323",
-  //     "&:hover": {
-  //       color: "#232323",
-  //     },
-  //   }),
 
-  //   menu: (provided) => ({
-  //     ...provided,
-  //     marginTop: "0",
-  //     boxShadow:
-  //       "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
-  //     borderRadius: "0.375rem",
-  //   }),
-  //   menuList: (provided) => ({
-  //     ...provided,
-  //     paddingTop: 0,
-  //     paddingBottom: 0,
-  //     maxHeight: showWeightInput  ? "130px" : "209px",
-  //     maxHeight: [2,5,6].includes(formik.values.scheme_type) ? "130px" : "209px",
-  //   }),
-  //   option: (provided, state) => ({
-  //     ...provided,
-  //     padding: "8px 12px",
-  //     fontSize: "14px",
-  //     // backgroundColor: state.isSelected
-  //     //   ? "#1E40AF"
-  //     //   : state.isFocused
-  //     //   ? "#EFF6FF"
-  //     //   : "white",
-  //     color: state.isSelected ? "white" : "#1F2937",
-  //     "&:active": {
-  //       backgroundColor: "#DBEAFE",
-  //     },
-  //   }),
-  // });
   const formik = useFormik({
     initialValues: {
       id_customer: "",
@@ -176,15 +117,6 @@ const AddSchemePayment = () => {
             .max(maxWeight, `Weight cannot exceed ${maxWeight}g`),
         otherwise: () => Yup.number().notRequired(),
       }),
-      // payment_amount: Yup.number().when([], {
-      //   is: () => showAmountInput && isFirstPayment,
-      //   then: () =>
-      //     Yup.number()
-      //       .required("Amount is required")
-      //       .min(minAmount, `Amount must be at least ${minAmount}`)
-      //       .max(maxAmount, `Amount cannot exceed ${maxAmount}`),
-      //   otherwise: () => Yup.number().required("Amount is required"),
-      // }),
       payment_amount: Yup.number().when([], {
         is: () => showAmountInput && isFirstPayment,
         then: () =>
@@ -203,25 +135,6 @@ const AddSchemePayment = () => {
       payment_mode: Yup.string().required("Payment mode is required"),
       itr_utr: Yup.string(),
       remark: Yup.string(),
-      // installments: Yup.number()
-      //   .required("Installments is required")
-      //   .min(1, "At least 1 installment is required")
-      //   .test(
-      //     "max-installments",
-      //     "Installments exceed remaining scheme installments",
-      //     function (value) {
-      //       if (!selectedScheme) return true;
-
-      //       const schemeType = selectedScheme?.id_scheme?.scheme_type;
-      //       if (schemeType === 10 || schemeType === 14) return true;
-
-      //       const totalPaid = selectedScheme.total_paidinstallments || 0;
-      //       const totalInstallments =
-      //         selectedScheme?.id_scheme?.total_installments;
-
-      //       return value <= totalInstallments - totalPaid;
-      //     }
-      //   ),
       installments: Yup.number()
         .required("Installments is required")
         .min(1, "At least 1 installment is required")
@@ -255,6 +168,65 @@ const AddSchemePayment = () => {
       // }
     },
   });
+
+  const customStyles = (isReadOnly) => ({
+    control: (base, state) => ({
+      ...base,
+      minHeight: "42px", //42px
+      backgroundColor: "white",
+      color:"#232323",
+      // fontWeight:600,
+      border: state.isFocused ? "1px solid #f2f2f9" : "1px solid #f2f2f9",
+      boxShadow: state.isFocused ? "0 0 0 1px #004181" : "none",
+      borderRadius: "0.5rem",
+      "&:hover": {
+        color: "#e2e8f0",
+      },
+      pointerEvents: !isReadOnly ? "none" : "auto",
+      opacity: !isReadOnly ? 1 : 1,
+      cursor: isReadOnly ? "pointer" : "default", 
+    }),
+    indicatorSeparator: () => ({
+      display: "none",
+    }),
+    placeholder: (base) => ({
+      ...base,
+      color: "#6C7086",
+      // fontWeight: "thin",
+      fontSize: "14px",
+      // fontStyle: "bold",
+    }),
+    dropdownIndicator: (provided, state) => ({
+      ...provided,
+      color: "#232323",
+      fontSize:"14px",
+      "&:hover": {
+        color: "#232323",
+      },
+    }),
+    menuList: (provided) => ({
+      ...provided,
+      // paddingTop: 0,
+      // paddingBottom: 0,
+     maxHeight: showWeightInput
+    ? "130px"
+    : "209px"
+      // maxHeight: [2, 5, 6].includes(formik.values.scheme_type)
+      //   ? "130px"
+      //   : "209px",
+    }),
+     input: (base) => ({
+      ...base,
+      "input[type='text']:focus": { boxShadow: 'none' },
+      }),
+      option:(base,state)=>({
+        ...base,
+        backgroundColor: state.isSelected ? "#F0F7FE" : state.isFocused ? "#F0F7FE" : "white",
+        color:"#232323",
+        fontWeight:"500",
+        fontSize:"14px",
+      })
+    });
 
   // API calls
   const { data: branchData } = useQuery({
@@ -303,6 +275,7 @@ const AddSchemePayment = () => {
   });
 
   const resetForm = () => {
+    const branch = formik.values.id_branch
     formik.resetForm();
     setSchemeData([]);
     setFullData([]);
@@ -316,6 +289,7 @@ const AddSchemePayment = () => {
     setSelectedMode(0);
     setIsLoading(false);
     setSelectKey((prev) => prev + 1);
+    console.log(branch)
   };
 
   const { mutate: updateschemepaymentmutate } = useMutation({
@@ -782,11 +756,11 @@ const AddSchemePayment = () => {
     }
     // schemes (10, 14)
     else if (specialSchemeTypes.includes(schemeType)) {
-      console.log("third");
       if (formik.values.metal_weight && formik.values.payment_amount) {
         const calculatedAmount = Number(formik.values.metal_weight) * metalRate;
         if (Math.abs(calculatedAmount - formik.values.payment_amount) > 0.01) {
           formik.setFieldValue("payment_amount", calculatedAmount.toFixed(2));
+          setShowAmountInput(true)
         }
       }
     }
@@ -1021,7 +995,7 @@ const AddSchemePayment = () => {
   useEffect(() => {
     const { payment_amount, metal_rate, scheme_type } = formik.values;
   
-    if ([2, 5, 6].includes(scheme_type) && payment_amount && metal_rate && Number(metal_rate) !== 0) {
+    if ([2, 5, 6,10,14].includes(scheme_type) && payment_amount && metal_rate && Number(metal_rate) !== 0) {
       setWeightSaved(Number(payment_amount) / Number(metal_rate));
     } else {
       setWeightSaved(0);
@@ -1574,7 +1548,7 @@ const AddSchemePayment = () => {
                         {showAmountInput ? "Enter Amount" : "Payment Amount"}
                         <span className="text-red-400">*</span>
                         {minAmount > 0 && maxAmount > 0 && showAmountInput && (
-                          <span className="text-gray-500 text-sm ml-2">
+                          <span className="text-gray-500 text-[10px] ml-2">
                             (Min: {minAmount}, Max: {maxAmount})
                           </span>
                         )}
@@ -1618,7 +1592,7 @@ const AddSchemePayment = () => {
                         )}
                     </div>
 
-                    {[2, 5, 6].includes(formik.values.scheme_type) && (
+                    {[2, 5, 6,10,14].includes(formik.values.scheme_type) && (
                       <div className="relative flex-1 mt-4">
                         <label className="block text-sm  mb-1">
                           Weight Saved<span className="text-red-400"> *</span>
@@ -1637,7 +1611,7 @@ const AddSchemePayment = () => {
 
                     {/* Payment mode */}
                     <div
-                      className={`flex flex-col ${!showWeightInput && "mt-4"} `}
+                      className={`flex flex-col ${(!showWeightInput || ![2, 5, 6,10,14].includes(formik.values.scheme_type)) && "mt-4"} `}
                     >
                       <label className="block text-sm  mb-1">
                         Payment Mode<span className="text-red-400"> *</span>
@@ -1708,8 +1682,7 @@ const AddSchemePayment = () => {
                     <div className="flex flex-col">
                       <label
                         className={`block text-sm  mb-1 ${
-                          [2, 5, 6].includes(formik.values.scheme_type) &&
-                          "mt-4"
+                         (!showWeightInput || ![2, 5, 6,10,14].includes(formik.values.scheme_type)) && "mt-4"
                         }`}
                       >
                         ITR/UTR ID
