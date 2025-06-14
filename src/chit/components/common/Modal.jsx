@@ -7,6 +7,7 @@ import Barcode from 'react-barcode';
 import Table from "./Table";
 import { X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { MdVerified } from "react-icons/md";
 
 const Modal = () => {
 
@@ -329,8 +330,8 @@ const Modal = () => {
             case 'SUCCESS':
                 return (
                     <div className="text-center px-4">
-                        <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
-                            <img src="../../../../src/assets/Sticker.png" alt="" />
+                        <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full mb-4">
+                        <MdVerified size={50} color='green'/>
                         </div>
                         <h3 className="text-xl font-semibold text-gray-700">
                             {formData.message}

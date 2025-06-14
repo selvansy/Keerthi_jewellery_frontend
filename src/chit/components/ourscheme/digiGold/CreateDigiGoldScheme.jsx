@@ -212,7 +212,7 @@ onSubmit: async (values) => {
     setIsLoading(false);
     return;
   }
-  
+  console.log('--------------------------------------------------------------------',values)
   try {
     const formData = new FormData();
 
@@ -361,6 +361,7 @@ onSubmit: async (values) => {
         formik.setFieldValue('term_desc','')
         formik.setFieldValue('description','')
         formik.setFieldValue("id_metal", digigoldData?.data?.id_gold?._id);
+      
         const data = digigoldData.data.gold.map((item) => ({
           value: item._id,
           label: item.purity_name,
@@ -395,7 +396,7 @@ onSubmit: async (values) => {
       }
     }
   }, [digigoldData, silver]);
-
+  // console.log(formik.values.id_metal)
   useEffect(() => {
     formik.setValues({
       ...formik.values,
@@ -855,38 +856,8 @@ onSubmit: async (values) => {
             )}
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-1">
-              Bonus Type 
-              {/* {!silver && <span className="text-red-400">*</span>} */}
-            </label>
-            <Select
-              styles={customStyles(true)}
-              name="bonus_type"
-              options={bonusTypeOptions}
-              value={bonusTypeOptions.find(
-                (option) => option.id === formik.values.bonus_type
-              )}
-              placeholder="Select bonus type"
-              onChange={(selectedOption) =>
-                formik.setFieldValue(
-                  "bonus_type",
-                  selectedOption ? selectedOption.id : ""
-                )
-              }
-              onBlur={formik.handleBlur}
-              className="basic-single w-full"
-              classNamePrefix="select"
-              isClearable={true}
-            />
-            {formik.touched.bonus_type && formik.errors.bonus_type && (
-              <div className="text-red-500 text-sm mt-1">
-                {formik.errors.bonus_type}
-              </div>
-            )}
-          </div>
 
-          <div className="flex flex-col ">
+            <div className="flex flex-col ">
             <label className="block text-sm font-medium mb-1">
               Maturity <span className="text-red-400"> *</span>
             </label>
@@ -917,6 +888,7 @@ onSubmit: async (values) => {
             )}
           </div>
 
+          
           <div className="flex flex-col ">
             <label className="block text-sm font-medium mb-1">
               Max Limit
@@ -945,6 +917,39 @@ onSubmit: async (values) => {
               <span className="text-red-500 text-sm mt-1">
                 {formik.errors.maxLimit}
               </span>
+            )}
+          </div>
+          
+
+          
+            <div>
+            <label className="block text-sm font-medium mb-1">
+              Bonus Type 
+              {/* {!silver && <span className="text-red-400">*</span>} */}
+            </label>
+            <Select
+              styles={customStyles(true)}
+              name="bonus_type"
+              options={bonusTypeOptions}
+              value={bonusTypeOptions.find(
+                (option) => option.id === formik.values.bonus_type
+              )}
+              placeholder="Select bonus type"
+              onChange={(selectedOption) =>
+                formik.setFieldValue(
+                  "bonus_type",
+                  selectedOption ? selectedOption.id : ""
+                )
+              }
+              onBlur={formik.handleBlur}
+              className="basic-single w-full"
+              classNamePrefix="select"
+              isClearable={true}
+            />
+            {formik.touched.bonus_type && formik.errors.bonus_type && (
+              <div className="text-red-500 text-sm mt-1">
+                {formik.errors.bonus_type}
+              </div>
             )}
           </div>
 
