@@ -1112,7 +1112,7 @@ const AddCloseAccount = () => {
             <div className="flex flex-col gap-3 lg:mt-4">
               <CheckboxToggle
                 checked={checked}
-                label="To close & refund the account with OTP verification, kindly check the checkbox"
+                label={dynamic?"Proceed with pre closure and refund using OTP verification":"Proceed with account closure  using OTP verification"}
                 onChange={handleOtpToggle}
               />
 

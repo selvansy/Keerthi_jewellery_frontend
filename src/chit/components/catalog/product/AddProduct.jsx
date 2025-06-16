@@ -95,6 +95,7 @@ const AddProduct = () => {
 
   useEffect(() => {
     getMetals();
+    formData.showprice=true
   }, []);
 
   useEffect(() => {
@@ -432,9 +433,6 @@ const AddProduct = () => {
 
     if (isNaN(formData.gst) || Number(formData.gst) <= 0) {
       errors.gst = "GST is required.";
-    }
-    if (!formData.showprice) {
-      errors.showprice = "Price Type is required.";
     }
 
     if (product_image.length == 0) {

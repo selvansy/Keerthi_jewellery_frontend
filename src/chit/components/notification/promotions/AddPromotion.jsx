@@ -13,6 +13,7 @@ import {
   getcustomerByBranchId,
   addPromotions,
   getallCampaign,
+  getCustomersByScheme,
 } from "../../../api/Endpoints";
 import ReactSelect, { components } from "react-select";
 import { FixedSizeList as List } from "react-window";
@@ -100,7 +101,7 @@ function AddPromotion() {
     body: "",
     id_branch: [],
     id_scheme: [],
-    customer_id: [],
+
     noti_image: "",
     pushNotification: true,
     sms: false,
@@ -149,10 +150,11 @@ function AddPromotion() {
     queryFn: getallSchemes,
   });
 
-  const branchId = branch || formData.id_branch;
+  const branchId =  formData.id_branch||[branch];
+  const schemeId = formData.id_scheme
   const { data: customerResponse, isLoading: loadingCustomer } = useQuery({
     queryKey: ["customer", branchId],
-    queryFn: () => getcustomerByBranchId(branchId),
+    queryFn: () => getCustomersByScheme({branchId,schemeId}),
     enabled: !!branchId,
   });
 
@@ -179,7 +181,7 @@ function AddPromotion() {
     return (
       customerResponse?.customers?.map((cus) => ({
         value: cus._id,
-        label: `${cus.firstname} ${cus.lastname} (${cus.mobile})`,
+        label: `${cus.firstname} (${cus.mobile})`,
       })) || []
     );
   }, [customerResponse]);

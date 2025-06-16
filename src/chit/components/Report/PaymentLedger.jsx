@@ -64,7 +64,7 @@ function PaymentLedger() {
   useEffect(() => {
     if (paymentData && paymentData.length > 0) {
       const flattened = paymentData.flatMap(scheme => 
-        scheme.paymentModes.map(mode => ({
+        scheme.paymentModes?.map(mode => ({
           schemeName: scheme.schemeName,
           payment_mode: mode.modeName,
           totalAmount: mode.totalAmount,

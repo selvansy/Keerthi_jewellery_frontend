@@ -1235,7 +1235,7 @@ const CustomerForm = ({
                 <div className="flex flex-col gap-3 lg:mt-4">
                   <CheckboxToggle
                     checked={checked}
-                    label="Please check the checkbox to create a customer account with OTP verification."
+                    label="Enable OTP verification to create a customer account"
                     onChange={handleOtpToggle}
                   />
 
