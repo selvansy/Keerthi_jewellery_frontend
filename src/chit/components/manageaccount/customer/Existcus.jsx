@@ -11,6 +11,7 @@ import { formatDate } from "../../../../utils/FormatDate";
 import { formatDecimal } from "../../../utils/commonFunction";
 import { useDispatch, useSelector } from "react-redux";
 import { setid } from "../../../../redux/clientFormSlice";
+import SpinLoading from "../../common/spinLoading";
 
 const Existcusomer = () => {
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ const Existcusomer = () => {
   const [totalPage, setTotalPages] = useState(0);
   const [totalDocument, setTotalDocument] = useState(0);
   const [activeSchemesTable, setActiveSchemesTable] = useState([]);
-
+  const [loading,setLoading]=useState(false)
   const [currentPage1, setCurrentPage1] = useState(1);
   const [itemsPerPage1, setItemsPerPage1] = useState(4);
   const [totalPage1, setTotalPages1] = useState(0);
@@ -148,6 +149,7 @@ const Existcusomer = () => {
   }, [branchData, accessBranch]);
 
   const handleSubmit = () => {
+    setLoading(true)
     if (!formik.values.mobile) {
       toast.error("Please enter mobile number");
       return;
@@ -233,9 +235,11 @@ const Existcusomer = () => {
         schemeAmount: response?.data?.schemeAmount || 0,
       });
       toast.success(response?.message);
+      setLoading(false)
       dispatch(setid(response?.data?.customerDetails?._id || ""));
     },
     onError: (error) => {
+      setLoading(false)
       toast.error(error.response?.data?.message);
     },
   });
@@ -466,9 +470,17 @@ const Existcusomer = () => {
               />
               <button
                 onClick={handleSubmit}
+                disabled={loading || formik.values.mobile.length==0}
                 className="absolute right-0 bg-[#004181] top-0 h-full w-1/3 flex items-center justify-center text-sm text-white rounded-r-md"
               >
-                Search
+                 {loading ? (
+                <div className="flex justify-center">
+                  <SpinLoading />
+                </div>
+              ) : (
+                "Search"
+              )}
+                
               </button>
             </div>
           </div>

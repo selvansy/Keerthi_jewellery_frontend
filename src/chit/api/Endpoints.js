@@ -1849,6 +1849,10 @@ export const getcustomerByBranchId = async (id) => {
   return response.data;
 };
 
+export const getCustomersByScheme =  async (data)=>{
+  const response = await Api.post(`${import.meta.env.VITE_API_URL}/api/client/customer/scheme`,data)
+}
+
 export const getcustomerById = async (id) => {
   const response = await Api.get(
     `${import.meta.env.VITE_API_URL}/api/client/customer/${id}`

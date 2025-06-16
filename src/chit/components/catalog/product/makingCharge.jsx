@@ -95,7 +95,7 @@ export default function MakingChargesForm({ onChange, initialState }) {
         {/* Mode */}
         <div className="flex flex-col justify-end">
           <label className="text-gray-700 font-medium mb-2">
-            Mode <span className="text-red-400">*</span>
+            Mode 
           </label>
           <div className="h-[44px]">
             <Select
@@ -114,7 +114,7 @@ export default function MakingChargesForm({ onChange, initialState }) {
         {/* Actual Value */}
         <div className="flex flex-col justify-end">
           <label className="text-gray-700 mb-2 font-medium">
-            Actual Value <span className="text-red-400">*</span>
+            Actual Value 
           </label>
           <div className="flex items-center border-2 border-[#F2F2F9] rounded-md h-[44px]">
             <div className="h-full border-e-2 border-[#DEDEDE] flex items-center">
@@ -136,7 +136,7 @@ export default function MakingChargesForm({ onChange, initialState }) {
          {/* Discount Percentage */}
          <div className="flex flex-col justify-end">
           <label className="text-gray-700 font-medium mb-2">
-            Discount Percentage <span className="text-red-400">*</span>
+            Discount Percentage 
           </label>
           <div className="relative h-[44px]">
             <input
@@ -157,7 +157,7 @@ export default function MakingChargesForm({ onChange, initialState }) {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
         <div className="flex flex-col  ">
           <label className="text-gray-700 mb-1.5 font-medium">
-            Discounted Value<span className="text-red-400">*</span>
+            Discounted Value
           </label>
           <div className="flex items-center border-2 border-[#F2F2F9] rounded-[8px] h-[44px] ">
             <div className="h-[44px] border-e-2 border-[#DEDEDE] flex items-center">

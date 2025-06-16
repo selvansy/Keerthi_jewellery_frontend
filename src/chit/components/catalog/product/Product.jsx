@@ -295,7 +295,7 @@ const Product = () => {
               style={{ backgroundColor: layout_color }}
             >
                <img src={plus} alt="plus" className="w-4 h-4 me-[10px]" />
-               Add Category
+               Add Product
             </button>
           </div>
         </div>

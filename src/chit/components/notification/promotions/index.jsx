@@ -47,6 +47,7 @@ function PromotionSummary() {
   const [searchLoading, setSearchLoading] = useState(false);
   const [from_date, setfrom_date] = useState();
   const [to_date, setto_date] = useState();
+  const [processData,setProcessData]=useState([])
 
   const limit = 10;
 
@@ -95,6 +96,24 @@ function PromotionSummary() {
     }
   };
 
+     useEffect(() => {
+      const process = promData.map((item, index) => ({
+        "S.no": index + 1,
+        "Start Date": new Date(item?.createdAt).toLocaleDateString('en-GB'),
+        "Promotion Name": item?.title,
+        "Promotion Medium": [
+          item?.sms ? "SMS" : null,
+          item?.email ? "Email" : null,
+          item?.whatsapp ? "WhatsApp" : null,
+          item?.pushNotification ? "Push Notification" : null,
+        ]
+          .filter(Boolean)
+          .join(", "),
+        "Delivery Status": item?.status,
+    
+      }));
+      setProcessData(process);
+    }, [promData]);
 
   const columns = [
     {
@@ -176,6 +195,8 @@ function PromotionSummary() {
     navigate('/')
   }
 
+
+
   return (
     <>
       <Breadcrumb
@@ -197,20 +218,12 @@ function PromotionSummary() {
                   setto_date(range.endDate);
                 }}
               />
-              {/* <ExportDropdown
-                apiData={promData}
-                fileName={`Promotions report ${new Date().toLocaleDateString(
-                  "en-GB"
-                )}`}
-              /> */}
-              <button
-              className="flex rounded-lg px-[20px] py-[8px] text-sm font-semibold text-white items-center whitespace-nowrap hover:bg-[#034571] transition-colors sm:w-auto"
-              onClick={handleClick}
-              style={{ backgroundColor: layout_color }}
-            >
-              <img src={plus} alt="plus" className="w-4 h-4 me-[10px]" />
-               Add Category
-            </button>
+              <ExportDropdown
+              apiData={processData}
+              fileName={`Overdue report ${new Date().toLocaleDateString(
+                "en-GB"
+              )}`}
+            />
             </div>
           </div>
         </div>
