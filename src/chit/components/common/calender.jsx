@@ -19,8 +19,6 @@ export default function DateRangeSelector({ onChange }) {
   const handleSelect = (ranges) => {
     setRange([ranges.selection]);
     
-    // Only close the calendar and trigger onChange when both dates are different
-    // This prevents closing when start date is selected and end date is auto-set to same date
     if (ranges.selection.startDate.getTime() !== ranges.selection.endDate.getTime()) {
       onChange?.(ranges.selection);
       setOpen(false);
