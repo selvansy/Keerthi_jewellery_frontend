@@ -104,7 +104,7 @@ const AddSchemePayment = () => {
       id_branch: Yup.string().required("Branch is required"),
       mobile: Yup.string()
         .required("Mobile number is required")
-        .max(13, "Mobile number must be at most 13 digits"),
+        .max(20, "Mobile number must be at most 20 digits"),
       id_scheme_account: Yup.string().required("Scheme account is required"),
       date_payment: Yup.date().required("Payment date is required"),
       metal_rate: Yup.number().optional("Metal rate is required"),
@@ -1002,6 +1002,7 @@ const AddSchemePayment = () => {
     }
   }, [formik.values.payment_amount, formik.values.metal_rate, formik.values.scheme_type, selectedScheme]);
   
+  console.log(formik.errors)
 
   return (
     <>

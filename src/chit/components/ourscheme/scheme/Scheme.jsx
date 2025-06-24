@@ -442,16 +442,16 @@ const Scheme = () => {
         if (row.scheme_type !== 10 && row.scheme_type !== 14) {
           return row?.maturity_period;
         } else {
-          return row?.noOfDays;
+          return `-`;
         }
       }, },
       {
         header: "Maturity Month",
         cell: (row) => {
           if (row.scheme_type !== 10 && row.scheme_type !== 14) {
-            return row?.maturity_period;
+            return row?.maturity_period
           } else {
-            return row?.noOfDays;
+            return `${row?.noOfDays} (Days)`
           }
         },
       },
@@ -566,27 +566,6 @@ const Scheme = () => {
                Add Scheme
             </button>
         </div>
-
-        {/* <FilterForm
-          isFilterOpen={isFilterOpen}
-          setIsFilterOpen={setIsFilterOpen}
-          from_date={from_date}
-          setFromdate={setFromdate}
-          to_date={to_date}
-          setTodate={setTodate}
-          // branchList={branchList}
-          filters={filters}
-          filterInputchange={filterInputchange}
-          // classificationData={classificationData}
-          // metalData={metalData}
-          // purityData={purityData}
-          // installmentTypeData={installmentTypeData}
-          // schemeTypeData={schemeTypeData}
-          // gstTypeData={gstTypeData}
-          // wastageType={wastageType}
-          // fundtype={fundtype}
-          applyfilterdatatable={applyfilterdatatable}
-        /> */}
 
         <div className="mt-4">
           <Table

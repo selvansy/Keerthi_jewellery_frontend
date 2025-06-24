@@ -26,7 +26,7 @@ import UP from "../../../../assets/up.svg";
 import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
 import { customStyles } from "../scheme/AddScheme";
 
-function MetalRateIndex({refresh}) {
+function MetalRateIndex({ refresh }) {
   const [purityData, setPurityData] = useState([]);
   const [metalValue, setMetalValue] = useState([]);
   const [formData, setFormData] = useState([]);
@@ -36,8 +36,8 @@ function MetalRateIndex({refresh}) {
   const [branchId, setIdbranch] = useState("");
   const [formErrors, setFormErrors] = useState({});
   const [updateData, setUpdate] = useState(false);
-  const [respnseData,setResponseData] = useState([])
-  const [key,setKey]= useState(0)
+  const [respnseData, setResponseData] = useState([]);
+  const [key, setKey] = useState(0);
   const roledata = useSelector((state) => state.clientForm.roledata);
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
@@ -58,12 +58,11 @@ function MetalRateIndex({refresh}) {
     };
 
     getMetalRate(data);
-    
   }, [roledata, branchId]);
-  
-  useEffect(()=>{
-  getallpuritytableMutate();
-  },[])
+
+  useEffect(() => {
+    getallpuritytableMutate();
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -79,14 +78,16 @@ function MetalRateIndex({refresh}) {
     });
 
     setFormErrors(errors);
-    const formValues = formData?.map((e) => ({
+    const formValues = formData.map((e) => ({
       id_branch: branchId,
       purity_id: e.purity_id?._id,
       material_type_id: e.material_type_id?._id,
+      metal_name: e.material_type_id?.metal_name,
+      purity_name: e.purity_id?.purity_name,
       rate: e.rate,
     }));
 
-    console.log(formValues)
+    console.log(formValues);
 
     if (Object.keys(errors).length === 0) {
       setLoading(true);
@@ -148,9 +149,9 @@ function MetalRateIndex({refresh}) {
   const { mutate: addMetalRate } = useMutation({
     mutationFn: (data) => createmetalrate(data),
     onSuccess: (response) => {
-      refresh()
+      refresh();
       // toast.success(response.message)
-      setResponseData(response?.data?.data)
+      setResponseData(response?.data?.data);
       handleSuccess();
       setIsOpen(false);
       setFormData(response.data);
@@ -163,17 +164,17 @@ function MetalRateIndex({refresh}) {
     },
   });
 
-  useEffect(()=>{
+  useEffect(() => {
     const updatedArray = metalValue.map((metal) => {
-      const match = respnseData.find(item => item.purity_id === metal._id);
+      const match = respnseData.find((item) => item.purity_id === metal._id);
 
       return {
         ...metal,
-        value: match ? match.rate : metal.value, 
+        value: match ? match.rate : metal.value,
       };
     });
     setMetalValue(updatedArray);
-  },[respnseData])
+  }, [respnseData]);
 
   const { mutate: getMetalRate } = useMutation({
     mutationFn: (data) => todaymetalrate(data),
@@ -196,9 +197,9 @@ function MetalRateIndex({refresh}) {
         name: e.material_type_id.metal_name,
         purity: e.purity_id.purity_name,
         value: e.rate,
-        _id:e?.purity_id?._id
+        _id: e?.purity_id?._id,
       }));
-// console.log(data,"data")
+      // console.log(data,"data")
       setMetalValue(metalRate);
 
       setUpdate(false);
@@ -243,19 +244,13 @@ function MetalRateIndex({refresh}) {
         updatedData[existingIndex].rate = Number(value);
         return updatedData;
       } else {
-        console.log( {
-          id_branch: id_branch === "0" ? branchId : branch,
-          purity_id: name,
-          material_type_id: purityItem.id_metal,
-          rate:  Number(value),
-        },)
         return [
           ...prevData,
           {
             id_branch: id_branch === "0" ? branchId : branch,
             purity_id: purityItem,
             material_type_id: purityItem.id_metal,
-            rate:  Number(value),
+            rate: Number(value),
           },
         ];
       }
@@ -269,19 +264,15 @@ function MetalRateIndex({refresh}) {
 
   return (
     <>
-
-    <div>
-        <Breadcrumb items={[
-            { label: "Masters" },
-            { label: "Metal Rate",active:true },
-
-        ]}/>
-    </div>
+      <div>
+        <Breadcrumb
+          items={[{ label: "Masters" }, { label: "Metal Rate", active: true }]}
+        />
+      </div>
       <div className="flex flex-col p-1 -ml-1">
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {metalValue?.slice(0,4).map((e) => (
+          {metalValue?.slice(0, 4).map((e) => (
             <div className="bg-white rounded-[16px] py-2 px-[10px] border border-[#F2F2F9]">
-
               <div className="rounded-md">
                 {e.name !== "Silver" ? (
                   <img
@@ -391,7 +382,6 @@ function MetalRateIndex({refresh}) {
             </div>
             <div>
               <div className="flex justify-end gap-4">
-               
                 <button
                   className=" text-white text-sm rounded-lg h-[36px] w-full hover:bg-blue-800 md:w-24"
                   type="button"
@@ -401,7 +391,7 @@ function MetalRateIndex({refresh}) {
                 >
                   {isLoading ? <SpinLoading /> : "Update"}
                 </button>
-                 <button
+                <button
                   className="bg-[#E2E8F0] text-black text-sm rounded-lg h-[36px] w-full md:w-24"
                   type="button"
                   onClick={handleClear}

@@ -29,52 +29,56 @@ import DateRangeSelector from "../common/calender";
 // import { customStyles } from "../SuperAdmin/Dashboard/accountReview/accountStatus";
 
 const customStyles = (isReadOnly) => ({
-    control: (base, state) => ({
-      ...base,
-      minHeight: "44px", //42px
-      backgroundColor: "white",
-      color:"#232323",
-      // fontWeight:600,
-      border: state.isFocused ? "1px solid #f2f2f9" : "1px solid #f2f2f9",
-      boxShadow: state.isFocused ? "0 0 0 1px #072D2D" : "none",
-      borderRadius: "0.5rem",
-      "&:hover": {
-        color: "#e2e8f0",
-      },
-      pointerEvents: !isReadOnly ? "none" : "auto",
-      opacity: !isReadOnly ? 1 : 1,
-      cursor: isReadOnly ? "pointer" : "default", 
-    }),
-    indicatorSeparator: () => ({
-      display: "none",
-    }),
-    placeholder: (base) => ({
-      ...base,
-      color: "#6C7086",
-      // fontWeight: "thin",
-      fontSize: "14px",
-      // fontStyle: "bold",
-    }),
-    dropdownIndicator: (provided, state) => ({
-      ...provided,
+  control: (base, state) => ({
+    ...base,
+    minHeight: "44px", //42px
+    backgroundColor: "white",
+    color: "#232323",
+    // fontWeight:600,
+    border: state.isFocused ? "1px solid #f2f2f9" : "1px solid #f2f2f9",
+    boxShadow: state.isFocused ? "0 0 0 1px #072D2D" : "none",
+    borderRadius: "0.5rem",
+    "&:hover": {
+      color: "#e2e8f0",
+    },
+    pointerEvents: !isReadOnly ? "none" : "auto",
+    opacity: !isReadOnly ? 1 : 1,
+    cursor: isReadOnly ? "pointer" : "default",
+  }),
+  indicatorSeparator: () => ({
+    display: "none",
+  }),
+  placeholder: (base) => ({
+    ...base,
+    color: "#6C7086",
+    // fontWeight: "thin",
+    fontSize: "14px",
+    // fontStyle: "bold",
+  }),
+  dropdownIndicator: (provided, state) => ({
+    ...provided,
+    color: "#232323",
+    fontSize: "14px",
+    "&:hover": {
       color: "#232323",
-      fontSize:"14px",
-      "&:hover": {
-        color: "#232323",
-      },
-    }),
-     input: (base) => ({
-      ...base,
-      "input[type='text']:focus": { boxShadow: 'none' },
-      }),
-      option:(base,state)=>({
-        ...base,
-        backgroundColor: state.isSelected ? "#F0F7FE" : state.isFocused ? "#F0F7FE" : "white",
-        color:"#232323",
-        fontWeight:"500",
-        fontSize:"14px",
-      })
-    });
+    },
+  }),
+  input: (base) => ({
+    ...base,
+    "input[type='text']:focus": { boxShadow: "none" },
+  }),
+  option: (base, state) => ({
+    ...base,
+    backgroundColor: state.isSelected
+      ? "#F0F7FE"
+      : state.isFocused
+      ? "#F0F7FE"
+      : "white",
+    color: "#232323",
+    fontWeight: "500",
+    fontSize: "14px",
+  }),
+});
 
 function AccountSummaryReport() {
   // const roledata = localStorage.getItem("decoded");
@@ -107,7 +111,6 @@ function AccountSummaryReport() {
 
   const [schemeList, setSchemeList] = useState([]);
   const [selectedScheme, setSelectedScheme] = useState();
-  
 
   // const {data: schemeresponse }= useQuery({
   //   queryKey:["Schemes"],
@@ -304,31 +307,25 @@ function AccountSummaryReport() {
         ]}
       />
       <div className="flex flex-col p-4 bg-white border border-[#F2F2F9] rounded-[16px] ">
-        <div className="flex flex-row ">
-          <div className="flex justify-start w-full">
+        <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4 w-full">
+          <div className="flex justify-start">
             <div className="w-60">
               <Select
                 styles={customStyles(true)}
                 placeholder="Schemes"
                 isClearable={true}
                 options={schemeList || []}
-                value={schemeList.find(
-                  (option) => option.value === selectedScheme
-                ) || null }
+                value={
+                  schemeList.find(
+                    (option) => option.value === selectedScheme
+                  ) || null
+                }
                 onChange={(option) => {
                   setSelectedScheme(option ? option.value : null);
                 }}
               />
             </div>
           </div>
-          {/* <div className="flex justify-end w-full">
-  <button
-  onClick={openmodal}
-  className="flex items-center text-sm border-gray-200 text-gray-400 rounded-md bg-gray-200 px-3 h-10 gap-2">
-    <Columns3 className="text-black h-5"/>
-    Manage Columns
-  </button>
-</div> */}
         </div>
         <hr className="mt-2" />
 
@@ -380,28 +377,6 @@ function AccountSummaryReport() {
             handleItemsPerPageChange={handleItemsPerPageChange}
           />
         </div>
-        <Modal />
-        {/* <ModelOne
-          title={
-            <div>
-              <h1 className="text-md font-medium text-black mt-2">
-                Want to Manage Tables?
-              </h1>
-              <p className="text-sm text-gray-400 mt-2">
-                Please Drag and Drop your column to reorder your table and
-                enable see options you want
-              </p>
-            </div>
-          }
-          isOpen={column}
-          extraClassName="w-1/3"
-          setIsOpen={setcolum}
-          closeModal={closemodal}
-        >
-          <div>
-            <Managetables setIsOpen={setcolum} />
-          </div>
-        </ModelOne> */}
       </div>
     </>
   );

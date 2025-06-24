@@ -128,7 +128,7 @@ export function ExistingCustomer({
       ...base,
       minHeight: "44px", //42px
       backgroundColor: "white",
-      color:"#232323",
+      color: "#232323",
       // fontWeight:600,
       border: state.isFocused ? "1px solid #f2f2f9" : "1px solid #f2f2f9",
       boxShadow: state.isFocused ? "0 0 0 1px #004181" : "none",
@@ -138,7 +138,7 @@ export function ExistingCustomer({
       },
       pointerEvents: !isReadOnly ? "none" : "auto",
       opacity: !isReadOnly ? 1 : 1,
-      cursor: isReadOnly ? "pointer" : "default", 
+      cursor: isReadOnly ? "pointer" : "default",
     }),
     indicatorSeparator: () => ({
       display: "none",
@@ -157,18 +157,22 @@ export function ExistingCustomer({
         color: "#232323",
       },
     }),
-     input: (base) => ({
+    input: (base) => ({
       ...base,
-      "input[type='text']:focus": { boxShadow: 'none' },
-      }),
-      option:(base,state)=>({
-        ...base,
-        backgroundColor: state.isSelected ? "#F0F7FE" : state.isFocused ? "#F0F7FE" : "white",
-        color:"#232323",
-        fontWeight:"500",
-        fontSize:"14px"
-      })
-    });
+      "input[type='text']:focus": { boxShadow: "none" },
+    }),
+    option: (base, state) => ({
+      ...base,
+      backgroundColor: state.isSelected
+        ? "#F0F7FE"
+        : state.isFocused
+        ? "#F0F7FE"
+        : "white",
+      color: "#232323",
+      fontWeight: "500",
+      fontSize: "14px",
+    }),
+  });
 
   return (
     <div className="grid md:grid-cols-3 gap-2">
@@ -221,15 +225,15 @@ export function ExistingCustomer({
           maxLength={"10"}
           className="border-[1px] border-[#f2f3f8] rounded-md p-2  focus:border-transparent"
           placeholder="Enter Here"
-        // onKeyDown={(e) => {
-        //   if (e.key === "Enter") {
-        //     e.preventDefault();
-        //     handlesearchcustomer({
-        //       id_branch: formData.id_branch,
-        //       search_mobile: formData.mobile,
-        //     });
-        //   }
-        // }}
+          // onKeyDown={(e) => {
+          //   if (e.key === "Enter") {
+          //     e.preventDefault();
+          //     handlesearchcustomer({
+          //       id_branch: formData.id_branch,
+          //       search_mobile: formData.mobile,
+          //     });
+          //   }
+          // }}
         />
 
         {/* Search Icon */}
@@ -532,7 +536,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
   // };
 
   const handleSearchmobile = async () => {
-    console.log('handle search');
+    console.log("handle search");
 
     try {
       if (Number(searchmobile) === Number(cusData.mobile)) {
@@ -550,8 +554,8 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
         );
 
         if (data && !data.data) {
-          console.log("first")
-          return toast.error("No customer found or deleted customer")
+          console.log("first");
+          return toast.error("No customer found or deleted customer");
         }
 
         setReferralName(`${data?.data?.firstname} ${data.data.lastname}`);
@@ -613,10 +617,10 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
   // };
 
   const filterInputchange = (e) => {
-    console.log('calling', e.target.name);
+    console.log("calling", e.target.name);
 
     const { name, value } = e.target;
-    console.log('val ', value);
+    console.log("val ", value);
 
     // setFormData((prev) => {
     //   console.log('prev', prev);
@@ -668,7 +672,6 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
         formData.max_weight = emptyToZero(formData.max_weight);
 
         setTimeout(() => {
-
           if (wtValue === "") {
             delete newErrors.weight;
           } else if (wtValue < formData.min_weight) {
@@ -688,11 +691,11 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
       let amtValue = emptyToZero(value);
       formData.min_amount = emptyToZero(formData.min_amount);
       formData.max_amount = emptyToZero(formData.max_amount);
-      console.log('amtValue', amtValue);
+      console.log("amtValue", amtValue);
 
       setErrors((prevState) => {
         const newErrors = { ...prevState };
-        console.log('formData.min_amount ', formData.min_amount);
+        console.log("formData.min_amount ", formData.min_amount);
         console.log(formData.max_amount);
         // setTimeout(() => {
 
@@ -715,7 +718,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
 
   useEffect(() => {
     handleschemebyid(formData.id_scheme);
-  }, [formData.id_scheme])
+  }, [formData.id_scheme]);
 
   // const handleschemebyid = async (id) => {
   //   try {
@@ -829,11 +832,24 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
     }
   }, [formData.id_scheme, schemefilter]);
 
+  // function digigoldandsilverMaturity(startDateStr, noOfDays) {
+  //   const startDate = new Date(startDateStr);
+  //   const maturityDate = new Date(startDate);
+  //   maturityDate.setDate(maturityDate.getDate() + noOfDays);
+  //   return maturityDate.toISOString().split('T')[0];
+  // }
   function digigoldandsilverMaturity(startDateStr, noOfDays) {
     const startDate = new Date(startDateStr);
     const maturityDate = new Date(startDate);
-    maturityDate.setDate(maturityDate.getDate() + noOfDays);
-    return maturityDate.toISOString().split('T')[0];
+    maturityDate.setDate(maturityDate.getDate() + noOfDays - 1);
+
+    const day = String(maturityDate.getDate()).padStart(2, "0");
+    const month = String(maturityDate.getMonth() + 1).padStart(2, "0");
+    const year = maturityDate.getFullYear();
+
+    const formattedDate = `${day}-${month}-${year}`;
+
+    setFormData((prev) => ({ ...prev, maturity_date: formattedDate }));
   }
 
   useEffect(() => {
@@ -847,12 +863,12 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
           formData.start_date,
           formData.maturity_period,
           formData.installment_type
-        )
+        );
       } else {
         digigoldandsilverMaturity(
           formData.start_date,
           formData.maturity_period
-        )
+        );
       }
     }
   }, [
@@ -945,23 +961,6 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
   const handleAddCustomer = () => {
     navigate("/manageaccount/addcustomer");
   };
-
-  // const handleStartDateChange = (date) => {
-  //   setStartDate(date);
-  //   setFormData((prev) => ({ ...prev, start_date: date }));
-
-  //   const start = new Date(date);
-  //   start.setMonth(start.getMonth() + formData.maturity_period);
-
-  //   const day = String(start.getDate()).padStart(2, "0");
-  //   const month = String(start.getMonth() + 1).padStart(2, "0");
-  //   const year = start.getFullYear();
-
-  //   const formattedDate = `${day}-${month}-${year}`;
-
-  //   // setMaturityDate(formattedDate);
-  //   // setFormData((prev) => ({ ...prev, maturity_date: formattedDate }));
-  // };
 
   const handleStartDateChange = (date) => {
     setStartDate(date);
@@ -1059,7 +1058,6 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
 
   const updateAmtWtValue = (payload) => {
     const { weight, amount } = payload;
-console.log('selectedClassification', selectedClassification, 'weight', weight, 'amount', amount);
 
     if (selectedClassification === 2 || selectedClassification === 3) {
       if (weight !== 0) {
@@ -1073,16 +1071,15 @@ console.log('selectedClassification', selectedClassification, 'weight', weight, 
       }
     }
     return payload;
-  }
+  };
   const onSubmit = (e) => {
     e.preventDefault();
 
-
     if (isValidForm()) {
-      console.log('formData', formData);
+      console.log("formData", formData);
       let payload = updateAmtWtValue(formData);
-      console.log('payload', payload);
-      
+      console.log("payload", payload);
+
       const updatedFormData = {
         ...payload,
         referral_id: referralId,
@@ -1229,7 +1226,6 @@ console.log('selectedClassification', selectedClassification, 'weight', weight, 
       }
     }
   }, [selectedClassification]);
-  // }, [formData.weight, formData.amount, selectedClassification]);
 
   useEffect(() => {
     if (selectedScheme === "Fixed" && formData.id_scheme) {
@@ -1244,8 +1240,6 @@ console.log('selectedClassification', selectedClassification, 'weight', weight, 
       }
     }
   }, [formData.id_scheme, selectedScheme, schemefilter]);
-
-  // console.log(errors);
 
   return (
     <form onSubmit={onSubmit}>
@@ -1303,7 +1297,9 @@ console.log('selectedClassification', selectedClassification, 'weight', weight, 
           <p style={{ color: "red" }}>{errors?.customer_name}</p>
         </div>
         <div>
-          <label className="text-sm text-[#232323] mb-1 font-semibold">Address</label>
+          <label className="text-sm text-[#232323] mb-1 font-semibold">
+            Address
+          </label>
           <input
             disabled
             type="text"
@@ -1382,12 +1378,12 @@ console.log('selectedClassification', selectedClassification, 'weight', weight, 
               value={
                 schemefilter.find((scheme) => scheme._id === formData.id_scheme)
                   ? {
-                    value: formData.id_scheme,
-                    label:
-                      schemefilter.find(
-                        (scheme) => scheme._id === formData.id_scheme
-                      )?.scheme_name || "",
-                  }
+                      value: formData.id_scheme,
+                      label:
+                        schemefilter.find(
+                          (scheme) => scheme._id === formData.id_scheme
+                        )?.scheme_name || "",
+                    }
                   : null
               }
               onChange={(selectedOption) => {
@@ -1473,19 +1469,20 @@ console.log('selectedClassification', selectedClassification, 'weight', weight, 
                     ...prev,
                     ...([12, 3, 4].includes(prev.scheme_type)
                       ? {
-                        weight: newValue,
-                        amount: newValue ? newValue * metalRate : 0,
-                      }
+                          weight: newValue,
+                          amount: newValue ? newValue * metalRate : 0,
+                        }
                       : {
-                        amount: newValue,
-                        weight: 0,
-                      }),
+                          amount: newValue,
+                          weight: 0,
+                        }),
                   }));
                 }}
-                placeholder={`Select ${[12, 3, 4].includes(formData.scheme_type)
-                  ? "Weight"
-                  : "Amount"
-                  }`}
+                placeholder={`Select ${
+                  [12, 3, 4].includes(formData.scheme_type)
+                    ? "Weight"
+                    : "Amount"
+                }`}
               />
             ) : (
               <div className="border-[1px] border-[#f2f3f8] rounded-md p-2 bg-gray-100 text-gray-500">
@@ -1680,8 +1677,8 @@ console.log('selectedClassification', selectedClassification, 'weight', weight, 
                 )}
                 onChange={(selectedOption) => {
                   setRole(selectedOption?.value || "");
-                  setReferralName(""); // Clear referral name when role changes
-                  setReferralid(null); // Clear referral ID when role changes
+                  setReferralName("");
+                  setReferralid(null);
                 }}
                 styles={customStyles(true)}
                 placeholder="Select Referral Type"

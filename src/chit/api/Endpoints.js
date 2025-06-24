@@ -2906,3 +2906,12 @@ export const getSchemewiseWeight = async (data) => {
   );
   return response.data;
 };
+
+
+//endpoints for exporting data
+export const exportData= async (data) => {
+  const response = await Api.post(
+    `${import.meta.env.VITE_API_URL}/api/import`,data
+  );
+  return response.data;
+};

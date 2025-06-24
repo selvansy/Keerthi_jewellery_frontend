@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setScemeAccountId } from "../../../../redux/clientFormSlice"
 import { getschemeaccountbyid, searchPaymentBySchNo } from '../../../api/Endpoints'
 import Table from '../../common/Table'
-import { formatNumber } from "../../../utils/commonFunction";
+import { formatDecimal, formatNumber } from "../../../utils/commonFunction";
 import { useMutation } from "@tanstack/react-query";
 
 function Ledgerdetails({ setIsOpen }) {
@@ -19,6 +19,7 @@ function Ledgerdetails({ setIsOpen }) {
   const [totalPages, setTotalPages] = useState(0);
   const [totalDocument, setTotalDocument] = useState(0)
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  console.log(paymentdata)
 
   const handleCancel = (e) => {
     e.preventDefault();
@@ -39,7 +40,7 @@ function Ledgerdetails({ setIsOpen }) {
       const payload = {
         page: currentPage,
         limit: itemsPerPage,
-        mobile: ledgerData?.mobile
+        mobile: id
       }
       handleSearchvalue(payload)
     } else {
@@ -88,7 +89,6 @@ function Ledgerdetails({ setIsOpen }) {
     if (!data) return;
     const response = await getschemeaccountbyid(data);
     if (response) {
-      console.log(response,"response")
       setLedgerData({
         account_name: response?.data?.account_name,
         mobile: response.data.id_customer.mobile,
@@ -101,7 +101,9 @@ function Ledgerdetails({ setIsOpen }) {
         scheme_type: response?.data?.scheme_type,
         scheme_typename: response?.data?.scheme_typename,
         gift_issues:response.data?.gift_issues,
-        status:response?.data?.status_name
+        status:response?.data?.status_name,
+        total_paidinstallments:response?.data?.paid_installments,
+
         // id: response?.data?._id,
         // id_scheme: response?.data?.id_scheme._id,
         // min_amount: response?.data?.id_scheme.min_amount,
@@ -110,15 +112,15 @@ function Ledgerdetails({ setIsOpen }) {
         // max_weight: response?.data?.id_scheme.max_weight,
         // amount: response?.data?.id_scheme.amount,
         // id_customer: response?.data?.id_customer._id,
-        // total_paidamount: response?.data?.total_paidamount,
+        total_paidamount: response?.data?.total_paidamount,
         // total_paidinstallments: response?.data?.total_paidinstallments,
-        // total_weight: response?.data?.total_weight,
+        total_weight: response?.data?.total_weight,
         // bill_no: response?.data?.bill_no,
         // bill_date: response?.data?.bill_date,
         // id_branch: response?.data?.id_branch._id,
         // address: response?.data?.id_customer.address,
         // customer_name: response?.data?.id_customer?.firstname + ' ' + response.data?.id_customer?.lastname,
-        // paid_weight:response.data?.payment?.metal_weight,
+        paid_weight:response?.data?.weight,
 
       });
       setpaymentdata(response?.data?.paymentdata);
@@ -148,12 +150,12 @@ function Ledgerdetails({ setIsOpen }) {
     },
     {
       header: "Total Amount",
-      cell: (row) => row?.total_amt
+      cell: (row) => row?.payment_amount
     },
-    {
-      header: "A/c No",
-      cell: (row) => row?.id_scheme_account?.scheme_acc_number ?? "-"
-    },
+    // {
+    //   header: "A/c No",
+    //   cell: (row) => row?.id_scheme_account?.scheme_acc_number ?? "-"
+    // },
     {
       header: "ITR/UTR",
       cell: (row) => row?.itr_utr ?? "-"
@@ -165,7 +167,6 @@ function Ledgerdetails({ setIsOpen }) {
 
 
   ]
-console.log(ledgerData,"kd")
 
   return (
     <div className="bg-white mx-auto">
@@ -179,18 +180,25 @@ console.log(ledgerData,"kd")
         <Detail label="Scheme A/C No" value={ledgerData?.scheme_acc_number} />
         <Detail label="Maturity Date" value={ledgerData?.maturity_date} />
         <Detail label="Classification" value={ledgerData?.id_classification?.name ?? "-"} />
-        <Detail
+         {ledgerData.scheme_type == 10 || ledgerData.scheme_type == 14  ? (
+           <Detail
+          label="Paid Installments"
+          value={`${ledgerData?.total_paidinstallments ?? "0"}`}
+        />
+         ): (
+           <Detail
           label="Paid Installments"
           value={`${ledgerData?.total_paidinstallments ?? "0"}/${ledgerData?.total_installments}`}
         />
+         )}
         <Detail label="Scheme Type" value={ledgerData?.scheme_typename} />
         <Detail label="Paid Amount" value={formatNumber({value:ledgerData?.total_paidamount ?? "",decimalPlaces:0})} />
         <Detail label="Bonus Amount" value={   
           formatNumber({value:paymentdata[0]?.wallet?.balance_amt ?? "-",decimalPlaces:0}) } />
-        <Detail label="Paid Weight" value={ledgerData?.paid_weight} />
-        <Detail label="Total Amount" value={formatNumber({value:ledgerData?.total_paidamount ?? "",decimalPlaces:0})} />
+        <Detail label="Paid Weight" value={`${formatDecimal(ledgerData?.paid_weight)} g`} />
+        {/* <Detail label="Total Amount" value={formatNumber({value:ledgerData?.total_paidamount ?? "",decimalPlaces:0})} /> */}
         <Detail label="Gift Handover" value={ledgerData?.gift_issues} />
-        <Detail label="Status" value={ledgerData?.status} highlight />
+        <Detail label="Status" value={ledgerData?.status} highlight={false} />
       </div>
 
       {/* Installments Table */}
@@ -218,14 +226,43 @@ export default Ledgerdetails;
 
 
 function Detail({ label, value, highlight = false }) {
-  console.log(label,value)
+  const statusStyles = {
+    Open: {
+      bg: "bg-[#12B76A38]",
+      text: "text-green-500",
+    },
+    Completed: {
+      bg: "bg-[#FDA70038]",
+      text: "text-[#FDA700]",
+    },
+    Closed: {
+      bg: "bg-[#FF000038]",
+      text: "text-red-500",
+    },
+    Preclose: {
+      bg: "bg-[#FF000038]",
+      text: "text-red-500",
+    },
+    Refund: {
+      bg: "bg-[#FF000038]",
+      text: "text-red-500",
+    },
+  };
+
+  const textColorClass = statusStyles[value]?.text || '';
+
   return (
     <div className="flex">
       <span className="w-44 font-medium text-gray-700">{label}</span>
-      <span className={`${highlight ? 'text-green-600 font-semibold' : 'text-gray-600 text-start'} `}>
-      {value !== undefined && value !== null ? value : 'N/A'}
+      <span
+        className={`${
+          highlight
+            ? "text-red-500 font-semibold"
+            : `${textColorClass} text-start`
+        }`}
+      >
+        {value !== undefined && value !== null ? value : 'N/A'}
       </span>
-
     </div>
   );
 }

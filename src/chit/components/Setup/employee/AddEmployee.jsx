@@ -109,7 +109,7 @@ const AddEmployee = () => {
       id_country: "",
       id_state: "",
       id_city: "",
-      id_branch:"",
+      id_branch: "",
       address: "",
       pincode: "",
       pan: "",
@@ -140,7 +140,7 @@ const AddEmployee = () => {
       pincode: Yup.string()
         .matches(/^[0-9]{6}$/, "Pincode must be 6 digits")
         .required("Pincode is required"),
-        id_branch: Yup.string().required("Country is required"),
+      id_branch: Yup.string().required("Country is required"),
       id_state: Yup.string().required("State is required"),
       id_city: Yup.string().required("City is required"),
       id_country: Yup.string().required("Country is required"),
@@ -171,7 +171,7 @@ const AddEmployee = () => {
     }),
     onSubmit: async (values) => {
       if (!isMounted.current) return;
-      
+
       setIsLoading(true);
       try {
         const formData = new FormData();
@@ -216,9 +216,9 @@ const AddEmployee = () => {
         }
 
         if (id) {
-          await updateEmployeeMutate(formData);
+          updateEmployeeMutate(formData);
         } else {
-          await addEmployeeMutate(formData);
+          addEmployeeMutate(formData);
         }
       } catch (error) {
         if (isMounted.current) {
@@ -298,7 +298,7 @@ const AddEmployee = () => {
         id_country: employee.id_country._id || country._id,
         employeeIncentivePercentage: employee.employeeIncentivePercentage || 0,
         pan: employee.pan || "",
-        whatsappNumber: employee.whatsappNumber || ""
+        whatsappNumber: employee.whatsappNumber || "",
       });
 
       setImagePreviews({
@@ -638,14 +638,20 @@ const AddEmployee = () => {
     });
   };
 
+  console.log(formik.values);
+  console.log(formik.errors);
+
   return (
     <form onSubmit={formik.handleSubmit} className="w-full mx-auto space-y-6">
       <div className="flex flex-row justify-between items-center mb-4">
         <p className="text-sm text-gray-400 mt-4 mb-3">
-          Employee / <span className="text-[#232323] font-semibold text-sm">Employee Creation</span>
+          Employee /{" "}
+          <span className="text-[#232323] font-semibold text-sm">
+            Employee Creation
+          </span>
         </p>
       </div>
-      
+
       <div className="bg-[#FFFFFF] rounded-[16px] p-6  border-[1px]">
         <h2 className="text-lg font-semibold mb-4 border-b pb-4">
           {id ? "Edit Employee" : "Add Employee"}
@@ -663,7 +669,10 @@ const AddEmployee = () => {
               <div className="relative">
                 <DatePicker
                   selected={formik.values[field]}
-                  onChange={(date) => formik.setFieldValue(field, date)}
+                  onChange={(date) => {
+                    formik.setFieldValue(field, date);
+                    formik.setFieldTouched(field, true);
+                  }}
                   onBlur={formik.handleBlur}
                   dateFormat="yyyy-MM-dd"
                   placeholderText="Select Date"
@@ -694,7 +703,11 @@ const AddEmployee = () => {
                 className="flex-1 border-[1px] border-[#f2f3f8] rounded-md px-3 py-2 cursor-pointer hover:bg-gray-50"
               >
                 <p className="truncate text-[#b5b5b5]">
-                  {imagePreviews.resume?.name || imagePreviews.resume || (formik.values.resume ? formik.values.resume.name : "Browse")}
+                  {imagePreviews.resume?.name ||
+                    imagePreviews.resume ||
+                    (formik.values.resume
+                      ? formik.values.resume.name
+                      : "Browse")}
                 </p>
               </label>
               <div className="absolute right-0 top-0 bottom-0 h-full flex flex-row gap-2">
@@ -730,7 +743,8 @@ const AddEmployee = () => {
                 className="flex-1 border-[1px] border-[#f2f3f8] rounded-md px-3 py-2 cursor-pointer hover:bg-gray-50"
               >
                 <p className="truncate text-[#b5b5b5]">
-                  {imagePreviews.image?.name || imagePreviews.image ||
+                  {imagePreviews.image?.name ||
+                    imagePreviews.image ||
                     (formik.values.image ? formik.values.image.name : "Browse")}
                 </p>
               </label>
@@ -767,7 +781,6 @@ const AddEmployee = () => {
           </div>
         </div>
         <div className="flex justify-end space-x-4 mt-4 py-5">
-          
           <button
             type="submit"
             disabled={isLoading || !formik.isValid}
