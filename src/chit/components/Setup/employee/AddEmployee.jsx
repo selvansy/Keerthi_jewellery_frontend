@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { CalendarDays, Camera, X } from "lucide-react";
+import { CalendarDays } from "lucide-react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { toast } from "react-toastify";
@@ -52,38 +52,21 @@ const AddEmployee = () => {
     "id_branch",
     "pan",
     "aadharNumber",
+    "department"
   ];
 
-  // const customStyles = (isReadOnly) => ({
-  //   control: (base, state) => ({
-  //     ...base,
-  //     minHeight: "42px",
-  //     backgroundColor: "white",
-  //     border: state.isFocused ? "1px solid black" : "2px solid #f2f3f8",
-  //     boxShadow: state.isFocused ? "0 0 0 1px black" : "none",
-  //     borderRadius: "0.375rem",
-  //     "&:hover": {
-  //       color: "#e2e8f0",
-  //     },
-  //     pointerEvents: !isReadOnly ? "none" : "auto",
-  //     opacity: !isReadOnly ? 1 : 1,
-  //   }),
-  //   indicatorSeparator: () => ({
-  //     display: "none",
-  //   }),
-  //   placeholder: (base) => ({
-  //     ...base,
-  //     color: "#858293",
-  //     fontWeight: "thin",
-  //   }),
-  //   dropdownIndicator: (provided, state) => ({
-  //     ...provided,
-  //     color: "#232323",
-  //     "&:hover": {
-  //       color: "#232323",
-  //     },
-  //   }),
-  // });
+  // Department options
+  const departmentOptions = [
+    { value: "sales", label: "Sales" },
+    { value: "marketing", label: "Marketing" },
+    { value: "finance", label: "Finance" },
+    { value: "hr", label: "Human Resources" },
+    { value: "operations", label: "Operations" },
+    { value: "it", label: "IT" },
+    { value: "customer_support", label: "Customer Support" },
+    { value: "admin", label: "Administration" },
+    { value: "other", label: "Other" }
+  ];
 
   // State Management
   const [showWebcam, setShowWebcam] = useState(false);
@@ -117,6 +100,7 @@ const AddEmployee = () => {
       date_of_join: null,
       aadharNumber: "",
       employeeIncentivePercentage: 0,
+      department: ""
     },
     validationSchema: Yup.object({
       firstname: Yup.string()
@@ -140,7 +124,8 @@ const AddEmployee = () => {
       pincode: Yup.string()
         .matches(/^[0-9]{6}$/, "Pincode must be 6 digits")
         .required("Pincode is required"),
-      id_branch: Yup.string().required("Country is required"),
+      id_branch: Yup.string().required("Branch is required"),
+      department: Yup.string().required("Department is required"),
       id_state: Yup.string().required("State is required"),
       id_city: Yup.string().required("City is required"),
       id_country: Yup.string().required("Country is required"),
@@ -299,6 +284,7 @@ const AddEmployee = () => {
         employeeIncentivePercentage: employee.employeeIncentivePercentage || 0,
         pan: employee.pan || "",
         whatsappNumber: employee.whatsappNumber || "",
+        department: employee.department || ""
       });
 
       setImagePreviews({
@@ -455,6 +441,10 @@ const AddEmployee = () => {
     );
   };
 
+  const handleDepartmentChange = (selectedOption) => {
+    formik.setFieldValue("department", selectedOption ? selectedOption.value : "");
+  };
+
   const handleGenderSelect = (value) => {
     formik.setFieldValue("gender", value);
   };
@@ -544,6 +534,8 @@ const AddEmployee = () => {
                 ? "Aadhar card number"
                 : field === "employeeIncentivePercentage"
                 ? "Employee Incentive Percentage"
+                : field === "department"
+                ? "Department"
                 : field
                     .replace(/_/g, " ")
                     .replace(/\b\w/g, (char) => char.toUpperCase())}
@@ -596,6 +588,17 @@ const AddEmployee = () => {
                 placeholder="Select Country"
                 styles={customStyles(true)}
               />
+            ) : field === "department" ? (
+              <Select
+                options={departmentOptions}
+                value={departmentOptions.find(
+                  (option) => option.value === formik.values.department
+                )}
+                onChange={handleDepartmentChange}
+                onBlur={formik.handleBlur}
+                placeholder="Select Department"
+                styles={customStyles(true)}
+              />
             ) : field === "whatsappNumber" ? (
               <input
                 type="text"
@@ -637,9 +640,6 @@ const AddEmployee = () => {
       );
     });
   };
-
-  console.log(formik.values);
-  console.log(formik.errors);
 
   return (
     <form onSubmit={formik.handleSubmit} className="w-full mx-auto space-y-6">
