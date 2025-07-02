@@ -107,7 +107,7 @@ function Action({ row, data, rowIndex, activeDropdown, setActive, handleEdit, ha
                     Edit
                   </button>
                 )}
-                {(showDelete && roledata.id_role.id_role == 1) && (
+                {(showDelete) && (
                   <button
                     className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-[#E7EEF5] flex items-center gap-2"
                     onClick={() => {

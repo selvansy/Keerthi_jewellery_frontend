@@ -3,7 +3,7 @@ import Table from "../../common/Table";
 import { SlidersHorizontal, Search, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import {
   getnewarrivalsTable,
   getallbranch,
@@ -247,6 +247,7 @@ const NewArrivals = () => {
             text: "Cancel",
           },
           submit: {
+
             text: "Delete",
           },
         },
@@ -357,6 +358,7 @@ const NewArrivals = () => {
           setActive={hanldeActiveDropDown}
           handleEdit={handleEdit}
           handleDelete={handleDelete}
+          showDelete={true}
         />
       ),
       sticky: "right",
@@ -397,7 +399,7 @@ const NewArrivals = () => {
     <>
       <Breadcrumb
         items={[
-          { label: "Catelogue" },
+          { label: "Catalogue" },
           { label: "New Arrivals", active: true },
         ]}
       />

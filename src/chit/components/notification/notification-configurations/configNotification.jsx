@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { notificationConfig, getConfig } from "../../../api/Endpoints";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import SpinLoading from "../../common/spinLoading";

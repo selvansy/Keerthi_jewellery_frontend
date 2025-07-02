@@ -15,7 +15,7 @@ import {
   getMetalRateByMetalId,
   productbyid,
 } from "../../../api/Endpoints";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { useDispatch, useSelector } from "react-redux";
 import SpinLoading from "../../common/spinLoading";
 import { customSelectStyles } from "../../Setup/purity";

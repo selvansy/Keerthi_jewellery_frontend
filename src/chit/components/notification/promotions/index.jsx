@@ -11,7 +11,7 @@ import {
   addDepartment,
 } from "../../../api/Endpoints";
 import { useMutation } from "@tanstack/react-query";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { openModal } from "../../../../redux/modalSlice";
 import { eventEmitter } from "../../../../utils/EventEmitter";
 import { useSelector, useDispatch } from "react-redux";

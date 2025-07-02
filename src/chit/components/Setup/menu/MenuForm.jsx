@@ -8,7 +8,7 @@ import {
 import { useMutation } from "@tanstack/react-query";
 import { useSelector, useDispatch } from "react-redux";
 import { setid } from "../../../../redux/clientFormSlice";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { Formik } from "formik";
 import * as Yup from "yup";
 

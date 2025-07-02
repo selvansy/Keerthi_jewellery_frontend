@@ -4,7 +4,7 @@ import { useDebounce } from "../../../hooks/useDebounce";
 import { Search} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import {
   getSchemeTable,
   getallbranch,

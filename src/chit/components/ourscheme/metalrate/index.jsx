@@ -11,7 +11,7 @@ import {
 import { eventEmitter } from "../../../../utils/EventEmitter";
 import Modal from "../../common/Modal";
 import { openModal } from "../../../../redux/modalSlice";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { useDispatch, useSelector } from "react-redux";
 import { SlidersHorizontal, Search, X } from "lucide-react";
 import { CalendarDays, RefreshCcw } from "lucide-react";

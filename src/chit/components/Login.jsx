@@ -8,7 +8,7 @@ import { jwtDecode } from "jwt-decode";
 import SpinLoading from "./common/spinLoading";
 import Logo from "../../assets/login.svg";
 import Background from "../../assets/LoginBg.png";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { Eye, EyeOff } from "lucide-react";
 import { useLocation } from "react-router-dom";
 

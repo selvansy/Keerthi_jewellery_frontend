@@ -595,29 +595,29 @@ const Base = ({ renderContent: RenderContent }) => {
             </div>
           </div>
           <div className="xl:flex items-center space-x-3 hidden ">
-            <div className="bg-[#FFE28D] flex px-[12px] py-[6px] rounded-[8px]">
-              <p>Gold (24K):</p>
-              <p className="ml-1">
+             <div className="bg-[#FFE28D] flex px-2 py-1 sm:px-3 sm:py-1.5 rounded-[8px] text-[#232323] font-medium sm:text-sm hidden md:flex">
+                <span className="hidden sm:inline">Gold (24K):</span>
+             <span className="ml-1 font-bold">
                 {metalRate[0]?.rate
                   ? formatNumber({ value: metalRate[0].rate, decimalPlaces: 0 })
                   : "N/A"}
-              </p>
+              </span>
             </div>
-            <div className="bg-[#FFE28D] flex px-[12px] py-[6px] rounded-[8px]">
-              <p>Gold (22K):</p>
-              <p className="ml-1">
+             <div className="bg-[#FFE28D] flex px-2 py-1 sm:px-3 sm:py-1.5 rounded-[8px] text-[#232323] font-medium sm:text-sm hidden md:flex">
+             <span className="hidden sm:inline">Gold (22K):</span>
+              <span className="ml-1 font-bold">
                 {metalRate[1]?.rate
                   ? formatNumber({ value: metalRate[1].rate, decimalPlaces: 0 })
                   : "N/A"}
-              </p>
+              </span>
             </div>
-            <div className="bg-[#C0C0C0] flex px-[12px] py-[6px] rounded-[8px]">
-              <p>Silver:</p>
-              <p className="ml-1">
+            <div className="bg-[#FFE28D] flex px-2 py-1 sm:px-3 sm:py-1.5 rounded-[8px] text-[#232323] font-medium sm:text-sm hidden md:flex">
+               <span className="hidden sm:inline">Silver:</span>
+              <span className="ml-1 font-bold">
                 {metalRate[2]?.rate
                   ? formatNumber({ value: metalRate[2].rate, decimalPlaces: 0 })
                   : "N/A"}
-              </p>
+              </span>
             </div>
 
             <div className="border-2 border-[#F2F2F9] rounded-full">

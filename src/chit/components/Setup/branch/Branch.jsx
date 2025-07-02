@@ -9,7 +9,7 @@ import {
 } from "../../../api/Endpoints";
 import { useMutation } from "@tanstack/react-query";
 import { useDebounce } from '../../../hooks/useDebounce';
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 
 import { useDispatch, useSelector } from 'react-redux';  
 import Action from "../../common/action";

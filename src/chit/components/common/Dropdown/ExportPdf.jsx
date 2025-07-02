@@ -2,7 +2,7 @@ import React from "react";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import { useSelector } from "react-redux";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { FileSpreadsheet } from "lucide-react";
 import { body, style } from "framer-motion/client";
 

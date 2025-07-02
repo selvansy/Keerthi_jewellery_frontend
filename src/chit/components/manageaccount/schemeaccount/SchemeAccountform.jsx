@@ -775,7 +775,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
   const handleschemebyid = async (id) => {
     try {
       const countData = await getSchemeAccountCount(formData.mobile, id);
-      const newAcNumber = countData.data !== 0 ? Number(countData.data) + 1 : 1;
+      const newAcNumber = countData.data !== 0 ? Number(countData.data) : 1;
       setAcNumber(newAcNumber);
 
       const schemeData = schemefilter.find(

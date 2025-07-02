@@ -1,6 +1,6 @@
 // import React, { useEffect, useRef, useState } from "react";
 // import { X } from "lucide-react";
-// import { toast } from "react-toastify";
+// import { toast } from "sonner";
 // import banner_placeholder from "../../../../assets/banner_placeholder.webp";
 // import warning from "../../../../assets/icons/warning.svg";
 
@@ -260,7 +260,7 @@
 // export default Classification;
 import React, { useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import banner_placeholder from "../../../../assets/banner_placeholder.webp";
 import warning from "../../../../assets/icons/warning.svg";
 

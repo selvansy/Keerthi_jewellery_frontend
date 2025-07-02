@@ -8,7 +8,7 @@ import {
   getallpurity,
   schemepaymenttodayrate,
 } from "../../../api/Endpoints";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { useDispatch, useSelector } from "react-redux";
 import { setbranchId, setid } from "../../../../redux/clientFormSlice";
 import profileplaceholder from "../../../../../src/assets/profileplaceholder.png";

@@ -2915,3 +2915,11 @@ export const exportData= async (data) => {
   );
   return response.data;
 };
+
+export const getSchemeCustomers = async (data) => {
+  const response = await Api.post(
+    `${import.meta.env.VITE_API_URL}/api/client/notify/schemecustomers`,
+    data
+  );
+  return response.data;
+};

@@ -144,7 +144,7 @@ const SchemeForm = () => {
         // setIsLoading(false);
         toast.success(response?.data?.message);
         formik.resetForm();
-        navigate("/scheme/delist");
+        navigate("/scheme/delisted");
       }
     },
     onError: () => {
@@ -1428,7 +1428,7 @@ const SchemeForm = () => {
           className="border-[1px] rounded-[16px] bg-white"
         >
           <AccordionTrigger className="px-6 text-[#232323] font-semibold text-lg">
-            Classification Details
+            Scheme Details
           </AccordionTrigger>
           <AccordionContent value="classification" className="px-6">
             <div className="border-t pt-4">

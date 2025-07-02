@@ -6,7 +6,7 @@ import * as Yup from "yup";
 import { CalendarDays } from "lucide-react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import Webcam from "react-webcam";
 import { useSelector } from "react-redux";
 import profileplaceholder from "../../../../assets/profileplaceholder.png";

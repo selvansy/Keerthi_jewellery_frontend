@@ -15,7 +15,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useSelector, useDispatch } from "react-redux";
 import { setid } from "../../../../redux/clientFormSlice";
 import { openModal } from "../../../../redux/modalSlice";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 

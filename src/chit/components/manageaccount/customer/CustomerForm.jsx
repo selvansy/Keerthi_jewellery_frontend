@@ -18,7 +18,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { sendOtp, verifyOtp } from "../../../api/Endpoints";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { useSelector } from "react-redux";
 import SpinLoading from "../../common/spinLoading";
 import Select from "react-select";

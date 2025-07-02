@@ -1298,7 +1298,7 @@ const AddSchemePayment = () => {
                             <div className="flex items-center">
                               <span className="text-gray-900">
                                 {Number(
-                                  (selectedScheme?.total_weight || 0).toFixed(2)
+                                  (selectedScheme?.total_weight || 0)
                                 )}
                                 {/* {selectedScheme?.total_weight || "-"} */}
                               </span>
@@ -1847,7 +1847,7 @@ const AddSchemePayment = () => {
                       <span className="text-gray-900">
                         {selectedScheme?.total_weight != null
                           ? `${Number(
-                              selectedScheme.total_weight.toFixed(2)
+                              formatDecimal(selectedScheme.total_weight)
                             )} g`
                           : "-"}
                       </span>
