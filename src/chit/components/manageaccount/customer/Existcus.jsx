@@ -353,7 +353,7 @@ const Existcusomer = () => {
     },
     {
       label: "Pending Amount",
-      value: data?.referralData?.pendingAmount || "-",
+      value: formatDecimal(data?.referralData?.pendingAmount,2) || "-",
     },
   ];
 

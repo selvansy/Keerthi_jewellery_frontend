@@ -5,6 +5,7 @@ import { X } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { getCustomerSummary } from "../../api/Endpoints";
 import { useDebounce } from "../../hooks/useDebounce";
+import { formatDecimal } from "../../utils/commonFunction";
 
 const CustomerModal = ({ close }) => {
   const [searchNumber, setSearchNumber] = useState("");
@@ -57,21 +58,21 @@ const CustomerModal = ({ close }) => {
       try {
         if (response.data) {
           setIsLoading(false);
-          const custData = response.data?.custData ?? {};
-          const walletData = response.data?.walletData ?? {};
+          // const custData = response.data?.custData ?? {};
+          const walletData = response.data ?? {};
 
           setCustomerData({
-            name: `${custData.firstname ?? "N/A"} ${
-              custData.lastname ?? ""
+            name: `${walletData.firstname ?? "N/A"} ${
+              walletData.lastname ?? ""
             }`.trim(),
-            phone: custData.mobile ?? "N/A",
-            address: custData.address ?? "N/A",
-            wallet_point: walletData.balance_point ?? "N/A",
-            active_scheme: response.data?.activeScheme ?? "N/A",
+            phone: walletData.mobile ?? "N/A",
+            address: walletData.address ?? "N/A",
+            wallet_point: walletData.balance_amt ?? "N/A",
+            active_scheme: walletData?.active_scheme_count ?? "N/A",
             total_overdues: "-",
-            total_closed: response.data?.closeScheme ?? "N/A",
-            total_completed: response.data?.completedScheme ?? "N/A",
-            overall_overdues: "-",
+            total_closed: response.data?.closedSchemeCount ?? "N/A",
+            total_completed: response.data?.completedSchemeCount ?? "N/A",
+            // overall_overdues: "-",
           });
         } else {
           setIsLoading(false);
@@ -193,10 +194,10 @@ const CustomerModal = ({ close }) => {
                 <div className="grid grid-cols-3">
                   <div className="text-center border p-4 shadow-sm">
                     <h3 className="text-black font-medium mb-4">
-                      Wallet point
+                      Wallet amount
                     </h3>
                     <p className="text-gray-600 text-xl">
-                      {customerData.wallet_point}
+                      ₹{formatDecimal(customerData.wallet_point,2)}
                     </p>
                   </div>
                   <div className="text-center border p-4 shadow-sm">
@@ -237,7 +238,7 @@ const CustomerModal = ({ close }) => {
                   </div>
                   <div className="text-center border p-4 shadow-sm">
                     <h3 className="text-black font-medium mb-4">
-                      Overall Overdues
+                      Total OverDue Amount
                     </h3>
                     <p className="text-gray-600 text-xl">
                       {customerData.overall_overdues}

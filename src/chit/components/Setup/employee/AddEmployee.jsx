@@ -19,6 +19,7 @@ import {
   getemployeebyid,
   getallbranch,
   updateemployee,
+  getAllDepartments,
 } from "../../../api/Endpoints";
 import Select from "react-select";
 import SpinLoading from "../../common/spinLoading";
@@ -52,7 +53,7 @@ const AddEmployee = () => {
     "id_branch",
     "pan",
     "aadharNumber",
-    "department"
+    "department",
   ];
 
   // Department options
@@ -65,7 +66,7 @@ const AddEmployee = () => {
     { value: "it", label: "IT" },
     { value: "customer_support", label: "Customer Support" },
     { value: "admin", label: "Administration" },
-    { value: "other", label: "Other" }
+    { value: "other", label: "Other" },
   ];
 
   // State Management
@@ -75,6 +76,7 @@ const AddEmployee = () => {
   const [states, setStates] = useState([]);
   const [city, setCity] = useState([]);
   const [branchData, setBranchData] = useState([]);
+  const [department, setDepartment] = useState([]);
   const [imagePreviews, setImagePreviews] = useState({
     image: null,
     resume: null,
@@ -100,7 +102,7 @@ const AddEmployee = () => {
       date_of_join: null,
       aadharNumber: "",
       employeeIncentivePercentage: 0,
-      department: ""
+      department: "",
     },
     validationSchema: Yup.object({
       firstname: Yup.string()
@@ -226,6 +228,11 @@ const AddEmployee = () => {
     queryFn: allcountry,
   });
 
+  const { data: departments } = useQuery({
+    queryKey: ["departments"],
+    queryFn: getAllDepartments,
+  });
+
   const { data: branchResponse } = useQuery({
     queryKey: ["branches"],
     queryFn: getallbranch,
@@ -240,7 +247,18 @@ const AddEmployee = () => {
     cacheTime: 1000 * 60 * 10,
   });
 
-  // Effects
+  //useEffects
+  useEffect(() => {
+    if (departments && departments?.data?.length > 0) {
+      const output = departments?.data?.map((dept) => ({
+        value: dept._id,
+        label: dept.name,
+      }));
+      console.log(output)
+      setDepartment(output);
+    }
+  }, [departments]);
+
   useEffect(() => {
     if (countryResponse && isMounted.current) {
       const countryOptions = countryResponse.data.map((state) => ({
@@ -284,7 +302,7 @@ const AddEmployee = () => {
         employeeIncentivePercentage: employee.employeeIncentivePercentage || 0,
         pan: employee.pan || "",
         whatsappNumber: employee.whatsappNumber || "",
-        department: employee.department || ""
+        department: employee.department || "",
       });
 
       setImagePreviews({
@@ -442,7 +460,7 @@ const AddEmployee = () => {
   };
 
   const handleDepartmentChange = (selectedOption) => {
-    formik.setFieldValue("department", selectedOption ? selectedOption.value : "");
+    formik.setFieldValue("department", selectedOption ? selectedOption.id : "");
   };
 
   const handleGenderSelect = (value) => {
@@ -590,11 +608,16 @@ const AddEmployee = () => {
               />
             ) : field === "department" ? (
               <Select
-                options={departmentOptions}
-                value={departmentOptions.find(
+                options={department}
+                value={department.find(
                   (option) => option.value === formik.values.department
                 )}
-                onChange={handleDepartmentChange}
+                onChange={(selectedOption) => {
+                  formik.setFieldValue(
+                    "department",
+                    selectedOption ? selectedOption.value : ""
+                  );
+                }}
                 onBlur={formik.handleBlur}
                 placeholder="Select Department"
                 styles={customStyles(true)}

@@ -195,13 +195,56 @@ const SchemeAccount = () => {
     },
     {
       header: "Scheme Name",
-      cell: (row) => {
-        if ([0, 1, 2].includes(row?.scheme_type)) {
-          return `${row?.scheme_name} (₹ ${row?.amount})`;
-        } else if (row?.scheme_type === 3) {
-          return `${row?.scheme_name} (GRM ${row?.min_weight} - ${row?.max_weight})`;
-        }
-        return `${row?.scheme_name} (₹ ${row?.min_amount} - ${row?.max_amount})`;
+       cell: (row) => {
+          const {
+            scheme_name,
+            amount,
+            min_amount,
+            max_amount,
+            min_weight,
+            max_weight,
+            scheme_type,
+          } = row;
+          console.log(scheme_name,
+            amount,
+            min_amount,
+            max_amount,
+            min_weight,
+            max_weight,
+            scheme_type)
+
+          // Priority 1: Fixed amount
+          if (scheme_type === 10) {
+            return `${scheme_name} ( ₹ ${min_amount} - ₹ ${max_amount})`;
+          }
+
+          if (scheme_type === 14) {
+            return `${scheme_name} ( ₹ ${min_amount} - ₹ ${max_amount})`;
+          }
+
+          // Weight-based schemes (type 12, 3, 4)
+          const isWeightBased = [12, 3, 4].includes(Number(scheme_type));
+
+          if (isWeightBased && min_weight !== null && max_weight !== null) {
+            return `${scheme_name} ( ${min_weight} g - ${max_weight} g)`;
+          }
+
+          // Amount-based schemes (default)
+          if (!isWeightBased && min_amount !== null && max_amount !== null) {
+            return `${scheme_name} ( ₹ ${min_amount} - ₹ ${max_amount})`;
+          }
+
+          // Amount-based schemes (default)
+          const digi = [11, 12].includes(Number(scheme_type));
+          if (digi) {
+            console.log(row);
+          }
+          if (!digi && min_amount !== null && max_amount !== null) {
+            return `${scheme_name} ( ₹ ${min_amount} - ₹ ${max_amount})`;
+          }
+
+          // Fallback
+          return `${scheme_name} (Details Unavailable)`;
       },
     },
     {
@@ -268,74 +311,95 @@ const SchemeAccount = () => {
       cell: (row) => row?.created_through,
     },
     {
-      header: "Action",
-      cell: (row) => (
-        <div
-          ref={dropdownRef}
-          className="dropdown-container relative flex items-center"
-        >
-          <button
-            className="p-2 border hover:bg-gray-100 rounded-full flex justify-center"
-            onClick={(e) => {
-              e.stopPropagation();
-              hanldeActiveDropDown(
-                activeDropdown === row?._id ? null : row?._id,
-                e
-              );
+  header: "Action",
+  cell: (row) => (
+    <div
+      ref={dropdownRef}
+      className="dropdown-container relative flex items-center"
+    >
+      <button
+        className="p-2 border hover:bg-gray-100 rounded-full flex justify-center"
+        onClick={(e) => {
+          e.stopPropagation();
+          hanldeActiveDropDown(
+            activeDropdown === row?._id ? null : row?._id,
+            e
+          );
+        }}
+      >
+        <img src={More} alt="More options" className="w-[20px] h-[20px]" />
+      </button>
+
+      {activeDropdown === row?._id &&
+        createPortal(
+          <div
+            className="absolute"
+            style={{
+              top: position.top,
+              left: position.left,
+              zIndex: 9999,
+              filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.15))",
             }}
           >
-            <img src={More} alt="More options" className="w-[20px] h-[20px]" />
-          </button>
-
-          {activeDropdown === row?._id &&
-            createPortal(
-              <div
-                className="absolute"
-                style={{
-                  top: position.top,
-                  left: position.left,
-                  zIndex: 9999,
-                  filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.15))",
-                }}
-              >
-                <div className="w-40 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
-                  <div className="py-1">
-                    <button
-                      className="w-full text-left text-nowrap px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                      onClick={() => {
-                        handleOpenLedger(row._id);
-                        hanldeActiveDropDown(null);
-                      }}
-                    >
-                      <img
-                        src={eyeIcon}
-                        alt="View"
-                        className="text-black w-4 h-4 mr-1"
-                      />
-                      View
-                    </button>
-                    <button
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                      onClick={() => {
-                        setActiveDropdown(null);
-                        handleGift(row);
-                      }}
-                    >
-                      <img
-                        src={gift}
-                        alt="Gift"
-                        className="w-[16px] h-[16px]"
-                      />
-                      Gift Handover
-                    </button>
-                  </div>
-                </div>
-              </div>,
-              document.body
-            )}
-        </div>
-      ),
-    },
+            <div className="w-40 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+              <div className="py-1">
+                <button
+                  className="w-full text-left text-nowrap px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                  onClick={() => {
+                    handleOpenLedger(row._id);
+                    hanldeActiveDropDown(null);
+                  }}
+                >
+                  <img
+                    src={eyeIcon}
+                    alt="View"
+                    className="text-black w-4 h-4 mr-1"
+                  />
+                  View
+                </button>
+                <button
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                  onClick={() => {
+                    setActiveDropdown(null);
+                    handleGift(row);
+                  }}
+                >
+                  <img
+                    src={gift}
+                    alt="Gift"
+                    className="w-[16px] h-[16px]"
+                  />
+                  Gift Handover
+                </button>
+                {/* Add Cancel button here */}
+                <button
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2 border-t border-gray-100"
+                  onClick={() => hanldeActiveDropDown(null)}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4 mr-1"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
+    </div>
+  ),
+},
   ];
 
   return (

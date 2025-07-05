@@ -1114,7 +1114,7 @@ const Modal = () => {
       case "SUCCESS":
         return (
           <div className="text-center px-4">
-            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mt-4">
               <img src="../../../../src/assets/Sticker.png" alt="" />
             </div>
             <h3 className="text-xl font-semibold text-gray-700">

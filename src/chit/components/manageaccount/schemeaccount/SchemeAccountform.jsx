@@ -558,7 +558,12 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
           return toast.error("No customer found or deleted customer");
         }
 
-        setReferralName(`${data?.data?.firstname} ${data.data.lastname}`);
+        setReferralName(
+          `${data?.data?.firstname || ""}${
+            data?.data?.lastname ? " " + data.data.lastname : ""
+          }`
+        );
+
         setReferralid(data?.data?._id);
         setFormData((prev) => ({
           ...prev,

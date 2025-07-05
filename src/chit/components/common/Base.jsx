@@ -341,47 +341,47 @@ const Base = ({ renderContent: RenderContent }) => {
   };
 
   const SubMenuItem = ({ text, onClick, isLast, parentSection, pathUrl }) => {
-    const url = pathUrl?.startsWith("/") ? pathUrl : `/${pathUrl}`;
+  const url = pathUrl?.startsWith("/") ? pathUrl : `/${pathUrl}`;
 
-    const handleLeftClick = (event) => {
-      if (event.ctrlKey || event.metaKey) {
-        window.open(url, "_blank");
-      } else {
-        setSelectedSubSection(text);
-        setSelectedSection(text);
-        setSelectedParentSection(parentSection);
-        onClick && onClick();
-      }
-    };
+  const handleLeftClick = (event) => {
+    if (event.ctrlKey || event.metaKey) {
+      window.open(url, "_blank");
+    } else {
+      setSelectedSubSection(text);
+      setSelectedSection(text);
+      setSelectedParentSection(parentSection);
+      onClick && onClick();
+    }
+  };
 
-    return (
-      <div className="group w-full relative">
-        {!isLast && (
-          <div className="absolute left-6 top-1/2 w-[1px] h-full bg-white -translate-x-1/2" />
-        )}
-        <div className="relative flex items-center pl-12">
-          <div
-            className={`absolute left-6 w-3 h-3 rounded-full border-[1px] -translate-x-1/2 z-10 ${
-              selectedSubSection !== text
-                ? "border-white"
-                : "bg-white border-[#004181]"
-            }`}
-          />
-          <div
-            className={`w-full flex items-start px-4 rounded-md py-2  transition-colors cursor-pointer my-1 text-sm font-semibold
-                    ${
-                      selectedSubSection === text
-                        ? "bg-[#004181] text-white"
-                        : "text-[#6C7086] hover:bg-[#004181] group-hover:text-white"
-                    }`}
-            onClick={handleLeftClick}
-          >
-            {text}
-          </div>
+  return (
+    <div className="w-full relative">
+      {!isLast && (
+        <div className="absolute left-6 top-1/2 w-[1px] h-full bg-white -translate-x-1/2" />
+      )}
+      <div className="relative flex items-center pl-12">
+        <div
+          className={`absolute left-6 w-3 h-3 rounded-full border-[1px] -translate-x-1/2 z-10 ${
+            selectedSubSection !== text
+              ? "border-white"
+              : "bg-white border-[#004181]"
+          }`}
+        />
+        <div
+          className={`w-full flex items-start px-4 rounded-md py-2 transition-colors cursor-pointer my-1 text-sm font-semibold
+                  ${
+                    selectedSubSection === text
+                      ? "bg-[#004181] text-white"
+                      : "text-[#6C7086] hover:bg-[#004181] hover:text-white"
+                  }`}
+          onClick={handleLeftClick}
+        >
+          {text}
         </div>
       </div>
-    );
-  };
+    </div>
+  );
+};
 
   const MenuItem = ({
     text,
@@ -673,7 +673,7 @@ const Base = ({ renderContent: RenderContent }) => {
         style={{ backgroundColor: sidebar_color }}
       >
         <div className="flex justify-center items-center">
-          <img src={logo} alt="Logo" className="h-28 w-52 object-fill" />
+          <img src={logo} alt="Logo" className="h-24 w-52 object-fill mb-4" />
         </div>
 
         <nav className="flex-1 text-white scrollbar-hide overflow-y-auto text-sm font-semibold">

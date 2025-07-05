@@ -6,23 +6,16 @@ import {
   getallpuritytable,
 } from "../../../api/Endpoints";
 import gold24 from "../../../../assets/Gold 24.svg";
-import gold22 from "../../../../assets/Gold 22.svg";
-import gold18 from "../../../../assets/Gold 18.svg";
 import silver from "../../../../assets/silver.svg";
-import { CookingPot, IndianRupee, Triangle } from "lucide-react";
+import { IndianRupee } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
 import Select from "react-select";
-import { customSelectStyles } from "../../../components/Setup/purity/index";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { formatNumber } from "../../../utils/commonFunction";
 import SpinLoading from "../../common/spinLoading";
 import { closeModal } from "../../../../redux/modalSlice";
 import Modal from "../../common/Modal";
-import ModelOne from "../../common/Modelone";
 import { openModal } from "../../../../redux/modalSlice";
-import Down from "../../../../assets/down.svg";
-import UP from "../../../../assets/up.svg";
 import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
 import { customStyles } from "../scheme/AddScheme";
 
@@ -40,6 +33,14 @@ function MetalRateIndex({ refresh }) {
   const [key, setKey] = useState(0);
   const roledata = useSelector((state) => state.clientForm.roledata);
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
+
+  const metalImages = {
+  1: gold24,    // Gold
+  2: silver,    // Silver
+  // 3: diamond,   // Diamond
+  // 4: platinum,  // Platinum
+  // default: defaultMetal // Default image for other metals
+};
 
   const id_branch = roledata?.branch;
   const dispatch = useDispatch();
@@ -173,6 +174,8 @@ function MetalRateIndex({ refresh }) {
         value: match ? match.rate : metal.value,
       };
     });
+
+    
     setMetalValue(updatedArray);
   }, [respnseData]);
 
@@ -261,7 +264,7 @@ function MetalRateIndex({ refresh }) {
       [name]: value.trim() === "" ? "This field is required" : "",
     }));
   };
-
+console.log(metalValue)
   return (
     <>
       <div>
@@ -270,7 +273,7 @@ function MetalRateIndex({ refresh }) {
         />
       </div>
       <div className="flex flex-col p-1 -ml-1">
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {metalValue?.slice(0, 4).map((e) => (
             <div className="bg-white rounded-[16px] py-2 px-[10px] border border-[#F2F2F9]">
               <div className="rounded-md">
@@ -299,7 +302,43 @@ function MetalRateIndex({ refresh }) {
               </div>
             </div>
           ))}
+        </div> */}
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+  {metalValue?.slice(0, 4).map((e) => {
+    // Find the metal data to get the id_metal
+    const metalData = formData.find(item => 
+      item.purity_id?.purity_name === e.purity && 
+      item.material_type_id?.metal_name === e.name
+    );
+    
+    // Get the metal number (default to 5 if not found)
+    const metalNumber = metalData?.material_type_id?.id_metal || 5;
+    
+    // Select the appropriate image
+    const metalImage = metalImages[metalNumber] || metalImages.default;
+    
+    return (
+      <div className="bg-white rounded-[16px] py-2 px-[10px] border border-[#F2F2F9]" key={e._id}>
+        <div className="rounded-md">
+          <img 
+            src={metalImage} 
+            alt={`${e.name} icon`} 
+            className="h-[100px] w-[100px]"
+          />
         </div>
+        <div className="flex flex-col py-[6px] ms-1">
+          <h3 className="text-lg text-[#232323] font-semibold">
+            {e.purity} {e.name}/g
+          </h3>
+          <h5 className="text-[#6C7086] text-md"></h5>
+          <h5 className="text-[#232323] text-sm font-semibold">
+            {formatNumber({ value: e.value, decimalPlaces: 0 })}
+          </h5>
+        </div>
+      </div>
+    );
+  })}
+</div>
 
         <div className="w-full flex flex-col bg-white mt-7 overflow-y-auto scrollbar-hide  border border-[#F2F2F9] rounded-[16px]">
           <div className="flex flex-col p-6 relative ">

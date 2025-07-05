@@ -439,9 +439,9 @@ const Scheme = () => {
         cell: (row) => row.metal_name,
       },
       { header: "Installments", cell: (row) => {
-        if (row.scheme_type !== 10 && row.scheme_type !== 14) {
-          return row?.maturity_period;
-        } else {
+        if (row.scheme_type !== 10 && row.scheme_type !== 14 || row.scheme_type !== "10" && row.scheme_type !== "14") {
+          return row?.total_installments;
+        } else{
           return `-`;
         }
       }, },

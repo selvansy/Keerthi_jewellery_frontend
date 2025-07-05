@@ -854,6 +854,13 @@ export const getDepartmentById = async (data) => {
   return response.data;
 };
 
+export const getAllDepartments = async (data) => {
+  const response = await Api.get(
+    `${import.meta.env.VITE_API_URL}/api/client/department`
+  );
+  return response.data;
+};
+
 export const updateDepartment = async (data) => {
   const response = await Api.patch(
     `${import.meta.env.VITE_API_URL}/api/client/department/${data.id}`,
