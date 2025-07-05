@@ -10,20 +10,31 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   getallSchemes,
   getallbranch,
-  getcustomerByBranchId,
-  addPromotions,
   getallCampaign,
-  getCustomersByScheme,
+  getSchemeCustomers,
+  addPromotions,
 } from "../../../api/Endpoints";
 import ReactSelect, { components } from "react-select";
 import { FixedSizeList as List } from "react-window";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import SpinLoading from "../../common/spinLoading";
 import { useNavigate } from "react-router-dom";
 import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
 import { debounce } from "lodash";
+import Select from "react-select";
 
-const customStyles = (isReadOnly) => ({
+// Constants
+const MAX_FILE_SIZE = 500 * 1024; // 500KB
+const NOTIFICATION_OPTIONS = [
+  { label: "Push Notification", field: "pushNotification" },
+  { label: "SMS", field: "sms" },
+  { label: "WhatsApp", field: "whatsapp" },
+];
+const ARRAY_FIELDS = ['id_branch', 'id_scheme', 'customer_id'];
+const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+
+// Custom styles for React Select
+const customStyles = {
   control: (base, state) => ({
     ...base,
     minHeight: "44px",
@@ -35,9 +46,6 @@ const customStyles = (isReadOnly) => ({
     "&:hover": {
       color: "#e2e8f0",
     },
-    pointerEvents: !isReadOnly ? "none" : "auto",
-    opacity: !isReadOnly ? 1 : 1,
-    cursor: isReadOnly ? "pointer" : "default",
   }),
   indicatorSeparator: () => ({
     display: "none",
@@ -47,7 +55,7 @@ const customStyles = (isReadOnly) => ({
     color: "#6C7086",
     fontSize: "14px",
   }),
-  dropdownIndicator: (provided, state) => ({
+  dropdownIndicator: (provided) => ({
     ...provided,
     color: "#232323",
     "&:hover": {
@@ -69,13 +77,23 @@ const customStyles = (isReadOnly) => ({
     fontWeight: "500",
     fontSize: "14px",
   }),
-});
+  valueContainer: (base) => ({
+    ...base,
+    maxHeight: "40px",
+    overflowY: "auto",
+    flexWrap: "nowrap",
+  }),
+  multiValue: (base) => ({
+    ...base,
+    whiteSpace: "nowrap",
+  }),
+};
 
 // Optimized components for large lists
 const OptimizedOption = (props) => {
-  delete props.innerProps.onMouseMove;
-  delete props.innerProps.onMouseOver;
-  return <components.Option {...props}>{props.children}</components.Option>;
+  const { innerProps, ...rest } = props;
+  const { onMouseMove, onMouseOver, ...filteredInnerProps } = innerProps;
+  return <components.Option {...rest} innerProps={filteredInnerProps}>{rest.children}</components.Option>;
 };
 
 const MenuList = ({ options, children, maxHeight, getValue }) => {
@@ -95,14 +113,31 @@ const MenuList = ({ options, children, maxHeight, getValue }) => {
   );
 };
 
+const ensureArrayFields = (data) => {
+  const processedData = { ...data };
+  
+  ARRAY_FIELDS.forEach(field => {
+    if (!Array.isArray(processedData[field])) {
+      processedData[field] = processedData[field] ? [processedData[field]] : [];
+    }
+  });
+  
+  return processedData;
+};
+
 function AddPromotion() {
+  const navigate = useNavigate();
+  const fileInputRef = useRef(null);
+  const layout_color = useSelector((state) => state.clientForm.layoutColor);
+  const roledata = useSelector((state) => state.clientForm.roledata);
+
   const [formData, setFormData] = useState({
     title: "",
     body: "",
     id_branch: [],
     id_scheme: [],
-
-    noti_image: "",
+    customer_id: [],
+    image: null,
     pushNotification: true,
     sms: false,
     whatsapp: false,
@@ -110,30 +145,11 @@ function AddPromotion() {
     isHtml: false,
   });
 
-  const navigate = useNavigate();
-  const fileInputRef = useRef(null);
-  const [image, setImage] = useState("");
   const [imagePreviews, setImagePreviews] = useState({ image: null });
-  const [pathurl, setPathurl] = useState(null);
-  const [isLoading, setisLoading] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [customerOptions, setCustomerOptions] = useState([]);
 
-  const layout_color = useSelector((state) => state.clientForm.layoutColor);
-  const roledata = useSelector((state) => state.clientForm.roledata);
-  const id_branch = roledata?.branch;
-  const branch = roledata?.id_branch;
-
-  useEffect(() => {
-    const data = campaignOptions?.find(
-      (option) => option?.label == formData.title
-    );
-    setFormData((prev) => ({
-      ...prev,
-      body: data?.description || "",
-    }));
-  }, [formData.title]);
-
-  // Fetch branches
+  // Fetch data
   const { data: branchResponse, isLoading: loadingBranch } = useQuery({
     queryKey: ["branch"],
     queryFn: getallbranch,
@@ -144,155 +160,211 @@ function AddPromotion() {
     queryFn: getallCampaign,
   });
 
-  // Fetch schemes
   const { data: schemeResponse, isLoading: loadingSchemes } = useQuery({
     queryKey: ["scheme"],
     queryFn: getallSchemes,
   });
 
-  const branchId =  formData.id_branch||[branch];
-  const schemeId = formData.id_scheme
-  const { data: customerResponse, isLoading: loadingCustomer } = useQuery({
-    queryKey: ["customer", branchId],
-    queryFn: () => getCustomersByScheme({branchId,schemeId}),
-    enabled: !!branchId,
-  });
+  // Memoized options
+  const branchOptions = useMemo(() => 
+    branchResponse?.data?.map((branch) => ({
+      value: branch._id,
+      label: branch.branch_name,
+    })) || []
+  , [branchResponse]);
 
-  // Memoize options for better performance
-  const branchOptions = useMemo(() => {
-    return (
-      branchResponse?.data?.map((branch) => ({
-        value: branch._id,
-        label: branch.branch_name,
-      })) || []
-    );
-  }, [branchResponse]);
+  const schemeOptions = useMemo(() => 
+    schemeResponse?.data?.map((scheme) => ({
+      value: scheme._id,
+      label: scheme.scheme_name,
+    })) || []
+  , [schemeResponse]);
 
-  const schemeOptions = useMemo(() => {
-    return (
-      schemeResponse?.data?.map((scheme) => ({
-        value: scheme._id,
-        label: scheme.scheme_name,
-      })) || []
-    );
-  }, [schemeResponse]);
-
-  const customerOptions = useMemo(() => {
-    return (
-      customerResponse?.customers?.map((cus) => ({
-        value: cus._id,
-        label: `${cus.firstname} (${cus.mobile})`,
-      })) || []
-    );
-  }, [customerResponse]);
-
-  const campaignOptions = useMemo(() => {
-    return (
-      campaignResponse?.data?.map((campaign) => ({
-        value: campaign._id,
-        label: campaign.name,
-        description: campaign.description,
-      })) || []
-    );
-  }, [campaignResponse]);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    if (name === "noti_image") {
-      setFormData((prev) => ({
-        ...prev,
-        noti_image: value,
-      }));
-      setPathurl(value);
-    }
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
+  const campaignOptions = useMemo(() => 
+    campaignResponse?.data?.map((campaign) => ({
+      value: campaign._id,
+      label: campaign.name,
+      description: campaign.description,
+    })) || []
+  , [campaignResponse]);
 
   // Debounced search handler
   const debouncedSearch = useCallback(
     debounce((searchValue) => {
-      setSearchTerm(searchValue);
+      // Currently just sets search term, could be used for filtering
+      console.log(searchValue);
     }, 500),
     []
   );
 
   const handleSelectChange = (selectedOptions, allOptions, fieldName) => {
-    if (selectedOptions.some((opt) => opt.value === "select_all")) {
-      setFormData((prev) => ({
-        ...prev,
-        [fieldName]: allOptions.map((s) => s.value),
-      }));
+    let values = [];
+    
+    if (!selectedOptions || (Array.isArray(selectedOptions) && selectedOptions.length === 0)) {
+      values = [];
     } else {
-      setFormData((prev) => ({
-        ...prev,
-        [fieldName]: selectedOptions.map((s) => s.value),
-      }));
+      const optionsArray = Array.isArray(selectedOptions) ? selectedOptions : [selectedOptions];
+      const isSelectAll = optionsArray.some(opt => opt.value === "select_all");
+      
+      values = isSelectAll
+        ? allOptions.map(opt => opt.value).filter(v => v !== "select_all")
+        : optionsArray.map(opt => opt.value);
     }
+
+    setFormData(prev => ({
+      ...prev,
+      [fieldName]: values
+    }));
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleCheckboxChange = (field) => {
+    setFormData(prev => ({ ...prev, [field]: !prev[field] }));
   };
 
   const handleClearImage = () => {
-    setImagePreviews((prev) => ({
-      ...prev,
-      image: null,
-    }));
-    setImage("");
-    fileInputRef.current.value = "";
+    // Clean up previous preview URL to avoid memory leaks
+    if (imagePreviews.image?.previewUrl) {
+      URL.revokeObjectURL(imagePreviews.image.previewUrl);
+    }
+    
+    setImagePreviews({ image: null });
+    setFormData(prev => ({ ...prev, image: null }));
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
-    const name = event.target.name;
+    
+    if (!file) return;
 
-    if (file && file.size <= 500 * 1024) {
-      const previewUrl = URL.createObjectURL(file);
-      if (file.size > 500 * 1024) {
-        toast.error("File size exceeds 500KB.");
-        return;
-      }
+    // Validate file type
+    if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
+      toast.error("Please select a valid image file (JPEG, PNG, GIF, WebP).");
+      event.target.value = ""; // Clear the input
+      return;
+    }
 
-      setImagePreviews((prev) => ({
-        ...prev,
-        [name]: {
-          file,
-          previewUrl,
-          name: file.name,
-        },
-      }));
+    // Validate file size
+    if (file.size > MAX_FILE_SIZE) {
+      toast.error("File size exceeds 500KB. Please select a smaller image.");
+      event.target.value = ""; // Clear the input
+      return;
+    }
 
-      setImage(file.name);
-      setPathurl(previewUrl);
-    } else {
-      toast.error(
-        `File size exceeded, upload max-size(500KB) or file not found`
-      );
+    // Clean up previous preview URL to avoid memory leaks
+    if (imagePreviews.image?.previewUrl) {
+      URL.revokeObjectURL(imagePreviews.image.previewUrl);
+    }
+
+    // Create new preview
+    const previewUrl = URL.createObjectURL(file);
+    setImagePreviews({
+      image: {
+        file,
+        previewUrl,
+        name: file.name,
+      },
+    });
+    
+    // Update formData with the file object
+    setFormData(prev => ({ ...prev, image: file }));
+  };
+
+  const handleFileInputClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ""; // Clear previous value to ensure onChange fires
+      fileInputRef.current.click();
     }
   };
 
-  const handleSubmit = () => {
-    setisLoading(true);
-    const formPayload = new FormData();
+  const { mutate: getSchemeCustomerList } = useMutation({
+    mutationFn: getSchemeCustomers,
+    onSuccess: (response) => {
+      const fetchedOptions = response?.data?.map((item) => ({
+        value: item._id,
+        label: `${item.firstname} ${item.lastname || ""} (${item.mobile})`,
+        mobile: item.mobile,
+      }));
+      setCustomerOptions(fetchedOptions);
+    },
+    onError: (error) => {
+      setIsLoading(false);
+      toast.error(error.response?.data?.message || "Error fetching customers");
+    },
+  });
 
-    Object.entries(formData).forEach(([key, value]) => {
-      if (Array.isArray(value)) {
-        value.forEach((item, index) => {
-          formPayload.append(`${key}[${index}]`, item);
+  const { mutate: addcustomerMutate } = useMutation({
+    mutationFn: addPromotions,
+    onSuccess: (response) => {
+      toast.success(response.message);
+      setIsLoading(false);
+      navigate("/schemereport/promosummary/");
+    },
+    onError: (error) => {
+      setIsLoading(false);
+      toast.error(error.response?.data?.message || "An error occurred");
+    },
+  });
+
+  const handleSubmit = () => {
+    // Basic validation
+    if (!formData.title.trim()) {
+      toast.error("Please select a title");
+      return;
+    }
+    
+    if (!formData.body.trim()) {
+      toast.error("Please enter content");
+      return;
+    }
+    
+    if (formData.id_branch.length === 0) {
+      toast.error("Please select at least one branch");
+      return;
+    }
+    
+    if (formData.id_scheme.length === 0) {
+      toast.error("Please select at least one scheme");
+      return;
+    }
+    
+    if (formData.customer_id.length === 0) {
+      toast.error("Please select at least one customer");
+      return;
+    }
+
+    setIsLoading(true);
+    const validatedFormData = ensureArrayFields(formData);
+    
+    const formDataToSend = new FormData();
+    
+    // Append all form data to FormData object
+    Object.keys(validatedFormData).forEach(key => {
+      if (key === 'image') {
+        if (validatedFormData[key] && validatedFormData[key] instanceof File) {
+          formDataToSend.append(key, validatedFormData[key]);
+        }
+      } else if (Array.isArray(validatedFormData[key])) {
+        validatedFormData[key].forEach(value => {
+          formDataToSend.append(`${key}[]`, value);
         });
-      } else if (value) {
-        formPayload.append(key, value);
+      } else {
+        formDataToSend.append(key, validatedFormData[key]);
       }
     });
 
-    if (image) formPayload.append("image", image);
-
-    addcustomerMutate(formPayload);
+    addcustomerMutate(formDataToSend);
   };
 
   const handleClear = () => {
     handleClearImage();
-    setFormData((prev) => ({ ...prev, noti_image: "" }));
     setFormData({
       title: "",
       body: "",
@@ -304,32 +376,39 @@ function AddPromotion() {
       whatsapp: false,
       email: false,
       isHtml: false,
-      noti_image: "",
+      image: null,
     });
+    setCustomerOptions([]);
   };
 
-  const { mutate: addcustomerMutate } = useMutation({
-    mutationFn: (data) => addPromotions(data),
-    onSuccess: (response) => {
-      if (response) {
-        toast.success(response.message);
+  // Update body when title changes
+  useEffect(() => {
+    const data = campaignOptions?.find(
+      (option) => option?.label === formData.title
+    );
+    if (data?.description) {
+      setFormData(prev => ({ ...prev, body: data.description }));
+    }
+  }, [formData.title, campaignOptions]);
+
+  // Fetch customers when scheme changes
+  useEffect(() => {
+    if (formData.id_scheme.length > 0) {
+      getSchemeCustomerList({ id_scheme: formData.id_scheme });
+    } else {
+      setCustomerOptions([]);
+      setFormData(prev => ({ ...prev, customer_id: [] }));
+    }
+  }, [formData.id_scheme, getSchemeCustomerList]);
+
+  // Cleanup preview URLs on unmount
+  useEffect(() => {
+    return () => {
+      if (imagePreviews.image?.previewUrl) {
+        URL.revokeObjectURL(imagePreviews.image.previewUrl);
       }
-      setisLoading(false);
-      navigate("/schemereport/promosummary/");
-    },
-    onError: (error) => {
-      setisLoading(false);
-      toast.error(error.response?.data?.message || "An error occurred");
-      console.error("Error:", error);
-    },
-  });
-
-  const handleCheckboxChange = (field) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      [field]: !prevData[field],
-    }));
-  };
+    };
+  }, []);
 
   return (
     <>
@@ -343,6 +422,7 @@ function AddPromotion() {
           />
         </div>
       </div>
+      
       <div className="bg-[#FFFFFF] rounded-[16px] p-6 border-[1px]">
         <h2 className="text-lg font-semibold mb-4 border-b pb-4">
           Add Promotions
@@ -350,15 +430,10 @@ function AddPromotion() {
 
         {/* Notification Options */}
         <div className="flex gap-4 mb-4">
-          {[
-            { label: "Push Notification", field: "pushNotification" },
-            { label: "SMS", field: "sms" },
-            { label: "WhatsApp", field: "whatsapp" },
-          ].map(({ label, field }) => (
+          {NOTIFICATION_OPTIONS.map(({ label, field }) => (
             <label key={field} className="flex items-center space-x-2 gap-2">
               <input
                 type="checkbox"
-                name={field}
                 checked={formData[field]}
                 className="w-[16px] h-[16px]"
                 onChange={() => handleCheckboxChange(field)}
@@ -381,12 +456,8 @@ function AddPromotion() {
                 { value: "select_all", label: "Select All" },
                 ...branchOptions,
               ]}
-              value={branchOptions.filter((s) =>
-                formData.id_branch.includes(s.value)
-              )}
-              onChange={(selectedOptions) => {
-                handleSelectChange(selectedOptions, branchOptions, "id_branch");
-              }}
+              value={branchOptions.filter(opt => formData.id_branch.includes(opt.value))}
+              onChange={(selected) => handleSelectChange(selected, branchOptions, "id_branch")}
               isLoading={loadingBranch}
               closeMenuOnSelect={false}
               hideSelectedOptions={false}
@@ -397,6 +468,7 @@ function AddPromotion() {
               filterOption={(option, input) =>
                 option.label.toLowerCase().includes(input.toLowerCase())
               }
+              styles={customStyles}
             />
           </div>
 
@@ -405,13 +477,13 @@ function AddPromotion() {
             <label className="font-medium text-gray-700">
               Scheme <span className="text-red-400">*</span>
             </label>
-            <ReactSelect
+            <Select
               isMulti
-              components={{ Option: OptimizedOption, MenuList }}
               options={[
                 { value: "select_all", label: "Select All" },
                 ...schemeOptions,
               ]}
+              components={{ Option: OptimizedOption, MenuList }}
               value={schemeOptions.filter((s) =>
                 formData.id_scheme.includes(s.value)
               )}
@@ -428,6 +500,7 @@ function AddPromotion() {
               filterOption={(option, input) =>
                 option.label.toLowerCase().includes(input.toLowerCase())
               }
+              styles={customStyles}
             />
           </div>
 
@@ -453,7 +526,6 @@ function AddPromotion() {
                   "customer_id"
                 );
               }}
-              isLoading={loadingCustomer}
               closeMenuOnSelect={false}
               hideSelectedOptions={false}
               menuShouldScrollIntoView={false}
@@ -461,22 +533,23 @@ function AddPromotion() {
               placeholder="Select Customers"
               onInputChange={debouncedSearch}
               filterOption={(option, input) =>
-                option.label.toLowerCase().includes(input.toLowerCase())
+                option.label.toLowerCase().includes(input.toLowerCase()) ||
+                option.mobile?.includes(input)
               }
+              styles={customStyles}
             />
           </div>
 
           {/* Title Selection */}
           <div className="flex flex-col">
-            <label className="font-mediaum text-gray-700">
+            <label className="font-medium text-gray-700">
               Title <span className="text-red-400">*</span>
             </label>
             <ReactSelect
-              styles={customStyles(true)}
-              isClearable={true}
+              styles={customStyles}
+              isClearable
               options={campaignOptions}
               className="py-2 px-2 rounded-md"
-              disabled
               placeholder="Select title"
               value={
                 campaignOptions.find(
@@ -485,7 +558,7 @@ function AddPromotion() {
               }
               isLoading={loadingCampaign}
               onChange={(option) => {
-                setFormData((prev) => ({
+                setFormData(prev => ({
                   ...prev,
                   title: option?.label || "",
                 }));
@@ -503,7 +576,7 @@ function AddPromotion() {
             </label>
             <textarea
               name="body"
-              className="w-full h-10 border-2 border-[#f2f3f8] rounded-md px-3 text-gray-500"
+              className="w-full h-20 border-2 border-[#f2f3f8] rounded-md px-3 py-2 text-gray-700 resize-vertical"
               placeholder="Enter content"
               onChange={handleChange}
               value={formData.body}
@@ -514,57 +587,68 @@ function AddPromotion() {
           <div className="flex flex-col gap-2">
             <div className="flex flex-row">
               <label className="font-medium text-gray-700">
-                Image Upload <span className="text-red-400">*</span>
+                Image Upload
               </label>
               <p className="text-gray-900 text-[12px] truncate text-start mx-2 mt-1">
                 (Maximum file size: 500KB)
               </p>
             </div>
 
-            {/* Input Field with Choose File Button */}
             <div className="relative w-full">
               <input
                 type="text"
-                className={`cursor-pointer border p-2 pr-24 rounded-md text-gray-400 w-full`}
+                className="cursor-pointer border-2 border-[#f2f3f8] p-2 pr-24 rounded-md text-gray-500 w-full bg-white"
                 placeholder="No file chosen"
                 value={imagePreviews?.image?.name || ""}
                 readOnly
-                onClick={() => {
-                  if (!imagePreviews?.image) {
-                    fileInputRef.current.value = null;
-                    fileInputRef.current.click();
-                  }
-                }}
+                onClick={handleFileInputClick}
               />
               <input
                 type="file"
                 accept="image/*"
                 ref={fileInputRef}
                 onChange={handleFileChange}
-                name="noti_image"
-                className={`cursor-pointer border p-2 pr-24 rounded-md text-gray-400 w-full hidden`}
+                className="hidden"
               />
-              <div
-                className={`cursor-pointer absolute right-2 top-1/2 -translate-y-1/2 text-white px-3 py-2 rounded-md text-sm`}
-                onClick={() => {
-                  if (!imagePreviews?.image) {
-                    fileInputRef.current.value = null;
-                    fileInputRef.current.click();
-                  }
-                }}
-                style={{ backgroundColor: layout_color }}
-              >
-                Choose File
+              <div className="absolute right-0 top-0 h-full flex items-center">
+                {imagePreviews?.image && (
+                  <button
+                    type="button"
+                    className="mr-2 text-red-500 hover:text-red-700 px-2 py-1 text-sm"
+                    onClick={handleClearImage}
+                    title="Remove image"
+                  >
+                    ×
+                  </button>
+                )}
+                <button
+                  type="button"
+                  className="text-white px-3 py-2 rounded-md text-sm font-medium h-full"
+                  onClick={handleFileInputClick}
+                  style={{ backgroundColor: layout_color }}
+                >
+                  Choose File
+                </button>
               </div>
             </div>
+
+            {/* Image Preview */}
+            {imagePreviews?.image && (
+              <div className="mt-2">
+                <img
+                  src={imagePreviews.image.previewUrl}
+                  alt="Preview"
+                  className="w-20 h-20 object-cover rounded-md border"
+                />
+              </div>
+            )}
           </div>
         </div>
 
         {/* Buttons */}
         <div className="flex justify-end mt-12 space-x-4">
           <button
-            className="text-white rounded-lg p-2 text-sm font-semibold lg:w-24"
-            type="submit"
+            className="text-white rounded-lg p-2 text-sm font-semibold lg:w-24 disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={handleSubmit}
             style={{ backgroundColor: layout_color }}
             disabled={isLoading}
@@ -573,8 +657,9 @@ function AddPromotion() {
           </button>
           <button
             type="button"
-            className="bg-gray-300 px-4 py-2 rounded-lg lg:w-24 font-semibold text-sm text-gray-600"
+            className="bg-gray-300 px-4 py-2 rounded-lg lg:w-24 font-semibold text-sm text-gray-600 hover:bg-gray-400 disabled:opacity-50"
             onClick={handleClear}
+            disabled={isLoading}
           >
             Clear
           </button>

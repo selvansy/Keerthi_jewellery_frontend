@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import SpinLoading from "../../common/spinLoading";
 import { useParams } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { addTopup, getTopupByClient } from "../../../api/Endpoints";
 import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
 

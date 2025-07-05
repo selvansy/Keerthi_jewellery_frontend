@@ -3,7 +3,7 @@ import Table from "../../common/Table";
 import { SlidersHorizontal, Search, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import {
   getproductTable,
   deleteproduct,

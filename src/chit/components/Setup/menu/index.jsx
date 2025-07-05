@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Search } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { openModal } from "../../../../redux/modalSlice";
 import { useDispatch, useSelector } from "react-redux";
 import Table from "../../common/Table";

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import {getnotificationtype ,getallbranch,createpushnotification   } from '../../../api/Endpoints'
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { useSelector } from "react-redux";
 import { X } from 'lucide-react'
 import profileplaceholder from "../../../../../src/assets/profileplaceholder.png"

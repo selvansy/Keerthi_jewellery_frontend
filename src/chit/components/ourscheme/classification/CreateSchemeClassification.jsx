@@ -4,7 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 
 import { X } from 'lucide-react'
 import { getClassificationById,getBranchById,getallbranch, getbranchbyclient, updateSchemeClassification, createSchemeClassification, } from "../../../api/Endpoints"
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { useDispatch, useSelector } from 'react-redux';
 import { setid } from "../../../../redux/clientFormSlice"
 import profileplaceholder from "../../../../../src/assets/profileplaceholder.png"

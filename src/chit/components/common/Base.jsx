@@ -15,7 +15,9 @@ import {
   UserRoundCheck,
   ChevronRight,
   Menu,
+  LayoutDashboard
 } from "lucide-react";
+
 
 import logo from "../../../assets/logo(3).svg";
 import RouteList from "../../../routes/RouteList";
@@ -32,6 +34,7 @@ import CustomerModal from "./customerModal";
 // import settings from "../../../assets/dashboard/setting.svg"
 import notification from "../../../assets/dashboard/notification.svg";
 import Dashboard from "../../../assets/icons/Dashboard.svg";
+
 import {
   getallpurity,
   getMetalRateByMetalId,
@@ -63,6 +66,8 @@ const Base = ({ renderContent: RenderContent }) => {
   const navigate = useNavigate();
   let dispatch = useDispatch();
 
+   const currentYear = new Date().getFullYear();
+
   useEffect(() => {
     const handleKeyDown = (event) => {
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "f") {
@@ -88,7 +93,7 @@ const Base = ({ renderContent: RenderContent }) => {
   const branchId = decoded.id_branch;
 
   const menus = useSelector((state) => state.auth.menu);
-
+  
   const getPurity = async () => {
     try {
       const response = await getallpurity();
@@ -96,71 +101,46 @@ const Base = ({ renderContent: RenderContent }) => {
 
       if (!data || !Array.isArray(data)) return;
 
-      const metals = ["Gold", "Silver"];
-      const goldPurityRegex = /^(24|22)\s?(k|c)(t)?$/i;
-
-      const filteredData = data.filter((item) => {
-        const metalName = item?.id_metal?.metal_name;
-        const purityName = item?.purity_name;
-
-        if (!metalName || !purityName) return false;
-
-        const isGold = /^gold$/i.test(metalName);
-        const isSilver = /^silver$/i.test(metalName);
-
-        if (isGold) {
-          return goldPurityRegex.test(purityName);
-        }
-
-        if (isSilver) {
-          return true; // Allow all silver
-        }
-
-        return false; // No other metals like platinum
-      });
-
       const id_branch = decoded?.id_branch;
       const passData = { id_branch: branchId };
       const metalRates = await todaymetalrate(passData);
 
-      const getPriority = (purity_name) => {
-        const name = purity_name.toLowerCase();
-        if (/24/.test(name)) return 0;
-        if (/22/.test(name)) return 1;
-        if (/silver/.test(name)) return 2;
-        return 3;
-      };
+      // Create a map of metal rates by type and purity
+      const ratesMap = {};
 
-      const sortedData = metalRates?.data
-        ?.filter((item) => {
-          const metalName = item.material_type_id?.metal_name;
-          const purityName = item.purity_id?.purity_name;
+      metalRates?.data?.forEach((item) => {
+        const metalName = item.material_type_id?.metal_name?.toLowerCase();
+        const purityName = item.purity_id?.purity_name?.toLowerCase();
 
-          if (!metalName || !purityName) return false;
+        if (!metalName || !purityName) return;
 
-          const isGold = /^gold$/i.test(metalName);
-          const isSilver = /^silver$/i.test(metalName);
-
-          if (isGold) {
-            return goldPurityRegex.test(purityName);
+        if (metalName.includes("gold")) {
+          if (
+            purityName.includes("24") ||
+            purityName.includes("24k") ||
+            purityName.includes("24ct")
+          ) {
+            ratesMap["gold24k"] = item;
+          } else if (
+            purityName.includes("22") ||
+            purityName.includes("22k") ||
+            purityName.includes("22ct")
+          ) {
+            ratesMap["gold22k"] = item;
           }
+        } else if (metalName.includes("silver")) {
+          ratesMap["silver"] = item;
+        }
+      });
 
-          if (isSilver) {
-            return true;
-          }
+      // Create an array in fixed order: 24K, 22K, Silver
+      const sortedRates = [
+        ratesMap["gold24k"],
+        ratesMap["gold22k"],
+        ratesMap["silver"],
+      ];
 
-          return false;
-        })
-        .sort((a, b) => {
-          return (
-            getPriority(a.purity_id?.purity_name || "") -
-            getPriority(b.purity_id?.purity_name || "")
-          );
-        });
-
-      if (sortedData && sortedData.length > 0) {
-        setMetalRate(sortedData);
-      }
+      setMetalRate(sortedRates);
     } catch (error) {
       console.error("Failed to fetch purity data:", error);
     }
@@ -244,7 +224,8 @@ const Base = ({ renderContent: RenderContent }) => {
       setIsSuperAdmin(true);
     } else {
       setIsSuperAdmin(false);
-      if (menus?.length < 0) {
+      if (menus.length < 0) {
+        console.log(menuData);
         getAllMenusMutate(decoded.id_role._id);
       }
     }
@@ -360,47 +341,47 @@ const Base = ({ renderContent: RenderContent }) => {
   };
 
   const SubMenuItem = ({ text, onClick, isLast, parentSection, pathUrl }) => {
-    const url = pathUrl?.startsWith("/") ? pathUrl : `/${pathUrl}`;
+  const url = pathUrl?.startsWith("/") ? pathUrl : `/${pathUrl}`;
 
-    const handleLeftClick = (event) => {
-      if (event.ctrlKey || event.metaKey) {
-        window.open(url, "_blank");
-      } else {
-        setSelectedSubSection(text);
-        setSelectedSection(text);
-        setSelectedParentSection(parentSection);
-        onClick && onClick();
-      }
-    };
+  const handleLeftClick = (event) => {
+    if (event.ctrlKey || event.metaKey) {
+      window.open(url, "_blank");
+    } else {
+      setSelectedSubSection(text);
+      setSelectedSection(text);
+      setSelectedParentSection(parentSection);
+      onClick && onClick();
+    }
+  };
 
-    return (
-      <div className="relative">
-        {!isLast && (
-          <div className="absolute left-6 top-1/2 w-[1px] h-full bg-white -translate-x-1/2" />
-        )}
-        <div className="relative flex items-center pl-12">
-          <div
-            className={`absolute left-6 w-3 h-3 rounded-full border-2 -translate-x-1/2 z-10 ${
-              selectedSubSection !== text
-                ? "border-white"
-                : "bg-white border-[#004181]"
-            }`}
-          />
-          <div
-            className={`w-full flex items-start px-4 rounded-md py-2  transition-colors cursor-pointer my-1 text-sm font-medium
-                    ${
-                      selectedSubSection === text
-                        ? "bg-[#004181] text-white font-semibold"
-                        : "text-[#6C7086] hover:bg-[#004181] hover:text-white"
-                    }`}
-            onClick={handleLeftClick}
-          >
-            {text}
-          </div>
+  return (
+    <div className="w-full relative">
+      {!isLast && (
+        <div className="absolute left-6 top-1/2 w-[1px] h-full bg-white -translate-x-1/2" />
+      )}
+      <div className="relative flex items-center pl-12">
+        <div
+          className={`absolute left-6 w-3 h-3 rounded-full border-[1px] -translate-x-1/2 z-10 ${
+            selectedSubSection !== text
+              ? "border-white"
+              : "bg-white border-[#004181]"
+          }`}
+        />
+        <div
+          className={`w-full flex items-start px-4 rounded-md py-2 transition-colors cursor-pointer my-1 text-sm font-semibold
+                  ${
+                    selectedSubSection === text
+                      ? "bg-[#004181] text-white"
+                      : "text-[#6C7086] hover:bg-[#004181] hover:text-white"
+                  }`}
+          onClick={handleLeftClick}
+        >
+          {text}
         </div>
       </div>
-    );
-  };
+    </div>
+  );
+};
 
   const MenuItem = ({
     text,
@@ -575,37 +556,12 @@ const Base = ({ renderContent: RenderContent }) => {
     },
   ];
 
-  const getGold24Rate = () => {
-    const gold24 = metalRate.find(
-      (item) =>
-        item.material_type_id?.metal_name?.toLowerCase() === "gold" &&
-        /24/.test(item.purity_id?.purity_name?.toLowerCase())
-    );
-    return gold24?.rate || 0;
-  };
-
-  const getGold22Rate = () => {
-    const gold22 = metalRate.find(
-      (item) =>
-        item.material_type_id?.metal_name?.toLowerCase() === "gold" &&
-        /22/.test(item.purity_id?.purity_name?.toLowerCase())
-    );
-    return gold22?.rate || 0;
-  };
-
-  const getSilverRate = () => {
-    const silver = metalRate.find(
-      (item) => item.material_type_id?.metal_name?.toLowerCase() === "silver"
-    );
-    return silver?.rate || 0;
-  };
-
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="fixed top-0 right-0 lg:left-64 left-0 bg-[#FFFFFF] border-b z-50 h-16 ">
+      <header className="fixed top-0 right-0 lg:left-64 left-0 bg-white border-b-[1px] z-50 h-16 ">
         <div className="flex justify-between items-center h-full px-4">
           {/* Left side of header with burger menu and section title */}
-          <div className="flex flex-rodw gap-4">
+          <div className="flex flex-row gap-4">
             <div className="flex items-center">
               {/* Burger menu button - positioned on the left for mobile */}
               <button
@@ -618,107 +574,91 @@ const Base = ({ renderContent: RenderContent }) => {
 
               {/* Section title - hidden on mobile */}
               <div className="title lg:flex justify-center items-center hidden">
-                <h1 className="text-lg font-semibold ml-2">{sectionName}</h1>
+                <h1 className="text-[#232323] text-lg font-semibold ml-2">{sectionName}</h1>
               </div>
             </div>
 
-            <div className="text-[#F5F5F5] text-xl font-semibold border-s-2 mt-1 border-[#F5F5F5] h-[28px]"></div>
-
+            <div className="text-[#F5F5F5] lg:flex text-xl font-semibold border-s-2 mt-1 border-[#F5F5F5] h-[28px] hidden"></div>
             {/* Search component */}
             <div
               className="se flex justify-center items-center pl-3 pr-5 w-[90px]  gap-3 border text-[#F2F2F9] h-[35px] rounded-[8px]"
               onClick={() => setIsModalOpen(true)}
             >
               <div className="search">
-                <img src={Search} alt="" className="w-8 h-8 " />
+                <img src={Search} alt="" className="w-7 h-7" />
               </div>
-              {/* <hr className="w-px h-[28px] bg-gray-300 font-semibold  border-none mt-2" /> */}
-              <div className="command flex ps-2">
-                <img src={Command} alt="" className="w-6 h-6" />
-                <span className="text-black">F</span>
+
+              <div className="command flex ps-1 items-center">
+                <img src={Command} alt="" className="w-7 h-7" />
+                <span className="text-[#232323] font-semibold text-sm ms-1">F</span>
               </div>
             </div>
           </div>
-
-          {/* Right side with settings, notifications and user menu */}
-
-          <div className="flex items-center space-x-1 xl:space-x-3 flex-wrap justify-end">
-            {/* Metal rates - will stack vertically on small screens */}
-            <div className="flex flex-col sm:flex-row gap-1 sm:gap-2">
-              <div className="bg-[#FFE28D] flex px-2 py-1 sm:px-3 sm:py-1.5 rounded-[8px] text-[#232323] font-medium sm:text-sm hidden md:flex">
+          <div className="xl:flex items-center space-x-3 hidden ">
+             <div className="bg-[#FFE28D] flex px-2 py-1 sm:px-3 sm:py-1.5 rounded-[8px] text-[#232323] font-medium sm:text-sm hidden md:flex">
                 <span className="hidden sm:inline">Gold (24K):</span>
-                <span className="sm:hidden">G24:</span>
-                <span className="ml-1 font-bold">
-                  {formatNumber({
-                    value: getGold24Rate(),
-                    decimalPlaces: 2,
-                  })}
-                </span>
-              </div>
-              <div className="bg-[#FFE28D] flex px-2 py-1 sm:px-3 sm:py-1.5 text-[#232323] text-sm font-medium rounded-lg text-[12px] sm:text-sm hidden md:flex">
-                <span className="hidden sm:inline">Gold (22K):</span>
-                <span className="sm:hidden">G22:</span>
-                <span className="ml-1 font-bold">
-                  {formatNumber({
-                    value: getGold22Rate(),
-                    decimalPlaces: 2,
-                  })}
-                </span>
-              </div>
-              <div className="bg-[#C0C0C0] flex px-2 py-1 sm:px-3 sm:py-1.5 text-[#232323] rounded-[8px] text-xs sm:text-sm hidden md:flex">
-                <span className="hidden sm:inline">Silver:</span>
-                <span className="sm:hidden">S:</span>
-                <span className="ml-1 font-bold ">
-                  {formatNumber({
-                    value: getSilverRate(),
-                    decimalPlaces: 2,
-                  })}
-                </span>
-              </div>
+             <span className="ml-1 font-bold">
+                {metalRate[0]?.rate
+                  ? formatNumber({ value: metalRate[0].rate, decimalPlaces: 0 })
+                  : "N/A"}
+              </span>
+            </div>
+             <div className="bg-[#FFE28D] flex px-2 py-1 sm:px-3 sm:py-1.5 rounded-[8px] text-[#232323] font-medium sm:text-sm hidden md:flex">
+             <span className="hidden sm:inline">Gold (22K):</span>
+              <span className="ml-1 font-bold">
+                {metalRate[1]?.rate
+                  ? formatNumber({ value: metalRate[1].rate, decimalPlaces: 0 })
+                  : "N/A"}
+              </span>
+            </div>
+            <div className="bg-[#FFE28D] flex px-2 py-1 sm:px-3 sm:py-1.5 rounded-[8px] text-[#232323] font-medium sm:text-sm hidden md:flex">
+               <span className="hidden sm:inline">Silver:</span>
+              <span className="ml-1 font-bold">
+                {metalRate[2]?.rate
+                  ? formatNumber({ value: metalRate[2].rate, decimalPlaces: 0 })
+                  : "N/A"}
+              </span>
             </div>
 
-            {/* Notification and user menu */}
-            <div className="flex items-center space-x-1 sm:space-x-2 ">
-              <button className="p-1 sm:p-2 text-gray-900 border rounded-3xl">
-                <img
-                  src={notification}
-                  alt="Notifications"
-                  className="w-5 h-5 sm:w-6 sm:h-6"
-                />
+            <div className="border-2 border-[#F2F2F9] rounded-full">
+            </div>
+
+            <div className="border-2 border-[#F2F2F9] rounded-full w-10 h-10">
+              <button className="p-2 text-gray-900">
+                <img src={notification} alt="" srcset="" />
               </button>
-
-              {roledata ? (
-                <div className="relative inline-block text-left">
-                  <button
-                    onClick={() => setIsOpen(!isOpen)}
-                    className="flex items-center gap-1 p-1 sm:p-2 focus:outline-none"
-                  >
-                    <span
-                      className="flex items-center justify-center w-7 h-7 sm:w-9 sm:h-9 text-sm sm:text-lg font-semibold text-white rounded-full"
-                      style={{ backgroundColor: layout_color }}
-                    >
-                      {role}
-                    </span>
-                    {/* <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4 text-gray-700" /> */}
-                  </button>
-
-                  {isOpen && (
-                    <div className="absolute right-0 mt-2 w-32 sm:w-40 bg-white border border-gray-200 rounded-md shadow-lg z-50">
-                      <button
-                        className="block w-full px-3 py-1.5 sm:px-4 sm:py-2 text-left text-xs sm:text-sm text-gray-700 hover:bg-gray-100"
-                        onClick={handleLogout}
-                      >
-                        Logout
-                      </button>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <button className="p-1 sm:p-2 text-gray-900">
-                  <UserRoundCheck size={24} className="sm:size-7" />
-                </button>
-              )}
             </div>
+
+            {roledata ? (
+              <div className="relative inline-block text-left">
+                <button
+                  onClick={() => setIsOpen(!isOpen)}
+                  className="flex items-center gap-2 p-2 focus:outline-none"
+                >
+                  <span
+                    className="flex items-center justify-center w-9 h-9 text-lg font-semibold text-white rounded-full"
+                    style={{ backgroundColor: layout_color }}
+                  >
+                    {role}
+                  </span>
+                </button>
+
+                {isOpen && (
+                  <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-md shadow-lg">
+                    <button
+                      className="block w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
+                      onClick={handleLogout}
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <button className="p-2 text-gray-900">
+                <UserRoundCheck size={28} />
+              </button>
+            )}
           </div>
         </div>
       </header>
@@ -727,16 +667,31 @@ const Base = ({ renderContent: RenderContent }) => {
 
       <aside
         ref={sidebarRef}
-        className={`fixed top-0 left-0 h-full w-64 lg:w-64 scrollbar-hide transform transition-transform duration-300 ease-in-out ${
+        className={`fixed top-0 left-0 h-full w-64 lg:w-64 scrollbar-hide transform transition-transform duration-300 ease-in-out  border-r-[1px] ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } lg:translate-x-0 z-50 lg:pt-4 overflow-auto flex flex-col border-r`}
+        } lg:translate-x-0 z-50 pt-16 lg:pt-4 overflow-auto flex flex-col`}
         style={{ backgroundColor: sidebar_color }}
       >
-        <div className="flex justify-center items-center mb-3">
-          <img src={logo} alt="Logo" className="h-18 w-32 object-fill" />
+        <div className="flex justify-center items-center">
+          <img src={logo} alt="Logo" className="h-24 w-52 object-fill mb-4" />
         </div>
 
-        <nav className="flex-1 text-white scrollbar-hide overflow-y-auto">
+        <nav className="flex-1 text-white scrollbar-hide overflow-y-auto text-sm font-semibold">
+          {/* <MenuItem
+            text="Dashboard"
+            menuIcon={
+              <img
+                src={Dashboard}
+                alt="Dashboard Icon"
+                className="w-5 h-5"
+              />}
+            hasSubmenu={false}
+            onClick={() => {
+              setSelectedSection("Dashboard");
+              setSelectedParentSection("Dashboard");
+              handleClick("Dashboard");
+            }}
+          /> */}
           <MenuItem
             text="Dashboard"
             // menuIcon={Dashboard}
@@ -953,8 +908,8 @@ const Base = ({ renderContent: RenderContent }) => {
 
       <footer className="flex flex-row justify-center items-center w-full h-10 bg-white border-t py-3 px-2 fixed bottom-0 left-0 lg:left-40 z-30">
         <div className="flex w-3/4 justify-center items-center ">
-          <div className="text-[14px] flex text-nowrap text-[#6C7086]">
-            ATTS Technologies Private Limited © 2025. All rights reserved.
+          <div className="text-sm lg:text-sm md:text-md flex text-nowrap text-gray-500">
+           ATTS Technologies Private Limited © 2025. All rights reserved.
           </div>
           {/* <div className="mx-2">/</div>
           <div

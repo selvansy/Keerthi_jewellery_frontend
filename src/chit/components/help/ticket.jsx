@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { Search, X, Eye } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { getAllTicket } from "../../api/Endpoints";
 import "react-datepicker/dist/react-datepicker.css";
 import usePagination from "../../hooks/usePagination";

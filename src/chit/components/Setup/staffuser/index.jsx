@@ -9,7 +9,7 @@ import {
   changeStaffUserStatus,
   deleteStaffUser,
 } from "../../../api/Endpoints";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { useDebounce } from "../../../hooks/useDebounce";
 import { setid } from "../../../../redux/clientFormSlice";
 import StaffuserForm from "./StaffuserForm";

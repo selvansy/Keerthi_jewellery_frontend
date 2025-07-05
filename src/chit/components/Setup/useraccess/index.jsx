@@ -5,7 +5,7 @@ import {
   updatemenupermission,
 } from "../../../api/Endpoints";
 import { useMutation } from "@tanstack/react-query";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import Select from "react-select";
 import { customSelectStyles } from "../purity";
 import Loading from "../../common/Loading";

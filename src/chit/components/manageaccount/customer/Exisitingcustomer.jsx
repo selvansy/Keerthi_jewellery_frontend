@@ -215,23 +215,6 @@ const Exisitingcustomer = () => {
     },
   ]
 
-
-  
-
-  const referdata=[{
-    label:"Refered Persons",value:" ₹ 7777"
-  },
-  {
-    label:"Wallet Amount",value:"  ₹ 7777"
-  },
-  {
-    label:"Redeemed Amount",value:" ₹ 7777"
-  },
-  {
-    label:"Pending AMount",value:" ₹ 7777"
-  },
-]
-
 const walletdata=[{
   label:"Chit recieved gifts",value:"02"
 },{label:"Non-Chit Received Gifts",value:"01"},

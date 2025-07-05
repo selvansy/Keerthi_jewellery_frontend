@@ -2,7 +2,12 @@ import React, { useEffect, useState } from "react";
 import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
 import Select from "react-select";
 import Table from "../../common/Table";
-import { getallbranch, customerOverview, activeSchemes, redeemedSchemes } from "../../../api/Endpoints";
+import {
+  getallbranch,
+  customerOverview,
+  activeSchemes,
+  redeemedSchemes,
+} from "../../../api/Endpoints";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useFormik } from "formik";
 import { useNavigate, useParams } from "react-router-dom";
@@ -100,7 +105,7 @@ const Existcusomer = () => {
     initialValues: {
       branch: id_branch ? id_branch : "",
       mobile: "",
-      idCustomer: ""
+      idCustomer: "",
     },
   });
 
@@ -164,13 +169,13 @@ const Existcusomer = () => {
     if (cusid) {
       resetState();
       const inputdata = {
-        idCustomer: cusid
+        idCustomer: cusid,
       };
       customerData({ data: inputdata });
     } else if (userId) {
       resetState();
       const inputdata = {
-        idCustomer: userId
+        idCustomer: userId,
       };
       customerData({ data: inputdata });
     }
@@ -263,17 +268,21 @@ const Existcusomer = () => {
     },
     {
       header: "Paid Installments",
-      cell: (row) => (
-        <div
-          className={`w-16 h-8 rounded-md py-1 flex justify-center items-center ${
-            row?.paid_installments > 0 
-              ? "bg-[#12B76A38] text-green-500 font-medium" 
-              : "bg-[#FF000038] text-red-500 font-medium"
-          }`}
-        >
-          {row?.paid_installments}/{row?.total_installments}
-        </div>
-      ),
+      cell: (row) => {
+        const showInstallment = `${row?.paid_installments}/${row?.total_installments}`;
+        const digi = `${row?.paid_installments}`
+        return (
+          <div
+            className={`w-16 h-8 rounded-md py-1 flex justify-center items-center ${
+              row?.paid_installments > 0
+                ? "bg-[#12B76A38] text-green-500 font-medium"
+                : "bg-[#FF000038] text-red-500 font-medium"
+            }`}
+          >
+            {(row.schemeType == 10 || row?.schemeType == 14) ? digi : showInstallment}
+          </div>
+        );
+      },
     },
     {
       header: "Start Date",
@@ -281,15 +290,24 @@ const Existcusomer = () => {
     },
     {
       header: "Maturity date",
-      cell: (row) => formatDate(row.maturityDate) || formatDate(row.maturityDate),
+      cell: (row) => row.maturityDate,
     },
     {
       header: "Amount Paid",
       cell: (row) => `₹${row.amountPaid || row.totalAmountPaid || 0}`,
     },
     {
+      header: "Weight",
+      cell: (row) => `${formatDecimal(row.weightPaid )|| 0} g`,
+    },
+    {
       header: "Over Dues",
-      cell: (row) => `${row.installmentDue || 0} ${(row.flexFixed != null) ? `(₹${row.flexFixed * row.installmentDue})` : `(-)`}`,
+      cell: (row) =>
+        `${row.installmentDue || 0} ${
+          row.flexFixed != null
+            ? `(₹${row.flexFixed * row.installmentDue})`
+            : `(-)`
+        }`,
     },
   ];
 
@@ -304,19 +322,19 @@ const Existcusomer = () => {
     },
     {
       header: "Account Name",
-      cell: (row) => row.account_name
+      cell: (row) => row.account_name,
     },
     {
       header: "Scheme Acc No",
       cell: (row) => row.scheme_acc_number,
     },
-     {
+    {
       header: "Start Date",
       cell: (row) => formatDate(row.startDate) || formatDate(row.createdAt),
     },
     {
       header: "Redeemed date",
-       cell: (row) => formatDate(row.closedDate),
+      cell: (row) => formatDate(row.closedDate),
     },
     {
       header: "Amount Paid",
@@ -339,7 +357,7 @@ const Existcusomer = () => {
     },
     {
       label: "Pending Amount",
-      value: data?.referralData?.pendingAmount || "-",
+      value: formatDecimal(data?.referralData?.pendingAmount,2) || "-",
     },
   ];
 
@@ -572,17 +590,23 @@ const Existcusomer = () => {
                 </p>
               </div>
               <div className="justify-start">
-                <p className="text-lg font-medium text-[#232323]">{data?.totalClosedSchemes || "-"}</p>
+                <p className="text-lg font-medium text-[#232323]">
+                  {data?.totalClosedSchemes || "-"}
+                </p>
                 <p className="text-sm font-bold text-gray-600">
                   Closed Schemes
                 </p>
               </div>
               <div className="justify-between">
-                <p className="text-lg font-medium text-[#232323]">{data?.totalPrecloseSchemes || "-"}</p>
+                <p className="text-lg font-medium text-[#232323]">
+                  {data?.totalPrecloseSchemes || "-"}
+                </p>
                 <p className="text-sm font-bold text-gray-600">Pre closed</p>
               </div>
               <div className="justify-end">
-                <p className="text-lg font-medium text-[#232323]">{data?.refundSchemes || "-"}</p>
+                <p className="text-lg font-medium text-[#232323]">
+                  {data?.refundSchemes || "-"}
+                </p>
                 <p className="text-sm font-bold text-gray-600">Refund</p>
               </div>
             </div>

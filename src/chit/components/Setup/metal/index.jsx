@@ -10,7 +10,7 @@ import {
   updatemetal,
   addmetal,
 } from "../../../api/Endpoints";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import Modal from "../../common/Modal";
 import ModelOne from "../../common/Modelone";
 import { useDebounce } from "../../../hooks/useDebounce";

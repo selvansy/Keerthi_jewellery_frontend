@@ -854,6 +854,13 @@ export const getDepartmentById = async (data) => {
   return response.data;
 };
 
+export const getAllDepartments = async (data) => {
+  const response = await Api.get(
+    `${import.meta.env.VITE_API_URL}/api/client/department`
+  );
+  return response.data;
+};
+
 export const updateDepartment = async (data) => {
   const response = await Api.patch(
     `${import.meta.env.VITE_API_URL}/api/client/department/${data.id}`,
@@ -2907,6 +2914,23 @@ export const getSchemewiseAmount = async (data) => {
 export const getSchemewiseWeight = async (data) => {
   const response = await Api.post(
     `${import.meta.env.VITE_API_URL}/api/client/reports/weight`,data
+  );
+  return response.data;
+};
+
+
+//endpoints for exporting data
+export const exportData= async (data) => {
+  const response = await Api.post(
+    `${import.meta.env.VITE_API_URL}/api/import`,data
+  );
+  return response.data;
+};
+
+export const getSchemeCustomers = async (data) => {
+  const response = await Api.post(
+    `${import.meta.env.VITE_API_URL}/api/client/notify/schemecustomers`,
+    data
   );
   return response.data;
 };

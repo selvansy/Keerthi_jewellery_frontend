@@ -6,9 +6,10 @@ import { login } from "../../redux/authSlice";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import SpinLoading from "./common/spinLoading";
-import Logo from "../../assets/login.svg";
+// import Logo from "../../assets/login.svg"; //aupay default
+import Logo from "../../assets/logo(3).svg";
 import Background from "../../assets/LoginBg.png";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { Eye, EyeOff } from "lucide-react";
 import { useLocation } from "react-router-dom";
 
@@ -88,7 +89,7 @@ const Login = () => {
         </div>
         <div className="flex justify-center mb-4 -mt-2">
           <p className="w-[320px] text-[#6C7086] text-center ">
-            Access the Aupay panel using your email and password.
+            Access the Aupay panel using your username and password.
           </p>
         </div>
         <form onSubmit={handleSubmit}>

@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import { addTicketRaise } from "../../api/Endpoints";
 import { useMutation } from "@tanstack/react-query";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import SpinLoading from "../common/spinLoading";
 
 const TicketSubmissionForm = ({ isOpen, onClose }) => {

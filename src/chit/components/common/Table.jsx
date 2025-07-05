@@ -23,56 +23,35 @@ const Table = ({
   showPagination = true,
 }) => {
   const [activeDropdown, setActiveDropdown] = useState(null);
-  const dropdownRef = useRef(null);
+  const dropdownRefs = useRef({});
 
-  // useEffect(() => {
-  //   const handleClickOutside = (event) => {
-  //     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-  //       setActiveDropdown(null);
-  //     }
-  //   };
-
-  //   document.addEventListener("mousedown", handleClickOutside);
-  //   return () => {
-  //     document.removeEventListener("mousedown", handleClickOutside);
-  //   };
-  // }, []);
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        console.log("first")
-        setActiveDropdown(null);
-      }
+      Object.values(dropdownRefs.current).forEach((ref) => {
+        if (ref && !ref.contains(event.target)) {
+          setActiveDropdown(null);
+        }
+      });
     };
-  
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
+  const setDropdownRef = (id, node) => {
+    if (node) {
+      dropdownRefs.current[id] = node;
+    } else {
+      delete dropdownRefs.current[id];
+    }
+  };
+
   return (
     <div className={`antialiased w-full ${className}`}>
       <div className="mx-auto bg-white">
-        <div className="bg-white relative   overflow-hidden">
-          {/* Search Bar */}
-          {/* <div className="flex justify-end p-3">
-            <div className="relative">
-              <input
-                type="text"
-                onChange={handleSearch}
-                className=" border border-gray-300 text-gray-900 text-sm rounded-lg pl-10 pr-10 p-2.5 w-60"
-                placeholder="Search"
-              />
-              <div className="absolute inset-y-0 right-[204px] pl-1 flex items-center pr-3 pointer-events-none">
-                <svg className="w-4 h-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                  <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
-                </svg>
-              </div>
-            </div>
-          </div> */}
-
-          {/* Table with fixed container to enable horizontal scrolling while keeping Actions column fixed */}
+        <div className="bg-white relative overflow-hidden">
           <div className="relative">
             <div className="overflow-x-auto">
               <table className="w-full text-sm text-left">
@@ -110,11 +89,8 @@ const Table = ({
                 <tbody>
                   {loading ? (
                     <tr>
-                      <td
-                        colSpan={columns.length}
-                        className="px-4 py-3 text-center"
-                      >
-                        Loading...
+                      <td colSpan={columns.length} className="px-4 py-3 text-center">
+                        <Loading />
                       </td>
                     </tr>
                   ) : data.length > 0 ? (
@@ -124,48 +100,45 @@ const Table = ({
                         className="border-t hover:bg-gray-50"
                       >
                         {columns.map((column, columnIndex) => {
-
-                          if (
+                          const isStickyAction =
                             column.header === "Actions" ||
                             column.header === "ACTIONS" ||
-                            column.sticky === "right"
-                          ) {
+                            column.sticky === "right";
+
+                          if (isStickyAction) {
                             return (
                               <td
                                 key={columnIndex}
-                                className={`sticky right-0  px-4 py-3 z-10 ${
-                                  columns.length >= 7 ? "bg-white" : ""
-                                }`}
+                                className="sticky right-0 px-4 py-3 z-10 bg-white hover:bg-gray-50 w-[120px]"
                                 style={{ right: 0 }}
                               >
                                 {column.cell ? (
                                   column.cell(row, rowIndex)
                                 ) : (
-                                  <div className="dropdown-container relative">
+                                  <div className="relative">
                                     <button
-                                      onClick={() =>
+                                      onClick={(e) => {
+                                        e.stopPropagation();
                                         setActiveDropdown(
-                                          activeDropdown ===
-                                            (row?._id || rowIndex)
+                                          activeDropdown === (row?._id || rowIndex)
                                             ? null
                                             : row?._id || rowIndex
-                                        )
-                                      }
+                                        );
+                                      }}
                                       className="text-gray-500 hover:text-gray-700"
                                     >
                                       <MoreVertical className="h-5 w-5" />
                                     </button>
-                                    {activeDropdown ===
-                                      (row?._id || rowIndex) && (
+                                    {activeDropdown === (row?._id || rowIndex) && (
                                       <div
-                                        ref={dropdownRef}
-                                        className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-20"
+                                        ref={(node) => setDropdownRef(row?._id || rowIndex, node)}
+                                        className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-20 border border-gray-100"
                                       >
                                         <div className="py-1">
-                                          <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                          <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
                                             Edit
                                           </button>
-                                          <button className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
+                                          <button className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-50">
                                             Delete
                                           </button>
                                         </div>
@@ -190,17 +163,16 @@ const Table = ({
                                 {column.cell ? (
                                   column.cell(row, rowIndex)
                                 ) : (
-                                  <div className="inline-block h-5 w-5 rounded-full  bg-gray-200"></div>
+                                  <div className="inline-block h-5 w-5 rounded-full bg-gray-200"></div>
                                 )}
                               </td>
                             );
                           }
 
-                          // For all other columns
                           return (
                             <td
                               key={columnIndex}
-                              className="px-4 py-3 text-[#232323] text-[14px] font-medium whitespace-nowrap "
+                              className="px-4 py-3 text-[#232323] text-[14px] font-medium whitespace-nowrap"
                             >
                               {column.cell
                                 ? column.cell(row, rowIndex)
@@ -212,10 +184,7 @@ const Table = ({
                     ))
                   ) : (
                     <tr>
-                      <td
-                        colSpan={columns.length}
-                        className="px-4 py-3 text-center"
-                      >
+                      <td colSpan={columns.length} className="px-4 py-3 text-center">
                         {noDataMessage}
                       </td>
                     </tr>
@@ -225,98 +194,67 @@ const Table = ({
             </div>
           </div>
 
+          {/* Pagination remains the same */}
           {showPagination && data.length >= 1 && (
-  <div className="p-4 flex items-center justify-between text-sm text-gray-600 border-t">
-    <div>
-      Showing {(currentPage - 1) * itemsPerPage + 1} to{" "}
-      {Math.min(currentPage * itemsPerPage, totalItems)} of{" "}
-      {totalItems} entries
-    </div>
+            <div className="p-4 flex items-center justify-between text-sm text-gray-600 border-t">
+              <div>
+                Showing {(currentPage - 1) * itemsPerPage + 1} to{" "}
+                {Math.min(currentPage * itemsPerPage, totalItems)} of{" "}
+                {totalItems} entries
+              </div>
 
-    <div className="flex items-center space-x-2">
-      <button
-        onClick={() => handlePageChange(currentPage - 1)}
-        disabled={currentPage === 1}
-        className={`flex items-center px-3 py-1 rounded ${
-          currentPage === 1
-            ? "text-gray-400 cursor-not-allowed"
-            : "text-blue-600 hover:bg-blue-50"
-        }`}
-      >
-        <ChevronLeft className="h-4 w-4 mr-1" /> Previous
-      </button>
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className={`flex items-center px-3 py-1 rounded border ${
+                    currentPage === 1
+                      ? "text-gray-400 cursor-not-allowed"
+                      : "text-[#1e3b8b] hover:bg-blue-50"
+                  }`}
+                >
+                  <ChevronLeft className="h-4 w-4 mr-1" /> Previous
+                </button>
 
-      {/* Always show first page */}
-      <button
-        onClick={() => handlePageChange(1)}
-        className={`px-3 py-1 rounded ${
-          currentPage === 1
-            ? "bg-blue-600 text-white"
-            : "text-blue-600 hover:bg-blue-50"
-        }`}
-      >
-        1
-      </button>
+                {/* Pagination buttons */}
+                {Array.from({ length: Math.ceil(totalItems / itemsPerPage) }, (_, i) => i + 1)
+                  .filter(page => 
+                    page === 1 || 
+                    page === Math.ceil(totalItems / itemsPerPage) ||
+                    Math.abs(page - currentPage) <= 1
+                  )
+                  .map((page, i, array) => (
+                    <React.Fragment key={page}>
+                      <button
+                        onClick={() => handlePageChange(page)}
+                        className={`px-3 py-1 rounded ${
+                          currentPage === page
+                            ? "bg-[#1e3b8b] text-white"
+                            : "text-[#1e3b8b] hover:bg-blue-50"
+                        }`}
+                      >
+                        {page}
+                      </button>
+                      {array[i + 1] - page > 1 && (
+                        <span className="px-2">...</span>
+                      )}
+                    </React.Fragment>
+                  ))}
 
-      {/* Show ellipsis if current page is far from start */}
-      {currentPage > 3 && (
-        <span className="px-2">...</span>
-      )}
-
-      {/* Show pages around current page */}
-      {[
-        currentPage - 1,
-        currentPage,
-        currentPage + 1
-      ].map((page) => (
-        page > 1 && page < Math.ceil(totalItems / itemsPerPage) && (
-          <button
-            key={page}
-            onClick={() => handlePageChange(page)}
-            className={`px-3 py-1 rounded ${
-              currentPage === page
-                ? "bg-blue-600 text-white"
-                : "text-blue-600 hover:bg-blue-50"
-            }`}
-          >
-            {page}
-          </button>
-        )
-      ))}
-
-      {/* Show ellipsis if current page is far from end */}
-      {currentPage < Math.ceil(totalItems / itemsPerPage) - 2 && (
-        <span className="px-2">...</span>
-      )}
-
-      {/* Always show last page if there's more than 1 page */}
-      {Math.ceil(totalItems / itemsPerPage) > 1 && (
-        <button
-          onClick={() => handlePageChange(Math.ceil(totalItems / itemsPerPage))}
-          className={`px-3 py-1 rounded ${
-            currentPage === Math.ceil(totalItems / itemsPerPage)
-              ? "bg-blue-600 text-white"
-              : "text-blue-600 hover:bg-blue-50"
-          }`}
-        >
-          {Math.ceil(totalItems / itemsPerPage)}
-        </button>
-      )}
-
-      <button
-        onClick={() => handlePageChange(currentPage + 1)}
-        disabled={currentPage >= Math.ceil(totalItems / itemsPerPage)}
-        className={`flex items-center px-3 py-1 rounded ${
-          currentPage >= Math.ceil(totalItems / itemsPerPage)
-            ? "text-gray-400 cursor-not-allowed"
-            : "text-blue-600 hover:bg-blue-50"
-        }`}
-      >
-        Next <ChevronRight className="h-4 w-4 ml-1" />
-      </button>
-    </div>
-  </div>
-)}
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage >= Math.ceil(totalItems / itemsPerPage)}
+                  className={`flex items-center px-3 py-1 rounded border ${
+                    currentPage >= Math.ceil(totalItems / itemsPerPage)
+                      ? "text-gray-400 cursor-not-allowed"
+                      : "text-[#1e3b8b] hover:bg-blue-50"
+                  }`}
+                >
+                  Next <ChevronRight className="h-4 w-4 ml-1" />
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

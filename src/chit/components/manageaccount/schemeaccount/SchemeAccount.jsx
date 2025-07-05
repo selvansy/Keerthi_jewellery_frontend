@@ -1,25 +1,24 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
-import { createPortal } from 'react-dom';
+import { createPortal } from "react-dom";
 
-import { Breadcrumb } from '../../common/breadCumbs/breadCumbs';
-import Table from '../../common/Table';
-import Modal from '../../common/Modal';
-import ModelOne from '../../common/Modelone';
-import { useDebounce } from '../../../hooks/useDebounce';
-import { openModal } from '../../../../redux/modalSlice';
+import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
+import Table from "../../common/Table";
+import Modal from "../../common/Modal";
+import ModelOne from "../../common/Modelone";
+import { useDebounce } from "../../../hooks/useDebounce";
 import { setScemeAccountId } from "../../../../redux/clientFormSlice";
 import ExportDropdown from "../../../components/common/Dropdown/Export";
-import Ledgerdetails from './ledgerdetails';
-import { allschemestatus, schemeaccounttable } from '../../../api/Endpoints';
+import Ledgerdetails from "./ledgerdetails";
+import { allschemestatus, schemeaccounttable } from "../../../api/Endpoints";
 
 import eyeIcon from "../../../../assets/icons/eye.svg";
 import More from "../../../../assets/icons/more.svg";
 import gift from "../../../../assets/icons/gift.svg";
-import { formatDate } from '../../../../utils/FormatDate';
+import { formatDate } from "../../../../utils/FormatDate";
 import plus from "../../../../assets/plus.svg";
 
 const statusStyles = {
@@ -87,7 +86,7 @@ const SchemeAccount = () => {
       setTotalPages(response.totalPages);
       setTotalDocument(response.totalDocument);
 
-      const exportData = response.data.map(item => ({
+      const exportData = response.data.map((item) => ({
         scheme_acc_number: item.scheme_acc_number,
         account_name: item.account_name,
         mobile: item.mobile,
@@ -96,7 +95,7 @@ const SchemeAccount = () => {
         total_weight: item.total_weight,
         start_date: item.start_date,
         maturity_date: item.maturity_date,
-        branch_name: item.branch_name
+        branch_name: item.branch_name,
       }));
 
       setSchaccExp(exportData);
@@ -104,16 +103,16 @@ const SchemeAccount = () => {
       setIsLoading(false);
     },
     onError: (error) => {
-      console.error('Error fetching scheme accounts:', error);
+      console.error("Error fetching scheme accounts:", error);
       setSearchLoading(false);
       setIsLoading(false);
-    }
+    },
   });
 
   // Effects
   useEffect(() => {
     if (scheme_status) {
-      const formattedStatus = scheme_status.data.map(status => ({
+      const formattedStatus = scheme_status.data.map((status) => ({
         value: Number(status.id_status),
         label: status.status_name,
       }));
@@ -137,12 +136,12 @@ const SchemeAccount = () => {
   };
 
   const handleClick = () => {
-    navigate('/managecustomers/addcustomer');
+    navigate("/managecustomers/addcustomer");
   };
 
   const handleOpenLedger = (data) => {
     if (!data) return;
-    setPopuptitle('View Details');
+    setPopuptitle("View Details");
     setDiplaySetting(1);
     setIsviewOpen(true);
     dispatch(setScemeAccountId(data));
@@ -183,43 +182,89 @@ const SchemeAccount = () => {
   // Table columns configuration
   const columns = [
     {
-      header: 'S.No',
+      header: "S.No",
       cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
     },
     {
       header: "Accounter Name",
-      cell: (row) => row?.customer_name
+      cell: (row) => row?.customer_name,
     },
     {
       header: "Mobile",
       cell: (row) => row?.mobile,
     },
     {
-      header: 'Scheme Name',
-      cell: (row) => {
-        if ([0, 1, 2].includes(row?.scheme_type)) {
-          return `${row?.scheme_name} (₹ ${row?.amount})`;
-        } else if (row?.scheme_type === 3) {
-          return `${row?.scheme_name} (GRM ${row?.min_weight} - ${row?.max_weight})`;
-        }
-        return `${row?.scheme_name} (₹ ${row?.min_amount} - ${row?.max_amount})`;
-      }
+      header: "Scheme Name",
+       cell: (row) => {
+          const {
+            scheme_name,
+            amount,
+            min_amount,
+            max_amount,
+            min_weight,
+            max_weight,
+            scheme_type,
+          } = row;
+          console.log(scheme_name,
+            amount,
+            min_amount,
+            max_amount,
+            min_weight,
+            max_weight,
+            scheme_type)
+
+          // Priority 1: Fixed amount
+          if (scheme_type === 10) {
+            return `${scheme_name} ( ₹ ${min_amount} - ₹ ${max_amount})`;
+          }
+
+          if (scheme_type === 14) {
+            return `${scheme_name} ( ₹ ${min_amount} - ₹ ${max_amount})`;
+          }
+
+          // Weight-based schemes (type 12, 3, 4)
+          const isWeightBased = [12, 3, 4].includes(Number(scheme_type));
+
+          if (isWeightBased && min_weight !== null && max_weight !== null) {
+            return `${scheme_name} ( ${min_weight} g - ${max_weight} g)`;
+          }
+
+          // Amount-based schemes (default)
+          if (!isWeightBased && min_amount !== null && max_amount !== null) {
+            return `${scheme_name} ( ₹ ${min_amount} - ₹ ${max_amount})`;
+          }
+
+          // Amount-based schemes (default)
+          const digi = [11, 12].includes(Number(scheme_type));
+          if (digi) {
+            console.log(row);
+          }
+          if (!digi && min_amount !== null && max_amount !== null) {
+            return `${scheme_name} ( ₹ ${min_amount} - ₹ ${max_amount})`;
+          }
+
+          // Fallback
+          return `${scheme_name} (Details Unavailable)`;
+      },
     },
     {
       header: "Scheme Acc No",
-      cell: (row) => row?.scheme_acc_number || 'Not Allocated'
+      cell: (row) => row?.scheme_acc_number || "Not Allocated",
     },
     {
       header: "Paid Installments",
       cell: (row) => (
         <div
           className={`w-16 h-8 rounded-md py-1 flex justify-center items-center ${
-            row?.total_paidinstallments > 0 
-              ? "bg-[#12B76A38] text-green-500 font-medium" 
+            row?.total_paidinstallments > 0
+              ? "bg-[#12B76A38] text-green-500 font-medium"
               : "bg-[#FF000038] text-red-500 font-medium"
           }`}
         >
-          {row?.paid_installments}/{row?.total_installments}
+          {row.scheme_type == 10 || row.scheme_type == 14
+            ? `${row?.paid_installments}`
+            : `${row?.paid_installments}/${row?.total_installments}`
+          }
         </div>
       ),
     },
@@ -243,90 +288,127 @@ const SchemeAccount = () => {
     },
     {
       header: "Start Date",
-      cell: (row) => formatDate(row?.start_date)
+      cell: (row) => formatDate(row?.start_date),
     },
     {
       header: "Maturity Date",
-      cell: (row) => row?.maturity_date
+      cell: (row) => row?.maturity_date,
     },
     {
       header: "Last Paid Date",
-      cell: (row) => formatDate(row.last_paid_date)
-
+      cell: (row) => formatDate(row.last_paid_date),
     },
     {
-      header: 'Scheme Type',
-      cell: (row) => row?.scheme_typename
+      header: "Scheme Type",
+      cell: (row) => row?.scheme_typename,
     },
     {
       header: "Classification",
-      cell: (row) => row?.classification?.name || '-'
+      cell: (row) => row?.classification?.name || "-",
     },
     {
       header: "Created Through",
-      cell: (row) => row?.created_through
+      cell: (row) => row?.created_through,
     },
     {
-      header: "Action",
-      cell: (row) => (
-        <div ref={dropdownRef} className="dropdown-container relative flex items-center">
-          <button
-            className="p-2 border hover:bg-gray-100 rounded-full flex justify-center"
-            onClick={(e) => {
-              e.stopPropagation();
-              hanldeActiveDropDown(activeDropdown === row?._id ? null : row?._id, e);
+  header: "Action",
+  cell: (row) => (
+    <div
+      ref={dropdownRef}
+      className="dropdown-container relative flex items-center"
+    >
+      <button
+        className="p-2 border hover:bg-gray-100 rounded-full flex justify-center"
+        onClick={(e) => {
+          e.stopPropagation();
+          hanldeActiveDropDown(
+            activeDropdown === row?._id ? null : row?._id,
+            e
+          );
+        }}
+      >
+        <img src={More} alt="More options" className="w-[20px] h-[20px]" />
+      </button>
+
+      {activeDropdown === row?._id &&
+        createPortal(
+          <div
+            className="absolute"
+            style={{
+              top: position.top,
+              left: position.left,
+              zIndex: 9999,
+              filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.15))",
             }}
           >
-            <img src={More} alt="More options" className="w-[20px] h-[20px]" />
-          </button>
-
-          {activeDropdown === row?._id &&
-            createPortal(
-              <div
-                className="absolute"
-                style={{
-                  top: position.top,
-                  left: position.left,
-                  zIndex: 9999,
-                  filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.15))",
-                }}
-              >
-                <div className="w-40 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
-                  <div className="py-1">
-                    <button
-                      className="w-full text-left text-nowrap px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                      onClick={() => {
-                        handleOpenLedger(row._id);
-                        hanldeActiveDropDown(null);
-                      }}
-                    >
-                      <img src={eyeIcon} alt="View" className='text-black w-4 h-4 mr-1' />
-                      View
-                    </button>
-                    <button
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                      onClick={() => {
-                        setActiveDropdown(null);
-                        handleGift(row);
-                      }}
-                    >
-                      <img src={gift} alt="Gift" className="w-[16px] h-[16px]" />
-                      Gift Handover
-                    </button>
-                  </div>
-                </div>
-              </div>,
-              document.body
-            )}
-        </div>
-      ),
-    }
+            <div className="w-40 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+              <div className="py-1">
+                <button
+                  className="w-full text-left text-nowrap px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                  onClick={() => {
+                    handleOpenLedger(row._id);
+                    hanldeActiveDropDown(null);
+                  }}
+                >
+                  <img
+                    src={eyeIcon}
+                    alt="View"
+                    className="text-black w-4 h-4 mr-1"
+                  />
+                  View
+                </button>
+                <button
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                  onClick={() => {
+                    setActiveDropdown(null);
+                    handleGift(row);
+                  }}
+                >
+                  <img
+                    src={gift}
+                    alt="Gift"
+                    className="w-[16px] h-[16px]"
+                  />
+                  Gift Handover
+                </button>
+                {/* Add Cancel button here */}
+                <button
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2 border-t border-gray-100"
+                  onClick={() => hanldeActiveDropDown(null)}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4 mr-1"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
+    </div>
+  ),
+},
   ];
 
   return (
     <>
       <Breadcrumb
-        items={[{ label: "Managecustomers" }, { label: "Customer Schemes", active: true }]}
+        items={[
+          { label: "Managecustomers" },
+          { label: "Customer Schemes", active: true },
+        ]}
       />
 
       <div className="flex flex-col p-4 bg-white border border-[#F2F2F9] rounded-[16px]">
@@ -387,7 +469,9 @@ const SchemeAccount = () => {
             <div className="w-full sm:w-auto">
               <ExportDropdown
                 apiData={schaccExp}
-                fileName={`Customer Schemes ${new Date().toLocaleDateString('en-GB')}`}
+                fileName={`Customer Schemes ${new Date().toLocaleDateString(
+                  "en-GB"
+                )}`}
               />
             </div>
 
@@ -398,8 +482,8 @@ const SchemeAccount = () => {
                 style={{ backgroundColor: layout_color }}
                 onClick={handleClick}
               >
-              <img src={plus} alt="plus" className="w-4 h-4 me-[10px]" />
-                 Add Customer
+                <img src={plus} alt="plus" className="w-4 h-4 me-[10px]" />
+                Add Customer
               </button>
             </div>
           </div>
@@ -424,7 +508,7 @@ const SchemeAccount = () => {
         {displaysetting === 1 && (
           <ModelOne
             title={popuptitle}
-            extraClassName='w-[700px] max-h-[90vh] overflow-y-auto'
+            extraClassName="w-[700px] max-h-[90vh] overflow-y-auto"
             setIsOpen={setIsviewOpen}
             isOpen={isviewOpen}
             closeModal={closeIncommingModal}

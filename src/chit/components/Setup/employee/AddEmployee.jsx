@@ -3,10 +3,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { CalendarDays, Camera, X } from "lucide-react";
+import { CalendarDays } from "lucide-react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import Webcam from "react-webcam";
 import { useSelector } from "react-redux";
 import profileplaceholder from "../../../../assets/profileplaceholder.png";
@@ -19,6 +19,7 @@ import {
   getemployeebyid,
   getallbranch,
   updateemployee,
+  getAllDepartments,
 } from "../../../api/Endpoints";
 import Select from "react-select";
 import SpinLoading from "../../common/spinLoading";
@@ -52,38 +53,21 @@ const AddEmployee = () => {
     "id_branch",
     "pan",
     "aadharNumber",
+    "department",
   ];
 
-  // const customStyles = (isReadOnly) => ({
-  //   control: (base, state) => ({
-  //     ...base,
-  //     minHeight: "42px",
-  //     backgroundColor: "white",
-  //     border: state.isFocused ? "1px solid black" : "2px solid #f2f3f8",
-  //     boxShadow: state.isFocused ? "0 0 0 1px black" : "none",
-  //     borderRadius: "0.375rem",
-  //     "&:hover": {
-  //       color: "#e2e8f0",
-  //     },
-  //     pointerEvents: !isReadOnly ? "none" : "auto",
-  //     opacity: !isReadOnly ? 1 : 1,
-  //   }),
-  //   indicatorSeparator: () => ({
-  //     display: "none",
-  //   }),
-  //   placeholder: (base) => ({
-  //     ...base,
-  //     color: "#858293",
-  //     fontWeight: "thin",
-  //   }),
-  //   dropdownIndicator: (provided, state) => ({
-  //     ...provided,
-  //     color: "#232323",
-  //     "&:hover": {
-  //       color: "#232323",
-  //     },
-  //   }),
-  // });
+  // Department options
+  const departmentOptions = [
+    { value: "sales", label: "Sales" },
+    { value: "marketing", label: "Marketing" },
+    { value: "finance", label: "Finance" },
+    { value: "hr", label: "Human Resources" },
+    { value: "operations", label: "Operations" },
+    { value: "it", label: "IT" },
+    { value: "customer_support", label: "Customer Support" },
+    { value: "admin", label: "Administration" },
+    { value: "other", label: "Other" },
+  ];
 
   // State Management
   const [showWebcam, setShowWebcam] = useState(false);
@@ -92,6 +76,7 @@ const AddEmployee = () => {
   const [states, setStates] = useState([]);
   const [city, setCity] = useState([]);
   const [branchData, setBranchData] = useState([]);
+  const [department, setDepartment] = useState([]);
   const [imagePreviews, setImagePreviews] = useState({
     image: null,
     resume: null,
@@ -109,7 +94,7 @@ const AddEmployee = () => {
       id_country: "",
       id_state: "",
       id_city: "",
-      id_branch:"",
+      id_branch: "",
       address: "",
       pincode: "",
       pan: "",
@@ -117,6 +102,7 @@ const AddEmployee = () => {
       date_of_join: null,
       aadharNumber: "",
       employeeIncentivePercentage: 0,
+      department: "",
     },
     validationSchema: Yup.object({
       firstname: Yup.string()
@@ -140,7 +126,8 @@ const AddEmployee = () => {
       pincode: Yup.string()
         .matches(/^[0-9]{6}$/, "Pincode must be 6 digits")
         .required("Pincode is required"),
-        id_branch: Yup.string().required("Country is required"),
+      id_branch: Yup.string().required("Branch is required"),
+      department: Yup.string().required("Department is required"),
       id_state: Yup.string().required("State is required"),
       id_city: Yup.string().required("City is required"),
       id_country: Yup.string().required("Country is required"),
@@ -171,7 +158,7 @@ const AddEmployee = () => {
     }),
     onSubmit: async (values) => {
       if (!isMounted.current) return;
-      
+
       setIsLoading(true);
       try {
         const formData = new FormData();
@@ -216,9 +203,9 @@ const AddEmployee = () => {
         }
 
         if (id) {
-          await updateEmployeeMutate(formData);
+          updateEmployeeMutate(formData);
         } else {
-          await addEmployeeMutate(formData);
+          addEmployeeMutate(formData);
         }
       } catch (error) {
         if (isMounted.current) {
@@ -241,6 +228,11 @@ const AddEmployee = () => {
     queryFn: allcountry,
   });
 
+  const { data: departments } = useQuery({
+    queryKey: ["departments"],
+    queryFn: getAllDepartments,
+  });
+
   const { data: branchResponse } = useQuery({
     queryKey: ["branches"],
     queryFn: getallbranch,
@@ -255,7 +247,18 @@ const AddEmployee = () => {
     cacheTime: 1000 * 60 * 10,
   });
 
-  // Effects
+  //useEffects
+  useEffect(() => {
+    if (departments && departments?.data?.length > 0) {
+      const output = departments?.data?.map((dept) => ({
+        value: dept._id,
+        label: dept.name,
+      }));
+      console.log(output)
+      setDepartment(output);
+    }
+  }, [departments]);
+
   useEffect(() => {
     if (countryResponse && isMounted.current) {
       const countryOptions = countryResponse.data.map((state) => ({
@@ -298,7 +301,8 @@ const AddEmployee = () => {
         id_country: employee.id_country._id || country._id,
         employeeIncentivePercentage: employee.employeeIncentivePercentage || 0,
         pan: employee.pan || "",
-        whatsappNumber: employee.whatsappNumber || ""
+        whatsappNumber: employee.whatsappNumber || "",
+        department: employee.department || "",
       });
 
       setImagePreviews({
@@ -455,6 +459,10 @@ const AddEmployee = () => {
     );
   };
 
+  const handleDepartmentChange = (selectedOption) => {
+    formik.setFieldValue("department", selectedOption ? selectedOption.id : "");
+  };
+
   const handleGenderSelect = (value) => {
     formik.setFieldValue("gender", value);
   };
@@ -544,6 +552,8 @@ const AddEmployee = () => {
                 ? "Aadhar card number"
                 : field === "employeeIncentivePercentage"
                 ? "Employee Incentive Percentage"
+                : field === "department"
+                ? "Department"
                 : field
                     .replace(/_/g, " ")
                     .replace(/\b\w/g, (char) => char.toUpperCase())}
@@ -596,6 +606,22 @@ const AddEmployee = () => {
                 placeholder="Select Country"
                 styles={customStyles(true)}
               />
+            ) : field === "department" ? (
+              <Select
+                options={department}
+                value={department.find(
+                  (option) => option.value === formik.values.department
+                )}
+                onChange={(selectedOption) => {
+                  formik.setFieldValue(
+                    "department",
+                    selectedOption ? selectedOption.value : ""
+                  );
+                }}
+                onBlur={formik.handleBlur}
+                placeholder="Select Department"
+                styles={customStyles(true)}
+              />
             ) : field === "whatsappNumber" ? (
               <input
                 type="text"
@@ -642,10 +668,13 @@ const AddEmployee = () => {
     <form onSubmit={formik.handleSubmit} className="w-full mx-auto space-y-6">
       <div className="flex flex-row justify-between items-center mb-4">
         <p className="text-sm text-gray-400 mt-4 mb-3">
-          Employee / <span className="text-[#232323] font-semibold text-sm">Employee Creation</span>
+          Employee /{" "}
+          <span className="text-[#232323] font-semibold text-sm">
+            Employee Creation
+          </span>
         </p>
       </div>
-      
+
       <div className="bg-[#FFFFFF] rounded-[16px] p-6  border-[1px]">
         <h2 className="text-lg font-semibold mb-4 border-b pb-4">
           {id ? "Edit Employee" : "Add Employee"}
@@ -663,7 +692,10 @@ const AddEmployee = () => {
               <div className="relative">
                 <DatePicker
                   selected={formik.values[field]}
-                  onChange={(date) => formik.setFieldValue(field, date)}
+                  onChange={(date) => {
+                    formik.setFieldValue(field, date);
+                    formik.setFieldTouched(field, true);
+                  }}
                   onBlur={formik.handleBlur}
                   dateFormat="yyyy-MM-dd"
                   placeholderText="Select Date"
@@ -694,7 +726,11 @@ const AddEmployee = () => {
                 className="flex-1 border-[1px] border-[#f2f3f8] rounded-md px-3 py-2 cursor-pointer hover:bg-gray-50"
               >
                 <p className="truncate text-[#b5b5b5]">
-                  {imagePreviews.resume?.name || imagePreviews.resume || (formik.values.resume ? formik.values.resume.name : "Browse")}
+                  {imagePreviews.resume?.name ||
+                    imagePreviews.resume ||
+                    (formik.values.resume
+                      ? formik.values.resume.name
+                      : "Browse")}
                 </p>
               </label>
               <div className="absolute right-0 top-0 bottom-0 h-full flex flex-row gap-2">
@@ -730,7 +766,8 @@ const AddEmployee = () => {
                 className="flex-1 border-[1px] border-[#f2f3f8] rounded-md px-3 py-2 cursor-pointer hover:bg-gray-50"
               >
                 <p className="truncate text-[#b5b5b5]">
-                  {imagePreviews.image?.name || imagePreviews.image ||
+                  {imagePreviews.image?.name ||
+                    imagePreviews.image ||
                     (formik.values.image ? formik.values.image.name : "Browse")}
                 </p>
               </label>
@@ -767,7 +804,6 @@ const AddEmployee = () => {
           </div>
         </div>
         <div className="flex justify-end space-x-4 mt-4 py-5">
-          
           <button
             type="submit"
             disabled={isLoading || !formik.isValid}

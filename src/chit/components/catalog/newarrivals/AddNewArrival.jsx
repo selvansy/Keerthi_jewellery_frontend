@@ -13,7 +13,7 @@ import {
   updatenewarrivals,
 } from "../../../api/Endpoints";
 import { useMutation } from "@tanstack/react-query";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import Loading from "../../common/Loading";
 import SpinLoading from "../../common/spinLoading";
 import { useNavigate, useParams } from "react-router-dom";

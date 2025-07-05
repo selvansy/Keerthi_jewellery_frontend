@@ -35,7 +35,7 @@ import diamond from "../../../../assets/Dimond 1.svg";
 import plus from "../../../../assets/plus.svg";
 import Table from "../../common/Table";
 import { useLocation, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { useParams } from "react-router-dom";
 import Select from "react-select";
 import AccountStatus from "./accountReview/accountStatus";

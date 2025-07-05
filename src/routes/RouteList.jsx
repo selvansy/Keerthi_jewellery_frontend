@@ -123,6 +123,7 @@ import WeightPaybleChild from "../chit/components/Report/weightPaybleChild";
 import { path } from "framer-motion/client";
 import Exisitingcustomer from "../chit/components/manageaccount/customer/Exisitingcustomer";
 import Existcusomer from "../chit/components/manageaccount/customer/Existcus";
+import UploadFileComponent from "../chit/components/ImportFile";
 
 const RouteList = [
 
@@ -886,10 +887,16 @@ const RouteList = [
     name:"Amount Payble",
     path:'/report/schemewiseamount',
     element:<Base renderContent={AmountPaybleChild} />
-  },{
+  },
+  {
     name:"Amount Payble",
     path:'/report/schemewiseweight',
     element:<Base renderContent={WeightPaybleChild} />
+  },
+    {
+    name:"Import",
+    path:'/import',
+    element:<Base renderContent={UploadFileComponent} />
   }
  
 

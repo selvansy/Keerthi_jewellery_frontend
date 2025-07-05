@@ -12,7 +12,7 @@ import Select from "react-select";
 import customSelectStyles from "../../common/customSelectStyles";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { useNavigate, useParams } from "react-router-dom";
 import SpinLoading from "../../common/spinLoading";
 

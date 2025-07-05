@@ -12,7 +12,7 @@ import {
   getbranchbyid,
 } from "../../../api/Endpoints";
 import { setid } from "../../../../redux/clientFormSlice";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { useDispatch, useSelector } from "react-redux";
 import Select from "react-select";
 import { customSelectStyles } from "../../Setup/purity";

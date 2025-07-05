@@ -10,7 +10,7 @@ import {
   puritybymetal,
   updatecategory,
 } from "../../../api/Endpoints";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { useSelector } from "react-redux";
 import SpinLoading from "../../common/spinLoading";
 

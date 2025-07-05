@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { SlidersHorizontal, Search, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import {
   getcategoryTable,
   getallbranch,
@@ -291,7 +291,7 @@ const Category = () => {
   return (
     <>
       <Breadcrumb
-        items={[{ label: "Catelogue" }, { label: "Category", active: true }]}
+        items={[{ label: "Catalogue" }, { label: "Category", active: true }]}
       />
 
       <div className="flex flex-col p-4  bg-white border border-[#F2F2F9]  rounded-[16px]">

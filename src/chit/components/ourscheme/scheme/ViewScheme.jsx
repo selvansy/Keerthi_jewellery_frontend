@@ -21,7 +21,7 @@ import { benefiMakingCharge, rewardType } from "../../../../utils/Constants";
 
 import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { schemeValidationSchema } from "../../../../utils/validations/schemeValidationSchema";
 import SpinLoading from "../../common/spinLoading";
 import "react-datepicker/dist/react-datepicker.css";

@@ -2,7 +2,7 @@ import React from "react";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import { useSelector } from "react-redux";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { FileSpreadsheet } from "lucide-react";
 import { body, style } from "framer-motion/client";
 
@@ -34,7 +34,7 @@ export const ExportToPDF = ({ apiData, fileName = "ExportedData" }) => {
       body: tableRows,
       startY: 20  ,
       styles: {
-        fontSize: 10, 
+        fontSize: 7, 
         lineHeight: 1.2,
         cellPadding: { top: 5, right: 3, bottom: 4, left: 4 },
         overflow: 'wrap',
@@ -51,7 +51,7 @@ export const ExportToPDF = ({ apiData, fileName = "ExportedData" }) => {
         cellPadding: { top: 5, right: 1, bottom: 4, left: 5 },
       },
       columnStyles: {
-        0: { cellWidth: 'linebreak' },
+        0: { cellWidth: 'wrap' },
         1: { cellWidth: 'wrap' },
         [lastColumnIndex]: { cellWidth: 'wrap' },
       },

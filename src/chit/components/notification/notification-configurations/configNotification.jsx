@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { notificationConfig, getConfig } from "../../../api/Endpoints";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import SpinLoading from "../../common/spinLoading";
@@ -8,7 +8,8 @@ import SpinLoading from "../../common/spinLoading";
 const ConfigNotification = () => {
 
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
-  const avl = ["pushNotification", "sms", "whatsapp"];
+  // const avl = ["pushNotification", "sms", "whatsapp"];
+    const avl = ["pushNotification"];
   const [activeTab, setActiveTab] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState({
