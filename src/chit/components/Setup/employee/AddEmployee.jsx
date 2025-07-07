@@ -9,7 +9,6 @@ import "react-datepicker/dist/react-datepicker.css";
 import { toast } from "sonner";
 import Webcam from "react-webcam";
 import { useSelector } from "react-redux";
-import profileplaceholder from "../../../../assets/profileplaceholder.png";
 import cameraIcon from "../../../../assets/icons/cameraIcon.svg";
 import {
   allcountry,
@@ -55,20 +54,7 @@ const AddEmployee = () => {
     "aadharNumber",
     "department",
   ];
-
-  // Department options
-  const departmentOptions = [
-    { value: "sales", label: "Sales" },
-    { value: "marketing", label: "Marketing" },
-    { value: "finance", label: "Finance" },
-    { value: "hr", label: "Human Resources" },
-    { value: "operations", label: "Operations" },
-    { value: "it", label: "IT" },
-    { value: "customer_support", label: "Customer Support" },
-    { value: "admin", label: "Administration" },
-    { value: "other", label: "Other" },
-  ];
-
+  
   // State Management
   const [showWebcam, setShowWebcam] = useState(false);
   const [isLoading, setIsLoading] = useState(false);

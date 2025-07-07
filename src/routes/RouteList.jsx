@@ -214,33 +214,18 @@ const RouteList = [
   //Masters
   {
     name: "Purity",
-    path: '/masters/purity/',
+    path: '/masters/purity',
     element: <Base renderContent={Purity} />
   },
   {
     name: "Metal",
-    path: '/masters/metal/',
+    path: '/masters/metal',
     element: <Base renderContent={Metal} />
   },
-  // {
-  //   name: "Metal Rate",
-  //   path: 'masters/metalrate',
-  //   element: <Base renderContent={MetalRate} />
-  // },
   {
     name: "Metal Rate",
     path: '/masters/metalrate',
     element: <Base renderContent={MetalRateIndex} />
-  },
-  {
-    name: "Create Metal Rate",
-    path: '/masters/metalrate/edit/:id',
-    element: <Base renderContent={CreateMetalRate} />
-  },
-  {
-    name: "Create Metal Rate",
-    path: '/masters/metalrate/add',
-    element: <Base renderContent={CreateMetalRate} />
   },
   {
     name: "User Role",
@@ -249,12 +234,12 @@ const RouteList = [
   },
   {
     name: "User Access",
-    path: '/usersettings/useraccess/',
+    path: '/usersettings/useraccess',
     element: <Base renderContent={UserAccess} />
   },
   {
     name: "Mode of Payment",
-    path: '/masters/paymentmode/',
+    path: '/masters/paymentmode',
     element: <Base renderContent={Paymentmode} />
   },
   {
@@ -275,11 +260,6 @@ const RouteList = [
   },
 
   //Payment
-  // {
-  //   name: "Scheme Payment",
-  //   path: '/payment/customerpayment',
-  //   element: <Base renderContent={SchemePayment} />
-  // },
   {
     name: "Add Scheme Payment",
     path: '/payment/addschemepayment',
@@ -365,6 +345,11 @@ const RouteList = [
   //   path:'/managecustomers/customer',
   //   element:<Base renderContent={Exisitingcustomer}/>
   // },
+   {
+   name:"Existing Customer",
+   path: "/managecustomers/customer",
+    element:<Base renderContent={Existcusomer}/> 
+  },
   {
    name:"Existing Customer",
    path: "/managecustomers/customer/:cusid?",
@@ -377,7 +362,7 @@ const RouteList = [
   },
   {
     name: "Add Customer",
-    path: '/managecustomers/editcustomer/:id',
+    path: '/managecustomers/editcustomer/:id?',
     element: <Base renderContent={Customers} />
   },
   {
@@ -392,15 +377,14 @@ const RouteList = [
   // },
 
   //Wallet
-
   {
     name: "Wallet Point Rate",
-    path: '/wallet/pointrate/',
+    path: '/wallet/pointrate',
     element: <Base renderContent={Addwallet} />
   },
   {
     name: "Wallet",
-    path: '/wallet/redeemption/',
+    path: '/wallet/redeemption',
     element: <Base renderContent={WalletRedemption} />
   },
   {
@@ -410,12 +394,12 @@ const RouteList = [
   },
   {
     name: "Wallet History",
-    path: '/wallet/wallethistory/',
+    path: '/wallet/wallethistory',
     element: <Base renderContent={WalletHistory} />
   },
   {
     name: "Redeem History",
-    path: '/wallet/redeemhistory/',
+    path: '/wallet/redeemhistory',
     element: <Base renderContent={RedeemHistory} />
   },
 
@@ -439,7 +423,7 @@ const RouteList = [
   },
   {
     name: "Gift Purchase",
-    path: 'gift/giftpurchase/',
+    path: 'gift/giftpurchase',
     element: <Base renderContent={GiftInwards} />
   },
   {
@@ -464,7 +448,7 @@ const RouteList = [
   },
   {
     name: "Gift Stock Report",
-    path: '/gift/stockreport/',
+    path: '/gift/stockreport',
     element: <Base renderContent={GiftReport} />
   },
 
@@ -531,12 +515,12 @@ const RouteList = [
   //Employee
   {
     name: "Employee Details",
-    path: '/employee/details/',
+    path: '/employee/details',
     element: <Base renderContent={OurEmployee} />
   },
   {
     name: "Employee Creation",
-    path: '/employee/creation/',
+    path: '/employee/creation',
     element: <Base renderContent={AddEmployee} />
   },
   {
@@ -597,7 +581,7 @@ const RouteList = [
   },
   {
     name: "redemption summary",
-    path: '/report/redemptionsummary/',
+    path: '/report/closedsummary',
     element: <Base renderContent={RedemptionReport} />
   },
 
@@ -797,12 +781,12 @@ const RouteList = [
   },
   {
     name:"Promotions Summary",
-    path:'/schemereport/promosummary/',
+    path:'/schemereport/promosummary',
     element:<Base renderContent={PromotionSummary} />
   },
   {
     name:"Notifications Summary",
-    path:'/schemereport/notification/',
+    path:'/schemereport/notification',
     element:<Base renderContent={NotificationHistory} />
   },
 
@@ -813,7 +797,7 @@ const RouteList = [
   },
   {
     name:"Policy View",
-    path:'/help/policy/',
+    path:'/help/policy',
     element:<Base renderContent={PolicyView} />
   },
 
@@ -876,7 +860,6 @@ const RouteList = [
     path:"/superdata",
     element:<Base renderContent={Login}/>
   },
-
   //! drill down table route
   {
     name:"Drill Down",
@@ -898,8 +881,6 @@ const RouteList = [
     path:'/import',
     element:<Base renderContent={UploadFileComponent} />
   }
- 
-
 ];
 
 export default RouteList;

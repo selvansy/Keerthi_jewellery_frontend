@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { CalendarDays, Camera, X, Send, Plus, EyeOff } from "lucide-react";
+import { EyeOff } from "lucide-react";
 
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
@@ -31,6 +31,7 @@ import ModelOne from "../../common/Modelone";
 import VerificationModal from "../closedaccount/VerificationModal";
 import OtpCompleted from "../../manageaccount/closedaccount/OtpCompleted";
 import { customStyles } from "../../ourscheme/scheme/AddScheme";
+import Webcam from "react-webcam";
 
 const customSelectStyles = (isReadOnly) => ({
   control: (base, state) => ({
@@ -143,7 +144,7 @@ const CustomerForm = ({
     password: "",
     confirmpassword: "",
     whatsapp: "",
-    otpVerified:false
+    otpVerified: false,
   };
 
   const descImageInputRef = useRef(null);
@@ -162,6 +163,12 @@ const CustomerForm = ({
     // date_of_birth: Yup.date()
     //   .typeError("Invalid date format")
     //   .required("Birth Date is required"),
+    date_of_birth: Yup.date()
+      // .required("Birth date is required")
+      .max(
+        new Date(new Date().setFullYear(new Date().getFullYear() - 18)),
+        "Employee must be at least 18 years old"
+      ),
     pincode: Yup.string()
       .required("Pincode is required")
       .matches(/^\d{6}$/, "Pincode must be 6 digits"),
@@ -177,7 +184,7 @@ const CustomerForm = ({
       .matches(/^\d{12}$/, "Aadhaar number must be exactly 12 digits"),
     pan: Yup.string()
       .required("PAN card number is required")
-      .matches(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, "Invalid PAN card format")
+      .matches(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, "Invalid PAN card format"),
   });
 
   const formik = useFormik({
@@ -264,8 +271,6 @@ const CustomerForm = ({
     },
   });
 
-  console.log(cusData, "dlk");
-
   const { data: countryresponse, isLoading: loadingCountries } = useQuery({
     queryKey: ["country", country],
     queryFn: allcountry,
@@ -343,7 +348,7 @@ const CustomerForm = ({
     }
   }, [cityresponse, stateresponse, countryresponse]);
 
-  const { mutate: addcustomerMutate } = useMutation({
+  const { mutate: addcustomerMutate, isLoading: addLoading } = useMutation({
     mutationFn: (data) => addcustomer(data),
     onSuccess: (response) => {
       if (response) {
@@ -468,6 +473,12 @@ const CustomerForm = ({
     }
   };
 
+  useEffect(() => {
+    if (formik.values.otpVerified == true) {
+      setChecked(false);
+    }
+  }, [formik.values.otpVerified]);
+
   // Send OTP API mutation
   const { mutate: postSendOtpMobile } = useMutation({
     mutationFn: sendOtp,
@@ -506,7 +517,7 @@ const CustomerForm = ({
   }
 
   const handleOtpComplete = () => {
-    formik.setFieldValue("otpVerified",true)
+    formik.setFieldValue("otpVerified", true);
     setOtpComplete(true);
     setSendOtp(false);
   };
@@ -537,22 +548,12 @@ const CustomerForm = ({
   };
 
   const handleDispatch = (data) => {
-    console.log("data---", data);
     setCusData({
       customer_name: data.firstname + " " + data.lastname,
       address: data.address,
       id_branch: data.id_branch,
       mobile: data.mobile,
     });
-
-    // dispatch(
-    //     SetaccExp({
-    //         customer_name: data.firstname + " " + data.lastname,
-    //         address: data.address,
-    //         id_branch: data.id_branch,
-    //         mobile: data.mobile,
-    //     })
-    // );
   };
 
   const handlePasswordToggle = () => {
@@ -1025,7 +1026,7 @@ const CustomerForm = ({
                       onChange={(date) => {
                         const value = formatDate(date);
                         formik.setFieldValue("date_of_birth", value);
-                        formik.setFieldTouched("date_of_birth", false);
+                        formik.setFieldTouched("date_of_birth", true);
                       }}
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
@@ -1284,13 +1285,13 @@ const CustomerForm = ({
               <div>
                 <div className="bg-white mt-6">
                   <div className="flex justify-end gap-5 mt-3">
-                  <button
+                    <button
                       className="text-white rounded-lg text-sm font-semibold h-[36px] w-full md:w-24"
                       type="submit"
                       style={{ backgroundColor: layout_color }}
-                      disabled={isLoading}
+                      disabled={addLoading}
                     >
-                      {isLoading ? <SpinLoading /> : id ? "Update" : "Save"}
+                      {addLoading ? <SpinLoading /> : id ? "Update" : "Save"}
                     </button>
                     <button
                       className="bg-[#E2E8F0] text-gray-500 rounded-lg h-[36px] w-full text-sm font-semibold md:w-24"
@@ -1330,6 +1331,32 @@ const CustomerForm = ({
                 >
                   <OtpCompleted setIsOpen={closeIncommingModal} />
                 </ModelOne>
+              )}
+
+              {showWebcam && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                  <div className="bg-white p-4 rounded-lg">
+                    <Webcam
+                      ref={webcamRef}
+                      screenshotFormat="image/jpeg"
+                      className="rounded-lg"
+                    />
+                    <div className="mt-4 flex justify-center gap-4">
+                      <button
+                        onClick={handleCapture}
+                        className="bg-[#004181] text-sm text-white px-4 py-2 rounded-md"
+                      >
+                        Capture
+                      </button>
+                      <button
+                        onClick={() => setShowWebcam(false)}
+                        className="bg-gray-500 text-sm text-white px-4 py-2 rounded-md"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                </div>
               )}
             </form>
           </>

@@ -24,11 +24,11 @@ import { debounce } from "lodash";
 import Select from "react-select";
 
 // Constants
-const MAX_FILE_SIZE = 500 * 1024; // 500KB
+const MAX_FILE_SIZE = 500 * 1024;
 const NOTIFICATION_OPTIONS = [
   { label: "Push Notification", field: "pushNotification" },
-  { label: "SMS", field: "sms" },
-  { label: "WhatsApp", field: "whatsapp" },
+  // { label: "SMS", field: "sms" },
+  // { label: "WhatsApp", field: "whatsapp" },
 ];
 const ARRAY_FIELDS = ['id_branch', 'id_scheme', 'customer_id'];
 const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
@@ -89,7 +89,6 @@ const customStyles = {
   }),
 };
 
-// Optimized components for large lists
 const OptimizedOption = (props) => {
   const { innerProps, ...rest } = props;
   const { onMouseMove, onMouseOver, ...filteredInnerProps } = innerProps;

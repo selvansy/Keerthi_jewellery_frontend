@@ -26,7 +26,7 @@ function NotificationCard() {
 
   return (
     <div className="grid grid-cols-2  gap-4 text-[#232323] text-sm">
-      <div className="bg-white rounded-[16px] py-[20px] pl-[10px] border-[1px] border-[#F5F5F5]  ">
+      {/* <div className="bg-white rounded-[16px] py-[20px] pl-[10px] border-[1px] border-[#F5F5F5]  ">
         <div className="rounded-md pb-3">
           <img src={whatsapp} alt="whatsapp" className="h-[40px] w-[40px]" />
         </div>
@@ -36,7 +36,7 @@ function NotificationCard() {
           </h5>
           <h5 className="text-[#6C7086] text-md font-medium">WhatsApp Limit</h5>
         </div>
-      </div>
+      </div> */}
 
       <div className="bg-white rounded-[16px] py-[20px] pl-[10px] border-[1px] border-[#F5F5F5]">
         <div className="rounded-md pb-3">

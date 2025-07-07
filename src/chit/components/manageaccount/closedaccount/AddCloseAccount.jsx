@@ -602,7 +602,7 @@ const AddCloseAccount = () => {
           <p className="text-sm text-gray-400 mb-3">
             Manage Customers /{" "}
             <span className="text-[#232323] font-semibold text-sm">
-              {dynamic ? "Pre Close Account" : "Closed Accounts"}
+              {dynamic ? "Pre Close Account" : "Account Closure"}
             </span>
           </p>
         </div>
@@ -610,7 +610,7 @@ const AddCloseAccount = () => {
         <div className="bg-[#FFFFFF] rounded-xl p-6 shadow-sm border">
           <div className="flex flex-row justify-between mb-4 border-b pb-4">
             <h2 className="text-lg font-semibold text-[#232323] ">
-              {dynamic ? "Pre Close Account" : "Closed Accounts"}
+              {dynamic ? "Pre Close Account" : "Account Closure"}
             </h2>
             {!dynamic && (
               <div>

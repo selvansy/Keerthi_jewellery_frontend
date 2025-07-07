@@ -105,24 +105,6 @@ export function ExistingCustomer({
     });
   };
 
-  //   useEffect(() => {
-  //   const handleConfirmation = (data) => {
-  //     if (data.paymentData) {
-  //       navigate('/payment', {
-  //         state: {
-  //           paymentData: data.paymentData
-  //         }
-  //       });
-  //     }
-  //   };
-
-  //   eventEmitter.on('CONFIRMATION_SUBMIT', handleConfirmation);
-
-  //   return () => {
-  //     eventEmitter.off('CONFIRMATION_SUBMIT', handleConfirmation);
-  //   };
-  // }, [navigate]);
-
   const customStyles = (isReadOnly) => ({
     control: (base, state) => ({
       ...base,
@@ -308,37 +290,9 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
   const [id_purity, setPurity] = useState("");
   const [metalRate, setMetalRate] = useState(0);
   const [referralId, setReferralid] = useState(null);
+  const [showReferral,setShowReferral]=useState(false)
 
   //* TODO use formik insted of formData
-  // const [formData, setFormData] = React.useState({
-  //   id_customer: cusData.customerId || "",
-  //   mobile: cusData.mobile,
-  //   start_date: start_date,
-  //   id_classification: "",
-  //   // collectionuserid: "",
-  //   scheme_acc_number: "",
-  //   id_scheme: "",
-  //   id_branch: cusData.id_branch,
-  //   account_name: "",
-  //   address: cusData.address,
-  //   customer_name: cusData.customer_name,
-  //   fixedamount: "",
-  //   amount: null,
-  //   weight: null,
-  //   scheme_type: 0,
-  //   min_amount: 0,
-  //   max_amount: 0,
-  //   min_weight: 0,
-  //   max_weight: 0,
-  //   total_installments: total_installments,
-  //   maturity_period: maturity_period,
-  //   maturity_date: maturity_date,
-  //   referral_id: "",
-  //   referral_type: "",
-  //   installment_type: "",
-  //   code: 0,
-  //   scheme_count_number: "",
-  // });
   const [formData, setFormData] = React.useState({
     id_customer: cusData.customerId || "",
     mobile: cusData.mobile,
@@ -536,8 +490,6 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
   // };
 
   const handleSearchmobile = async () => {
-    console.log("handle search");
-
     try {
       if (Number(searchmobile) === Number(cusData.mobile)) {
         return toast.error("Self referral is not allowed");
@@ -622,10 +574,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
   // };
 
   const filterInputchange = (e) => {
-    console.log("calling", e.target.name);
-
     const { name, value } = e.target;
-    console.log("val ", value);
 
     // setFormData((prev) => {
     //   console.log('prev', prev);
@@ -644,8 +593,6 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
     //   ...prev,
     //   [name]: value,
     // }));
-
-    console.log(name, formData[name]);
 
     if (name === "referral_type") {
       setFormData((prev) => ({ ...prev, [name]: value }));
@@ -719,7 +666,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
       });
     }
   };
-  // console.log(formData);
+
 
   useEffect(() => {
     handleschemebyid(formData.id_scheme);
@@ -1088,6 +1035,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
       const updatedFormData = {
         ...payload,
         referral_id: referralId,
+        referral_type: referralRoles[selectedClassification].label,
         scheme_count_number: acNumber,
       };
       setFormData(updatedFormData);
@@ -1244,7 +1192,9 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
         );
       }
     }
-  }, [formData.id_scheme, selectedScheme, schemefilter]);
+  }, [formData.id_scheme, selectedScheme, schemefilter])
+
+  console.log(showReferral)
 
   return (
     <form onSubmit={onSubmit}>
@@ -1407,6 +1357,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
                     code: selectedOption.code,
                     noOfDays: selectedOption.noOfDays,
                   }));
+                  setShowReferral(selectedOption.display_referral)
                   if (selectedOption.id_metal) {
                     setMetal(selectedOption.id_metal);
                   }
@@ -1665,7 +1616,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
             <p style={{ color: "red" }}>{errors?.maturity_date}</p>
           </div>
         )}
-        {!id && formData.referral_id === null && (
+        {!id && formData.referral_id === null && showReferral && (
           <>
             <div>
               <label className="text-sm text-[#232323] mb-1 font-semibold">
