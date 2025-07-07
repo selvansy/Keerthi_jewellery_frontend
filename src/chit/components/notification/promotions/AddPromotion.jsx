@@ -191,7 +191,7 @@ function AddPromotion() {
   const debouncedSearch = useCallback(
     debounce((searchValue) => {
       // Currently just sets search term, could be used for filtering
-      console.log(searchValue);
+      ;
     }, 500),
     []
   );

@@ -35,7 +35,7 @@ export const requestNotificationPermission = async () => {
     }
 
     const permission = await Notification.requestPermission();
-    console.log('Notification permission:', permission);
+    ;
 
     if (permission === 'granted') {
       try {
@@ -48,7 +48,7 @@ export const requestNotificationPermission = async () => {
           return null;
         }
         
-        console.log('FCM Token:', token);
+        ;
         await sendTokenToServer(token);
         
         // Listen for token refresh
@@ -60,7 +60,7 @@ export const requestNotificationPermission = async () => {
         return null;
       }
     } else {
-      console.log('Notification permission denied');
+      ;
       return null;
     }
   } catch (error) {
@@ -75,7 +75,7 @@ const onTokenRefresh = (messaging) => {
     getToken(messaging, {
       vapidKey: 'BPUSErslziiNp4dhzWlrdXRfAD4rYUTssW6jkc3WkXTt3FsJoeQdml3ipgcQVLdKxx6l-VwyTc9tuISJx8FuGuc'
     }).then((refreshedToken) => {
-      console.log('Token refreshed:', refreshedToken);
+      ;
       sendTokenToServer(refreshedToken);
     }).catch((err) => {
       console.error('Unable to retrieve refreshed token:', err);
@@ -101,7 +101,7 @@ const sendTokenToServer = async (token) => {
       throw new Error(`Failed to register device token: ${response.status}`);
     }
     
-    console.log('Token successfully registered with server');
+    ;
   } catch (error) {
     console.error('Error sending token to server:', error);
   }
@@ -116,7 +116,7 @@ export const onMessageListener = () => {
     }
     
     onMessage(messaging, (payload) => {
-      console.log('Message received:', payload);
+      ;
       resolve(payload);
     });
   });

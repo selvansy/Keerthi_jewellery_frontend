@@ -118,7 +118,7 @@ const PaymentPrint = () => {
     },
     onError: (error) => {
       setisLoading(false)
-      console.log("eror", error)
+      
       toast.error(error.message || 'Try again');
     }
   });

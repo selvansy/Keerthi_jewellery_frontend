@@ -31,7 +31,7 @@ function Action({ row, data, rowIndex, activeDropdown, setActive, handleEdit, ha
     }
   });
   const roledata = useSelector((state) => state.clientForm.roledata);
-  console.log(roledata)
+  
 
   const calculatePosition = () => {
     if (activeDropdown === row?._id && buttonRef.current) {

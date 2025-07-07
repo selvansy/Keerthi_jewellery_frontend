@@ -98,11 +98,11 @@ const AddOffers = () => {
     onSuccess: (response) => {
       setFormData(response.data);
       const {data}=response
-      console.log(data)
+      
       // setIOffersImage(`${response.data.pathUrl}/${response.data.desc_img}`);
       if (data.offer_image && data.offer_image.length > 0 && data.pathurl) {
         const fullImageUrl = `${data.pathurl}${data.offer_image[0]}`;
-        console.log(fullImageUrl)
+        
         // setSelectedImage(data.offer_image[0]);
         setImagePreviews((prev) => [
           ...prev,
@@ -256,7 +256,7 @@ const AddOffers = () => {
             formDataToSend.append(key, value);
           }
         });
-        console.log(imagePreviews)
+        
         if (offer_img_path && offer_img_path.length > 0) {
           offer_img_path.forEach((image) => {
             if (image instanceof File || typeof image === "string") {
@@ -274,7 +274,7 @@ const AddOffers = () => {
         
       }
     } catch (err) {
-      console.log(err);
+      ;
     }
   };
 

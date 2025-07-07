@@ -63,7 +63,7 @@ function WeightPaybleChild() {
   }, [paybleData]);
 
   const handleClick =(row)=>{
-    console.log(row)
+    
     navigate(`/managecustomers/customer/${row._id}`)
   }
 

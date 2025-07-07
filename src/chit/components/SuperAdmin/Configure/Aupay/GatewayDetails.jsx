@@ -135,7 +135,7 @@ const handleCancel = (type) => {
           body: JSON.stringify(formData),
         }) .then((response) => response.json())
         .then((data) => {
-          console.log('Another API response:', data);
+          ;
         })
         .catch((error) => {
           console.error('Error with another API call:', error);
@@ -151,7 +151,7 @@ const handleCancel = (type) => {
   const {mutate: addgatewaysettingmutate } = useMutation({
     mutationFn: addgatewaysetting,
     onSuccess: (response) => {
-      console.log(response);
+      ;
       toast.success(response.message)
       setFormData(formData);
       dispatch(pagehandler(currentStep + 1));
@@ -171,11 +171,11 @@ const handleCancel = (type) => {
   const getallpaymenttype = async () => {
     try {
       const res = await paymenttype();
-      console.log(res)
+      
       setPaymentTypeData(res.data);
 
     } catch (error) {
-      console.log(error)
+      
     }
   }
 

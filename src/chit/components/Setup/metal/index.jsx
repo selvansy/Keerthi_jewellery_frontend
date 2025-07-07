@@ -64,7 +64,7 @@ const Metal = () => {
       setisLoading(false);
     },
     onError: (error) => {
-      console.log(error.response.data);
+      ;
       setMetalData([]);
       setisLoading(false);
       setSearchLoading(false);
@@ -411,7 +411,7 @@ export const MetalForm = ({ setIsOpen, id, clearId }) => {
           setIsLoading(false);
         }
       } catch (error) {
-        console.log("error", error);
+        ;
       }
     },
     onError: (error) => {

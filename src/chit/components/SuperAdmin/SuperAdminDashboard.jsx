@@ -32,7 +32,7 @@ function SuperAdminDashboard() {
   const { mutate: CardSummary } = useMutation({
     mutationFn: getpaymentDashboard,
     onSuccess: (response) => {
-      console.log(response)
+      
       setCardData(response.data);
     }
   });

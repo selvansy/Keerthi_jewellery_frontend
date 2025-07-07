@@ -129,7 +129,7 @@ const Weddingnotification = () => {
   const { mutate: getBranches } = useMutation({
     mutationFn: getallbranch,
     onSuccess: (response) => {
-      console.log("res", response)
+      
       setBranchList(response.data);
     },
     onError: (error) => {
@@ -175,7 +175,7 @@ const Weddingnotification = () => {
 
 
   const handleDelete = (id) => {
-    console.log(id)
+    
     setActiveDropdown(null);
     dispatch(openModal({
       modalType: 'CONFIRMATION',

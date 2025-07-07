@@ -632,7 +632,7 @@ const SchemeForm = () => {
   };
 
   const handleAmountSelect = (index) => {
-    console.log(index);
+    ;
     setSelectedAmount(index);
     setEditAmount(amounts[index]);
   };

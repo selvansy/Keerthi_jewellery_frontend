@@ -86,7 +86,7 @@ function AccountReview({id_branch}) {
     mutationFn: ({id_branch, startDate, endDate}) => getAccountReview({id_branch, startDate, endDate}),
     onSuccess: (response) => {
       setAccountDataCount(response.data);
-      console.log(response.data)
+      
     },
     onError: (error) => {
       setAccountDataCount(initialState);

@@ -330,7 +330,7 @@ export const OutStandingFilter = ({ getOutstandingReport, itemsPerPage, currentP
     }, [currentPage, itemsPerPage])
 
     const handleSearch = (e) => {
-        console.log(e.target.value)
+        
         setSearch(e.target.value)
       }
 

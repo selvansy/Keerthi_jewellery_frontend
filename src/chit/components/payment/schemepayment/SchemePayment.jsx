@@ -141,7 +141,7 @@ const SchemePayment = () => {
     const { mutate: getallbranchMutate } = useMutation({
       mutationFn: getallbranch,
       onSuccess: (response) => {
-        console.log('jut')
+        
         if (response) {
           setBranch(response.data);
         }
@@ -271,7 +271,7 @@ const SchemePayment = () => {
   }
 
   const handleStatusToggle = async (id) => {
-    console.log(id);
+    ;
     let response = await changeschemeaccountStatus(id);
     if (response) {
       toast.success(response.message);

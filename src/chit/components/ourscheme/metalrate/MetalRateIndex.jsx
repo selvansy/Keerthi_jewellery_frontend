@@ -88,7 +88,7 @@ function MetalRateIndex({ refresh }) {
       rate: e.rate,
     }));
 
-    console.log(formValues);
+    ;
 
     if (Object.keys(errors).length === 0) {
       setLoading(true);
@@ -142,7 +142,7 @@ function MetalRateIndex({ refresh }) {
       }
     },
     onError: (error) => {
-      console.log(error.response.data);
+      ;
     },
   });
 
@@ -161,7 +161,7 @@ function MetalRateIndex({ refresh }) {
     onError: (error) => {
       setLoading(false);
       toast.error(error.response.data.message);
-      console.log(error.response.data);
+      ;
     },
   });
 
@@ -189,7 +189,7 @@ function MetalRateIndex({ refresh }) {
       }
     },
     onError: (error) => {
-      console.log(error.response.data);
+      ;
     },
   });
 
@@ -202,7 +202,7 @@ function MetalRateIndex({ refresh }) {
         value: e.rate,
         _id: e?.purity_id?._id,
       }));
-      // console.log(data,"data")
+      // 
       setMetalValue(metalRate);
 
       setUpdate(false);
@@ -264,7 +264,7 @@ function MetalRateIndex({ refresh }) {
       [name]: value.trim() === "" ? "This field is required" : "",
     }));
   };
-console.log(metalValue)
+
   return (
     <>
       <div>

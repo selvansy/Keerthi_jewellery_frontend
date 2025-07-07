@@ -52,7 +52,7 @@ const Userrole = () => {
     mutationFn: (payload) => getalluserroletable(payload),
 
     onSuccess: (response) => {
-      console.log(response)
+      
       if (response) {
         setuserroleData(response.data);
         setTotalPages(response.totalPages);

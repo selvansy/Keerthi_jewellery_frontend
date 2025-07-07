@@ -128,7 +128,7 @@ const Birthdaynotification = () => {
   const { mutate: getBranches } = useMutation({
     mutationFn: getallbranch,
     onSuccess: (response) => {
-      console.log("res", response)
+      
       setBranchList(response.data);
     },
     onError: (error) => {
@@ -171,7 +171,7 @@ const Birthdaynotification = () => {
 
 
   const handleDelete = (id) => {
-    console.log(id)
+    
     setActiveDropdown(null);
     dispatch(openModal({
       modalType: 'CONFIRMATION',

@@ -19,7 +19,7 @@ function Ledgerdetails({ setIsOpen }) {
   const [totalPages, setTotalPages] = useState(0);
   const [totalDocument, setTotalDocument] = useState(0)
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  console.log(paymentdata)
+  
 
   const handleCancel = (e) => {
     e.preventDefault();

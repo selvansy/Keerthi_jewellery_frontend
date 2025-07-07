@@ -95,7 +95,7 @@ function StaffuserForm({ setIsOpen }) {
     validateOnBlur: true,
     onSubmit: (values) => {
       if (id) {
-        console.log(values)
+        
         updatestaffmutate({id,values});
       } else {
         addstaffmutate(values);

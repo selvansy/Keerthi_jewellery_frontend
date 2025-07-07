@@ -75,7 +75,7 @@ function DrilldownTable({
               break;
           
             default:
-              console.log("Invalid type provided");
+              ;
               break;
           }
     }
@@ -177,7 +177,7 @@ const schemeColumns = (currentPage, itemsPerPage, handleClick) => [
             </div>
           </div>
         </div>
-        <div>{console.log(setData)}</div>
+        <div>{}</div>
         <div className="mt-4">
           <Table
             data={setData}

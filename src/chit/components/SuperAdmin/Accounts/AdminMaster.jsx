@@ -34,7 +34,7 @@ const AdminMaster = () => {
     //   });
 
     const handleStatusToggle = (id) => {
-        console.log(id)
+        
         toast.success("status changed");
         setClientTable((prevData) =>
             prevData.map((e) =>

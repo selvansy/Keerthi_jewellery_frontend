@@ -103,7 +103,7 @@ const ProductWhatsapp = () => {
    const { mutate: fetchById } = useMutation({
          mutationFn: getProductById,
          onSuccess: (response) => {
-          console.log("res",response)
+          
           if(response){  
            dispatch(setWhatsappData({
             name:response.data.name,
@@ -216,7 +216,7 @@ const ProductWhatsapp = () => {
         const { mutate: categoryByMetalId } = useMutation({
           mutationFn: categorybymetalid,
           onSuccess: (response) => {
-            console.log("Category",response)
+            
             setCategory(response.data);
           },
           onError: (error) => {
@@ -434,7 +434,7 @@ const handleSend = (id,id_branch) => {
   const { mutate: sendwhatsapp } = useMutation({
     mutationFn: sendwhatsappmessage,
     onSuccess: (response) => {
-      console.log("Response", response);
+      ;
       toast.success(response.message);
       getofferData({ page: currentPage, limit: itemsPerPage, search: search });
     },
@@ -579,7 +579,7 @@ const handleSend = (id,id_branch) => {
     setCurrentPage(page);
   };
 
-  console.log("MetalId",filtermetaltype)
+  
   return (
     <div className="flex flex-col p-4">
       <h2 className="text-2xl text-gray-900 font-bold">Product Notification</h2>

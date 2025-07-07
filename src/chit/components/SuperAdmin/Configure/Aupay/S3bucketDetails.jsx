@@ -139,7 +139,7 @@ const S3bucketDetails = ({ setIsAddClient,onPageChange, isLoading = false }) => 
         body: JSON.stringify(formData),
         }) .then((response) => response.json())
         .then((data) => {
-        console.log('Another API response:', data);
+        ;
         })
         .catch((error) => {
         console.error('Error with another API call:', error);
@@ -155,7 +155,7 @@ const S3bucketDetails = ({ setIsAddClient,onPageChange, isLoading = false }) => 
   const {mutate: adds3bucketsettingmutate } = useMutation({
     mutationFn: adds3bucketsetting,
     onSuccess: (response) => {
-      console.log(response);
+      ;
       toast.success(response.message)
       setFormData(formData);
       dispatch(pagehandler(currentStep + 1));

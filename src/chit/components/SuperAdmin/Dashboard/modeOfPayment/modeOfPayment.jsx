@@ -75,7 +75,7 @@ function ModeOfPayment({ id_branch }) {
       paymentModeHistory({ id_branch, startDate, endDate }),
     onSuccess: (response) => {
       setPaymentModeData(response.data);
-      console.log(response.data);
+      ;
     },
     onError: (error) => {
       //   setAccountDataCount(initialState);

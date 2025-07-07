@@ -201,7 +201,7 @@ function WalletHistory() {
 
     },
     onError: (error) => {
-      console.log(error)
+      
       setSearchLoading(false);
       setisLoading(false)
       setwalletData([])

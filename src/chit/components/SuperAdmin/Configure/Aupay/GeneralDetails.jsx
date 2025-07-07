@@ -14,7 +14,7 @@ const GeneralDetails = ({setIsAddClient, onPageChange, isLoading = false }) => {
   const currentStep = useSelector((state) => state.clientForm.currentStep);  
   const id = useSelector((state)=>state.clientForm.id_client);
  const aupay_url = useSelector((state) => state.clientForm.aupay_url);
-  console.log(aupay_url)
+  
   const totalPages = useSelector((state) => state.clientForm.totalSteps);
   const pawn_active=1;
   let dispatch = useDispatch()
@@ -112,7 +112,7 @@ const GeneralDetails = ({setIsAddClient, onPageChange, isLoading = false }) => {
     if (!data.display_agent) errors.display_agent = 'Display Agent is required';
     if (!data.collection_percentage) errors.collection_percentage = 'Agent Collection Percentage is required';
    
-    console.log('Errors:', errors);
+    ;
     return errors;
   };
 
@@ -156,7 +156,7 @@ const GeneralDetails = ({setIsAddClient, onPageChange, isLoading = false }) => {
         setPrinttypeData(res.data);
         
       } catch (error) {
-        console.log(error)
+        
       }
     }
 
@@ -169,7 +169,7 @@ const GeneralDetails = ({setIsAddClient, onPageChange, isLoading = false }) => {
       setAccountNoData(res.data);
       
     } catch (error) {
-      console.log(error)
+      
     }
   }
    //Get all Classification Type
@@ -180,7 +180,7 @@ const GeneralDetails = ({setIsAddClient, onPageChange, isLoading = false }) => {
       setClassifiyTypeData(res.data);
       
     } catch (error) {
-      console.log(error)
+      
     }
   }
 
@@ -193,7 +193,7 @@ const GeneralDetails = ({setIsAddClient, onPageChange, isLoading = false }) => {
       setReferralCalcData(res.data);
       
     } catch (error) {
-      console.log(error)
+      
     }
   }
 
@@ -206,7 +206,7 @@ const GeneralDetails = ({setIsAddClient, onPageChange, isLoading = false }) => {
       setDisplayTypeData(res.data);
       
     } catch (error) {
-      console.log(error)
+      
     }
   }
   
@@ -218,7 +218,7 @@ const GeneralDetails = ({setIsAddClient, onPageChange, isLoading = false }) => {
       setReceiptTypeData(res.data);
       
     } catch (error) {
-      console.log(error)
+      
     }
   }
 
@@ -230,7 +230,7 @@ const GeneralDetails = ({setIsAddClient, onPageChange, isLoading = false }) => {
         setClosePrintData(res.data);
         
       } catch (error) {
-        console.log(error)
+        
       }
     }
 
@@ -257,7 +257,7 @@ const GeneralDetails = ({setIsAddClient, onPageChange, isLoading = false }) => {
             body: JSON.stringify(formData),
           }) .then((response) => response.json())
           .then((data) => {
-            console.log('Another API response:', data);
+            ;
           })
           .catch((error) => {
             console.error('Error with another API call:', error);
@@ -274,7 +274,7 @@ const GeneralDetails = ({setIsAddClient, onPageChange, isLoading = false }) => {
     const {mutate: addgeneralsettingmutate } = useMutation({
       mutationFn: addgeneralsetting,
       onSuccess: (response) => {
-        console.log(response);
+        ;
         toast.success(response.message)
         setFormData(formData);
         dispatch(pagehandler(currentStep + 1));  

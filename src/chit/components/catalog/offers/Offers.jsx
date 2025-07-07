@@ -127,7 +127,7 @@ const Offers = () => {
     };
 
     if (from_date !== "" && to_date !== "" && filters.type !== "" && filters.id_branch !== "") {
-      console.log(filterTosend)
+      
       //  getcategoryData(filterTosend);
       setIsFilterOpen(false)
       setFromdate("")
@@ -178,7 +178,7 @@ const Offers = () => {
   const { mutate: branchbyId } = useMutation({
     mutationFn: getBranchById,
     onSuccess: (response) => {
-      console.log("Response", response)
+      
       setbranch(response.data);
     },
     onError: (error) => {

@@ -289,7 +289,7 @@ const AddSchemePayment = () => {
     setSelectedMode(0);
     setIsLoading(false);
     setSelectKey((prev) => prev + 1);
-    console.log(branch)
+    
   };
 
   const { mutate: updateschemepaymentmutate } = useMutation({
@@ -464,7 +464,7 @@ const AddSchemePayment = () => {
 
   //     if (output) {
   //       if (isWeightScheme) {
-  //         console.log(selectedScheme,'jd')
+  //         
   //         setMinWeight(id_scheme?.min_weight || 0);
   //         formik.setFieldValue("min_weight", id_scheme?.min_weight);
   //         setMaxWeight(id_scheme?.max_weight || 0);
@@ -541,7 +541,7 @@ const AddSchemePayment = () => {
 
   //   // Classification logic
   //   if (classificationOrder === 2) {
-  //     console.log("2")
+  //     
   //     if (isWeightScheme) {
   //       const paymentAmount = Number(metalRate) * Number(weight || 0);
   //       formik.setFieldValue("payment_amount", paymentAmount);
@@ -552,7 +552,7 @@ const AddSchemePayment = () => {
   //       setBaseAmount(amount);
   //     }
   //   } else if (classificationOrder === 3) {
-  //     console.log("3")
+  //     
   //     // const output = last_paid_amount === 0;
   //     const output = true
   //     // setIsFirstPay(output);
@@ -592,7 +592,7 @@ const AddSchemePayment = () => {
   //       }
   //     }
   //   } else {
-  //     console.log("1")
+  //     
   //     if (isWeightScheme) {
   //       setMinWeight(id_scheme?.min_weight || 0);
   //       setMaxWeight(id_scheme?.max_weight || 0);
@@ -738,17 +738,17 @@ const AddSchemePayment = () => {
 
     // schemes (12, 3, 4)
     if (weightSchemeTypes.includes(schemeType)) {
-      console.log("first");
+      ;
       if (formik.values.metal_weight) {
         const calculatedAmount = Number(formik.values.metal_weight) * metalRate;
-        console.log(calculatedAmount, "d");
+        ;
         formik.setFieldValue("payment_amount", calculatedAmount.toFixed(2));
         setBaseAmount(calculatedAmount);
       }
     }
     // schemes (2, 5, 6)
     else if (amountSchemeTypes.includes(schemeType)) {
-      console.log("sec");
+      ;
       if (formik.values.payment_amount) {
         const calculatedWeight = formik.values.payment_amount / metalRate;
         formik.setFieldValue("metal_weight", calculatedWeight.toFixed(3));
@@ -1002,7 +1002,7 @@ const AddSchemePayment = () => {
     }
   }, [formik.values.payment_amount, formik.values.metal_rate, formik.values.scheme_type, selectedScheme]);
   
-  console.log(formik.errors)
+  
 
   return (
     <>

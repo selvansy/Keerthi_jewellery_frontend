@@ -141,7 +141,7 @@ const NotificationDetails = ({ setIsAddClient,onPageChange, isLoading = false })
           body: JSON.stringify(formData),
           }) .then((response) => response.json())
           .then((data) => {
-          console.log('Another API response:', data);
+          ;
           })
           .catch((error) => {
           console.error('Error with another API call:', error);
@@ -157,12 +157,12 @@ const NotificationDetails = ({ setIsAddClient,onPageChange, isLoading = false })
   const {mutate: addnotificationsettingmutate } = useMutation({
     mutationFn: addnotificationsetting,
     onSuccess: (response) => {
-      console.log(response);
+      ;
       toast.success(response.message)
       setFormData(formData);
-      console.log(currentStep);
+      ;
       dispatch(pagehandler(currentStep + 1));
-      console.log(currentStep);
+      ;
     },
     onError: (error) => {
       toast.error(error.response.data.message)

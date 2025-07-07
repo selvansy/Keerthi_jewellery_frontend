@@ -102,13 +102,13 @@ function GiftHandOverForm() {
     gift_issues: [],
     qty: "",
   });
-  console.log(formData);
+  ;
 
   const scheme_gift = formData.issue_type;
 
   // Fixed useEffect for handling passed data
   useEffect(() => {
-    console.log("Data from navigation:", data);
+    ;
 
     if (!data) return;
 

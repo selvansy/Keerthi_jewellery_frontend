@@ -181,7 +181,7 @@ const ProductWhatsapp = () => {
   const { mutate: getallbranches } = useMutation({
     mutationFn: getallbranch,
     onSuccess: (response) => {
-      console.log("Res", response)
+      
       setBranchList(response.data);
     },
     onError: (error) => {
@@ -271,7 +271,7 @@ const ProductWhatsapp = () => {
   const { mutate: deleteOffer } = useMutation({
     mutationFn: deleteoffers,
     onSuccess: (response) => {
-      console.log("Response",response)
+      
       toast.success(response.message);
       getofferData({ page: currentPage, limit: itemsPerPage, search: search })
     },
@@ -284,7 +284,7 @@ const ProductWhatsapp = () => {
   useEffect(() => {
     eventEmitter.on('CONFIRMATION_SUBMIT', async (data) => {
       try {
-        console.log("dataDeelte",data.OfferId)
+        
         deleteOffer(data.OfferId);
 
       } catch (error) {
@@ -339,7 +339,7 @@ const ProductWhatsapp = () => {
   const { mutate: sendwhatsapp } = useMutation({
     mutationFn: sendwhatsappmessage,
     onSuccess: (response) => {
-      console.log("Response", response);
+      ;
       toast.success(response.message);
       getofferData({ page: currentPage, limit: itemsPerPage, search: search });
     },

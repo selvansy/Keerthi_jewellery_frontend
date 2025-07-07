@@ -38,7 +38,7 @@ export default function RedeemHisCard(userdata) {
             setTotalDocuments(response.totalDocuments)
         },
         onError: (error) => {
-            console.log(error)
+            
             setisLoading(false)
             setwalletData([])
         }

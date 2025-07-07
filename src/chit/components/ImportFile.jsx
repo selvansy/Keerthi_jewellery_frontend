@@ -11,7 +11,7 @@ const UploadFileComponent = () => {
   const mutation = useMutation({
     mutationFn: async (formData) => await exportData(formData),
     onSuccess: (response) => {
-      console.log("Upload successful", response);
+      ;
       toast.success(response.message);
     },
     onError: (error) => {

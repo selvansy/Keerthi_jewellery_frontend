@@ -240,7 +240,7 @@ const AddEmployee = () => {
         value: dept._id,
         label: dept.name,
       }));
-      console.log(output)
+      
       setDepartment(output);
     }
   }, [departments]);

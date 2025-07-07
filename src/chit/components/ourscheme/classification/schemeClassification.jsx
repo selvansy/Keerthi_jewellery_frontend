@@ -133,7 +133,7 @@ const SchemeClassification = () => {
     let response = await activateClassification(id);
     if (response) {
       toast.success(response.message);
-      console.log(response)
+      
       getClassificationTablemuate({
         from_date: from_date,
         to_date: to_date,

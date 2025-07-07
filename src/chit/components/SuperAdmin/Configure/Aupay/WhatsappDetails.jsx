@@ -105,7 +105,7 @@ const WhastappDetails = ({ setIsAddClient,onPageChange, isLoading = false }) => 
     if (!data.whatsapp_type) errors.whatsapp_type = 'Whatsapp Type is required';
 
 
-  console.log(errors)
+  
 
     return errors;
   };
@@ -129,7 +129,7 @@ const WhastappDetails = ({ setIsAddClient,onPageChange, isLoading = false }) => 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  console.log(formData.id_client)
+  
     const validationErrors = validate(formData);
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
@@ -148,7 +148,7 @@ const WhastappDetails = ({ setIsAddClient,onPageChange, isLoading = false }) => 
           body: JSON.stringify(formData),
           }) .then((response) => response.json())
           .then((data) => {
-          console.log('Another API response:', data);
+          ;
           })
           .catch((error) => {
           console.error('Error with another API call:', error);
@@ -164,7 +164,7 @@ const WhastappDetails = ({ setIsAddClient,onPageChange, isLoading = false }) => 
   const {mutate: addwhatsappsettingmutate } = useMutation({
     mutationFn: addwhatsappsetting,
     onSuccess: (response) => {
-      console.log(response);
+      ;
       toast.success(response.message)
       setFormData(formData);
       dispatch(pagehandler(currentStep + 1));
@@ -177,22 +177,22 @@ const WhastappDetails = ({ setIsAddClient,onPageChange, isLoading = false }) => 
   const getallsmsaccesstype = async () => {
     try {
       const res = await smsaccesstype();
-      console.log(res)
+      
       setSmsAccessData(res.data);
 
     } catch (error) {
-      console.log(error)
+      
     }
   }
  
   const getallwhatsapptype = async () => {
     try {
       const res = await whatsapptype();
-      console.log(res)
+      
       setWhatsapp(res.data);
 
     } catch (error) {
-      console.log(error)
+      
     }
   }
 

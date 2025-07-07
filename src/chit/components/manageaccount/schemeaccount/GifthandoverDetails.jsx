@@ -94,7 +94,7 @@ function GifthandoverDetails() {
             }
         },
         // onError: (error) => {
-        //     console.log("eror")
+        //     
         //     // toast.error(error.response.data.message)
         // }
     });

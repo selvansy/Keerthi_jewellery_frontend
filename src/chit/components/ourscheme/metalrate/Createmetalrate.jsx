@@ -43,7 +43,7 @@ const CreateMetalRate = () => {
       }
     },
     onError: (error) => {
-      console.log(error.response.data);
+      ;
     },
   });
 
@@ -55,7 +55,7 @@ const CreateMetalRate = () => {
     },
 
     onError: (error) => {
-      console.log(error.response.data);
+      ;
     },
   });
 
@@ -71,7 +71,7 @@ const CreateMetalRate = () => {
 
     onError: (error) => {
       toast.error(error.response.data.message)
-      console.log(error.response.data);
+      ;
     },
   });
 

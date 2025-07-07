@@ -11,7 +11,7 @@ import { toast } from 'react-toastify';
 function Viewnotification({ setIsOpen}) {
 let dispatch = useDispatch();
 const id = useSelector((state) => state.clientForm.pushnotifyId);
-console.log("EditId",id)
+
 const [notifypopup,setNotifyPopup]=useState(null)
 
  const handleCancel = (e) => {
@@ -30,7 +30,7 @@ const [notifypopup,setNotifyPopup]=useState(null)
   const { mutate: fetchpushnotificationById } = useMutation({
        mutationFn: pushnotificationbyid,
        onSuccess: (response) => {
-        console.log("Res",response)
+        
         if(response){     
           setNotifyPopup({
             noti_name: response.data.noti_name,

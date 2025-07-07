@@ -106,7 +106,7 @@ const FAQForm = () => {
 
         },
         onError: (error) => {
-              console.log("er",error)
+              
             toast.error(error?.response?.data?.message);
             setIsLoading(false);
         }

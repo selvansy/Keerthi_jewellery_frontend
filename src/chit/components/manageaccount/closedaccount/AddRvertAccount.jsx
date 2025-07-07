@@ -213,7 +213,7 @@ const AddRvertAccount = () => {
 
 
   const handleDatePaymentChange = (date) => {
-    console.log("------", date);
+    ;
     if (!date) { return }
 
     const year = date.getFullYear();

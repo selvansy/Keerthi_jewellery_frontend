@@ -110,7 +110,7 @@ const Paymentmode = () => {
 
   
    const handleAddpaymentmode = () => {
-      console.log("dfjdnn")
+      
       setIsviewOpen(true)
   };
 
@@ -134,7 +134,7 @@ const Paymentmode = () => {
 
     eventEmitter.on('CONFIRMATION_SUBMIT', async (data) => {
       try {
-        console.log(data);
+        ;
         let response = await deletepaymentmode(data.paymentmodeId);
         toast.success(response.message);
         getallpaymentmodesMutate({ page: currentPage, limit });

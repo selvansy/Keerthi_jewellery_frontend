@@ -423,7 +423,7 @@ const Scheme = () => {
           // Amount-based schemes (default)
           const digi = [11, 12].includes(Number(scheme_type));
           if (digi) {
-            console.log(row);
+            ;
           }
           if (!digi && min_amount !== null && max_amount !== null) {
             return `${scheme_name} ( ₹ ${min_amount} - ₹ ${max_amount})`;

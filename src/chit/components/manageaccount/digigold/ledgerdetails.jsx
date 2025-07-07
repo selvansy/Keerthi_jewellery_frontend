@@ -8,7 +8,7 @@ function Ledgerdetails({ setIsOpen }) {
  const layout_color = useSelector((state) => state.clientForm.layoutColor);
   let dispatch = useDispatch();
   const id = useSelector((state) => state.clientForm.id_scheme_account);
-  console.log("----", id)
+  
   const [ledgerData, setLedgerData] = useState([]);
   const [paymentdata, setpaymentdata] = useState([]);
   const handleCancel = (e) => {

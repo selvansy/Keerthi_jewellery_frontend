@@ -334,9 +334,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
   //   );
 
   //   if (changedFields.length > 0) {
-  //     console.log("🔄 Changed fields:");
   //     changedFields.forEach((key) => {
-  //       console.log(`→ ${key}:`, prev[key], "→", formData[key]);
   //     });
   //   }
 
@@ -506,7 +504,6 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
         );
 
         if (data && !data.data) {
-          console.log("first");
           return toast.error("No customer found or deleted customer");
         }
 
@@ -575,11 +572,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
 
   const filterInputchange = (e) => {
     const { name, value } = e.target;
-
     // setFormData((prev) => {
-    //   console.log('prev', prev);
-    //   console.log('Updated', { ...prev, [name]: value });
-
     //   return { ...prev, [name]: value }}
     //   );
     const newValue = value === "" ? "" : isNaN(value) ? value : +value;
@@ -643,12 +636,9 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
       let amtValue = emptyToZero(value);
       formData.min_amount = emptyToZero(formData.min_amount);
       formData.max_amount = emptyToZero(formData.max_amount);
-      console.log("amtValue", amtValue);
 
       setErrors((prevState) => {
         const newErrors = { ...prevState };
-        console.log("formData.min_amount ", formData.min_amount);
-        console.log(formData.max_amount);
         // setTimeout(() => {
 
         if (amtValue === "") {
@@ -1028,9 +1018,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
     e.preventDefault();
 
     if (isValidForm()) {
-      console.log("formData", formData);
       let payload = updateAmtWtValue(formData);
-      console.log("payload", payload);
 
       const updatedFormData = {
         ...payload,
@@ -1047,7 +1035,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
         createSchemeaccount(updatedFormData);
       }
     } else {
-      console.log("Form has validation errors");
+      console.error("Form has validation errors");
     }
   };
 
@@ -1135,7 +1123,6 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
   }, [formData.weight]);
 
   const handlePayment = (id) => {
-    console.log(id);
     dispatch(
       openModal({
         modalType: "CONFIRMATION",
@@ -1193,8 +1180,6 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
       }
     }
   }, [formData.id_scheme, selectedScheme, schemefilter])
-
-  console.log(showReferral)
 
   return (
     <form onSubmit={onSubmit}>

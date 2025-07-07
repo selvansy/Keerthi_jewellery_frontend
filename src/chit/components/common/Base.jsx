@@ -225,7 +225,7 @@ const Base = ({ renderContent: RenderContent }) => {
     } else {
       setIsSuperAdmin(false);
       if (menus.length < 0) {
-        console.log(menuData);
+        ;
         getAllMenusMutate(decoded.id_role._id);
       }
     }

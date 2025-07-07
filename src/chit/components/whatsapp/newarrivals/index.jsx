@@ -91,7 +91,7 @@ const NewArrivalsWhatsapp = () => {
    const { mutate: fetchById } = useMutation({
          mutationFn: getNewArrivalsById,
          onSuccess: (response) => {
-          console.log("res",response)
+          
           if(response){  
            dispatch(setWhatsappData({
             name:response.data.name,
@@ -131,7 +131,7 @@ const NewArrivalsWhatsapp = () => {
   const { mutate: getallbranches } = useMutation({
     mutationFn: getallbranch,
     onSuccess: (response) => {
-      console.log("Res", response)
+      
       setBranchList(response.data);
     },
     onError: (error) => {
@@ -338,7 +338,7 @@ const NewArrivalsWhatsapp = () => {
     const { mutate: sendwhatsapp } = useMutation({
       mutationFn: sendwhatsappmessage,
       onSuccess: (response) => {
-        console.log("Response", response);
+        ;
         toast.success(response.message);
         getofferData({ page: currentPage, limit: itemsPerPage, search: search });
       },

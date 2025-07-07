@@ -79,7 +79,7 @@ const CustomerModal = ({ close }) => {
           setCustomerData({});
         }
       } catch (err) {
-        console.log(err);
+        ;
       }
     },
     onError: (err) => {

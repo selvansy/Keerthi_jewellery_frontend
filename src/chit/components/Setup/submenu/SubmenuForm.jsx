@@ -145,7 +145,7 @@ function SubmenuForm({ setIsOpen, getallsubmenusMutate, menus,id,clearId }) {
     const { mutate: createsubmenuMutate } = useMutation({
         mutationFn: addsubmenu,
         onSuccess: (response) => {
-            console.log(response)
+            
             toast.success(response.data.message);
             setIsOpen(false);
             navigate("/setup/submenu");
@@ -167,7 +167,7 @@ function SubmenuForm({ setIsOpen, getallsubmenusMutate, menus,id,clearId }) {
             navigate("/setup/submenu");
             
           } catch (error) {
-            console.log(error)
+            
           }
         },
         onError: (error) => {

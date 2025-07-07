@@ -32,7 +32,7 @@ function SettingNotification({ setIsSettingOpen}) {
   const { mutate: handleweddingbirthbyid } = useMutation({
     mutationFn: getweddingbirthbyid,
     onSuccess: (response) => {
-      console.log(response.data)
+      
       let image = response.data.pathurl+response.data.image;
   
       setFormData({
@@ -81,7 +81,7 @@ function SettingNotification({ setIsSettingOpen}) {
     if (!formData.id_branch) errors.id_branch = "Branch is required";
     if (image.length === 0) errors.image = "Product Image is required";
 
-    console.log(errors);
+    ;
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -112,7 +112,7 @@ function SettingNotification({ setIsSettingOpen}) {
     }
 
     const formDataToSend = new FormData();
-    console.log(formData)
+    
     formDataToSend.append("id_branch", formData.id_branch);
     formDataToSend.append("description", formData.description);
     formDataToSend.append("type", 4);

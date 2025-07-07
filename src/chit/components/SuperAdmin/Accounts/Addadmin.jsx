@@ -39,7 +39,7 @@ function Addadmin({ isLoading = false, setisAdmin }) {
 
     const handleSubmit = (values) => {
 
-        console.log(values)
+        
     }
 
 

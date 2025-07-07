@@ -84,7 +84,7 @@ export default function MakingChargesForm({ onChange, initialState }) {
   ];
 
   const unit = formData.mode === "amount" ? "INR" : "gms";
-  console.log(formData)
+  
   return (
     <div>
       <h2 className="text-xl text-[#023453] font-bold justify-between mb-3">

@@ -109,7 +109,7 @@ const AppsettingDetails = ({ setIsAddClient,onPageChange, isLoading = false }) =
             body: JSON.stringify(formData),
           }) .then((response) => response.json())
           .then((data) => {
-            console.log('Another API response:', data);
+            ;
           })
           .catch((error) => {
             console.error('Error with another API call:', error);
@@ -127,7 +127,7 @@ const AppsettingDetails = ({ setIsAddClient,onPageChange, isLoading = false }) =
   const {mutate: addappsettingmutate } = useMutation({
     mutationFn: addappsetting,
     onSuccess: (response) => {
-      console.log(response);
+      ;
       toast.success(response.message)
       setFormData(formData);
       dispatch(pagehandler(currentStep + 1));
@@ -171,7 +171,7 @@ const AppsettingDetails = ({ setIsAddClient,onPageChange, isLoading = false }) =
       }
 
     } catch (error) {
-      console.log(error)
+      
     }
   }
 

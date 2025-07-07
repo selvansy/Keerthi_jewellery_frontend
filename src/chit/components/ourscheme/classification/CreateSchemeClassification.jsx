@@ -137,7 +137,7 @@ const CreateSchemeClassificaton = () => {
     if (!logo) errors.main_image = "Main image is required";
     if (!desc_img)
       errors.desc_img = "Description image is required";
-    console.log(errors)
+    
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -170,7 +170,7 @@ const CreateSchemeClassificaton = () => {
       toast.error("Fill required fields")
       return;
     }
-    console.log(formData)
+    
     const formDataToSend = new FormData();
 
     formDataToSend.append("classification_name", formData.classification_name);
@@ -183,7 +183,7 @@ const CreateSchemeClassificaton = () => {
     if (logo) formDataToSend.append("logo", logo);
     if (desc_img) formDataToSend.append("desc_img", desc_img);
 
-    console.log(formDataToSend)
+    
     createSchemeClassificationMutate(formDataToSend);
 
 
@@ -222,7 +222,7 @@ const CreateSchemeClassificaton = () => {
   const { mutate: fetchClassificationById } = useMutation({
     mutationFn: getClassificationById,
     onSuccess: (response) => {
-      console.log(response)
+      
       setFormData({
           classification_name: response.data.classification_name,
           description: response.data.description,
@@ -287,7 +287,7 @@ const CreateSchemeClassificaton = () => {
       formDataToSend.append("desc_img", desc_img);
     }
   
-    console.log(formDataToSend)
+    
     updateClassification({ id: id, data:formDataToSend });
 
   };

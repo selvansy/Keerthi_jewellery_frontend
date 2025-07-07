@@ -105,7 +105,7 @@ const Purity = () => {
         setSearchLoading(false);
       },
       onError: (error) => {
-        console.log(error.response.data);
+        ;
         setpurityData([]);
         setSearchLoading(false);
         setisLoading(false);

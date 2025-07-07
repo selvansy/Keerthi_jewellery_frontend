@@ -446,7 +446,7 @@ const AddProduct = () => {
     const validationErrors = validateFormData();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
-      console.log(errors);
+      ;
       return;
     }
     setIsLoading(true);
@@ -455,7 +455,7 @@ const AddProduct = () => {
 
     Object.entries(formData).forEach(([key, value]) => {
       if (key === "_id" || key === "pathurl" || key === "active") {
-        console.log("Skipping:", key);
+        ;
         return;
       }
     
@@ -465,7 +465,7 @@ const AddProduct = () => {
             subKey === "_id" &&
             (key === "wastageCharges" || key === "makingCharges")
           ) {
-            console.log("Skipping subKey _id inside:", key);
+            ;
             return;
           }
           formDataToSend.append(`${key}[${subKey}]`, subValue);

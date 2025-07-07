@@ -68,7 +68,7 @@ function PaymentmodeForm({ setIsOpen }) {
     };
 
     const handleSubmit = (formData, resetForm) => {
-        console.log("Submitted Data:", formData);
+        ;
 
         if (id) {
             // Update payment mode

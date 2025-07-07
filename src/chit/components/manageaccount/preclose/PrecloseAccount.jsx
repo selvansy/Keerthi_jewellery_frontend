@@ -332,7 +332,7 @@ const PrecloseAccount = () => {
   }
 
   const handleStatusToggle = async (id) => {
-    console.log(id);
+    ;
     let response = await changeschemeaccountStatus(id);
     if (response) {
       toast.success(response.message);

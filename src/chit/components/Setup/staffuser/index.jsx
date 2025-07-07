@@ -237,7 +237,7 @@ const StaffUser = () => {
   };
 
   const handleActiveFilterChange = (filter) => {
-    console.log(filter,'kd')
+    
     setActiveFilter(filter);
     setCurrentPage(1); // Reset to first page when filter changes
   };

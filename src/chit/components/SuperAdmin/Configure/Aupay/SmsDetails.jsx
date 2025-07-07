@@ -82,7 +82,7 @@ const SmsDetails = ({setIsAddClient,onPageChange, isLoading = false }) => {
   }
 
  const handleCancel = (type) => {
-  console.log(currentStep)
+  
      if(type === "back"){
        dispatch(pagehandler(currentStep - 1))    
        setIsAddClient(false);
@@ -114,7 +114,7 @@ const SmsDetails = ({setIsAddClient,onPageChange, isLoading = false }) => {
     if (!data.payment_url) errors.payment_url = 'Invalid payment_url';
 
 
-console.log(errors);
+;
     // if (!/^\d{10}$/.test(data.otp_content)) errors.otp_content = 'Invalid Spoc Contact Number';
 
     // const validateUrl = (url) => /^https:\/\/[a-zA-Z0-9-]+\.auss\.co\/$/.test(url.trim());
@@ -166,7 +166,7 @@ console.log(errors);
         body: JSON.stringify(formData),
         }) .then((response) => response.json())
         .then((data) => {
-        console.log('Another API response:', data);
+        ;
         })
         .catch((error) => {
         console.error('Error with another API call:', error);
@@ -182,7 +182,7 @@ console.log(errors);
   const {mutate: addsmssettingmutate } = useMutation({
     mutationFn: addsmssetting,
     onSuccess: (response) => {
-      console.log(response);
+      ;
       toast.success(response.message)
       setFormData(formData);
       dispatch(pagehandler(currentStep + 1));
@@ -202,11 +202,11 @@ console.log(errors);
   const getallsmsaccesstype = async () => {
     try {
       const res = await smsaccesstype();
-      console.log(res)
+      
       setSmsAccessData(res.data);
 
     } catch (error) {
-      console.log(error)
+      
     }
   }
 

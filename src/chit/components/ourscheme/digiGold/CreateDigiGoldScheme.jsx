@@ -212,7 +212,7 @@ onSubmit: async (values) => {
     setIsLoading(false);
     return;
   }
-  console.log('--------------------------------------------------------------------',values)
+  
   try {
     const formData = new FormData();
 
@@ -303,7 +303,7 @@ onSubmit: async (values) => {
       navigate("/scheme/scheme/");
     },
     onError: (error) => {
-      console.log(error)
+      
       setIsLoading(false);
       toast.error(error.response?.data?.message);
     },
@@ -396,7 +396,7 @@ onSubmit: async (values) => {
       }
     }
   }, [digigoldData, silver]);
-  // console.log(formik.values.id_metal)
+  // 
   useEffect(() => {
     formik.setValues({
       ...formik.values,
@@ -537,10 +537,10 @@ onSubmit: async (values) => {
   // };
   // Function to generate dynamic fields
   const getLabel = (id)=> {
-    // console.log('bonus type ',formik.values.bonus_type);
+    // ;
     
     const data = bonusTypeOptions.filter((e)=> e.id == id); //formik.values.bonus_type
-    console.log('data', data);
+    ;
     
     if(data.length > 0){
       

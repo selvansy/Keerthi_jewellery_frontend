@@ -186,7 +186,7 @@ const MetalRate = () => {
     },
   });
 
-  console.log(metalRate);
+  ;
 
   const handleClick = (e) => {
     e.preventDefault();

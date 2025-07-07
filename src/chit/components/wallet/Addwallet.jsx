@@ -36,7 +36,7 @@ function Addwallet() {
 
         },
         onError: (error) => {
-          console.log(error.response.data);
+          ;
     
         },
       });
@@ -51,7 +51,7 @@ function Addwallet() {
 
         onError: (error) => {
             setIsLoading(false)
-          console.log(error.response.data);
+          ;
         },
       });
 

@@ -56,7 +56,7 @@ const Login = () => {
 
   useEffect(() => {
     if (location.pathname === "/superdata") {
-      console.log("first")
+      
       setSuperMan(true);
     } else {
       setSuperMan(false);

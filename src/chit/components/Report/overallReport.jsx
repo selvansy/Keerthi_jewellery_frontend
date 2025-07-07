@@ -244,7 +244,7 @@ function overallReport() {
             <div className="flex justify-end items-center gap-4">
               <DateRangeSelector
                 onChange={(range) => {
-                  console.log(range);
+                  ;
                   setfrom_date(range.startDate);
                   setto_date(range.endDate);
                 }}

@@ -236,10 +236,10 @@ function AccountSummaryReport() {
     }));
     setProcessData(process);
 
-    console.log("ff", process);
+    ;
   }, [overAllData]);
 
-  console.log("ee", overAllData);
+  ;
 
   const columns = [
     {

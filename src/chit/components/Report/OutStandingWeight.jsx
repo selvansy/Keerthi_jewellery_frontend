@@ -77,7 +77,7 @@ export default function OutStandingWeight() {
       const { mutate: getTodaysMetalRate } = useMutation({
         mutationFn: todayMetalRate,
         onSuccess: (response) => {
-            console.log(response)
+            
           setMetalRate(response.data)
     
         },

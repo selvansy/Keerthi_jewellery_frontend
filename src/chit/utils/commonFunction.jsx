@@ -8,7 +8,7 @@ export const useMobileNumber = (maxLength = 10) => {
 
   const handleChange = (e) => {
     let newValue = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
-    console.log(newValue);
+    ;
 
     if (newValue.length > maxLength) {
       newValue = newValue.slice(0, maxLength);

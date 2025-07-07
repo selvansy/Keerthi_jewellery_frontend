@@ -373,7 +373,7 @@ const UserAccess = () => {
           return 'All branch';
         }
         if (typeof row?.access_branch === 'object' && row?.access_branch !== null) {
-          console.log(row);
+          ;
           return row?.access_branch.branch_name || '-';
         }
         return '-';

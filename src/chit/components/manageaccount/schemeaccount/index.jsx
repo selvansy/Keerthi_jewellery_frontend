@@ -169,7 +169,7 @@ const Schemeaccount = () => {
   const { mutate: getallbranchMutate } = useMutation({
     mutationFn: getallbranch,
     onSuccess: (response) => {
-      console.log('jut')
+      
       if (response) {
         setBranch(response.data);
       }

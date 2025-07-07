@@ -138,7 +138,7 @@ export const redeemType = async () => {
 };
 
 export const mobilesearch = async (mobile) => {
-  console.log("mobile--",mobile)
+  
   const response = await Api.get(
     `${
       import.meta.env.VITE_API_URL
@@ -1382,7 +1382,7 @@ export const getallpaymentmode = async () => {
 
 //staff user
 export const getstaffusertable = async (data) => {
-  console.log(data,'kd')
+  
   const response = await Api.post(
     `${import.meta.env.VITE_API_URL}/api/client/staff/table`,
     data
@@ -1398,7 +1398,7 @@ export const addstaff = async (data) => {
 };
 
 export const updatestaff = async (id, data) => {
-  console.log(id,data,"dk")
+  
   const response = await Api.patch(
     `${import.meta.env.VITE_API_URL}/api/client/staff/${id}`,
     data
@@ -1992,7 +1992,7 @@ export const getcustomerschemeaccount = async (data) => {
 };
 
 export const searchGiftCodenumber = async (data) => {
-  console.log("data---",data)
+  
   const response = await Api.post(
     `${import.meta.env.VITE_API_URL}/api/client/giftissues/branch/${data.id_branch}/barcode`,
     data.GiftCode
@@ -2570,7 +2570,7 @@ export const getSchemeClassifications = async () => {
 
 //get customer details by mobile number no branch Id needed
 export const getCustomerByMobile = async (number,customer) => {
-  console.log(number,customer)
+  
   const response = await Api.get(
     `${
       import.meta.env.VITE_API_URL
@@ -2771,7 +2771,7 @@ export const getOverAllSummary = async (data) => {
   return response.data;
 };
 export const amountPayble = async (data) => {
-  console.log(data)
+  
   const response = await Api.post(
     `${import.meta.env.VITE_API_URL}/api/client/reports/amountpayble`,data
   );
@@ -2823,13 +2823,13 @@ export const getOverAllDashboard = async(branchId)=>{
 }
 
 export const getAccountReview = async(data)=>{ 
-  console.log(data)
+  
   const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/dashboard/accountreview`,data)
   return response.data
 }
 
 export const accountStats = async(data)=>{ 
-  console.log(data)
+  
   const response= await Api.post(`${import.meta.env.VITE_API_URL}/api/client/dashboard/account`,data)
   return response.data
 }

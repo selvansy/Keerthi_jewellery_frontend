@@ -71,7 +71,7 @@ const AddCategory = ({setIsOpen, id ,clearId}) => {
     },
     onError: (error) => {
       setIsLoading(false);
-      console.log(error)
+      
       toast.error(error.response.data.message);
     },
   });
@@ -92,7 +92,7 @@ const AddCategory = ({setIsOpen, id ,clearId}) => {
     },
     onError: (error) => {
       setIsLoading(false);
-      console.log(error);
+      ;
 
       toast.error(error.response.data.message);
     },

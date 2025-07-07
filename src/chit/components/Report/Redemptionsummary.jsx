@@ -39,7 +39,7 @@ function RedemptionReport() {
     mutationFn: ({ from_date, to_date }) => closedSummary({ from_date, to_date }),
     onSuccess: (response) => {
       const { data } = response;
-      console.log(data);
+      ;
       setCloseData(data);
       setTotalDocuments(response?.totalDocuments);
       setTotalPages(response?.totalPages);

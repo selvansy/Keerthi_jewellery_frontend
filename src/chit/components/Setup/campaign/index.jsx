@@ -78,7 +78,7 @@ function Campaign() {
             setisLoading(false);
         },
         onError: (error) => {
-            console.log(error.response.data);
+            ;
             setcampaignData([]);
             setSearchLoading(false);
         },
@@ -219,7 +219,7 @@ function Campaign() {
 
     const nextPage = () => {
         setCurrentPage((prevPage) => {
-            console.log("prevPage:", prevPage, "totalPages:", totalPages);
+            ;
             return prevPage < totalPages ? prevPage + 1 : prevPage;
         });
     };

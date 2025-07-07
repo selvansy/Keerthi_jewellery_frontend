@@ -508,7 +508,7 @@ const AddCloseAccount = () => {
 
   // Submit form handler
   const handleSubmit = (values) => {
-    console.log(values, "line 505");
+    ;
     if (values.status === 4 && !values.refund_paymenttype) {
       formik.setFieldTouched("refund_paymenttype", true);
       toast.error("Payment mode is required for refund");

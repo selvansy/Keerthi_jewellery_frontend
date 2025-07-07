@@ -104,7 +104,7 @@ const LayoutSettings = ({ onPageChange, isLoading = false, setIsAddClient }) => 
         return errors;
 
     };
-    // console.log(formErrors)
+    // 
 
     const handleChange = (e) => {
 
@@ -119,7 +119,7 @@ const LayoutSettings = ({ onPageChange, isLoading = false, setIsAddClient }) => 
         //         ...prev,
         //         layout_type: 1
         //     }))
-        //     console.log(formData)
+        //     
         // } else if (name == 'rightlayout') {
 
         //     setToplayout(!toplayout)
@@ -167,7 +167,7 @@ const LayoutSettings = ({ onPageChange, isLoading = false, setIsAddClient }) => 
         body: JSON.stringify(formData),
         }) .then((response) => response.json())
         .then((data) => {
-        console.log('Another API response:', data);
+        ;
         })
         .catch((error) => {
         console.error('Error with another API call:', error);
@@ -183,7 +183,7 @@ const LayoutSettings = ({ onPageChange, isLoading = false, setIsAddClient }) => 
   const {mutate: addlayoutsettingmutate } = useMutation({
     mutationFn: addlayoutsetting,
     onSuccess: (response) => {
-      console.log(response);
+      ;
       toast.success(response.message)
       setFormData(formData);
       dispatch(pagehandler(currentStep + 1));
@@ -204,9 +204,9 @@ const LayoutSettings = ({ onPageChange, isLoading = false, setIsAddClient }) => 
     const layouttype = async () => {
         try {
             const res = await layouttype();
-            // console.log(res.data)
+            // 
         } catch (error) {
-            // console.log(error)
+            // 
         }
     }
 

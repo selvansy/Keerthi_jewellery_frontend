@@ -53,7 +53,7 @@ const Submenu = () => {
     mutationFn: (payload) => getallsubmenudatatable(payload),
     onSuccess: (response) => {
       if (response) {
-        console.log(response)
+        
         setsubmenuData(response.data);
         setTotalPages(response.totalPages);
         setTotalDocuments(response.totalDocument)
@@ -268,7 +268,7 @@ const Submenu = () => {
   useEffect(() => {
     eventEmitter.on("CONFIRMATION_SUBMIT", async (data) => {
       try {
-        console.log(data);
+        ;
         let response = await deletesubmenu(data.subid);
         toast.success(response.message);
         getallsubmenusMutate({ page: currentPage, limit: itemsPerPage });

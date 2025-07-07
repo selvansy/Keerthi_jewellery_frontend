@@ -158,7 +158,7 @@ function GiftItemForm({ setIsOpen, isviewOpen, id, setId, refetchTable }) {
 
         if (Object.keys(validationErrors).length === 0) {
             setIsLoading(true)
-            console.log("formData---",formData)
+            
             if (id) {
                 updategiftitemMutate({ id: id, data: formData });
             } else {

@@ -135,7 +135,7 @@ const Schemetype = () => {
 
         eventEmitter.on('CONFIRMATION_SUBMIT', async (data) => {
             try {
-                console.log(data);
+                ;
                 let response = await deleteschemetype(data.schemetypeId);
                 toast.success(response.message);
                 getschemetypetableMutate({ page: currentPage, limit });

@@ -122,7 +122,7 @@ const Category = () => {
   const { mutate: getCategory } = useMutation({
     mutationFn: (payload) => getcategoryTable(payload),
     onSuccess: (response) => {
-      console.log(response);
+      ;
       setCategoryData(response?.data);
       setTotalPages(response.totalPages);
       setIsLoading(false);

@@ -85,7 +85,7 @@ const Organisation = () => {
       })
     });
 
-console.log(orgData,'kd')
+
   const formik = useFormik({
     initialValues: {
       company_name: orgData?.company_name || "",
@@ -190,7 +190,7 @@ console.log(orgData,'kd')
   }, [countryData, statesData, cityData]);
 
   useEffect(() => {
-    console.log(fetchedData,'jg')
+    
     if (fetchedData && fetchedData?.data) {
       const newData = fetchedData.data;
       setOrgData(newData);

@@ -167,7 +167,7 @@
 //         dispatch(closeModal());
 //         break;
 //       default:
-//         console.log("Unknown modal type:", modalType);
+//         ;
 //         dispatch(closeModal());
 //     }
 //   };
@@ -954,7 +954,7 @@ const Modal = () => {
         dispatch(closeModal());
         break;
       default:
-        console.log("Unknown modal type:", modalType);
+        ;
         dispatch(closeModal());
     }
   };
@@ -1006,7 +1006,7 @@ const Modal = () => {
     }
   };
 
-  console.log(buttons);
+  ;
 
   const renderForm = () => {
     switch (modalType) {

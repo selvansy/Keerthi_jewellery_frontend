@@ -212,7 +212,7 @@ const AddGiftIssued = () => {
 
   const handleschemeaccountbyBranch = async (data) => {
     if (!data?.length) return;
-   console.log("data",data)
+   
     const account = data.map(({ _id, id_scheme }) => {
       const { scheme_type, scheme_name, amount, min_weight, max_weight, min_amount, max_amount,no_of_gifts } = id_scheme;
 

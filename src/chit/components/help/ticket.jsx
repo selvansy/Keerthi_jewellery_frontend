@@ -54,7 +54,7 @@ const Ticket = () => {
       setIsLoading(false);
     },
     onError: (error) => {
-      console.log(error.response.data);
+      ;
       setTicketData([]);
       setIsLoading(false);
       setSearchLoading(false);

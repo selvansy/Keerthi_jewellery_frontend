@@ -62,7 +62,7 @@ const ProjectAccessForm = ({ refetch, setIsOpen}) => {
 
     const validateForm = () => {
         const errors = {};
-        console.log(formData.id_project)
+        
         const projectidArray = formData.id_project; 
         if (!formData.id_branch) errors.id_branch = "Branch is required";
         if (projectidArray.length === 0) errors.id_project = "Project is required";
@@ -178,7 +178,7 @@ const ProjectAccessForm = ({ refetch, setIsOpen}) => {
             toast.error("Fill required fields")
             return;
         }
-      console.log(id,formData)
+      
         updateprojectaccessmutate(formData);
     };
 

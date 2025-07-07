@@ -105,7 +105,7 @@ const AddNotfication = () => {
 
   //handle submit
   const handleSubmit = () => {
-    console.log("FormData",formData)
+    
     if (!validateForm(formData)) {
       return;
     }
@@ -117,7 +117,7 @@ const AddNotfication = () => {
     formDataToSend.append("senttype", formData.senttype);  
     if (noti_image) formDataToSend.append("noti_image", noti_image);
 
-    console.log(formDataToSend)
+    
     createpushnotificationMutate(formDataToSend);
   };
 

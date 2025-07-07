@@ -126,7 +126,7 @@ function RedeemHistory() {
       setisLoading(false)
     },
     onError: (error) => {
-      console.log(error)
+      
       setSearchLoading(false);
       setisLoading(false)
       setRedeemData([])

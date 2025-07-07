@@ -68,7 +68,7 @@ function  Customers() {
   }, [isCustomer]);
 
   // useEffect(() => {
-  //   console.log('parent render');
+  //   ;
   // });
   
   const handleClear = () => {
