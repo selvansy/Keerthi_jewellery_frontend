@@ -72,6 +72,7 @@ const CustomerModal = ({ close }) => {
             total_overdues: "-",
             total_closed: response.data?.closedSchemeCount ?? "N/A",
             total_completed: response.data?.completedSchemeCount ?? "N/A",
+            total_overdues: response?.data?.overDue
             // overall_overdues: "-",
           });
         } else {
@@ -236,14 +237,14 @@ const CustomerModal = ({ close }) => {
                       {customerData.total_completed}
                     </p>
                   </div>
-                  <div className="text-center border p-4 shadow-sm">
+                  {/* <div className="text-center border p-4 shadow-sm">
                     <h3 className="text-black font-medium mb-4">
                       Total OverDue Amount
                     </h3>
                     <p className="text-gray-600 text-xl">
                       {customerData.overall_overdues}
                     </p>
-                  </div>
+                  </div> */}
                 </div>
               </>
             ) : (
