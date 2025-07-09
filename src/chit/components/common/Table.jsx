@@ -23,7 +23,9 @@ const Table = ({
   showPagination = true,
 }) => {
   const [activeDropdown, setActiveDropdown] = useState(null);
+  const [isPageChanging, setIsPageChanging] = useState(false);
   const dropdownRefs = useRef({});
+  const prevPageRef = useRef(currentPage);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -40,12 +42,57 @@ const Table = ({
     };
   }, []);
 
+  useEffect(() => {
+    if (currentPage !== prevPageRef.current) {
+      setIsPageChanging(true);
+      const timer = setTimeout(() => {
+        setIsPageChanging(false);
+      }, 300); // Small delay to prevent flickering if data loads very quickly
+      return () => clearTimeout(timer);
+    }
+    prevPageRef.current = currentPage;
+  }, [currentPage]);
+
   const setDropdownRef = (id, node) => {
     if (node) {
       dropdownRefs.current[id] = node;
     } else {
       delete dropdownRefs.current[id];
     }
+  };
+
+  const renderSkeletonRows = () => {
+    return Array.from({ length: itemsPerPage }).map((_, rowIndex) => (
+      <tr key={`skeleton-${rowIndex}`} className="border-t">
+        {columns.map((column, columnIndex) => {
+          const isStickyAction =
+            column.header === "Actions" ||
+            column.header === "ACTIONS" ||
+            column.sticky === "right";
+
+          if (isStickyAction) {
+            return (
+              <td
+                key={`skeleton-action-${columnIndex}`}
+                className="sticky right-0 px-4 py-3 z-10 bg-white w-[120px]"
+                style={{ right: 0 }}
+              >
+                <div className="h-5 w-5 bg-gray-200 rounded animate-pulse"></div>
+              </td>
+            );
+          }
+
+          return (
+            <td
+              key={`skeleton-${columnIndex}`}
+              className="px-4 py-3 whitespace-nowrap"
+            >
+              <div className="h-5 bg-gray-200 rounded animate-pulse"></div>
+            </td>
+          );
+        })}
+      </tr>
+    ));
   };
 
   return (
@@ -87,7 +134,9 @@ const Table = ({
                   </tr>
                 </thead>
                 <tbody>
-                  {loading ? (
+                  {loading && isPageChanging ? (
+                    renderSkeletonRows()
+                  ) : loading ? (
                     <tr>
                       <td colSpan={columns.length} className="px-4 py-3 text-center">
                         <Loading />
@@ -194,7 +243,6 @@ const Table = ({
             </div>
           </div>
 
-          {/* Pagination remains the same */}
           {showPagination && data.length >= 1 && (
             <div className="p-4 flex items-center justify-between text-sm text-gray-600 border-t">
               <div>
@@ -205,10 +253,13 @@ const Table = ({
 
               <div className="flex items-center space-x-2">
                 <button
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={currentPage === 1}
+                  onClick={() => {
+                    setIsPageChanging(true);
+                    handlePageChange(currentPage - 1);
+                  }}
+                  disabled={currentPage === 1 || loading}
                   className={`flex items-center px-3 py-1 rounded border ${
-                    currentPage === 1
+                    currentPage === 1 || loading
                       ? "text-gray-400 cursor-not-allowed"
                       : "text-[#1e3b8b] hover:bg-blue-50"
                   }`}
@@ -226,11 +277,17 @@ const Table = ({
                   .map((page, i, array) => (
                     <React.Fragment key={page}>
                       <button
-                        onClick={() => handlePageChange(page)}
+                        onClick={() => {
+                          setIsPageChanging(true);
+                          handlePageChange(page);
+                        }}
+                        disabled={loading}
                         className={`px-3 py-1 rounded ${
                           currentPage === page
                             ? "bg-[#1e3b8b] text-white"
-                            : "text-[#1e3b8b] hover:bg-blue-50"
+                            : loading 
+                              ? "text-gray-400 cursor-not-allowed"
+                              : "text-[#1e3b8b] hover:bg-blue-50"
                         }`}
                       >
                         {page}
@@ -242,10 +299,13 @@ const Table = ({
                   ))}
 
                 <button
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={currentPage >= Math.ceil(totalItems / itemsPerPage)}
+                  onClick={() => {
+                    setIsPageChanging(true);
+                    handlePageChange(currentPage + 1);
+                  }}
+                  disabled={currentPage >= Math.ceil(totalItems / itemsPerPage) || loading}
                   className={`flex items-center px-3 py-1 rounded border ${
-                    currentPage >= Math.ceil(totalItems / itemsPerPage)
+                    currentPage >= Math.ceil(totalItems / itemsPerPage) || loading
                       ? "text-gray-400 cursor-not-allowed"
                       : "text-[#1e3b8b] hover:bg-blue-50"
                   }`}

@@ -216,19 +216,19 @@ export default function WastageChargeForm({ onChange,initialState }) {
           <label className="flex items-center gap-2 cursor-pointer">
             <input
               type="checkbox"
-              checked={formData.mcView}
+              checked={formData.wastageView}
               onChange={() => handleInputChange("wastageView", !formData.wastageView)}
               className="hidden"
-              id="mcView"
+              id="wastageView"
             />
             <div
               className={`w-[16px] h-[16px] border-2 rounded-sm flex items-center justify-center ${
-                formData.mcView
+                formData.wastageView
                   ? "bg-[#004181] border-[#004181]"
                   : "border-gray-400"
               }`}
             >
-              {formData.mcView && (
+              {formData.wastageView && (
                 <svg
                   className=" text-white"
                   fill="none"

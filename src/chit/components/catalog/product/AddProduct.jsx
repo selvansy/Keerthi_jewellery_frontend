@@ -50,6 +50,7 @@ const AddProduct = () => {
   const [pathUrl, setPathUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [makingCharge,setMakingCharge]=useState({})
+  const [responseData,setResponseData]= useState({})
   const [formData, setFormData] = useState({
     product_name: "",
     code: "",
@@ -203,6 +204,7 @@ const AddProduct = () => {
   const { mutate: getProdcutById } = useMutation({
     mutationFn: (id) => productbyid(id),
     onSuccess: (response) => {
+      setResponseData(response)
       setMakingCharge(response.data)
       setFormData(response.data);
       setproductImgPath(response.data.product_image);
@@ -212,6 +214,17 @@ const AddProduct = () => {
       console.error("Error fetching getProdcutById:", error);
     },
   });
+
+  useEffect(() => {
+  if (id && formData) {
+    setFormData((prev) => ({
+      ...prev,
+      id_category: responseData.data?.id_category
+    }));
+  }
+}, [id, formData]);
+
+
   const { mutate: getPurityByMetal } = useMutation({
     mutationFn: (id) => puritybymetal(id),
     onSuccess: (response) => {

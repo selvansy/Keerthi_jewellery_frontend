@@ -97,7 +97,7 @@ function PromotionSummary() {
   };
 
      useEffect(() => {
-      const process = promData.map((item, index) => ({
+      const process = promData?.map((item, index) => ({
         "S.no": index + 1,
         "Start Date": new Date(item?.createdAt).toLocaleDateString('en-GB'),
         "Promotion Name": item?.title,

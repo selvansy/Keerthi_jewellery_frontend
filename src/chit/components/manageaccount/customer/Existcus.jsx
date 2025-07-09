@@ -17,6 +17,7 @@ import { formatDecimal } from "../../../utils/commonFunction";
 import { useDispatch, useSelector } from "react-redux";
 import { setid } from "../../../../redux/clientFormSlice";
 import SpinLoading from "../../common/spinLoading";
+import { formatNumber } from "../../../utils/commonFunction";
 
 const Existcusomer = () => {
   const navigate = useNavigate();
@@ -123,6 +124,7 @@ const Existcusomer = () => {
     schemeCount: 0,
     accountCount: 0,
     schemeAmount: 0,
+    overduedata:{}
   });
 
   const [branch, setBranch] = useState(() => (accessBranch === "0" ? [] : {}));
@@ -164,7 +166,6 @@ const Existcusomer = () => {
     });
   };
 
-  // Handle initial load and cusid changes
   useEffect(() => {
     if (cusid) {
       resetState();
@@ -181,7 +182,6 @@ const Existcusomer = () => {
     }
   }, [cusid, userId]);
 
-  // Fetch schemes when customer data changes
   useEffect(() => {
     const customerId = data.customerDetails?._id;
     if (customerId) {
@@ -238,6 +238,7 @@ const Existcusomer = () => {
         schemeCount: response?.data?.uniqueSchemesCount || 0,
         accountCount: response?.data?.totalSchemeAccounts || 0,
         schemeAmount: response?.data?.schemeAmount || 0,
+        overduedata:response?.data?.overDueData
       });
       toast.success(response?.message);
       setLoading(false)
@@ -248,6 +249,8 @@ const Existcusomer = () => {
       toast.error(error.response?.data?.message);
     },
   });
+
+  console.log(data,"data")
 
   const columns1 = [
     {
@@ -371,9 +374,9 @@ const Existcusomer = () => {
   ];
 
   const overduedata = [
-    { label: "Over Dues scheme", value: "04" },
-    { label: "Over Dues Count", value: "₹ 7,890" },
-    { label: "Over Dues Amount", value: "₹ 8,789" },
+    { label: "Over Dues scheme", value: data?.overduedata?.overdueSchemes || 0 },
+    { label: "Over Dues Count", value: data?.overduedata?.overdueCount || 0 },
+    { label: "Over Dues Amount", value: formatNumber({value:data?.overduedata?.overdueAmount,decimalPlaces:0}) || 0 },
   ];
 
   const completedata = [
