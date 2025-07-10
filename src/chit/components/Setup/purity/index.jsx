@@ -279,7 +279,7 @@ const Purity = () => {
     {
       header: "Metal Name",
       cell: (row) => {
-        return row.id_metal?.metal_name;
+        return row?.metal_name;
       },
     },
     {
@@ -293,6 +293,7 @@ const Purity = () => {
           setActive={hanldeActiveDropDown}
           handleEdit={handleEdit}
           handleDelete={handleDelete}
+          showDelete={!row.isUsed}
         />
       ),
       sticky: "right",

@@ -134,14 +134,8 @@ const Table = ({
                   </tr>
                 </thead>
                 <tbody>
-                  {loading && isPageChanging ? (
+                  {loading ? (
                     renderSkeletonRows()
-                  ) : loading ? (
-                    <tr>
-                      <td colSpan={columns.length} className="px-4 py-3 text-center">
-                        <Loading />
-                      </td>
-                    </tr>
                   ) : data.length > 0 ? (
                     data.map((row, rowIndex) => (
                       <tr
@@ -243,7 +237,7 @@ const Table = ({
             </div>
           </div>
 
-          {showPagination && data.length >= 1 && (
+          {showPagination && !loading && data.length >= 1 && (
             <div className="p-4 flex items-center justify-between text-sm text-gray-600 border-t">
               <div>
                 Showing {(currentPage - 1) * itemsPerPage + 1} to{" "}
@@ -257,9 +251,9 @@ const Table = ({
                     setIsPageChanging(true);
                     handlePageChange(currentPage - 1);
                   }}
-                  disabled={currentPage === 1 || loading}
+                  disabled={currentPage === 1}
                   className={`flex items-center px-3 py-1 rounded border ${
-                    currentPage === 1 || loading
+                    currentPage === 1
                       ? "text-gray-400 cursor-not-allowed"
                       : "text-[#1e3b8b] hover:bg-blue-50"
                   }`}
@@ -281,13 +275,10 @@ const Table = ({
                           setIsPageChanging(true);
                           handlePageChange(page);
                         }}
-                        disabled={loading}
                         className={`px-3 py-1 rounded ${
                           currentPage === page
                             ? "bg-[#1e3b8b] text-white"
-                            : loading 
-                              ? "text-gray-400 cursor-not-allowed"
-                              : "text-[#1e3b8b] hover:bg-blue-50"
+                            : "text-[#1e3b8b] hover:bg-blue-50"
                         }`}
                       >
                         {page}
@@ -303,9 +294,9 @@ const Table = ({
                     setIsPageChanging(true);
                     handlePageChange(currentPage + 1);
                   }}
-                  disabled={currentPage >= Math.ceil(totalItems / itemsPerPage) || loading}
+                  disabled={currentPage >= Math.ceil(totalItems / itemsPerPage)}
                   className={`flex items-center px-3 py-1 rounded border ${
-                    currentPage >= Math.ceil(totalItems / itemsPerPage) || loading
+                    currentPage >= Math.ceil(totalItems / itemsPerPage)
                       ? "text-gray-400 cursor-not-allowed"
                       : "text-[#1e3b8b] hover:bg-blue-50"
                   }`}

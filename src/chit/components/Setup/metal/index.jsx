@@ -47,7 +47,7 @@ const Metal = () => {
   const [searchInput, setSearchInput] = useState("");
   const debouncedSearch = useDebounce(searchInput, 500);
   const [searchLoading, setSearchLoading] = useState("");
-  const [enableButton,setEnableButton]= useState(false)
+  const [enableButton, setEnableButton] = useState(false);
 
   const limit = 10;
 
@@ -58,13 +58,12 @@ const Metal = () => {
         setMetalData(response.data);
         setTotalPages(response.totalPages);
         setTotalDocument(response.totalDocument);
-        setEnableButton(true)
+        setEnableButton(true);
       }
       setSearchLoading(false);
       setisLoading(false);
     },
     onError: (error) => {
-      ;
       setMetalData([]);
       setisLoading(false);
       setSearchLoading(false);
@@ -196,17 +195,21 @@ const Metal = () => {
     },
     {
       header: "Actions",
-      cell: (row, rowIndex) => (
-        <Action
-          row={row}
-          data={metadata}
-          rowIndex={rowIndex}
-          activeDropdown={activeDropdown}
-          setActive={hanldeActiveDropDown}
-          handleEdit={handleEdit}
-          handleDelete={handleDelete}
-        />
-      ),
+      cell: (row, rowIndex) => {
+        console.log(row.isUsed)
+        return (
+          <Action
+            row={row}
+            data={metadata}
+            rowIndex={rowIndex}
+            activeDropdown={activeDropdown}
+            setActive={hanldeActiveDropDown}
+            handleEdit={handleEdit}
+            handleDelete={handleDelete}
+            showDelete={!row.isUsed}
+          />
+        );
+      },
       sticky: "right",
     },
     // {
@@ -280,17 +283,17 @@ const Metal = () => {
           </div>
 
           {/* Add Metal Button */}
-          {(MetalData && MetalData.length<=3 && enableButton)&&(
+          {MetalData && MetalData.length <= 3 && enableButton && (
             <div className="flex justify-end items-center ">
-            <button
-              className="flex rounded-lg px-[20px] py-[8px] text-sm font-semibold text-white items-center whitespace-nowrap hover:bg-[#034571] transition-colors sm:w-auto"
-              onClick={handleaddmetal}
-              style={{ backgroundColor: layout_color }}
-            >
-              <img src={plus} alt="plus" className="w-4 h-4 me-[10px]" />
-              Add Metal
-            </button>
-          </div>
+              <button
+                className="flex rounded-lg px-[20px] py-[8px] text-sm font-semibold text-white items-center whitespace-nowrap hover:bg-[#034571] transition-colors sm:w-auto"
+                onClick={handleaddmetal}
+                style={{ backgroundColor: layout_color }}
+              >
+                <img src={plus} alt="plus" className="w-4 h-4 me-[10px]" />
+                Add Metal
+              </button>
+            </div>
           )}
         </div>
 
@@ -410,9 +413,7 @@ export const MetalForm = ({ setIsOpen, id, clearId }) => {
           setIsOpen(false);
           setIsLoading(false);
         }
-      } catch (error) {
-        ;
-      }
+      } catch (error) {}
     },
     onError: (error) => {
       setIsLoading(false);
@@ -497,7 +498,7 @@ export const MetalForm = ({ setIsOpen, id, clearId }) => {
           >
             {isLoading ? <SpinLoading /> : id ? "Update" : "Save"}
           </button>
-           <button
+          <button
             type="button"
             className="bg-[#E2E8F0] text-[#6C7086] text-sm font-semibold rounded-lg  w-full md:w-20"
             onClick={handleCancel}

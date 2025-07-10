@@ -246,11 +246,36 @@ const Existcusomer = () => {
     },
     onError: (error) => {
       setLoading(false)
+     setData({
+      customerDetails: {},
+      schemes: [],
+      totalOpenSchemes: 0,
+      totalClosedSchemes: 0,
+      totalWeightPayable: 0,
+      totalAmountPayable: 0,
+      totalPrecloseSchemes: 0,
+      refundSchemes: 0,
+      referralData: {},
+      chitrecievedGift: 0,
+      nonChit: 0,
+      pendingGift: 0,
+      schemeCount: 0,
+      accountCount: 0,
+      schemeAmount: 0,
+      overduedata: {}
+    });
+    setActiveSchemesTable(prev => []);
+    setRedeemedSchemesTable(prev => []);
       toast.error(error.response?.data?.message);
     },
   });
 
-  console.log(data,"data")
+  useEffect(() => {
+  if (!data.customerDetails?._id) {
+    setActiveSchemesTable([]);
+    setRedeemedSchemesTable([]);
+  }
+}, [data.customerDetails]);
 
   const columns1 = [
     {
@@ -382,7 +407,7 @@ const Existcusomer = () => {
   const completedata = [
     { label: "Scheme Count", value: data.schemeCount || "-" },
     { label: "Account Count", value: data.accountCount || "-" },
-    { label: "Scheme Amount", value: `₹${data?.totalAmountPayable}` || "-" },
+    { label: "Scheme Amount", value: formatNumber({value:data?.totalAmountPayable,decimalPlaces:0}) || "-" },
   ];
 
   const profileData = [
@@ -409,6 +434,18 @@ const Existcusomer = () => {
       value: formatDate(data.customerDetails?.weddingAnniversary) || "-",
     },
   ];
+
+  useEffect(()=>{
+    const customerId = data.customerDetails?._id;
+     const inputData = { id_customer: customerId,page:currentPage,limit:4};
+      activeSchemesData({ data: inputData});
+  },[currentPage])
+
+  useEffect(()=>{
+    const customerId = data.customerDetails?._id;
+     const inputData = { id_customer: customerId,page:currentPage1,limit:4};
+      redeemedSchemeData({ data: inputData});
+  },[currentPage1])
 
   const handlePageChange = (page) => {
     const pageNumber = Number(page);
@@ -684,7 +721,7 @@ const Existcusomer = () => {
             Active schemes
           </h1>
           <Table
-            data={activeSchemesTable}
+            data={activeSchemesTable || []}
             columns={columns1}
             isLoading={isLoading1}
             currentPage={currentPage}

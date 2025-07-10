@@ -1040,6 +1040,7 @@ const CustomerForm = ({
                       showMonthDropdown
                       showYearDropdown
                       dropdownMode="select"
+                      maxDate={new Date()}
                     />
 
                     <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center pointer-events-none">

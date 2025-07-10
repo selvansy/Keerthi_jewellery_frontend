@@ -20,6 +20,8 @@ import More from "../../../../assets/icons/more.svg";
 import gift from "../../../../assets/icons/gift.svg";
 import { formatDate } from "../../../../utils/FormatDate";
 import plus from "../../../../assets/plus.svg";
+import Select from "react-select";
+import { customSelectStyles } from "../../Setup/purity";
 
 const statusStyles = {
   Open: {
@@ -66,7 +68,7 @@ const SchemeAccount = () => {
   const [displaysetting, setDiplaySetting] = useState(0);
   const [activeFilter, setActiveFilter] = useState("");
   const [selectedValue, setSelectedValue] = useState("");
-  const [activeDropdown, setActiveDropdown] = useState(null);
+  const [activeDropdown, setActiveDropdown] = useState("");
   const [position, setPosition] = useState({ top: 0, left: 0 });
 
   const debouncedSearch = useDebounce(searchInput, 500);
@@ -116,6 +118,7 @@ const SchemeAccount = () => {
         value: Number(status.id_status),
         label: status.status_name,
       }));
+      formattedStatus.push({value:"",label:"All"})
       setStatus(formattedStatus);
     }
   }, [scheme_status]);
@@ -195,56 +198,48 @@ const SchemeAccount = () => {
     },
     {
       header: "Scheme Name",
-       cell: (row) => {
-          const {
-            scheme_name,
-            amount,
-            min_amount,
-            max_amount,
-            min_weight,
-            max_weight,
-            scheme_type,
-          } = row;
-          console.log(scheme_name,
-            amount,
-            min_amount,
-            max_amount,
-            min_weight,
-            max_weight,
-            scheme_type)
+      cell: (row) => {
+        const {
+          scheme_name,
+          amount,
+          min_amount,
+          max_amount,
+          min_weight,
+          max_weight,
+          scheme_type,
+        } = row;
 
-          // Priority 1: Fixed amount
-          if (scheme_type === 10) {
-            return `${scheme_name} ( ₹ ${min_amount} - ₹ ${max_amount})`;
-          }
+        // Priority 1: Fixed amount
+        if (scheme_type === 10) {
+          return `${scheme_name} ( ₹ ${min_amount} - ₹ ${max_amount})`;
+        }
 
-          if (scheme_type === 14) {
-            return `${scheme_name} ( ₹ ${min_amount} - ₹ ${max_amount})`;
-          }
+        if (scheme_type === 14) {
+          return `${scheme_name} ( ₹ ${min_amount} - ₹ ${max_amount})`;
+        }
 
-          // Weight-based schemes (type 12, 3, 4)
-          const isWeightBased = [12, 3, 4].includes(Number(scheme_type));
+        // Weight-based schemes (type 12, 3, 4)
+        const isWeightBased = [12, 3, 4].includes(Number(scheme_type));
 
-          if (isWeightBased && min_weight !== null && max_weight !== null) {
-            return `${scheme_name} ( ${min_weight} g - ${max_weight} g)`;
-          }
+        if (isWeightBased && min_weight !== null && max_weight !== null) {
+          return `${scheme_name} ( ${min_weight} g - ${max_weight} g)`;
+        }
 
-          // Amount-based schemes (default)
-          if (!isWeightBased && min_amount !== null && max_amount !== null) {
-            return `${scheme_name} ( ₹ ${min_amount} - ₹ ${max_amount})`;
-          }
+        // Amount-based schemes (default)
+        if (!isWeightBased && min_amount !== null && max_amount !== null) {
+          return `${scheme_name} ( ₹ ${min_amount} - ₹ ${max_amount})`;
+        }
 
-          // Amount-based schemes (default)
-          const digi = [11, 12].includes(Number(scheme_type));
-          if (digi) {
-            ;
-          }
-          if (!digi && min_amount !== null && max_amount !== null) {
-            return `${scheme_name} ( ₹ ${min_amount} - ₹ ${max_amount})`;
-          }
+        // Amount-based schemes (default)
+        const digi = [11, 12].includes(Number(scheme_type));
+        if (digi) {
+        }
+        if (!digi && min_amount !== null && max_amount !== null) {
+          return `${scheme_name} ( ₹ ${min_amount} - ₹ ${max_amount})`;
+        }
 
-          // Fallback
-          return `${scheme_name} (Details Unavailable)`;
+        // Fallback
+        return `${scheme_name} (Details Unavailable)`;
       },
     },
     {
@@ -263,8 +258,7 @@ const SchemeAccount = () => {
         >
           {row.scheme_type == 10 || row.scheme_type == 14
             ? `${row?.paid_installments}`
-            : `${row?.paid_installments}/${row?.total_installments}`
-          }
+            : `${row?.paid_installments}/${row?.total_installments}`}
         </div>
       ),
     },
@@ -311,96 +305,97 @@ const SchemeAccount = () => {
       cell: (row) => row?.created_through,
     },
     {
-  header: "Action",
-  cell: (row) => (
-    <div
-      ref={dropdownRef}
-      className="dropdown-container relative flex items-center"
-    >
-      <button
-        className="p-2 border hover:bg-gray-100 rounded-full flex justify-center"
-        onClick={(e) => {
-          e.stopPropagation();
-          hanldeActiveDropDown(
-            activeDropdown === row?._id ? null : row?._id,
-            e
-          );
-        }}
-      >
-        <img src={More} alt="More options" className="w-[20px] h-[20px]" />
-      </button>
-
-      {activeDropdown === row?._id &&
-        createPortal(
-          <div
-            className="absolute"
-            style={{
-              top: position.top,
-              left: position.left,
-              zIndex: 9999,
-              filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.15))",
+      header: "Action",
+      cell: (row) => (
+        <div
+          ref={dropdownRef}
+          className="dropdown-container relative flex items-center"
+        >
+          <button
+            className="p-2 border hover:bg-gray-100 rounded-full flex justify-center"
+            onClick={(e) => {
+              e.stopPropagation();
+              hanldeActiveDropDown(
+                activeDropdown === row?._id ? null : row?._id,
+                e
+              );
             }}
           >
-            <div className="w-40 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
-              <div className="py-1">
-                <button
-                  className="w-full text-left text-nowrap px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                  onClick={() => {
-                    handleOpenLedger(row._id);
-                    hanldeActiveDropDown(null);
-                  }}
-                >
-                  <img
-                    src={eyeIcon}
-                    alt="View"
-                    className="text-black w-4 h-4 mr-1"
-                  />
-                  View
-                </button>
-                <button
-                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                  onClick={() => {
-                    setActiveDropdown(null);
-                    handleGift(row);
-                  }}
-                >
-                  <img
-                    src={gift}
-                    alt="Gift"
-                    className="w-[16px] h-[16px]"
-                  />
-                  Gift Handover
-                </button>
-                {/* Add Cancel button here */}
-                <button
-                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2 border-t border-gray-100"
-                  onClick={() => hanldeActiveDropDown(null)}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4 mr-1"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </div>,
-          document.body
-        )}
-    </div>
-  ),
-},
+            <img src={More} alt="More options" className="w-[20px] h-[20px]" />
+          </button>
+
+          {activeDropdown === row?._id &&
+            createPortal(
+              <div
+                className="absolute"
+                style={{
+                  top: position.top,
+                  left: position.left,
+                  zIndex: 9999,
+                  filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.15))",
+                }}
+              >
+                <div className="w-40 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+                  <div className="py-1">
+                    <button
+                      className="w-full text-left text-nowrap px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                      onClick={() => {
+                        handleOpenLedger(row._id);
+                        hanldeActiveDropDown(null);
+                      }}
+                    >
+                      <img
+                        src={eyeIcon}
+                        alt="View"
+                        className="text-black w-4 h-4 mr-1"
+                      />
+                      View
+                    </button>
+                    <button
+                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                      onClick={() => {
+                        setActiveDropdown(null);
+                        handleGift(row);
+                      }}
+                    >
+                      <img
+                        src={gift}
+                        alt="Gift"
+                        className="w-[16px] h-[16px]"
+                      />
+                      Gift Handover
+                    </button>
+                    {/* Add Cancel button here */}
+                    <button
+                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2 border-t border-gray-100"
+                      onClick={() => hanldeActiveDropDown(null)}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-4 w-4 mr-1"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </div>,
+              document.body
+            )}
+        </div>
+      ),
+    },
   ];
+  console.log(activeFilter)
 
   return (
     <>
@@ -417,9 +412,10 @@ const SchemeAccount = () => {
           <div className="flex flex-col gap-2 sm:items-center sm:gap-4 w-full sm:w-auto">
             <div className="w-full">
               <div className="relative w-full">
-                <select
+                {/* <select
                   className="appearance-none border-2 focus:ring-1  focus:ring-[#004181] outline-none  border-[#F2F2F9] rounded-[8px] p-1 w-full h-[36px] bg-white text-gray-700"
                   value={selectedValue}
+                  
                   onChange={(e) => handleSelect(e.target.value)}
                 >
                   <option value="">All Status</option>
@@ -428,7 +424,20 @@ const SchemeAccount = () => {
                       {option.label}
                     </option>
                   ))}
-                </select>
+                </select> */}
+                <Select
+                  options={status}
+                  isClearable={true}
+                  value={
+                    status.find((status) => status.value === activeFilter) ||
+                    ""
+                  }
+                  onChange={(selectedOption) =>
+                    handleSelect(selectedOption?.value)
+                  }
+                  styles={customSelectStyles}
+                  placeholder="Scheme Filter"
+                />
                 <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
                   <svg
                     className="h-4 w-4 text-gray-400"
@@ -494,7 +503,7 @@ const SchemeAccount = () => {
           <Table
             data={schemeaccount}
             columns={columns}
-            isLoading={isLoading}
+            loading={isLoading}
             currentPage={currentPage}
             handlePageChange={handlePageChange}
             itemsPerPage={itemsPerPage}

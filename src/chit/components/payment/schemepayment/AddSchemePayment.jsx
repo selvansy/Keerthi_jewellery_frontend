@@ -71,7 +71,6 @@ const AddSchemePayment = () => {
   const [baseAmount, setBaseAmount] = useState(0);
   const [selectKey, setSelectKey] = useState(0);
 
-
   const formik = useFormik({
     initialValues: {
       id_customer: "",
@@ -174,7 +173,7 @@ const AddSchemePayment = () => {
       ...base,
       minHeight: "42px", //42px
       backgroundColor: "white",
-      color:"#232323",
+      color: "#232323",
       // fontWeight:600,
       border: state.isFocused ? "1px solid #f2f2f9" : "1px solid #f2f2f9",
       boxShadow: state.isFocused ? "0 0 0 1px #004181" : "none",
@@ -184,7 +183,7 @@ const AddSchemePayment = () => {
       },
       pointerEvents: !isReadOnly ? "none" : "auto",
       opacity: !isReadOnly ? 1 : 1,
-      cursor: isReadOnly ? "pointer" : "default", 
+      cursor: isReadOnly ? "pointer" : "default",
     }),
     indicatorSeparator: () => ({
       display: "none",
@@ -199,7 +198,7 @@ const AddSchemePayment = () => {
     dropdownIndicator: (provided, state) => ({
       ...provided,
       color: "#232323",
-      fontSize:"14px",
+      fontSize: "14px",
       "&:hover": {
         color: "#232323",
       },
@@ -208,25 +207,27 @@ const AddSchemePayment = () => {
       ...provided,
       // paddingTop: 0,
       // paddingBottom: 0,
-     maxHeight: showWeightInput
-    ? "130px"
-    : "209px"
+      maxHeight: showWeightInput ? "130px" : "209px",
       // maxHeight: [2, 5, 6].includes(formik.values.scheme_type)
       //   ? "130px"
       //   : "209px",
     }),
-     input: (base) => ({
+    input: (base) => ({
       ...base,
-      "input[type='text']:focus": { boxShadow: 'none' },
-      }),
-      option:(base,state)=>({
-        ...base,
-        backgroundColor: state.isSelected ? "#F0F7FE" : state.isFocused ? "#F0F7FE" : "white",
-        color:"#232323",
-        fontWeight:"500",
-        fontSize:"14px",
-      })
-    });
+      "input[type='text']:focus": { boxShadow: "none" },
+    }),
+    option: (base, state) => ({
+      ...base,
+      backgroundColor: state.isSelected
+        ? "#F0F7FE"
+        : state.isFocused
+        ? "#F0F7FE"
+        : "white",
+      color: "#232323",
+      fontWeight: "500",
+      fontSize: "14px",
+    }),
+  });
 
   // API calls
   const { data: branchData } = useQuery({
@@ -275,7 +276,7 @@ const AddSchemePayment = () => {
   });
 
   const resetForm = () => {
-    const branch = formik.values.id_branch
+    const branch = formik.values.id_branch;
     formik.resetForm();
     setSchemeData([]);
     setFullData([]);
@@ -289,7 +290,6 @@ const AddSchemePayment = () => {
     setSelectedMode(0);
     setIsLoading(false);
     setSelectKey((prev) => prev + 1);
-    
   };
 
   const { mutate: updateschemepaymentmutate } = useMutation({
@@ -464,7 +464,7 @@ const AddSchemePayment = () => {
 
   //     if (output) {
   //       if (isWeightScheme) {
-  //         
+  //
   //         setMinWeight(id_scheme?.min_weight || 0);
   //         formik.setFieldValue("min_weight", id_scheme?.min_weight);
   //         setMaxWeight(id_scheme?.max_weight || 0);
@@ -541,7 +541,7 @@ const AddSchemePayment = () => {
 
   //   // Classification logic
   //   if (classificationOrder === 2) {
-  //     
+  //
   //     if (isWeightScheme) {
   //       const paymentAmount = Number(metalRate) * Number(weight || 0);
   //       formik.setFieldValue("payment_amount", paymentAmount);
@@ -552,7 +552,7 @@ const AddSchemePayment = () => {
   //       setBaseAmount(amount);
   //     }
   //   } else if (classificationOrder === 3) {
-  //     
+  //
   //     // const output = last_paid_amount === 0;
   //     const output = true
   //     // setIsFirstPay(output);
@@ -592,7 +592,7 @@ const AddSchemePayment = () => {
   //       }
   //     }
   //   } else {
-  //     
+  //
   //     if (isWeightScheme) {
   //       setMinWeight(id_scheme?.min_weight || 0);
   //       setMaxWeight(id_scheme?.max_weight || 0);
@@ -738,17 +738,14 @@ const AddSchemePayment = () => {
 
     // schemes (12, 3, 4)
     if (weightSchemeTypes.includes(schemeType)) {
-      ;
       if (formik.values.metal_weight) {
         const calculatedAmount = Number(formik.values.metal_weight) * metalRate;
-        ;
         formik.setFieldValue("payment_amount", calculatedAmount.toFixed(2));
         setBaseAmount(calculatedAmount);
       }
     }
     // schemes (2, 5, 6)
     else if (amountSchemeTypes.includes(schemeType)) {
-      ;
       if (formik.values.payment_amount) {
         const calculatedWeight = formik.values.payment_amount / metalRate;
         formik.setFieldValue("metal_weight", calculatedWeight.toFixed(3));
@@ -760,7 +757,7 @@ const AddSchemePayment = () => {
         const calculatedAmount = Number(formik.values.metal_weight) * metalRate;
         if (Math.abs(calculatedAmount - formik.values.payment_amount) > 0.01) {
           formik.setFieldValue("payment_amount", calculatedAmount.toFixed(2));
-          setShowAmountInput(true)
+          setShowAmountInput(true);
         }
       }
     }
@@ -994,15 +991,23 @@ const AddSchemePayment = () => {
 
   useEffect(() => {
     const { payment_amount, metal_rate, scheme_type } = formik.values;
-  
-    if ([2, 5, 6,10,14].includes(scheme_type) && payment_amount && metal_rate && Number(metal_rate) !== 0) {
+
+    if (
+      [2, 5, 6, 10, 14].includes(scheme_type) &&
+      payment_amount &&
+      metal_rate &&
+      Number(metal_rate) !== 0
+    ) {
       setWeightSaved(Number(payment_amount) / Number(metal_rate));
     } else {
       setWeightSaved(0);
     }
-  }, [formik.values.payment_amount, formik.values.metal_rate, formik.values.scheme_type, selectedScheme]);
-  
-  
+  }, [
+    formik.values.payment_amount,
+    formik.values.metal_rate,
+    formik.values.scheme_type,
+    selectedScheme,
+  ]);
 
   return (
     <>
@@ -1016,7 +1021,10 @@ const AddSchemePayment = () => {
       >
         <div className="flex flex-row justify-between items-center mb-4">
           <p className="text-sm text-gray-400 mt-4 mb-4">
-            Payment / <span className="text-[#232323] font-semibold text-sm">Scheme Payment</span>
+            Payment /{" "}
+            <span className="text-[#232323] font-semibold text-sm">
+              Scheme Payment
+            </span>
           </p>
 
           <div className="flex flec-row gap-2">
@@ -1297,9 +1305,7 @@ const AddSchemePayment = () => {
                             </div>
                             <div className="flex items-center">
                               <span className="text-gray-900">
-                                {Number(
-                                  (selectedScheme?.total_weight || 0)
-                                )}
+                                {Number(selectedScheme?.total_weight || 0)}
                                 {/* {selectedScheme?.total_weight || "-"} */}
                               </span>
                             </div>
@@ -1329,7 +1335,6 @@ const AddSchemePayment = () => {
                   <div className="relative">
                     <DatePicker
                       name="date_payment"
-              
                       readOnly
                       selected={formik.values.date_payment}
                       dateFormat="dd-MM-yyyy"
@@ -1593,7 +1598,7 @@ const AddSchemePayment = () => {
                         )}
                     </div>
 
-                    {[2, 5, 6,10,14].includes(formik.values.scheme_type) && (
+                    {[2, 5, 6, 10, 14].includes(formik.values.scheme_type) && (
                       <div className="relative flex-1 mt-4">
                         <label className="block text-sm  mb-1">
                           Weight Saved<span className="text-red-400"> *</span>
@@ -1601,10 +1606,7 @@ const AddSchemePayment = () => {
                         <input
                           type="text"
                           disabled
-                          value={ `${formatDecimal(
-                                weightSaved
-                                )}`
-                          }
+                          value={`${formatDecimal(weightSaved)}`}
                           className="border-[1px] border-[#f2f3f8] rounded-md p-2 w-full bg-gray-100"
                         />
                       </div>
@@ -1612,7 +1614,13 @@ const AddSchemePayment = () => {
 
                     {/* Payment mode */}
                     <div
-                      className={`flex flex-col ${(!showWeightInput || ![2, 5, 6,10,14].includes(formik.values.scheme_type)) && "mt-4"} `}
+                      className={`flex flex-col ${
+                        (!showWeightInput ||
+                          ![2, 5, 6, 10, 14].includes(
+                            formik.values.scheme_type
+                          )) &&
+                        "mt-4"
+                      } `}
                     >
                       <label className="block text-sm  mb-1">
                         Payment Mode<span className="text-red-400"> *</span>
@@ -1665,11 +1673,18 @@ const AddSchemePayment = () => {
                               type="number"
                               name={multipay.parameter}
                               value={formik.values[multipay.parameter] || ""}
+                              onKeyDown={(e) => {
+                                if (["e", "E", "+", "-"].includes(e.key)) {
+                                  e.preventDefault();
+                                }
+                              }}
                               onChange={(e) => {
-                                formik.setFieldValue(
-                                  multipay.parameter,
-                                  Number(e.target.value) || ""
-                                );
+                                if (e.target.value >= 0) {
+                                  formik.setFieldValue(
+                                    multipay.parameter,
+                                    Number(e.target.value) || ""
+                                  );
+                                }
                               }}
                               className="border-[1px] border-gray-300 rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                               placeholder="Enter amount here"
@@ -1683,7 +1698,11 @@ const AddSchemePayment = () => {
                     <div className="flex flex-col">
                       <label
                         className={`block text-sm  mb-1 ${
-                         (!showWeightInput || ![2, 5, 6,10,14].includes(formik.values.scheme_type)) && "mt-4"
+                          (!showWeightInput ||
+                            ![2, 5, 6, 10, 14].includes(
+                              formik.values.scheme_type
+                            )) &&
+                          "mt-4"
                         }`}
                       >
                         ITR/UTR ID
@@ -1700,9 +1719,7 @@ const AddSchemePayment = () => {
 
                     {/* Remarks */}
                     <div className="col-span-full flex flex-col">
-                      <label className="block text-sm mb-1">
-                        Remarks
-                      </label>
+                      <label className="block text-sm mb-1">Remarks</label>
                       <textarea
                         name="remark"
                         value={formik.values.remark}
@@ -1725,7 +1742,9 @@ const AddSchemePayment = () => {
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   <div className="flex flex-col gap-2">
                     <div className="flex items-center">
-                      <span className="text-[#232323] font-semibold">A/C Name</span>
+                      <span className="text-[#232323] font-semibold">
+                        A/C Name
+                      </span>
                     </div>
                     <div className="flex items-center">
                       <span className="text-gray-900">
@@ -1736,7 +1755,9 @@ const AddSchemePayment = () => {
 
                   <div className="flex flex-col gap-2">
                     <div className="flex items-center">
-                      <span className="text-[#232323] font-semibold">Address</span>
+                      <span className="text-[#232323] font-semibold">
+                        Address
+                      </span>
                     </div>
                     <div className="flex items-center">
                       <span className="text-gray-900">

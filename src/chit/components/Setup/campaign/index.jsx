@@ -375,9 +375,9 @@ export const CampaingForm = ({ closeIncommingModal, id, clearId }) => {
             setIsLoading(false)
         },
         onError: (error) => {
-
+            console.log(error)
             setIsLoading(false)
-            toast.error(error.response.message);
+            toast.error(error?.response?.data?.message);
         },
     });
 

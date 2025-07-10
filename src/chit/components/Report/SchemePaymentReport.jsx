@@ -35,8 +35,16 @@ function AccountSummaryReport() {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [totalPages, setTotalPages] = useState(0);
   const [totalDocuments, setTotalDocuments] = useState(0);
-  const [from_date, setfrom_date] = useState();
-  const [to_date, setto_date] = useState();
+  const [from_date, setfrom_date] = useState(() => {
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate());
+  return tomorrow;
+});
+  const [to_date, setto_date] = useState(() => {
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate());
+  return tomorrow;
+});
   const [searchLoading, setSearchLoading] = useState(false);
   const [processData, setProcessData] = useState([]);
   const [schemeList, setSchemeList] = useState([]);
@@ -184,24 +192,6 @@ function AccountSummaryReport() {
     },
   });
 
-  // useEffect(() => {
-  //   const process = paymentData?.map((item, index) => ({
-  //     "S.No": index + 1 + (currentPage - 1) * itemsPerPage,
-  //     "Receipt No": item.payment_receipt,
-  //     "Transaction ID": item.id_transaction,
-  //     "Payment Date": item.createdAt ? formatDate(item.createdAt) : "",
-  //     Customer: item.customer_name,
-  //     "Mobile Number": item.customer_mobile,
-  //     "Accounter Name": item.accounter_name,
-  //     "Scheme Name": item.scheme_name,
-  //     "Scheme A/c No": item.schemeAccNo,
-  //     Classification: item.classification_name,
-  //     "Paid Amount": item.payment_amount,
-  //     "Payment mode": item.payment_mode || "Cash Free",
-  //     "Paid Installment": `${item.totalPaidInstallment}/${item.total_installments}`,
-  //   }));
-  //   setProcessData(process);
-  // }, [paymentData, currentPage, itemsPerPage]);
   useEffect(() => {
     const process = paymentData?.map((item, index) => {
       const baseData = {
@@ -410,6 +400,14 @@ function AccountSummaryReport() {
                   setto_date(range.endDate);
                 }}
               />
+              {/* <DateRangeSelector
+  fromDate={from_date}  // Pass your from_date state
+  toDate={to_date}      // Pass your to_date state
+  onChange={(range) => {
+    setfrom_date(range.startDate);
+    setto_date(range.endDate);
+  }}
+/> */}
               <ExportDropdown
                 apiData={processData}
                 fileName={`Scheme Payment Report ${new Date().toLocaleDateString(

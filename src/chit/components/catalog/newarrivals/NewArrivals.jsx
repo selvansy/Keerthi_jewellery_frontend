@@ -293,18 +293,18 @@ const NewArrivals = () => {
       header: "Product Name",
       cell: (row) => row?.product_name,
     },
-    {
-      header: "Image",
-      cell: (row) => (
-        <div className="w-12 h-12 rounded overflow-hidden">
-          <img
-            src={`${row.pathurl}${row.images_Url[0]}`}
-            alt={row?.branchName || "Preview"}
-            className="w-full h-full object-cover"
-          />
-        </div>
-      ),
-    },
+    // {
+    //   header: "Image",
+    //   cell: (row) => (
+    //     <div className="w-12 h-12 rounded overflow-hidden">
+    //       <img
+    //         src={`${row.pathurl}${row.images_Url[0]}`}
+    //         alt={row?.branchName || "Preview"}
+    //         className="w-full h-full object-cover"
+    //       />
+    //     </div>
+    //   ),
+    // },
     {
       header: "Start Date",
       cell: (row) => {
