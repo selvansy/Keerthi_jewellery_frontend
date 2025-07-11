@@ -1023,7 +1023,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
       const updatedFormData = {
         ...payload,
         referral_id: referralId,
-        referral_type: referralRoles[selectedClassification].label,
+        referral_type: referralRoles[selectedClassification]?.label,
         scheme_count_number: acNumber,
       };
       setFormData(updatedFormData);
