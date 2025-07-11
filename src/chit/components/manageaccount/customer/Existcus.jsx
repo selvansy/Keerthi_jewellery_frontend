@@ -436,15 +436,19 @@ const Existcusomer = () => {
   ];
 
   useEffect(()=>{
-    const customerId = data.customerDetails?._id;
+    if(data.customerDetails?._id){
+       const customerId = data.customerDetails?._id;
      const inputData = { id_customer: customerId,page:currentPage,limit:4};
       activeSchemesData({ data: inputData});
+    }
   },[currentPage])
 
   useEffect(()=>{
-    const customerId = data.customerDetails?._id;
+    if(data.customerDetails?._id){
+      const customerId = data.customerDetails?._id;
      const inputData = { id_customer: customerId,page:currentPage1,limit:4};
       redeemedSchemeData({ data: inputData});
+    }
   },[currentPage1])
 
   const handlePageChange = (page) => {

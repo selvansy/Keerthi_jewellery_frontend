@@ -113,7 +113,7 @@ function MetalRateIndex({ refresh }) {
     setTimeout(() => {
       setSuccNot(false);
       dispatch(closeModal());
-    }, 2500);
+    }, 1000);
   };
 
   const { data: branchresponse, isLoading: loadingbranch } = useQuery({
