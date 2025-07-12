@@ -10,6 +10,7 @@ const ConfigNotification = () => {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
   // const avl = ["pushNotification", "sms", "whatsapp"];
     const avl = ["pushNotification"];
+    const head = ["push Notification"];
   const [activeTab, setActiveTab] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState({
@@ -170,7 +171,7 @@ const ConfigNotification = () => {
                   }`}
                 onClick={() => setActiveTab(index)}
               >
-                {tab.toUpperCase()}
+                {head[index].toUpperCase()}
               </button>
             ))}
           </div>

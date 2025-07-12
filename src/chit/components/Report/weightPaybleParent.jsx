@@ -122,9 +122,15 @@ function WeightPaybleParent() {
     //   },
       {
         header: "Total Paid Weight",
-        cell: (row) => `${formatDecimal(row?.totalCollectedAmount)} g`,
+        cell: (row) => `${truncateDecimal(row?.totalCollectedAmount,3)} g`,
       },
   ];
+
+   function truncateDecimal(value, decimals) {
+  const factor = Math.pow(10, decimals);
+  const truncated = Math.floor(value * factor) / factor;
+  return truncated.toFixed(decimals);
+}
 
   useEffect(() => {
     const process =paybleData?.map((item, index) => ({

@@ -351,15 +351,18 @@ const AddSchemePayment = () => {
   }, [id_branch]);
 
   useEffect(() => {
-    if (paymentModes) {
-      const data = paymentModes.data.map((item) => ({
+  if (paymentModes) {
+    const data = paymentModes.data
+      .filter(item => item.id_mode !== 11) 
+      .map((item) => ({
         mode: item.id_mode,
         value: item._id,
         label: item.mode_name,
       }));
-      setPaymentmode(data);
-    }
-  }, [paymentModes]);
+    setPaymentmode(data);
+  }
+}, [paymentModes]);
+
 
   useEffect(() => {
     if (!branchData) return;

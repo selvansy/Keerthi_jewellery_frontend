@@ -111,7 +111,7 @@ function WeightPaybleChild() {
     },
     {
       header: "Total Collectd Weight",
-      cell: (row) => `${row?.totalValue} g`,
+      cell: (row) => `${truncateDecimal(row?.totalValue,3)} g`,
     },
     {
       header: "Maturity Date ",
@@ -128,6 +128,13 @@ function WeightPaybleChild() {
         cell: (row) => row?.paidInstallments,
       },
   ];
+
+  function truncateDecimal(value, decimals) {
+  const factor = Math.pow(10, decimals);
+  const truncated = Math.floor(value * factor) / factor;
+  return truncated.toFixed(decimals);
+}
+
 
 
   const handlePageChange = (page) => {
