@@ -93,6 +93,7 @@ function AmountPaybleParent() {
 
 
   const handlePageChange = (page) => {
+    console.log(page)
     const pageNumber = Number(page);
     if (
       !pageNumber ||
@@ -102,7 +103,7 @@ function AmountPaybleParent() {
     ) {
       return;
     }
-
+console.log(pageNumber)
     setCurrentPage(pageNumber);
   };
 

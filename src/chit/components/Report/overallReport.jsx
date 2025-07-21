@@ -63,8 +63,10 @@ function overallReport() {
       to_date,
       id_branch,
       id_scheme: selectedScheme,
+      page:currentPage,
+      limit:itemsPerPage
     });
-  }, [from_date, to_date, selectedScheme]);
+  }, [from_date, to_date, selectedScheme,currentPage]);
 
   useEffect(() => {
     if (!roleData) return;
@@ -109,8 +111,8 @@ function overallReport() {
   });
 
   const { mutate: getOverAllReport } = useMutation({
-    mutationFn: ({ from_date, to_date, id_scheme: selectedScheme }) =>
-      getOverAllSummary({ from_date, to_date, id_scheme: selectedScheme }),
+    mutationFn: ({ from_date, to_date, id_scheme: selectedScheme,page,limit}) =>
+      getOverAllSummary({ from_date, to_date, id_scheme: selectedScheme,page,limit}),
     onSuccess: (response) => {
       setOverAllData(response.data);
       setisLoading(false);
@@ -194,6 +196,7 @@ function overallReport() {
   };
 
   const handlePageChange = (page) => {
+
     const pageNumber = Number(page);
     if (
       !pageNumber ||

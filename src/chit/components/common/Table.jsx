@@ -272,6 +272,7 @@ const Table = ({
                     <React.Fragment key={page}>
                       <button
                         onClick={() => {
+                          console.log(page)
                           setIsPageChanging(true);
                           handlePageChange(page);
                         }}

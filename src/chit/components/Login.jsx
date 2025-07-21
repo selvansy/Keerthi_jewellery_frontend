@@ -73,7 +73,7 @@ const Login = () => {
 
   return (
     <div
-      className="flex min-h-screen items-center justify-center bg-red-400"
+      className="flex min-h-screen items-center justify-center"
       style={{
         backgroundImage: `url(${Background})`,
         backgroundSize: "cover",

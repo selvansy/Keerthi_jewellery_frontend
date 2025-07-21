@@ -183,7 +183,7 @@ const CustomerModal = ({ close }) => {
                     <p className="text-gray-700 text-lg">{customerData.name}</p>
 
                     <h3 className="text-black mt-6 mb-2">Phone no:</h3>
-                    <p className="text-gray-700">{customerData.phone}</p>
+                    <p className="text-gray-700">{searchNumber}</p>
                   </div>
                   <div>
                     <h3 className="text-black mb-2">Address:</h3>

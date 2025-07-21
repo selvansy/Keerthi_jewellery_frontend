@@ -19,6 +19,7 @@ function Ledgerdetails({ setIsOpen }) {
   const [totalPages, setTotalPages] = useState(0);
   const [totalDocument, setTotalDocument] = useState(0)
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const weightScheme = [12,3,4,2,5,6,10,14]
   
 
   const handleCancel = (e) => {
@@ -103,25 +104,9 @@ function Ledgerdetails({ setIsOpen }) {
         gift_issues:response.data?.gift_issues,
         status:response?.data?.status_name,
         total_paidinstallments:response?.data?.paid_installments,
-
-        // id: response?.data?._id,
-        // id_scheme: response?.data?.id_scheme._id,
-        // min_amount: response?.data?.id_scheme.min_amount,
-        // max_amount: response?.data?.id_scheme.max_amount,
-        // min_weight: response?.data?.id_scheme.min_weight,
-        // max_weight: response?.data?.id_scheme.max_weight,
-        // amount: response?.data?.id_scheme.amount,
-        // id_customer: response?.data?.id_customer._id,
         total_paidamount: response?.data?.total_paidamount,
-        // total_paidinstallments: response?.data?.total_paidinstallments,
         total_weight: response?.data?.total_weight,
-        // bill_no: response?.data?.bill_no,
-        // bill_date: response?.data?.bill_date,
-        // id_branch: response?.data?.id_branch._id,
-        // address: response?.data?.id_customer.address,
-        // customer_name: response?.data?.id_customer?.firstname + ' ' + response.data?.id_customer?.lastname,
         paid_weight:response?.data?.weight,
-
       });
       setpaymentdata(response?.data?.paymentdata);
     } else {
@@ -129,44 +114,47 @@ function Ledgerdetails({ setIsOpen }) {
     }
   };
 
+  console.log(ledgerData?.scheme_type)
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-GB');
   };
 
+  // Define columns conditionally based on scheme type
+  const getColumns = () => {
+    const baseColumns = [
+      {
+        header: "Installments",
+        cell: (row) => row?.paid_installments ?? "-",
+      },
+      {
+        header: "Receipt No",
+        cell: (row) => row?.payment_receipt
+      },
+      {
+        header: "Total Amount",
+        cell: (row) => row?.payment_amount
+      },
+      {
+        header: "ITR/UTR",
+        cell: (row) => row?.itr_utr ?? "-"
+      },
+      {
+        header: "Remarks",
+        cell: (row) => row?.remark ?? "-"
+      },
+    ];
 
-  const columns = [
-    // {
-    //     header: 'S.No',
-    //     cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
-    // },
-    {
-      header: "Installments",
-      cell: (row) => row?.paid_installments ?? "-",
-    },
-    {
-      header: "Receipt No",
-      cell: (row) => row?.payment_receipt
-    },
-    {
-      header: "Total Amount",
-      cell: (row) => row?.payment_amount
-    },
-    // {
-    //   header: "A/c No",
-    //   cell: (row) => row?.id_scheme_account?.scheme_acc_number ?? "-"
-    // },
-    {
-      header: "ITR/UTR",
-      cell: (row) => row?.itr_utr ?? "-"
-    },
-    {
-      header: "Remarks",
-      cell: (row) => row?.remark ?? "-"
-    },
-
-
-  ]
+    if (weightScheme.includes(ledgerData?.scheme_type)) {
+      baseColumns.splice(3, 0, {
+        header: "Saved Weight",
+        cell: (row) => `${formatDecimal(row?.metal_weight)} g`
+      });
+    }
+    
+    return baseColumns;
+  };
 
   return (
     <div className="bg-white mx-auto">
@@ -196,18 +184,16 @@ function Ledgerdetails({ setIsOpen }) {
         <Detail label="Bonus Amount" value={   
           formatNumber({value:paymentdata[0]?.wallet?.balance_amt ?? "-",decimalPlaces:0}) } />
         <Detail label="Paid Weight" value={`${formatDecimal(ledgerData?.paid_weight)} g`} />
-        {/* <Detail label="Total Amount" value={formatNumber({value:ledgerData?.total_paidamount ?? "",decimalPlaces:0})} /> */}
         <Detail label="Gift Handover" value={ledgerData?.gift_issues} />
         <Detail label="Status" value={ledgerData?.status} highlight={false} />
       </div>
 
       {/* Installments Table */}
       <div className="mt-10">
-
         <div className="overflow-x-auto">
           <Table
             data={paymentdata}
-            columns={columns}
+            columns={getColumns()} // Use the dynamic columns function
             isLoading={isLoading}
             currentPage={currentPage}
             handlePageChange={handlePageChange}
@@ -215,7 +201,6 @@ function Ledgerdetails({ setIsOpen }) {
             totalItems={totalDocument}
             handleItemsPerPageChange={handleItemsPerPageChange}
           />
-
         </div>
       </div>
     </div>

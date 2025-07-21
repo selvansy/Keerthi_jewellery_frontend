@@ -182,7 +182,7 @@ function Topup() {
                 <div className="flex flex-row gap-6 justify-start">
                   {[
                     { label: "SMS", key: "SMS" },
-                    { label: "WhatsApp", key: "WhatsApp" },
+                    // { label: "WhatsApp", key: "WhatsApp" },
                     // { label: "Email", key: "Email" },
                   ].map((notify_type) => (
                     <label

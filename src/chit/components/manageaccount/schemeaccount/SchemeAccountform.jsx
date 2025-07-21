@@ -200,6 +200,12 @@ export function ExistingCustomer({
               mobile: value,
             }));
           }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              console.log(e.key);
+              handleSearchmobile();
+            }
+          }}
           style={{ height: inputHeight }}
           name="mobile"
           onInput={(e) => (e.target.value = e.target.value.replace(/\D/g, ""))}
@@ -290,7 +296,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
   const [id_purity, setPurity] = useState("");
   const [metalRate, setMetalRate] = useState(0);
   const [referralId, setReferralid] = useState(null);
-  const [showReferral,setShowReferral]=useState(false)
+  const [showReferral, setShowReferral] = useState(false);
 
   //* TODO use formik insted of formData
   const [formData, setFormData] = React.useState({
@@ -656,7 +662,6 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
       });
     }
   };
-
 
   useEffect(() => {
     handleschemebyid(formData.id_scheme);
@@ -1179,7 +1184,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
         );
       }
     }
-  }, [formData.id_scheme, selectedScheme, schemefilter])
+  }, [formData.id_scheme, selectedScheme, schemefilter]);
 
   return (
     <form onSubmit={onSubmit}>
@@ -1342,7 +1347,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
                     code: selectedOption.code,
                     noOfDays: selectedOption.noOfDays,
                   }));
-                  setShowReferral(selectedOption.display_referral)
+                  setShowReferral(selectedOption.display_referral);
                   if (selectedOption.id_metal) {
                     setMetal(selectedOption.id_metal);
                   }
@@ -1521,6 +1526,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
               value={formData.account_name}
               onChange={(e) => filterInputchange(e)}
               onWheel={(e) => e.target.blur()}
+              maxLength={15}
               className="border-[1px] border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
               placeholder="Enter Account Name"
               style={{ height: inputHeight }}

@@ -7,6 +7,8 @@ import {
 } from "../../../api/Endpoints";
 import gold24 from "../../../../assets/Gold 24.svg";
 import silver from "../../../../assets/silver.svg";
+import diamond from "../../../../assets/diamond.png";
+import platinum from "../../../../assets/platinum.png";
 import { IndianRupee } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import Select from "react-select";
@@ -37,8 +39,8 @@ function MetalRateIndex({ refresh }) {
   const metalImages = {
   1: gold24,    // Gold
   2: silver,    // Silver
-  // 3: diamond,   // Diamond
-  // 4: platinum,  // Platinum
+  3: diamond,   // Diamond
+  4: platinum,  // Platinum
   // default: defaultMetal // Default image for other metals
 };
 
@@ -106,7 +108,7 @@ function MetalRateIndex({ refresh }) {
         modalType: "SUCCESS",
         header: "",
         formData: {
-          message: "The metalRate was added Successfully",
+          message: "Metal Rate was added Successfully",
         },
       })
     );

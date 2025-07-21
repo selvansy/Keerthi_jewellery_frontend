@@ -292,6 +292,7 @@ const Purity = () => {
           activeDropdown={activeDropdown}
           setActive={hanldeActiveDropDown}
           handleEdit={handleEdit}
+          showEdit={!row.isUsed}
           handleDelete={handleDelete}
           showDelete={!row.isUsed}
         />
