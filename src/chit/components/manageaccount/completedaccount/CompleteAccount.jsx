@@ -30,24 +30,29 @@ function CompleteAccount() {
   const [preCloseData, setPreCloseData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [totalPages,  setTotalPages] = useState(0);
-  const [from_date, setfrom_date] = useState();
-  const [to_date, setto_date] = useState();
+  const [totalPages, setTotalPages] = useState(0);
+  
+  // Set initial dates to current date
+  const today = new Date();
+  const formattedDate = today.toISOString().split('T')[0];
+  
+  const [from_date, setfrom_date] = useState(formattedDate);
+  const [to_date, setto_date] = useState(formattedDate);
   const [totalDocuments, setTotalDocuments] = useState(0);
 
   useEffect(() => {
-    getCompletedData({ from_date, to_date });
-  }, [from_date, to_date]);
+    getCompletedData({ from_date, to_date, page: currentPage, limit: itemsPerPage });
+  }, [from_date, to_date, currentPage, itemsPerPage]);
 
   const { mutate: getCompletedData } = useMutation({
-    mutationFn: ({ from_date, to_date }) =>
-      completedAccount({ from_date, to_date }),
+    mutationFn: ({ from_date, to_date, page, limit }) =>
+      completedAccount({ from_date, to_date, page, limit }),
     onSuccess: (response) => {
       const { data } = response;
       setPreCloseData(data);
       setisLoading(false);
-      setTotalDocuments(response.totalDocuments)
-      setTotalPages(response.totalPages)
+      setTotalDocuments(response.totalDocuments);
+      setTotalPages(Math.ceil(response.totalDocuments / itemsPerPage));
     },
     onError: (error) => {
       setisLoading(false);
@@ -65,8 +70,12 @@ function CompleteAccount() {
     ) {
       return;
     }
-
     setCurrentPage(pageNumber);
+  };
+
+  const handleItemsPerPageChange = (value) => {
+    setItemsPerPage(value);
+    setCurrentPage(1); // Reset to first page when items per page changes
   };
 
   const columns = [
@@ -75,7 +84,7 @@ function CompleteAccount() {
       cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
     },
     {
-      header: "Accounter  Name",
+      header: "Accounter Name",
       cell: (row) => row?.account_name,
     },
     {
@@ -126,17 +135,11 @@ function CompleteAccount() {
       header: "Gift Issue",
       cell: (row) => row?.gift_issues,
     },
-
     {
       header: "Crated Through",
       cell: (row) => row?.added_by,
     },
   ];
-
-  const handleItemsPerPageChange = (value) => {
-    setItemsPerPage(value);
-    setCurrentPage(1);
-  };
 
   return (
     <>
@@ -155,7 +158,10 @@ function CompleteAccount() {
                 onChange={(range) => {
                   setfrom_date(range.startDate);
                   setto_date(range.endDate);
+                  setCurrentPage(1); // Reset to first page when date range changes
                 }}
+                initialStartDate={formattedDate}
+                initialEndDate={formattedDate}
               />
               <ExportDropdown
                 apiData={preCloseData}
@@ -176,6 +182,7 @@ function CompleteAccount() {
             itemsPerPage={itemsPerPage}
             totalItems={totalDocuments}
             handleItemsPerPageChange={handleItemsPerPageChange}
+            totalPages={totalPages}
           />
         </div>
       </div>
@@ -184,5 +191,3 @@ function CompleteAccount() {
 }
 
 export default CompleteAccount;
-
-// export default

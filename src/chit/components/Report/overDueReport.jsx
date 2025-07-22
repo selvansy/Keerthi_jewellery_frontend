@@ -7,9 +7,7 @@ import "jspdf-autotable";
 import ExportDropdown from "../../components/common/Dropdown/Export";
 import { ExportToExcel } from "../common/Dropdown/Excelexport";
 import { ExportToPDF } from "../common/Dropdown/ExportPdf";
-import {
-  dueReportSummary,
-} from "../../../chit/api/Endpoints";
+import { dueReportSummary } from "../../../chit/api/Endpoints";
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import { useSelector } from "react-redux";
@@ -19,7 +17,6 @@ import { formatNumber } from "../../utils/commonFunction";
 
 function OverDueReport() {
   const roledata = localStorage.getItem("decoded");
-
   const id_role = roledata?.id_role?.id_role;
   const id_client = roledata?.id_client;
   const id_branch = roledata?.branch;
@@ -27,25 +24,40 @@ function OverDueReport() {
 
   const [isLoading, setisLoading] = useState(true);
   const [overDueData, setOverDueData] = useState([]);
- const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [totalPages,  setTotalPages] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
   const [totalDocuments, setTotalDocuments] = useState(0);
-  const [from_date,setfrom_date]=useState()
-  const [to_date,setto_date]=useState()
+  
+  // Set initial dates to current date
+  const [dateRange, setDateRange] = useState({
+    startDate: new Date(),
+    endDate: new Date()
+  });
 
   useEffect(() => {
-    getDueReport({from_date,to_date});
-  }, [from_date,to_date]);
+    getDueReport({
+      from_date: dateRange.startDate,
+      to_date: dateRange.endDate,
+      page: currentPage,
+      limit: itemsPerPage
+    });
+  }, [currentPage, itemsPerPage, dateRange]);
 
   const { mutate: getDueReport } = useMutation({
-    mutationFn:({from_date,to_date})=>dueReportSummary({from_date,to_date}),
+    mutationFn: ({ from_date, to_date, page, limit }) => 
+      dueReportSummary({ 
+        from_date, 
+        to_date,
+        page,
+        limit
+      }),
     onSuccess: (response) => {
       const { data } = response;
       setOverDueData(data.data);
       setisLoading(false);
-      setTotalPages(response.totalPages)
-      setTotalDocuments(response.totalDocuments)
+      setTotalPages(data.totalPages || 0);
+      setTotalDocuments(data.totalDocuments || 0);
     },
     onError: (error) => {
       setisLoading(false);
@@ -95,7 +107,7 @@ function OverDueReport() {
       header: "Joined Date",
       cell: (row) => {
         const date = new Date(row?.createdAt);
-        return date.toLocaleDateString("en-GB"); // 'en-GB' gives the d-m-Y format
+        return date.toLocaleDateString("en-GB");
       },
     },
     {
@@ -108,12 +120,10 @@ function OverDueReport() {
     },
     {
       header: "Total Paid Amount",
-      // cell: (row) => row?.totalPaidAmount,
       cell: (row) => `₹ ${row?.amount}`
     },
     {
       header: "Total Paid Weight",
-      // cell: (row) => row?.totalPaidWeight,
       cell: (row) => `${row?.weight} g`,
     },
     {
@@ -122,77 +132,69 @@ function OverDueReport() {
     },
     {
       header: "Last Paid Date",
-      cell: (row) => {
-        // const date = new Date(row?.lastPaidDate);  
-       return formatDate(row?.createdAt);
-        // return date.toLocaleDateString("en-GB");
-      },
+      cell: (row) => formatDate(row?.createdAt),
     },
   ];
-  
-
 
   const handlePageChange = (page) => {
     const pageNumber = Number(page);
-    if (
-      !pageNumber ||
-      isNaN(pageNumber) ||
-      pageNumber < 1 ||
-      pageNumber > totalPages
-    ) {
+    if (pageNumber < 1 || pageNumber > totalPages) {
       return;
     }
-
     setCurrentPage(pageNumber);
   };
 
   const handleItemsPerPageChange = (value) => {
-    setItemsPerPage(value);
-    setCurrentPage(1);
+    setItemsPerPage(Number(value));
+    setCurrentPage(1); // Reset to first page when items per page changes
+  };
+
+  const handleDateRangeChange = (range) => {
+    setDateRange(range);
+    setCurrentPage(1); // Reset to first page when date range changes
   };
 
   return (
     <>
-    <Breadcrumb
-      items={[
-        { label: "Scheme Reports" },
-        { label: "Overdue ", active: true },
-      ]}
-    />
-    <div className="flex flex-col p-4 bg-white border-[1px] border-[#F2F2F9] rounded-[16px] ">
-      <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
-        <div className="flex justify-between items-center w-full">
-          <div className="flex justify-start"></div>
-          <div className="flex justify-end items-center gap-4">
-            <DateRangeSelector
-              onChange={(range) => {
-                setfrom_date(range.startDate);
-                setto_date(range.endDate);
-              }}
-            />
-            <ExportDropdown
-              apiData={overDueData}
-              fileName={`Overdue report ${new Date().toLocaleDateString(
-                "en-GB"
-              )}`}
-            />
+      <Breadcrumb
+        items={[
+          { label: "Scheme Reports" },
+          { label: "Overdue ", active: true },
+        ]}
+      />
+      <div className="flex flex-col p-4 bg-white border-[1px] border-[#F2F2F9] rounded-[16px] ">
+        <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mt-4">
+          <div className="flex justify-between items-center w-full">
+            <div className="flex justify-start"></div>
+            <div className="flex justify-end items-center gap-4">
+              <DateRangeSelector
+                initialStartDate={dateRange.startDate}
+                initialEndDate={dateRange.endDate}
+                onChange={handleDateRangeChange}
+              />
+              <ExportDropdown
+                apiData={overDueData}
+                fileName={`Overdue report ${new Date().toLocaleDateString(
+                  "en-GB"
+                )}`}
+              />
+            </div>
           </div>
         </div>
+        <div className="mt-4">
+          <Table
+            data={overDueData}
+            columns={columns}
+            loading={isLoading}
+            currentPage={currentPage}
+            handlePageChange={handlePageChange}
+            itemsPerPage={itemsPerPage}
+            totalItems={totalDocuments}
+            handleItemsPerPageChange={handleItemsPerPageChange}
+          />
+        </div>
       </div>
-      <div className="mt-4">
-        <Table
-          data={overDueData}
-          columns={columns}
-          loading={isLoading}
-          currentPage={currentPage}
-          handlePageChange={handlePageChange}
-          itemsPerPage={itemsPerPage}
-          totalItems={totalDocuments}
-          handleItemsPerPageChange={handleItemsPerPageChange}
-        />
-      </div>
-    </div>
-  </>
+    </>
   );
 }
 

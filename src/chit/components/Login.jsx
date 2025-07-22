@@ -82,7 +82,7 @@ const Login = () => {
     >
       <div className="w-full max-w-md bg-white shadow-lg rounded-[16px] p-6">
         <div className="text-center mb-1  flex justify-center py-3">
-          <img src={Logo} alt="" srcset="" />
+          <img src={Logo} alt="" srcSet="" />
         </div>
         <div className="text-center py-3">
           <h1 className="text-2xl font-bold text[#232323]">Sign-In</h1>

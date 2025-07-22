@@ -23,8 +23,8 @@ function WeightPaybleChild() {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [totalPages,  setTotalPages] = useState(0);
   const [totalDocuments, setTotalDocuments] = useState(0);
-  const [from_date,setfrom_date]=useState()
-  const [to_date,setto_date]=useState()
+  const [from_date,setfrom_date]=useState(new Date())
+  const [to_date,setto_date]=useState(new Date())
   const [processData,setProcessData]=useState([]);
   const type= 'weight'
 
@@ -64,7 +64,7 @@ function WeightPaybleChild() {
 
   const handleClick =(row)=>{
     
-    navigate(`/managecustomers/customer/${row._id}`)
+    navigate(`/managecustomers/customer/${row.customerId}`)
   }
 
   const columns = [
@@ -115,7 +115,7 @@ function WeightPaybleChild() {
     },
     {
       header: "Maturity Date ",
-      cell: (row) => formatDate(row?.maturityDate),
+      cell: (row) => row?.maturityDate,
     },
     // {
     //     header: "joined Date ",
@@ -161,7 +161,7 @@ function WeightPaybleChild() {
       <Breadcrumb
         items={[
           { label: "Scheme Reports" },
-          { label: "weight Payable", active: true },
+          { label: "Weight Payable", active: true },
         ]}
       />
       <div className="flex flex-col p-4 bg-white border-2 border-[#F2F2F9] rounded-[16px] ">

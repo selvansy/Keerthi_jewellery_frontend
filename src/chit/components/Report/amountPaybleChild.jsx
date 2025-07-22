@@ -59,7 +59,7 @@ function AmountPaybleChild() {
 
   const handleClick =(row)=>{
     
-    navigate(`/managecustomers/customer/${row._id}`)
+    navigate(`/managecustomers/customer/${row.customerId}`)
   }
 
   const columns = [
@@ -102,7 +102,7 @@ function AmountPaybleChild() {
     },
     {
       header: "Maturity Date ",
-      cell: (row) => formatDate(row?.maturityDate),
+      cell: (row) => row?.maturityDate,
     },
     {
       header: "Paid Installment",

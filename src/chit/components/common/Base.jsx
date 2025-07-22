@@ -625,7 +625,7 @@ const Base = ({ renderContent: RenderContent }) => {
 
             <div className="border-2 border-[#F2F2F9] rounded-full w-10 h-10">
               <button className="p-2 text-gray-900">
-                <img src={notification} alt="" srcset="" />
+                <img src={notification} alt="" srcSet="" />
               </button>
             </div>
 
