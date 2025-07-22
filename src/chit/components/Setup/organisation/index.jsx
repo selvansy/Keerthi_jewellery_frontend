@@ -100,6 +100,8 @@ const Organisation = () => {
       website: orgData?.website || "",
       whatsapp_no: orgData?.whatsapp_no || "",
       logo: orgData?.logo || null,
+      longitude:"",
+      latitude:"",
     },
     validationSchema: Yup.object({
       company_name: Yup.string().required("Company name is required"),
@@ -303,6 +305,8 @@ const Organisation = () => {
       logo: null,
     });
   };
+
+  console.log(formik.values)
 
   return (
     <>
@@ -529,6 +533,47 @@ const Organisation = () => {
                   </span>
                 )}
               </div>
+
+              <div className="flex flex-col">
+                <label className="text-black mb-1 text-sm font-medium">
+                  Latitude
+                </label>
+                <input
+                  type="text"
+                  name="latitude"
+                  value={formik.values.latitude}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                  placeholder="Enter latitude"
+                />
+                {formik.touched.website && formik.errors.website && (
+                  <span className="text-red-500 text-xs mt-1">
+                    {formik.errors.website}
+                  </span>
+                )}
+              </div>
+
+              <div className="flex flex-col">
+                <label className="text-black mb-1 text-sm font-medium">
+                  Longitude
+                </label>
+                <input
+                  type="text"
+                  name="longitude"
+                  value={formik.values.longitude}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className="w-full border-2 border-[#f2f3f8] rounded-md px-3 py-2"
+                  placeholder="Enter longitude"
+                />
+                {formik.touched.website && formik.errors.website && (
+                  <span className="text-red-500 text-xs mt-1">
+                    {formik.errors.website}
+                  </span>
+                )}
+              </div>
+
 
               <div className="flex flex-col">
                 <label className="text-black mb-1 text-sm font-medium">
