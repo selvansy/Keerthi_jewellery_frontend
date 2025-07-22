@@ -38,14 +38,14 @@ const VerificationModal = ({setIsOpen,mobile,branch,otpComplete}) => {
     
     // Auto-focus next input when a digit is entered
     if (value && index < 5) {
-      inputRefs.current[index + 1].focus();
+      inputRefs.current[index + 1]?.focus();
     }
   };
 
   // Handle backspace key
   const handleKeyDown = (index, e) => {
     if (e.key === 'Backspace' && !otp[index] && index > 0) {
-      inputRefs.current[index - 1].focus();
+      inputRefs.current[index - 1]?.focus();
     }
   };
 

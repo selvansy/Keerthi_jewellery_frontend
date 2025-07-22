@@ -25,24 +25,34 @@ function RedemptionReport() {
   const [closeData, setCloseData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [from_date, setfrom_date] = useState();
-  const [to_date, setto_date] = useState();
+  const [from_date, setfrom_date] = useState(new Date());
+  const [to_date, setto_date] = useState(new Date());
   const [totalDocuments, setTotalDocuments] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [processData, setProcessData] = useState([]);
 
   useEffect(() => {
-    getCloseData({ from_date, to_date });
-  }, [from_date, to_date]);
+    getCloseData({ 
+      from_date, 
+      to_date,
+      page: currentPage,
+      limit: itemsPerPage
+    });
+  }, [from_date, to_date, currentPage, itemsPerPage]);
 
   const { mutate: getCloseData } = useMutation({
-    mutationFn: ({ from_date, to_date }) => closedSummary({ from_date, to_date }),
+    mutationFn: ({ from_date, to_date, page, limit }) => 
+      closedSummary({ 
+        from_date, 
+        to_date,
+        page,
+        limit
+      }),
     onSuccess: (response) => {
       const { data } = response;
-      ;
       setCloseData(data);
-      setTotalDocuments(response?.totalDocuments);
-      setTotalPages(response?.totalPages);
+      setTotalDocuments(response?.totalDocuments || 0);
+      setTotalPages(response?.totalPages || 1);
       setisLoading(false);
     },
     onError: (error) => {
@@ -106,7 +116,7 @@ function RedemptionReport() {
     },
     {
       header: "Closed Date",
-      cell: (row) => formatDate(row?.closed_date),
+      cell: (row) => row?.closed_date ? formatDate(row.closed_date) : "-",
     },
     {
       header: "Closed By",
@@ -124,13 +134,12 @@ function RedemptionReport() {
     ) {
       return;
     }
-
     setCurrentPage(pageNumber);
   };
 
   const handleItemsPerPageChange = (value) => {
-    setItemsPerPage(value);
-    setCurrentPage(1);
+    setItemsPerPage(Number(value));
+    setCurrentPage(1); // Reset to first page when items per page changes
   };
 
   return (
@@ -150,6 +159,7 @@ function RedemptionReport() {
                 onChange={(range) => {
                   setfrom_date(range.startDate);
                   setto_date(range.endDate);
+                  setCurrentPage(1); // Reset to first page when date changes
                 }}
               />
               <ExportDropdown
@@ -171,6 +181,7 @@ function RedemptionReport() {
             itemsPerPage={itemsPerPage}
             totalItems={totalDocuments}
             handleItemsPerPageChange={handleItemsPerPageChange}
+            totalPages={totalPages}
           />
         </div>
       </div>

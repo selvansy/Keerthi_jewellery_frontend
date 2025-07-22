@@ -32,6 +32,7 @@ import SpinLoading from "../../common/spinLoading";
 import { formatNumber } from "../../../utils/commonFunction";
 import { customStyles } from "../../ourscheme/scheme/AddScheme";
 import plus from "../../../../assets/plus.svg";
+import { VerifiedIcon } from "lucide-react";
 
 const AddCloseAccount = () => {
   const dispatch = useDispatch();
@@ -72,41 +73,7 @@ const AddCloseAccount = () => {
   const [selectedMode, setSelectedMode] = useState(0);
   const [multipaymode, setMultiPaymode] = useState([]);
   const [multiPaymentValues, setMultiPaymentValues] = useState({});
-
-  // const customStyles = (isReadOnly) => ({
-  //   control: (base, state) => ({
-  //     ...base,
-  //     minHeight: "42px",
-  //     backgroundColor: "white",
-  //     border: state.isFocused ? "1px solid black" : "2px solid #f2f3f8",
-  //     boxShadow: state.isFocused ? "0 0 0 1px black" : "none",
-  //     borderRadius: "0.375rem",
-  //     "&:hover": {
-  //       color: "#e2e8f0",
-  //     },
-  //     pointerEvents: !isReadOnly ? "none" : "auto",
-  //     opacity: !isReadOnly ? 1 : 1,
-  //   }),
-  //   indicatorSeparator: () => ({
-  //     display: "none",
-  //   }),
-  //   placeholder: (base) => ({
-  //     ...base,
-  //     color: "#858293",
-  //     fontWeight: "thin",
-  //   }),
-  //   dropdownIndicator: (provided, state) => ({
-  //     ...provided,
-  //     color: "#232323",
-  //     "&:hover": {
-  //       color: "#232323",
-  //     },
-  //   }),
-  //   menuPortal: (base) => ({
-  //     ...base,
-  //     zIndex: 9999,
-  //   }),
-  // });
+  const [timeLeft, setTimeLeft] = useState(30);
 
   // Format today's date
   const today = new Date();
@@ -146,13 +113,15 @@ const AddCloseAccount = () => {
       mobile: "",
       penalty_amount: "",
       total_paidamount: 0,
-      otpMobile: "",
+      otpMobile:"",
       total_amount: 0,
       bonusAmnt: "",
       dynamic: false,
+      otpVerified:false
     },
     validationSchema,
     onSubmit: (values) => {
+     
       handleSubmit(values);
     },
     validateOnBlur: true,
@@ -508,7 +477,6 @@ const AddCloseAccount = () => {
 
   // Submit form handler
   const handleSubmit = (values) => {
-    ;
     if (values.status === 4 && !values.refund_paymenttype) {
       formik.setFieldTouched("refund_paymenttype", true);
       toast.error("Payment mode is required for refund");
@@ -527,7 +495,7 @@ const AddCloseAccount = () => {
       }
     }
 
-    if (checked && !otpCompleted) {
+    if (checked && !formik.values.otpVerified) {
       toast.error("OTP verification is required");
       return;
     }
@@ -593,7 +561,20 @@ const AddCloseAccount = () => {
     setOtpComplete(true);
     setSendOtp(false);
     setReverView(false);
+    // setChecked(false)
+    formik.setFieldValue("otpVerified",true)
   };
+
+  useEffect(() => {
+    if (otpCompleted === true) {
+      const timeout = setTimeout(() => {
+        setOtpComplete(false);
+      }, 300); 
+  
+      return () => clearTimeout(timeout); 
+    }
+  }, [otpCompleted]);
+  
 
   return (
     <>
@@ -1112,39 +1093,47 @@ const AddCloseAccount = () => {
             <div className="flex flex-col gap-3 lg:mt-4">
               <CheckboxToggle
                 checked={checked}
-                label={dynamic?"Proceed with pre closure and refund using OTP verification":"Proceed with account closure  using OTP verification"}
+                label={dynamic?"Proceed with pre-closure and refund after OTP verification":"Proceed with account closure using OTP verification"}
                 onChange={handleOtpToggle}
               />
 
-              {checked && (
-                <div className="flex flex-row justify-between w-full gap-4">
-                  <div className="flex flex-col gap-3 flex-[0.9]">
-                    <label className="block text-sm font-medium mb-1">
-                      Mobile Number<span className="text-red-400"> *</span>
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="number"
-                        min="0"
-                        className="border-[1px] border-[#f2f3f8] rounded-md p-2 w-96 lg:w-[46%] focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent pr-24"
-                        placeholder="Enter mobile number"
-                        value={formik.values.mobile || formik.values.otpMobile}
-                        onChange={formik.handleChange}
-                        name="otpMobile"
-                      />
-                      <div className="absolute right-6 sm:right-4 md:right-96  top-1/2 -translate-y-1/2">
-                        <button
-                          className="bg-[#004181] text-white rounded-md px-4 py-2"
-                          onClick={(e) => sendOtpToMobile(e)}
-                          disabled={isSendOtpLoading}
-                        >
-                          {isSendOtpLoading ? <SpinLoading /> : "Send OTP"}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
+{checked && (
+  <div className="flex flex-row justify-between w-full gap-4">
+    <div className="flex flex-col gap-3 flex-[0.9]">
+      <label className="block text-sm font-medium mb-1">
+        Mobile Number<span className="text-red-400"> *</span>
+        {formik.values.otpVerified && (
+          <span className="ml-2 text-green-500">
+            <VerifiedIcon className="inline-block w-4 h-4" />
+            <span className="ml-1 text-xs">Verified</span>
+          </span>
+        )}
+      </label>
+      <div className="relative">
+        <input
+          type="number"
+          min="0"
+          className="border-[1px] border-[#f2f3f8] rounded-md p-2 w-96 lg:w-[46%] focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent pr-24"
+          placeholder="Enter mobile number"
+          value={formik.values.mobile || formik.values.otpMobile}
+          onChange={formik.handleChange}
+          name="otpMobile"
+        />
+        <div className="absolute right-6 sm:right-4 md:right-96 top-1/2 -translate-y-1/2">
+          {!formik.values.otpVerified && (
+            <button
+              className="bg-[#004181] text-white rounded-md px-4 py-2"
+              onClick={(e) => sendOtpToMobile(e)}
+              disabled={isSendOtpLoading}
+            >
+              {isSendOtpLoading ? <SpinLoading /> : "Send OTP"}
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  </div>
+)}
             </div>
           </div>
         </div>
