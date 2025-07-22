@@ -24,17 +24,13 @@ import DatePicker from "react-datepicker";
 import { useSelector } from "react-redux";
 import { Breadcrumb } from "../common/breadCumbs/breadCumbs";
 import DateRangeSelector from "../common/calender";
-// import { customSelectStyles } from "../Setup/purity";
-// import Managetables from "./managetables";
-// import { customStyles } from "../SuperAdmin/Dashboard/accountReview/accountStatus";
 
 const customStyles = (isReadOnly) => ({
   control: (base, state) => ({
     ...base,
-    minHeight: "44px", //42px
+    minHeight: "44px",
     backgroundColor: "white",
     color: "#232323",
-    // fontWeight:600,
     border: state.isFocused ? "1px solid #f2f2f9" : "1px solid #f2f2f9",
     boxShadow: state.isFocused ? "0 0 0 1px #072D2D" : "none",
     borderRadius: "0.5rem",
@@ -51,9 +47,7 @@ const customStyles = (isReadOnly) => ({
   placeholder: (base) => ({
     ...base,
     color: "#6C7086",
-    // fontWeight: "thin",
     fontSize: "14px",
-    // fontStyle: "bold",
   }),
   dropdownIndicator: (provided, state) => ({
     ...provided,
@@ -81,7 +75,6 @@ const customStyles = (isReadOnly) => ({
 });
 
 function AccountSummaryReport() {
-  // const roledata = localStorage.getItem("decoded");
   const roleData = useSelector((state) => state.clientForm.roledata);
   const accessBranch = roleData?.branch;
   const id_branch = roleData?.id_branch;
@@ -90,7 +83,6 @@ function AccountSummaryReport() {
 
   const id_role = roleData?.id_role?.id_role;
   const id_client = roleData?.id_client;
-  // const id_branch = roleData?.branch;
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
 
   const [isLoading, setisLoading] = useState(true);
@@ -106,28 +98,9 @@ function AccountSummaryReport() {
   const [column, setcolum] = useState(false);
   const [branchOptions, setBranchOptions] = useState([]);
   const [selectedbranch, setSelectedbranch] = useState();
-
   const [schemetype, setSchemtype] = useState([]);
-
   const [schemeList, setSchemeList] = useState([]);
   const [selectedScheme, setSelectedScheme] = useState();
-
-  // const {data: schemeresponse }= useQuery({
-  //   queryKey:["Schemes"],
-  //   queryFn: getActiveScheme,
-  // });
-
-  //  useEffect(() => {
-  //                 if (schemeresponse) {
-  //                   const data = schemeresponse.data
-  //                   const branch = data.map((scheme) => ({
-  //                     value: scheme.scheme_type,
-  //                     label: scheme.scheme_name,
-  //                   }));
-  //                   setSchemtype(branch);
-  //                 }
-
-  //           }, [schemeresponse])
 
   const closemodal = () => {
     setcolum(false);
@@ -136,21 +109,6 @@ function AccountSummaryReport() {
   const openmodal = () => {
     setcolum(true);
   };
-  //  const {data: branchresponse }= useQuery({
-  // queryKey:["Branchs"],
-  // queryFn: getallbranch,
-  //     })
-  //      useEffect(() => {
-  //         if (branchresponse) {
-  //           const data = branchresponse.data
-  //           const branch = data.map((branch) => ({
-  //             value: branch._id,
-  //             label: branch.branch_name,
-  //           }));
-  //           setBranchOptions(branch);
-  //         }
-
-  //       }, [branchresponse])
 
   const { mutate: getAllScheme } = useMutation({
     mutationFn: () => getActiveScheme(),
@@ -167,6 +125,7 @@ function AccountSummaryReport() {
       console.error("Error fetching payment data:", error);
     },
   });
+
   const { mutate: getAllbranch } = useMutation({
     mutationFn: () => getallbranch(),
     onSuccess: (response) => {
@@ -183,29 +142,13 @@ function AccountSummaryReport() {
     },
   });
 
-  useEffect(() => {
-    getOverAllReport({
-      from_date,
-      to_date,
-      id_branch: selectedbranch,
-      id_scheme: selectedScheme,
-    });
-  }, [from_date, to_date, selectedScheme, selectedbranch]);
-  useEffect(() => {
-    if (!roleData) return;
-    if (accessBranch == 0) {
-      getAllScheme();
-      getAllbranch();
-    }
-  }, [roleData]);
-
   const { mutate: getOverAllReport } = useMutation({
     mutationFn: (payload) => getOverAllSummary(payload),
     onSuccess: (response) => {
       setOverAllData(response.data);
       setisLoading(false);
       setTotalDocuments(response.totalDocs);
-      setTotalPages(response.totalDocs);
+      setTotalPages(response.totalPages);
       setSearchLoading(false);
     },
     onError: (error) => {
@@ -213,6 +156,25 @@ function AccountSummaryReport() {
       console.error("Error fetching metal rate:", error);
     },
   });
+
+  useEffect(() => {
+    getOverAllReport({
+      from_date,
+      to_date,
+      id_branch: selectedbranch,
+      id_scheme: selectedScheme,
+      page: currentPage, // Added currentPage to payload
+      limit: itemsPerPage // Added itemsPerPage to payload
+    });
+  }, [from_date, to_date, selectedScheme, selectedbranch, currentPage, itemsPerPage]);
+
+  useEffect(() => {
+    if (!roleData) return;
+    if (accessBranch == 0) {
+      getAllScheme();
+      getAllbranch();
+    }
+  }, [roleData]);
 
   const handleSchemeClick = (row) => {
     navigate("/report/table", {
@@ -235,11 +197,7 @@ function AccountSummaryReport() {
         item.totalRefundAccount !== undefined ? item.totalRefundAccount : "0",
     }));
     setProcessData(process);
-
-    ;
   }, [overAllData]);
-
-  ;
 
   const columns = [
     {
@@ -274,6 +232,10 @@ function AccountSummaryReport() {
       cell: (row) => row?.totalPaidAccounts,
     },
     {
+      header: "PRE-CLOSE ACCOUNT",
+      cell: (row) => row?.totalPreCloseAccount,
+    },
+    {
       header: "REFUND ACCOUNT ",
       cell: (row) => row?.totalRefundAccount,
     },
@@ -289,7 +251,6 @@ function AccountSummaryReport() {
     ) {
       return;
     }
-
     setCurrentPage(pageNumber);
   };
 
@@ -375,6 +336,7 @@ function AccountSummaryReport() {
             itemsPerPage={itemsPerPage}
             totalItems={totalDocuments}
             handleItemsPerPageChange={handleItemsPerPageChange}
+            totalPages={totalPages} // Added totalPages prop
           />
         </div>
       </div>
