@@ -15,9 +15,8 @@ import {
   UserRoundCheck,
   ChevronRight,
   Menu,
-  LayoutDashboard
+  LayoutDashboard,
 } from "lucide-react";
-
 
 import logo from "../../../assets/logo(3).svg";
 import RouteList from "../../../routes/RouteList";
@@ -58,6 +57,7 @@ const Base = ({ renderContent: RenderContent }) => {
   const [metalRate, setMetalRate] = useState([]);
 
   const [isOpen, setIsOpen] = useState(false);
+  const logoutRef = useRef(null);
 
   const [activeMenu, setActiveMenu] = useState(null);
 
@@ -66,7 +66,7 @@ const Base = ({ renderContent: RenderContent }) => {
   const navigate = useNavigate();
   let dispatch = useDispatch();
 
-   const currentYear = new Date().getFullYear();
+  const currentYear = new Date().getFullYear();
 
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -93,7 +93,7 @@ const Base = ({ renderContent: RenderContent }) => {
   const branchId = decoded.id_branch;
 
   const menus = useSelector((state) => state.auth.menu);
-  
+
   const getPurity = async () => {
     try {
       const response = await getallpurity();
@@ -225,7 +225,6 @@ const Base = ({ renderContent: RenderContent }) => {
     } else {
       setIsSuperAdmin(false);
       if (menus.length < 0) {
-        ;
         getAllMenusMutate(decoded.id_role._id);
       }
     }
@@ -285,6 +284,14 @@ const Base = ({ renderContent: RenderContent }) => {
       ) {
         setIsHeaderMenuOpen(false);
       }
+
+      if (
+        logoutRef.current &&
+        !logoutRef.current.contains(event.target) &&
+        !event.target.closest('[data-testid="logout-dropdown"]')
+      ) {
+        setIsOpen(false);
+      }
     };
 
     const handleResize = () => {
@@ -341,47 +348,47 @@ const Base = ({ renderContent: RenderContent }) => {
   };
 
   const SubMenuItem = ({ text, onClick, isLast, parentSection, pathUrl }) => {
-  const url = pathUrl?.startsWith("/") ? pathUrl : `/${pathUrl}`;
+    const url = pathUrl?.startsWith("/") ? pathUrl : `/${pathUrl}`;
 
-  const handleLeftClick = (event) => {
-    if (event.ctrlKey || event.metaKey) {
-      window.open(url, "_blank");
-    } else {
-      setSelectedSubSection(text);
-      setSelectedSection(text);
-      setSelectedParentSection(parentSection);
-      onClick && onClick();
-    }
-  };
+    const handleLeftClick = (event) => {
+      if (event.ctrlKey || event.metaKey) {
+        window.open(url, "_blank");
+      } else {
+        setSelectedSubSection(text);
+        setSelectedSection(text);
+        setSelectedParentSection(parentSection);
+        onClick && onClick();
+      }
+    };
 
-  return (
-    <div className="w-full relative">
-      {!isLast && (
-        <div className="absolute left-6 top-1/2 w-[1px] h-full bg-white -translate-x-1/2" />
-      )}
-      <div className="relative flex items-center pl-12">
-        <div
-          className={`absolute left-6 w-3 h-3 rounded-full border-[1px] -translate-x-1/2 z-10 ${
-            selectedSubSection !== text
-              ? "border-white"
-              : "bg-white border-[#004181]"
-          }`}
-        />
-        <div
-          className={`w-full flex items-start px-4 rounded-md py-2 transition-colors cursor-pointer my-1 text-sm font-semibold
+    return (
+      <div className="w-full relative">
+        {!isLast && (
+          <div className="absolute left-6 top-1/2 w-[1px] h-full bg-white -translate-x-1/2" />
+        )}
+        <div className="relative flex items-center pl-12">
+          <div
+            className={`absolute left-6 w-3 h-3 rounded-full border-[1px] -translate-x-1/2 z-10 ${
+              selectedSubSection !== text
+                ? "border-white"
+                : "bg-white border-[#004181]"
+            }`}
+          />
+          <div
+            className={`w-full flex items-start px-4 rounded-md py-2 transition-colors cursor-pointer my-1 text-sm font-semibold
                   ${
                     selectedSubSection === text
                       ? "bg-[#004181] text-white"
                       : "text-[#6C7086] hover:bg-[#004181] hover:text-white"
                   }`}
-          onClick={handleLeftClick}
-        >
-          {text}
+            onClick={handleLeftClick}
+          >
+            {text}
+          </div>
         </div>
       </div>
-    </div>
-  );
-};
+    );
+  };
 
   const MenuItem = ({
     text,
@@ -574,7 +581,9 @@ const Base = ({ renderContent: RenderContent }) => {
 
               {/* Section title - hidden on mobile */}
               <div className="title lg:flex justify-center items-center hidden">
-                <h1 className="text-[#232323] text-lg font-semibold ml-2">{sectionName}</h1>
+                <h1 className="text-[#232323] text-lg font-semibold ml-2">
+                  {sectionName}
+                </h1>
               </div>
             </div>
 
@@ -590,21 +599,23 @@ const Base = ({ renderContent: RenderContent }) => {
 
               <div className="command flex ps-1 items-center">
                 <img src={Command} alt="" className="w-7 h-7" />
-                <span className="text-[#232323] font-semibold text-sm ms-1">F</span>
+                <span className="text-[#232323] font-semibold text-sm ms-1">
+                  F
+                </span>
               </div>
             </div>
           </div>
           <div className="xl:flex items-center space-x-3 hidden ">
-             <div className="bg-[#FFE28D] flex px-2 py-1 sm:px-3 sm:py-1.5 rounded-[8px] text-[#232323] font-medium sm:text-sm hidden md:flex">
-                <span className="hidden sm:inline">Gold (24K):</span>
-             <span className="ml-1 font-bold">
+            <div className="bg-[#FFE28D] flex px-2 py-1 sm:px-3 sm:py-1.5 rounded-[8px] text-[#232323] font-medium sm:text-sm hidden md:flex">
+              <span className="hidden sm:inline">Gold (24K):</span>
+              <span className="ml-1 font-bold">
                 {metalRate[0]?.rate
                   ? formatNumber({ value: metalRate[0].rate, decimalPlaces: 0 })
                   : "N/A"}
               </span>
             </div>
-             <div className="bg-[#FFE28D] flex px-2 py-1 sm:px-3 sm:py-1.5 rounded-[8px] text-[#232323] font-medium sm:text-sm hidden md:flex">
-             <span className="hidden sm:inline">Gold (22K):</span>
+            <div className="bg-[#FFE28D] flex px-2 py-1 sm:px-3 sm:py-1.5 rounded-[8px] text-[#232323] font-medium sm:text-sm hidden md:flex">
+              <span className="hidden sm:inline">Gold (22K):</span>
               <span className="ml-1 font-bold">
                 {metalRate[1]?.rate
                   ? formatNumber({ value: metalRate[1].rate, decimalPlaces: 0 })
@@ -612,7 +623,7 @@ const Base = ({ renderContent: RenderContent }) => {
               </span>
             </div>
             <div className="bg-[#FFE28D] flex px-2 py-1 sm:px-3 sm:py-1.5 rounded-[8px] text-[#232323] font-medium sm:text-sm hidden md:flex">
-               <span className="hidden sm:inline">Silver:</span>
+              <span className="hidden sm:inline">Silver:</span>
               <span className="ml-1 font-bold">
                 {metalRate[2]?.rate
                   ? formatNumber({ value: metalRate[2].rate, decimalPlaces: 0 })
@@ -620,8 +631,7 @@ const Base = ({ renderContent: RenderContent }) => {
               </span>
             </div>
 
-            <div className="border-2 border-[#F2F2F9] rounded-full">
-            </div>
+            <div className="border-2 border-[#F2F2F9] rounded-full"></div>
 
             <div className="border-2 border-[#F2F2F9] rounded-full w-10 h-10">
               <button className="p-2 text-gray-900">
@@ -630,10 +640,11 @@ const Base = ({ renderContent: RenderContent }) => {
             </div>
 
             {roledata ? (
-              <div className="relative inline-block text-left">
+              <div className="relative inline-block text-left" ref={logoutRef}>
                 <button
                   onClick={() => setIsOpen(!isOpen)}
                   className="flex items-center gap-2 p-2 focus:outline-none"
+                  data-testid="logout-dropdown"
                 >
                   <span
                     className="flex items-center justify-center w-9 h-9 text-lg font-semibold text-white rounded-full"
@@ -644,7 +655,7 @@ const Base = ({ renderContent: RenderContent }) => {
                 </button>
 
                 {isOpen && (
-                  <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-md shadow-lg">
+                  <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-md shadow-lg z-50">
                     <button
                       className="block w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
                       onClick={handleLogout}
@@ -909,7 +920,7 @@ const Base = ({ renderContent: RenderContent }) => {
       <footer className="flex flex-row justify-center items-center w-full h-10 bg-white border-t py-3 px-2 fixed bottom-0 left-0 lg:left-40 z-30">
         <div className="flex w-3/4 justify-center items-center ">
           <div className="text-sm lg:text-sm md:text-md flex text-nowrap text-gray-500">
-           ATTS Technologies Private Limited © 2025. All rights reserved.
+            ATTS Technologies Private Limited © 2025. All rights reserved.
           </div>
           {/* <div className="mx-2">/</div>
           <div

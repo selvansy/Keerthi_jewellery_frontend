@@ -223,19 +223,24 @@ function AccountSummaryReport() {
     setProcessData(process);
   }, [paymentData, currentPage, itemsPerPage]);
 
-  useEffect(() => {
-    if (!roleData) return;
-    if (accessBranch == 0) {
-      getAllScheme();
-    }
-  }, [roleData]);
+  // useEffect(() => {
+  //   if (!roleData) return;
+  //   if (accessBranch == 0) {
+  //     getAllScheme();
+  //   }
+  // }, [roleData]);
 
-  useEffect(() => {
-    if (!roleData) return;
-    if (accessBranch == 0) {
-      getAllbranch();
-    }
-  }, [roleData]);
+  // useEffect(() => {
+  //   if (!roleData) return;
+  //   if (accessBranch == 0) {
+  //     getAllbranch();
+  //   }
+  // }, [roleData]);
+  
+  useEffect(()=>{
+    getAllScheme();
+    getAllbranch();
+  },[])
 
   const columns = [
     {

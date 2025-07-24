@@ -142,7 +142,7 @@ function PreCloseReport() {
     },
     {
       header: "Paid Weight",
-      cell: (row) => `${formatDecimal(row?.totalPaidWeight)} g`,
+      cell: (row) => `${formatDecimal(row?.totalPaidWeight,3)} g`,
     },
     {
       header: "Classification",

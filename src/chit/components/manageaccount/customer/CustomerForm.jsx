@@ -179,12 +179,12 @@ const CustomerForm = ({
       .nullable()
       .oneOf([Yup.ref("password")], "Passwords must match")
       .notRequired(),
-    aadharNumber: Yup.string()
-      .required("Aadhaar number is required")
-      .matches(/^\d{12}$/, "Aadhaar number must be exactly 12 digits"),
-    pan: Yup.string()
-      .required("PAN card number is required")
-      .matches(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, "Invalid PAN card format"),
+    // aadharNumber: Yup.string()
+    //   .required("Aadhaar number is required")
+    //   .matches(/^\d{12}$/, "Aadhaar number must be exactly 12 digits"),
+    // pan: Yup.string()
+    //   .required("PAN card number is required")
+    //   .matches(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, "Invalid PAN card format"),
   });
 
   const formik = useFormik({
@@ -573,6 +573,7 @@ const CustomerForm = ({
               onSubmit={(e) => {
                 e.preventDefault();
                 formik.handleSubmit(e);
+                 autoComplete="off"
               }}
             >
               <div className="grid grid-rows-1 md:grid-cols-2 lg:grid-cols-3 gap-6 border-gray-300">
@@ -931,7 +932,7 @@ const CustomerForm = ({
 
                 <div className="flex flex-col">
                   <label className="text-[#232323] font-semibold text-sm  mb-1 ">
-                    Pan Number<span className="text-red-400"> *</span>
+                    Pan Number
                   </label>
                   <input
                     type="text"
@@ -954,7 +955,7 @@ const CustomerForm = ({
 
                 <div className="flex flex-col">
                   <label className="text-[#232323] font-semibold text-sm mb-1 ">
-                    Aadhar Card Number<span className="text-red-400"> *</span>
+                    Aadhar Card Number
                   </label>
                   <input
                     type="text"
@@ -1041,6 +1042,7 @@ const CustomerForm = ({
                       showYearDropdown
                       dropdownMode="select"
                       maxDate={new Date()}
+                      autoComplete="off"
                     />
 
                     <span className="absolute right-0 top-0 h-full w-14 flex items-center justify-center pointer-events-none">
@@ -1063,6 +1065,7 @@ const CustomerForm = ({
                     <input
                       type={showpassword ? "text" : "password"}
                       name="password"
+                      autoComplete="new-password"
                       value={formik.values.password}
                       onChange={formik.handleChange}
                       className="w-full border-[1px] border-[#f2f3f8] rounded-lg px-3 py-2"

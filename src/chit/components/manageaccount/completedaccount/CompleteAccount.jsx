@@ -16,7 +16,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { useSelector } from "react-redux";
 import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
 import DateRangeSelector from "../../common/calender";
-import { formatNumber } from "../../../utils/commonFunction";
+import { formatDecimal, formatNumber } from "../../../utils/commonFunction";
 
 function CompleteAccount() {
   const roledata = localStorage.getItem("decoded");
@@ -101,7 +101,7 @@ function CompleteAccount() {
     },
     {
       header: "total Paid Weight",
-      cell: (row) => `${row?.totalPaidWeight} g`,
+      cell: (row) => `${formatDecimal(row?.totalPaidWeight)}g`,
     },
     {
       header: "Classification",

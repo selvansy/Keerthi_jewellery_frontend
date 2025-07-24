@@ -23,8 +23,8 @@ function WeightPaybleChild() {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [totalPages,  setTotalPages] = useState(0);
   const [totalDocuments, setTotalDocuments] = useState(0);
-  const [from_date,setfrom_date]=useState(new Date())
-  const [to_date,setto_date]=useState(new Date())
+  const [from_date,setfrom_date]=useState()
+  const [to_date,setto_date]=useState()
   const [processData,setProcessData]=useState([]);
   const type= 'weight'
 
