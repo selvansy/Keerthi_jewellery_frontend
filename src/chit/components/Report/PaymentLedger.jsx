@@ -16,6 +16,7 @@ import { customSelectStyles } from "../Setup/purity";
 import { Breadcrumb } from "../common/breadCumbs/breadCumbs";
 import DateRangeSelector from "../common/calender";
 import { customStyles } from "../ourscheme/scheme/AddScheme";
+import { formatDecimal,formatNumber } from "../../utils/commonFunction";
 
 function PaymentLedger() {
   const roleData = useSelector((state) => state.clientForm.roledata);
@@ -125,7 +126,7 @@ function PaymentLedger() {
     },
     {
       header: "Amount",
-      cell: (row) => row?.totalAmount,
+      cell: (row) => formatNumber({value:row?.totalAmount,decimalPlaces:2}),
     },
     {
       header: "Payment Count",

@@ -11,6 +11,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { formatDate } from "../../../utils/FormatDate";
 import { Breadcrumb } from "../common/breadCumbs/breadCumbs";
 import DateRangeSelector from "../common/calender";
+import { formatDecimal } from "../../utils/commonFunction";
 
 function WeightPaybleChild() {
 
@@ -111,7 +112,7 @@ function WeightPaybleChild() {
     },
     {
       header: "Total Collectd Weight",
-      cell: (row) => `${truncateDecimal(row?.totalValue,3)} g`,
+      cell: (row) => `${formatDecimal(row?.totalValue,3)} g`,
     },
     {
       header: "Maturity Date ",
@@ -134,8 +135,6 @@ function WeightPaybleChild() {
   const truncated = Math.floor(value * factor) / factor;
   return truncated.toFixed(decimals);
 }
-
-
 
   const handlePageChange = (page) => {
     const pageNumber = Number(page);

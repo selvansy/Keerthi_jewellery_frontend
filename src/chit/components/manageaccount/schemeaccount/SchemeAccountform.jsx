@@ -254,41 +254,36 @@ export function ExistingCustomer({
   );
 }
 
-const AddSchemeAccount = ({ cusData, handleClear }) => {
-  let dispatch = useDispatch();
-  const id_branch = cusData?.id_branch;
+const referralRoles = [
+  { value: 1, label: "Employee", endpoint: getEmployeeByMobile },
+  { value: 2, label: "Customer", endpoint: getCustomerByMobile },
+];
 
-  const layout_color = useSelector((state) => state.clientForm.layoutColor);
+const AddSchemeAccount = ({ cusData, handleClear }) => {
+  const dispatch = useDispatch();
+  const id_branch = cusData?.id_branch;
   const navigate = useNavigate();
   const location = useLocation();
   const { id } = useParams();
   const todaydate = new Date();
 
+  const layout_color = useSelector((state) => state.clientForm.layoutColor);
+
+  // Refs for persistent data
+  const formDataRef = useRef({});
+  const prevFormDataRef = useRef({});
+
   const [isLoading, setLoading] = useState(false);
   const [start_date, setStartDate] = useState(todaydate);
   const [maturity_date, setMaturityDate] = useState("");
-  const [maturity_period, setMaturityPeriod] = useState(0);
-  const [total_installments, setTotalinstallments] = useState(0);
   const [fixedamt, setFixedAmt] = useState([]);
-  const [mobile, setMobile] = useState("");
-  const [suggestions, setSuggestions] = useState([]);
   const [branchData, setBranchData] = useState([]);
-  const [header, setHeader] = useState("");
   const [classifyfilter, setClassify] = useState([]);
   const [schemefilter, setScheme] = useState([]);
   const [errors, setErrors] = useState(null);
   const [selectedScheme, setSelectedScheme] = useState("");
   const [acNumber, setAcNumber] = useState(1);
   const [referralName, setReferralName] = useState("");
-  // const referralRoles = [
-  //   { id: 1, role: "Employee", endpoint: getEmployeeByMobile },
-  //   { id: 2, role: "Customer", endpoint: getCustomerByMobile },
-  // ];
-  const referralRoles = [
-    { value: 1, label: "Employee", endpoint: getEmployeeByMobile },
-    { value: 2, label: "Customer", endpoint: getCustomerByMobile },
-  ];
-  // // keep this role format
   const [searchmobile, setSearchMobile] = useState("");
   const [selectedRole, setRole] = useState("");
   const [selectedClassification, setClassification] = useState("");
@@ -298,8 +293,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
   const [referralId, setReferralid] = useState(null);
   const [showReferral, setShowReferral] = useState(false);
 
-  //* TODO use formik insted of formData
-  const [formData, setFormData] = React.useState({
+  const [formData, setFormData] = useState({
     id_customer: cusData.customerId || "",
     mobile: cusData.mobile,
     start_date: start_date,
@@ -331,22 +325,17 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
     fixed: 0,
   });
 
-  //    const prevFormData = useRef(formData);
+  // Update ref on formData change
+  useEffect(() => {
+    formDataRef.current = formData;
+  }, [formData]);
 
-  // useEffect(() => {
-  //   const prev = prevFormData.current;
-  //   const changedFields = Object.keys(formData).filter(
-  //     key => formData[key] !== prev[key]
-  //   );
-
-  //   if (changedFields.length > 0) {
-  //     changedFields.forEach((key) => {
-  //     });
-  //   }
-
-  //   // Update ref for next comparison
-  //   prevFormData.current = formData;
-  // }, [formData]);
+  // Restore form data on error
+  const restoreFormData = () => {
+    if (prevFormDataRef.current) {
+      setFormData(prevFormDataRef.current);
+    }
+  };
 
   const { data: branchresponse, isLoading: branchloading } = useQuery({
     queryKey: ["branch"],
@@ -364,108 +353,6 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
     }
   }, [branchresponse]);
 
-  // useEffect(() => {
-  //   const scheme = async () => {
-  //     const schemeData = await getschemeaccountbyid(id);
-  //     if (schemeData) {
-  //       handleschemebyclassification(schemeData.data.id_classification._id);
-  //       if (schemeData.data.id_classification.order === 2) {
-  //         setSelectedScheme("Fixed");
-  //         handleschemebyclassification(
-  //           schemeData?.data?.id_classification?._id
-  //         );
-  //       }
-
-  //       setFormData({
-  //         id: schemeData.data._id,
-  //         id_scheme: schemeData.data.id_scheme._id,
-  //         scheme_type: schemeData.data.id_scheme.scheme_type,
-  //         total_installments: schemeData.data.id_scheme.total_installments,
-  //         min_amount: schemeData.data.id_scheme.min_amount,
-  //         max_amount: schemeData.data.id_scheme.max_amount,
-  //         min_weight: schemeData.data.id_scheme.min_weight,
-  //         max_weight: schemeData.data.id_scheme.max_weight,
-  //         id_customer: schemeData.data.id_customer._id,
-  //         scheme_acc_number: schemeData.data.scheme_acc_number,
-  //         start_date: schemeData.data.start_date,
-  //         id_classification: schemeData.data.id_classification._id,
-  //         collectionuserid: schemeData.data.collectionuserid,
-  //         id_branch: schemeData.data.id_branch._id,
-  //         account_name: schemeData.data.account_name,
-  //         // customer_name:
-  //         //   schemeData.data.id_customer.firstname +
-  //         //   " " +
-  //         //   schemeData.data.id_customer.lastname,
-  //         mobile: schemeData.data.id_customer.mobile,
-  //         address: schemeData.data.id_customer.address,
-  //         amount: schemeData.data.amount,
-  //         maturity_period: schemeData.data.id_scheme.maturity_period,
-  //         maturity_date: schemeData.data.maturity_date,
-  //         referral_id: schemeData.data.referral_id,
-  //         customer_name: schemeData.data.id_customer
-  //           ? `${schemeData.data.id_customer.firstname} ${schemeData.data.id_customer.lastname}`
-  //           : "",
-  //       });
-  //       setAcNumber(schemeData.data.scheme_count_number);
-  //     }
-  //   };
-  //   scheme();
-  // }, [id]);
-
-  // const handleschemeaccountbyid = async (data) => {
-  //   if (!data) return;
-  //   const response = await getschemeaccountbyid(data);
-  //   if (response) {
-  //     if (response.data.scheme_type === 6) {
-  //       setIspayable(true);
-  //     } else {
-  //       setIspayable(false);
-  //     }
-
-  //     handleClassifyChange(response.data.id_branch._id);
-  //     handleemployeebyBranch(response.data.id_branch._id);
-  //     getemployeebybranch(response.data.id_branch._id);
-  //     handleschemebyclassification(response.data.id_scheme.id_classification);
-
-  //     setFormData({
-  //       id: response.data._id,
-  //       id_scheme: response.data.id_scheme._id,
-  //       scheme_type: response.data.id_scheme.scheme_type,
-  //       total_installments: response.data.id_scheme.total_installments,
-  //       min_amount: response.data.id_scheme.min_amount,
-  //       max_amount: response.data.id_scheme.max_amount,
-  //       min_weight: response.data.id_scheme.min_weight,
-  //       max_weight: response.data.id_scheme.max_weight,
-  //       id_customer: response.data.id_customer._id,
-  //       scheme_acc_number: response.data.scheme_acc_number,
-  //       start_date: response.data.start_date,
-  //       id_classification: response.data.id_classification._id,
-
-  //       collectionuserid: response.data.collectionuserid,
-  //       id_branch: response.data.id_branch._id,
-  //       account_name: response.data.account_name,
-  //       customer_name:
-  //         response.data.id_customer.firstname +
-  //         " " +
-  //         response.data.id_customer.lastname,
-  //       mobile: response.data.id_customer.mobile,
-  //       address: response.data.id_customer.address,
-  //       amount: response.data.amount,
-  //       maturity_period: response.data.id_scheme.maturity_period,
-  //       maturity_date: response.data.maturity_date,
-  //       referral_id: response.data.referral_id,
-  //     });
-  //     setTotalinstallments(response.data.id_scheme.total_installments);
-  //     setMaturityPeriod(response.data.id_scheme.maturity_period);
-  //     setMaturityDate(response.data.id_scheme.maturity_date);
-  //     setMobile(response.data.id_customer.mobile);
-
-  //     handleStartDateChange(response.data.start_date);
-  //   } else {
-  //     toast.error("Customer not created!");
-  //   }
-  // };
-
   useEffect(() => {
     if (cusData) {
       handlesearchcustomer({
@@ -473,25 +360,8 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
         search: cusData.mobile,
       });
     }
-
     handleClassifyChange();
   }, [cusData.mobile]);
-
-  // const handleSearchmobile = async() => {
-  //   referralRoles.forEach(element => {
-  //       if(formData.referral_type === element.role){
-  //           const data = await element.endpoint(searchmobile)
-  //       }
-  //   });
-  //   // setSearchError("");
-  //   // if (mobile === "") {
-  //   //   toast.error("Mobile Number is required!");
-  //   // }
-  //   // handlesearchcustomer({
-  //   //   id_branch: cusData.id_branch,
-  //   //   search_mobile: cusData.mobile,
-  //   // });
-  // };
 
   const handleSearchmobile = async () => {
     try {
@@ -522,14 +392,12 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
         setReferralid(data?.data?._id);
         setFormData((prev) => ({
           ...prev,
-          referral_type: matchingRole.role,
-          // referral_id: data?.data?._id,
+          referral_type: matchingRole.label,
         }));
-      } else {
-        console.warn("No matching referral role found!");
       }
     } catch (error) {
       console.error("Error fetching search mobile data:", error);
+      toast.error("Failed to search referral");
     }
   };
 
@@ -537,20 +405,18 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
     mutationFn: searchcustomermobile,
     onSuccess: (response) => {
       if (response) {
-        setReferralid;
         setFormData({
           id_customer: response.data._id,
           mobile: response.data.mobile,
           start_date: start_date,
           id_classification: "",
-          // collectionuserid: "",
           scheme_acc_number: "",
           id_scheme: "",
           id_branch: id_branch,
           account_name: `${response.data.firstname} ${response.data.lastname}`,
           address: response.data.address,
           customer_name: response.data.firstname + " " + response.data.lastname,
-          total_installments: total_installments,
+          total_installments: 0,
           amount: "",
           weight: "",
           scheme_type: 0,
@@ -558,8 +424,8 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
           max_amount: 0,
           min_weight: 0,
           max_weight: 0,
-          maturity_period: maturity_period,
-          maturity_date: maturity_date,
+          maturity_period: 0,
+          maturity_date: "",
           referral_id: response?.data?.referral_id,
           code: 0,
           scheme_count_number: "",
@@ -571,16 +437,8 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
     },
   });
 
-  // const handleautocompletemobile = (e) => {
-  //   const value = e.target.value;
-  //   setMobile(value);
-  // };
-
   const filterInputchange = (e) => {
     const { name, value } = e.target;
-    // setFormData((prev) => {
-    //   return { ...prev, [name]: value }}
-    //   );
     const newValue = value === "" ? "" : isNaN(value) ? value : +value;
 
     setFormData((prev) => ({
@@ -588,30 +446,12 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
       [name]: newValue,
     }));
 
-    //   setFormData((prev) => ({
-    //   ...prev,
-    //   [name]: value,
-    // }));
-
     if (name === "referral_type") {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
 
     if (name === "account_name") {
       setFormData((prev) => ({ ...prev, [name]: value }));
-    }
-
-    if (name === "id_branch") {
-      if (value !== "") {
-        handleClassifyChange(value);
-        handleemployeebyBranch(value);
-        getemployeebybranch({ id_branch: value });
-      }
-    }
-
-    if (name === "id_scheme") {
-      setFormData((prev) => ({ ...prev, [name]: value }));
-      handleschemebyid(value);
     }
 
     if (name === "weight") {
@@ -645,8 +485,6 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
 
       setErrors((prevState) => {
         const newErrors = { ...prevState };
-        // setTimeout(() => {
-
         if (amtValue === "") {
           delete newErrors.amount;
         } else if (amtValue < formData.min_amount) {
@@ -656,69 +494,11 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
         } else {
           delete newErrors.amount;
         }
-        // }, 500);
-
         return newErrors;
       });
     }
   };
 
-  useEffect(() => {
-    handleschemebyid(formData.id_scheme);
-  }, [formData.id_scheme]);
-
-  // const handleschemebyid = async (id) => {
-  //   try {
-  //     const countData = await getSchemeAccountCount(formData.mobile, id);
-  //     const newAcNumber = countData.data !== 0 ? Number(countData.data) + 1 : 1;
-
-  //     setAcNumber(newAcNumber);
-  //     const schemeData = schemefilter.find(
-  //       (item) => String(item._id) === String(id)
-  //     );
-
-  //     if (schemeData) {
-  //       setMetal(schemeData?.id_metal);
-  //       setPurity(schemeData?.id_purity);
-  //       setFormData((prevState) => ({
-  //         ...prevState,
-  //         scheme_type: schemeData?.scheme_type,
-  //         total_installments: schemeData?.total_installments,
-  //         maturity_period: schemeData?.maturity_period,
-  //         installment_type: schemeData?.installment_type,
-  //         code: schemeData?.code,
-  //       }));
-
-  //       if ([12, 3, 4].includes(schemeData.scheme_type)) {
-  //         setFormData((prevData) => ({
-  //           ...prevData,
-  //           min_weight: schemeData?.min_weight,
-  //           max_weight: schemeData?.max_weight,
-  //           min_amount: 0,
-  //           max_amount: 0,
-  //         }));
-  //       } else {
-  //         if ([10, 14].includes(schemeData.scheme_type)) {
-  //           setFormData((prevData) => ({
-  //             ...prevData,
-  //             noOfDays: schemeData?.noOfDays,
-  //           }));
-  //         }
-  //         setFormData((prevData) => ({
-  //           ...prevData,
-  //           min_amount: schemeData?.min_amount,
-  //           max_amount: schemeData?.max_amount,
-  //           min_weight: 0,
-  //           max_weight: 0,
-  //         }));
-  //       }
-  //     } else {
-  //       console.warn("No matching scheme found for ID:", id);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error handling scheme by ID:", error);
-  //   }
-  // };
   const handleschemebyid = async (id) => {
     try {
       const countData = await getSchemeAccountCount(formData.mobile, id);
@@ -733,7 +513,6 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
         setMetal(schemeData?.id_metal);
         setPurity(schemeData?.id_purity);
 
-        // Update fixed amounts if scheme is fixed type
         if (selectedScheme === "Fixed" && schemeData.fixed_amounts) {
           const fixedAmounts = schemeData.fixed_amounts.map((amount) => ({
             value: amount,
@@ -779,12 +558,6 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
     }
   }, [formData.id_scheme, schemefilter]);
 
-  // function digigoldandsilverMaturity(startDateStr, noOfDays) {
-  //   const startDate = new Date(startDateStr);
-  //   const maturityDate = new Date(startDate);
-  //   maturityDate.setDate(maturityDate.getDate() + noOfDays);
-  //   return maturityDate.toISOString().split('T')[0];
-  // }
   function digigoldandsilverMaturity(startDateStr, noOfDays) {
     const startDate = new Date(startDateStr);
     const maturityDate = new Date(startDate);
@@ -850,17 +623,8 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
     ).padStart(2, "0")}-${date.getFullYear()}`;
 
     setMaturityDate(formattedDate);
-
     setFormData((prev) => ({ ...prev, maturity_date: formattedDate }));
   }
-
-  const handleemployeebyBranch = async (id_branch) => {
-    if (!id_branch) return;
-    const response = await getemployeebybranch({ id_branch: id_branch });
-    if (response) {
-      setEmployee(response.data);
-    }
-  };
 
   const { mutate: handleschemebyclassification } = useMutation({
     mutationFn: (id) => geallschemebyclassification(id),
@@ -887,27 +651,6 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
       }
     },
   });
-
-  const handleSelectNumber = (number) => {
-    setMobile(number);
-    setSuggestions([]);
-  };
-
-  useEffect(() => {
-    if (id) {
-      setHeader("Edit Scheme Account");
-    } else {
-      setHeader("Add Scheme Account");
-    }
-  }, [location.pathname, id]);
-
-  const handleCancel = () => {
-    navigate("/managecustomers/customer/");
-  };
-
-  const handleAddCustomer = () => {
-    navigate("/manageaccount/addcustomer");
-  };
 
   const handleStartDateChange = (date) => {
     setStartDate(date);
@@ -940,65 +683,40 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
   const isValidForm = () => {
     const err = {};
 
-    if (formData.id_branch === "id_branch") {
+    if (!formData.id_branch) {
       err["id_branch"] = "Branch is required";
-    } else {
-      err["id_branch"] = "";
     }
 
-    if (formData.id_classification === "") {
+    if (!formData.id_classification) {
       err["id_classification"] = "Classification is required";
-    } else {
-      err["id_classification"] = "";
     }
 
-    if (formData.id_scheme === "") {
+    if (!formData.id_scheme) {
       err["id_scheme"] = "Scheme is required";
-    } else {
-      err["id_scheme"] = "";
     }
 
-    if (formData.start_date === "") {
+    if (!formData.start_date) {
       err["start_date"] = "Start Date is required";
-    } else {
-      err["start_date"] = "";
     }
-    if (formData.account_name === "") {
+
+    if (!formData.account_name) {
       err["account_name"] = "Account Name is required";
-    } else {
-      err["account_name"] = "";
     }
-    if (formData.customer_name === "") {
+
+    if (!formData.customer_name) {
       err["customer_name"] = "Customer Name is required";
-    } else {
-      err["id_branch"] = "";
     }
 
-    if (formData.total_installments === "") {
+    if (!formData.total_installments && formData.total_installments !== 0) {
       err["total_installments"] = "Total Installment is required";
-    } else {
-      err["total_installments"] = "";
-    }
-
-    if (formData.maturity_period === "") {
-      err["maturity_period"] = "Maturity month is required";
-    } else {
-      err["maturity_period"] = "";
     }
 
     if (!formData.maturity_period && formData.maturity_period !== 0) {
       err["maturity_period"] = "Maturity month is required";
-    } else {
-      err["maturity_period"] = "";
     }
 
-    setErrors((prevState) => ({
-      ...prevState,
-      ...err,
-    }));
-    const hasErrors = Object.values(err).some((error) => error.length > 0);
-
-    return !hasErrors;
+    setErrors(err);
+    return Object.keys(err).length === 0;
   };
 
   const inputHeight = "42px";
@@ -1019,19 +737,22 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
     }
     return payload;
   };
+
   const onSubmit = (e) => {
     e.preventDefault();
 
     if (isValidForm()) {
+      prevFormDataRef.current = { ...formData }; // Save current state before submission
+      
       let payload = updateAmtWtValue(formData);
 
       const updatedFormData = {
         ...payload,
         referral_id: referralId,
-        referral_type: referralRoles[selectedClassification]?.label,
+        referral_type: selectedRole ? referralRoles.find(r => r.value === selectedRole)?.label : "",
         scheme_count_number: acNumber,
       };
-      setFormData(updatedFormData);
+
       setLoading(true);
 
       if (id) {
@@ -1039,8 +760,6 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
       } else {
         createSchemeaccount(updatedFormData);
       }
-    } else {
-      console.error("Form has validation errors");
     }
   };
 
@@ -1050,12 +769,11 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
       toast.success(response.message);
       setLoading(false);
       handlePayment(response.id);
-      handleClear();
-      // navigate("/managecustomers/customerschemes");
     },
     onError: (error) => {
       setLoading(false);
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "An error occurred");
+      restoreFormData();
     },
   });
 
@@ -1068,7 +786,8 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
     },
     onError: (error) => {
       setLoading(false);
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "An error occurred");
+      restoreFormData();
     },
   });
 
@@ -1091,7 +810,6 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
           if (metalRate) {
             const rate = metalRate.data.rate;
             setMetalRate(rate);
-            // formik.setFieldValue("metal_rate", rate);
           }
         } catch (error) {
           console.error("Error fetching metal rate:", error);
@@ -1108,17 +826,10 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
       !errors?.weight
     ) {
       const outputAmount = metalRate * formData.weight;
-      if (outputAmount > 0) {
-        setFormData((prev) => ({
-          ...prev,
-          amount: outputAmount,
-        }));
-      } else {
-        setFormData((prev) => ({
-          ...prev,
-          amount: 0,
-        }));
-      }
+      setFormData((prev) => ({
+        ...prev,
+        amount: outputAmount > 0 ? outputAmount : 0,
+      }));
     } else {
       setFormData((prev) => ({
         ...prev,
@@ -1150,70 +861,35 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
     );
   };
 
-  useEffect(() => {
-    const { weight, amount } = formData;
-
-    if (selectedClassification === 2 || selectedClassification === 3) {
-      if (weight !== 0) {
-        setFormData((prev) => ({
-          ...prev,
-          flexFixed: weight,
-          weight: 0,
-          amount: 0,
-        }));
-      } else if (amount !== 0) {
-        setFormData((prev) => ({
-          ...prev,
-          flexFixed: amount,
-          weight: 0,
-          amount: 0,
-        }));
-      }
-    }
-  }, [selectedClassification]);
-
-  useEffect(() => {
-    if (selectedScheme === "Fixed" && formData.id_scheme) {
-      const scheme = schemefilter.find((s) => s._id === formData.id_scheme);
-      if (scheme?.fixed_amounts) {
-        setFixedAmt(
-          scheme.fixed_amounts.map((amount) => ({
-            value: amount,
-            label: amount.toString(),
-          }))
-        );
-      }
-    }
-  }, [formData.id_scheme, selectedScheme, schemefilter]);
+  const handleCancel = () => {
+    navigate("/managecustomers/customer/");
+  };
 
   return (
     <form onSubmit={onSubmit}>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Branch */}
         <div>
           <label className="text-sm text-[#232323] mb-1 font-semibold">
             Branch<span className="text-red-400">*</span>
           </label>
-
           <Select
             options={branchData}
-            value={
-              branchData.find((option) => option.value === cusData.id_branch) ||
-              formData.id_branch
+            value={branchData.find((option) => option.value === cusData.id_branch)}
+            onChange={(option) => 
+              setFormData(prev => ({...prev, id_branch: option?.value || ""}))
             }
-            onChange={(option) =>
-              formik.setFieldValue("id_branch", option?.value || "")
-            }
-            onKeyDown={(e) => e.key === "Enter" && e.preventDefault()}
-            styles={customStyles(true)}
+            styles={customSelectStyles}
             isLoading={branchloading}
             isDisabled={id_branch !== "0"}
             placeholder="Select Branch"
           />
-
           {errors?.id_branch && (
-            <div style={{ color: "red" }}>{errors?.id_branch}</div>
+            <div className="text-red-500 text-sm">{errors.id_branch}</div>
           )}
         </div>
+
+        {/* Mobile Number */}
         <div>
           <label className="text-sm text-[#232323] mb-1 font-semibold">
             Mobile Number<span className="text-red-400">*</span>
@@ -1227,6 +903,8 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
             disabled
           />
         </div>
+
+        {/* Customer Name */}
         <div>
           <label className="text-sm text-[#232323] mb-1 font-semibold">
             Customer Name<span className="text-red-400">*</span>
@@ -1239,8 +917,12 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
             className="w-full border-[1px] border-[#f2f3f8] rounded-md px-3 py-2"
             placeholder="Customer Name"
           />
-          <p style={{ color: "red" }}>{errors?.customer_name}</p>
+          {errors?.customer_name && (
+            <div className="text-red-500 text-sm">{errors.customer_name}</div>
+          )}
         </div>
+
+        {/* Address */}
         <div>
           <label className="text-sm text-[#232323] mb-1 font-semibold">
             Address
@@ -1254,139 +936,148 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
             placeholder="Customer Address"
           />
         </div>
+
+        {/* Scheme Classification */}
         <div>
           <label className="text-sm text-[#232323] mb-1 font-semibold">
             Scheme Classification<span className="text-red-400">*</span>
           </label>
-          <div className="relative">
-            <Select
-              styles={customStyles(true)}
-              isClearable={true}
-              options={classifyfilter}
-              name="id_classification"
-              value={classifyfilter.find(
-                (item) => item.value === formData.id_classification
-              )}
-              onChange={(selectedOption) => {
-                if (selectedOption) {
-                  setClassification(selectedOption.order);
-                  setSelectedScheme(selectedOption.label);
-                  setFormData((prev) => ({
-                    ...prev,
-                    id_classification: selectedOption.value,
-                  }));
-                  handleschemebyclassification(selectedOption.value);
-                } else {
-                  setClassification("");
-                  setSelectedScheme("");
-                  setFormData((prev) => ({
-                    ...prev,
-                    id_classification: "",
-                  }));
-                  setScheme([]);
-                }
-              }}
-            />
-          </div>
-          <p style={{ color: "red" }}>{errors?.id_classification}</p>
+          <Select
+            styles={customStyles(true)}
+            isClearable={true}
+            options={classifyfilter}
+            name="id_classification"
+            value={classifyfilter.find(
+              (item) => item.value === formData.id_classification
+            )}
+            onChange={(selectedOption) => {
+              if (selectedOption) {
+                setClassification(selectedOption.order);
+                setSelectedScheme(selectedOption.label);
+                setFormData(prev => ({
+                  ...prev,
+                  id_classification: selectedOption.value,
+                  id_scheme: "",
+                }));
+                handleschemebyclassification(selectedOption.value);
+              } else {
+                setClassification("");
+                setSelectedScheme("");
+                setFormData(prev => ({
+                  ...prev,
+                  id_classification: "",
+                  id_scheme: "",
+                }));
+                setScheme([]);
+              }
+            }}
+            placeholder="Select Classification"
+          />
+          {errors?.id_classification && (
+            <div className="text-red-500 text-sm">{errors.id_classification}</div>
+          )}
         </div>
+
+        {/* Scheme */}
         <div>
           <label className="text-sm text-[#232323] mb-1 font-semibold">
             Scheme<span className="text-red-400">*</span>
           </label>
-          <div className="relative">
-            <Select
-              styles={customStyles(true)}
-              isClearable={true}
-              options={schemefilter.map((scheme) => {
-                let label = scheme.scheme_name;
+          <Select
+            styles={customStyles(true)}
+            isClearable={true}
+            options={schemefilter.map((scheme) => {
+              let label = scheme.scheme_name;
 
+              if (
+                [3, 4, 12].includes(scheme.scheme_type) &&
+                scheme.min_weight !== 0 &&
+                scheme.max_weight !== 0
+              ) {
+                label += ` (${scheme.min_weight} - ${scheme.max_weight} GRM)`;
+              } else if (scheme.min_amount !== 0 && scheme.max_amount !== 0) {
+                label += ` (Rs. ${scheme.min_amount} - Rs. ${scheme.max_amount})`;
+              } else if (scheme.amount !== null) {
+                label += ` (Rs. ${scheme.amount})`;
+              }
+
+              return {
+                value: scheme._id,
+                label: label,
+                ...scheme,
+              };
+            })}
+            name="id_scheme"
+            value={
+              schemefilter.find((scheme) => scheme._id === formData.id_scheme)
+                ? {
+                    value: formData.id_scheme,
+                    label:
+                      schemefilter.find(
+                        (scheme) => scheme._id === formData.id_scheme
+                      )?.scheme_name || "",
+                  }
+                : null
+            }
+            onChange={(selectedOption) => {
+              if (selectedOption) {
+                setFormData(prev => ({
+                  ...prev,
+                  id_scheme: selectedOption.value,
+                  scheme_type: selectedOption.scheme_type,
+                  total_installments: selectedOption.total_installments,
+                  maturity_period: selectedOption.maturity_period,
+                  installment_type: selectedOption.installment_type,
+                  min_amount: selectedOption.min_amount,
+                  max_amount: selectedOption.max_amount,
+                  min_weight: selectedOption.min_weight,
+                  max_weight: selectedOption.max_weight,
+                  code: selectedOption.code,
+                  noOfDays: selectedOption.noOfDays,
+                }));
+                setShowReferral(selectedOption.display_referral);
+                if (selectedOption.id_metal) {
+                  setMetal(selectedOption.id_metal);
+                }
+                if (selectedOption.id_purity) {
+                  setPurity(selectedOption.id_purity);
+                }
                 if (
-                  [3, 4, 12].includes(scheme.scheme_type) &&
-                  scheme.min_weight !== 0 &&
-                  scheme.max_weight !== 0
+                  selectedScheme === "Fixed" &&
+                  selectedOption.fixed_amounts
                 ) {
-                  label += ` (${scheme.min_weight} - ${scheme.max_weight} GRM)`;
-                } else if (scheme.min_amount !== 0 && scheme.max_amount !== 0) {
-                  label += ` (Rs. ${scheme.min_amount} - Rs. ${scheme.max_amount})`;
-                } else if (scheme.amount !== null) {
-                  label += ` (Rs. ${scheme.amount})`;
+                  setFixedAmt(selectedOption.fixed_amounts);
                 }
-
-                return {
-                  value: scheme._id,
-                  label: label,
-                  ...scheme,
-                };
-              })}
-              name="id_scheme"
-              value={
-                schemefilter.find((scheme) => scheme._id === formData.id_scheme)
-                  ? {
-                      value: formData.id_scheme,
-                      label:
-                        schemefilter.find(
-                          (scheme) => scheme._id === formData.id_scheme
-                        )?.scheme_name || "",
-                    }
-                  : null
+              } else {
+                setFormData(prev => ({
+                  ...prev,
+                  id_scheme: "",
+                  scheme_type: 0,
+                  total_installments: 0,
+                  maturity_period: 0,
+                  installment_type: "",
+                  min_amount: 0,
+                  max_amount: 0,
+                  min_weight: 0,
+                  max_weight: 0,
+                  code: 0,
+                  noOfDays: "",
+                }));
               }
-              onChange={(selectedOption) => {
-                if (selectedOption) {
-                  setFormData((prev) => ({
-                    ...prev,
-                    id_scheme: selectedOption.value,
-                    scheme_type: selectedOption.scheme_type,
-                    total_installments: selectedOption.total_installments,
-                    maturity_period: selectedOption.maturity_period,
-                    installment_type: selectedOption.installment_type,
-                    min_amount: selectedOption.min_amount,
-                    max_amount: selectedOption.max_amount,
-                    min_weight: selectedOption.min_weight,
-                    max_weight: selectedOption.max_weight,
-                    code: selectedOption.code,
-                    noOfDays: selectedOption.noOfDays,
-                  }));
-                  setShowReferral(selectedOption.display_referral);
-                  if (selectedOption.id_metal) {
-                    setMetal(selectedOption.id_metal);
-                  }
-                  if (selectedOption.id_purity) {
-                    setPurity(selectedOption.id_purity);
-                  }
-                  if (
-                    selectedScheme === "Fixed" &&
-                    selectedOption.fixed_amounts
-                  ) {
-                    setFixedAmt(selectedOption.fixed_amounts);
-                  }
-                } else {
-                  setFormData((prev) => ({
-                    ...prev,
-                    id_scheme: "",
-                    scheme_type: 0,
-                    total_installments: 0,
-                    maturity_period: 0,
-                    installment_type: "",
-                    min_amount: 0,
-                    max_amount: 0,
-                    min_weight: 0,
-                    max_weight: 0,
-                    code: 0,
-                    noOfDays: "",
-                  }));
-                }
-              }}
-              isDisabled={!formData.id_classification}
-              placeholder={
-                formData.id_classification
-                  ? "Select Scheme"
-                  : "Select Classification First"
-              }
-            />
-          </div>
-          <p style={{ color: "red" }}>{errors?.id_scheme}</p>
+            }}
+            isDisabled={!formData.id_classification}
+            placeholder={
+              formData.id_classification
+                ? "Select Scheme"
+                : "Select Classification First"
+            }
+          />
+          {errors?.id_scheme && (
+            <div className="text-red-500 text-sm">{errors.id_scheme}</div>
+          )}
         </div>
+
+        {/* Fixed Amount/Weight */}
         {selectedScheme === "Fixed" ? (
           <div>
             <label className="text-sm text-[#232323] mb-1 font-semibold">
@@ -1396,7 +1087,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
 
             {fixedamt && fixedamt.length > 0 ? (
               <Select
-                styles={customStyles(true)}
+                styles={customSelectStyles}
                 isClearable={true}
                 options={fixedamt}
                 name={
@@ -1411,7 +1102,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
                 )}
                 onChange={(selectedOption) => {
                   const newValue = selectedOption?.value || null;
-                  setFormData((prev) => ({
+                  setFormData(prev => ({
                     ...prev,
                     ...([12, 3, 4].includes(prev.scheme_type)
                       ? {
@@ -1440,11 +1131,15 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
               </div>
             )}
 
-            <p style={{ color: "red" }}>{errors?.weight || errors?.amount}</p>
+            {(errors?.weight || errors?.amount) && (
+              <div className="text-red-500 text-sm">
+                {errors.weight || errors.amount}
+              </div>
+            )}
           </div>
         ) : (
           <>
-            {selectedClassification === 3 && schemefilter.length > 0 ? (
+            {selectedClassification === 3 && schemefilter.length > 0 && (
               <>
                 {[12, 3, 4].includes(formData.scheme_type) ? (
                   <div className="flex flex-col">
@@ -1456,16 +1151,17 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
                       type="number"
                       step="any"
                       name="weight"
-                      // defaultValue={value}
-                      value={formData.weight}
-                      onChange={(e) => filterInputchange(e)}
+                      value={formData.weight || ""}
+                      onChange={filterInputchange}
                       onWheel={(e) => e.target.blur()}
                       className="border-[1px] border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                       placeholder="Enter weight"
                     />
-                    <p className="text-sm mt-2" style={{ color: "red" }}>
-                      {errors?.weight}
-                    </p>
+                    {errors?.weight && (
+                      <div className="text-red-500 text-sm mt-1">
+                        {errors.weight}
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <div className="flex flex-col">
@@ -1473,48 +1169,47 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
                       Amount<span className="text-red-400"> * </span>
                       <span className="text-gray-400 text-sm">{`(min: ${formData.min_amount} - max: ${formData.max_amount})`}</span>
                     </label>
-                    {/* <p>Form data amount : {formData.amount}</p> */}
                     <input
                       type="number"
                       name="amount"
-                      // defaultValue={value}
-                      value={formData.amount}
+                      value={formData.amount || ""}
                       onWheel={(e) => e.target.blur()}
-                      onChange={(e) => filterInputchange(e)}
-                      className="border-[1px]  border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+                      onChange={filterInputchange}
+                      className="border-[1px] border-gray-300 rounded-md p-2 w-full pr-16 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
                       placeholder="Enter amount"
                     />
-                    <p className="text-sm mt-2" style={{ color: "red" }}>
-                      {errors?.amount}
-                    </p>
+                    {errors?.amount && (
+                      <div className="text-red-500 text-sm mt-1">
+                        {errors.amount}
+                      </div>
+                    )}
                   </div>
                 )}
               </>
-            ) : null}
+            )}
           </>
         )}
-        <>
-          {selectedClassification === 3 &&
-            schemefilter.length > 0 &&
-            [12, 3, 4].includes(formData.scheme_type) && (
-              <div className="flex flex-col">
-                <label className="text-sm text-[#232323] mb-1 font-semibold">
-                  Payable Amount
-                </label>
-                <input
-                  type="text"
-                  name="amount"
-                  value={formData.amount}
-                  disabled
-                  className="border-[1px] cursor-not-allowed border-gray-300 rounded-md p-2 w-full pr-16 bg-gray-100 focus:outline-none"
-                  placeholder="Payable Amount"
-                />
-                {errors?.amount && (
-                  <p style={{ color: "red" }}>{errors.amount}</p>
-                )}
-              </div>
-            )}
-        </>
+
+        {/* Payable Amount (for weight-based schemes) */}
+        {selectedClassification === 3 &&
+          schemefilter.length > 0 &&
+          [12, 3, 4].includes(formData.scheme_type) && (
+            <div className="flex flex-col">
+              <label className="text-sm text-[#232323] mb-1 font-semibold">
+                Payable Amount
+              </label>
+              <input
+                type="text"
+                name="amount"
+                value={formData.amount || 0}
+                disabled
+                className="border-[1px] cursor-not-allowed border-gray-300 rounded-md p-2 w-full pr-16 bg-gray-100 focus:outline-none"
+                placeholder="Payable Amount"
+              />
+            </div>
+          )}
+
+        {/* Account Name */}
         <div className="flex flex-col relative group">
           <label className="text-sm text-[#232323] mb-1 font-semibold">
             Account Name<span className="text-red-400">*</span>
@@ -1523,8 +1218,8 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
             <input
               type="text"
               name="account_name"
-              value={formData.account_name}
-              onChange={(e) => filterInputchange(e)}
+              value={formData.account_name || ""}
+              onChange={filterInputchange}
               onWheel={(e) => e.target.blur()}
               maxLength={15}
               className="border-[1px] border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
@@ -1535,8 +1230,12 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
               AC{acNumber}
             </span>
           </div>
-          <p style={{ color: "red" }}>{errors?.account_name}</p>
+          {errors?.account_name && (
+            <div className="text-red-500 text-sm">{errors.account_name}</div>
+          )}
         </div>
+
+        {/* Total Installment */}
         {formData.scheme_type !== 10 && formData.scheme_type !== 14 && (
           <div className="flex flex-col">
             <label className="text-sm text-[#232323] mb-1 font-semibold">
@@ -1545,14 +1244,18 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
             <input
               type="text"
               name="total_installments"
-              value={formData.total_installments}
+              value={formData.total_installments || 0}
               className="w-full border-[1px] border-[#f2f3f8] rounded-md px-3 py-2"
               placeholder="Enter Total Installment"
               disabled
             />
-            <p style={{ color: "red" }}>{errors?.total_installments}</p>
+            {errors?.total_installments && (
+              <div className="text-red-500 text-sm">{errors.total_installments}</div>
+            )}
           </div>
         )}
+
+        {/* Maturity Period */}
         <div className="flex flex-col">
           <label className="text-sm text-[#232323] mb-1 font-semibold">
             Maturity Period<span className="text-red-400">*</span>
@@ -1560,20 +1263,24 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
           <input
             type="text"
             name="maturity_period"
-            value={formData.maturity_period}
+            value={formData.maturity_period || 0}
             className="w-full border-[1px] border-[#f2f3f8] rounded-md px-3 py-2"
             placeholder="Enter Maturity Month"
             disabled
           />
-          <p style={{ color: "red" }}>{errors?.maturity_period}</p>
+          {errors?.maturity_period && (
+            <div className="text-red-500 text-sm">{errors.maturity_period}</div>
+          )}
         </div>
+
+        {/* Start Date */}
         <div>
           <label className="text-sm text-[#232323] mb-1 font-semibold">
             Start Date<span className="text-red-400">*</span>
           </label>
           <div className="relative">
             <DatePicker
-              selected={formData.start_date}
+              selected={formData.start_date ? new Date(formData.start_date) : null}
               onChange={handleStartDateChange}
               dateFormat="dd-MM-yyyy"
               placeholderText="Select Date"
@@ -1587,8 +1294,12 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
               <CalendarDays size={20} />
             </span>
           </div>
-          <p style={{ color: "red" }}>{errors?.start_date}</p>
+          {errors?.start_date && (
+            <div className="text-red-500 text-sm">{errors.start_date}</div>
+          )}
         </div>
+
+        {/* Maturity Date */}
         {formData.id_scheme && (
           <div>
             <label className="text-sm text-[#232323] mb-1 font-semibold">
@@ -1599,14 +1310,15 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
                 type="text"
                 disabled
                 name="maturity_date"
-                value={formData.maturity_date}
+                value={formData.maturity_date || ""}
                 className="w-full border-[1px] border-[#f2f3f8] rounded-md px-3 py-2"
                 placeholder="Enter Maturity Date"
               />
             </div>
-            <p style={{ color: "red" }}>{errors?.maturity_date}</p>
           </div>
         )}
+
+        {/* Referral Section */}
         {!id && formData.referral_id === null && showReferral && (
           <>
             <div>
@@ -1650,30 +1362,32 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
                   placeholder="Enter mobile number or referral code"
                   disabled={!selectedRole}
                 />
-                <div
-                  disabled={searchmobile === ""}
+                <button
+                  type="button"
+                  disabled={!searchmobile || !selectedRole}
                   onClick={handleSearchmobile}
-                  className="absolute flex items-center justify-center cursor-pointer right-[0%] rounded-r-lg top-[68%] -translate-y-1/2 w-10 md:h-[43px] md:top-[50px] h-[62%] sm:right-0 sm:top-[68%] lg:right-[0%]"
+                  className="absolute flex items-center justify-center right-[0%] rounded-r-lg top-[68%] -translate-y-1/2 w-10 md:h-[43px] md:top-[44px] h-[62%] sm:right-0 sm:top-[68%] lg:right-[0%] bg-gray-100 hover:bg-gray-200"
                 >
                   <Search size={20} className="text-[#6C7086]" />
-                </div>
+                </button>
               </div>
             </div>
           </>
         )}
       </div>
-      <div className="bg-white p-2  mt-4">
+
+      {/* Form Actions */}
+      <div className="bg-white p-2 mt-4">
         <div className="flex justify-end gap-5 mt-3">
           <button
-            className=" text-white rounded-md text-sm font-semibold h-[36px] w-full  md:w-24"
+            className={`text-white rounded-md text-sm font-semibold h-[36px] w-full md:w-24 bg-[#1e3b8b] disabled:bg-blue-400`}
             type="submit"
             disabled={isLoading}
-            style={{ backgroundColor: layout_color }}
           >
             {isLoading ? <SpinLoading /> : id ? "Update" : "Save"}
           </button>
           <button
-            className="bg-[#E2E8F0] text-sm text-[#6C7086] font-semibold rounded-md h-[36px] w-full md:w-24"
+            className="bg-[#E2E8F0] text-sm text-[#6C7086] font-semibold rounded-md h-[36px] w-full md:w-24 hover:bg-gray-200"
             type="button"
             onClick={handleCancel}
           >
