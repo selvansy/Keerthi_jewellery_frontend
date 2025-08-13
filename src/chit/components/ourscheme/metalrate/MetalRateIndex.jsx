@@ -90,8 +90,6 @@ function MetalRateIndex({ refresh }) {
       rate: e.rate,
     }));
 
-    ;
-
     if (Object.keys(errors).length === 0) {
       setLoading(true);
 
@@ -275,36 +273,7 @@ function MetalRateIndex({ refresh }) {
         />
       </div>
       <div className="flex flex-col p-1 -ml-1">
-        {/* <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {metalValue?.slice(0, 4).map((e) => (
-            <div className="bg-white rounded-[16px] py-2 px-[10px] border border-[#F2F2F9]">
-              <div className="rounded-md">
-                {e.name !== "Silver" ? (
-                  <img
-                    src={gold24}
-                    alt="gold24"
-                    className="h-[100px] w-[100px]"
-                  />
-                ) : (
-                  <img
-                    src={silver}
-                    alt="silver"
-                    className="h-[90px] w-[90px]"
-                  />
-                )}
-              </div>
-              <div className="flex flex-col py-[6px] ms-1">
-                <h3 className="text-lg text-[#232323] font-semibold">
-                  {e.purity} {e.name}/g
-                </h3>
-                <h5 className="text-[#6C7086] text-md"></h5>
-                <h5 className="text-[#232323] text-sm font-semibold">
-                  {formatNumber({ value: e.value, decimalPlaces: 0 })}
-                </h5>
-              </div>
-            </div>
-          ))}
-        </div> */}
+        
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
   {metalValue?.slice(0, 4).map((e) => {
     // Find the metal data to get the id_metal

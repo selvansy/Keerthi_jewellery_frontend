@@ -35,15 +35,6 @@ function OverDueReport() {
     endDate: new Date()
   });
 
-  useEffect(() => {
-    getDueReport({
-      from_date: dateRange.startDate,
-      to_date: dateRange.endDate,
-      page: currentPage,
-      limit: itemsPerPage
-    });
-  }, [currentPage, itemsPerPage, dateRange]);
-
   const { mutate: getDueReport } = useMutation({
     mutationFn: ({ from_date, to_date, page, limit }) => 
       dueReportSummary({ 
@@ -64,6 +55,15 @@ function OverDueReport() {
       console.error("Error fetching metal rate:", error);
     },
   });
+
+  useEffect(() => {
+    getDueReport({
+      from_date: dateRange.startDate,
+      to_date: dateRange.endDate,
+      page: currentPage,
+      limit: itemsPerPage
+    });
+  }, [currentPage, itemsPerPage, dateRange]);
 
   const formatDate = (dateString) => {
     if (!dateString) return '';

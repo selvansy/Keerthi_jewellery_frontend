@@ -742,7 +742,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
     e.preventDefault();
 
     if (isValidForm()) {
-      prevFormDataRef.current = { ...formData }; // Save current state before submission
+      prevFormDataRef.current = { ...formData };
       
       let payload = updateAmtWtValue(formData);
 
@@ -864,6 +864,8 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
   const handleCancel = () => {
     navigate("/managecustomers/customer/");
   };
+
+  console.log(formData)
 
   return (
     <form onSubmit={onSubmit}>
@@ -1087,7 +1089,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
 
             {fixedamt && fixedamt.length > 0 ? (
               <Select
-                styles={customSelectStyles}
+                styles={customSelectStyles(true)}
                 isClearable={true}
                 options={fixedamt}
                 name={
@@ -1100,19 +1102,37 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
                     ? option.value === formData.weight
                     : option.value === formData.amount
                 )}
+                // onChange={(selectedOption) => {
+                //   const newValue = selectedOption?.value || null;
+                //   console.log(selectedOption.value)
+                //   setFormData(prev => ({
+                //     ...prev,
+                //     ...([12, 3, 4].includes(prev.scheme_type)
+                //       ? {
+                //           weight: newValue,
+                //           amount: newValue ? newValue * metalRate : 0,
+                //         }
+                //       : {
+                //           amount: newValue,
+                //           weight: 0,
+                //         }),
+                //   }));
+                // }}
                 onChange={(selectedOption) => {
                   const newValue = selectedOption?.value || null;
                   setFormData(prev => ({
                     ...prev,
-                    ...([12, 3, 4].includes(prev.scheme_type)
+                    ...([12, 3, 4].includes(prev.scheme_type))
                       ? {
                           weight: newValue,
                           amount: newValue ? newValue * metalRate : 0,
+                          flexFixed: newValue // Add this line
                         }
                       : {
                           amount: newValue,
                           weight: 0,
-                        }),
+                          flexFixed: newValue // Add this line
+                        },
                   }));
                 }}
                 placeholder={`Select ${

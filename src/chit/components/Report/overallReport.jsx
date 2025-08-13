@@ -25,6 +25,7 @@ import { useSelector } from "react-redux";
 import { Breadcrumb } from "../common/breadCumbs/breadCumbs";
 import DateRangeSelector from "../common/calender";
 import { customSelectStyles } from "../Setup/purity";
+import { formatDecimal, formatNumber } from "../../utils/commonFunction";
 // import Managetables from "./managetables";
 
 function overallReport() {
@@ -149,11 +150,11 @@ function overallReport() {
     },
     {
       header: "PAID ACCOUNT",
-      cell: (row) => row?.totalPaidAccounts,
+      cell: (row) => formatNumber({value:row?.totalPaidAccounts,decimalPlaces:2}),
     },
     {
       header: "PAID Amount",
-      cell: (row) => row?.totalOpenAmount,
+      cell: (row) => formatNumber({value:row?.totalOpenAmount,decimalPlaces:2}),
     },
     {
       header: "CLOSE ACCOUNT",
@@ -161,11 +162,11 @@ function overallReport() {
     },
     {
       header: "CLOSE Amount",
-      cell: (row) => row?.totalCloseAmount,
+      cell: (row) => formatNumber({value:row?.totalCloseAmount,decimalPlaces:2}),
     },
     {
       header: "CLOSE WGT",
-      cell: (row) => row?.closedWeight,
+      cell: (row) => `${formatDecimal( row?.closedWeight)} g`,
     },
     {
       header: "PRE-CLOSE ACCOUNT",
@@ -173,7 +174,7 @@ function overallReport() {
     },
     {
       header: "PRE-CLOSE AMOUNT",
-      cell: (row) => row?.totalPreCloseAmount,
+      cell: (row) => formatNumber({value:row?.totalPreCloseAmount,decimalPlaces:2}),
     },
     {
       header: "REFUND ACCOUNT ",
@@ -181,7 +182,7 @@ function overallReport() {
     },
     {
       header: "REFUND Amount ",
-      cell: (row) => row?.totalRefundAmount,
+      cell: (row) => formatNumber({value:row?.totalRefundAmount,decimalPlaces:2}),
     },
     {
       header: "BRANCH NAME",
