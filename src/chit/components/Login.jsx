@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import SpinLoading from "./common/spinLoading";
 // import Logo from "../../assets/login.svg"; //aupay default
-import Logo from "../../assets/logo(3).svg";
+import Logo from "../../assets/nytro.png";
 import Background from "../../assets/LoginBg.png";
 import { toast } from "sonner";
 import { Eye, EyeOff } from "lucide-react";
@@ -82,7 +82,7 @@ const Login = () => {
     >
       <div className="w-full max-w-md bg-white shadow-lg rounded-[16px] p-6">
         <div className="text-center mb-1  flex justify-center py-3">
-          <img src={Logo} alt="" srcSet="" />
+          <img src={Logo} alt="" srcSet="" className="h-12 w-22"/>
         </div>
         <div className="text-center py-3">
           <h1 className="text-2xl font-bold text[#232323]">Sign-In</h1>
