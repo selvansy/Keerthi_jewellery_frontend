@@ -30,10 +30,18 @@ function DrilldownTable({
   const [itemsPerPage, setItemsPerPage] = useState(initialItemsPerPage);
   const [totalPages, setTotalPages] = useState(0);
   const [totalDocuments, setTotalDocuments] = useState(0);
-  const [fromDate, setFromDate] = useState();
-  const [toDate, setToDate] = useState();
+
+
+    const location = useLocation();
+  const { id, type,showBreadcrumb,breadcrumbItems,fromdate,todate} = location.state || {};
+  const navigate = useNavigate()
+
+
+  const [fromDate, setFromDate] = useState(fromdate);
+  const [toDate, setToDate] = useState(todate);
   const [setData,dataToPass]= useState([])
   const [column,setColumn] = useState()
+
 
   const formatDate = (dateString) => {
   if (!dateString) return '';
@@ -43,13 +51,10 @@ function DrilldownTable({
   const year = date.getFullYear();
   return `${day}/${month}/${year}`;
 };
-
-  const location = useLocation();
-  const { id, type,showBreadcrumb,breadcrumbItems} = location.state || {};
-  const navigate = useNavigate()
  
   useEffect(()=>{
     const fetchData =async()=>{
+    try{
         switch (type) {
             case "scheme":
               const Data = await getSchemeDetailedView(
@@ -57,10 +62,12 @@ function DrilldownTable({
                    id: id,
                     page:currentPage,
                     limit:itemsPerPage,
-                    search:''
+                    search:'',
+                    fromdate:fromDate.toISOString(),
+                    todate:toDate.toISOString()
                 }
               );
-              if(Data.data.length > 0){
+              if(Data?.data?.length > 0){
                 dataToPass(Data.data)
                 setIsLoading(false)
                 setCurrentPage(Data.currentPage)
@@ -77,8 +84,15 @@ function DrilldownTable({
             default:
               ;
               break;
-          }
+            }
+        }
+    catch (error) {
+      console.error("Error fetching data:", error);
+      dataToPass([]); 
+    } finally {
+      setIsLoading(false); 
     }
+  }
     fetchData()
   },[type])
   

@@ -302,7 +302,8 @@ export function RefferalCusCard({ refData }) {
 
                             <div className="relative">
                                 <div className='px-2  w-full text-[#6C7086]'>
-                                    {refData?.id_scheme?.scheme_name} {refData?.id_scheme?.code} {refData?.id_scheme?.description}
+                                    {`${refData?.id_scheme?.scheme_name} (${refData?.id_scheme?.code})`}
+                                    {/* {refData?.id_scheme?.description} */}
                                 </div>
                             </div>
                         </div>

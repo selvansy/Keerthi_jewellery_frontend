@@ -82,7 +82,7 @@ function PreCloseReport() {
       "Name":item.customer_name,
       "Customer Mobile":item.customer_mobile,
       "Acc Name":item.account_name,
-      "Scheme Name":item.schemeName,
+      "Scheme Name":item.scheme_name,
       "Scheme Acc no":item.scheme_acc_number,
       "Total Paid Installment":item.total_paid_installments,
       "Total Installment":item.total_installments,

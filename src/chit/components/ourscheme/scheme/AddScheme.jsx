@@ -217,9 +217,12 @@ const SchemeForm = () => {
       wallet_redemption_onpayment: false,
     },
     validationSchema: schemeValidationSchema,
-    onSubmit: (values) => {
+    validateOnChange: false,
+    validateOnBlur: false,
+    onSubmit:(values) => {
       if (isLoading) return;
       const formData = new FormData();
+      console.log("erty",formData)
 
       if (formik.values.classType) {
         amounts.forEach((amount) => {
@@ -603,8 +606,10 @@ const SchemeForm = () => {
   const handleClassChange = (selectedOption) => {
     formik.setFieldValue(
       "id_classification",
-      selectedOption ? selectedOption.value : ""
+      selectedOption ? selectedOption.value : "",
+      true
     );
+  formik.setFieldTouched("id_classification", true); 
 
     if (selectedOption?.id === 2) {
       setSelectedClass(null);
@@ -818,6 +823,8 @@ const SchemeForm = () => {
                     .toUpperCase()
                     // .replace(/\b\w/g, (char) => char.toUpperCase());
                   formik.setFieldValue("code", capitalized);
+                  formik.setFieldTouched("code", true);
+                  formik.validateField("code"); 
                 }}
                 onBlur={formik.handleBlur}
                 name="code"
@@ -893,8 +900,11 @@ const SchemeForm = () => {
                 value={metal.find(
                   (option) => option.value === formik.values.id_metal
                 )}
+                // onChange={(option) =>
+                //   formik.setFieldValue("id_metal", option ? option.value : "") 
+                // }
                 onChange={(option) =>
-                  formik.setFieldValue("id_metal", option ? option.value : "")
+                  formik.setFieldValue("id_metal", option ? option.value : "", true)
                 }
                 onBlur={() => formik.setFieldTouched("id_metal", true)}
               />
@@ -923,7 +933,7 @@ const SchemeForm = () => {
                   (option) => option.value === formik.values.id_purity
                 )}
                 onChange={(option) =>
-                  formik.setFieldValue("id_purity", option ? option.value : "")
+                  formik.setFieldValue("id_purity", option ? option.value : "",true)
                 }
                 onBlur={() => formik.setFieldTouched("id_purity", true)}
               />
@@ -975,7 +985,8 @@ const SchemeForm = () => {
                   (option) => option.value === formik.values.scheme_type
                 )}
                 onChange={(option) => {
-                  formik.setFieldValue("scheme_type", option?.value);
+                  formik.setFieldValue("scheme_type", option?.value,true);
+                   formik.setFieldTouched("scheme_type", true);  
                   formik.validateForm();
                 }}
                 onBlur={() => formik.setFieldTouched("scheme_type", true)}
@@ -1003,8 +1014,10 @@ const SchemeForm = () => {
                   // formik.setFieldValue("maturity_period", "");
                   formik.setFieldValue(
                     "installment_type",
-                    option ? option.value : null
+                    option ? option.value : null,
+                    true
                   );
+                   formik.setFieldTouched("installment_type", true);  
                   setSpanText(option.label);
                   if (option.value === 1) {
                     setValidation({ max: 12, maxLength: 2, val: "month" });
@@ -1094,7 +1107,7 @@ const SchemeForm = () => {
                       `Installment cannot exceed maturity period`
                     );
                   } else {
-                    formik.setFieldValue("total_installments", value);
+                    formik.setFieldValue("total_installments", value,true);
                     formik.setFieldError("total_installments", "");
                   }
                 }}
@@ -1126,7 +1139,8 @@ const SchemeForm = () => {
                 onChange={(option) =>
                   formik.setFieldValue(
                     "saving_type",
-                    option ? option.value : ""
+                    option ? option.value : "",
+                    true
                   )
                 }
                 onBlur={() => formik.setFieldTouched("saving_type", true)}

@@ -179,8 +179,21 @@ function Ledgerdetails({ setIsOpen }) {
         )}
         <Detail label="Scheme Type" value={ledgerData?.scheme_typename} />
         <Detail label="Paid Amount" value={formatNumber({ value: ledgerData?.total_paidamount ?? "", decimalPlaces: 0 })} />
-        <Detail label="Bonus Amount" value={
-          formatNumber({ value: paymentdata[0]?.wallet?.balance_amt ?? "-", decimalPlaces: 0 })} />
+            {/* <Detail
+          label="Bonus Amount"
+          value={formatNumber({
+            value:
+              ledgerData?.status === "Closed"
+                ? ledgerData?.bonus_amount !== null
+                  ? ledgerData.bonus_amount
+                  : ledgerData?.bonus_percent
+                    ? (ledgerData.total_paidamount * ledgerData.bonus_percent) / 100
+                    : 0
+                : 0,
+            decimalPlaces: 2,
+          })}
+        /> */}
+        <Detail label="Bonus Amount" value={formatNumber({ value: paymentdata[0]?.wallet?.balance_amt ?? "-", decimalPlaces: 0 })} />
         <Detail label="Paid Weight" value={`${formatDecimal(ledgerData?.paid_weight)} g`} />
         <Detail label="Gift Handover" value={ledgerData?.gift_issues} />
         <Detail label="Status" value={ledgerData?.status} highlight={false} />

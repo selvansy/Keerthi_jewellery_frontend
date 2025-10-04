@@ -167,7 +167,7 @@ const CustomerForm = ({
       // .required("Birth date is required")
       .max(
         new Date(new Date().setFullYear(new Date().getFullYear() - 18)),
-        "Employee must be at least 18 years old"
+        "Customer must be at least 18 years old"
       ),
     pincode: Yup.string()
       .required("Pincode is required")
@@ -586,19 +586,20 @@ const CustomerForm = ({
                     name="firstname"
                     value={formik.values.firstname}
                     onChange={(e) => {
-                      formik.handleChange(e);
-                      formik.setFieldTouched("firstname", false);
+                      let value = e.target.value;
+
+                      value = value.replace(/[^a-zA-Z ]/g, "");
+
+                      value = value.replace(/^\s+/, "");
+                      formik.setFieldValue("firstname", value);
                     }}
                     className="w-full border-[1px] border-[#f2f3f8] rounded-lg px-3 py-2"
                     placeholder="Enter Here"
                   />
                   {formik.errors.firstname ? (
-                    <div style={{ color: "red" }}>
-                      {formik.errors.firstname}
-                    </div>
+                    <div style={{ color: "red" }}>{formik.errors.firstname}</div>
                   ) : null}
                 </div>
-
                 <div className="flex flex-col">
                   <label className="text-[#232323] font-semibold text-sm mb-1 ">
                     Last Name
@@ -607,9 +608,13 @@ const CustomerForm = ({
                     type="text"
                     name="lastname"
                     value={formik.values.lastname}
-                    onChange={(e) => {
-                      formik.handleChange(e);
-                      formik.setFieldTouched("lastname", false);
+                      onChange={(e) => {
+                      let value = e.target.value;
+
+                      value = value.replace(/[^a-zA-Z ]/g, "");
+
+                      value = value.replace(/^\s+/, "");
+                      formik.setFieldValue("lastname", value);
                     }}
                     className="w-full border-[1px] border-[#f2f3f8] rounded-lg px-3 py-2"
                     placeholder="Enter Here"

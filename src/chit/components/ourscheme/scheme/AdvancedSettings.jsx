@@ -167,8 +167,10 @@ const AdvancedSettings = ({ formik, layout_color, installment_type }) => {
             onWheel={(e) => e.target.blur()}
             value={formik.values.referralPercentage}
             onChange={formik.handleChange}
+            disabled={!formik.values.display_referral}
             onBlur={formik.handleBlur}
-            className="border-[1px] border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-1 focus:ring-[#004181] focus:border-transparent"
+            className={`border-[1px] border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-1 focus:ring-[#004181] focus:border-transparent
+          ${!formik.values.display_referral ? "bg-gray-100 text-gray-500" : ""}`}
             placeholder="Enter Referral Percentage"
           />
           <span className="absolute right-0 top-0 w-9 h-full px-3 flex items-center justify-center text-black border-l">

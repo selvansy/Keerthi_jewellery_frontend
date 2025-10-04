@@ -40,6 +40,9 @@ function CompleteAccount() {
   const [to_date, setto_date] = useState(formattedDate);
   const [totalDocuments, setTotalDocuments] = useState(0);
 
+  
+  const [processData, setProcessData] = useState([]);
+
   useEffect(() => {
     getCompletedData({ from_date, to_date, page: currentPage, limit: itemsPerPage });
   }, [from_date, to_date, currentPage, itemsPerPage]);
@@ -78,6 +81,31 @@ function CompleteAccount() {
     setCurrentPage(1); // Reset to first page when items per page changes
   };
 
+  function spliceDecimals(num, decimals) {
+    const factor = Math.pow(10, decimals);
+    return Math.trunc(num * factor) / factor;
+  }
+
+    useEffect(() => {
+            const process = preCloseData.map((item, index) => ({
+              "S.No": index + 1,
+              "Sch.Name":item.scheme_name,
+              "Acc.Name":item.account_name,
+              "Sch.Acc.No":item.scheme_acc_number,
+              "Tot.Paid.Amnt":item.totalPaidAmount,
+              // "Tot.Paid.weight":item.totalPaidWeight.toFixed(3),
+              "Tot.Paid.Weight":item.totalPaidWeight ? `${spliceDecimals(item.totalPaidWeight,3)} g` : "0.000 g",
+              // "Classification Name":item.classification_name,
+              "Start Date":item.createdAt? new Date(item.createdAt).toLocaleDateString('en-GB') : '',
+              "Mat.Date":item.maturity_date,
+              "Com.Date":item.completedDate ? new Date(item.completedDate).toLocaleDateString('en-GB') : '',
+              "Classification":item.classification_name,
+              // "Gift Issures":item.gift_issues,
+              "Added By":item.added_by,
+            }));
+            setProcessData(process);
+          }, [preCloseData]);
+
   const columns = [
     {
       header: "S.No",
@@ -93,7 +121,7 @@ function CompleteAccount() {
     },
     {
       header: "scheme A/c No",
-      cell: (row) => row?.account_name,
+      cell: (row) => row?.scheme_acc_number,
     },
     {
       header: "Total Paid Amount",
@@ -107,24 +135,84 @@ function CompleteAccount() {
       header: "Classification",
       cell: (row) => row?.classification_name,
     },
+    // {
+    //   header: "Started date",
+    //   cell: (row) => {
+    //     const date = new Date(row.createdAt);
+    //     const day = String(date.getDate()).padStart(2, '0');
+    //     const month = String(date.getMonth() + 1).padStart(2, '0');
+    //     const year = date.getFullYear();
+    //     return `${day}-${month}-${year}`;
+    //   }
+    // }, 
+    
     {
-      header: "Started date",
+      header: "Started Date",
       cell: (row) => {
-        const date = new Date(row.createdAt);
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const year = date.getFullYear();
-        return `${day}-${month}-${year}`;
-      }
-    },  
+        const rawDate = row?.createdAt;
+
+        if (!rawDate) return "-";
+
+        let dateObj;
+
+        dateObj = new Date(rawDate);
+        if (isNaN(dateObj.getTime())) {
+          const parts = rawDate.split(/[-/]/);
+          if (parts.length === 3) {
+            const [day, month, year] = parts.map(Number);
+            dateObj = new Date(year, month - 1, day);
+          }
+        }
+
+        if (isNaN(dateObj.getTime())) {
+          return rawDate;
+        }
+
+        return dateObj.toLocaleDateString("en-GB", {
+          day: "numeric",
+          month: "numeric",
+          year: "numeric",
+        });
+      },
+    },
+    // {
+    //   header: "Maturity Date",
+    //   cell: (row) => row?.maturity_date,
+    // },
+
     {
       header: "Maturity Date",
-      cell: (row) => row?.maturity_date,
+      cell: (row) => {
+        const rawDate = row?.maturity_date;
+
+        if (!rawDate) return "-";
+
+        let dateObj;
+
+        dateObj = new Date(rawDate);
+        if (isNaN(dateObj.getTime())) {
+          const parts = rawDate.split(/[-/]/);
+          if (parts.length === 3) {
+            const [day, month, year] = parts.map(Number);
+            dateObj = new Date(year, month - 1, day);
+          }
+        }
+
+        if (isNaN(dateObj.getTime())) {
+          return rawDate;
+        }
+
+        return dateObj.toLocaleDateString("en-GB", {
+          day: "numeric",
+          month: "numeric",
+          year: "numeric",
+        });
+      },
     },
     {
       header: "Completed date",
       cell: (row) => {
-        return new Date(row.completedDate).toLocaleDateString("en-US", {
+        return new Date(row.completedDate).toLocaleDateString("en-GB", {
           year: "numeric",
           month: "numeric",
           day: "numeric",
@@ -164,7 +252,7 @@ function CompleteAccount() {
                 initialEndDate={formattedDate}
               />
               <ExportDropdown
-                apiData={preCloseData}
+                apiData={processData}
                 fileName={`Overdue report ${new Date().toLocaleDateString(
                   "en-GB"
                 )}`}

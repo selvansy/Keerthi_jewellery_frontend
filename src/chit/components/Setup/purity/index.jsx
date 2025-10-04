@@ -51,6 +51,10 @@ export const customSelectStyles = (isReadOnly) => ({
     fontWeight: "thin",
     // fontStyle: "bold",
   }),
+  menuList: (provided) => ({
+      ...provided,
+      maxHeight:  "190px",
+    }),
   dropdownIndicator: (provided, state) => ({
     ...provided,
     color: "#232323",
@@ -58,6 +62,7 @@ export const customSelectStyles = (isReadOnly) => ({
       color: "#232323",
     },
   }),
+ 
 });
 
 const inputHeight = "42px";
@@ -508,9 +513,10 @@ export const PurityForm = ({ setIsOpen, metals, clearId, id }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+      const cleanedValue = value.replace(/[^a-zA-Z0-9 ]/g, "");
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: cleanedValue,
     }));
     setFormErrors((prev) => ({
       ...prev,

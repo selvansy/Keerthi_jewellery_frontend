@@ -188,8 +188,10 @@ const Classification = ({
           <textarea
             name="description"
             value={formik?.values?.description || ""}
-            onChange={formik?.handleChange}
-            onBlur={formik?.handleBlur}
+            // onChange={formik?.handleChange}
+            // onBlur={formik?.handleBlur}
+            onChange={(e) => formik.setFieldValue("description", e.target.value, true)}
+            onBlur={() => formik.setFieldTouched("description", true)}
             className="border resize-none rounded-md p-2 w-full h-32 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
           />
           {formik?.touched?.description && formik?.errors?.description && (
@@ -206,8 +208,10 @@ const Classification = ({
           <textarea
             name="term_desc"
             value={formik?.values?.term_desc || ""}
-            onChange={formik?.handleChange}
-            onBlur={formik?.handleBlur}
+            // onChange={formik?.handleChange}
+            // onBlur={formik?.handleBlur}
+            onChange={(e) => formik.setFieldValue("term_desc", e.target.value, true)}
+            onBlur={() => formik.setFieldTouched("term_desc", true)}
             className="border rounded-md resize-none p-2 w-full h-32 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
           />
           {formik?.touched?.term_desc && formik?.errors?.term_desc && (

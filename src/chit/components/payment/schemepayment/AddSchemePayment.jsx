@@ -205,12 +205,7 @@ const AddSchemePayment = () => {
     }),
     menuList: (provided) => ({
       ...provided,
-      // paddingTop: 0,
-      // paddingBottom: 0,
-      maxHeight: showWeightInput ? "130px" : "209px",
-      // maxHeight: [2, 5, 6].includes(formik.values.scheme_type)
-      //   ? "130px"
-      //   : "209px",
+      maxHeight: showWeightInput ? "130px" : "160px",
     }),
     input: (base) => ({
       ...base,
@@ -746,7 +741,6 @@ const AddSchemePayment = () => {
     selectedScheme,
   ]);
 
-  console.log(ispayamtreadOnly,"kd")
 
   return (
     <>
@@ -968,7 +962,7 @@ const AddSchemePayment = () => {
                               </span>
                             </div>
                             <div className="flex items-center">
-                              <span className="text-gray-900">
+                              <span className="text-gray-900 truncate block max-w-full">
                                 {selectedScheme?.id_customer?.address || "-"}
                               </span>
                             </div>
@@ -1524,7 +1518,7 @@ const AddSchemePayment = () => {
                       </span>
                     </div>
                     <div className="flex items-center">
-                      <span className="text-gray-900">
+                      <span className="text-gray-900 break-words whitespace-pre-wrap w-full">
                         {selectedScheme?.id_customer?.address || "-"}
                       </span>
                     </div>

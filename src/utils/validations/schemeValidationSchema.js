@@ -213,8 +213,8 @@ export const schemeValidationSchema = Yup.object({
       (value) => String(value).length <= 3
     ),
   saving_type: Yup.number()
-    .optional("Saving type is required")
-    .required("Scheme type is required"),
+    // .optional("Saving type is required")
+    .required("Saving type is required"),
   totalCountAmount: Yup.number().when("classType", {
     is: true,
     then: (schema) =>

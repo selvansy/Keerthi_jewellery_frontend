@@ -2900,7 +2900,7 @@ export const userRedeemHistory = async (data) => {
 //!drill down api
 
 export const getSchemeDetailedView = async(data)=>{ 
-  const response= await Api.get(`${import.meta.env.VITE_API_URL}/api/client/reports/scheme?schemeid=${data.id}&page=${data.page}&limit=${data.limit}&search=${data.search}`,)
+  const response= await Api.get(`${import.meta.env.VITE_API_URL}/api/client/reports/scheme?schemeid=${data.id}&page=${data.page}&limit=${data.limit}&search=${data.search}&from_date=${data.fromdate}&to_date=${data.todate}`,)
   return response.data
 }
 

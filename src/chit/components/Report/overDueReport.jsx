@@ -29,6 +29,45 @@ function OverDueReport() {
   const [totalPages, setTotalPages] = useState(0);
   const [totalDocuments, setTotalDocuments] = useState(0);
   
+  const [processData, setProcessData] = useState([]);
+
+
+     function spliceDecimals(num, decimals) {
+    const factor = Math.pow(10, decimals);
+    return Math.trunc(num * factor) / factor;
+  }
+  
+  useEffect(() => {
+    const process = overDueData.map((item, index) => ({
+      "S.No": index + 1,
+      // "Customer Name":item.customer_name,
+      "Cus.Mob": item.customer_mobile,
+      "Acc.Name": item.account_name,
+      "Tot.Ins": item.total_installments,
+      "Tot.Paid.Inst": `${item.paid_installments} / ${item.total_installments}`,
+      "Sch.Acc.No": item.scheme_acc_number,
+      "Tot.paid.Amnt": item.totalPaidAmount,
+      "Tot.paid.wt": item.weight
+        ? item.weight >= 1000
+          ? `${spliceDecimals(item.weight,3)} g`
+          : `${spliceDecimals(item.weight,3)}g`
+        : "0 g",
+      "Ints.Due": item.installmentDue,
+      "Join Date":item.createdAt
+        ? new Date(item.createdAt).toLocaleDateString("en-GB")
+        : "",
+      "Mat.Date": item.maturity_date
+        ? new Date(item.maturity_date).toLocaleDateString("en-GB")
+        : "",
+      // CreatedAt:item.createdAt?.slice(0, 10),
+      "Last paid Date": item.createdAt
+        ? new Date(item.createdAt).toLocaleDateString("en-GB")
+        : "",
+    }));
+    setProcessData(process);
+  }, [overDueData]);
+  // const [process]
+  
   // Set initial dates to current date
   const [dateRange, setDateRange] = useState({
     startDate: new Date(),
@@ -173,7 +212,7 @@ function OverDueReport() {
                 onChange={handleDateRangeChange}
               />
               <ExportDropdown
-                apiData={overDueData}
+                apiData={processData}
                 fileName={`Overdue report ${new Date().toLocaleDateString(
                   "en-GB"
                 )}`}

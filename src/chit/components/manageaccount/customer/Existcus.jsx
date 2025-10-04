@@ -33,7 +33,10 @@ const Existcusomer = () => {
   const [totalPage1, setTotalPages1] = useState(0);
   const [totalDocument1, setTotalDocument1] = useState(0);
   const [redeemedSchemesTable, setRedeemedSchemesTable] = useState([]);
+  const [EditCus,setEditcus]=useState(false);
 
+
+  console.log("wertyu",EditCus)
   // Reset state when customer changes
   const resetState = () => {
     setData({
@@ -242,6 +245,7 @@ const Existcusomer = () => {
       });
       toast.success(response?.message);
       setLoading(false)
+      setEditcus(true)
       dispatch(setid(response?.data?.customerDetails?._id || ""));
     },
     onError: (error) => {
@@ -552,7 +556,8 @@ const Existcusomer = () => {
       <div className="border rounded-lg bg-white my-3 p-4">
         <div className="flex flex-row justify-between items-center">
           <h1 className="text-md font-bold text-[#232323]">Account Overview</h1>
-          <div>
+         {EditCus && (
+           <div>
             <button
               type="button"
               className="px-6 py-2 text-sm bg-[#004181] text-white rounded-md"
@@ -565,8 +570,9 @@ const Existcusomer = () => {
               Edit Profile
             </button>
           </div>
+         )}
         </div>
-        <hr className="w-full mt-2" />
+        <hr className="w-full mt-4" />
         <div className="grid grid-cols-3 ">
           <div className="flex flex-col gap-2 justify-center items-center">
             <img

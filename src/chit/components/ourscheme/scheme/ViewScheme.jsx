@@ -832,7 +832,7 @@ const ViewScheme = () => {
                     {eyeOpen && (
                       <div
                         ref={popoverRef}
-                        className="absolute z-10 mt-1 bg-white border border-gray-200 rounded-md shadow-lg p-2 w-48"
+                        className="absolute z-10 mt-1 bg-white border border-gray-200 rounded-md shadow-lg p-2 w-56"
                       >
                         <div className="grid grid-cols-3 gap-1">
                           {formik.values.fixed_amounts.map((amount, index) => (
@@ -969,6 +969,7 @@ const ViewScheme = () => {
                 {reward?.find((item) => item.value === formik.values.bonus_type)
                   ?.label || "N/A"}
               </p>
+              
             </div>
 
             {formik.values.bonus_type !== 2 ? (

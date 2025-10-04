@@ -178,7 +178,7 @@ function AccountSummaryReport() {
 
   const handleSchemeClick = (row) => {
     navigate("/report/table", {
-      state: { id: row._id, type: "scheme" },
+      state: { id: row._id, type: "scheme",fromdate:from_date,todate:to_date  },
     });
   };
 

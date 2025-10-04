@@ -33,6 +33,7 @@ function PaymentLedger() {
   const [totalPages, setTotalPages] = useState(0);
   const [totalDocuments, setTotalDocuments] = useState(0);
 
+  const [processData,setProcessData]=useState()
   const [from_date, setfrom_date] = useState();
   const [to_date, setto_date] = useState();
   const [schemeList, setSchemeList] = useState([]);
@@ -61,6 +62,18 @@ function PaymentLedger() {
     }
   }, [currentPage, itemsPerPage, roleData, from_date, to_date, selectedMode]);
 
+  useEffect(() => {
+              const process = paymentData.map((item, index) => ({
+                "S.No": index + 1,
+                "Scheme Name":item.schemeName,
+                "Mode Name":item.modeName,
+                "Amount":item.totalAmount,
+                "Payment Count":item.paymentCount
+              }));
+              setProcessData(process);
+            }, [paymentData]);
+  
+
   // Flatten the data when paymentData changes
   useEffect(() => {
     if (paymentData && paymentData.length > 0) {
@@ -69,7 +82,7 @@ function PaymentLedger() {
           schemeName: scheme.schemeName,
           payment_mode: mode.modeName,
           totalAmount: mode.totalAmount,
-          paymentCount: mode.paymentCount
+          paymentCount: mode.paymentCount,
         }))
       );
       setFlattenedData(flattened);
@@ -122,7 +135,7 @@ function PaymentLedger() {
     },
     {
       header: "Payment Mode",
-      cell: (row) => row?.payment_mode,
+      cell: (row) => row?.modeName,
     },
     {
       header: "Amount",
@@ -184,7 +197,7 @@ function PaymentLedger() {
                 }}
               />
               <ExportDropdown
-                apiData={flattenedData} // Use flattenedData for export
+                apiData={processData} // Use flattenedData for export
                 fileName={`Payment Ledger Report ${new Date().toLocaleDateString(
                   "en-GB"
                 )}`}
@@ -194,7 +207,7 @@ function PaymentLedger() {
         </div>
         <div className="mt-4">
           <Table
-            data={flattenedData} // Use flattenedData instead of paymentData
+            data={paymentData} // Use flattenedData instead of paymentData
             columns={columns}
             loading={isLoading}
             currentPage={currentPage}

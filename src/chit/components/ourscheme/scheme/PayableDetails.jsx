@@ -52,9 +52,13 @@ const PayableDetails = ({
                 type="number"
                 name="min_weight"
                 value={formik.values.min_weight}
-                onChange={formik.handleChange}
+                // onChange={formik.handleChange}
+                onChange={(e) => {
+                  formik.setFieldValue("min_weight", e.target.value, true);
+                }}
                 onWheel={(e) => e.target.blur()}
-                onBlur={formik.handleBlur}
+                // onBlur={formik.handleBlur}
+                onBlur={() => formik.setFieldTouched("min_weight", true)} 
                 className="border-[1px] border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-1 focus:ring-[#004181] focus:border-transparent"
                 placeholder="Enter Min Weight"
                 style={{ height: inputHeight }}
@@ -120,10 +124,12 @@ const PayableDetails = ({
                   if (e.target.value.length <= 11) {
                     // focus:ring-1 custom-height focus:ring-[#004181] outline-none
                     formik.handleChange(e);
+                    formik.setFieldValue("min_amount", e.target.value, true); 
                   }
                 }}
                 onWheel={(e) => e.target.blur()}
-                onBlur={formik.handleBlur}
+                // onBlur={formik.handleBlur}
+                  onBlur={() => formik.setFieldTouched("min_amount", true)} 
                 className="border-[1px] border-[#f2f3f8] rounded-md p-2 w-full text-start pl-10 focus:outline-none focus:ring-1  focus:ring-[#004181]"
                 placeholder="Enter Min Amount"
                 style={{ height: inputHeight }}
@@ -151,9 +157,11 @@ const PayableDetails = ({
                 onChange={(e) => {
                   if (e.target.value.length <= 11) {
                     formik.handleChange(e);
+                    formik.setFieldValue("max_amount", e.target.value, true); 
                   }
                 }}
-                onBlur={formik.handleBlur}
+                // onBlur={formik.handleBlur}
+                onBlur={() => formik.setFieldTouched("max_amount", true)} 
                 className="border-[1px] border-[#f2f3f8] rounded-md w-full pl-10  focus:outline-none focus:ring-1 focus:ring-[#004181] focus:border-transparent"
                 placeholder="Enter Max Amount"
                 style={{ height: inputHeight }}
@@ -194,7 +202,8 @@ const PayableDetails = ({
           onChange={(option) => {
             formik.setFieldValue(
               "wastagebenefit",
-              option ? option.value : null
+              option ? option.value : null,
+              true
             );
             formik.setFieldTouched("wastagebenefit", true, false);
           }}
@@ -228,7 +237,7 @@ const PayableDetails = ({
             ) || ""
           }
           onChange={(option) =>
-            formik.setFieldValue("benefit_making", option ? option.value : "")
+            formik.setFieldValue("benefit_making", option ? option.value : "",true)
           }
           onBlur={() => formik.setFieldTouched("benefit_making", true)}
           menuPortalTarget={document.body}
