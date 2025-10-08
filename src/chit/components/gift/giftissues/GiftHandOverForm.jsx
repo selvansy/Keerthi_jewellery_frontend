@@ -271,7 +271,7 @@ function GiftHandOverForm() {
     mutationFn: (payload) => addgiftissues(payload),
     onSuccess: (response) => {
       setLoading(false);
-      toast.success(response.message);
+      toast.success("Gift Issued successfully");
       navigate("/gift/gifthandover");
     },
     onError: (error) => {

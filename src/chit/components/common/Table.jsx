@@ -21,6 +21,7 @@ const Table = ({
   debounceSearch,
   handleSearch,
   showPagination = true,
+  perItemSelect = true 
 }) => {
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [isPageChanging, setIsPageChanging] = useState(false);
@@ -239,10 +240,32 @@ const Table = ({
 
           {showPagination && !loading && data.length >= 1 && (
             <div className="p-4 flex items-center justify-between text-sm text-gray-600 border-t">
-              <div>
-                Showing {(currentPage - 1) * itemsPerPage + 1} to{" "}
-                {Math.min(currentPage * itemsPerPage, totalItems)} of{" "}
-                {totalItems} entries
+              <div className="flex items-center space-x-4">
+                <div>
+                  Showing {(currentPage - 1) * itemsPerPage + 1} to{" "}
+                  {Math.min(currentPage * itemsPerPage, totalItems)} of{" "}
+                  {totalItems} entries
+                </div>
+                
+                {/* Items per page dropdown - only shown when perItemSelect is true */}
+                {perItemSelect && (
+                  <div className="flex items-center space-x-2">
+                    {/* <label htmlFor="itemsPerPage" className="text-sm text-gray-600">
+                      Items per page:
+                    </label> */}
+                    <select
+                      id="itemsPerPage"
+                      value={itemsPerPage}
+                      onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
+                      className="px-2 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value={10}>10</option>
+                      <option value={25}>25</option>
+                      <option value={50}>50</option>
+                      <option value={100}>100</option>
+                    </select>
+                  </div>
+                )}
               </div>
 
               <div className="flex items-center space-x-2">

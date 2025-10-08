@@ -29,8 +29,6 @@ function AmountPaybleChild() {
   const [from_date, setfrom_date] = useState(new Date());
   const [to_date, setto_date] = useState(new Date());
 
-  console.log("erty",totalDocuments)
-
   const navigate = useNavigate()
 
   // Fetch data whenever any of these dependencies change
@@ -48,7 +46,6 @@ function AmountPaybleChild() {
     mutationFn: ({id, page, limit, from_date, to_date}) => 
       getSchemewiseAmount({id, page, limit, from_date, to_date}),
     onSuccess: (response) => {
-      console.log('rty',response)
       setPaybleData(response.data);
       setisLoading(false);
       setTotalDocuments(response.totalCount);

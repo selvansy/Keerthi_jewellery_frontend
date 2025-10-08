@@ -67,7 +67,7 @@ function overallReport() {
       page:currentPage,
       limit:itemsPerPage
     });
-  }, [from_date, to_date, selectedScheme,currentPage]);
+  }, [from_date, to_date, selectedScheme,currentPage,itemsPerPage]);
 
   useEffect(() => {
     if (!roleData) return;
@@ -150,7 +150,7 @@ function overallReport() {
     },
     {
       header: "PAID ACCOUNT",
-      cell: (row) => formatNumber({value:row?.totalPaidAccounts,decimalPlaces:2}),
+      cell: (row) => row?.totalPaidAccounts,
     },
     {
       header: "PAID Amount",

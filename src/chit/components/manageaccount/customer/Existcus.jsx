@@ -34,9 +34,6 @@ const Existcusomer = () => {
   const [totalDocument1, setTotalDocument1] = useState(0);
   const [redeemedSchemesTable, setRedeemedSchemesTable] = useState([]);
   const [EditCus,setEditcus]=useState(false);
-
-
-  console.log("wertyu",EditCus)
   // Reset state when customer changes
   const resetState = () => {
     setData({

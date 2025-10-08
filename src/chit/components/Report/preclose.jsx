@@ -149,27 +149,66 @@ function PreCloseReport() {
       cell: (row) => row?.classification_name,
     },
     {
-      header: "Started date",
-      cell: (row) => formatDate(row.createdAt) 
-    },    
-    {
       header: "Maturity Date",
-      cell: (row) => row?.maturity_date,
-    },
-    {
-      header: "Last paid Date",
-      // cell: (row) => row?.last_paid_date,
       cell: (row) => {
-        const date = new Date(row?.last_paid_date);
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const year = date.getFullYear();
-        return `${day}-${month}-${year}`;
-      }
-    },
+        const rawDate = row?.maturity_date;
+
+        if (!rawDate) return "-";
+
+        let dateObj;
+
+
+        dateObj = new Date(rawDate);
+
+
+        if (isNaN(dateObj.getTime())) {
+          const parts = rawDate.split(/[-/]/);
+          if (parts.length === 3) {
+            const [day, month, year] = parts.map(Number);
+            dateObj = new Date(year, month - 1, day);
+          }
+        }
+
+        if (isNaN(dateObj.getTime())) {
+          return rawDate;
+        }
+
+        return dateObj.toLocaleDateString("en-GB", {
+          day: "numeric",
+          month: "numeric",
+          year: "numeric",
+        });
+      },
+    },   
+    // {
+    //   header: "Maturity Date",
+    //   cell: (row) => row?.maturity_date,
+    // },
     {
-      header: "Closed Date",
-      cell: (row) => formatDate(row?.closedDate)
+      header: "Last Paid Date",
+      cell: (row) => {
+        if (!row?.last_paid_date) return "-"; 
+        const date = new Date(row.last_paid_date);
+        if (isNaN(date)) return "-"; 
+        return date.toLocaleDateString("en-GB", {
+          year: "numeric",
+          month: "numeric",
+          day: "numeric",
+        });
+      },
+    },
+   {
+      header: "Last Paid Date",
+      cell: (row) => {
+        if (!row?.closedDate) return "-"; 
+        const date = new Date(row.closedDate);
+        if (isNaN(date)) return "-"; 
+        return date.toLocaleDateString("en-GB", {
+          year: "numeric",
+          month: "numeric",
+          day: "numeric",
+        });
+      },
     },
     {
       header: "Bill No ",
@@ -178,13 +217,36 @@ function PreCloseReport() {
     {
       header: "Bill Date",
       cell: (row) => {
-        return new Date(row.bill_date).toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "numeric",
+        const rawDate = row?.bill_date;
+
+        if (!rawDate) return "-";
+
+        let dateObj;
+
+
+        dateObj = new Date(rawDate);
+
+
+        if (isNaN(dateObj.getTime())) {
+          const parts = rawDate.split(/[-/]/);
+          if (parts.length === 3) {
+            const [day, month, year] = parts.map(Number);
+            dateObj = new Date(year, month - 1, day);
+          }
+        }
+
+        if (isNaN(dateObj.getTime())) {
+          return rawDate;
+        }
+
+        return dateObj.toLocaleDateString("en-GB", {
           day: "numeric",
+          month: "numeric",
+          year: "numeric",
         });
-      }
-    },
+      },
+    },   
+
     {
       header: "Gift Handover",
       cell: (row) => (

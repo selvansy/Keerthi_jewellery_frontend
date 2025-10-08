@@ -648,16 +648,61 @@ const AddSchemePayment = () => {
   //   }
   // };
 
-  const handleAmountChange = (e) => {
-    const value = parseFloat(e.target.value) || "";
+  // const handleAmountChange = (e) => {
+  //   const value = parseFloat(e.target.value) || "";
 
-    formik.setFieldValue("payment_amount", value);
-    // formik.setFieldError("payment_amount","")
+  //   formik.setFieldValue("payment_amount", value);
+  //   // formik.setFieldError("payment_amount","")
+
+  //   if (formik.values.installments === 1) {
+  //     setBaseAmount(value);
+  //   }
+  // };
+
+ useEffect(() => {
+    const currentAmount = parseFloat(formik.values.payment_amount);
+    // console.log("jsajsaosa",formik.values.payment_amount)
+
+    if (!maxAmount || maxAmount === 0) {
+      return;
+    }
+
+    const maxLimit = maxAmount * formik.values.installments;
+
+    if (currentAmount > maxLimit) {
+      formik.setFieldValue("payment_amount", maxLimit);
+      setBaseAmount(formik.values.installments === 1 ? maxLimit : "");
+    }
+    
+  }, [formik.values.installments, maxAmount]);
+
+  
+  const handleAmountChange = (e) => {
+    const value = e.target.value;
+
+    let numericValue = parseFloat(value);
+
+    if (numericValue === "") {
+      formik.setFieldValue("payment_amount", "");
+      return;
+    }
+
+    const maxLimit = maxAmount * formik.values.installments;
+
+    // if (numericValue > maxLimit) {
+    if (maxAmount > 0 && numericValue > maxLimit) {
+      console.log("kkkklkl");
+      e.preventDefault();
+      return;
+    }
+
+    formik.setFieldValue("payment_amount", numericValue);
 
     if (formik.values.installments === 1) {
-      setBaseAmount(value);
+      setBaseAmount(numericValue);
     }
   };
+
 
   const handleInstallmentChange = (value) => {
     if (!selectedScheme) return;

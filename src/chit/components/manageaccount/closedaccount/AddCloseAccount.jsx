@@ -526,13 +526,14 @@ const AddCloseAccount = () => {
   const schemeAccountOptions = schemedata.map((account) => {
     let label = account?.id_scheme?.scheme_name;
 
-    if ([4, 5, 6, 7, 8, 9, 10].includes(account?.id_scheme?.scheme_type)) {
-      label += ` (Rs. ${account?.id_scheme?.min_amount} - Rs. ${account?.id_scheme?.max_amount})`;
-    } else if (account?.id_scheme?.scheme_type === 3) {
-      label += ` (${account?.id_scheme?.min_weight} - ${account?.id_scheme?.max_weight})`;
-    } else if ([0, 1, 2].includes(account?.id_scheme?.scheme_type)) {
-      label += ` (Rs. ${account?.id_scheme?.amount})`;
-    }
+    // if ([4, 5, 6, 7, 8, 9, 10].includes(account?.id_scheme?.scheme_type)) {
+    //   label += ` (Rs. ${account?.id_scheme?.min_amount} - Rs. ${account?.id_scheme?.max_amount})`;
+    // } else if (account?.id_scheme?.scheme_type === 3) {
+    //   label += ` (${account?.id_scheme?.min_weight} - ${account?.id_scheme?.max_weight})`;
+    // } else if ([0, 1, 2].includes(account?.id_scheme?.scheme_type)) {
+    //   label += ` (Rs. ${account?.id_scheme?.amount})`;
+    // }
+    
 
     label += ` - (${account?.scheme_acc_number || "Not Allocated"})`;
 

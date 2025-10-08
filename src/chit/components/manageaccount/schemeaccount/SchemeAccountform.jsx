@@ -293,6 +293,8 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
   const [referralId, setReferralid] = useState(null);
   const [showReferral, setShowReferral] = useState(false);
 
+  console.log("SelectedSCheme",selectedScheme)
+
   const [formData, setFormData] = useState({
     id_customer: cusData.customerId || "",
     mobile: cusData.mobile,
@@ -715,6 +717,19 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
       err["maturity_period"] = "Maturity month is required";
     }
 
+    if( selectedScheme  !== "Flexi"){
+  if ([12, 3, 4].includes(formData.scheme_type)) {
+    if (formData.weight === 0 || formData.weight === "" || formData.weight == null) {
+      err["weight"] = "Weight is required";
+    }
+  } else {
+    if (formData.amount === 0 || formData.amount === "" || formData.amount == null) {
+      err["amount"] = "Amount is required";
+    }
+  }
+}
+
+
     setErrors(err);
     return Object.keys(err).length === 0;
   };
@@ -865,8 +880,13 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
     navigate("/managecustomers/customer/");
   };
 
-  console.log(formData)
+   function spliceDecimals(num, decimals) {
+    const factor = Math.pow(10, decimals);
+    return Math.trunc(num * factor) / factor;
+  }
 
+
+  console.log("amount",formData.amount,"weight",formData.weight)
   return (
     <form onSubmit={onSubmit}>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -1036,6 +1056,8 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
                   max_weight: selectedOption.max_weight,
                   code: selectedOption.code,
                   noOfDays: selectedOption.noOfDays,
+                  amount: 0,
+                  weight: 0,
                 }));
                 setShowReferral(selectedOption.display_referral);
                 if (selectedOption.id_metal) {
@@ -1063,6 +1085,8 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
                   min_weight: 0,
                   max_weight: 0,
                   code: 0,
+                  amount: 0,
+                  weight: 0,
                   noOfDays: "",
                 }));
               }
@@ -1221,7 +1245,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
               <input
                 type="text"
                 name="amount"
-                value={formData.amount || 0}
+                value={spliceDecimals(formData.amount,2) || 0}
                 disabled
                 className="border-[1px] cursor-not-allowed border-gray-300 rounded-md p-2 w-full pr-16 bg-gray-100 focus:outline-none"
                 placeholder="Payable Amount"

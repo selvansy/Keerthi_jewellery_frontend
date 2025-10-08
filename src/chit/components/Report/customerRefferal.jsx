@@ -57,7 +57,7 @@ function CustomerRefferal() {
     onSuccess: (response) => {
       setCustomerRefData(response.data);
       setTotalPages(response.totalPages);
-      setTotalDocuments(response.totalDocuments);
+      setTotalDocuments(response.totalCount);
       setisLoading(false);
     },
     onError: (error) => {
@@ -74,28 +74,28 @@ function CustomerRefferal() {
     },
     {
       header: "Customer ",
-      cell: (row) => row?.Customer,
+      cell: (row) => row?.customer_name,
     },
     {
       header: "Mobile",
-      cell: (row) => row?.mobile,
+      cell: (row) => row?.referredCusMobile,
     },
     {
       header: "SCHEME NAME",
-      cell: (row) => row?.scheme_name,
+      cell: (row) => row?.schemeName,
     },
     {
       header: "Referred Customer Name",
-      cell: (row) => row?.referred_Customer,
+      cell: (row) => row?.referredCusName,
     },
     {
       header: "Referred Customer Mobile no",
-      cell: (row) => row?.referred_customer_mobile,
+      cell: (row) => row?.referredCusMobile,
     },
     {
       header: "Joined Date",
       cell: (row) => {
-        return new Date(row.joined_Date).toLocaleDateString("en-US", {
+        return new Date(row.referredDate).toLocaleDateString("en-GB", {
           year: "numeric",
           month: "numeric",
           day: "numeric",
@@ -106,7 +106,7 @@ function CustomerRefferal() {
       header: "chit Purchase Value ",
       cell: (row) => {
         return formatNumber({
-          value: row?.totalChit_value,
+          value: row?.ReferralBonuses?.payment_amount,
           decimalPlaces: 0,
         });
       },
@@ -115,7 +115,7 @@ function CustomerRefferal() {
       header: "Incentive Amount ",
       cell: (row) => {
         return formatNumber({
-          value: row?.incentive_Amount,
+          value: row?.ReferralBonuses?.referral_amount,
           decimalPlaces: 0,
         });
       },
@@ -123,7 +123,7 @@ function CustomerRefferal() {
     {
       header: "Payment Date",
       cell: (row) => {
-        return new Date(row.payment_date).toLocaleDateString("en-US", {
+        return new Date(row?.ReferralBonuses?.payment_date).toLocaleDateString("en-GB", {
           year: "numeric",
           month: "numeric",
           day: "numeric",

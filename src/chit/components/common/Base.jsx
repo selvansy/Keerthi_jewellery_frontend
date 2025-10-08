@@ -683,8 +683,8 @@ const Base = ({ renderContent: RenderContent }) => {
         } lg:translate-x-0 z-50 pt-16 lg:pt-4 overflow-auto flex flex-col`}
         style={{ backgroundColor: sidebar_color }}
       >
-        <div className="flex justify-center items-center p-4">
-          <img src={logo} alt="Logo" className="h-16 w-52 object-fill mb-4" />
+        <div className="flex justify-center p-5 items-center">
+          <img src={logo} alt="Logo" className="h-12 w-52 object-fill mb-4" />
         </div>
 
         <nav className="flex-1 text-white scrollbar-hide overflow-y-auto text-sm font-semibold">
