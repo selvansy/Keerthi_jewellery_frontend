@@ -293,7 +293,6 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
   const [referralId, setReferralid] = useState(null);
   const [showReferral, setShowReferral] = useState(false);
 
-  console.log("SelectedSCheme",selectedScheme)
 
   const [formData, setFormData] = useState({
     id_customer: cusData.customerId || "",
@@ -886,7 +885,7 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
   }
 
 
-  console.log("amount",formData.amount,"weight",formData.weight)
+  console.log("amount",formData.flexFixed,formData.amount,"weight",formData.weight)
   return (
     <form onSubmit={onSubmit}>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

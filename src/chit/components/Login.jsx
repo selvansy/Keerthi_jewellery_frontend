@@ -81,7 +81,7 @@ const Login = () => {
       }}
     >
       <div className="w-full max-w-md bg-white shadow-lg rounded-[16px] p-6">
-        <div className="text-center mb-1  flex justify-center py-3">
+     <div className="text-center mb-1  flex justify-center py-3">
           <img src={Logo} alt="" srcSet="" className="h-12 w-52"/>
         </div>
         <div className="text-center py-3">

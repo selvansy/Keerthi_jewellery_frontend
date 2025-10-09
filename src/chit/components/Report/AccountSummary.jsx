@@ -239,6 +239,10 @@ function AccountSummaryReport() {
       header: "REFUND ACCOUNT ",
       cell: (row) => row?.totalRefundAccount,
     },
+    {
+      header:"Completed Account",
+      cell:(row)=> row?.totalCompletedAccount
+    }
   ];
 
   const handlePageChange = (page) => {

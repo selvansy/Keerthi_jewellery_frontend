@@ -67,7 +67,7 @@ function overallReport() {
       page:currentPage,
       limit:itemsPerPage
     });
-  }, [from_date, to_date, selectedScheme,currentPage,itemsPerPage]);
+  }, [from_date, to_date, selectedScheme,currentPage]);
 
   useEffect(() => {
     if (!roleData) return;

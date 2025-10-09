@@ -118,6 +118,7 @@ const CustomerForm = ({
   const [country, setCountry] = useState("");
   const [state, setState] = useState("");
   const [city, setCity] = useState("");
+
   const [branchData, setBranchData] = useState(() =>
     accessBranch === "0" ? [] : {}
   );
@@ -292,10 +293,10 @@ const CustomerForm = ({
     queryKey: ["branches", accessBranch, id_branch],
     queryFn: async () => {
       if (accessBranch === "0") {
-        setisLoading(true);
+        setisLoading(false);
         return getallbranch();
       }
-      setisLoading(true);
+      setisLoading(false);
       return getBranchById(id_branch);
     },
     enabled: Boolean(accessBranch),
@@ -386,6 +387,9 @@ const CustomerForm = ({
       setisLoading(false);
       console.error("Erro:", error);
     },
+    onSettled: () => {
+      setisLoading(false);
+    }
   });
 
   const sendOtpToMobile = (e) => {
@@ -1300,7 +1304,7 @@ const CustomerForm = ({
                       style={{ backgroundColor: layout_color }}
                       disabled={addLoading}
                     >
-                      {addLoading ? <SpinLoading /> : id ? "Update" : "Save"}
+                      {isLoading ? <SpinLoading /> : id ? "Update" : "Save"}
                     </button>
                     <button
                       className="bg-[#E2E8F0] text-gray-500 rounded-lg h-[36px] w-full text-sm font-semibold md:w-24"
