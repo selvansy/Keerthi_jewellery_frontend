@@ -182,6 +182,10 @@ function AccountSummaryReport() {
     });
   };
 
+  console.log(from_date,to_date)
+
+ 
+
   useEffect(() => {
     const process = overAllData.map((item, index) => ({
       "S.No": index + 1,

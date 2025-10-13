@@ -37,10 +37,11 @@ function DrilldownTable({
   const navigate = useNavigate()
 
 
-  const [fromDate, setFromDate] = useState(fromdate);
-  const [toDate, setToDate] = useState(todate);
+  const [fromDate, setFromDate] = useState(fromdate || new Date());
+  const [toDate, setToDate] = useState(todate || new Date());
   const [setData,dataToPass]= useState([])
   const [column,setColumn] = useState()
+
 
 
   const formatDate = (dateString) => {
