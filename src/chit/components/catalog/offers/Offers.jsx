@@ -23,6 +23,7 @@ import Action from '../../common/action'
 import { useDebounce } from '../../../hooks/useDebounce'
 import ActiveDropdown from '../../common/ActiveDropdown'
 import { Breadcrumb } from '../../common/breadCumbs/breadCumbs'
+import { formatDate } from '../../../../utils/FormatDate'
 
 const Offers = () => {
 
@@ -322,10 +323,11 @@ const Offers = () => {
     },
     {
       header: "Create Date",
-      cell: (row) => {
-        const date = new Date(row?.createdAt);
-        return date.toLocaleDateString('en-GB'); // 'en-GB' gives the d-m-Y format
-      }
+      // cell: (row) => {
+      //   const date = new Date(row?.createdAt);
+      //   return date.toLocaleDateString('en-GB'); // 'en-GB' gives the d-m-Y format
+      // }
+      cell:(row)=>formatDate(row?.createdAt)
     },
     {
       header: 'Active',

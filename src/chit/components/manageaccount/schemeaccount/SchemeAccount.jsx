@@ -182,6 +182,7 @@ const SchemeAccount = () => {
     setCurrentPage(Math.max(1, Math.min(pageNumber, totalPages)));
   };
 
+
   // Table columns configuration
   const columns = [
     {
@@ -286,7 +287,7 @@ const SchemeAccount = () => {
     },
     {
       header: "Maturity Date",
-      cell: (row) => row?.maturity_date,
+      cell: (row) => formatDate(row?.maturity_date),
     },
     {
       header: "Last Paid Date",

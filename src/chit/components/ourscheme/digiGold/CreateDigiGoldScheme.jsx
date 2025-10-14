@@ -869,9 +869,17 @@ onSubmit: async (values) => {
                 type="number"
                 name="noOfDays"
                 value={formik.values.noOfDays}
+                // onChange={(e) => {
+                //   if (e.target.value.length <= 11) {
+                //     formik.handleChange(e);
+                //   }
+                // }}
                 onChange={(e) => {
-                  if (e.target.value.length <= 11) {
-                    formik.handleChange(e);
+                  const value = e.target.value;
+                  if (value === "" || /^[1-9][0-9]*$/.test(value)) {
+                    if (value.length <= 11) {
+                      formik.setFieldValue("noOfDays", value);
+                    }
                   }
                 }}
                 onWheel={(e) => e.target.blur()}

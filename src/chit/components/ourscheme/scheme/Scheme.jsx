@@ -26,6 +26,7 @@ import Modal from "../../../components/common/Modal";
 import FilterForm from "./FilterForm";
 import Action from "../../common/action";
 import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
+import { formatDate } from "../../../../utils/FormatDate";
 
 const Scheme = () => {
   const dispatch = useDispatch();
@@ -469,10 +470,11 @@ const Scheme = () => {
       },
       {
         header: "Create Date",
-        cell: (row) => {
-          const date = new Date(row?.createdAt);
-          return date.toLocaleDateString("en-GB");
-        },
+        // cell: (row) => {
+        //   const date = new Date(row?.createdAt);
+        //   return date.toLocaleDateString("en-GB");
+        // },
+        cell:(row)=>formatDate(row?.createdAt)
       },
       {
         header: "Active",

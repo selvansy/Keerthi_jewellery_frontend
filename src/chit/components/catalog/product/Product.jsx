@@ -20,6 +20,7 @@ import Action from "../../common/action";
 import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
 import ActiveDropdown from "../../common/ActiveDropdown";
 import plus from "../../../../assets/plus.svg";
+import { formatDate } from "../../../../utils/FormatDate";
 
 const Product = () => {
   const navigate = useNavigate();
@@ -193,10 +194,11 @@ const Product = () => {
     },
     {
       header: "Create Date",
-      cell: (row) => {
-        const date = new Date(row?.createdAt);
-        return date.toLocaleDateString("en-GB");
-      },
+      // cell: (row) => {
+      //   const date = new Date(row?.createdAt);
+      //   return date.toLocaleDateString("en-GB");
+      // },
+      cell:(row)=>formatDate(row?.createdAt)
     },
 
     {

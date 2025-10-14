@@ -21,6 +21,7 @@ import DateRangeSelector from "../../common/calender";
 import ExportDropdown from "../../common/Dropdown/Export";
 import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
 import { formatNumber } from "../../../utils/commonFunction"
+import { formatDate } from "../../../../utils/FormatDate";
 
 const topupApprovals = () => {
 
@@ -125,10 +126,11 @@ const topupApprovals = () => {
     },
     {
       header: "Topup Date",
-      cell: (row) => {
-        const date = new Date(row?.updatedAt);
-        return date.toLocaleDateString("en-GB") || "-";
-      },
+      // cell: (row) => {
+      //   const date = new Date(row?.updatedAt);
+      //   return date.toLocaleDateString("en-GB") || "-";
+      // },
+      cell:(row)=>formatDate(row?.updatedAt)
     },
     {
       header: "Requested Credit",
@@ -141,10 +143,11 @@ const topupApprovals = () => {
     },
     {
       header: "Date",
-      cell: (row) => {
-        const date = new Date(row?.createdAt);
-        return date.toLocaleDateString("en-GB") || "-";
-      },
+      // cell: (row) => {
+      //   const date = new Date(row?.createdAt);
+      //   return date.toLocaleDateString("en-GB") || "-";
+      // },
+      cell:(row)=>formatDate(row?.createdAt)
     },
     {
       header: "Actions",

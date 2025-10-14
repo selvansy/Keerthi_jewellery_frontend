@@ -17,6 +17,7 @@ const PayableDetails = ({
   const [reward, setReward] = useState([]);
 
   useEffect(() => {
+     console.log('rewardType:', rewardType);
     const data = rewardType.map((item) => ({
       value: item.id,
       label: item.name,
@@ -39,6 +40,7 @@ const PayableDetails = ({
   const showWeightFields = !classType && isSpecialSchemeType;
   const showAmountFields = !classType && !isSpecialSchemeType;
 
+
   return (
     <div className="grid grid-rows-2 md:grid-cols-3 lg:grid-col-3 gap-5 text-[#232323]">
       {showWeightFields ? (
@@ -53,8 +55,15 @@ const PayableDetails = ({
                 name="min_weight"
                 value={formik.values.min_weight}
                 // onChange={formik.handleChange}
+                // onChange={(e) => {
+                //   formik.setFieldValue("min_weight", e.target.value, true);
+                // }}
                 onChange={(e) => {
-                  formik.setFieldValue("min_weight", e.target.value, true);
+                  const value = e.target.value;
+                  const regex = /^\d*\.?\d{0,3}$/;
+                  if (value === "" || regex.test(value)) {
+                    formik.setFieldValue("min_weight", value, true);
+                  }
                 }}
                 onWheel={(e) => e.target.blur()}
                 // onBlur={formik.handleBlur}
@@ -83,7 +92,14 @@ const PayableDetails = ({
                 name="max_weight"
                 value={formik.values.max_weight}
                 onWheel={(e) => e.target.blur()}
-                onChange={formik.handleChange}
+                // onChange={formik.handleChange}
+                 onChange={(e) => {
+                  const value = e.target.value;
+                  const regex = /^\d*\.?\d{0,3}$/;
+                  if (value === "" || regex.test(value)) {
+                    formik.setFieldValue("max_weight", value, true);
+                  }
+                }}
                 onBlur={formik.handleBlur}
                 className="border-[1px] border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-1 focus:ring-[#004181] focus:border-transparent"
                 placeholder="Enter Max Weight"
@@ -297,6 +313,7 @@ const PayableDetails = ({
             value={formik.values.bonus_amount}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
+            disabled={!formik.values.bonus_type}
             className="w-full border-[1px] border-[#f2f3f8] pl-10 rounded-md px-3 py-2"
             placeholder="Enter bonus amount"
           />
@@ -321,6 +338,7 @@ const PayableDetails = ({
             value={formik.values.bonus_percent}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
+            disabled={!formik.values.bonus_type}
             className="w-full border-[1px] border-[#f2f3f8] rounded-md px-3 py-2"
             placeholder="Enter Bonus Percent"
           />
@@ -347,6 +365,7 @@ const PayableDetails = ({
           onWheel={(e) => e.target.blur()}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
+          disabled={!formik.values.bonus_type}
           className="border-[1px] border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-1 focus:ring-[#004181] focus:border-transparent"
           placeholder="Enter Min Installments"
           style={{ height: inputHeight }}

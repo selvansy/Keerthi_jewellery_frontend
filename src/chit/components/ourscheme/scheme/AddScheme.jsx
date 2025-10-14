@@ -730,6 +730,7 @@ const SchemeForm = () => {
     }
   };
 
+  console.log("sdcvhsa",formik.scheme_type)
   useEffect(() => {
     if (formik.values.maturity_period && formik.values.installment_type) {
       let calculatedInstallments = 0;
@@ -981,12 +982,12 @@ const SchemeForm = () => {
                     ? "Choose a classification first"
                     : "Select scheme type"
                 }
-                value={filteredSchemeTypeData?.find(
+                value={ formik.values.scheme_type !== null ? filteredSchemeTypeData?.find(
                   (option) => option.value === formik.values.scheme_type
-                )}
+                ) : null }
                 onChange={(option) => {
-                  formik.setFieldValue("scheme_type", option?.value,true);
-                   formik.setFieldTouched("scheme_type", true);  
+                  formik.setFieldValue("scheme_type", option?.value, true);
+                  formik.setFieldTouched("scheme_type", true);
                   formik.validateForm();
                 }}
                 onBlur={() => formik.setFieldTouched("scheme_type", true)}

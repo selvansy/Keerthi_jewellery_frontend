@@ -13,6 +13,7 @@ import chitReceivedGift from "../../../../../src/assets/icons/chitReceivedGift.s
 import totalbal from "../../../../../src/assets/icons/totalbal.svg"
 import { Breadcrumb } from '../../common/breadCumbs/breadCumbs';
 import plus from "../../../../assets/plus.svg";
+import { formatDate } from '../../../../utils/FormatDate'
 
 // \src\assets\totalbal.svg
 const GiftHandOver = () => {
@@ -161,7 +162,8 @@ const GiftHandOver = () => {
     },
     {
       header: "Issues Date",
-      cell: (row) => format(new Date(row?.create_date), 'dd/MM/yyyy')
+      // cell: (row) => format(new Date(row?.create_date), 'dd/MM/yyyy')
+      cell:(row)=> formatDate(row?.create_date)
     },
     {
       header: "Branch Name",

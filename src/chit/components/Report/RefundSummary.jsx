@@ -100,7 +100,7 @@ function RefundReport() {
     },
     {
       header: "Maturity Date",
-      cell: (row) => row?.maturity_date,
+      cell: (row) => formatDate(row?.maturity_date),
     },
     {
       header: "Last paid Date",

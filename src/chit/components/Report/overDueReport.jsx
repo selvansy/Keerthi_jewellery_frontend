@@ -14,6 +14,7 @@ import { useSelector } from "react-redux";
 import { Breadcrumb } from "../common/breadCumbs/breadCumbs";
 import DateRangeSelector from "../common/calender";
 import { formatNumber } from "../../utils/commonFunction";
+import { formatDate } from "../../../utils/FormatDate";
 
 function OverDueReport() {
   const roledata = localStorage.getItem("decoded");
@@ -104,14 +105,14 @@ function OverDueReport() {
     });
   }, [currentPage, itemsPerPage, dateRange]);
 
-  const formatDate = (dateString) => {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
-  };
+  // const formatDate = (dateString) => {
+  //   if (!dateString) return '';
+  //   const date = new Date(dateString);
+  //   const day = String(date.getDate()).padStart(2, '0');
+  //   const month = String(date.getMonth() + 1).padStart(2, '0');
+  //   const year = date.getFullYear();
+  //   return `${day}/${month}/${year}`;
+  // };
 
   const columns = [
     {
@@ -144,14 +145,15 @@ function OverDueReport() {
     },
     {
       header: "Joined Date",
-      cell: (row) => {
-        const date = new Date(row?.createdAt);
-        return date.toLocaleDateString("en-GB");
-      },
+      // cell: (row) => {
+      //   const date = new Date(row?.createdAt);
+      //   return date.toLocaleDateString("en-GB");
+      // },
+      cell:(row)=>formatDate(row?.createdAt)
     },
     {
       header: "Maturity date",
-      cell: (row) => row?.maturity_date,
+      cell: (row) => formatDate(row?.maturity_date)
     },
     {
       header: "Total Paid Installments",

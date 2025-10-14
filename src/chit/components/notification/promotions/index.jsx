@@ -25,6 +25,7 @@ import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
 import DateRangeSelector from "../../common/calender";
 import ExportDropdown from "../../common/Dropdown/Export";
 import plus from "../../../../assets/plus.svg";
+import { formatDate } from "../../../../utils/FormatDate";
 
 
 function PromotionSummary() {
@@ -122,10 +123,11 @@ function PromotionSummary() {
     },
     {
       header: "Start Date",
-      cell: (row) => {
-        const date = new Date(row?.createdAt);
-        return date.toLocaleDateString("en-GB") || "-";
-      },
+      // cell: (row) => {
+      //   const date = new Date(row?.createdAt);
+      //   return date.toLocaleDateString("en-GB") || "-";
+      // },
+      cell:(row)=>formatDate(row?.createdAt)
     },
     {
       header: "Promotion Name",

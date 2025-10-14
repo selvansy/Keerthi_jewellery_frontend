@@ -6,6 +6,7 @@ import Table from '../../common/Table'
 import { formatDecimal, formatNumber } from "../../../utils/commonFunction";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
+import { formatDate } from "../../../../utils/FormatDate";
 
 function Ledgerdetails({ setIsOpen }) {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
@@ -117,11 +118,11 @@ function Ledgerdetails({ setIsOpen }) {
     }
   };
 
-  const formatDate = (dateString) => {
-    if (!dateString) return "-";
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-GB');
-  };
+  // const formatDate = (dateString) => {
+  //   if (!dateString) return "-";
+  //   const date = new Date(dateString);
+  //   return date.toLocaleDateString('en-GB');
+  // };
 
   // Define columns conditionally based on scheme type
   const getColumns = () => {
@@ -175,7 +176,7 @@ function Ledgerdetails({ setIsOpen }) {
         <Detail label="Scheme Name" value={ledgerData?.scheme_name} />
         <Detail label="Start Date" value={formatDate(ledgerData?.start_date)} />
         <Detail label="Scheme A/C No" value={ledgerData?.scheme_acc_number} />
-        <Detail label="Maturity Date" value={ledgerData?.maturity_date} />
+        <Detail label="Maturity Date" value={formatDate(ledgerData?.maturity_date)} />
         <Detail label="Classification" value={ledgerData?.id_classification?.name ?? "-"} />
         {ledgerData.scheme_type == 10 || ledgerData.scheme_type == 14 ? (
           <Detail

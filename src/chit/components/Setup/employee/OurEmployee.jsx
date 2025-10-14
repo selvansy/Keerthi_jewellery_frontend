@@ -17,6 +17,7 @@ import { useDebounce } from "../../../hooks/useDebounce";
 import Action from "../../common/action";
 import plus from "../../../../assets/plus.svg";
 import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
+import { formatDate } from "../../../../utils/FormatDate";
 
 const OurEmployee = () => {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
@@ -87,14 +88,14 @@ const OurEmployee = () => {
     setCurrentPage(1);
   };
 
-  const formatDate = (dateString) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
-  };
+  // const formatDate = (dateString) => {
+  //   if (!dateString) return "";
+  //   const date = new Date(dateString);
+  //   const day = String(date.getDate()).padStart(2, "0");
+  //   const month = String(date.getMonth() + 1).padStart(2, "0");
+  //   const year = date.getFullYear();
+  //   return `${day}/${month}/${year}`;
+  // };
 
   const handleAddEmployeeClick = () => {
     navigate("/employee/creation");

@@ -20,6 +20,7 @@ import Loading from "../../common/Loading";
 import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
 import DateRangeSelector from "../../common/calender";
 import ExportDropdown from "../../common/Dropdown/Export";
+import { formatDate } from "../../../../utils/FormatDate";
 
 
 function NotificationHistory() {
@@ -110,10 +111,11 @@ function NotificationHistory() {
     },
     {
       header: "Sent Date",
-      cell: (row) => {
-        const date = new Date(row?.createdAt);
-        return date.toLocaleDateString("en-GB") || "-";
-      },
+      // cell: (row) => {
+      //   const date = new Date(row?.createdAt);
+      //   return date.toLocaleDateString("en-GB") || "-";
+      // },
+      cell:(row)=>formatDate(row?.createdAt)
     },
     {
       header: "Delivery Status",

@@ -150,65 +150,35 @@ function PreCloseReport() {
     },
     {
       header: "Maturity Date",
-      cell: (row) => {
-        const rawDate = row?.maturity_date;
-
-        if (!rawDate) return "-";
-
-        let dateObj;
-
-
-        dateObj = new Date(rawDate);
-
-
-        if (isNaN(dateObj.getTime())) {
-          const parts = rawDate.split(/[-/]/);
-          if (parts.length === 3) {
-            const [day, month, year] = parts.map(Number);
-            dateObj = new Date(year, month - 1, day);
-          }
-        }
-
-        if (isNaN(dateObj.getTime())) {
-          return rawDate;
-        }
-
-        return dateObj.toLocaleDateString("en-GB", {
-          day: "numeric",
-          month: "numeric",
-          year: "numeric",
-        });
-      },
-    },   
-    // {
-    //   header: "Maturity Date",
-    //   cell: (row) => row?.maturity_date,
-    // },
+      cell: (row) => formatDate(row?.maturity_date),
+    },
     {
       header: "Last Paid Date",
-      cell: (row) => {
-        if (!row?.last_paid_date) return "-"; 
-        const date = new Date(row.last_paid_date);
-        if (isNaN(date)) return "-"; 
-        return date.toLocaleDateString("en-GB", {
-          year: "numeric",
-          month: "numeric",
-          day: "numeric",
-        });
-      },
+      // cell: (row) => {
+      //   if (!row?.last_paid_date) return "-"; 
+      //   const date = new Date(row.last_paid_date);
+      //   if (isNaN(date)) return "-"; 
+      //   return date.toLocaleDateString("en-GB", {
+      //     year: "numeric",
+      //     month: "numeric",
+      //     day: "numeric",
+      //   });
+      // },
+      cell:(row)=>formatDate(row?.last_paid_date)
     },
    {
-      header: "Last Paid Date",
-      cell: (row) => {
-        if (!row?.closedDate) return "-"; 
-        const date = new Date(row.closedDate);
-        if (isNaN(date)) return "-"; 
-        return date.toLocaleDateString("en-GB", {
-          year: "numeric",
-          month: "numeric",
-          day: "numeric",
-        });
-      },
+      header: "Closed Date",
+      // cell: (row) => {
+      //   if (!row?.closedDate) return "-"; 
+      //   const date = new Date(row.closedDate);
+      //   if (isNaN(date)) return "-"; 
+      //   return date.toLocaleDateString("en-GB", {
+      //     year: "numeric",
+      //     month: "numeric",
+      //     day: "numeric",
+      //   });
+      // },
+      cell:(row)=>formatDate(row?.closedDate)
     },
     {
       header: "Bill No ",
@@ -216,35 +186,36 @@ function PreCloseReport() {
     },
     {
       header: "Bill Date",
-      cell: (row) => {
-        const rawDate = row?.bill_date;
+      // cell: (row) => {
+      //   const rawDate = row?.bill_date;
 
-        if (!rawDate) return "-";
+      //   if (!rawDate) return "-";
 
-        let dateObj;
-
-
-        dateObj = new Date(rawDate);
+      //   let dateObj;
 
 
-        if (isNaN(dateObj.getTime())) {
-          const parts = rawDate.split(/[-/]/);
-          if (parts.length === 3) {
-            const [day, month, year] = parts.map(Number);
-            dateObj = new Date(year, month - 1, day);
-          }
-        }
+      //   dateObj = new Date(rawDate);
 
-        if (isNaN(dateObj.getTime())) {
-          return rawDate;
-        }
 
-        return dateObj.toLocaleDateString("en-GB", {
-          day: "numeric",
-          month: "numeric",
-          year: "numeric",
-        });
-      },
+      //   if (isNaN(dateObj.getTime())) {
+      //     const parts = rawDate.split(/[-/]/);
+      //     if (parts.length === 3) {
+      //       const [day, month, year] = parts.map(Number);
+      //       dateObj = new Date(year, month - 1, day);
+      //     }
+      //   }
+
+      //   if (isNaN(dateObj.getTime())) {
+      //     return rawDate;
+      //   }
+
+      //   return dateObj.toLocaleDateString("en-GB", {
+      //     day: "numeric",
+      //     month: "numeric",
+      //     year: "numeric",
+      //   });
+      // },
+      cell:(row)=>formatDate(row?.bill_date)
     },   
 
     {

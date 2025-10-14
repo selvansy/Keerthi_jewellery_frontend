@@ -17,6 +17,7 @@ import More from "../../../assets/more.svg"
 import { createPortal } from 'react-dom';
 import eyeIcon from "../../../assets/icons/eye.svg"
 import { customStyles } from '../ourscheme/scheme/AddScheme';
+import { formatDate } from '../../../utils/FormatDate';
 
 
 const customSelectStyles = (isReadOnly) => ({
@@ -429,13 +430,14 @@ function WalletRedemption() {
         },
         {
             header: "Join Date",
-            cell: (row) => {
-              const dateStr = row?.id_scheme_account?.start_date;
-              if (!dateStr) return "-";
+            // cell: (row) => {
+            //   const dateStr = row?.id_scheme_account?.start_date;
+            //   if (!dateStr) return "-";
           
-              const date = new Date(dateStr);
-              return date.toISOString().split("T")[0];
-            },
+            //   const date = new Date(dateStr);
+            //   return date.toISOString().split("T")[0];
+            // },
+            cell:(row)=>formatDate(row?.id_scheme_account?.start_date)
           },
           
 
@@ -498,7 +500,7 @@ function WalletRedemption() {
 
             <div className="flex flex-row justify-between items-center w-full sm:order-1 sm:w-auto sm:mr-auto md:order-1 md:w-auto md:mr-auto ">
                 <div className="w-1/2 sm:w-auto me-1 mt-2">
-                    <Breadcrumb items={[{ label: "Wallet" }, { label: "Wallet Redeemption", active: true }]} />
+                    <Breadcrumb items={[{ label: "Wallet" }, { label: "Wallet Redemption", active: true }]} />
                 </div>
             </div>
 
@@ -558,8 +560,8 @@ function WalletRedemption() {
                                                 <th className="text-start px-4 py-2">Name</th>
                                                 <th className="text-start px-4 py-2">Mobile</th>
                                                 <th className="text-start px-4 py-2">Wallet Amount</th>
-                                                <th className="text-start px-4 py-2">Wallet Redeemeption</th>
-                                                <th className="text-start px-4 py-2">Total Reffered</th>
+                                                <th className="text-start px-4 py-2">Wallet Redemption</th>
+                                                <th className="text-start px-4 py-2">Total Referred</th>
                                             </tr>
                                         </thead>
                                         <tbody>

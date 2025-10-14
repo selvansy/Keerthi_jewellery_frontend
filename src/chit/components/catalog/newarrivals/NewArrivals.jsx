@@ -28,6 +28,7 @@ import Action from "../../common/action";
 import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
 import ActiveDropdown from "../../common/ActiveDropdown";
 import plus from "../../../../assets/plus.svg";
+import { formatDate } from "../../../../utils/FormatDate";
 
 const NewArrivals = () => {
   const navigate = useNavigate();
@@ -307,24 +308,27 @@ const NewArrivals = () => {
     // },
     {
       header: "Start Date",
-      cell: (row) => {
-        const date = new Date(row?.start_date);
-        return date.toLocaleDateString("en-GB");
-      },
+      // cell: (row) => {
+      //   const date = new Date(row?.start_date);
+      //   return date.toLocaleDateString("en-GB");
+      // },
+      cell:(row)=>formatDate(row?.start_date)
     },
     {
       header: "End Date",
-      cell: (row) => {
-        const date = new Date(row?.end_date);
-        return date.toLocaleDateString("en-GB");
-      },
+      // cell: (row) => {
+      //   const date = new Date(row?.end_date);
+      //   return date.toLocaleDateString("en-GB");
+      // },
+      cell:(row)=>formatDate(row?.end_date)
     },
     {
       header: "Create Date",
-      cell: (row) => {
-        const date = new Date(row?.createdAt);
-        return date.toLocaleDateString("en-GB"); // 'en-GB' gives the d-m-Y format
-      },
+      // cell: (row) => {
+      //   const date = new Date(row?.createdAt);
+      //   return date.toLocaleDateString("en-GB"); // 'en-GB' gives the d-m-Y format
+      // },
+      cell:(row)=>formatDate(row?.createdAt)
     },
     {
       header: "Active",

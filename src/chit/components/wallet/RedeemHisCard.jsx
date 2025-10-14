@@ -4,6 +4,7 @@ import Table from "../common/Table"
 import { walletRedeemByUser, getRefferalpayment,userRedeemHistory} from "../../api/Endpoints"
 import { useMutation } from '@tanstack/react-query';
 import { formatNumber } from '../../utils/commonFunction';
+import { formatDate } from '../../../utils/FormatDate';
 
 
 export default function RedeemHisCard(userdata) {
@@ -82,12 +83,13 @@ export default function RedeemHisCard(userdata) {
         },
         {
             header: "Date",
-            cell: (row) => {
-                if (!row?.createdAt) return "-";
-                const date = new Date(row?.createdAt);
-                const formattedDate = date.toISOString().split("T")[0];
-                return formattedDate;
-            }
+            // cell: (row) => {
+            //     if (!row?.createdAt) return "-";
+            //     const date = new Date(row?.createdAt);
+            //     const formattedDate = date.toISOString().split("T")[0];
+            //     return formattedDate;
+            // }
+            cell:(row)=>formatDate(row?.createdAt)
         },
 
     ];

@@ -28,6 +28,7 @@ import AddCategory from "./AddCategory";
 import ModelOne from "../../common/Modelone";
 import ActiveDropdown from "../../common/ActiveDropdown";
 import plus from "../../../../assets/plus.svg";
+import { formatDate } from "../../../../utils/FormatDate";
 
 
 const Category = () => {
@@ -239,10 +240,11 @@ const Category = () => {
     },
     {
       header: "Create Date",
-      cell: (row) => {
-        const date = new Date(row?.createdAt);
-        return date.toLocaleDateString("en-GB"); // 'en-GB' gives the d-m-Y format
-      },
+      // cell: (row) => {
+      //   const date = new Date(row?.createdAt);
+      //   return date.toLocaleDateString("en-GB"); // 'en-GB' gives the d-m-Y format
+      // },
+      cell:(row)=>formatDate(row?.createdAt)
     },
     {
       header: "Active",

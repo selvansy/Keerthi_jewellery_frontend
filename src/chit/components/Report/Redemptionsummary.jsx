@@ -112,11 +112,13 @@ function RedemptionReport() {
     },
     {
       header: "Maturity Date",
-      cell: (row) => row?.maturity_date,
+      // cell: (row) => row?.maturity_date,
+      cell:(row)=>formatDate(row?.maturity_date)
     },
     {
       header: "Closed Date",
-      cell: (row) => row?.closed_date ? formatDate(row.closed_date) : "-",
+      // cell: (row) => row?.closed_date ? formatDate(row.closed_date) : "-",
+      cell:(row)=>formatDate(row?.closed_date)
     },
     {
       header: "Closed By",

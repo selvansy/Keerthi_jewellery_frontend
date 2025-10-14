@@ -15,6 +15,7 @@ import { customSelectStyles } from "../Setup/purity";
 import { Breadcrumb } from "../common/breadCumbs/breadCumbs";
 import DateRangeSelector from "../common/calender";
 import { formatNumber } from "../../utils/commonFunction";
+import { formatDate } from "../../../utils/FormatDate";
 
 function CustomerRefferal() {
   const roleData = useSelector((state) => state.clientForm.roledata);
@@ -94,13 +95,14 @@ function CustomerRefferal() {
     },
     {
       header: "Joined Date",
-      cell: (row) => {
-        return new Date(row.referredDate).toLocaleDateString("en-GB", {
-          year: "numeric",
-          month: "numeric",
-          day: "numeric",
-        });
-      },
+      // cell: (row) => {
+      //   return new Date(row.referredDate).toLocaleDateString("en-GB", {
+      //     year: "numeric",
+      //     month: "numeric",
+      //     day: "numeric",
+      //   });
+      // },
+      cell:(row)=>formatDate(row?.referredDate)
     },
     {
       header: "chit Purchase Value ",
@@ -122,13 +124,14 @@ function CustomerRefferal() {
     },
     {
       header: "Payment Date",
-      cell: (row) => {
-        return new Date(row?.ReferralBonuses?.payment_date).toLocaleDateString("en-GB", {
-          year: "numeric",
-          month: "numeric",
-          day: "numeric",
-        });
-      },
+      // cell: (row) => {
+      //   return new Date(row?.ReferralBonuses?.payment_date).toLocaleDateString("en-GB", {
+      //     year: "numeric",
+      //     month: "numeric",
+      //     day: "numeric",
+      //   });
+      // },
+      cell:(row)=>formatDate(row?.ReferralBonuses?.payment_date)
     },
   ];
 

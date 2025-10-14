@@ -24,6 +24,7 @@ import { useDispatch, useSelector } from "react-redux";
 import SpinLoading from "../../common/spinLoading";
 import { formatNumber } from "../../../utils/commonFunction";
 import { formatDecimal } from "../../../utils/commonFunction";
+import { formatDate } from "../../../../utils/FormatDate";
 // import { customStyles } from "../../ourscheme/scheme/AddScheme";
 
 const AddSchemePayment = () => {
@@ -1056,9 +1057,11 @@ const AddSchemePayment = () => {
                             <div className="flex items-center">
                               <span className="text-gray-900">
                                 {selectedScheme?.start_date
-                                  ? new Date(
-                                      selectedScheme.start_date
-                                    ).toLocaleDateString("en-GB")
+                                  ? 
+                                  // new Date(
+                                  //     selectedScheme.start_date
+                                  //   ).toLocaleDateString("en-GB")
+                                  formatDate(selectedScheme?.start_date)
                                   : "-"}
                               </span>
                             </div>
@@ -1612,9 +1615,11 @@ const AddSchemePayment = () => {
                     <div className="flex items-center">
                       <span className="text-gray-900">
                         {selectedScheme?.start_date
-                          ? new Date(
-                              selectedScheme.start_date
-                            ).toLocaleDateString("en-GB")
+                          ? 
+                          // new Date(
+                          //     selectedScheme.start_date
+                          //   ).toLocaleDateString("en-GB")
+                          formatDate(selectedScheme.start_date)
                           : "-"}
                       </span>
                     </div>
