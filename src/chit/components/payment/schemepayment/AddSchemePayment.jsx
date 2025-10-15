@@ -576,7 +576,7 @@ const AddSchemePayment = () => {
       setShowWeightInput(true);
       setIspayamtreadOnly(false);
 
-      const initialWeight = selectedScheme?.weight || id_scheme?.min_weight || 0;
+      const initialWeight =  id_scheme?.min_weight || 0;
       formik.setFieldValue("metal_weight", initialWeight);
 
       const initialAmount = initialWeight * metalRate;
@@ -590,7 +590,7 @@ const AddSchemePayment = () => {
       setShowAmountInput(true);
       setIspayamtreadOnly(false);
       
-      const initialAmount = selectedScheme?.amount || id_scheme?.min_amount || 0;
+      const initialAmount =  id_scheme?.min_amount || 0;
       formik.setFieldValue("payment_amount", initialAmount);
       setBaseAmount(initialAmount);
     } else {
@@ -601,7 +601,7 @@ const AddSchemePayment = () => {
       setShowAmountInput(true);
       setIspayamtreadOnly(false);
       
-      const initialAmount = selectedScheme?.amount || id_scheme?.min_amount || 0;
+      const initialAmount = id_scheme?.min_amount || 0;
       formik.setFieldValue("payment_amount", initialAmount);
       setBaseAmount(initialAmount);
     }
