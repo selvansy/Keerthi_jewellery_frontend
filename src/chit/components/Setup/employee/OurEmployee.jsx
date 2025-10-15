@@ -216,6 +216,14 @@ const OurEmployee = () => {
       cell: (row) => `${row?.firstname} ${row?.lastname}`,
     },
     {
+      header:"Mobile",
+      cell:(row)=> row?.mobile
+    },
+    {
+      header :"Employee Code",
+      cell:(row)=>row?.emp_code
+    },
+    {
       header: "Date of Joining",
       cell: (row) => formatDate(row?.date_of_join),
     },

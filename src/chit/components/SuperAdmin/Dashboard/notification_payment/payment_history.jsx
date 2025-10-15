@@ -4,6 +4,7 @@ import { paymentHistory } from "../../../../api/Endpoints";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { formatNumber } from "../../../../utils/commonFunction";
+import { formatDate } from "../../../../../utils/FormatDate";
 
 function PaymentHistory({ id_branch }) {
   const [paymentData, setPaymentData] = useState([]);
@@ -63,7 +64,8 @@ function PaymentHistory({ id_branch }) {
                   <td className="px-5 py-2">{item?.id_customer?.firstname} {item?.id_customer?.lastname}</td>
                   <td className="px-5 py-2">{item?.id_scheme?.scheme_name}</td>
                   <td className="px-5 py-2">{formatNumber({ value: item?.payment_amount, decimalPlaces: 2 })}</td>
-                  <td className="px-5 py-2">{new Date(item?.createdAt).toLocaleDateString()}</td>
+                  {/* <td className="px-5 py-2">{new Date(item?.createdAt).toLocaleDateString()}</td> */}
+                   <td className="px-5 py-2">{formatDate(item?.createdAt)}</td>
                 </tr>
               ))}
             </tbody>

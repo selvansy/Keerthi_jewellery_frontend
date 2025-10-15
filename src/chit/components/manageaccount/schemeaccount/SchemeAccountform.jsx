@@ -1149,12 +1149,12 @@ const AddSchemeAccount = ({ cusData, handleClear }) => {
                       ? {
                           weight: newValue,
                           amount: newValue ? newValue * metalRate : 0,
-                          flexFixed: newValue // Add this line
+                          flexFixed: newValue 
                         }
                       : {
                           amount: newValue,
                           weight: 0,
-                          flexFixed: newValue // Add this line
+                          flexFixed: newValue 
                         },
                   }));
                 }}

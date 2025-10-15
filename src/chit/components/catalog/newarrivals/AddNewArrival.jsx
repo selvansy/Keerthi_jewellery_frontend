@@ -778,7 +778,7 @@ function AddNewArrival() {
         <Loading />
       ) : (
         <>
-          <div className="w-full flex flex-col bg-white mt-3 overflow-y-auto scrollbar-hide rounded-[16px] px-4 border-2 border-[#F2F2F9] min-h-[400px]">
+          <div className="w-full flex flex-col bg-white mt-3  overflow-visible scrollbar-hide rounded-[16px] px-4 border-2 border-[#F2F2F9] min-h-[400px]">
             <div className="flex flex-col p-4 bg-white relative">
               <div className="flex items-center gap-4">
                 <h2 className="text-2xl font-bold whitespace-nowrap">
@@ -861,7 +861,7 @@ function AddNewArrival() {
                     </span>
                 </div>
 
-                <div className="flex flex-col relative">
+                <div className="flex flex-col relative overflow-visible">
                   <label className="text-gray-700 mb-2 mt-2 font-medium">
                     End Date<span className="text-red-400">*</span>
                   </label>
@@ -878,7 +878,7 @@ function AddNewArrival() {
                     dateFormat="yyyy-MM-dd"
                     minDate={formData.start_date}
                   />
-                  <span className="absolute right-0 top-5 h-full w-14 flex items-center justify-center cursor-pointer">
+                  <span className="absolute right-0 top-4 h-full w-14 flex items-center justify-center cursor-pointer">
                       <CalendarDays size={20} />
                     </span>
                 </div>

@@ -35,6 +35,8 @@ const Existcusomer = () => {
   const [redeemedSchemesTable, setRedeemedSchemesTable] = useState([]);
   const [EditCus,setEditcus]=useState(false);
   // Reset state when customer changes
+
+  console.log("werty",activeSchemesTable)
   const resetState = () => {
     setData({
       customerDetails: {},
@@ -338,6 +340,26 @@ const Existcusomer = () => {
             : `(-)`
         }`,
     },
+    {
+      header: "Over Dues",
+      cell: (row) => {
+        const amountBased = [0, 1, 2, 5, 6, 7, 8, 9, 10, 11, 13, 14].includes(
+          row.schemeType
+        );
+        const weightBased = [12, 3, 4].includes(row.schemeType);
+
+        const dueCount = row.installmentDue || 0;
+        const unit = amountBased ? "₹" : weightBased ? "g" : "";
+
+        const calculated =
+          row.flexFixed != null
+            ? `${unit}${row.flexFixed * dueCount}`
+            : `-`;
+
+        return `${dueCount} (${calculated})`;
+      },
+    }
+
   ];
 
   const columns2 = [

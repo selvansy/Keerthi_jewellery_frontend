@@ -247,14 +247,15 @@ export function RefferalCusCard({ refData }) {
         },
         {
             header: "Installment Date",
-            cell: (row) => {
-                if (!row?.createdAt) return "-";
-                const formatDate = (dateString) => {
-                    const date = new Date(dateString);
-                    return date.toLocaleDateString('en-GB');
-                };
-                return formatDate(row?.createdAt);
-            }
+            // cell: (row) => {
+            //     if (!row?.createdAt) return "-";
+            //     const formatDate = (dateString) => {
+            //         const date = new Date(dateString);
+            //         return date.toLocaleDateString('en-GB');
+            //     };
+            //     return formatDate(row?.createdAt);
+            // }
+            cell:(row)=>formatDate(row?.createdAt)
         },
         {
             header: "Paid Amount",

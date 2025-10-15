@@ -17,6 +17,7 @@ import { useSelector } from "react-redux";
 import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
 import DateRangeSelector from "../../common/calender";
 import { formatDecimal, formatNumber } from "../../../utils/commonFunction";
+import { formatDate } from "../../../../utils/FormatDate";
 
 function CompleteAccount() {
   const roledata = localStorage.getItem("decoded");
@@ -135,89 +136,31 @@ function CompleteAccount() {
       header: "Classification",
       cell: (row) => row?.classification_name,
     },
-    // {
-    //   header: "Started date",
-    //   cell: (row) => {
-    //     const date = new Date(row.createdAt);
-    //     const day = String(date.getDate()).padStart(2, '0');
-    //     const month = String(date.getMonth() + 1).padStart(2, '0');
-    //     const year = date.getFullYear();
-    //     return `${day}-${month}-${year}`;
-    //   }
-    // }, 
-    
     {
-      header: "Started Date",
-      cell: (row) => {
-        const rawDate = row?.createdAt;
-
-        if (!rawDate) return "-";
-
-        let dateObj;
-
-        dateObj = new Date(rawDate);
-        if (isNaN(dateObj.getTime())) {
-          const parts = rawDate.split(/[-/]/);
-          if (parts.length === 3) {
-            const [day, month, year] = parts.map(Number);
-            dateObj = new Date(year, month - 1, day);
-          }
-        }
-
-        if (isNaN(dateObj.getTime())) {
-          return rawDate;
-        }
-
-        return dateObj.toLocaleDateString("en-GB", {
-          day: "numeric",
-          month: "numeric",
-          year: "numeric",
-        });
-      },
-    },
-    // {
-    //   header: "Maturity Date",
-    //   cell: (row) => row?.maturity_date,
-    // },
-
+      header: "Started date",
+      // cell: (row) => {
+      //   const date = new Date(row.createdAt);
+      //   const day = String(date.getDate()).padStart(2, '0');
+      //   const month = String(date.getMonth() + 1).padStart(2, '0');
+      //   const year = date.getFullYear();
+      //   return `${day}-${month}-${year}`;
+      // }
+      cell:(row)=>formatDate(row?.createdAt)
+    }, 
     {
       header: "Maturity Date",
-      cell: (row) => {
-        const rawDate = row?.maturity_date;
-
-        if (!rawDate) return "-";
-
-        let dateObj;
-
-        dateObj = new Date(rawDate);
-        if (isNaN(dateObj.getTime())) {
-          const parts = rawDate.split(/[-/]/);
-          if (parts.length === 3) {
-            const [day, month, year] = parts.map(Number);
-            dateObj = new Date(year, month - 1, day);
-          }
-        }
-
-        if (isNaN(dateObj.getTime())) {
-          return rawDate;
-        }
-
-        return dateObj.toLocaleDateString("en-GB", {
-          day: "numeric",
-          month: "numeric",
-          year: "numeric",
-        });
-      },
+      cell: (row) => formatDate(row?.maturity_date),
     },
     {
       header: "Completed date",
-      cell: (row) => {
-        return new Date(row.completedDate).toLocaleDateString("en-GB", {
-          year: "numeric",
-          month: "numeric",
-          day: "numeric",
-        });
-      },
+      // cell: (row) => {
+      //   return new Date(row.completedDate).toLocaleDateString("en-GB", {
+      //     year: "numeric",
+      //     month: "numeric",
+      //     day: "numeric",
+      //   });
+      // },
+      cell:(row)=> formatDate(row?.completedDate)
     },
     {
       header: "Gift Issue",
