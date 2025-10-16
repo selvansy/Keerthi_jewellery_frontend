@@ -87,6 +87,15 @@ export const customStyles = (isReadOnly) => ({
     fontWeight: "500",
     fontSize: "14px",
   }),
+  menuList: (provided) => ({
+      ...provided,
+      // paddingTop: 0,
+      // paddingBottom: 0,
+      maxHeight:  "190px",
+      // maxHeight: [2, 5, 6].includes(formik.values.scheme_type)
+      //   ? "130px"
+      //   : "209px",
+    }),
 });
 
 const SchemeForm = () => {

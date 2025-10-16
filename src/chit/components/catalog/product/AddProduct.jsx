@@ -1219,7 +1219,7 @@ const AddProduct = () => {
         id_category: responseData.data?.id_category
       }));
     }
-  }, [id, formData]);
+  }, [id,responseData.data]);
 
   const { mutate: getPurityByMetal } = useMutation({
     mutationFn: (id) => puritybymetal(id),

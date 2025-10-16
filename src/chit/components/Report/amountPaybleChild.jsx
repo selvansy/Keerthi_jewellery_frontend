@@ -18,7 +18,7 @@ function AmountPaybleChild() {
   const roledata = localStorage.getItem("decoded");
 
   const location = useLocation();
-  const { id, type } = location.state || {};
+  const { id, type,fromdate,todate } = location.state || {};
 
   const [isLoading, setisLoading] = useState(true);
   const [paybleData, setPaybleData] = useState([]);
@@ -26,8 +26,8 @@ function AmountPaybleChild() {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [totalPages, setTotalPages] = useState(0);
   const [totalDocuments, setTotalDocuments] = useState(0);
-  const [from_date, setfrom_date] = useState(new Date());
-  const [to_date, setto_date] = useState(new Date());
+  const [from_date, setfrom_date] = useState(fromdate||new Date());
+  const [to_date, setto_date] = useState(todate ||new Date());
 
   const navigate = useNavigate()
 

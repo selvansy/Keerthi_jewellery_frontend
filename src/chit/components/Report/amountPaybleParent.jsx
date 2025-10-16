@@ -27,7 +27,7 @@ function AmountPaybleParent() {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [totalPages, setTotalPages] = useState(0);
   const [totalDocuments, setTotalDocuments] = useState(0);
-  const [from_date, setfrom_date] = useState(null); // Changed to null initially
+  const [from_date, setfrom_date] = useState(new Date()); // Changed to null initially
   const [to_date, setto_date] = useState(new Date());
   const type = "amount";
 
@@ -75,7 +75,7 @@ function AmountPaybleParent() {
 
   const handleSchemeClick = (row) => {
     navigate("/report/schemewiseamount", {
-      state: { id: row._id, type: "amount" },
+      state: { id: row._id, type: "amount",fromdate:from_date,todate:to_date },
     });
   };
 

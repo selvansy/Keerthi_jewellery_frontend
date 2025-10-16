@@ -30,9 +30,71 @@ import VerificationModal from "./VerificationModal";
 import OtpCompleted from "./OtpCompleted";
 import SpinLoading from "../../common/spinLoading";
 import { formatNumber } from "../../../utils/commonFunction";
-import { customStyles } from "../../ourscheme/scheme/AddScheme";
+// import { customStyles } from "../../ourscheme/scheme/AddScheme";
 import plus from "../../../../assets/plus.svg";
 import { VerifiedIcon } from "lucide-react";
+
+ const customStyles = (isReadOnly) => ({
+  control: (base, state) => ({
+    ...base,
+    minHeight: "42px", //42px
+    backgroundColor: "white",
+    color: "#232323",
+    // fontWeight:600,
+    border: state.isFocused ? "1px solid #f2f2f9" : "1px solid #f2f2f9",
+    boxShadow: state.isFocused ? "0 0 0 1px #004181" : "none",
+    borderRadius: "0.5rem",
+    "&:hover": {
+      color: "#e2e8f0",
+    },
+    pointerEvents: !isReadOnly ? "none" : "auto",
+    opacity: !isReadOnly ? 1 : 1,
+    cursor: isReadOnly ? "pointer" : "default",
+  }),
+  indicatorSeparator: () => ({
+    display: "none",
+  }),
+  placeholder: (base) => ({
+    ...base,
+    color: "#6C7086",
+    // fontWeight: "thin",
+    fontSize: "14px",
+    // fontStyle: "bold",
+  }),
+  dropdownIndicator: (provided, state) => ({
+    ...provided,
+    color: "#232323",
+    fontSize: "14px",
+    "&:hover": {
+      color: "#232323",
+    },
+  }),
+  input: (base) => ({
+    ...base,
+    "input[type='text']:focus": { boxShadow: "none" },
+  }),
+  option: (base, state) => ({
+    ...base,
+    backgroundColor: state.isSelected
+      ? "#F0F7FE"
+      : state.isFocused
+      ? "#F0F7FE"
+      : "white",
+    color: "#232323",
+    fontWeight: "500",
+    fontSize: "14px",
+  }),
+  menuList: (provided) => ({
+      ...provided,
+      // paddingTop: 0,
+      // paddingBottom: 0,
+      maxHeight:  "120px",
+      // maxHeight: [2, 5, 6].includes(formik.values.scheme_type)
+      //   ? "130px"
+      //   : "209px",
+    }),
+});
+
 
 const AddCloseAccount = () => {
   const dispatch = useDispatch();
@@ -143,7 +205,9 @@ const AddCloseAccount = () => {
 
   useEffect(() => {
     if (paymentModes) {
-      const data = paymentModes.data.map((item) => ({
+      const data = paymentModes.data
+      .filter((item) => item.mode_name.trim().toLowerCase() !== "cash free")
+      .map((item) => ({
         mode: item.id_mode,
         value: item._id,
         label: item.mode_name,
@@ -311,7 +375,9 @@ const AddCloseAccount = () => {
     mutationFn: getallpaymentmodes,
     onSuccess: (response) => {
       if (response?.data) {
-        const options = response.data.map((mode) => ({
+        const filteredData = response.data.filter((mode) => mode.mode_name !== "CASH FREE");
+        console.log(filteredData)
+        const options = filteredData.map((mode) => ({
           value: mode._id,
           label: mode.mode_name,
         }));
@@ -580,7 +646,7 @@ const AddCloseAccount = () => {
   return (
     <>
       <form onSubmit={formik.handleSubmit} className="w-full mx-auto space-y-6">
-        <div className="flex flex-row justify-between items-center mt-4 mb-4">
+        <div className="flex flex-row justify-between items-center mt-4 mb-4 overflow-visible">
           <p className="text-sm text-gray-400 mb-3">
             Manage Customers /{" "}
             <span className="text-[#232323] font-semibold text-sm">
