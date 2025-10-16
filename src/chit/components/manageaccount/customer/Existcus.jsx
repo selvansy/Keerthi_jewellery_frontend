@@ -331,34 +331,36 @@ const Existcusomer = () => {
       header: "Weight",
       cell: (row) => `${formatDecimal(row.weightPaid )|| 0} g`,
     },
-    {
-      header: "Over Dues",
-      cell: (row) =>
-        `${row.installmentDue || 0} ${
-          row.flexFixed != null
-            ? `(₹${row.flexFixed * row.installmentDue})`
-            : `(-)`
-        }`,
-    },
-    {
-      header: "Over Dues",
-      cell: (row) => {
-        const amountBased = [0, 1, 2, 5, 6, 7, 8, 9, 10, 11, 13, 14].includes(
-          row.schemeType
-        );
-        const weightBased = [12, 3, 4].includes(row.schemeType);
+    // {
+    //   header: "Over Dues",
+    //   cell: (row) =>
+    //     `${row.installmentDue || 0} ${
+    //       row.flexFixed != null
+    //         ? `(₹${row.flexFixed * row.installmentDue})`
+    //         : `(-)`
+    //     }`,
+    // },
+   {
+  header: "Over Dues",
+  cell: (row) => {
+    const amountBased = [0, 1, 2, 5, 6, 7, 8, 9, 10, 11, 13, 14].includes(row.schemeType);
+    const weightBased = [12, 3, 4].includes(row.schemeType);
 
-        const dueCount = row.installmentDue || 0;
-        const unit = amountBased ? "₹" : weightBased ? "g" : "";
+    const dueCount = row.installmentDue || 0;
 
-        const calculated =
-          row.flexFixed != null
-            ? `${unit}${row.flexFixed * dueCount}`
-            : `-`;
+    if (row.flexFixed == null) return `${dueCount} (-)`;
 
-        return `${dueCount} (${calculated})`;
-      },
-    }
+    const total = row.flexFixed * dueCount;
+
+    const calculated = amountBased
+      ? `₹ ${total}`
+      : weightBased
+      ? `${total} g`
+      : "-";
+
+    return `${dueCount} (${calculated})`;
+  },
+}
 
   ];
 

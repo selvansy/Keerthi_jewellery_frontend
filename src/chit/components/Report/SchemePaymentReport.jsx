@@ -431,6 +431,7 @@ function AccountSummaryReport() {
             handlePageChange={handlePageChange}
             itemsPerPage={itemsPerPage}
             totalItems={totalDocuments}
+            itemsPerPageOptions={[10,20,50,100,250]}
             handleItemsPerPageChange={handleItemsPerPageChange}
           />
         </div>

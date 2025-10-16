@@ -273,7 +273,7 @@ useEffect(() => {
           <Breadcrumb
                           items={[
                             { label: "Settings" },
-                            { label: "Menu", active: true },
+                            { label: "Delisted Schemes", active: true },
                           ]}
                         />
                     <div className="w-full flex flex-col bg-white border-[1px] rounded-[16px] p-4">

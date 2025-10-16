@@ -285,8 +285,12 @@ const PayableDetails = ({
               (option) => option.value === formik.values.bonus_type
             ) || ""
           }
-          onChange={(option) =>
+          onChange={(option) =>{
             formik.setFieldValue("bonus_type", option?.value ?? "")
+            formik.setFieldValue("bonus_amount","")
+            formik.setFieldValue("bonus_percent","")
+            formik.setFieldValue("benefit_min_installment_wst_mkg","")
+          }
           }
           onBlur={() => formik.setFieldTouched("bonus_type", true)}
         />

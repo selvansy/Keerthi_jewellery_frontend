@@ -576,7 +576,7 @@ const AddSchemePayment = () => {
       setShowWeightInput(true);
       setIspayamtreadOnly(false);
 
-      const initialWeight =  id_scheme?.min_weight || 0;
+      const initialWeight = id_scheme?.min_weight || 0;
       formik.setFieldValue("metal_weight", initialWeight);
 
       const initialAmount = initialWeight * metalRate;
@@ -590,7 +590,7 @@ const AddSchemePayment = () => {
       setShowAmountInput(true);
       setIspayamtreadOnly(false);
       
-      const initialAmount =  id_scheme?.min_amount || 0;
+      const initialAmount = id_scheme?.min_amount || 0;
       formik.setFieldValue("payment_amount", initialAmount);
       setBaseAmount(initialAmount);
     } else {
@@ -601,7 +601,7 @@ const AddSchemePayment = () => {
       setShowAmountInput(true);
       setIspayamtreadOnly(false);
       
-      const initialAmount = id_scheme?.min_amount || 0;
+      const initialAmount =  id_scheme?.min_amount || 0;
       formik.setFieldValue("payment_amount", initialAmount);
       setBaseAmount(initialAmount);
     }
@@ -1325,7 +1325,7 @@ const AddSchemePayment = () => {
                           Enter Weight
                           <span className="text-red-400">*</span>
                           {minWeight > 0 && maxWeight > 0 && (
-                            <span className="text-gray-500 text-sm ml-2">
+                            <span className="text-gray-500 text-xs ml-2">
                               (Min: {minWeight}gm, Max: {maxWeight}gm)
                             </span>
                           )}
@@ -1394,7 +1394,7 @@ const AddSchemePayment = () => {
                         {showAmountInput ? "Enter Amount" : "Payment Amount"}
                         <span className="text-red-400">*</span>
                         {minAmount > 0 && maxAmount > 0 && showAmountInput && (
-                          <span className="text-gray-500 text-[10px] ml-2">
+                          <span className="text-gray-500 text-xs ml-2">
                             (Min: {minAmount}, Max: {maxAmount})
                           </span>
                         )}

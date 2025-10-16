@@ -201,7 +201,11 @@ const AdvancedSettings = ({ formik, layout_color, installment_type }) => {
           </div>
           <div className="w-px bg-gray-300" />
           <div
-            onClick={() => formik.setFieldValue("display_referral", false)}
+            onClick={
+            () => {formik.setFieldValue("display_referral", false)
+            formik.setFieldValue("referralPercentage","")
+            }
+            }
             className={`${
               !formik.values.display_referral
                 ? "text-white"

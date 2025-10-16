@@ -31,6 +31,18 @@ function AmountPaybleParent() {
   const [to_date, setto_date] = useState(new Date());
   const type = "amount";
 
+
+    const [processData, setProcessData] = useState([]);
+  
+      useEffect(() => {
+    const process = paybleData.map((item, index) => ({
+      "S.No": index + 1,
+      "Scheme":item?.schemeName,
+      "Classification":item?.classificationName,
+      "Total Collected Amount":item?.totalCollectedAmount
+    }));
+    setProcessData(process);
+  }, [paybleData]);
   useEffect(() => {
     const payload = {
       page: currentPage,
@@ -147,7 +159,7 @@ function AmountPaybleParent() {
                 initialEndDate={new Date()}
               />
               <ExportDropdown
-                apiData={paybleData}
+                apiData={processData}
                 fileName={`Amount Payable Report ${new Date().toLocaleDateString(
                   "en-GB"
                 )}`}

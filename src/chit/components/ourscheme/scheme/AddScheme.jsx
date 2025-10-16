@@ -383,9 +383,9 @@ const SchemeForm = () => {
         saving_type: schemeData.data.saving_type || "",
 
         // Fixed scheme specific fields
-        totalCountAmount: schemeData?.data?.totalCountAmount || "",
-        incrementRate: schemeData.data.incrementRate || "",
-        startingAmount: schemeData.data.startingAmount || "",
+        // totalCountAmount: schemeData?.data?.totalCountAmount || "",
+        // incrementRate: schemeData.data.incrementRate || "",
+        // startingAmount: schemeData.data.startingAmount || "",
 
         // PayableDetails fields
         min_amount: schemeData.data.min_amount || 0,

@@ -80,6 +80,11 @@ const SchemeAccount = () => {
     queryFn: () => allschemestatus(),
   });
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedSearch, activeFilter]);
+  
+
   // API Mutation for fetching scheme accounts
   const { mutate: getschemeaccountMutate } = useMutation({
     mutationFn: (payload) => schemeaccounttable(payload),
@@ -509,6 +514,7 @@ const SchemeAccount = () => {
             handlePageChange={handlePageChange}
             itemsPerPage={itemsPerPage}
             totalItems={totalDocument}
+            itemsPerPageOptions={[10,20,50,100,250]}
             handleItemsPerPageChange={handleItemsPerPageChange}
           />
         </div>
