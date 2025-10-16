@@ -220,8 +220,8 @@ const OurEmployee = () => {
       cell:(row)=> row?.mobile
     },
     {
-      header :"Employee Code",
-      cell:(row)=>row?.emp_code
+      header :"Employee ID",
+      cell:(row)=>row?.employeeId
     },
     {
       header: "Date of Joining",

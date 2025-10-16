@@ -321,7 +321,7 @@ const Existcusomer = () => {
     },
     {
       header: "Maturity date",
-      cell: (row) => row.maturityDate,
+      cell: (row) => formatDate(row.maturityDate),
     },
     {
       header: "Amount Paid",

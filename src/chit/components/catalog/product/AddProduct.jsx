@@ -1053,6 +1053,12 @@ const AddProduct = () => {
     },
   });
 
+
+  function spliceDecimals(num, decimals) {
+    const factor = Math.pow(10, decimals);
+    return Math.trunc(num * factor) / factor;
+  }
+
   useEffect(() => {
     if (!id) return;
     getProdcutById(id);
@@ -1100,38 +1106,73 @@ const AddProduct = () => {
     }));
   }, [formData.id_metal]);
 
+  // useEffect(() => {
+  //   let makingCharge = 0;
+  //   let wastageCharge = 0;
+
+  //   if (formData.makingCharges.mode === "weight") {
+  //     makingCharge = currentRate * formData.wastageCharges.discountedValue;
+  //   } else {
+  //     makingCharge = Number(formData.makingCharges.discountedValue) || 0;
+  //   }
+
+  //   if (formData.wastageCharges.mode === "weight") {
+  //     wastageCharge = currentRate * formData.wastageCharges.discountedValue;
+  //   } else {
+  //     wastageCharge = Number(formData.wastageCharges.discountedValue) || 0;
+  //   }
+
+  //   let total = price + makingCharge + wastageCharge;
+  //   let totalWithGST = total + formData.gst / 100;
+
+  //   setTotalPrice(totalWithGST);
+  // }, [
+  //   price,
+  //   currentRate,
+  //   formData.gst,
+  //   formData.weight,
+  //   formData.makingCharges.mode,
+  //   formData.makingCharges.discountedValue,
+  //   formData.wastageCharges.mode,
+  //   formData.wastageCharges.discountedValue,
+  // ]);
+
+
   useEffect(() => {
-    let makingCharge = 0;
-    let wastageCharge = 0;
+  let makingCharge = 0;
+  let wastageCharge = 0;
 
-    if (formData.makingCharges.mode === "weight") {
-      makingCharge = currentRate * formData.wastageCharges.discountedValue;
-    } else {
-      makingCharge = Number(formData.makingCharges.discountedValue) || 0;
-    }
+  if (formData.makingCharges?.mode === "weight") {
+    makingCharge = currentRate * formData.makingCharges?.discountedValue;
+  } else {
+    makingCharge = Number(formData.makingCharges?.discountedValue) || 0;
+  }
 
-    if (formData.wastageCharges.mode === "weight") {
-      wastageCharge = currentRate * formData.wastageCharges.discountedValue;
-    } else {
-      wastageCharge = Number(formData.wastageCharges.discountedValue) || 0;
-    }
+  if (formData.wastageCharges?.mode === "weight") {
+    wastageCharge = currentRate * formData.wastageCharges?.discountedValue;
+  } else {
+    wastageCharge = Number(formData.wastageCharges?.discountedValue) || 0;
+  }
 
-    let total = price + makingCharge + wastageCharge;
-    let totalWithGST = total + formData.gst / 100;
+  const subtotal = price + makingCharge + wastageCharge;
+  
+  const gstAmount = subtotal * (formData.gst / 100);
+  
+  const totalWithGST = subtotal + gstAmount;
 
-    setTotalPrice(totalWithGST);
-  }, [
-    price,
-    currentRate,
-    formData.gst,
-    formData.weight,
-    formData.makingCharges.mode,
-    formData.makingCharges.discountedValue,
-    formData.wastageCharges.mode,
-    formData.wastageCharges.discountedValue,
-  ]);
+  setTotalPrice(totalWithGST);
+}, [
+  price,
+  currentRate,
+  formData.gst,
+  formData.weight,
+  formData.makingCharges?.mode,
+  formData.makingCharges?.discountedValue,
+  formData.wastageCharges?.mode,
+  formData.wastageCharges?.discountedValue,
+]);
 
-  // Update image previews whenever existingImages, newImages, or pathUrl changes
+
   useEffect(() => {
     const previews = [
       ...existingImages.map(img => `${pathUrl}${img}`),
@@ -1140,7 +1181,6 @@ const AddProduct = () => {
     setImagePreviews(previews);
   }, [existingImages, newImages, pathUrl]);
 
-  // Clean up blob URLs when component unmounts or newImages changes
   useEffect(() => {
     return () => {
       newImages.forEach((file) => {
@@ -1164,7 +1204,6 @@ const AddProduct = () => {
     },
   });
 
-  //mutation to get all branches
   const { mutate: getAllBranches } = useMutation({
     mutationFn: () => getAllBranch(),
     onSuccess: (response) => {
@@ -1180,7 +1219,6 @@ const AddProduct = () => {
     },
   });
 
-  //mutation to get all metals
   const { mutate: getMetals } = useMutation({
     mutationFn: () => getallmetal(),
     onSuccess: (response) => {
@@ -1848,7 +1886,7 @@ const AddProduct = () => {
 
                 <input
                   type="string"
-                  value={totalPrice}
+                  value={spliceDecimals(totalPrice,3)}
                   className="w-full focus:outline-none ml-2 bg-[#F4F4F4]"
                   placeholder="Price"
                   readOnly
