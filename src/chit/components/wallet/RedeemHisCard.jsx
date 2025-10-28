@@ -272,7 +272,7 @@ export function RefferalCusCard({ refData }) {
         <>
             <div className="w-full flex flex-col bg-white">
                 <div className="flex flex-col pb-4 relative ">
-                    <div className=" grid grid-rows-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-4 border-gray-300 overflow-y-scroll scrollbar-hide">
+                    <div className=" grid grid-rows-2 lg:grid-cols-2 gap-3 mb-4 text-sm">
 
                         <div className="flex flex-row gap-2 mb-4">
                             <label className="text-gray-700 font-medium">
@@ -304,7 +304,7 @@ export function RefferalCusCard({ refData }) {
                             </label>
 
                             <div className="relative">
-                                <div className='px-2  w-full text-[#6C7086]'>
+                                <div className='px-5  w-full text-[#6C7086]'>
                                     {`${refData?.id_scheme?.scheme_name} (${refData?.id_scheme?.code})`}
                                     {/* {refData?.id_scheme?.description} */}
                                 </div>
@@ -350,7 +350,7 @@ export function RefferalCusCard({ refData }) {
 
                         <div className="flex flex-row gap-2 mb-4">
                             <label className="text-gray-700 font-medium">
-                                Total Refferal amount
+                                Total Referral amount
                             </label>
 
                             <div className="relative">

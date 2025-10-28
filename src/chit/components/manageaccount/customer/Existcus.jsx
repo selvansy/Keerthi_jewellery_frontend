@@ -759,6 +759,7 @@ const Existcusomer = () => {
             handleItemsPerPageChange={(value) => setItemsPerPage(value)}
             handlePageChange={handlePageChange}
             itemsPerPage={itemsPerPage}
+             perItemSelect = {true}
             totalItems={totalDocument}
           />
         </div>
@@ -771,6 +772,7 @@ const Existcusomer = () => {
             columns={columns2}
             isLoading={isLoading2}
             currentPage={currentPage1}
+             perItemSelect = {false}
             handleItemsPerPageChange={(value) => setItemsPerPage1(value)}
             handlePageChange={handlePageChange1}
             itemsPerPage={itemsPerPage1}

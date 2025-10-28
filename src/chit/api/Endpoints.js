@@ -2934,3 +2934,20 @@ export const getSchemeCustomers = async (data) => {
   );
   return response.data;
 };
+
+
+
+// for print receipt
+export const paymentReceipt = async (data) => {
+  const response = await Api.post(
+    `${import.meta.env.VITE_API_URL}/api/client/print/receipt`,data
+  );
+  return response.data;
+};
+
+export const paymentReceiptByIds = async (data) => {
+  const response = await Api.post(
+    `${import.meta.env.VITE_API_URL}/api/client/print/receipt/print`,data
+  );
+  return response.data;
+};

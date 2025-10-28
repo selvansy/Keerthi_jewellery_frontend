@@ -1009,12 +1009,10 @@ const AddProduct = () => {
   const [purity, setPurity] = useState([]);
   const MAX_IMAGES = 3;
   
-  // Separate state for images
-  const [existingImages, setExistingImages] = useState([]); // For images from server
-  const [newImages, setNewImages] = useState([]); // For newly uploaded files
-  const [deletedImages, setDeletedImages] = useState([]); // Track deleted images
+  const [existingImages, setExistingImages] = useState([]); 
+  const [newImages, setNewImages] = useState([]); 
+  const [deletedImages, setDeletedImages] = useState([]); 
   
-  // Combined for display
   const [imagePreviews, setImagePreviews] = useState([]);
   const [price, setPrice] = useState("");
   const [totalPrice, setTotalPrice] = useState("");
@@ -1054,6 +1052,8 @@ const AddProduct = () => {
   });
 
 
+
+  console.log(formData  )
   function spliceDecimals(num, decimals) {
     const factor = Math.pow(10, decimals);
     return Math.trunc(num * factor) / factor;
@@ -1137,8 +1137,7 @@ const AddProduct = () => {
   //   formData.wastageCharges.discountedValue,
   // ]);
 
-
-  useEffect(() => {
+useEffect(() => {
   let makingCharge = 0;
   let wastageCharge = 0;
 
@@ -1489,76 +1488,180 @@ const AddProduct = () => {
     return errors;
   };
 
+  // const handleSubmit = () => {
+  //   const validationErrors = validateFormData();
+  //   if (Object.keys(validationErrors).length > 0) {
+  //     setErrors(validationErrors);
+  //     return;
+  //   }
+  //   setIsLoading(true);
+  //   setErrors({});
+
+  //   const formDataToSend = new FormData();
+
+  //   // Append basic form data
+  //   Object.entries(formData).forEach(([key, value]) => {
+  //     if (key === "_id" || key === "pathurl" || key === "active") {
+  //       return;
+  //     }
+
+  //     if (typeof value === "object" && value !== null) {
+  //       Object.entries(value).forEach(([subKey, subValue]) => {
+  //         if (
+  //           subKey === "_id" &&
+  //           (key === "wastageCharges" || key === "makingCharges")
+  //         ) {
+  //           return;
+  //         }
+  //         formDataToSend.append(`${key}[${subKey}]`, subValue);
+  //       });
+  //     } else {
+  //       formDataToSend.append(key, value);
+  //     }
+  //   });
+
+  //   // For edit mode, handle images properly
+  //   if (id) {
+  //     // Append deleted images
+  //     if (deletedImages.length > 0) {
+  //       deletedImages.forEach((imagePath) => {
+  //         formDataToSend.append("deletedImages", imagePath);
+  //       });
+  //     }
+
+  //     // Append existing images to maintain references
+  //     if (existingImages.length > 0) {
+  //       existingImages.forEach((imagePath) => {
+  //         formDataToSend.append("existingImages", imagePath);
+  //       });
+  //     }
+
+  //     // Append new images (only files)
+  //     newImages.forEach((image) => {
+  //       if (image instanceof File) {
+  //         formDataToSend.append("product_image", image);
+  //       }
+  //     });
+  //   } else {
+  //     // For create mode, only append new images
+  //     newImages.forEach((image) => {
+  //       if (image instanceof File) {
+  //         formDataToSend.append("product_image", image);
+  //       }
+  //     });
+  //   }
+
+  //   if (id) {
+  //     editProduct({ formDataToSend, id });
+  //   } else {
+  //     addProduct(formDataToSend);
+  //   }
+  // };
+
+
   const handleSubmit = () => {
-    const validationErrors = validateFormData();
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
-    }
-    setIsLoading(true);
-    setErrors({});
+  const validationErrors = validateFormData();
+  if (Object.keys(validationErrors).length > 0) {
+    setErrors(validationErrors);
+    return;
+  }
+  setIsLoading(true);
+  setErrors({});
 
-    const formDataToSend = new FormData();
+  const formDataToSend = new FormData();
 
-    // Append basic form data
-    Object.entries(formData).forEach(([key, value]) => {
-      if (key === "_id" || key === "pathurl" || key === "active") {
-        return;
-      }
-
-      if (typeof value === "object" && value !== null) {
-        Object.entries(value).forEach(([subKey, subValue]) => {
-          if (
-            subKey === "_id" &&
-            (key === "wastageCharges" || key === "makingCharges")
-          ) {
-            return;
-          }
-          formDataToSend.append(`${key}[${subKey}]`, subValue);
-        });
-      } else {
-        formDataToSend.append(key, value);
-      }
-    });
-
-    // For edit mode, handle images properly
-    if (id) {
-      // Append deleted images
-      if (deletedImages.length > 0) {
-        deletedImages.forEach((imagePath) => {
-          formDataToSend.append("deletedImages", imagePath);
-        });
-      }
-
-      // Append existing images to maintain references
-      if (existingImages.length > 0) {
-        existingImages.forEach((imagePath) => {
-          formDataToSend.append("existingImages", imagePath);
-        });
-      }
-
-      // Append new images (only files)
-      newImages.forEach((image) => {
-        if (image instanceof File) {
-          formDataToSend.append("product_image", image);
-        }
-      });
+  const safeAppend = (key, value) => {
+    if (value === null || value === undefined) {
+      formDataToSend.append(key, '');
+    } else if (typeof value === 'object' && !(value instanceof File)) {
+      formDataToSend.append(key, JSON.stringify(value));
     } else {
-      // For create mode, only append new images
-      newImages.forEach((image) => {
-        if (image instanceof File) {
-          formDataToSend.append("product_image", image);
-        }
-      });
-    }
-
-    if (id) {
-      editProduct({ formDataToSend, id });
-    } else {
-      addProduct(formDataToSend);
+      formDataToSend.append(key, value);
     }
   };
 
+  Object.entries(formData).forEach(([key, value]) => {
+    if (key === "_id" || key === "pathurl" || key === "active") {
+      return;
+    }
+
+    if (id && value === null) {
+      safeAppend(key, '');
+      return;
+    }
+
+    if (typeof value === "object" && value !== null) {
+      Object.entries(value).forEach(([subKey, subValue]) => {
+        if (
+          subKey === "_id" &&
+          (key === "wastageCharges" || key === "makingCharges")
+        ) {
+          return;
+        }
+        
+        if (id && subValue === null) {
+          safeAppend(`${key}[${subKey}]`, '');
+        } else if (subValue !== null && subValue !== undefined) {
+          safeAppend(`${key}[${subKey}]`, subValue);
+        }
+      });
+    } else {
+      safeAppend(key, value);
+    }
+  });
+
+  // if (id) {
+  //   if (deletedImages.length > 0) {
+  //     deletedImages.forEach((imagePath) => {
+  //       formDataToSend.append("deletedImages", imagePath);
+  //     });
+  //   }
+
+  //   if (existingImages.length > 0) {
+  //     existingImages.forEach((imagePath) => {
+  //       formDataToSend.append("existingImages", imagePath);
+  //     });
+  //   } else {
+  //     formDataToSend.append("existingImages", "[]");
+  //   }
+
+  //   newImages.forEach((image) => {
+  //     if (image instanceof File) {
+  //       formDataToSend.append("product_image", image);
+  //     }
+  //   });
+
+  //   formDataToSend.append("isEdit", "true");
+  // } else {
+  //   newImages.forEach((image) => {
+  //     if (image instanceof File) {
+  //       formDataToSend.append("product_image", image);
+  //     }
+  //   });
+  // }
+
+
+    if (existingImages.length > 0) {
+    formDataToSend.append("existing_images", JSON.stringify(existingImages));
+  }
+  
+  if (newImages.length > 0) {
+    newImages.forEach((image) => {
+      formDataToSend.append("product_image", image);
+    });
+  }
+
+  console.log("FormData contents before submit:");
+  for (let pair of formDataToSend.entries()) {
+    console.log(`${pair[0]}:`, pair[1]);
+  }
+
+  if (id) {
+    editProduct({ formDataToSend, id });
+  } else {
+    addProduct(formDataToSend);
+  }
+};
   const totalImagesCount = existingImages.length + newImages.length;
 
   return (
@@ -1675,7 +1778,7 @@ const AddProduct = () => {
 
             <div className="flex flex-col">
               <label className="text-gray-700 mb-2 mt-2 font-medium">
-                purity<span className="text-red-400">*</span>
+                Purity<span className="text-red-400">*</span>
               </label>
               <Select
                 styles={customSelectStyles(metals)}

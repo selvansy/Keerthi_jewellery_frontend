@@ -16,6 +16,9 @@ import {
   ChevronRight,
   Menu,
   LayoutDashboard,
+  Layers2,
+  IndianRupee,
+  Printer,
 } from "lucide-react";
 
 import logo from "../../../assets/nytro.png";
@@ -40,6 +43,7 @@ import {
   todaymetalrate,
 } from "../../api/Endpoints";
 import { formatNumber } from "../../utils/commonFunction";
+import packageJson from "../../../../package.json";
 
 const Base = ({ renderContent: RenderContent }) => {
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -533,34 +537,34 @@ const Base = ({ renderContent: RenderContent }) => {
   const quickLinks = [
     {
       name: "Metal Rate",
-      link: "/setup/metal",
-      icon: <Star className="text-pink-500" />,
+      link: "/masters/metalrate/",
+      icon: <IndianRupee color="grey" />,
     },
     {
       name: "Customer",
-      link: "/manageaccount/addcustomer",
-      icon: <User className="text-blue-500" />,
+      link: "/managecustomers/customer/",
+      icon: <User color="grey" />,
     },
-    {
-      name: "Manage Account",
-      link: "/manageaccount/addschemeaccount",
-      icon: <Settings className="text-purple-500" />,
-    },
+    // {
+    //   name: "Manage Account",
+    //   link: "/manageaccount/addschemeaccount",
+    //   icon: <Settings className="text-purple-500" />,
+    // },
     {
       name: "Payment",
       link: "/payment/addschemepayment",
-      icon: <CreditCard className="text-green-500" />,
+      icon: <CreditCard color="grey" />,
     },
-    {
-      name: "Card Print",
-      link: "/cardprint/printone",
-      icon: <LucidePrinter className="text-green-500" />,
-    },
-    {
-      name: "Receipt Print",
-      link: "/receiptprint/printone",
-      icon: <PawPrintIcon className="text-green-500" />,
-    },
+    // {
+    //   name: "Card Print",
+    //   link: "/cardprint/printone",
+    //   icon: <LucidePrinter color="grey"  />,
+    // },
+    // {
+    //   name: "Receipt Print",
+    //   link: "/receiptprint/printone",
+    //   icon: <Printer color="grey"  />,
+    // },
   ];
 
   return (
@@ -631,7 +635,15 @@ const Base = ({ renderContent: RenderContent }) => {
               </span>
             </div>
 
-            <div className="border-2 border-[#F2F2F9] rounded-full"></div>
+            <div className="border-2 border-[#F2F2F9] rounded-full">
+              <button
+                className="p-2 text-gray-900"
+                data-testid="toggle-settings"
+                onClick={() => setSettingsOpen(!settingsOpen)}
+              >
+                <Layers2 color="grey" />
+              </button>
+            </div>
 
             <div className="border-2 border-[#F2F2F9] rounded-full w-10 h-10">
               <button className="p-2 text-gray-900">
@@ -671,6 +683,19 @@ const Base = ({ renderContent: RenderContent }) => {
               </button>
             )}
           </div>
+
+          <div className="xl:hidden items-center space-x-3  flex ">
+            <div className="border-2 border-[#F2F2F9] rounded-full">
+              <button
+                className="p-2 text-gray-900"
+                data-testid="toggle-settings"
+                onClick={() => setSettingsOpen(!settingsOpen)}
+              >
+                <Layers2 color="grey" />
+              </button>
+            </div>
+           
+          </div>
         </div>
       </header>
 
@@ -683,10 +708,9 @@ const Base = ({ renderContent: RenderContent }) => {
         } lg:translate-x-0 z-50 pt-16 lg:pt-4 overflow-auto flex flex-col`}
         style={{ backgroundColor: sidebar_color }}
       >
-       <div className="flex justify-center p-5 items-center">
+        <div className="flex justify-center p-5 items-center">
           <img src={logo} alt="Logo" className="h-10 w-48 object-fill mb-4" />
         </div>
-
 
         <nav className="flex-1 text-white scrollbar-hide overflow-y-auto text-sm font-semibold">
           {/* <MenuItem
@@ -749,8 +773,7 @@ const Base = ({ renderContent: RenderContent }) => {
         </nav>
       </aside>
 
-      <div className="flex flex-col min-h-screen bg-[#fffefa] pt-14 lg:pl-64 pb-10">
-        {/* SettingsButton  */}
+      {/* <div className="flex flex-col min-h-screen bg-[#fffefa] pt-14 lg:pl-64 pb-10">
         <div className="settingsButton flex flex-row justify-end items-center">
           {settingsOpen === true && (
             <div
@@ -761,7 +784,6 @@ const Base = ({ renderContent: RenderContent }) => {
             >
               <nav className="flex-1 text-gray-900">
                 <div className="flex flex-col">
-                  {/* Title  */}
                   <div className="flex justify-between items-center">
                     <div className="p-3 border-l">
                       <h3 className="text-xl font-semibold text-start px-3">
@@ -879,7 +901,6 @@ const Base = ({ renderContent: RenderContent }) => {
                       </div>
                     </div>
                   </div>
-                  {/* Quick Links */}
                   <div className="p-3">
                     <h3 className="text-xl font-medium mb-2 px-3 m-2">
                       Quick Links
@@ -916,6 +937,66 @@ const Base = ({ renderContent: RenderContent }) => {
             <RenderContent refresh={getPurity} />
           </div>
         </main>
+      </div> */}
+
+      <div className="flex flex-col min-h-screen bg-transparent pt-14 lg:pl-64 pb-10">
+        {/* SettingsButton  */}
+        <div className="settingsButton flex flex-row justify-end items-center">
+          {/* Settings Panel - Always rendered, visibility controlled by transform */}
+          <div
+            ref={settingsRef}
+            className={`fixed top-0 right-0 h-full scrollbar-hide w-64 lg:w-1/4 bg-white border-l border-[#e4e6eb] transform transition-transform duration-300 ease-in-out z-50 pt-16 lg:pt-4 flex flex-col ${
+              settingsOpen ? "translate-x-0" : "translate-x-full"
+            }`}
+          >
+            <nav className="flex-1 text-gray-900">
+              <div className="flex flex-col">
+                {/* Title  */}
+                <div className="flex justify-between">
+                  <div className="p-3 border-l">
+                    <h3 className="text-xl font-semibold text-start px-3">
+                      Quick Links
+                    </h3>
+                  </div>
+                  <div className="p-3 text-xl ">
+                    <X
+                      size={28}
+                      onClick={() => setSettingsOpen((prev) => !prev)}
+                      className="cursor-pointer"
+                    />
+                  </div>
+                </div>
+
+                {/* Quick Links */}
+                <div>
+                  <div className="grid grid-cols-2 gap-4 px-3">
+                    {quickLinks.map((link, index) => (
+                      <div
+                        key={index}
+                        className="flex flex-col items-center p-4 bg-white border rounded-lg shadow-lg hover:bg-gray-300 cursor-pointer"
+                        onClick={() => {
+                          navigate(link.link);
+                          setSettingsOpen(false);
+                        }}
+                      >
+                        <div className="text-2xl mb-2">{link.icon}</div>
+                        <span className="text-sm font-medium text-gray-700">
+                          {link.name}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </nav>
+          </div>
+        </div>
+
+        <main className="bg-[#fffefa] px-6 pt-4 pb-4 mb-6">
+          <div className="h-full">
+            <RenderContent refresh={getPurity} />
+          </div>
+        </main>
       </div>
 
       <footer className="flex flex-row justify-center items-center w-full h-10 bg-white border-t py-3 px-2 fixed bottom-0 left-0 lg:left-40 z-30">
@@ -931,6 +1012,9 @@ const Base = ({ renderContent: RenderContent }) => {
             {" "}
             <span className="text-blue-700">Legal Policies</span>
           </div> */}
+        </div>
+        <div className="text-sm lg:text-sm md:text-md flex text-nowrap text-gray-500">
+          V-({packageJson.version})
         </div>
       </footer>
     </div>

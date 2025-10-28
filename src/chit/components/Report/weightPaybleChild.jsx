@@ -55,7 +55,7 @@ function WeightPaybleChild() {
       "Customer":item?.customer,
       "Accounter Name":`${item?.accounter_fname} ${item?.accounter_lname}`,
       "scheme A/c No": item?.schemeAccNumber,
-      "Total Collectd Weight":item?.totalValue,
+      "Total Collectd Weight":item?.totalValue.toFixed(3),
       "Maturity Date":formatDate(item?.maturityDate),
       "Paid Installment":item?.paidInstallments,
        

@@ -9,21 +9,31 @@ export default function WastageChargeForm({ onChange,initialState }) {
 
   const [formData, setFormData] = useState({}); 
 
-  const handleInputChange = (field, value) => {
-    setFormData((prev) => {
-      const updatedFormData = { ...prev, [field]: value };
+  // const handleInputChange = (field, value) => {
+  //   setFormData((prev) => {
+  //     const updatedFormData = { ...prev, [field]: value };
       
-      if (
-        updatedFormData.actualValue &&
-        updatedFormData.discountedValue &&
-        updatedFormData.discountedPercentage
-      ) {
-        onChange(updatedFormData);
-      }
+  //     if (
+  //       updatedFormData.actualValue &&
+  //       updatedFormData.discountedValue &&
+  //       updatedFormData.discountedPercentage
+  //     ) {
+  //       onChange(updatedFormData);
+  //     }
 
-      return updatedFormData;
-    });
-  };
+  //     return updatedFormData;
+  //   });
+  // };
+
+  const handleInputChange = (field, value) => {
+  setFormData((prev) => {
+    const updatedFormData = { ...prev, [field]: value };
+    
+    onChange(updatedFormData);
+
+    return updatedFormData;
+  });
+};
 
    useEffect(()=>{
       if(!initialState) return

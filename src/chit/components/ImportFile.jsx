@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { exportData } from "../api/Endpoints"; // Use a single API for all types
+import { exportData } from "../api/Endpoints";
 import { toast } from "sonner";
 
 const UploadFileComponent = () => {
@@ -8,18 +8,62 @@ const UploadFileComponent = () => {
   const [file, setFile] = useState(null);
   const [error, setError] = useState("");
 
+  const downloadExcelFile = (blob, fileName) => {
+    // Create a blob URL for the Excel file
+    const url = window.URL.createObjectURL(blob);
+    
+    // Create a temporary anchor element to trigger download
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    
+    // Clean up
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+  };
+
   const mutation = useMutation({
-    mutationFn: async (formData) => await exportData(formData),
-    onSuccess: (response) => {
-      ;
-      toast.success(response.message);
+    mutationFn: async (formData) => {
+      const response = await exportData(formData);
+      
+      // Check if response is an Excel file (blob)
+      if (response instanceof Blob) {
+        return { isExcel: true, blob: response };
+      }
+      
+      // Regular JSON response
+      return { isExcel: false, data: response };
+    },
+    onSuccess: (result) => {
+      if (result.isExcel) {
+        // Handle Excel file download
+        const fileName = `error_report_${selectedField}_${Date.now()}.xlsx`;
+        downloadExcelFile(result.blob, fileName);
+        toast.error("Upload failed. Downloading error report...");
+      } else {
+        // Handle regular success response
+        toast.success(result.data.message || "Upload successful!");
+      }
+      setFile(null);
+      setSelectedField("");
     },
     onError: (error) => {
       console.error("Upload failed", error);
-      setError(
-        `Error field: ${error?.response?.data?.error}, Line: ${error?.response?.data?.errorLine}`
-      );
-      toast.error(error?.response?.data?.message || "Upload failed");
+      
+      // Check if error response contains an Excel file
+      if (error?.response?.data instanceof Blob) {
+        const fileName = `error_report_${selectedField}_${Date.now()}.xlsx`;
+        downloadExcelFile(error.response.data, fileName);
+        toast.error("Upload failed. Downloading error report...");
+      } else {
+        // Regular error response
+        setError(
+          `Error field: ${error?.response?.data?.error}, Line: ${error?.response?.data?.errorLine}`
+        );
+        toast.error(error?.response?.data?.message || "Upload failed");
+      }
       setFile(null);
     },
   });
@@ -62,17 +106,33 @@ const UploadFileComponent = () => {
           type="file"
           onChange={(e) => setFile(e.target.files[0])}
           className="w-full"
+          accept=".xlsx,.xls,.csv"
         />
+        <p className="text-sm text-gray-500 mt-1">
+          Supported formats: .xlsx, .xls, .csv
+        </p>
       </div>
 
       <button
         onClick={handleUpload}
-        className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-xl transition duration-200"
+        disabled={mutation.isLoading}
+        className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white py-2 px-4 rounded-xl transition duration-200"
       >
         {mutation.isLoading ? "Uploading..." : "Upload"}
       </button>
 
-      {error && <span className="text-red-500">{error}</span>}
+      {error && (
+        <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-xl">
+          <span className="text-red-500 text-sm">{error}</span>
+        </div>
+      )}
+
+      {mutation.isLoading && (
+        <div className="mt-4 text-center">
+          <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+          <p className="text-sm text-gray-600 mt-2">Processing your file...</p>
+        </div>
+      )}
     </div>
   );
 };

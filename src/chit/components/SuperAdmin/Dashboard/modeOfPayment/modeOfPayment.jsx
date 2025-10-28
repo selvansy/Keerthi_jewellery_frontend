@@ -40,10 +40,10 @@ const options = [
     label: "This Year",
     value: new Date(now.getFullYear(), 0, 1).toISOString(),
   },
-  {
-    label: "Custom",
-    value: "",
-  },
+  // {
+  //   label: "Custom",
+  //   value: "",
+  // },
 ];
 
 const CustomControl = (props) => (
@@ -114,10 +114,10 @@ function ModeOfPayment({ id_branch }) {
         startDate = getStartOfDay(startDate);
         endDate = getEndOfDay(currentDate);
         break;
-      case "Custom":
-        startDate = null;
-        endDate = null;
-        break;
+      // case "Custom":
+      //   startDate = null;
+      //   endDate = null;
+      //   break;
       default:
         break;
     }

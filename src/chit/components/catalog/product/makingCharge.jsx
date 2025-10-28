@@ -9,23 +9,34 @@ export default function MakingChargesForm({ onChange, initialState }) {
 
   const [formData, setFormData] = useState({}); 
  
+  // const handleInputChange = (field, value) => {
+  //   setFormData((prev) => {
+  //     const updatedFormData = { ...prev, [field]: value };
+
+  //     if (
+  //       updatedFormData.actualValue &&
+  //       updatedFormData.discountedValue &&
+  //       updatedFormData.discountedPercentage
+  //     ) {
+  //       onChange(updatedFormData);
+  //     }
+
+  //     return updatedFormData;
+  //   });
+  // };
+
+
   const handleInputChange = (field, value) => {
-    setFormData((prev) => {
-      const updatedFormData = { ...prev, [field]: value };
+  setFormData((prev) => {
+    const updatedFormData = { ...prev, [field]: value };
+    
+    // Always call onChange with updated data, regardless of field completeness
+    onChange(updatedFormData);
 
-      if (
-        updatedFormData.actualValue &&
-        updatedFormData.discountedValue &&
-        updatedFormData.discountedPercentage
-      ) {
-        onChange(updatedFormData);
-      }
+    return updatedFormData;
+  });
+};
 
-      return updatedFormData;
-    });
-  };
-
-  
   useEffect(()=>{
     if(!initialState) return
     setFormData(initialState)

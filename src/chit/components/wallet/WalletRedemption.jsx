@@ -425,7 +425,7 @@ function WalletRedemption() {
             }
         },
         {
-            header: "Refferral Reward",
+            header: "Referral Reward",
             cell: (row) => `₹ ${row?.credited_amount || "-"}`,
         },
         {
@@ -505,7 +505,7 @@ function WalletRedemption() {
             </div>
 
             <div className='w-full flex flex-col bg-white border-[1px] border-[#f2f3f8] rounded-md px-6 overflow-y-auto scrollbar-hide gap-x-8 p-5'>
-                <h2 className='text-md font-bold text-[#232323] mb-4'>{id ? "Refferal History" : "Add Wallet Redemption"}</h2>
+                <h2 className='text-md font-bold text-[#232323] mb-4'>{id ? "Referral History" : "Add Wallet Redemption"}</h2>
                 {
                     !id && (
                         <>

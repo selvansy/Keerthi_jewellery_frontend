@@ -70,6 +70,7 @@ const SchemeAccount = () => {
   const [selectedValue, setSelectedValue] = useState("");
   const [activeDropdown, setActiveDropdown] = useState("");
   const [position, setPosition] = useState({ top: 0, left: 0 });
+  const [processData,setProcessData]=useState([])
 
   const debouncedSearch = useDebounce(searchInput, 500);
   const dropdownRef = useRef(null);
@@ -137,6 +138,33 @@ const SchemeAccount = () => {
     };
     getschemeaccountMutate(filterTosend);
   }, [currentPage, itemsPerPage, debouncedSearch, activeFilter]);
+
+
+   useEffect(() => {
+      const process = schemeaccount.map((value, index) => ({
+         "S.no": index + 1,
+      "Acc.Name":value.account_name,
+      "Mobile":value.mobile,
+      "Sch.Name":value.scheme_name,
+      "Sch.Acc.no":value.scheme_acc_number,
+      "Paid.Inst": `${value.total_paidinstallments || 0 }/${value.total_installments || 0}`,
+      "Status Name":value.status_name,
+      "Start Date": value.createdAt
+        ? new Date(value.createdAt).toLocaleDateString('en-GB')
+        : '',
+      "Mat.date": value.maturity_date,
+        // ? new Date(value.maturity_date).toLocaleDateString('en-GB')
+        // : '',
+      "Last.Paid.Date": value.last_paid_date
+        ? new Date(value.last_paid_date).toLocaleDateString('en-GB')
+        : '',
+      "Sch.type":value.scheme_typename,
+      "Created Through":value.created_through,
+      "Classification":value?.classification?.name
+      }));
+      setProcessData(process);
+    }, [schemeaccount]);
+  
 
   // Event handlers
   const closeIncommingModal = () => {
@@ -483,7 +511,7 @@ const SchemeAccount = () => {
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4 w-full sm:w-auto lg:pt-10">
             <div className="w-full sm:w-auto">
               <ExportDropdown
-                apiData={schaccExp}
+                apiData={processData}
                 fileName={`Customer Schemes ${new Date().toLocaleDateString(
                   "en-GB"
                 )}`}

@@ -385,6 +385,7 @@ const Purity = () => {
             currentPage={currentPage}
             handlePageChange={handlePageChange}
             itemsPerPage={itemsPerPage}
+            perItemSelect = {false}
             totalItems={totalDocuments}
             handleItemsPerPageChange={handleItemsPerPageChange}
           />

@@ -54,16 +54,10 @@ function OverDueReport() {
           : `${spliceDecimals(item.weight,3)}g`
         : "0 g",
       "Ints.Due": item.installmentDue,
-      "Join Date":item.createdAt
-        ? new Date(item.createdAt).toLocaleDateString("en-GB")
-        : "",
-      "Mat.Date": item.maturity_date
-        ? new Date(item.maturity_date).toLocaleDateString("en-GB")
-        : "",
+      "Join Date":formatDate(item.createdAt),
+      "Mat.Date": formatDate(item.maturity_date),
       // CreatedAt:item.createdAt?.slice(0, 10),
-      "Last paid Date": item.createdAt
-        ? new Date(item.createdAt).toLocaleDateString("en-GB")
-        : "",
+      "Last paid Date": formatDate(item.createdAt),
     }));
     setProcessData(process);
   }, [overDueData]);

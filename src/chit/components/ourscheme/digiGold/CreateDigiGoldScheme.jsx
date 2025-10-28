@@ -37,6 +37,7 @@ const CreateDigiGoldScheme = () => {
   const id_branch = roleData?.id_branch;
   const accessBranch = roleData?.branch;
 
+  // All states declared together
   const [branch, setBranch] = useState(() => (accessBranch === "0" ? [] : {}));
   const [layout_color, setLayoutColor] = useState("#015173");
   const [staticData, setStaticData] = useState({});
@@ -49,50 +50,74 @@ const CreateDigiGoldScheme = () => {
   const [descriptionImage, setDescriptionImage] = useState(null);
   const [pathUrl, setPathUrl] = useState("");
   const [purity, setPurity] = useState([]);
-
-  // Customisations for react-select
-  // const customStyles = (isReadOnly) => ({
-  //   control: (base, state) => ({
-  //     ...base,
-  //     minHeight: "42px",
-  //     backgroundColor: "white",
-  //     border: state.isFocused ? "1px solid black" : "2px solid #f2f3f8",
-  //     boxShadow: state.isFocused ? "0 0 0 1px black" : "none",
-  //     borderRadius: "0.375rem",
-  //     "&:hover": {
-  //       color: "#e2e8f0",
-  //     },
-  //     pointerEvents: !isReadOnly ? "none" : "auto",
-  //     opacity: !isReadOnly ? 1 : 1,
-  //   }),
-  //   indicatorSeparator: () => ({
-  //     display: "none",
-  //   }),
-  //   placeholder: (base) => ({
-  //     ...base,
-  //     color: "#858293",
-  //     fontWeight: "thin",
-  //     // fontStyle: "bold",
-  //   }),
-  //   dropdownIndicator: (provided, state) => ({
-  //     ...provided,
-  //     color: "#232323",
-  //     "&:hover": {
-  //       color: "#232323",
-  //     },
-  //   }),
-  // });
+  const [selectedPurity, setSelectedPurity] = useState(null);
+  const [initialDataLoaded, setInitialDataLoaded] = useState(false);
 
   const inputHeight = "42px";
 
+  // Improved cleanup function
+  const destroyAllStates = () => {
+    console.log("Cleaning up all states...");
+    
+    // Reset all state variables to their initial values
+    setBranch(accessBranch === "0" ? [] : {});
+    setLayoutColor("#015173");
+    setStaticData({});
+    setIsLoading(false);
+    setIsDataLoaded(false);
+    setBonus(false);
+    setSilver(false);
+    setHeader("");
+    setMainImage(null);
+    setDescriptionImage(null);
+    setPathUrl("");
+    setPurity([]);
+    setSelectedPurity(null);
+    setInitialDataLoaded(false);
+  };
+
+  // Reset function for form and states
+  const resetFormAndStates = () => {
+    destroyAllStates();
+    
+    // Reset formik to initial values
+    if (formik) {
+      formik.resetForm();
+    }
+  };
+
+  // Cleanup on component unmount
   useEffect(() => {
-    if (location.pathname === "/scheme/digisilver") {
+    return () => {
+      destroyAllStates();
+    };
+  }, []);
+
+  // Reset when navigating to different routes
+  useEffect(() => {
+    // Reset when the path changes significantly (not just ID changes)
+    const currentPath = location.pathname.split('/').slice(0, 4).join('/'); // Get base path
+    
+    return () => {
+      // Only reset if we're actually navigating away from the form
+      if (!location.pathname.includes('/scheme/digi')) {
+        resetFormAndStates();
+      }
+    };
+  }, [location.pathname]);
+
+  useEffect(() => {
+    const path = location.pathname;
+    const isSilver = path.startsWith("/scheme/digisilver");
+    const id = path.split("/")[3]; 
+  
+    if (isSilver && !id) {
       setSilver(true);
       setHeader("Create Digi Silver Scheme");
-    } else if (location.pathname === "/scheme/digisilver" && id) {
+    } else if (isSilver && id) {
       setSilver(true);
       setHeader("Edit Digi Silver");
-    } else if (!id && location.pathname !== "/scheme/digisilver") {
+    } else if (!isSilver && !id) {
       setSilver(false);
       setHeader("Create Digi Gold Scheme");
     } else {
@@ -100,7 +125,7 @@ const CreateDigiGoldScheme = () => {
       setHeader("Edit Digi Gold");
     }
   }, [location.pathname]);
-
+  
   // Formik initialization
   const formik = useFormik({
     initialValues: {
@@ -116,25 +141,24 @@ const CreateDigiGoldScheme = () => {
       entry_type: 0,
       values: [],
       bonuses: [],
-      buy_gst: "",
-      sell_gst: "",
       max_amount: "",
       min_amount: "",
       scheme_type: silver ? 14 : 10,
       noOfDays: null,
-      maxLimit:null
+      maxLimit: null
     },
     validationSchema: Yup.object({
       scheme_name: Yup.string().required("Scheme name is required"),
-      description: Yup.string().required("Description is required")
-      .max(850, "Description cannot exceed 850 characters"),
-      term_desc: Yup.string().required("Terms & conditions is required")
-      .max(850, "Terms & conditions cannot exceed 850 characters"),
-      id_purity:Yup.string().required("Purity is required"),
-      // id_branch: Yup.string().required("Branch is required"),
-      id_branch:Yup.string()
-      .required("Branch is required")
-      .nullable(),
+      description: Yup.string()
+        .required("Description is required")
+        .max(850, "Description cannot exceed 850 characters"),
+      term_desc: Yup.string()
+        .required("Terms & conditions is required")
+        .max(850, "Terms & conditions cannot exceed 850 characters"),
+      id_purity: Yup.string().required("Purity is required"),
+      id_branch: Yup.string()
+        .required("Branch is required")
+        .nullable(),
       bonus_type: Yup.number().when("$isBonus", {
         is: true,
         then: (schema) => schema.required("Bonus type is required"),
@@ -148,11 +172,6 @@ const CreateDigiGoldScheme = () => {
             .required("Count is required"),
         otherwise: (schema) => schema.notRequired(),
       }),
-      // entry_type: Yup.number().when("$isBonus", {
-      //   is: true,
-      //   then: (schema) => schema.required("Entry type is required"),
-      //   otherwise: (schema) => schema.notRequired(),
-      // }),
       values: Yup.array().of(
         Yup.object().shape({
           min: Yup.number().when(["$entry_type", "$isBonus"], {
@@ -184,90 +203,80 @@ const CreateDigiGoldScheme = () => {
             otherwise: (schema) => schema.notRequired(),
           })
       ),
-      // buy_gst: Yup.number().optional("Buy GST is required"),
-      // sell_gst: Yup.number().optional("Sell GST is required"),
       max_amount: Yup.number().required("Max Amount is required"),
       min_amount: Yup.number().required("Min Amount is required"),
       scheme_type: Yup.number().required("Scheme type is required"),
-      noOfDays:Yup.number().required("Maturity days required"),
+      noOfDays: Yup.number().required("Maturity days required"),
       logo: Yup.mixed()
-      .test('required', 'Main image is required', (value) => {
-        return mainImage !== null && mainImage !== false;
-      })
-      // .test('fileSize', 'File too large', (value) => {
-      //   if (value && value.size) {
-      //     return value.size <= 1024 * 1024;
-      //   }
-      //   return true;
-      // }),
+        .test('required', 'Main image is required', (value) => {
+          return mainImage !== null && mainImage !== false;
+        })
     }),
     context: { isBonus }, 
-    // Replace the onSubmit function in your formik configuration
-// Replace the onSubmit function in your formik configuration
-onSubmit: async (values) => {
-  setIsLoading(true);
-  
-  if (!mainImage) {
-    formik.setFieldError('logo', 'Main image is required');
-    setIsLoading(false);
-    return;
-  }
-  
-  try {
-    const formData = new FormData();
+    enableReinitialize: true,
 
-    Object.keys(values).forEach(key => {
-      if (key !== 'values' && key !== 'bonuses' && 
-          key !== 'logo' && key !== 'desc_img' &&  key !== 'main_image' &&
-          values[key] !== undefined && values[key] !== null) {
-        formData.append(key, values[key]);
+    onSubmit: async (values) => {
+      setIsLoading(true);
+      
+      if (!mainImage) {
+        formik.setFieldError('logo', 'Main image is required');
+        setIsLoading(false);
+        return;
       }
-    });
+      
+      try {
+        const formData = new FormData();
 
-    if (values.values && values.values.length > 0) {
-      values.values.forEach((item, index) => {
-        if (item.min !== undefined) formData.append(`values[${index}][min]`, item.min);
-        if (item.max !== undefined) formData.append(`values[${index}][max]`, item.max);
-        if (item.value !== undefined) formData.append(`values[${index}][value]`, item.value);
-      });
-    }
+        Object.keys(values).forEach(key => {
+          if (key !== 'values' && key !== 'bonuses' && 
+              key !== 'logo' && key !== 'desc_img' &&  key !== 'main_image' &&
+              values[key] !== undefined && values[key] !== null) {
+            formData.append(key, values[key]);
+          }
+        });
 
-    if (values.bonuses && values.bonuses.length > 0) {
-      values.bonuses.forEach((bonus, index) => {
-        formData.append(`bonuses[${index}]`, bonus);
-      });
-    }
+        if (values.values && values.values.length > 0) {
+          values.values.forEach((item, index) => {
+            if (item.min !== undefined) formData.append(`values[${index}][min]`, item.min);
+            if (item.max !== undefined) formData.append(`values[${index}][max]`, item.max);
+            if (item.value !== undefined) formData.append(`values[${index}][value]`, item.value);
+          });
+        }
 
-    if (mainImage instanceof File) {
-      formData.append("logo", mainImage);
-    } else if (typeof mainImage === 'string') {
-      formData.append("logo", mainImage);
-    }
+        if (values.bonuses && values.bonuses.length > 0) {
+          values.bonuses.forEach((bonus, index) => {
+            formData.append(`bonuses[${index}]`, bonus);
+          });
+        }
 
-    if (descriptionImage) {
-      if (descriptionImage instanceof File) {
-        formData.append("desc_img", descriptionImage);
-      } else if (typeof descriptionImage === 'string') {
-        formData.append("desc_img", descriptionImage);
+        if (mainImage instanceof File) {
+          formData.append("logo", mainImage);
+        } else if (typeof mainImage === 'string') {
+          formData.append("logo", mainImage);
+        }
+
+        if (descriptionImage) {
+          if (descriptionImage instanceof File) {
+            formData.append("desc_img", descriptionImage);
+          } else if (typeof descriptionImage === 'string') {
+            formData.append("desc_img", descriptionImage);
+          }
+        }
+
+        if (id) {
+          updateSchemeData({ id, formData });
+        } else {
+          addNewScheme(formData);
+        }
+      } catch (error) {
+        console.error("Submission error:", error);
+        toast.error("Failed to submit form");
+        setIsLoading(false);
       }
     }
-
-    if (id) {
-      // For update
-      updateSchemeData({ id, formData });
-    } else {
-      // For create
-      addNewScheme(formData);
-    }
-  } catch (error) {
-    console.error("Submission error:", error);
-    toast.error("Failed to submit form");
-    setIsLoading(false);
-  }
-}
   });
  
-  //api calls
+  // API calls
   const { data: branchData } = useQuery({
     queryKey: ["branches", accessBranch, id_branch],
     queryFn: async () => {
@@ -298,37 +307,43 @@ onSubmit: async (values) => {
   const { mutate: addNewScheme } = useMutation({
     mutationFn: addscheme,
     onSuccess: (response) => {
-      setIsLoading(true);
+      setIsLoading(false);
       toast.success(response.message);
+      resetFormAndStates(); // Clear form after successful submission
       navigate("/scheme/scheme/");
     },
     onError: (error) => {
-      
       setIsLoading(false);
       toast.error(error.response?.data?.message);
     },
   });
 
   const { mutate: updateSchemeData } = useMutation({
-    mutationFn: ({ id, values }) => updateScheme(id, values),
+    mutationFn: ({ id, formData }) => updateScheme(id, formData),
     onSuccess: (response) => {
       if (response.status === 200) {
         setIsLoading(false);
-        toast.success(response.message);
-        navigate("/scheme/scheme/");
+        toast.success(response?.data?.message);
+        resetFormAndStates(); // Clear form after successful update
+        if(schemeData?.data?.active){
+          navigate("/scheme/scheme/");
+        }else{
+          navigate("/scheme/delisted");
+        }
       }
     },
-    onError: () => {
+    onError: (error) => {
       setIsLoading(false);
-      toast.error(response.message);
+      toast.error(error.response?.data?.message || "Failed to update scheme");
     },
   });
 
-  //useEffect
+  // useEffect for setting branch
   useEffect(() => {
     formik.setFieldValue("id_branch", id_branch || accessBranch);
   }, [id_branch, accessBranch]);
 
+  // useEffect for branch data
   useEffect(() => {
     if (!branchData) return;
 
@@ -348,93 +363,111 @@ onSubmit: async (values) => {
     }
   }, [branchData, accessBranch]);
 
+
   useEffect(() => {
-    if (branchData && digigoldData && (!id || schemeData)) {
+    if (digigoldData && (!id || (id && schemeData))) {
       setIsDataLoaded(true);
+      setInitialDataLoaded(true);
     }
-  }, [branchData, digigoldData, schemeData, id]);
+  }, [digigoldData, schemeData, id]);
+
 
   useEffect(() => {
     if (digigoldData) {
+      let purityData = [];
+      
       if (!silver) {
         setStaticData(digigoldData.data);
-        formik.setFieldValue('term_desc','')
-        formik.setFieldValue('description','')
         formik.setFieldValue("id_metal", digigoldData?.data?.id_gold?._id);
       
-        const data = digigoldData.data.gold.map((item) => ({
+        purityData = digigoldData.data.gold.map((item) => ({
           value: item._id,
           label: item.purity_name,
         }));
-        setPurity(data);
-        formik.setFieldValue(
-          "id_classification",
-          digigoldData.data.classification
-        );
-        setDescriptionImage(null)
-        setMainImage(null)
+        
         formik.setFieldValue("scheme_type", 10);
-        formik.setFieldValue('code',"Digigold")
+        formik.setFieldValue('code',"Digigold");
       } else {
         setStaticData(digigoldData.data);
-        formik.setFieldValue('term_desc','')
-        formik.setFieldValue('description','')
         formik.setFieldValue("id_metal", digigoldData?.data?.id_silver?._id);
-        const data = digigoldData.data.silver.map((item) => ({
+        
+        purityData = digigoldData.data.silver.map((item) => ({
           value: item._id,
           label: item.purity_name,
         }));
-        setPurity(data);
+        
+        formik.setFieldValue("scheme_type", 14);
+        formik.setFieldValue('code',"Digisilver");
+      }
+      
+      setPurity(purityData);
+      
+      if(!id){
         formik.setFieldValue(
           "id_classification",
           digigoldData.data.classification
         );
-        setDescriptionImage(null)
-        setMainImage(null)
-        formik.setFieldValue("scheme_type", 14);
-        formik.setFieldValue('code',"Digisilver")
       }
     }
   }, [digigoldData, silver]);
-  // 
+
+  // Fixed: Only populate form data when ALL required data is available
   useEffect(() => {
-    formik.setValues({
-      ...formik.values,
-      scheme_name: schemeData?.data?.scheme_name || "",
-      description: schemeData?.data?.description || "",
-      term_desc: schemeData?.data?.term_desc || "",
-      id_branch: schemeData?.data?.id_branch || "",
-      id_metal: schemeData?.data?.id_metal?._id || "",
-      id_purity: schemeData?.data?.id_purity?._id || "",
-      id_classification: schemeData?.data?.id_classification,
-      bonus_type: schemeData?.data?.bonus_type || 2,
-      count: schemeData?.data?.count || "",
-      entry_type: schemeData?.data?.entry_type || 0,
-      values: schemeData?.data?.values || [],
-      bonuses: schemeData?.data?.bonuses || [],
-      buy_gst: schemeData?.data?.buy_gst || "",
-      sell_gst: schemeData?.data?.sell_gst || "",
-      max_amount: schemeData?.data?.max_amount || "",
-      min_amount: schemeData?.data?.min_amount || "",
-      scheme_type: schemeData?.data?.scheme_type ?? (silver ? 11 : 10),
-      noOfDays: schemeData?.data?.noOfDays || "",
-      maxLimit: schemeData?.data?.maxLimit || 0
-    });
-    if (schemeData?.data?.bonus_type) {
-      setBonus(true);
+    if (initialDataLoaded && schemeData?.data && digigoldData) {
+      const formValues = {
+        scheme_name: schemeData.data.scheme_name || "",
+        description: schemeData.data.description || "",
+        term_desc: schemeData.data.term_desc || "",
+        id_branch: schemeData.data.id_branch || "",
+        id_metal: schemeData.data.id_metal?._id || "",
+        id_purity: schemeData.data.id_purity?._id || "",
+        id_classification: schemeData.data.id_classification._id || digigoldData.data.classification,
+        bonus_type: schemeData.data.bonus_type || 2,
+        count: schemeData.data.count || "",
+        entry_type: schemeData.data.entry_type || 0,
+        values: schemeData.data.values || [],
+        bonuses: schemeData.data.bonuses || [],
+        buy_gst: schemeData.data.buy_gst || "",
+        sell_gst: schemeData.data.sell_gst || "",
+        max_amount: schemeData.data.max_amount || "",
+        min_amount: schemeData.data.min_amount || "",
+        scheme_type: schemeData.data.scheme_type ?? (silver ? 14 : 10),
+        noOfDays: schemeData.data.noOfDays || "",
+        maxLimit: schemeData.data.maxLimit || 0
+      };
+      
+      formik.setValues(formValues);
+      
+      if (schemeData.data.bonus_type) {
+        setBonus(true);
+      }
+      if (schemeData.data.logo) {
+        setMainImage(schemeData.data.logo);
+      }
+      if (schemeData.data.desc_img) {
+        setDescriptionImage(schemeData.data.desc_img);
+      }
+      if (schemeData.data.pathUrl) {
+        setPathUrl(schemeData.data.pathUrl);
+      }
+
+      if (schemeData.data.id_purity?._id && purity.length > 0) {
+        const selected = purity.find(item => item.value === schemeData.data.id_purity._id);
+        setSelectedPurity(selected || null);
+      }
     }
-    if (schemeData?.data?.logo) {
-      setMainImage(schemeData?.data?.logo);
+  }, [initialDataLoaded, schemeData, digigoldData, purity.length]);
+
+
+  useEffect(() => {
+    if (id && schemeData?.data?.id_purity?._id && purity.length > 0 && initialDataLoaded) {
+      const selected = purity.find(item => item.value === schemeData.data.id_purity._id);
+      setSelectedPurity(selected || null);
     }
-    if (schemeData?.data?.desc_img) {
-      setDescriptionImage(schemeData?.data?.desc_img);
-    }
-    if (schemeData?.data?.pathUrl) {
-      setPathUrl(schemeData?.data?.pathUrl);
-    }
-  }, [schemeData]);
+  }, [id, schemeData, purity, initialDataLoaded]);
 
   const handleCancle = () => {
+    resetFormAndStates();
     if (!id) {
       navigate("/ourscheme/digigold");
     } else {
@@ -442,117 +475,20 @@ onSubmit: async (values) => {
     }
   };
 
-  // Function to generate dynamic fields
-  // const generateFields = () => {
-  //   const count = formik.values.count;
-  //   const entryType = formik.values.entry_type;
-  //   const fields = [];
-
-  //   for (let i = 0; i < count; i++) {
-  //     fields.push(
-  //       <div key={`value-${i}`}>
-  //         <label className="block text-sm font-medium mb-1">
-  //           Value {i + 1} <span className="text-red-400">*</span>
-  //         </label>
-  //         {entryType === 2 ? (
-  //           <div className="flex gap-4">
-  //             <input
-  //               type="number"
-  //               name={`values[${i}].min`}
-  //               value={formik.values.values[i]?.min || ""}
-  //               onChange={formik.handleChange}
-  //               onBlur={formik.handleBlur}
-  //               onWheel={(e) => e.target.blur()}
-  //               placeholder="Min Value"
-  //               className="w-full border rounded-md px-3 py-2"
-  //             />
-  //             <input
-  //               type="number"
-  //               name={`values[${i}].max`}
-  //               value={formik.values.values[i]?.max || ""}
-  //               onChange={formik.handleChange}
-  //               onBlur={formik.handleBlur}
-  //               placeholder="Max Value"
-  //               onWheel={(e) => e.target.blur()}
-  //               className="w-full border rounded-md px-3 py-2"
-  //             />
-  //           </div>
-  //         ) : (
-  //           <input
-  //             type="number"
-  //             name={`values[${i}].value`}
-  //             value={formik.values.values[i]?.value || ""}
-  //             onChange={formik.handleChange}
-  //             onBlur={formik.handleBlur}
-  //             onWheel={(e) => e.target.blur()}
-  //             placeholder="Enter value"
-  //             className="w-full border rounded-md px-3 py-2"
-  //           />
-  //         )}
-  //         {formik.touched.values?.[i]?.min && formik.errors.values?.[i]?.min ? (
-  //           <div className="text-red-500 text-sm mt-1">
-  //             {formik.errors.values[i].min}
-  //           </div>
-  //         ) : null}
-  //         {formik.touched.values?.[i]?.max && formik.errors.values?.[i]?.max ? (
-  //           <div className="text-red-500 text-sm mt-1">
-  //             {formik.errors.values[i].max}
-  //           </div>
-  //         ) : null}
-  //         {formik.touched.values?.[i]?.value &&
-  //         formik.errors.values?.[i]?.value ? (
-  //           <div className="text-red-500 text-sm mt-1">
-  //             {formik.errors.values[i].value}
-  //           </div>
-  //         ) : null}
-  //       </div>
-  //     );
-
-  //     // Bonus field with consistent styling
-  //     fields.push(
-  //       <div key={`bonus-${i}`}>
-  //         <label className="block text-sm font-medium mb-1">
-  //           Bonus {i + 1} (%) <span className="text-red-400">*</span>
-  //         </label>
-  //         <input
-  //           type="number"
-  //           name={`bonuses[${i}]`}
-  //           value={formik.values.bonuses[i] || ""}
-  //           onChange={formik.handleChange}
-  //           onBlur={formik.handleBlur}
-  //           onWheel={(e) => e.target.blur()}
-  //           placeholder="Enter bonus"
-  //           className="w-full border rounded-md px-3 py-2"
-  //         />
-  //         {formik.touched.bonuses?.[i] && formik.errors.bonuses?.[i] ? (
-  //           <div className="text-red-500 text-sm mt-1">
-  //             {formik.errors.bonuses[i]}
-  //           </div>
-  //         ) : null}
-  //       </div>
-  //     );
-  //   }
-
-  //   return fields;
-  // };
-  // Function to generate dynamic fields
-  const getLabel = (id)=> {
-    // ;
-    
-    const data = bonusTypeOptions.filter((e)=> e.id == id); //formik.values.bonus_type
-    ;
-    
-    if(data.length > 0){
-      
+  const getLabel = (id) => {
+    const data = bonusTypeOptions.filter((e) => e.id == id);
+    if (data.length > 0) {
       return data[0]; 
     }
     return null;
-  }
+  };
+
   const generateFields = () => {
     const count = formik.values.count;
 
     if (count >= 11) {
-      return toast.warn("Maximum allowed value and bonus upto 10");
+      toast.warn("Maximum allowed value and bonus upto 10");
+      return null;
     }
 
     const entryType = formik.values.entry_type;
@@ -560,7 +496,6 @@ onSubmit: async (values) => {
 
     for (let i = 0; i < count; i++) {
       if (entryType === 2) {
-        // Min value field
         fields.push(
           <div key={`value-min-${i}`}>
             <label className="block text-sm font-medium mb-1">
@@ -576,8 +511,7 @@ onSubmit: async (values) => {
               placeholder="Min Value"
               className="w-full border rounded-md px-3 py-2"
             />
-            {formik.touched.values?.[i]?.min &&
-            formik.errors.values?.[i]?.min ? (
+            {formik.touched.values?.[i]?.min && formik.errors.values?.[i]?.min ? (
               <div className="text-red-500 text-sm mt-1">
                 {formik.errors.values[i].min}
               </div>
@@ -585,7 +519,6 @@ onSubmit: async (values) => {
           </div>
         );
 
-        // Max value field
         fields.push(
           <div key={`value-max-${i}`}>
             <label className="block text-sm font-medium mb-1">
@@ -601,8 +534,7 @@ onSubmit: async (values) => {
               onWheel={(e) => e.target.blur()}
               className="w-full border rounded-md px-3 py-2"
             />
-            {formik.touched.values?.[i]?.max &&
-            formik.errors.values?.[i]?.max ? (
+            {formik.touched.values?.[i]?.max && formik.errors.values?.[i]?.max ? (
               <div className="text-red-500 text-sm mt-1">
                 {formik.errors.values[i].max}
               </div>
@@ -610,11 +542,10 @@ onSubmit: async (values) => {
           </div>
         );
       } else {
-        // Single value field for entry type 1
         fields.push(
           <div key={`value-${i}`}>
             <label className="block text-sm font-medium mb-1">
-               {getLabel(formik.values.bonus_type)?.code} {i + 1} <span className="text-red-400">*</span>
+              {getLabel(formik.values.bonus_type)?.code} {i + 1} <span className="text-red-400">*</span>
             </label>
             <input
               type="number"
@@ -626,8 +557,7 @@ onSubmit: async (values) => {
               placeholder="Enter value"
               className="w-full border rounded-md px-3 py-2"
             />
-            {formik.touched.values?.[i]?.value &&
-            formik.errors.values?.[i]?.value ? (
+            {formik.touched.values?.[i]?.value && formik.errors.values?.[i]?.value ? (
               <div className="text-red-500 text-sm mt-1">
                 {formik.errors.values[i].value}
               </div>
@@ -636,26 +566,25 @@ onSubmit: async (values) => {
         );
       }
 
-      // Bonus field with consistent styling (unchanged)
       fields.push(
         <div key={`bonus-${i}`}>
           <label className="block text-sm font-medium mb-1">
             Bonus {i + 1} (%) <span className="text-red-400">*</span>
           </label>
           <div className="relative">
-          <span className="absolute right-0 top-0 w-9 h-full px-3 flex items-center justify-center text-black border-l">
-                %
-              </span>
-          <input
-            type="number"
-            name={`bonuses[${i}]`}
-            value={formik.values.bonuses[i] || ""}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            onWheel={(e) => e.target.blur()}
-            placeholder="Enter bonus"
-            className="w-full border rounded-md px-3 py-2"
-          />
+            <span className="absolute right-0 top-0 w-9 h-full px-3 flex items-center justify-center text-black border-l">
+              %
+            </span>
+            <input
+              type="number"
+              name={`bonuses[${i}]`}
+              value={formik.values.bonuses[i] || ""}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              onWheel={(e) => e.target.blur()}
+              placeholder="Enter bonus"
+              className="w-full border rounded-md px-3 py-2"
+            />
           </div>
           {formik.touched.bonuses?.[i] && formik.errors.bonuses?.[i] ? (
             <div className="text-red-500 text-sm mt-1">
@@ -673,6 +602,16 @@ onSubmit: async (values) => {
     setBonus(!isBonus);
     formik.validateForm();
   };
+
+  // Show loading until all data is ready
+  if (id && !initialDataLoaded) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <SpinLoading />
+        <span className="ml-2">Loading scheme data...</span>
+      </div>
+    );
+  }
 
   return (
     <form
@@ -695,7 +634,6 @@ onSubmit: async (values) => {
               {...formik.getFieldProps("scheme_name")}
             />
 
-            {/* Show error if user reaches max length */}
             {formik.values.scheme_name.length >= 30 && (
               <div className="text-red-500 text-sm mt-1">
                 Max 30 characters allowed
@@ -711,31 +649,31 @@ onSubmit: async (values) => {
 
           {accessBranch === "0" && branch.length > 0 && !isLoading ? (
             <div>
-            <label className="block text-sm font-medium mb-1">
-              Branch <span className="text-red-500">*</span>
-            </label>
-            <Select
-              styles={customStyles(true)}
-              isClearable={true}
-              options={branch}
-              placeholder="Select Branch"
-              value={
-                branch.find(
-                  (option) => option.value === formik.values.id_branch
-                ) || null
-              }
-              onChange={(option) => {
-                formik.setFieldValue("id_branch", option ? option.value : "");
-                formik.setFieldTouched("id_branch", true); // Mark as touched when changed
-              }}
-              onBlur={() => formik.setFieldTouched("id_branch", true)} // Mark as touched on blur
-            />
-            {formik.touched.id_branch && formik.errors.id_branch && (
-              <div className="text-red-500 text-sm mt-1">
-                {formik.errors.id_branch}
-              </div>
-            )}
-          </div>
+              <label className="block text-sm font-medium mb-1">
+                Branch <span className="text-red-500">*</span>
+              </label>
+              <Select
+                styles={customStyles(true)}
+                isClearable={true}
+                options={branch}
+                placeholder="Select Branch"
+                value={
+                  branch.find(
+                    (option) => option.value === formik.values.id_branch
+                  ) || null
+                }
+                onChange={(option) => {
+                  formik.setFieldValue("id_branch", option ? option.value : "");
+                  formik.setFieldTouched("id_branch", true);
+                }}
+                onBlur={() => formik.setFieldTouched("id_branch", true)}
+              />
+              {formik.touched.id_branch && formik.errors.id_branch && (
+                <div className="text-red-500 text-sm mt-1">
+                  {formik.errors.id_branch}
+                </div>
+              )}
+            </div>
           ) : (
             <div>
               <label className="block text-sm font-medium mb-1">
@@ -778,13 +716,12 @@ onSubmit: async (values) => {
               styles={customStyles(true)}
               options={purity}
               isClearable={true}
-              placeholder="Select purtiy type"
-              value={purity.find(
-                (option) => option.value === formik.values.id_purity
-              )}
-              onChange={(option) =>
-                formik.setFieldValue("id_purity", option ? option.value : "")
-              }
+              placeholder="Select purity type"
+              value={selectedPurity}
+              onChange={(option) => {
+                setSelectedPurity(option);
+                formik.setFieldValue("id_purity", option ? option.value : "");
+              }}
               onBlur={() => formik.setFieldTouched("id_purity", true)}
             />
             {formik.touched.id_purity && formik.errors.id_purity && (
@@ -856,8 +793,7 @@ onSubmit: async (values) => {
             )}
           </div>
 
-
-            <div className="flex flex-col ">
+          <div className="flex flex-col ">
             <label className="block text-sm font-medium mb-1">
               Maturity <span className="text-red-400"> *</span>
             </label>
@@ -869,17 +805,9 @@ onSubmit: async (values) => {
                 type="number"
                 name="noOfDays"
                 value={formik.values.noOfDays}
-                // onChange={(e) => {
-                //   if (e.target.value.length <= 11) {
-                //     formik.handleChange(e);
-                //   }
-                // }}
                 onChange={(e) => {
-                  const value = e.target.value;
-                  if (value === "" || /^[1-9][0-9]*$/.test(value)) {
-                    if (value.length <= 11) {
-                      formik.setFieldValue("noOfDays", value);
-                    }
+                  if (e.target.value.length <= 11) {
+                    formik.handleChange(e);
                   }
                 }}
                 onWheel={(e) => e.target.blur()}
@@ -896,7 +824,6 @@ onSubmit: async (values) => {
             )}
           </div>
 
-          
           <div className="flex flex-col ">
             <label className="block text-sm font-medium mb-1">
               Max Limit
@@ -927,13 +854,10 @@ onSubmit: async (values) => {
               </span>
             )}
           </div>
-          
 
-          
-            <div>
+          <div>
             <label className="block text-sm font-medium mb-1">
               Bonus Type 
-              {/* {!silver && <span className="text-red-400">*</span>} */}
             </label>
             <Select
               styles={customStyles(true)}
@@ -964,7 +888,6 @@ onSubmit: async (values) => {
           <div>
             <label className="block text-sm font-medium mb-1">
               Entry Type 
-              {/* {!silver && <span className="text-red-400">*</span>} */}
             </label>
             <Select
               name="entry_type"
@@ -1001,7 +924,6 @@ onSubmit: async (values) => {
           <div>
             <label className="block text-sm font-medium mb-1">
               Count 
-              {/* {!silver && <span className="text-red-400">*</span>} */}
             </label>
             <input
               type="number"
@@ -1012,7 +934,6 @@ onSubmit: async (values) => {
               onChange={(e) => {
                 let value = parseInt(e.target.value, 10);
 
-                // Clamp value between 1 and 10
                 if (isNaN(value)) value = "";
                 if (value > 10) value = 10;
                 if (value < 1) value = "";
@@ -1022,7 +943,7 @@ onSubmit: async (values) => {
                 formik.setFieldValue("bonuses", Array(value).fill(0));
               }}
               onBlur={formik.handleBlur}
-              onWheel={(e) => e.target.blur()} // prevent scroll-changing
+              onWheel={(e) => e.target.blur()}
               className="w-full border rounded-md px-3 py-2"
             />
             {formik.touched.count && formik.errors.count && (
@@ -1067,29 +988,28 @@ onSubmit: async (values) => {
         <button
           type="submit"
           disabled={isLoading}
-          className="px-9 h-[36px] text-sm font-semibold bg-[#004181] text-white rounded-md  flex justify-center items-center"
+          className="px-9 h-[36px] text-sm font-semibold bg-[#004181] text-white rounded-md flex justify-center items-center"
         >
           {isLoading ? <SpinLoading /> : id ? "Update" : "Save"}
         </button>
 
         {id ? (
           <button
-          type="button"
-          className="w-20 h-9 border-2 bg-[#F6F7F9] border-[#f2f3f8] rounded-md hover:bg-gray-50 flex justify-center items-center text-[#6C7086]"
-          onClick={()=>navigate('/scheme/scheme/')}
-        >
-          Back
-        </button>
-        ):(
+            type="button"
+            className="w-20 h-9 border-2 bg-[#F6F7F9] border-[#f2f3f8] rounded-md hover:bg-gray-50 flex justify-center items-center text-[#6C7086]"
+            onClick={handleCancle}
+          >
+            Back
+          </button>
+        ) : (
           <button
-          type="button"
-          className="px-9 h-[36px] border-2 text-sm font-semibold bg-[#F6F7F9] border-[#f2f3f8] rounded-md hover:bg-gray-50 flex justify-center items-center text-[#6C7086]"
-          onClick={() => formik.resetForm()}
-        >
-          Clear
-        </button>
+            type="button"
+            className="px-9 h-[36px] border-2 text-sm font-semibold bg-[#F6F7F9] border-[#f2f3f8] rounded-md hover:bg-gray-50 flex justify-center items-center text-[#6C7086]"
+            onClick={resetFormAndStates}
+          >
+            Clear
+          </button>
         )}
-        
       </div>
     </form>
   );

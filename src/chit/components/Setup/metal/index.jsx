@@ -306,6 +306,7 @@ const Metal = () => {
             handlePageChange={handlePageChange}
             itemsPerPage={itemsPerPage}
             totalItems={totalDocument}
+            perItemSelect = {false}
             handleItemsPerPageChange={handleItemsPerPageChange}
             handleSearch={handleSearch}
           />

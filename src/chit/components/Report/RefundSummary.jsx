@@ -31,6 +31,39 @@ function RefundReport() {
   const [from_date,setfrom_date]=useState()
   const [to_date,setto_date]=useState()
 
+  const[ProcessData,setProcessData]=useState([])
+
+
+  
+  useEffect(() => {
+    const process = refundData.map((item, index) => ({
+      "S.no": index + 1,
+      "Cus.Name":item.customer_name, 
+      "Cus.Mob": item.customer_mobile,
+      "Acc.Name": item.account_name,
+      // "Scheme Name":item.scheme_name,
+      "Sch.Acc.No": item.scheme_acc_number,
+      "Tot.Paid.Inst": item.total_paid_installments,
+      "Tot.Inst": item.total_installments,
+      "Tot.Paid.amnt": item.totalPaidAmount,
+      // "Tot.Paid.wt": item.totalPaidWeight?.toFixed(3),
+      // "Tot.Paid.wt": item.totalPaidWeight != null
+      //   ? `${spliceDecimals(item.totalPaidWeight, 3)} g`
+      //   : null,
+      "Classify.name":item.classification_name,
+      "Paid.Inst":`${item.total_paid_installments} / ${item.total_installments}`, 
+      "Start.Date":item.createdAt ? new Date(item.createdAt).toLocaleDateString('en-GB') : '',
+      // "Mat.Date": item.maturity_date ? new Date(item.maturity_date).toLocaleDateString('en-GB') : '',
+      "Last Paid Date": item.last_paid_date ? new Date(item.last_paid_date).toLocaleDateString('en-GB') : '',
+      // "Closed Date":item.closed_date,
+      "Bill no": item.bill_no,
+      "Bill date": item.bill_date ? new Date(item.bill_date).toLocaleDateString('en-GB') : '',
+      // "Gift Isuues":item.gift_issues,
+      // "Closed By":item.closed_by,
+    }));
+    setProcessData(process);
+  }, [refundData]);
+
   useEffect(() => {
     getRefunData({from_date,to_date});
   }, [from_date,to_date,itemsPerPage,currentPage]);
@@ -169,7 +202,7 @@ function RefundReport() {
               }}
             />
             <ExportDropdown
-              apiData={refundData}
+              apiData={ProcessData}
               fileName={`Overdue report ${new Date().toLocaleDateString(
                 "en-GB"
               )}`}

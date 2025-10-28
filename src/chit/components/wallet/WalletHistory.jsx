@@ -307,7 +307,7 @@ function WalletHistory() {
       cell: (row) => `${row?.total_reward_amt || "-"}`,
     },
     {
-      header: "Wallet Redeemption",
+      header: "Wallet Redemption",
       cell: (row) => (
         <span style={{ color: row?.redeem_amt < 0 ? "red" : "inherit" }}>
           {row?.redeem_amt !== undefined ? Math.abs(row.redeem_amt) : "-"}
@@ -352,7 +352,7 @@ function WalletHistory() {
                       onClick={() => handleRefferalHistory(row)}
                     >
                      <img src={refferalicon} alt="" srcSet="" className='text-black w-4 h-4 mr-1'/>
-                      Refferal History
+                      Referral History
                     </button>
 
                     <button

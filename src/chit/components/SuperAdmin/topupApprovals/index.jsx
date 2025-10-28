@@ -47,7 +47,28 @@ const topupApprovals = () => {
   const [from_date, setfrom_date] = useState();
   const [to_date, setto_date] = useState();
 
+  const[ProcessData,setProcessData]=useState([])
   const limit = 10;
+
+
+
+   useEffect(() => {
+    const process = topupData.map((item, index) => ({
+      "S.no": index + 1,
+       "Type": item.Email
+      ? "Email"
+      : item.SMS
+      ? "SMS"
+      : item.WhatsApp
+      ? "WhatsApp"
+      : "-",
+      "Topup Date": formatDate(item.createdAt),
+      "Actual Amount": item.actualAmount,
+      "Date": formatDate(item.requestedDate),
+    }));
+    setProcessData(process);
+  }, [topupData]);
+
 
   function closeIncommingModal() {
     setIsviewOpen(false);
@@ -241,7 +262,7 @@ const topupApprovals = () => {
                 }}
               />
               <ExportDropdown
-                apiData={topupData}
+                apiData={ProcessData}
                 fileName={`Overall report ${new Date().toLocaleDateString(
                   "en-GB"
                 )}`}

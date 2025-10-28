@@ -199,6 +199,8 @@ function AccountSummaryReport() {
         item.totalPaidAccounts !== undefined ? item.totalPaidAccounts : "0",
       "Refund Account":
         item.totalRefundAccount !== undefined ? item.totalRefundAccount : "0",
+      "Completed Account":
+      item.totalCompletedAccount !== undefined ?item.totalCompletedAccount : "0"
     }));
     setProcessData(process);
   }, [overAllData]);
