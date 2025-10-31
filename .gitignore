@@ -15,6 +15,7 @@ backup.jsx
 .env
 .env.production
 .env.development
+vite.config.js
 
 # Editor directories and files
 .vscode/*

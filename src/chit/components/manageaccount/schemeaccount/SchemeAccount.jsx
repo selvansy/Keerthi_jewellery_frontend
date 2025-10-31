@@ -150,15 +150,16 @@ const SchemeAccount = () => {
       "Paid.Inst": `${value.total_paidinstallments || 0 }/${value.total_installments || 0}`,
       "Status Name":value.status_name,
       "Start Date": value.createdAt
-        ? new Date(value.createdAt).toLocaleDateString('en-GB')
+        ? formatDate(value.createdAt)
         : '',
-      "Mat.date": value.maturity_date,
+      "Mat.date": formatDate(value.maturity_date),
         // ? new Date(value.maturity_date).toLocaleDateString('en-GB')
         // : '',
       "Last.Paid.Date": value.last_paid_date
-        ? new Date(value.last_paid_date).toLocaleDateString('en-GB')
+        ? formatDate(value?.last_paid_date)
         : '',
       "Sch.type":value.scheme_typename,
+      "Saved Weight":`${spliceDecimals(value?.total_weight,3)} g`,
       "Created Through":value.created_through,
       "Classification":value?.classification?.name
       }));
@@ -214,6 +215,11 @@ const SchemeAccount = () => {
     if (!pageNumber || isNaN(pageNumber)) return;
     setCurrentPage(Math.max(1, Math.min(pageNumber, totalPages)));
   };
+
+    function spliceDecimals(num, decimals) {
+    const factor = Math.pow(10, decimals);
+    return Math.trunc(num * factor) / factor;
+  }
 
 
   // Table columns configuration
@@ -313,6 +319,10 @@ const SchemeAccount = () => {
           </div>
         );
       },
+    },
+     {
+      header:"Saved Weight",
+      cell:(row)=> row?.total_weight ? `${spliceDecimals(row?.total_weight,3)} g` : "0.000 g"
     },
     {
       header: "Start Date",

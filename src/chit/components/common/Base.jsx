@@ -555,16 +555,16 @@ const Base = ({ renderContent: RenderContent }) => {
       link: "/payment/addschemepayment",
       icon: <CreditCard color="grey" />,
     },
-    {
-      name: "Card Print",
-      link: "/cardprint/printone",
-      icon: <LucidePrinter color="grey"  />,
-    },
-    {
-      name: "Receipt Print",
-      link: "/receiptprint/printone",
-      icon: <Printer color="grey"  />,
-    },
+    // {
+    //   name: "Card Print",
+    //   link: "/cardprint/printone",
+    //   icon: <LucidePrinter color="grey"  />,
+    // },
+    // {
+    //   name: "Receipt Print",
+    //   link: "/receiptprint/printone",
+    //   icon: <Printer color="grey"  />,
+    // },
   ];
 
   return (

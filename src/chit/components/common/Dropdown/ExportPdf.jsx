@@ -34,7 +34,7 @@ export const ExportToPDF = ({ apiData, fileName = "ExportedData" }) => {
       body: tableRows,
       startY: 20 ,
       styles: {
-        fontSize: 8, 
+        fontSize: 7, 
         lineHeight: 1.2,
         cellPadding: { top: 5, right: 3, bottom: 4, left: 4 },
         overflow: 'wrap',

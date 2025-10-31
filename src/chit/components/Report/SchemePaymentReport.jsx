@@ -158,6 +158,11 @@ function AccountSummaryReport() {
     },
   });
 
+    function spliceDecimals(num, decimals) {
+    const factor = Math.pow(10, decimals);
+    return Math.trunc(num * factor) / factor;
+  }
+
   const { mutate: getPaymentData } = useMutation({
     mutationFn: ({
       from_date,
@@ -295,6 +300,10 @@ function AccountSummaryReport() {
     {
       header: "Payment mode",
       cell: (row) => row?.payment_mode || "Cash Free",
+    },
+    {
+      header:"Saved Weight",
+      cell:(row)=> row?.metal_weight ? `${spliceDecimals(row?.metal_weight,3)} g` :"0.000 g",
     },
     {
       header: "Paid Installment",

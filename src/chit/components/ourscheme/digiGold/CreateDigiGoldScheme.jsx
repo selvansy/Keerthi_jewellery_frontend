@@ -921,6 +921,87 @@ const CreateDigiGoldScheme = () => {
             )}
           </div>
 
+            {/* referral implimentation */}
+          <div>
+            <label className="block text-sm font-semibold text-[#232323] mb-1">
+              Referral Percentage
+            </label>
+            <input
+              type="number"
+              min={0}
+              name="referralPercentage"
+              value={formik.values.referralPercentage}
+              // onChange={(e) => {
+              //   let value = parseInt(e.target.value, 10);
+
+              //   formik.setFieldValue("referralPercentage", value);
+              // }}
+              onChange={(e) => {
+                let value = e.target.value;
+
+                // Allow empty value or valid numbers
+                if (value === '') {
+                  formik.setFieldValue("referralPercentage", '');
+                } else {
+                  const numValue = parseInt(value, 10);
+                  if (!isNaN(numValue)) {
+                    formik.setFieldValue("referralPercentage", numValue);
+                  }
+                }
+              }}
+              onBlur={formik.handleBlur}
+              onWheel={(e) => e.target.blur()}
+               disabled={!formik.values.display_referral}
+              className={`border border-[#f2f3f8] rounded-lg p-2 w-full h-[44px] focus:outline-none focus:ring-1 focus:ring-black focus:border-transparent ${!formik.values.display_referral ? "bg-gray-100 cursor-not-allowed" : ""
+                }`}
+              // className="w-full h-11 border rounded-lg px-3 py-2"
+            />
+            {formik.touched.referralPercentage &&
+              formik.errors.referralPercentage && (
+                <div className="text-red-500 text-sm mt-1">
+                  {formik.errors.referralPercentage}
+                </div>
+              )}
+          </div>
+
+          <div className="flex flex-col mt-2">
+            <label className="block text-sm font-medium mb-1">
+              Display Referral
+            </label>
+            <div className="flex items-center ml-4">
+              <label className="relative inline-block cursor-pointer mt-1 w-[75px] h-8">
+                <input
+                  type="checkbox"
+                  className="sr-only peer"
+                  checked={formik.values.display_referral}
+                  onChange={(e) =>
+                    formik.setFieldValue("display_referral", e.target.checked)
+                  }
+                />
+                <div
+                  className="w-[70px] h-full rounded-[20px] transition-colors duration-300
+                 flex items-center justify-between px-3 text-[12px] font-semibold
+                 peer-checked:bg-gradient-to-r peer-checked:from-[#ccc] peer-checked:to-[#ccc] text-black"
+                  style={{ backgroundColor: "#ccc" }}
+                >
+                  <span className="text-[#091B1B]">Yes</span>
+                  <span style={{ color: "black" }}>No</span>
+                </div>
+                <div className="absolute top-1 left-2 w-7 h-6 bg-[#004181] rounded-full shadow-md transition-transform duration-300 peer-checked:translate-x-[30px]"></div>
+              </label>
+            </div>
+
+            {formik.touched.display_referral &&
+              formik.errors.display_referral && (
+                <span className="text-red-500 text-sm mt-1">
+                  {formik.errors.display_referral}
+                </span>
+              )}
+          </div>
+          {/* end */}
+
+
+
           <div>
             <label className="block text-sm font-medium mb-1">
               Count 
@@ -953,7 +1034,6 @@ const CreateDigiGoldScheme = () => {
             )}
           </div>
 
-          <div></div>
           {generateFields()}
         </div>
       </div>

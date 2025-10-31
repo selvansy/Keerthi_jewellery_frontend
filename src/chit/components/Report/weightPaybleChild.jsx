@@ -116,7 +116,7 @@ function WeightPaybleChild() {
     },
     {
       header: "Maturity Date ",
-      cell: (row) => row?.maturityDate,
+      cell: (row) => row?.maturityDate ? formatDate(row?.maturityDate) : "-",
     },
     // {
     //     header: "joined Date ",
@@ -129,6 +129,11 @@ function WeightPaybleChild() {
         cell: (row) => row?.paidInstallments,
       },
   ];
+
+   function spliceDecimals(num, decimals) {
+  const factor = Math.pow(10, decimals);
+  return Math.round(num * factor) / factor;
+}
 
   function truncateDecimal(value, decimals) {
   const factor = Math.pow(10, decimals);

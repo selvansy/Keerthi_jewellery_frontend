@@ -120,17 +120,23 @@ function WeightPaybleParent() {
     //     header: "Paid Installment",
     //     cell: (row) => `${row?.totalPaidCount}/${row?.total_installments}`,
     //   },
+      // {
+      //   header: "Total Paid Weight",
+      //   cell: (row) => `${spliceDecimals(row?.totalCollectedAmount,3)} g`,
+      // },
       {
-        header: "Total Paid Weight",
-        cell: (row) => `${truncateDecimal(row?.totalCollectedAmount,3)} g`,
-      },
+  header: "Total Paid Weight",
+  cell: (row) =>
+    `${formatNumber({ value: row?.totalCollectedAmount, decimalPlaces: 3, currency: null })} g`,
+}
+
   ];
 
-   function truncateDecimal(value, decimals) {
+ function spliceDecimals(num, decimals) {
   const factor = Math.pow(10, decimals);
-  const truncated = Math.floor(value * factor) / factor;
-  return truncated.toFixed(decimals);
+  return Math.round(num * factor) / factor;
 }
+
 
   useEffect(() => {
     const process =paybleData?.map((item, index) => ({
