@@ -1798,6 +1798,15 @@ export const employeebybranch = async (data) => {
 
 //Customer
 
+export const exportCustomers = async ({ from_date, to_date, search }) => {
+  const baseUrl = `${import.meta.env.VITE_API_URL}/api/client/customer/export/customers`;
+
+  const url = `${baseUrl}?startDate=${from_date ? from_date : ""}&endDate=${to_date ? to_date : ""}&search=${search || ""}`;
+
+  const response = await Api.get(url);
+  return response.data;
+};
+
 export const getcustomertable = async (data) => {
   const response = await Api.post(
     `${import.meta.env.VITE_API_URL}/api/client/customer/table`,

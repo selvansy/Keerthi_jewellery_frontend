@@ -14,6 +14,7 @@ function HeaderDashborder({ id_branch }) {
     totalCustomers: 0,
     totalGoldSave: 0,
     totalAmount: 0,
+    totalSilverSave:0,
     overDues: 0,
   };
   const [cardData, setCardData] = useState(initialState);
@@ -32,6 +33,12 @@ function HeaderDashborder({ id_branch }) {
     },
   });
 
+    function spliceDecimals(num, decimals) {
+    const factor = Math.pow(10, decimals);
+    return Math.trunc(num * factor) / factor;
+  }
+
+
   const cards = [
     {
       title: "Total Customers",
@@ -41,8 +48,10 @@ function HeaderDashborder({ id_branch }) {
       image: customer,
     },
     {
-      title: "Total Gold Savings",
-      value: `${formatDecimal(cardData.totalGoldSave)} g` || 0,
+      title: "Total Silver Savings",
+      subTitle: "Total Gold Savings",
+      value: `${spliceDecimals(cardData.totalSilverSave,3)} g` || 0,
+      sub_Value: `${spliceDecimals(cardData.totalGoldSave,3 )} g`||  0,
       image: Total_Account,
     },
     {

@@ -117,7 +117,8 @@ function RevertForm({ setIsOpen, isviewOpen }) {
     },
     onError: (error) => {
       setIsLoading(false);
-      toast.error(error.response.message);
+      // toast.error(error.response.message);
+      toast.error(error?.response?.data?.message || error?.message || "Something went wrong");
     },
   });
 

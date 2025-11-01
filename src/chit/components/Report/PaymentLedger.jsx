@@ -74,7 +74,6 @@ function PaymentLedger() {
             }, [paymentData]);
   
 
-  // Flatten the data when paymentData changes
   useEffect(() => {
     if (paymentData && paymentData.length > 0) {
       const flattened = paymentData.flatMap(scheme => 

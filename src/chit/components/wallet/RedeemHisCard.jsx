@@ -3,8 +3,8 @@ import Select from "react-select";
 import Table from "../common/Table"
 import { walletRedeemByUser, getRefferalpayment,userRedeemHistory} from "../../api/Endpoints"
 import { useMutation } from '@tanstack/react-query';
-import { formatNumber } from '../../utils/commonFunction';
 import { formatDate } from '../../../utils/FormatDate';
+import { spliceDecimals } from '../../../utils/Constants';
 
 
 export default function RedeemHisCard(userdata) {
@@ -74,7 +74,7 @@ export default function RedeemHisCard(userdata) {
         {
             header: "Redeemed Amount",
             cell: (row) => {
-                return row?.credited_amount !== undefined ? formatNumber({ value: Math.abs(row.credited_amount) }) : "-";
+                return row?.credited_amount !== undefined ? `₹${spliceDecimals(Math.abs(row.credited_amount) )}` : "-";
             }
         },
         {
@@ -140,7 +140,7 @@ export default function RedeemHisCard(userdata) {
 
                             <div className="relative">
                                 <div className='px-2  w-full text-[#6C7086]'>
-                                    {data?.total_reward_amt}
+                                    {`₹${spliceDecimals(data?.total_reward_amt,2)}`}
                                 </div>
                             </div>
                         </div>
@@ -152,7 +152,7 @@ export default function RedeemHisCard(userdata) {
 
                             <div className="relative">
                                 <div className='px-2  w-full text-[#6C7086]'>
-                                    {data?.redeem_amt}
+                                     {`₹${spliceDecimals(data?.redeem_amt,2)}`}
                                 </div>
                             </div>
                         </div>
@@ -259,11 +259,11 @@ export function RefferalCusCard({ refData }) {
         },
         {
             header: "Paid Amount",
-            cell: (row) => formatNumber({ value: row?.payment_amount, decimalPlaces: 0 }),
+            cell: (row) => `₹${spliceDecimals(row?.payment_amount,2)}`,
         },
         {
             header: "Monthly Reward",
-            cell: (row) => formatNumber({ value: row?.referral_amount, decimalPlaces: 0 }),
+            cell: (row) => `₹${spliceDecimals(row?.referral_amount, 2)}`,
         },
 
     ];
@@ -343,7 +343,7 @@ export function RefferalCusCard({ refData }) {
 
                             <div className="relative">
                                 <div className='px-2  w-full text-[#6C7086]'>
-                                    {formatNumber({ value: refData?.payment[0]?.total_amt, decimalPlaces: 0 })}
+                                    {`₹${spliceDecimals(refData?.payment[0]?.total_amt,2 )}`}
                                 </div>
                             </div>
                         </div>
@@ -355,7 +355,7 @@ export function RefferalCusCard({ refData }) {
 
                             <div className="relative">
                                 <div className='px-2  w-full text-[#6C7086]'>
-                                    {formatNumber({value:totalReferral,decimalPlaces:0})}
+                                    {`₹${spliceDecimals(totalReferral,2)}`}
                                 </div>
                             </div>
                         </div>
@@ -367,7 +367,7 @@ export function RefferalCusCard({ refData }) {
 
                             <div className="relative">
                                 <div className='px-2  w-full text-[#6C7086]'>
-                                    {refData?.id_scheme_account?.maturity_date}
+                                    {formatDate(refData?.id_scheme_account?.maturity_date)}
                                 </div>
                             </div>
                         </div>

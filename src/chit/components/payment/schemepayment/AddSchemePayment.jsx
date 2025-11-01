@@ -1344,7 +1344,7 @@ const AddSchemePayment = () => {
                               const value = e.target.value;
 
                               // Validate the input format (optional)
-                              if (value === "" || /^\d*\.?\d*$/.test(value)) {
+                              if (value === "" || /^\d+(\.\d{0,3})?$/.test(value)) {
                                 formik.setFieldValue("metal_weight", value);
 
                                 // Calculate payment amount only when we have a valid number

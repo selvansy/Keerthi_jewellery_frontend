@@ -24,6 +24,7 @@ import { formatNumber } from '../../utils/commonFunction';
 import RedeemHisCard from './RedeemHisCard';
 import ModelOne from "../common/Modelone";
 import { useNavigate,useLocation  } from 'react-router-dom';
+import { spliceDecimals } from '../../../utils/Constants';
 
 
 
@@ -303,20 +304,20 @@ function WalletHistory() {
       }
     },
     {
-      header: "Wallet Amount",
-      cell: (row) => `${row?.total_reward_amt || "-"}`,
+      header: "Total Wallet Amount",
+      cell: (row) => `₹${spliceDecimals( row?.total_reward_amt,2 )|| "-"}`,
     },
     {
-      header: "Wallet Redemption",
+      header: "Wallet Redeemption",
       cell: (row) => (
         <span style={{ color: row?.redeem_amt < 0 ? "red" : "inherit" }}>
-          {row?.redeem_amt !== undefined ? Math.abs(row.redeem_amt) : "-"}
+          {row?.redeem_amt !== undefined ? `₹${spliceDecimals(Math.abs(row.redeem_amt),2)}` : "-"}
         </span>
       ),
     },
     {
       header: "Balance Reward",
-      cell: (row) => `${row?.balance_amt || "-"}`,
+      cell: (row) => `₹${spliceDecimals(row?.balance_amt,2) || "-"}`,
     },
     {
       header: "Action",
@@ -352,7 +353,7 @@ function WalletHistory() {
                       onClick={() => handleRefferalHistory(row)}
                     >
                      <img src={refferalicon} alt="" srcSet="" className='text-black w-4 h-4 mr-1'/>
-                      Referral History
+                      Refferal History
                     </button>
 
                     <button

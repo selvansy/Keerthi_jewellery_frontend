@@ -7,6 +7,7 @@ import { Breadcrumb } from "../common/breadCumbs/breadCumbs";
 import DateRangeSelector from "../common/calender";
 import { getSchemeDetailedView } from "../../api/Endpoints";
 import { useLocation, useNavigate } from "react-router-dom";
+import { formatDate } from "../../../utils/FormatDate";
 // import { schemeColumns } from "../../../utils/DrillDownColums";
 
 function DrilldownTable({
@@ -44,15 +45,6 @@ function DrilldownTable({
 
 
 
-  const formatDate = (dateString) => {
-  if (!dateString) return '';
-  const date = new Date(dateString);
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const year = date.getFullYear();
-  return `${day}/${month}/${year}`;
-};
- 
   useEffect(()=>{
     const fetchData =async()=>{
     try{
@@ -154,7 +146,7 @@ const schemeColumns = (currentPage, itemsPerPage, handleClick) => [
   },
   {
     header: "Maturity Date",
-    cell: (row) => row?.maturityDate,
+    cell: (row) => formatDate(row?.maturityDate),
   },
   {
     header: "Overdues",

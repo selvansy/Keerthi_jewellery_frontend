@@ -204,13 +204,14 @@ function AccountSummaryReport() {
         "Receipt No": item.payment_receipt,
         "Transaction ID": item.id_transaction,
         "Payment Date": item.createdAt ? formatDate(item.createdAt) : "",
-        Customer: item.customer_name,
+        "Customer": item.customer_name,
         "Mobile Number": item.customer_mobile,
         "Accounter Name": item.accounter_name,
         "Scheme Name": item.scheme_name,
         "Scheme A/c No": item.schemeAccNo,
-        Classification: item.classification_name,
-        "Paid Amount": item.payment_amount,
+        "Classification": item.classification_name,
+        "Saved Weight":`${spliceDecimals(item.metal_weight,3)} g`,
+        "Paid Amount": `${spliceDecimals(item.payment_amount,3)}`,
         "Payment mode": item.payment_mode || "Cash Free",
       };
 
@@ -295,7 +296,7 @@ function AccountSummaryReport() {
     {
       header: "Paid Amount",
       cell: (row) =>
-        formatNumber({ value: row?.payment_amount, decimalPlaces: 0 }),
+        formatNumber({ value: row?.payment_amount, decimalPlaces: 3 }),
     },
     {
       header: "Payment mode",

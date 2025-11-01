@@ -93,6 +93,12 @@ function AccountReview({id_branch}) {
     },
   });
 
+    function spliceDecimals(num, decimals) {
+    const factor = Math.pow(10, decimals);
+    return Math.trunc(num * factor) / factor;
+  }
+
+
   const accountData = [
     { title: "New Joinee", value: accountDataCount.newCustomer, img: newJoine },
     { title: "New Accounts", value: accountDataCount.newAccounts, img: newAcc },
@@ -116,7 +122,7 @@ function AccountReview({id_branch}) {
     },
     {
       title: "Received Weights",
-      value:  `${formatDecimal(accountDataCount.receivedWeights)} g` ,
+      value:  `${spliceDecimals(accountDataCount.receivedWeights,3)} g` ,
       img: receiveWgt,
     },
   ];

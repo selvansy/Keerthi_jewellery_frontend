@@ -15,7 +15,7 @@ export default defineConfig({
     // ],
     hmr: {
       protocol: "ws",
-      host: '192.168.0.22', // Replace with your real local IP
+      host: '192.168.0.4', // Replace with your real local IP
       port: 1420,
       overlay: false,
     },

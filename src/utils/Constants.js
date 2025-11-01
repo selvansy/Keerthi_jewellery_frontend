@@ -56,3 +56,18 @@ export const entryTypeOptions = [
 //       { id: 2, name: "Privacy Policy" },
 //       { id: 4, name: "Refund Policy" }
 //   ];
+
+export  function spliceDecimals(num, decimals) {
+    const factor = Math.pow(10, decimals);
+    return Math.trunc(num * factor) / factor;
+}
+
+export const commissionTriggerType =[
+    {id:1,name:"On Each Payment"},
+    {id:2,name:"On First Payment"},
+]
+
+export const referralCommissionType=[
+    {id:1,name:"Percentage Of Payment"},
+    {id:2,name:"Fixed Amount"}
+]

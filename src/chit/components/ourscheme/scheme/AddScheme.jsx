@@ -13,7 +13,6 @@ import {
   addscheme,
   updateScheme,
   puritybymetal,
-  buygsttype,
   wastagetype,
   getBranchById,
 } from "../../../api/Endpoints";
@@ -33,8 +32,6 @@ import { toast } from "sonner";
 import { schemeValidationSchema } from "../../../../utils/validations/schemeValidationSchema";
 import SpinLoading from "../../common/spinLoading";
 import "react-datepicker/dist/react-datepicker.css";
-import { color, hover } from "framer-motion";
-import { option } from "framer-motion/client";
 import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
 
 export const customStyles = (isReadOnly) => ({
@@ -87,19 +84,9 @@ export const customStyles = (isReadOnly) => ({
     fontWeight: "500",
     fontSize: "14px",
   }),
-  menuList: (provided) => ({
-      ...provided,
-      // paddingTop: 0,
-      // paddingBottom: 0,
-      maxHeight:  "190px",
-      // maxHeight: [2, 5, 6].includes(formik.values.scheme_type)
-      //   ? "130px"
-      //   : "209px",
-    }),
 });
 
 const SchemeForm = () => {
-  // const { setFieldValue, validateForm, values } = useFormikContext();
   const navigate = useNavigate();
 
   let { id } = useParams();
@@ -117,7 +104,6 @@ const SchemeForm = () => {
 
   const [metal, setMetal] = useState([]);
   const [purity, setPurity] = useState([]);
-  // const [layout_color, setLayoutColor] = useState("#015173");
   const [selectedClass, setSelectedClass] = useState(null);
   const [branch, setBranch] = useState(() => (accessBranch === "0" ? [] : {}));
   const [amounts, setAmounts] = useState([]);
@@ -131,7 +117,6 @@ const SchemeForm = () => {
   const [wastagedata, setWastageType] = useState([]);
   const [schemeTypeData, setSchemeTypeData] = useState([]);
   const [giftType, setGiftType] = useState([]);
-  // const [isLoading, setIsLoading] = useState(false);
   const [spanText, setSpanText] = useState("");
   const [validation, setValidation] = useState({});
   const [pathUrl, setPathUrl] = useState("");
@@ -139,12 +124,10 @@ const SchemeForm = () => {
   const { mutate: addNewScheme, isPending: isAdding } = useMutation({
     mutationFn: addscheme,
     onSuccess: (response) => {
-      // setIsLoading(false);
       toast.success(response.message);
       navigate("/scheme/scheme/");
     },
     onError: (error) => {
-      // setIsLoading(false);
       toast.error(error.response?.data?.message);
     },
   });
@@ -153,14 +136,12 @@ const SchemeForm = () => {
     mutationFn: ({ id, data }) => updateScheme(id, data),
     onSuccess: (response) => {
       if (response.status === 200) {
-        // setIsLoading(false);
         toast.success(response?.data?.message);
         formik.resetForm();
         navigate("/scheme/delisted");
       }
     },
     onError: () => {
-      // setIsLoading(false);
       toast.error(response.message);
     },
   });
@@ -184,7 +165,7 @@ const SchemeForm = () => {
       id_branch: "",
       startingAmount: "",
       saving_type: "",
-      final_join_date: "",
+      // final_join_date: "",
 
       // PayableDetails fields
       amount: "", // no need to pass
@@ -206,11 +187,8 @@ const SchemeForm = () => {
 
       // AdvancedSettings fields
       limit_installment: 1,
-      pending_installment: "",
-      paid_installment: "",
       limit_customer: 0,
       gift_minimum_paid_installment: 0,
-      referralPercentage: "",
 
       //gift
       gift_type: 1,
@@ -222,16 +200,17 @@ const SchemeForm = () => {
       not_paid_installment: "",
       convenience_fees: 0,
       display_referral: false,
-      display_Weight_in_ledger: false,
       wallet_redemption_onpayment: false,
+      display_Weight_in_ledger: false,
+      referralPercentage: "",
+      referralAmount:"",
+      referralTriggerType:1,
+      commissionType:1
     },
     validationSchema: schemeValidationSchema,
-    validateOnChange: false,
-    validateOnBlur: false,
-    onSubmit:(values) => {
+    onSubmit: (values) => {
       if (isLoading) return;
       const formData = new FormData();
-      console.log("erty",formData)
 
       if (formik.values.classType) {
         amounts.forEach((amount) => {
@@ -309,20 +288,6 @@ const SchemeForm = () => {
     queryFn: getSchemeClassifications,
   });
 
-  // const { data: branchData } = useQuery({
-  //   queryKey: ["branches", accessBranch, id_branch],
-  //   queryFn: async () => {
-  //     if (accessBranch === "0") {
-  //       setIsLoading(true);
-  //       return getallbranch();
-  //     }
-  //     setIsLoading(true);
-  //     return getBranchById(id_branch);
-  //   },
-  //   enabled: Boolean(accessBranch),
-  //   staleTime: 5 * 60 * 1000,
-  //   cacheTime: 10 * 60 * 1000,
-  // });
   const { data: branchData, isLoading: isBranchLoading } = useQuery({
     queryKey: ["branches", accessBranch, id_branch],
     queryFn: async () => {
@@ -391,7 +356,7 @@ const SchemeForm = () => {
         maturity_period: schemeData.data.maturity_period || "",
         saving_type: schemeData.data.saving_type || "",
 
-        // Fixed scheme specific fields
+        // Fixed scheme specific fields (no need to enable while editing)
         // totalCountAmount: schemeData?.data?.totalCountAmount || "",
         // incrementRate: schemeData.data.incrementRate || "",
         // startingAmount: schemeData.data.startingAmount || "",
@@ -615,10 +580,8 @@ const SchemeForm = () => {
   const handleClassChange = (selectedOption) => {
     formik.setFieldValue(
       "id_classification",
-      selectedOption ? selectedOption.value : "",
-      true
+      selectedOption ? selectedOption.value : ""
     );
-  formik.setFieldTouched("id_classification", true); 
 
     if (selectedOption?.id === 2) {
       setSelectedClass(null);
@@ -739,7 +702,6 @@ const SchemeForm = () => {
     }
   };
 
-  console.log("sdcvhsa",formik.scheme_type)
   useEffect(() => {
     if (formik.values.maturity_period && formik.values.installment_type) {
       let calculatedInstallments = 0;
@@ -766,7 +728,7 @@ const SchemeForm = () => {
     }
   }, [formik.values.maturity_period, formik.values.installment_type]);
 
-  console.log(formik.errors)
+  console.log(formik.values)
 
   return (
     <div>
@@ -833,8 +795,6 @@ const SchemeForm = () => {
                     .toUpperCase()
                     // .replace(/\b\w/g, (char) => char.toUpperCase());
                   formik.setFieldValue("code", capitalized);
-                  formik.setFieldTouched("code", true);
-                  formik.validateField("code"); 
                 }}
                 onBlur={formik.handleBlur}
                 name="code"
@@ -910,11 +870,8 @@ const SchemeForm = () => {
                 value={metal.find(
                   (option) => option.value === formik.values.id_metal
                 )}
-                // onChange={(option) =>
-                //   formik.setFieldValue("id_metal", option ? option.value : "") 
-                // }
                 onChange={(option) =>
-                  formik.setFieldValue("id_metal", option ? option.value : "", true)
+                  formik.setFieldValue("id_metal", option ? option.value : "")
                 }
                 onBlur={() => formik.setFieldTouched("id_metal", true)}
               />
@@ -943,7 +900,7 @@ const SchemeForm = () => {
                   (option) => option.value === formik.values.id_purity
                 )}
                 onChange={(option) =>
-                  formik.setFieldValue("id_purity", option ? option.value : "",true)
+                  formik.setFieldValue("id_purity", option ? option.value : "")
                 }
                 onBlur={() => formik.setFieldTouched("id_purity", true)}
               />
@@ -991,12 +948,11 @@ const SchemeForm = () => {
                     ? "Choose a classification first"
                     : "Select scheme type"
                 }
-                value={ formik.values.scheme_type !== null ? filteredSchemeTypeData?.find(
+                value={filteredSchemeTypeData?.find(
                   (option) => option.value === formik.values.scheme_type
-                ) : null }
+                )}
                 onChange={(option) => {
-                  formik.setFieldValue("scheme_type", option?.value, true);
-                  formik.setFieldTouched("scheme_type", true);
+                  formik.setFieldValue("scheme_type", option?.value);
                   formik.validateForm();
                 }}
                 onBlur={() => formik.setFieldTouched("scheme_type", true)}
@@ -1024,10 +980,8 @@ const SchemeForm = () => {
                   // formik.setFieldValue("maturity_period", "");
                   formik.setFieldValue(
                     "installment_type",
-                    option ? option.value : null,
-                    true
+                    option ? option.value : null
                   );
-                   formik.setFieldTouched("installment_type", true);  
                   setSpanText(option.label);
                   if (option.value === 1) {
                     setValidation({ max: 12, maxLength: 2, val: "month" });
@@ -1117,7 +1071,7 @@ const SchemeForm = () => {
                       `Installment cannot exceed maturity period`
                     );
                   } else {
-                    formik.setFieldValue("total_installments", value,true);
+                    formik.setFieldValue("total_installments", value);
                     formik.setFieldError("total_installments", "");
                   }
                 }}
@@ -1149,8 +1103,7 @@ const SchemeForm = () => {
                 onChange={(option) =>
                   formik.setFieldValue(
                     "saving_type",
-                    option ? option.value : "",
-                    true
+                    option ? option.value : ""
                   )
                 }
                 onBlur={() => formik.setFieldTouched("saving_type", true)}
@@ -1161,33 +1114,7 @@ const SchemeForm = () => {
                 </div>
               )}
             </div>
-            {/* <div>
-            <label className="block text-sm font-medium mb-1">
-              Final Join Date
-            </label>
-            <div className="relative">
-              <DatePicker
-                selected={formik.values.final_join_date}
-                onChange={(date) =>
-                  formik.setFieldValue("final_join_date", date)
-                }
-                // dateFormat="dd-MM-yyyy"
-                placeholderText="Select Date"
-                className="border border-gray-300 rounded-md p-3 w-full focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                showMonthDropdown
-                showYearDropdown
-                dropdownMode="select"
-                wrapperClassName="w-full"
-              />
-              <span className="absolute right-0 top-1/2 transform -translate-y-1/2 text-gray-500 w-14 h-[43px] justify-center items-center flex rounded-r-md pointer-events-none">
-                <CalendarDays size={20} />
-              </span>
-            </div>
-          </div> */}
             {formik.values.classType && (
-              //   <div className="grid grid-cols-3 gap-4 w-full mt-3">
-
-              // </div>
               <>
                 <div>
                   <label className="block text-sm font-medium mb-1">
@@ -1430,26 +1357,11 @@ const SchemeForm = () => {
         </div>
 
         <Accordion type="multiple" collapsible className="space-y-4">
-          {/* <AccordionItem value="grace" className="border rounded-lg bg-white">
-          <AccordionTrigger className="px-6 py-4">
-            Grace Period
-          </AccordionTrigger>
-          <AccordionContent value="classification" className="px-6 py-4">
-            <Grace
-              formik={formik}
-              layout_color={layout_color}
-              grace_type={formik.values.grace_type}
-              maturity_period={formik.values.maturity_period}
-            />
-          </AccordionContent>
-        </AccordionItem> */}
-
           <AccordionItem
             value="payable"
             className=" rounded-[16px] border-[1px] bg-white"
           >
             <AccordionTrigger className="px-6 py-4 text-[#232323] font-semibold text-lg">
-              {/* <div className="w-full text-start text-lg font-semisemibold pb-4"> Payable Details</div> */}
               Payable Details
             </AccordionTrigger>
             <AccordionContent className="px-6">
@@ -1535,13 +1447,6 @@ const SchemeForm = () => {
           >
             Clear
           </button>
-          {/* <button
-          type="submit"
-          disabled={isLoading}
-          className="w-20 h-9 bg-blue-900 text-white rounded-md hover:bg-blue-800 flex justify-center items-center"
-        >
-          {isLoading ? <SpinLoading /> : id ? "Update" : "Save"}
-        </button> */}
         </div>
       </form>
     </div>

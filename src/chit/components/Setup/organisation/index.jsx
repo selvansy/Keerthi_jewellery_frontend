@@ -118,18 +118,28 @@ const Organisation = () => {
         .email("Invalid email format")
         .required("Email is required"),
       website: Yup.string().url("Invalid URL format"),
-      whatsapp_no: Yup.string().matches(
-        /^[0-9]{10}$/,
-        "Whatsapp number must be 10 digits"
-      ),
+      // whatsapp_no: Yup.string().matches(
+      //   /^[0-9]{10}$/,
+      //   "Whatsapp number must be 10 digits"
+      // ),
+      // whatsapp_no: Yup.string()
+      //   .transform((value) =>
+      //     value?.replace(/^\+91/, "").replace(/\D/g, "")
+      //   )
+      //   .matches(/^[0-9]{10}$/, "WhatsApp number must be 10 digits"),
+
     }),
     onSubmit: (values) => {
       const formData = new FormData();
-
       Object.keys(values).forEach((key) => {
         if (values[key] && typeof values[key] !== "object") {
+          if (key === "whatsapp_no" && values) {
+          formData.append(key, values[key].replace(/^\+91/, ""));
+        }else{
           formData.append(key, values[key]);
         }
+        }
+        
       });
 
       if (values.logo) {
@@ -139,6 +149,7 @@ const Organisation = () => {
       orgDetails(formData);
     },
   });
+  
 
   //api call
   //fetch country

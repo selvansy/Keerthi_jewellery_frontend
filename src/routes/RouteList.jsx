@@ -32,7 +32,7 @@ import NewArrivals from "../chit/components/catalog/newarrivals/NewArrivals";
 import AddNewArrival from "../chit/components/catalog/newarrivals/AddNewArrival";
 import Pushnotification from "../chit/components/notification/pushnotification/index";
 import AddOffers from "../chit/components/catalog/offers/AddOffers";
-import ExistingCusTable from "../chit/components/manageaccount/customer/index";
+import ExistingCusTable from "../chit/components/manageaccount/customer/customerTable";
 import Customers from "../chit/components/manageaccount/customer/Customers";
 import OutStandingWeight from "../chit/components/Report/OutStandingWeight";
 import ModeWisePayment from "../chit/components/Report/PaymentModeLedger";
@@ -355,11 +355,11 @@ const RouteList = [
 
   //Manage Customers
 
-  // {
-  //   name: "Existing customer",
-  //   path: '/managecustomers/customer',
-  //   element: <Base renderContent={ExistingCusTable} />
-  // },
+  {
+    name: "Customer List",
+    path: '/managecustomers/customers',
+    element: <Base renderContent={ExistingCusTable} />
+  },
   // {
   //   name:"Existing Customer",
   //   path:'/managecustomers/customer',

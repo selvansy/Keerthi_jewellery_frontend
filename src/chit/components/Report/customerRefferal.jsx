@@ -68,18 +68,18 @@ function CustomerRefferal() {
   });
 
 
-  const columns = [
+const columns = [
     {
       header: "S.No",
       cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
     },
     {
       header: "Customer ",
-      cell: (row) => row?.customer_name,
+      cell: (row) => row?.referredCusName,
     },
     {
       header: "Mobile",
-      cell: (row) => row?.referredCusMobile,
+       cell: (row) => row?.referredCusMobile,
     },
     {
       header: "SCHEME NAME",
@@ -87,11 +87,13 @@ function CustomerRefferal() {
     },
     {
       header: "Referred Customer Name",
-      cell: (row) => row?.referredCusName,
+      cell: (row) => row?.customer_name,
+      
     },
     {
       header: "Referred Customer Mobile no",
-      cell: (row) => row?.referredCusMobile,
+       cell: (row) => row?.customerMobile,
+     
     },
     {
       header: "Joined Date",
