@@ -7,6 +7,7 @@ import { formatDecimal, formatNumber } from "../../../utils/commonFunction";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { formatDate } from "../../../../utils/FormatDate";
+import { spliceDecimals } from "../../../../utils/Constants";
 
 function Ledgerdetails({ setIsOpen }) {
   const layout_color = useSelector((state) => state.clientForm.layoutColor);
@@ -140,13 +141,17 @@ function Ledgerdetails({ setIsOpen }) {
         cell: (row) => formatNumber({ value: row?.payment_amount ?? 0, decimalPlaces: 0 })
       },
       {
-        header: "ITR/UTR",
-        cell: (row) => row?.itr_utr ?? "-"
-      },
-      {
-        header: "Remarks",
-        cell: (row) => row?.remark ?? "-"
-      },
+        header:"Payment Date",
+        cell:(row)=>formatDate(row?.createdAt)
+      }
+      // {
+      //   header: "ITR/UTR",
+      //   cell: (row) => row?.itr_utr ?? "-"
+      // },
+      // {
+      //   header: "Remarks",
+      //   cell: (row) => row?.remark ?? "-"
+      // },
     ];
 
     if (weightScheme.includes(ledgerData?.scheme_type)) {
@@ -166,11 +171,10 @@ function Ledgerdetails({ setIsOpen }) {
       ? (ledgerData.total_paidamount * ledgerData.bonus_percent) / 100
       : 0;
 
-
   return (
     <div className="bg-white mx-auto">
       {/* Scheme Details */}
-      <div className="grid grid-rows-2 lg:grid-cols-2 gap-4 text-sm">
+      <div className="grid grid-rows-2 lg:grid-cols-2 gap-x-16 gap-y-3 text-sm">
         <Detail label="Accounter Name" value={ledgerData?.account_name} />
         <Detail label="Mobile No" value={ledgerData?.mobile} />
         <Detail label="Scheme Name" value={ledgerData?.scheme_name} />
@@ -191,7 +195,7 @@ function Ledgerdetails({ setIsOpen }) {
         )}
         <Detail label="Scheme Type" value={ledgerData?.scheme_typename} />
         <Detail label="Paid Amount" value={formatNumber({ value: ledgerData?.total_paidamount ?? "", decimalPlaces: 0 })} />
-        <Detail label="Paid Weight" value={`${formatDecimal(ledgerData?.paid_weight)} g`} />
+        <Detail label="Paid Weight" value={`${spliceDecimals(ledgerData?.paid_weight,3)} g`} />
         <Detail label="Gift Handover" value={ledgerData?.gift_issues} />
         <Detail label="Status" value={ledgerData?.status} highlight={false} />
         <Detail
@@ -264,13 +268,13 @@ function Detail({ label, value, highlight = false }) {
   const textColorClass = statusStyles[value]?.text || '';
 
   return (
-    <div className="flex">
-      <span className="w-44 font-medium text-gray-700">{label}</span>
+    <div className="flex justify-between items-center">
+      <span className="w-44 text-left font-medium text-gray-700">{label}</span>
       <span
         className={`${
           highlight
-            ? "text-red-500 font-semibold"
-            : `${textColorClass} text-start`
+            ? "text-red-500 font-semibold text-right"
+            : `${textColorClass} text-right`
         }`}
       >
         {value !== undefined && value !== null ? value : 'N/A'}

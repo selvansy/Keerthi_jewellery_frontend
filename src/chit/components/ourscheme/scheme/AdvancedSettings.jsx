@@ -101,7 +101,21 @@ const AdvancedSettings = ({ formik, layout_color, installment_type }) => {
               name="limit_installment"
               onWheel={(e) => e.target.blur()}
               value={formik.values.limit_installment}
-              onChange={formik.handleChange}
+              // onChange={formik.handleChange}
+              onChange={(e) => {
+                let value = parseInt(e.target.value, 10) || "";
+                const totalInstallments = formik.values.total_installments || "";
+
+                if (value > totalInstallments) {
+                  formik.setFieldError(
+                    "limit_installment",
+                    `Installment cannot exceed total installments ${totalInstallments}`
+                  );
+                } else {
+                  formik.setFieldValue("limit_installment", value);
+                  formik.setFieldError("limit_installment", "");
+                }
+              }}
               onBlur={formik.handleBlur}
               className="border-[1px] border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-1 focus:ring-[#004181] focus:border-transparent"
               placeholder="Enter Limit Installment"
@@ -150,7 +164,21 @@ const AdvancedSettings = ({ formik, layout_color, installment_type }) => {
               name="gift_minimum_paid_installment"
               onWheel={(e) => e.target.blur()}
               value={formik.values.gift_minimum_paid_installment}
-              onChange={formik.handleChange}
+              // onChange={formik.handleChange}
+              onChange={(e) => {
+                let value = parseInt(e.target.value, 10) || "";
+                const totalInstallments = formik.values.total_installments || "";
+
+                if (value > totalInstallments) {
+                  formik.setFieldError(
+                    "gift_minimum_paid_installment",
+                    `Installment cannot exceed total installments ${totalInstallments}`
+                  );
+                } else {
+                  formik.setFieldValue("gift_minimum_paid_installment", value);
+                  formik.setFieldError("gift_minimum_paid_installment", "");
+                }
+              }}
               onBlur={formik.handleBlur}
               className="border-[1px] border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-1 focus:ring-[#004181] focus:border-transparent"
               placeholder="Enter Paid Installment"
@@ -258,7 +286,7 @@ const AdvancedSettings = ({ formik, layout_color, installment_type }) => {
                 isClearable={true}
                 placeholder= "Commission Trigger"
                 value={commissionTrigger.find(
-                  (option) => option.value === formik.values.id
+                  (option) => option.value === formik.values.referralTriggerType
                 )}
                 onChange={(option) =>
                   formik.setFieldValue("referralTriggerType", option ? option.value : "")
@@ -281,8 +309,9 @@ const AdvancedSettings = ({ formik, layout_color, installment_type }) => {
                 isClearable={true}
                 placeholder= "Referral Commission Type"
                 value={referralCommission.find(
-                  (option) => option.value === formik.values.id
+                  (option) => option.value === formik.values.commissionType
                 )}
+                isDisabled={!formik.values.referralTriggerType}
                 onChange={(option) =>
                   formik.setFieldValue("commissionType", option ? option.value : "")
                 }

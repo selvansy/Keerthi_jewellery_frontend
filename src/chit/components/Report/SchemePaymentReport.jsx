@@ -296,7 +296,7 @@ function AccountSummaryReport() {
     {
       header: "Paid Amount",
       cell: (row) =>
-        formatNumber({ value: row?.payment_amount, decimalPlaces: 3 }),
+        formatNumber({ value: row?.payment_amount, decimalPlaces: 2 }),
     },
     {
       header: "Payment mode",

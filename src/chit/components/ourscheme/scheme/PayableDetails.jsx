@@ -367,7 +367,21 @@ const PayableDetails = ({
           name="benefit_min_installment_wst_mkg"
           value={formik.values.benefit_min_installment_wst_mkg}
           onWheel={(e) => e.target.blur()}
-          onChange={formik.handleChange}
+          // onChange={formik.handleChange}
+          onChange={(e) => {
+            let value = parseInt(e.target.value, 10) || "";
+            const totalInstallments = formik.values.total_installments || "";
+
+            if (value > totalInstallments) {
+              formik.setFieldError(
+                "benefit_min_installment_wst_mkg",
+                `Minimum installment cannot exceed total installments ${totalInstallments}`
+              );
+            } else {
+              formik.setFieldValue("benefit_min_installment_wst_mkg", value);
+              formik.setFieldError("benefit_min_installment_wst_mkg", "");
+            }
+          }}
           onBlur={formik.handleBlur}
           disabled={!formik.values.bonus_type}
           className="border-[1px] border-[#f2f3f8] rounded-md p-2 w-full focus:outline-none focus:ring-1 focus:ring-[#004181] focus:border-transparent"

@@ -16,6 +16,7 @@ import {
   wastagetype,
   getBranchById,
 } from "../../../api/Endpoints";
+import { commissionTriggerType,referralCommissionType } from "../../../../utils/Constants";
 import { useQuery, useQueries, useMutation } from "@tanstack/react-query";
 import { benefiMakingCharge, rewardType } from "../../../../utils/Constants";
 
@@ -62,6 +63,8 @@ const ViewScheme = () => {
   const [benefitMaking, setMaking] = useState([]);
   const [reward, setReward] = useState([]);
   const [eyeOpen, setEye] = useState(false);
+  const [referraltriggertype,setreferraltriggertype]=useState("")
+  const [commissionType, setCommissionType] = useState("");
 
   const formik = useFormik({
     initialValues: {
@@ -357,6 +360,9 @@ const ViewScheme = () => {
         desc_img: schemeData?.data?.desc_img || "",
         fixed_amounts: schemeData?.data?.fixed_amounts || [],
         referralPercentage: schemeData?.data?.referralPercentage || 0,
+        commissionType:schemeData?.data?.referralTriggerType || "Not available",
+        referralTriggerType:schemeData?.data?.commissionType || "Not Available",
+        referralAmount:schemeData?.data?.referralAmount || 0
       });
 
       if (schemeData?.data?.logo) {
@@ -371,8 +377,20 @@ const ViewScheme = () => {
       if (schemeData?.data) {
         formik.setFieldValue("scheme_type", schemeData?.data?.scheme_type);
       }
+
+      if(schemeData?.data?.referralTriggerType){
+        let data = referralCommissionType.filter((item)=> schemeData?.data?.commissionType == item.id)
+        formik.setFieldValue("commissionType",data[0].name)
+      }
+      if(schemeData?.data?.commissionType){
+         let data = commissionTriggerType.filter((item)=> schemeData?.data?.referralTriggerType == item.id)
+        formik.setFieldValue("referralTriggerType",data[0].name)
+        setCommissionType(data[0].id)
+      }
     }
   }, [id, schemeData, classifications]);
+
+  console.log("tewdtyw",formik.values.commissionType)
 
   useEffect(() => {
     if (schemeData?.data && Array.isArray(schemeData.data.fixed_amounts)) {
@@ -1054,14 +1072,51 @@ const ViewScheme = () => {
           </div>
           <h2 className="text-lg font-semibold mb-4 border-b pb-4">Referral</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div>
+             <div>
               <label className="block text-sm font-medium mb-1">
-                Referral Percentage (Monthly)
+                Commission Trigger Type
+              </label>
+              <p className="text-[#72737e] pb-2">
+                {`${formik.values?.referralTriggerType}`}
+              </p>
+            </div>
+              <div>
+              <label className="block text-sm font-medium mb-1">
+                Referral Commission type  
+              </label>
+              <p className="text-[#72737e] pb-2">
+                {`${formik.values?.commissionType}`}
+              </p>
+            </div>
+
+            {
+            formik.values?.commissionType === "Percentage Of Payment"
+             ? (
+              <>
+               <div>
+              <label className="block text-sm font-medium mb-1">
+                Referral Percentage
               </label>
               <p className="text-[#72737e] pb-2">
                 {`${formik.values?.referralPercentage} %`}
               </p>
             </div>
+              </>
+            ) : (
+              <>
+               <div>
+              <label className="block text-sm font-medium mb-1">
+                Referral Amount
+              </label>
+              <p className="text-[#72737e] pb-2">
+                {`₹ ${formik.values?.referralAmount}`}
+              </p>
+            </div>
+              </>
+            )
+              
+            }
+                
             <div>
               <label className="block text-sm font-medium mb-1">
                 Display Referral

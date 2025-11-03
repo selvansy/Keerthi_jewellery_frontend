@@ -138,7 +138,7 @@ const SchemeForm = () => {
       if (response.status === 200) {
         toast.success(response?.data?.message);
         formik.resetForm();
-        navigate("/scheme/delisted");
+        navigate("/scheme/scheme/");
       }
     },
     onError: () => {
@@ -204,8 +204,8 @@ const SchemeForm = () => {
       display_Weight_in_ledger: false,
       referralPercentage: "",
       referralAmount:"",
-      referralTriggerType:1,
-      commissionType:1
+      referralTriggerType:"",
+      commissionType:""
     },
     validationSchema: schemeValidationSchema,
     onSubmit: (values) => {
@@ -421,6 +421,9 @@ const SchemeForm = () => {
         setMainImage: schemeData?.data?.logo || null,
         setDescriptionImage: schemeData?.data?.desc_img || null,
         referralPercentage: schemeData?.data?.referralPercentage || "",
+        referralAmount: schemeData?.data?.referralAmount || "",
+        referralTriggerType:schemeData?.data?.referralTriggerType || 1,
+        commissionType: schemeData?.data?.commissionType || 1
       });
       if (schemeData?.data?.logo) {
         setMainImage(schemeData?.data?.logo);
@@ -712,7 +715,8 @@ const SchemeForm = () => {
           calculatedInstallments = maturityMonths - 1;
           break;
         case 2: // Weekly
-          calculatedInstallments = Math.round(maturityMonths * 4.345 - 4.345);
+          // calculatedInstallments = Math.round(maturityMonths * 4.345 - 4.345);
+           calculatedInstallments = maturityMonths - 1 ;
           break;
         case 3: // Daily
           calculatedInstallments = maturityMonths * 30 - 30;
