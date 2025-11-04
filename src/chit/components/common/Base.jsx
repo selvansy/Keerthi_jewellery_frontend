@@ -19,6 +19,7 @@ import {
   Layers2,
   IndianRupee,
   Printer,
+  Book,
 } from "lucide-react";
 
 import logo from "../../../assets/nytro.png";
@@ -42,7 +43,7 @@ import {
   getMetalRateByMetalId,
   todaymetalrate,
 } from "../../api/Endpoints";
-import { formatNumber } from "../../utils/commonFunction";
+import { emptyToZero, formatNumber } from "../../utils/commonFunction";
 import packageJson from "../../../../package.json";
 
 const Base = ({ renderContent: RenderContent }) => {
@@ -351,6 +352,29 @@ const Base = ({ renderContent: RenderContent }) => {
     setActiveMenu((prevActiveMenu) => (prevActiveMenu === menu ? null : menu));
   };
 
+const formatNumber = ({
+  value,
+  decimalPlaces = 2,
+  locale = "en-IN",
+  currency = "INR",
+} = {}) => {
+  value = emptyToZero(value);
+
+  const isInteger = Number.isInteger(value);
+
+  const options = {
+    minimumFractionDigits: isInteger ? 0 : decimalPlaces,
+    maximumFractionDigits: decimalPlaces,
+  };
+
+  if (currency) {
+    options.style = "currency";
+    options.currency = currency;
+  }
+
+  return new Intl.NumberFormat(locale, options).format(value);
+};
+
   const SubMenuItem = ({ text, onClick, isLast, parentSection, pathUrl }) => {
     const url = pathUrl?.startsWith("/") ? pathUrl : `/${pathUrl}`;
 
@@ -545,26 +569,32 @@ const Base = ({ renderContent: RenderContent }) => {
       link: "/managecustomers/customer/",
       icon: <User color="grey" />,
     },
-    // {
-    //   name: "Manage Account",
-    //   link: "/manageaccount/addschemeaccount",
-    //   icon: <Settings className="text-purple-500" />,
-    // },
+    {
+      name: "Add Account",
+      link: "/managecustomers/addcustomer",
+      icon: <Settings color="grey" />,
+    },
     {
       name: "Payment",
       link: "/payment/addschemepayment",
       icon: <CreditCard color="grey" />,
     },
-    {
-      name: "Card Print",
-      link: "/cardprint/printone",
-      icon: <LucidePrinter color="grey"  />,
-    },
-    {
+     {
       name: "Receipt Print",
       link: "/receiptprint/printone",
       icon: <Printer color="grey"  />,
     },
+     {
+      name: "Passbook Print",
+      link: "/print/passbook",
+      icon: <Book color="grey"  />,
+    },
+    {
+      name: "Card Print",
+      link: "/cardprint/printone",
+      icon: <Book color="grey"  />,
+    },
+   
   ];
 
   return (
@@ -614,7 +644,7 @@ const Base = ({ renderContent: RenderContent }) => {
               <span className="hidden sm:inline">Gold (24K):</span>
               <span className="ml-1 font-bold">
                 {metalRate[0]?.rate
-                  ? formatNumber({ value: metalRate[0].rate, decimalPlaces: 0 })
+                  ? formatNumber({ value: metalRate[0].rate, decimalPlaces: 2 })
                   : "N/A"}
               </span>
             </div>
@@ -622,15 +652,15 @@ const Base = ({ renderContent: RenderContent }) => {
               <span className="hidden sm:inline">Gold (22K):</span>
               <span className="ml-1 font-bold">
                 {metalRate[1]?.rate
-                  ? formatNumber({ value: metalRate[1].rate, decimalPlaces: 0 })
+                  ? formatNumber({ value: metalRate[1].rate, decimalPlaces: 2 })
                   : "N/A"}
               </span>
             </div>
-            <div className="bg-[#FFE28D] flex px-2 py-1 sm:px-3 sm:py-1.5 rounded-[8px] text-[#232323] font-medium sm:text-sm hidden md:flex">
+            <div className="bg-[#C0C0C0] flex px-2 py-1 sm:px-3 sm:py-1.5 rounded-[8px] text-[#232323] font-medium sm:text-sm hidden md:flex">
               <span className="hidden sm:inline">Silver:</span>
               <span className="ml-1 font-bold">
                 {metalRate[2]?.rate
-                  ? formatNumber({ value: metalRate[2].rate, decimalPlaces: 0 })
+                  ? formatNumber({ value: metalRate[2].rate, decimalPlaces: 2 })
                   : "N/A"}
               </span>
             </div>

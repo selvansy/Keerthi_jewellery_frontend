@@ -34,15 +34,30 @@ function AmountPaybleParent() {
 
     const [processData, setProcessData] = useState([]);
   
-      useEffect(() => {
-    const process = paybleData.map((item, index) => ({
-      "S.No": index + 1,
-      "Scheme":item?.schemeName,
-      "Classification":item?.classificationName,
-      "Total Collected Amount":item?.totalCollectedAmount
-    }));
-    setProcessData(process);
+  //     useEffect(() => {
+  //   const process = paybleData.map((item, index) => ({
+  //     "S.No": index + 1,
+  //     "Scheme":item?.schemeName,
+  //     "Classification":item?.classificationName,
+  //     "Total Collected Amount":item?.totalCollectedAmount
+  //   }));
+  //   setProcessData(process);
+  // }, [paybleData]);
+
+    useEffect(() => {
+    if (paybleData && Array.isArray(paybleData)) {
+      const process = paybleData?.map((item, index) => ({
+        "S.No": index + 1,
+        "Scheme": item?.schemeName || '',
+        "Classification": item?.classificationName || '',
+        "Total Collected Amount": item?.totalCollectedAmount || 0
+      }));
+      setProcessData(process);
+    } else {
+      setProcessData([]);
+    }
   }, [paybleData]);
+
   useEffect(() => {
     const payload = {
       page: currentPage,

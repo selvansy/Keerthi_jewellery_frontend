@@ -285,7 +285,7 @@ const AddEmployee = () => {
           : null,
         aadharNumber: employee.aadharNumber || "",
         id_country: employee.id_country._id || country._id,
-        employeeIncentivePercentage: employee.employeeIncentivePercentage || 0,
+        employeeIncentivePercentage: employee?.employeeIncentivePercentage || 0,
         pan: employee.pan || "",
         whatsappNumber: employee.whatsappNumber || "",
         department: employee.department || "",

@@ -16,7 +16,7 @@ import { formatDecimal } from "../../utils/commonFunction";
 function WeightPaybleChild() {
 
   const location = useLocation();
-  const { id} = location.state || {};
+  const { id,fromdate,todate} = location.state || {};
 
   const [isLoading, setisLoading] = useState(true);
   const [paybleData, setPaybleData] = useState([]);
@@ -24,8 +24,8 @@ function WeightPaybleChild() {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [totalPages,  setTotalPages] = useState(0);
   const [totalDocuments, setTotalDocuments] = useState(0);
-  const [from_date,setfrom_date]=useState()
-  const [to_date,setto_date]=useState()
+  const [from_date,setfrom_date]=useState(fromdate || new Date())
+  const [to_date,setto_date]=useState(todate || new Date())
   const [processData,setProcessData]=useState([]);
   const type= 'weight'
 
@@ -55,7 +55,7 @@ function WeightPaybleChild() {
       "Customer":item?.customer,
       "Accounter Name":`${item?.accounter_fname} ${item?.accounter_lname}`,
       "scheme A/c No": item?.schemeAccNumber,
-      "Total Collectd Weight":item?.totalValue.toFixed(3),
+      "Total Collectd Weight":`${spliceDecimals(item?.totalValue,3)}`,
       "Maturity Date":formatDate(item?.maturityDate),
       "Paid Installment":item?.paidInstallments,
        
@@ -112,7 +112,7 @@ function WeightPaybleChild() {
     },
     {
       header: "Total Collectd Weight",
-      cell: (row) => `${formatDecimal(row?.totalValue,3)} g`,
+      cell: (row) => `${spliceDecimals(row?.totalValue,3)} g`,
     },
     {
       header: "Maturity Date ",
@@ -132,7 +132,7 @@ function WeightPaybleChild() {
 
    function spliceDecimals(num, decimals) {
   const factor = Math.pow(10, decimals);
-  return Math.round(num * factor) / factor;
+  return Math.trunc(num * factor) / factor;
 }
 
   function truncateDecimal(value, decimals) {

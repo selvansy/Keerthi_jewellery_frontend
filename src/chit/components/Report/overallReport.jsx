@@ -26,9 +26,12 @@ import { Breadcrumb } from "../common/breadCumbs/breadCumbs";
 import DateRangeSelector from "../common/calender";
 import { customSelectStyles } from "../Setup/purity";
 import { formatDecimal, formatNumber } from "../../utils/commonFunction";
+import { spliceDecimals } from "../../../utils/Constants";
 // import Managetables from "./managetables";
 
-function overallReport() {
+function 
+
+overallReport() {
   const [isLoading, setisLoading] = useState(true);
   const [overAllData, setOverAllData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -166,7 +169,7 @@ function overallReport() {
     },
     {
       header: "CLOSE WGT",
-      cell: (row) => `${formatDecimal( row?.closedWeight)} g`,
+      cell: (row) => `${spliceDecimals( row?.closedWeight,3)} g`,
     },
     {
       header: "PRE-CLOSE ACCOUNT",

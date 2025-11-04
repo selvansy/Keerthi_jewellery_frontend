@@ -18,6 +18,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setid } from "../../../../redux/clientFormSlice";
 import SpinLoading from "../../common/spinLoading";
 import { formatNumber } from "../../../utils/commonFunction";
+import { spliceDecimals } from "../../../../utils/Constants";
 
 const Existcusomer = () => {
   const navigate = useNavigate();
@@ -329,7 +330,7 @@ const Existcusomer = () => {
     },
     {
       header: "Weight",
-      cell: (row) => `${formatDecimal(row.weightPaid )|| 0} g`,
+      cell: (row) => `${spliceDecimals(row.weightPaid,3 )|| 0} g`,
     },
     // {
     //   header: "Over Dues",

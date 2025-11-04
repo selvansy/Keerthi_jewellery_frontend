@@ -16,6 +16,7 @@ import { Breadcrumb } from "../common/breadCumbs/breadCumbs";
 import DateRangeSelector from "../common/calender";
 import { formatNumber } from "../../utils/commonFunction";
 import { formatDate } from "../../../utils/FormatDate";
+import { spliceDecimals } from "../../../utils/Constants";
 
 function CustomerRefferal() {
   const roleData = useSelector((state) => state.clientForm.roledata);
@@ -67,8 +68,7 @@ function CustomerRefferal() {
     },
   });
 
-
-const columns = [
+  const columns = [
     {
       header: "S.No",
       cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
@@ -79,7 +79,7 @@ const columns = [
     },
     {
       header: "Mobile",
-       cell: (row) => row?.referredCusMobile,
+      cell: (row) => row?.referredCusMobile,
     },
     {
       header: "SCHEME NAME",
@@ -88,12 +88,10 @@ const columns = [
     {
       header: "Referred Customer Name",
       cell: (row) => row?.customer_name,
-      
     },
     {
       header: "Referred Customer Mobile no",
-       cell: (row) => row?.customerMobile,
-     
+      cell: (row) => row?.customerMobile,
     },
     {
       header: "Joined Date",
@@ -104,24 +102,18 @@ const columns = [
       //     day: "numeric",
       //   });
       // },
-      cell:(row)=>formatDate(row?.referredDate)
+      cell: (row) => formatDate(row?.referredDate),
     },
     {
       header: "chit Purchase Value ",
       cell: (row) => {
-        return formatNumber({
-          value: row?.ReferralBonuses?.payment_amount,
-          decimalPlaces: 0,
-        });
+        return `₹${spliceDecimals(row?.ReferralBonuses?.payment_amount, 2)}`;
       },
     },
     {
       header: "Incentive Amount ",
       cell: (row) => {
-        return formatNumber({
-          value: row?.ReferralBonuses?.referral_amount,
-          decimalPlaces: 0,
-        });
+        return `₹${spliceDecimals(row?.ReferralBonuses?.referral_amount, 2)}`;
       },
     },
     {
@@ -133,7 +125,7 @@ const columns = [
       //     day: "numeric",
       //   });
       // },
-      cell:(row)=>formatDate(row?.ReferralBonuses?.payment_date)
+      cell: (row) => formatDate(row?.ReferralBonuses?.payment_date),
     },
   ];
 

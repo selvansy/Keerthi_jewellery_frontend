@@ -130,7 +130,7 @@ function CompleteAccount() {
     },
     {
       header: "total Paid Weight",
-      cell: (row) => `${formatDecimal(row?.totalPaidWeight)}g`,
+      cell: (row) => `${spliceDecimals(row?.totalPaidWeight,3)}g`,
     },
     {
       header: "Classification",

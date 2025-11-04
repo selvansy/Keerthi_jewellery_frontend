@@ -13,6 +13,7 @@ import DateRangeSelector from "../common/calender";
 import { formatNumber } from "../../utils/commonFunction";
 import { formatDecimal } from "../../utils/commonFunction";
 import { formatDate } from "../../../utils/FormatDate";
+import { spliceDecimals } from "../../../utils/Constants";
 
 function PreCloseReport() {
   const roledata = localStorage.getItem("decoded");
@@ -142,7 +143,7 @@ function PreCloseReport() {
     },
     {
       header: "Paid Weight",
-      cell: (row) => `${formatDecimal(row?.totalPaidWeight,3)} g`,
+      cell: (row) => `${spliceDecimals(row?.totalPaidWeight,3)} g`,
     },
     {
       header: "Classification",

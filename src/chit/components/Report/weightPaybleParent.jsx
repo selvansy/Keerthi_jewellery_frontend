@@ -62,7 +62,7 @@ function WeightPaybleParent() {
 
   const handleSchemeClick = (row) => {
     navigate("/report/schemewiseweight", {
-      state: { id: row._id},
+      state: { id: row._id,fromdate:from_date,todate:to_date},
     });
 };
 
@@ -127,14 +127,14 @@ function WeightPaybleParent() {
       {
   header: "Total Paid Weight",
   cell: (row) =>
-    `${formatNumber({ value: row?.totalCollectedAmount, decimalPlaces: 3, currency: null })} g`,
+    `${spliceDecimals(row?.totalCollectedAmount, 3 )} g`,
 }
 
   ];
 
  function spliceDecimals(num, decimals) {
   const factor = Math.pow(10, decimals);
-  return Math.round(num * factor) / factor;
+  return Math.trunc(num * factor) / factor;
 }
 
 
@@ -143,7 +143,7 @@ function WeightPaybleParent() {
       "S.No": index + 1,
       "Scheme Name":item.schemeName,
       "Classification Name":item.classificationName,
-      "Total Paid Weight": `${item.totalCollectedAmount} g`, 
+      "Total Paid Weight": `${spliceDecimals(item.totalCollectedAmount,3)} g`, 
     }));
     setProcessData(process);
   }, [paybleData]);

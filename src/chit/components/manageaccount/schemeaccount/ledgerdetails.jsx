@@ -157,7 +157,7 @@ function Ledgerdetails({ setIsOpen }) {
     if (weightScheme.includes(ledgerData?.scheme_type)) {
       baseColumns.splice(3, 0, {
         header: "Saved Weight",
-        cell: (row) => `${formatDecimal(row?.metal_weight)} g`
+        cell: (row) => `${spliceDecimals(row?.metal_weight,3)} g`
       });
     }
 

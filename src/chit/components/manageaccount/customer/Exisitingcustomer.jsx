@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { formatDate } from "../../../../utils/FormatDate";
 import { formatDecimal } from "../../../utils/commonFunction";
 import { head, header, label } from "framer-motion/client";
+import { spliceDecimals } from "../../../../utils/Constants";
 
 const Exisitingcustomer = () => {
   const navigate = useNavigate();
@@ -390,7 +391,7 @@ const walletdata=[{
             <hr className="w-px h-10 bg-gray-300 border-none mt-3" />
             <div className="justify-between p-2">
               <p className="text-lg font-medium text-black">
-                {`${formatDecimal(data?.totalWeightPayable)} g`}
+                {`${spliceDecimals(data?.totalWeightPayable,3)} g`}
               </p>
               <p className="text-sm font-bold text-gray-600">Weight Paid</p>
             </div>
@@ -476,7 +477,7 @@ const walletdata=[{
               </div>
               <div className="justify-between"> 
                   <p className="text-lg font-medium text-black">
-                      {`${formatDecimal(data?.totalWeightPayable)} g`}
+                      {`${spliceDecimals(data?.totalWeightPayable,3)} g`}
                   </p>
                   <p className="text-sm font-bold text-gray-600">Weight payble</p>
               </div>

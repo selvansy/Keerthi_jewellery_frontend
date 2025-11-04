@@ -13,13 +13,13 @@ import { IndianRupee } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import Select from "react-select";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { formatNumber } from "../../../utils/commonFunction";
 import SpinLoading from "../../common/spinLoading";
 import { closeModal } from "../../../../redux/modalSlice";
 import Modal from "../../common/Modal";
 import { openModal } from "../../../../redux/modalSlice";
 import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
 import { customStyles } from "../scheme/AddScheme";
+import { emptyToZero, formatNumber } from "../../../utils/commonFunction";
 
 function MetalRateIndex({ refresh }) {
   const [purityData, setPurityData] = useState([]);
@@ -43,6 +43,31 @@ function MetalRateIndex({ refresh }) {
   4: platinum,  // Platinum
   // default: defaultMetal // Default image for other metals
 };
+
+const formatNumber = ({
+  value,
+  decimalPlaces = 2,
+  locale = "en-IN",
+  currency = "INR",
+} = {}) => {
+  value = emptyToZero(value);
+
+  const isInteger = Number.isInteger(value);
+
+  const options = {
+    minimumFractionDigits: isInteger ? 0 : decimalPlaces,
+    maximumFractionDigits: decimalPlaces,
+  };
+
+  if (currency) {
+    options.style = "currency";
+    options.currency = currency;
+  }
+
+  return new Intl.NumberFormat(locale, options).format(value);
+};
+
+
 
   const id_branch = roledata?.branch;
   const dispatch = useDispatch();
@@ -235,6 +260,8 @@ function MetalRateIndex({ refresh }) {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
+   const validvalue= value.replace(/^(\d+)\.(\d{0,2}).*$/, "$1.$2"); 
+
     setFormData((prevData) => {
       const purityItem = purityData.find((item) => item._id === name);
       if (!purityItem) return prevData;
@@ -244,7 +271,7 @@ function MetalRateIndex({ refresh }) {
       );
       if (existingIndex !== -1) {
         const updatedData = [...prevData];
-        updatedData[existingIndex].rate = Number(value);
+        updatedData[existingIndex].rate = Number(validvalue);
         return updatedData;
       } else {
         return [
@@ -253,7 +280,7 @@ function MetalRateIndex({ refresh }) {
             id_branch: id_branch === "0" ? branchId : branch,
             purity_id: purityItem,
             material_type_id: purityItem.id_metal,
-            rate: Number(value),
+            rate: Number(validvalue),
           },
         ];
       }
@@ -261,7 +288,7 @@ function MetalRateIndex({ refresh }) {
 
     setFormErrors((prevErrors) => ({
       ...prevErrors,
-      [name]: value.trim() === "" ? "This field is required" : "",
+      [name]: validvalue.trim() === "" ? "This field is required" : "",
     }));
   };
 

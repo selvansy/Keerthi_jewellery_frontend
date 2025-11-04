@@ -2960,3 +2960,23 @@ export const paymentReceiptByIds = async (data) => {
   );
   return response.data;
 };
+
+// passbook print
+
+export const getPaymentDetailsPassBook =  async (data) => {
+  const response = await Api.post(
+    `${import.meta.env.VITE_API_URL}/api/client/print/passbook`,
+    data
+  );
+  return response.data;
+};
+
+
+// for scheme order update
+
+export const updateSchemeOrder = async (data) => {
+  const response = await Api.post(
+    `${import.meta.env.VITE_API_URL}/api/client/scheme/change-order`,{data:data}
+  );
+  return response.data;
+};

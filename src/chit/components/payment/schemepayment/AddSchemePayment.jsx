@@ -25,6 +25,8 @@ import SpinLoading from "../../common/spinLoading";
 import { formatNumber } from "../../../utils/commonFunction";
 import { formatDecimal } from "../../../utils/commonFunction";
 import { formatDate } from "../../../../utils/FormatDate";
+import { spliceDecimals } from "../../../../utils/Constants";
+import ThermalReceipt from "../../Print/ReceiptPrint/receiptPrint";
 // import { customStyles } from "../../ourscheme/scheme/AddScheme";
 
 const AddSchemePayment = () => {
@@ -51,6 +53,14 @@ const AddSchemePayment = () => {
   const [schemedata, setSchemeData] = useState([]);
   const [fullData, setFullData] = useState([]);
   const [selectedScheme, setSelectedScheme] = useState({});
+
+    // Print paymnet
+  const [saveAndPrint,setSaveAndPrint]=useState(false)
+  const [printOpen, setPrintOpen] = useState(false);
+  const [paymentResData, setPaymentResData] = useState(null);
+  const [printPaymentData, setPrintPaymentData] = useState([]);
+  const [resBranchData,setResBranchData]=useState({})
+
   // Add these to your constants
   const weightSchemeTypes = [12, 3, 4]; // Schemes where weight is primary input
   const amountSchemeTypes = [2, 5, 6]; // Schemes where amount is primary input
@@ -286,6 +296,18 @@ const AddSchemePayment = () => {
     mutationFn: addschemepayment,
     onSuccess: (response) => {
       toast.success(response.message);
+      const schemeInfo = response?.printData?.schemeInfo;
+    const paymentData = response?.printData?.data;
+    const companyData = response?.printData?.companyData;
+ 
+    if(saveAndPrint){
+      // Ensure data is ready before printing
+    setPaymentResData(schemeInfo || {});
+    setPrintPaymentData(paymentData || []);
+    setResBranchData(companyData || {});
+    setPrintOpen(true);
+  }
+
       resetForm();
     },
     onError: (error) => {
@@ -841,7 +863,17 @@ const AddSchemePayment = () => {
           </p>
 
           <div className="flex flec-row gap-2">
+             <button
+              onClick={()=>setSaveAndPrint(true)}
+              type="submit"
+              disabled={isLoading}
+              style={{ backgroundColor: layout_color }}
+              className="w-36 h-9 bg-blue-900 text-white text-sm font-semibold rounded-lg hover:bg-blue-800 flex justify-center items-center"
+            >
+              {isLoading ? <SpinLoading /> : "Save and Print"}
+            </button> 
             <button
+              onClick={()=>setSaveAndPrint(false)}
               type="submit"
               disabled={isLoading}
               className="w-24 h-9 bg-blue-900 text-white text-sm font-semibold rounded-lg hover:bg-blue-800 flex justify-center items-center"
@@ -1446,7 +1478,7 @@ const AddSchemePayment = () => {
                         <input
                           type="text"
                           disabled
-                          value={`${formatDecimal(weightSaved)}`}
+                          value={`${spliceDecimals(weightSaved,3)}`}
                           className="border-[1px] border-[#f2f3f8] rounded-md p-2 w-full bg-gray-100"
                         />
                       </div>
@@ -1733,6 +1765,15 @@ const AddSchemePayment = () => {
           </div>
         </div>
       </form>
+          {printOpen && saveAndPrint && (
+        <ThermalReceipt
+          isOpen={printOpen}
+          setIsOpen={setPrintOpen}
+          scheme={paymentResData}
+          payments={printPaymentData}
+          branchData={resBranchData}
+          />
+      )}
     </>
   );
 };

@@ -60,11 +60,11 @@ import Metal from "../chit/components/Setup/metal/index";
 import Purity from "../chit/components/Setup/purity/index";
 import MenuComp from "../chit/components/Setup/menu/index";
 import Login from "../chit/components/Login";
-import ClientMaster from '../chit/components/SuperAdmin/ClientMaster/index';
-import ClientForm from '../chit/components/SuperAdmin/ClientMaster/ClientForm';
+import ClientMaster from "../chit/components/SuperAdmin/ClientMaster/index";
+import ClientForm from "../chit/components/SuperAdmin/ClientMaster/ClientForm";
 import AupayConfigure from "../chit/components/SuperAdmin/Configure/Aupay/index";
 import AdminMaster from "../chit/components/SuperAdmin/Accounts/AdminMaster";
-import Dashboard from "../chit/components/SuperAdmin/Dashboard/Dashboard"
+import Dashboard from "../chit/components/SuperAdmin/Dashboard/Dashboard";
 import AddNotfication from "../chit/components/notification/pushnotification/AddNotfication";
 import Weddingnotification from "../chit/components/notification/Weddingnotification";
 import Birthdaynotification from "../chit/components/notification/Birthdaynotification";
@@ -88,11 +88,11 @@ import Addwallet from "../chit/components/wallet/Addwallet";
 import SchemeForm from "../chit/components/ourscheme/scheme/AddScheme";
 import RedeemHistory from "../chit/components/wallet/RedeemHistory";
 import Ticket from "../chit/components/help/ticket";
-import TopUp from "../chit/components/SuperAdmin/topupApprovals/index"
+import TopUp from "../chit/components/SuperAdmin/topupApprovals/index";
 import ContentManagement from "../chit/components/contentManagement/ContentManagement";
 import ContentForm from "../chit/components/contentManagement/ContentForm";
 import FaqTable from "../chit/components/faq";
-import FaqCreation from "../chit/components/SuperAdmin/faq/FaqCreation"
+import FaqCreation from "../chit/components/SuperAdmin/faq/FaqCreation";
 import FaqIndex from "../chit/components/SuperAdmin/faq";
 import PromotionSummary from "../chit/components/notification/promotions";
 import AddPromotion from "../chit/components/notification/promotions/AddPromotion";
@@ -124,25 +124,25 @@ import { path } from "framer-motion/client";
 import Exisitingcustomer from "../chit/components/manageaccount/customer/Exisitingcustomer";
 import Existcusomer from "../chit/components/manageaccount/customer/Existcus";
 import UploadFileComponent from "../chit/components/ImportFile";
+import PassBookTable from "../chit/components/Print/passbookPrint/passbookTable"
 
 const RouteList = [
-
   {
-    name: 'Login',
-    path: '/',
-    element: <Login />
+    name: "Login",
+    path: "/",
+    element: <Login />,
   },
 
   {
-    name:"Campaign",
-    path:"/campaign",
-    element:<Base renderContent={Campaign}/>
+    name: "Campaign",
+    path: "/campaign",
+    element: <Base renderContent={Campaign} />,
   },
 
   {
     name: "Dashboard",
-    path: '/dashboard',
-    element: <Base renderContent={Dashboard} />
+    path: "/dashboard",
+    element: <Base renderContent={Dashboard} />,
   },
 
   //Scheme
@@ -173,54 +173,54 @@ const RouteList = [
   },
   {
     name: "Add DigiGold",
-    path: '/scheme/adddigigold',
-    element: <Base renderContent={CreateDigiGoldScheme} />
+    path: "/scheme/adddigigold",
+    element: <Base renderContent={CreateDigiGoldScheme} />,
   },
   {
     name: "Add DigiGold",
-    path: '/scheme/editdigigold/:id',
-    element: <Base renderContent={CreateDigiGoldScheme} />
+    path: "/scheme/editdigigold/:id",
+    element: <Base renderContent={CreateDigiGoldScheme} />,
   },
   {
     name: "Add DigiGold",
-    path: '/scheme/digisilver',
-    element: <Base renderContent={CreateDigiGoldScheme} />
+    path: "/scheme/digisilver",
+    element: <Base renderContent={CreateDigiGoldScheme} />,
   },
 
   //ManageAccount
 
   {
     name: "Scheme Account",
-    path: 'manageaccount/schemeaccount/',
-    element: <Base renderContent={Schemeaccount} />
+    path: "manageaccount/schemeaccount/",
+    element: <Base renderContent={Schemeaccount} />,
   },
   {
     name: "Add Scheme Account",
-    path: '/manageaccount/addschemeaccount',
-    element: <Base renderContent={AddSchemeAccount} />
+    path: "/manageaccount/addschemeaccount",
+    element: <Base renderContent={AddSchemeAccount} />,
   },
 
   {
     name: "Update Scheme Account",
-    path: '/manageaccount/addschemeaccount/:id',
-    element: <Base renderContent={AddSchemeAccount} />
+    path: "/manageaccount/addschemeaccount/:id",
+    element: <Base renderContent={AddSchemeAccount} />,
   },
   {
     name: "Digi Gold Account",
-    path: '/manageaccount/digigoldaccount',
-    element: <Base renderContent={DigiGold} />
+    path: "/manageaccount/digigoldaccount",
+    element: <Base renderContent={DigiGold} />,
   },
 
   //Masters
   {
     name: "Purity",
-    path: '/masters/purity/',
-    element: <Base renderContent={Purity} />
+    path: "/masters/purity/",
+    element: <Base renderContent={Purity} />,
   },
   {
     name: "Metal",
-    path: '/masters/metal/',
-    element: <Base renderContent={Metal} />
+    path: "/masters/metal/",
+    element: <Base renderContent={Metal} />,
   },
   // {
   //   name: "Metal Rate",
@@ -229,49 +229,49 @@ const RouteList = [
   // },
   {
     name: "Metal Rate",
-    path: '/masters/metalrate',
-    element: <Base renderContent={MetalRateIndex} />
+    path: "/masters/metalrate",
+    element: <Base renderContent={MetalRateIndex} />,
   },
   {
     name: "Create Metal Rate",
-    path: '/masters/metalrate/edit/:id',
-    element: <Base renderContent={CreateMetalRate} />
+    path: "/masters/metalrate/edit/:id",
+    element: <Base renderContent={CreateMetalRate} />,
   },
   {
     name: "Create Metal Rate",
-    path: '/masters/metalrate/add',
-    element: <Base renderContent={CreateMetalRate} />
+    path: "/masters/metalrate/add",
+    element: <Base renderContent={CreateMetalRate} />,
   },
   {
     name: "User Role",
-    path: '/masters/userrole',
-    element: <Base renderContent={UserRole} />
+    path: "/masters/userrole",
+    element: <Base renderContent={UserRole} />,
   },
   {
     name: "User Access",
-    path: '/usersettings/useraccess/',
-    element: <Base renderContent={UserAccess} />
+    path: "/usersettings/useraccess/",
+    element: <Base renderContent={UserAccess} />,
   },
   {
     name: "Mode of Payment",
-    path: '/masters/paymentmode/',
-    element: <Base renderContent={Paymentmode} />
+    path: "/masters/paymentmode/",
+    element: <Base renderContent={Paymentmode} />,
   },
   {
     name: "Department",
-    path: '/usersettings/department',
-    element: <Base renderContent={Department} />
+    path: "/usersettings/department",
+    element: <Base renderContent={Department} />,
   },
   {
     name: "Topup",
-    path: '/usersettings/topup',
-    element: <Base renderContent={Topup} />
+    path: "/usersettings/topup",
+    element: <Base renderContent={Topup} />,
   },
 
   {
     name: "Campaign Type",
-    path: '/promotions/campaign',
-    element: <Base renderContent={Campaign} />
+    path: "/promotions/campaign",
+    element: <Base renderContent={Campaign} />,
   },
 
   //Payment
@@ -282,75 +282,75 @@ const RouteList = [
   // },
   {
     name: "Add Scheme Payment",
-    path: '/payment/addschemepayment',
-    element: <Base renderContent={AddSchemePayment} />
+    path: "/payment/addschemepayment",
+    element: <Base renderContent={AddSchemePayment} />,
   },
   {
     name: "Add Scheme Payment",
-    path: '/payment/addschemepayment/:id',
-    element: <Base renderContent={AddSchemePayment} />
+    path: "/payment/addschemepayment/:id",
+    element: <Base renderContent={AddSchemePayment} />,
   },
 
   //Catalog
   {
     name: "Category",
-    path: '/catalog/category',
-    element: <Base renderContent={Category} />
+    path: "/catalog/category",
+    element: <Base renderContent={Category} />,
   },
   {
     name: "Add Category",
-    path: '/catalog/addcategory',
-    element: <Base renderContent={AddCategory} />
+    path: "/catalog/addcategory",
+    element: <Base renderContent={AddCategory} />,
   },
   {
     name: "Update Category",
-    path: '/catalog/editcategory/:id',
-    element: <Base renderContent={AddCategory} />
+    path: "/catalog/editcategory/:id",
+    element: <Base renderContent={AddCategory} />,
   },
   {
     name: "Product",
-    path: '/catalog/product',
-    element: <Base renderContent={Product} />
+    path: "/catalog/product",
+    element: <Base renderContent={Product} />,
   },
   {
     name: "Add Product",
-    path: '/catalog/addproduct',
-    element: <Base renderContent={AddProduct} />
+    path: "/catalog/addproduct",
+    element: <Base renderContent={AddProduct} />,
   },
   {
     name: "Update Product",
-    path: '/catalog/editproduct/:id',
-    element: <Base renderContent={AddProduct} />
+    path: "/catalog/editproduct/:id",
+    element: <Base renderContent={AddProduct} />,
   },
   {
     name: "Offers",
-    path: '/catalog/offers',
-    element: <Base renderContent={Offers} />
+    path: "/catalog/offers",
+    element: <Base renderContent={Offers} />,
   },
   {
     name: "Add Offer",
-    path: '/catalog/addoffers',
-    element: <Base renderContent={AddOffers} />
+    path: "/catalog/addoffers",
+    element: <Base renderContent={AddOffers} />,
   },
   {
     name: "Update Offer",
-    path: '/catalog/editoffers/:id',
-    element: <Base renderContent={AddOffers} />
+    path: "/catalog/editoffers/:id",
+    element: <Base renderContent={AddOffers} />,
   },
   {
     name: "New Arrivals",
-    path: '/catalog/newarrivals',
-    element: <Base renderContent={NewArrivals} />
+    path: "/catalog/newarrivals",
+    element: <Base renderContent={NewArrivals} />,
   },
   {
     name: "Add New Arrivals",
-    path: '/catalog/addnewarrivals',
-    element: <Base renderContent={AddNewArrival} />
+    path: "/catalog/addnewarrivals",
+    element: <Base renderContent={AddNewArrival} />,
   },
   {
     name: "Update New Arrivals",
-    path: '/catalog/editnewarrivals/:id',
-    element: <Base renderContent={AddNewArrival} />
+    path: "/catalog/editnewarrivals/:id",
+    element: <Base renderContent={AddNewArrival} />,
   },
 
   //Manage Customers
@@ -366,24 +366,24 @@ const RouteList = [
   //   element:<Base renderContent={Exisitingcustomer}/>
   // },
   {
-   name:"Existing Customer",
-   path: "/managecustomers/customer/:cusid?",
-    element:<Base renderContent={Existcusomer}/> 
+    name: "Existing Customer",
+    path: "/managecustomers/customer/:cusid?",
+    element: <Base renderContent={Existcusomer} />,
   },
   {
     name: "Add Customer",
-    path: '/managecustomers/addcustomer',
-    element: <Base renderContent={Customers} />
+    path: "/managecustomers/addcustomer",
+    element: <Base renderContent={Customers} />,
   },
   {
     name: "Add Customer",
-    path: '/managecustomers/editcustomer/:id',
-    element: <Base renderContent={Customers} />
+    path: "/managecustomers/editcustomer/:id",
+    element: <Base renderContent={Customers} />,
   },
   {
     name: "Completed Account",
-    path: '/report/completedaccount',
-    element: <Base renderContent={CompleteAccount} />
+    path: "/report/completedaccount",
+    element: <Base renderContent={CompleteAccount} />,
   },
   // {
   //   name:"Customer Schemes",
@@ -395,249 +395,246 @@ const RouteList = [
 
   {
     name: "Wallet Point Rate",
-    path: '/wallet/pointrate/',
-    element: <Base renderContent={Addwallet} />
+    path: "/wallet/pointrate/",
+    element: <Base renderContent={Addwallet} />,
   },
   {
     name: "Wallet",
-    path: '/wallet/redeemption/',
-    element: <Base renderContent={WalletRedemption} />
+    path: "/wallet/redeemption/",
+    element: <Base renderContent={WalletRedemption} />,
   },
   {
     name: "Wallet",
-    path: '/wallet/redeemption/:id',
-    element: <Base renderContent={WalletRedemption} />
+    path: "/wallet/redeemption/:id",
+    element: <Base renderContent={WalletRedemption} />,
   },
   {
     name: "Wallet History",
-    path: '/wallet/wallethistory/',
-    element: <Base renderContent={WalletHistory} />
+    path: "/wallet/wallethistory/",
+    element: <Base renderContent={WalletHistory} />,
   },
   {
     name: "Redeem History",
-    path: '/wallet/redeemhistory/',
-    element: <Base renderContent={RedeemHistory} />
+    path: "/wallet/redeemhistory/",
+    element: <Base renderContent={RedeemHistory} />,
   },
-
 
   //Gifts
 
   {
     name: "Gift Vendor",
-    path: '/gift/giftvendor',
-    element: <Base renderContent={GiftVendor} />
+    path: "/gift/giftvendor",
+    element: <Base renderContent={GiftVendor} />,
   },
   {
     name: "Gift Item",
-    path: '/gift/giftitem',
-    element: <Base renderContent={GiftItem} />
+    path: "/gift/giftitem",
+    element: <Base renderContent={GiftItem} />,
   },
   {
     name: "Gift Handover",
-    path: '/gift/gifthandover',
-    element: <Base renderContent={GiftHandOver} />
+    path: "/gift/gifthandover",
+    element: <Base renderContent={GiftHandOver} />,
   },
   {
     name: "Gift Purchase",
-    path: 'gift/giftpurchase/',
-    element: <Base renderContent={GiftInwards} />
+    path: "gift/giftpurchase/",
+    element: <Base renderContent={GiftInwards} />,
   },
   {
     name: "Gift Purchase",
-    path: '/gift/addgiftinwards',
-    element: <Base renderContent={GiftPurchaseForm} />
+    path: "/gift/addgiftinwards",
+    element: <Base renderContent={GiftPurchaseForm} />,
   },
   {
     name: "Edit Gift Purchase",
-    path: '/gift/addgiftinwards/:id',
-    element: <Base renderContent={GiftPurchaseForm} />
+    path: "/gift/addgiftinwards/:id",
+    element: <Base renderContent={GiftPurchaseForm} />,
   },
   {
     name: "Gift HandOver",
-    path: '/gift/gifthandover',
-    element: <Base renderContent={GiftHandOver} />
+    path: "/gift/gifthandover",
+    element: <Base renderContent={GiftHandOver} />,
   },
   {
     name: "Gift Issued Creation",
-    path: '/gift/giftissues/creategiftissue',
-    element: <Base renderContent={GiftHandOverForm} />
+    path: "/gift/giftissues/creategiftissue",
+    element: <Base renderContent={GiftHandOverForm} />,
   },
   {
     name: "Gift Stock Report",
-    path: '/gift/stockreport/',
-    element: <Base renderContent={GiftReport} />
+    path: "/gift/stockreport/",
+    element: <Base renderContent={GiftReport} />,
   },
 
   //Notifications
 
   {
     name: "Push Notification",
-    path: '/notification/pushnotification',
-    element: <Base renderContent={Pushnotification} />
+    path: "/notification/pushnotification",
+    element: <Base renderContent={Pushnotification} />,
   },
   {
     name: "Create Notification",
-    path: '/notification/addnotification',
-    element: <Base renderContent={AddNotfication} />
+    path: "/notification/addnotification",
+    element: <Base renderContent={AddNotfication} />,
   },
   {
     name: "Wedding Anniversary",
-    path: '/notification/weddingnotification',
-    element: <Base renderContent={Weddingnotification} />
+    path: "/notification/weddingnotification",
+    element: <Base renderContent={Weddingnotification} />,
   },
   {
     name: "Birthday",
-    path: '/notification/birthday',
-    element: <Base renderContent={Birthdaynotification} />
+    path: "/notification/birthday",
+    element: <Base renderContent={Birthdaynotification} />,
   },
   {
     name: "configurations",
-    path: '/notification/configurations',
-    element: <Base renderContent={configNotification} />
+    path: "/notification/configurations",
+    element: <Base renderContent={configNotification} />,
   },
 
   //Scheme Reports
   {
     name: "Outstanding Summary",
-    path: '/reports/outstandingsummary',
-    element: <Base renderContent={OutStandingReport} />
+    path: "/reports/outstandingsummary",
+    element: <Base renderContent={OutStandingReport} />,
   },
   {
     name: "Account Summary Report",
-    path: '/reports/accountsummary',
-    element: <Base renderContent={AccountSummaryReport} />
+    path: "/reports/accountsummary",
+    element: <Base renderContent={AccountSummaryReport} />,
   },
   {
     name: "Scheme Payment Report",
-    path: '/reports/schemepayment',
-    element: <Base renderContent={SchemePaymentReport} />
+    path: "/reports/schemepayment",
+    element: <Base renderContent={SchemePaymentReport} />,
   },
   {
     name: "Scheme Account Report",
-    path: 'reports/schemeaccount',
-    element: <Base renderContent={SchemeAccountReport} />
+    path: "reports/schemeaccount",
+    element: <Base renderContent={SchemeAccountReport} />,
   },
   {
     name: "Outstanding Amount",
-    path: '/reports/outstanding',
-    element: <Base renderContent={OutStandingAmount} />
+    path: "/reports/outstanding",
+    element: <Base renderContent={OutStandingAmount} />,
   },
   {
     name: "Outstanding Weight",
-    path: '/reports/outstandingweight',
-    element: <Base renderContent={OutStandingWeight} />
+    path: "/reports/outstandingweight",
+    element: <Base renderContent={OutStandingWeight} />,
   },
 
   //Employee
   {
     name: "Employee Details",
-    path: '/employee/details/',
-    element: <Base renderContent={OurEmployee} />
+    path: "/employee/details/",
+    element: <Base renderContent={OurEmployee} />,
   },
   {
     name: "Employee Creation",
-    path: '/employee/creation/',
-    element: <Base renderContent={AddEmployee} />
+    path: "/employee/creation/",
+    element: <Base renderContent={AddEmployee} />,
   },
   {
     name: "Employee Creation",
-    path: '/employee/edit/:id',
-    element: <Base renderContent={AddEmployee} />
+    path: "/employee/edit/:id",
+    element: <Base renderContent={AddEmployee} />,
   },
 
   //Settings
   {
     name: "Menu",
-    path: '/setup/menu',
-    element: <Base renderContent={MenuComp} />
+    path: "/setup/menu",
+    element: <Base renderContent={MenuComp} />,
   },
   {
     name: "Sub Menu",
-    path: '/setup/submenu',
-    element: <Base renderContent={Submenu} />
+    path: "/setup/submenu",
+    element: <Base renderContent={Submenu} />,
   },
   {
     name: "Branch",
-    path: '/setup/branch',
-    element: <Base renderContent={Branch} />
+    path: "/setup/branch",
+    element: <Base renderContent={Branch} />,
   },
   {
     name: "Add Branch",
-    path: '/setup/branch/add',
-    element: <Base renderContent={AddBranch} />
+    path: "/setup/branch/add",
+    element: <Base renderContent={AddBranch} />,
   },
   {
     name: "Edit Branch",
-    path: '/setup/branch/edit/:id',
-    element: <Base renderContent={AddBranch} />
+    path: "/setup/branch/edit/:id",
+    element: <Base renderContent={AddBranch} />,
   },
   {
     name: "Staff User",
-    path: '/setup/staffuser',
-    element: <Base renderContent={StaffUser} />
+    path: "/setup/staffuser",
+    element: <Base renderContent={StaffUser} />,
   },
   {
     name: "Organisation",
-    path: '/usersettings/organisation',
-    element: <Base renderContent={Organisation} />
+    path: "/usersettings/organisation",
+    element: <Base renderContent={Organisation} />,
   },
 
-
- 
   //Accounts Report
   {
     name: "Payment Mode Ledger",
-    path: '/reports/paymentmodeledger',
-    element: <Base renderContent={ModeWisePayment} />
+    path: "/reports/paymentmodeledger",
+    element: <Base renderContent={ModeWisePayment} />,
   },
   {
     name: "preclose summary",
-    path: '/reports/preclosesummary',
-    element: <Base renderContent={PreCloseReport} />
+    path: "/reports/preclosesummary",
+    element: <Base renderContent={PreCloseReport} />,
   },
   {
     name: "redemption summary",
-    path: '/report/redemptionsummary/',
-    element: <Base renderContent={RedemptionReport} />
+    path: "/report/redemptionsummary/",
+    element: <Base renderContent={RedemptionReport} />,
   },
 
-  //Whatsapp 
+  //Whatsapp
   {
     name: "Whastapp Offers",
-    path: '/whatsapp/offers',
-    element: <Base renderContent={OffersWhatsapp} />
+    path: "/whatsapp/offers",
+    element: <Base renderContent={OffersWhatsapp} />,
   },
   {
     name: "Whatsapp Product",
-    path: '/whatsapp/product',
-    element: <Base renderContent={ProductWhatsapp} />
+    path: "/whatsapp/product",
+    element: <Base renderContent={ProductWhatsapp} />,
   },
   {
     name: "Whatsapp New Arrivals",
-    path: '/whatsapp/newarrivals',
-    element: <Base renderContent={NewArrivalsWhatsapp} />
+    path: "/whatsapp/newarrivals",
+    element: <Base renderContent={NewArrivalsWhatsapp} />,
   },
   {
     name: "Card Print",
-    path: '/cardprint/printone',
-    element: <Base renderContent={PaymentPrint} />
+    path: "/cardprint/printone",
+    element: <Base renderContent={PaymentPrint} />,
   },
   {
     name: "Receipt Print",
-    path: '/receiptprint/printone',
-    element: <Base renderContent={AccountSearchAndPrint} />
+    path: "/receiptprint/printone",
+    element: <Base renderContent={AccountSearchAndPrint} />,
   },
   {
     name: "Classification",
-    path: '/ourscheme/classification',
-    element: <Base renderContent={SchemeClassification} />
+    path: "/ourscheme/classification",
+    element: <Base renderContent={SchemeClassification} />,
   },
   // {
   //   name: "Digi Gold",
   //   path: 'scheme/digigold',
   //   element: <Base renderContent={DigiGoldScheme} />
   // },
- 
+
   // {
   //   name: "Add Classification",
   //   path: '/classification/addclassification',
@@ -650,8 +647,8 @@ const RouteList = [
   // },
   {
     name: "Closed Account",
-    path: '/managecustomers/accountredemption',
-    element: <Base renderContent={AddCloseAccount} />
+    path: "/managecustomers/accountredemption",
+    element: <Base renderContent={AddCloseAccount} />,
   },
   // {
   //   name: "Add Close Account",
@@ -660,17 +657,16 @@ const RouteList = [
   // },
   {
     name: "Add Revert Account",
-    path: '/manageaccount/addrevertaccount',
-    element: <Base renderContent={AddRvertAccount} />
+    path: "/manageaccount/addrevertaccount",
+    element: <Base renderContent={AddRvertAccount} />,
   },
   {
     name: "Preclose Account",
-    path: '/managecustomers/preclose',
-    element: <Base renderContent={AddCloseAccount} />
+    path: "/managecustomers/preclose",
+    element: <Base renderContent={AddCloseAccount} />,
   },
-  
-  // Outstanding Report 
 
+  // Outstanding Report
 
   // {
   //   name: "Out Standing Digi Gold",
@@ -695,211 +691,214 @@ const RouteList = [
 
   {
     name: "Scheme Type",
-    path: '/setup/schemetype',
-    element: <Base renderContent={Schemetype} />
+    path: "/setup/schemetype",
+    element: <Base renderContent={Schemetype} />,
   },
   // super admin routes
 
-  
   {
     name: "Topup Summary",
-    path: '/schemereport/topupsummary',
-    element: <Base renderContent={TopUp} />
+    path: "/schemereport/topupsummary",
+    element: <Base renderContent={TopUp} />,
   },
 
   {
     name: "Client Master",
-    path: '/superadmin/clientmaster',
-    element: <Base renderContent={ClientMaster} />
+    path: "/superadmin/clientmaster",
+    element: <Base renderContent={ClientMaster} />,
   },
   {
     name: "Add client",
     path: "/superadmin/addclient",
-    element: <Base renderContent={ClientForm} />
+    element: <Base renderContent={ClientForm} />,
   },
 
   {
     name: "edit client",
     path: "/superadmin/addclient/:id",
-    element: <Base renderContent={ClientForm} />
+    element: <Base renderContent={ClientForm} />,
   },
 
   {
     name: "Project Master",
-    path: '/superadmin/projectmaster',
-    element: <Base renderContent={ProjectMaster} />
+    path: "/superadmin/projectmaster",
+    element: <Base renderContent={ProjectMaster} />,
   },
 
   {
     name: "Project Access",
-    path: '/superadmin/projectaccess',
-    element: <Base renderContent={ProjectAccess} />
+    path: "/superadmin/projectaccess",
+    element: <Base renderContent={ProjectAccess} />,
   },
-
 
   {
     name: "Aupay Configure",
-    path: '/superadmin/aupayconfigure',
-    element: <Base renderContent={AupayConfigure} />
+    path: "/superadmin/aupayconfigure",
+    element: <Base renderContent={AupayConfigure} />,
   },
   {
     name: "Accounts",
-    path: '/superadmin/admin',
-    element: <Base renderContent={AdminMaster} />
+    path: "/superadmin/admin",
+    element: <Base renderContent={AdminMaster} />,
   },
   {
-    name: 'test',
-    path: '/test',
-    element: <Base renderContent={SchemeForm} />
+    name: "test",
+    path: "/test",
+    element: <Base renderContent={SchemeForm} />,
   },
 
   /// help
   {
-    name:"ticket raise",
-    path:'/help/raiseticket',
-    element:<Base renderContent={Ticket} />
+    name: "ticket raise",
+    path: "/help/raiseticket",
+    element: <Base renderContent={Ticket} />,
   },
 
   {
-    name:"Terms and Conditions",
-    path:'/help/policy',
-    element:<Base renderContent={ContentManagement} />
+    name: "Terms and Conditions",
+    path: "/help/policy",
+    element: <Base renderContent={ContentManagement} />,
   },
   {
-    name:"Policies",
-    path:'/help/policy/add',
-    element:<Base renderContent={ContentForm} />
+    name: "Policies",
+    path: "/help/policy/add",
+    element: <Base renderContent={ContentForm} />,
   },
   {
-    name:"Policies",
-    path:'/help/policy/view/:id',
-    element:<Base renderContent={ContentView} />
+    name: "Policies",
+    path: "/help/policy/view/:id",
+    element: <Base renderContent={ContentView} />,
   },
   {
-    name:"FAQ",
-    path:'/help/faq',
-    element:<Base renderContent={FaqTable} />
+    name: "FAQ",
+    path: "/help/faq",
+    element: <Base renderContent={FaqTable} />,
   },
   {
-    name:"FaqCreation",
-    path:'/help/faq/add',
-    element:<Base renderContent={FaqCreation} />
+    name: "FaqCreation",
+    path: "/help/faq/add",
+    element: <Base renderContent={FaqCreation} />,
   },
   {
-    name:"FaqCreation",
-    path:"/help/policy/edit/:id",
-    element:<Base renderContent={FaqCreation} />
+    name: "FaqCreation",
+    path: "/help/policy/edit/:id",
+    element: <Base renderContent={FaqCreation} />,
   },
   {
-    name:"FaqIndex",
-    path:'/help/faq/table',
-    element:<Base renderContent={FaqIndex} />
+    name: "FaqIndex",
+    path: "/help/faq/table",
+    element: <Base renderContent={FaqIndex} />,
   },
   {
-    name:"Promotions Summary",
-    path:'/schemereport/promosummary/',
-    element:<Base renderContent={PromotionSummary} />
+    name: "Promotions Summary",
+    path: "/schemereport/promosummary/",
+    element: <Base renderContent={PromotionSummary} />,
   },
   {
-    name:"Notifications Summary",
-    path:'/schemereport/notification/',
-    element:<Base renderContent={NotificationHistory} />
-  },
-
-  {
-    name:"Promotions Creation",
-    path:'/promotions/promotioncreations',
-    element:<Base renderContent={AddPromotion} />
-  },
-  {
-    name:"Policy View",
-    path:'/help/policy/',
-    element:<Base renderContent={PolicyView} />
+    name: "Notifications Summary",
+    path: "/schemereport/notification/",
+    element: <Base renderContent={NotificationHistory} />,
   },
 
   {
-    name:"Over Due",
-    path:'/report/overdue',
-    element:<Base renderContent={OverDueReport} />
+    name: "Promotions Creation",
+    path: "/promotions/promotioncreations",
+    element: <Base renderContent={AddPromotion} />,
+  },
+  {
+    name: "Policy View",
+    path: "/help/policy/",
+    element: <Base renderContent={PolicyView} />,
   },
 
   {
-    name:"Refund",
-    path:'/report/refund',
-    element:<Base renderContent={RefundReport} />
+    name: "Over Due",
+    path: "/report/overdue",
+    element: <Base renderContent={OverDueReport} />,
+  },
+
+  {
+    name: "Refund",
+    path: "/report/refund",
+    element: <Base renderContent={RefundReport} />,
   },
   {
-    name:"over all",
-    path:'/report/overallreport',
-    element:<Base renderContent={overallReport} />
+    name: "over all",
+    path: "/report/overallreport",
+    element: <Base renderContent={overallReport} />,
   },
   {
-    name:"Employee Refferal",
-    path:'/accountreport/employeereferrals',
-    element:<Base renderContent={EmployeeRefferal} />
+    name: "Employee Refferal",
+    path: "/accountreport/employeereferrals",
+    element: <Base renderContent={EmployeeRefferal} />,
   },
   {
-    name:"Employee Refferal",
-    path:'/accountreport/customerreferrals',
-    element:<Base renderContent={CustomerRefferal} />
+    name: "Employee Refferal",
+    path: "/accountreport/customerreferrals",
+    element: <Base renderContent={CustomerRefferal} />,
   },
   {
-    name:"Payment Ledger",
-    path:'/report/paymentmodeledger',
-    element:<Base renderContent={PaymentLedger} />
+    name: "Payment Ledger",
+    path: "/report/paymentmodeledger",
+    element: <Base renderContent={PaymentLedger} />,
   },
   //  {
   //   name:"Customer Schemes",
   //   path:"/managecustomers/customerschemes",
   //   element:<Base renderContent={CustomerSchemes}/>
   // },
-  
-   {
-    name:"Customer Schemes",
-    path:"/managecustomers/customerschemes",
-    element:<Base renderContent={SchemeAccount}/>
+
+  {
+    name: "Customer Schemes",
+    path: "/managecustomers/customerschemes",
+    element: <Base renderContent={SchemeAccount} />,
   },
   {
-    name:"Amount Payble",
-    path:'/report/amountpayble',
-    element:<Base renderContent={AmountPaybleParent} />
+    name: "Amount Payble",
+    path: "/report/amountpayble",
+    element: <Base renderContent={AmountPaybleParent} />,
   },
 
   {
-    name:"Weight Payble",
-    path:'/report/weightpayable',
-    element:<Base renderContent={WeightPaybleParent} />
+    name: "Weight Payble",
+    path: "/report/weightpayable",
+    element: <Base renderContent={WeightPaybleParent} />,
   },
 
   {
-    name:"Admn Login",
-    path:"/superdata",
-    element:<Base renderContent={Login}/>
+    name: "Admn Login",
+    path: "/superdata",
+    element: <Base renderContent={Login} />,
   },
 
   //! drill down table route
   {
-    name:"Drill Down",
-    path:"/report/table",
-    element:<Base renderContent={DrilldownTable}/>
+    name: "Drill Down",
+    path: "/report/table",
+    element: <Base renderContent={DrilldownTable} />,
   },
   {
-    name:"Amount Payble",
-    path:'/report/schemewiseamount',
-    element:<Base renderContent={AmountPaybleChild} />
+    name: "Amount Payble",
+    path: "/report/schemewiseamount",
+    element: <Base renderContent={AmountPaybleChild} />,
   },
   {
-    name:"Amount Payble",
-    path:'/report/schemewiseweight',
-    element:<Base renderContent={WeightPaybleChild} />
+    name: "Amount Payble",
+    path: "/report/schemewiseweight",
+    element: <Base renderContent={WeightPaybleChild} />,
   },
-    {
-    name:"Import",
-    path:'/import',
-    element:<Base renderContent={UploadFileComponent} />
-  }
- 
+  {
+    name: "Import",
+    path: "/import",
+    element: <Base renderContent={UploadFileComponent} />,
+  },
 
+  // passbook print
+  {
+    name: "passbook-print",
+    path: "/print/passbook",
+    element: <Base renderContent={PassBookTable} />,
+  },
 ];
 
 export default RouteList;

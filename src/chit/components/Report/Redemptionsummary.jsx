@@ -12,6 +12,7 @@ import DateRangeSelector from "../common/calender";
 import { formatNumber } from "../../utils/commonFunction";
 import { formatDecimal } from "../../utils/commonFunction";
 import { formatDate } from "../../../utils/FormatDate";
+import { spliceDecimals } from "../../../utils/Constants";
 
 function RedemptionReport() {
   const roledata = localStorage.getItem("decoded");
@@ -69,7 +70,7 @@ function RedemptionReport() {
       "Scheme Acc No": item.scheme_acc_number,
       "Installments": `${item.total_paid_installments}/${item.total_installments}`,
       "Total Amount": item.totalPaidAmount,
-      "Total Weight": `${formatDecimal(item.totalPaidWeight)} g`,
+      "Total Weight": `${spliceDecimals(item.totalPaidWeight,3)} g`,
       "Maturity Date": item.maturity_date ? formatDate(item.maturity_date) : "-",
       "Closed Date": item.closed_date ? formatDate(item.closed_date) : "-",
       "Closed By": item.closed_by,
@@ -108,7 +109,7 @@ function RedemptionReport() {
     },
     {
       header: "Paid Weight",
-      cell: (row) => `${formatDecimal(row?.totalPaidWeight)} g`,
+      cell: (row) => `${spliceDecimals(row?.totalPaidWeight,3)} g`,
     },
     {
       header: "Maturity Date",

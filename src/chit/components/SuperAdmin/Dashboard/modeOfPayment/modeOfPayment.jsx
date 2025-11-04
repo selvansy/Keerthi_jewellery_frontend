@@ -8,6 +8,7 @@ import { useMutation } from "@tanstack/react-query";
 import { customSelectStyles } from "../../../Setup/purity";
 import { CalendarDays, CalendarSearch } from "lucide-react";
 import { customStyles } from "../../../ourscheme/scheme/AddScheme";
+import { spliceDecimals } from "../../../../../utils/Constants";
 const getStartOfDay = (date) => {
   const newDate = new Date(date);
   newDate.setHours(0, 0, 0, 0);
@@ -169,7 +170,7 @@ function ModeOfPayment({ id_branch }) {
                     >
                       {item.payment_mode || "Cash Free"}
                     </th>
-                    <td className="px-6 py-4"> {item.totalAmount}</td>
+                    <td className="px-6 py-4"> {spliceDecimals(item.totalAmount,2)}</td>
                   </tr>
                 ))
               ) : (

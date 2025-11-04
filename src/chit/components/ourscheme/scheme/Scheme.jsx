@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback, useMemo } from "react";
 import Table from "../../common/Table";
 import { useDebounce } from "../../../hooks/useDebounce";
-import { Search} from "lucide-react";
+import { Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -17,6 +17,7 @@ import {
   puritybymetal,
   wastagetype,
   deleteScheme,
+  updateSchemeOrder,
 } from "../../../api/Endpoints";
 import { useDispatch, useSelector } from "react-redux";
 import "react-datepicker/dist/react-datepicker.css";
@@ -27,6 +28,7 @@ import FilterForm from "./FilterForm";
 import Action from "../../common/action";
 import { Breadcrumb } from "../../common/breadCumbs/breadCumbs";
 import { formatDate } from "../../../../utils/FormatDate";
+import DraggableTable from "../../common/dragTable";
 
 const Scheme = () => {
   const dispatch = useDispatch();
@@ -47,6 +49,7 @@ const Scheme = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [from_date, setFromdate] = useState("");
   const [to_date, setTodate] = useState("");
+  const [dragTableOpen, setDragTableOpen] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
   const [filters, setFilters] = useState({
     from_date: "",
@@ -219,7 +222,13 @@ const Scheme = () => {
       scheme_type: "",
       buytgsttype: "",
     });
-  }, [currentPage, itemsPerPage, debouncedSearch, filters.id_branch]);
+  }, [
+    currentPage,
+    itemsPerPage,
+    debouncedSearch,
+    filters.id_branch,
+    dragTableOpen,
+  ]);
 
   useEffect(() => {
     const handleConfirmationSubmit = async (data) => {
@@ -241,7 +250,7 @@ const Scheme = () => {
         setSchemeData(response.data);
         setTotalDocument(response.totalDocument);
         setisLoading(false);
-        setSearchLoading(false)
+        setSearchLoading(false);
       }
     },
     onError: (error) => {
@@ -424,7 +433,6 @@ const Scheme = () => {
           // Amount-based schemes (default)
           const digi = [11, 12].includes(Number(scheme_type));
           if (digi) {
-            ;
           }
           if (!digi && min_amount !== null && max_amount !== null) {
             return `${scheme_name} ( ₹ ${min_amount} - ₹ ${max_amount})`;
@@ -439,26 +447,32 @@ const Scheme = () => {
         header: "Metal Name",
         cell: (row) => row.metal_name,
       },
-      { header: "Installments", cell: (row) => {
-        if (row.scheme_type !== 10 && row.scheme_type !== 14 || row.scheme_type !== "10" && row.scheme_type !== "14") {
-          return row?.total_installments;
-        } else{
-          return `-`;
-        }
-      }, },
+      {
+        header: "Installments",
+        cell: (row) => {
+          if (
+            (row.scheme_type !== 10 && row.scheme_type !== 14) ||
+            (row.scheme_type !== "10" && row.scheme_type !== "14")
+          ) {
+            return row?.total_installments;
+          } else {
+            return `-`;
+          }
+        },
+      },
       {
         header: "Maturity Month",
         cell: (row) => {
           if (row.scheme_type !== 10 && row.scheme_type !== 14) {
-            return row?.maturity_period
+            return row?.maturity_period;
           } else {
-            return `${row?.noOfDays} (Days)`
+            return `${row?.noOfDays} (Days)`;
           }
         },
       },
       {
         header: "Display Order",
-        cell: (row) => row?.classification_order || "-"
+        cell: (row) => row?.classification_order || "-",
       },
       {
         header: "Scheme Type",
@@ -474,7 +488,7 @@ const Scheme = () => {
         //   const date = new Date(row?.createdAt);
         //   return date.toLocaleDateString("en-GB");
         // },
-        cell:(row)=>formatDate(row?.createdAt)
+        cell: (row) => formatDate(row?.createdAt),
       },
       {
         header: "Active",
@@ -524,8 +538,33 @@ const Scheme = () => {
       handleEdit,
       handleDelete,
       handleStatusToggle,
+      dragTableOpen,
     ]
   );
+
+  const { mutate: updateScheme } = useMutation({
+    mutationFn: (payload) => updateSchemeOrder(payload),
+    onSuccess: (response) => {
+      if (response) {
+        setSchemeData(response.data);
+        setTotalDocument(response.totalDocument);
+        setisLoading(false);
+        setSearchLoading(false);
+      }
+    },
+    onError: (error) => {
+      setisLoading(false);
+      console.error("Error:", error);
+    },
+  });
+
+  // And define the handler in your component:
+  const handleDragReorder = (reorderedData) => {
+    updateScheme(reorderedData);
+    console.log("Reordered data:", reorderedData);
+    // Update your state or make API call here
+    // setSchemeData(reorderedData);
+  };
   return (
     <>
       <Breadcrumb
@@ -557,30 +596,45 @@ const Scheme = () => {
               />
             </div>
             {/* Button First */}
-           
           </div>
-           <button
-              className="rounded-md px-5 py-1 text-sm font-semibold text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] w-[158px] h-[36px] transition-colors"
-              onClick={handleCreateSchemeClick}
-              style={{ backgroundColor: layout_color }}
-            >
-              <span className="text-lg mr-2">+</span> 
-               Add Scheme
-            </button>
+          <button
+            className="rounded-md px-5 py-1 text-sm font-semibold text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] w-[158px] h-[36px] transition-colors"
+            onClick={() => setDragTableOpen(!dragTableOpen)}
+            style={{ backgroundColor: layout_color }}
+          >
+            {dragTableOpen ? "Done" : "Change Order"}
+          </button>
+          <button
+            className="rounded-md px-5 py-1 text-sm font-semibold text-white whitespace-nowrap flex-shrink-0 hover:bg-[#034571] w-[158px] h-[36px] transition-colors"
+            onClick={handleCreateSchemeClick}
+            style={{ backgroundColor: layout_color }}
+          >
+            <span className="text-lg mr-2">+</span>
+            Add Scheme
+          </button>
         </div>
 
         <div className="mt-4">
-          <Table
-            data={schemeData}
-            columns={columns}
-            isLoading={isLoading}
-            currentPage={currentPage}
-            handlePageChange={handlePageChange}
-            itemsPerPage={itemsPerPage}
-            totalItems={totalDocument}
-            handleItemsPerPageChange={handleItemsPerPageChange}
-            debounceSearch={handleSearch}
-          />
+          {!dragTableOpen ? (
+            <Table
+              dragFunction={handleDragReorder}
+              data={schemeData}
+              columns={columns}
+              isLoading={isLoading}
+              currentPage={currentPage}
+              handlePageChange={handlePageChange}
+              itemsPerPage={itemsPerPage}
+              totalItems={totalDocument}
+              handleItemsPerPageChange={handleItemsPerPageChange}
+              debounceSearch={handleSearch}
+            />
+          ) : (
+            <DraggableTable
+              data={schemeData}
+              columns={columns.filter((_, i) => i !== columns.length - 2)}
+              onRowsReorder={handleDragReorder}
+            />
+          )}
         </div>
       </div>
 
