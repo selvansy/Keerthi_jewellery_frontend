@@ -330,7 +330,7 @@ const formatNumber = ({
           </h3>
           <h5 className="text-[#6C7086] text-md"></h5>
           <h5 className="text-[#232323] text-sm font-semibold">
-            {formatNumber({ value: e.value, decimalPlaces: 0 })}
+            {formatNumber({ value: e.value, decimalPlaces: 2 })}
           </h5>
         </div>
       </div>

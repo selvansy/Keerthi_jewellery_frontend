@@ -411,7 +411,7 @@ const Existcusomer = () => {
     },
     {
       label: "Pending Amount",
-      value: formatDecimal(data?.referralData?.pendingAmount,2) || "-",
+      value: spliceDecimals(data?.referralData?.pendingAmount,2) || "-",
     },
   ];
 
@@ -651,7 +651,7 @@ const Existcusomer = () => {
                 <p className="text-lg font-medium text-[#232323]">
                   {`${formatDecimal(data?.totalWeightPayable)} g`}
                 </p>
-                <p className="text-sm font-bold text-gray-600">Weight payble</p>
+                <p className="text-sm font-bold text-gray-600">Weight payable</p>
               </div>
               <div className="justify-end">
                 <p className="text-lg font-medium text-[#232323]">

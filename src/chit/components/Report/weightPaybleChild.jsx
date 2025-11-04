@@ -55,7 +55,8 @@ function WeightPaybleChild() {
       "Customer":item?.customer,
       "Accounter Name":`${item?.accounter_fname} ${item?.accounter_lname}`,
       "scheme A/c No": item?.schemeAccNumber,
-      "Total Collectd Weight":`${spliceDecimals(item?.totalValue,3)}`,
+      // "Total Collectd Weight":`${spliceDecimals(item?.totalValue,3)}`,
+      "Total Collectd Weight":`${(item?.totalValue)}`,
       "Maturity Date":formatDate(item?.maturityDate),
       "Paid Installment":item?.paidInstallments,
        
@@ -73,14 +74,6 @@ function WeightPaybleChild() {
       header: "S.No",
       cell: (_, index) => index + 1 + (currentPage - 1) * itemsPerPage,
     },
-    // {
-    //   header: "Scheme",
-    //   cell: (row) => row?.scheme_name,
-    // },
-    // {
-    //   header: "Classification",
-    //   cell: (row) => row?.classification_name,
-    // },
     {
       header: "Customer",
       cell: (row) => {
@@ -118,12 +111,6 @@ function WeightPaybleChild() {
       header: "Maturity Date ",
       cell: (row) => row?.maturityDate ? formatDate(row?.maturityDate) : "-",
     },
-    // {
-    //     header: "joined Date ",
-    //     cell: (row) => {
-    //       return formatDate(row?.joinedDate)
-    //     }
-    //   },
       {
         header: "Paid Installment",
         cell: (row) => row?.paidInstallments,

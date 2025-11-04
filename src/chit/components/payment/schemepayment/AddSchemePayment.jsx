@@ -195,7 +195,6 @@ const AddSchemePayment = () => {
     },
   });
 
-  console.log("formik",formik.payment_amount)
 
   const customStyles = (isReadOnly) => ({
     control: (base, state) => ({
@@ -236,7 +235,7 @@ const AddSchemePayment = () => {
       ...provided,
       // paddingTop: 0,
       // paddingBottom: 0,
-      maxHeight: showWeightInput ? "130px" : "209px",
+      maxHeight: showWeightInput ? "130px" : "140px",
       // maxHeight: [2, 5, 6].includes(formik.values.scheme_type)
       //   ? "130px"
       //   : "209px",
@@ -1742,7 +1741,7 @@ const AddSchemePayment = () => {
                       <span className="text-gray-900">
                         {selectedScheme?.total_weight != null
                           ? `${Number(
-                              formatDecimal(selectedScheme.total_weight)
+                              spliceDecimals(selectedScheme.total_weight,3)
                             )} g`
                           : "-"}
                       </span>

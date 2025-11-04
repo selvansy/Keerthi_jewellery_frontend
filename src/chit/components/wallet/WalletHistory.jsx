@@ -353,7 +353,7 @@ function WalletHistory() {
                       onClick={() => handleRefferalHistory(row)}
                     >
                      <img src={refferalicon} alt="" srcSet="" className='text-black w-4 h-4 mr-1'/>
-                      Refferal History
+                      Referral History
                     </button>
 
                     <button

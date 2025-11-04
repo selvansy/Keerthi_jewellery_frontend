@@ -9,14 +9,11 @@ export default defineConfig({
  base: '/',
   server: {
     historyApiFallback: true,
-    host: '0.0.0.0', // <- allows access from network devices
-    // allowedHosts: [
-    //   'cdcfaf917ac8.ngrok-free.app' // no protocol, just the hostname
-    // ],
+    host: '0.0.0.0',
     hmr: {
       protocol: "ws",
-      host: ' 192.168.0.4', // Replace with your real local IP
-      port: 1420,
+      host: '192.168.0.13',
+      port: 5173,
       overlay: false,
     },
   },

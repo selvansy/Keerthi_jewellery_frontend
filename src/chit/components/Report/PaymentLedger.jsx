@@ -17,6 +17,7 @@ import { Breadcrumb } from "../common/breadCumbs/breadCumbs";
 import DateRangeSelector from "../common/calender";
 import { customStyles } from "../ourscheme/scheme/AddScheme";
 import { formatDecimal,formatNumber } from "../../utils/commonFunction";
+import { spliceDecimals } from "../../../utils/Constants";
 
 function PaymentLedger() {
   const roleData = useSelector((state) => state.clientForm.roledata);
@@ -67,7 +68,7 @@ function PaymentLedger() {
                 "S.No": index + 1,
                 "Scheme Name":item.schemeName,
                 "Mode Name":item.modeName,
-                "Amount":item.totalAmount,
+                "Amount":spliceDecimals( item.totalAmount,2),
                 "Payment Count":item.paymentCount
               }));
               setProcessData(process);

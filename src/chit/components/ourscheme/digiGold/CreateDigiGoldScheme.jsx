@@ -974,8 +974,10 @@ const CreateDigiGoldScheme = () => {
                   type="checkbox"
                   className="sr-only peer"
                   checked={formik.values.display_referral}
-                  onChange={(e) =>
-                    formik.setFieldValue("display_referral", e.target.checked)
+                  onChange={(e) =>{
+                    formik.setFieldValue("display_referral", e.target.checked);
+                    formik.setFieldValue("referralPercentage","")
+                  }
                   }
                 />
                 <div

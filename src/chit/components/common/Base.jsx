@@ -589,11 +589,11 @@ const formatNumber = ({
       link: "/print/passbook",
       icon: <Book color="grey"  />,
     },
-    {
-      name: "Card Print",
-      link: "/cardprint/printone",
-      icon: <Book color="grey"  />,
-    },
+    // {
+    //   name: "Card Print",
+    //   link: "/cardprint/printone",
+    //   icon: <Book color="grey"  />,
+    // },
    
   ];
 
@@ -675,11 +675,11 @@ const formatNumber = ({
               </button>
             </div>
 
-            <div className="border-2 border-[#F2F2F9] rounded-full w-10 h-10">
+            {/* <div className="border-2 border-[#F2F2F9] rounded-full w-10 h-10">
               <button className="p-2 text-gray-900">
                 <img src={notification} alt="" srcSet="" />
               </button>
-            </div>
+            </div> */}
 
             {roledata ? (
               <div className="relative inline-block text-left" ref={logoutRef}>

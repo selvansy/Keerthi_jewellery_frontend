@@ -312,9 +312,11 @@ const AdvancedSettings = ({ formik, layout_color, installment_type }) => {
                   (option) => option.value === formik.values.commissionType
                 )}
                 isDisabled={!formik.values.referralTriggerType}
-                onChange={(option) =>
-                  formik.setFieldValue("commissionType", option ? option.value : "")
-                }
+                onChange={(option) =>{
+                  formik.setFieldValue("commissionType", option ? option.value : "");
+                  formik.setFieldValue("referralAmount","");
+                  formik.setFieldValue("referralPercentage","")
+                 } }
                 onBlur={() => formik.setFieldTouched("commissionType", true)}
                 menuPortalTarget={document.body}
               />

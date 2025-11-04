@@ -6,6 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import { getCustomerSummary } from "../../api/Endpoints";
 import { useDebounce } from "../../hooks/useDebounce";
 import { formatDecimal } from "../../utils/commonFunction";
+import { spliceDecimals } from "../../../utils/Constants";
 
 const CustomerModal = ({ close }) => {
   const [searchNumber, setSearchNumber] = useState("");
@@ -198,7 +199,7 @@ const CustomerModal = ({ close }) => {
                       Wallet amount
                     </h3>
                     <p className="text-gray-600 text-xl">
-                      ₹{formatDecimal(customerData.wallet_point,2)}
+                      ₹{spliceDecimals(customerData.wallet_point,2)}
                     </p>
                   </div>
                   <div className="text-center border p-4 shadow-sm">
