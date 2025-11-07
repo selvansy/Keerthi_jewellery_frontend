@@ -112,6 +112,10 @@ function RedemptionReport() {
       cell: (row) => `${spliceDecimals(row?.totalPaidWeight,3)} g`,
     },
     {
+      header: "Bonus Amount",
+      cell:(row)=>row?.closingBonus ? `₹${spliceDecimals(row?.closingBonus,2)}` : "-",
+    },
+    {
       header: "Maturity Date",
       // cell: (row) => row?.maturity_date,
       cell:(row)=>formatDate(row?.maturity_date)

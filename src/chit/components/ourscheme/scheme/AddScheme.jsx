@@ -177,23 +177,17 @@ const SchemeForm = () => {
       benefit_min_installment_wst_mkg: "",
       wastagebenefit: "",
       benefit_making: "",
-
       //classification
       description: "",
       term_desc: "",
-      classification_order: 0,
-
       wastagetype: "", // no need to pass
-
       // AdvancedSettings fields
       limit_installment: 1,
       limit_customer: 0,
       gift_minimum_paid_installment: 0,
-
       //gift
       gift_type: 1,
       no_of_gifts: 0,
-
       bonus_type: "",
       bonus_amount: "",
       bonus_percent: "",
@@ -205,7 +199,11 @@ const SchemeForm = () => {
       referralPercentage: "",
       referralAmount:"",
       referralTriggerType:"",
-      commissionType:""
+      commissionType:"",
+      // description1: "",
+      // description2: "",
+      // description3: "",
+      // description4: "",
     },
     validationSchema: schemeValidationSchema,
     onSubmit: (values) => {
@@ -415,7 +413,6 @@ const SchemeForm = () => {
         not_paid_installment: schemeData?.data?.not_paid_installment || "",
         benefit_min_installment_wst_mkg:
           schemeData?.data?.benefit_min_installment_wst_mkg || "",
-        classification_order: schemeData?.data?.classification_order,
         grace_fine_amount: schemeData?.data?.grace_fine_amount || false,
         final_join_date: schemeData?.data?.final_join_date || "",
         setMainImage: schemeData?.data?.logo || null,

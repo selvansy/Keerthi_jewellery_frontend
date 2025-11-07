@@ -12,7 +12,7 @@ export default defineConfig({
     host: '0.0.0.0',
     hmr: {
       protocol: "ws",
-      host: '192.168.0.13',
+      host: '192.168.0.6',
       port: 5173,
       overlay: false,
     },

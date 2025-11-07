@@ -143,6 +143,10 @@ const GiftHandOver = () => {
       cell: (row) => row?.id_customer?.mobile
     },
     {
+      header:"Scheme Account Number",
+      cell:(row)=>row?.id_scheme_account?.scheme_acc_number,
+    },
+    {
       header: "Gift Name",
       cell: (row) => {
         const gift_names = row?.gifts?.map((val) => val?.id_gift?.gift_name);

@@ -52,6 +52,7 @@ function RefundReport() {
       //   ? `${spliceDecimals(item.totalPaidWeight, 3)} g`
       //   : null,
       "Classify.name":item.classification_name,
+      "Pay.Mode":item.paymentModename,
       "Paid.Inst":`${item.total_paid_installments} / ${item.total_installments}`, 
       "Start.Date":item.createdAt ? new Date(item.createdAt).toLocaleDateString('en-GB') : '',
       // "Mat.Date": item.maturity_date ? new Date(item.maturity_date).toLocaleDateString('en-GB') : '',
@@ -143,6 +144,10 @@ function RefundReport() {
     {
       header: "Closed Date",
       cell: (row) => formatDate(row.closed_date)
+    },
+    {
+      header:"Payment Mode",
+      cell:(row)=>row?.paymentModename,
     },
     {
       header: "Bill No ",

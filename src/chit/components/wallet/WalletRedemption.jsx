@@ -407,7 +407,7 @@ function WalletRedemption() {
     },
     {
       header: "Referral Reward",
-      cell: (row) => row?.credited_amount|| "-"
+      cell: (row) => spliceDecimals(row?.credited_amount,2)|| "-"
     },
     {
       header: "Join Date",
@@ -567,7 +567,7 @@ function WalletRedemption() {
                       </td>
                       <td className="text-start px-4 py-2">
                         {/* {`₹${spliceDecimals(walletUser.walletAmount, 2)}`} */}
-                        {walletUser.walletAmount}
+                        {`₹${spliceDecimals(walletUser.walletAmount,2)}`}
                       </td>
                       <td className="text-start px-4 py-2">
                         {`₹${spliceDecimals(walletUser.redeem_amt, 2)}`}

@@ -94,6 +94,8 @@ function PreCloseReport() {
       // "Maturity date":item.maturity_date,
       // "Last Paid Date":item.last_paid_date,
       // "Closed Date":item.closed_date,
+      "PaymentModename":item?.paymentModename,
+      "Bonus Amount": item?.closingBonus ? spliceDecimals(item?.closingBonus,3) : "-",
       "Bill Number":item.bill_no,
       "Bill date":item.bill_date ? formatDate(item.bill_date) : '',
       "Gift Issues":item.gift_issues,
@@ -166,6 +168,10 @@ function PreCloseReport() {
       //   });
       // },
       cell:(row)=>formatDate(row?.last_paid_date)
+    },
+    {
+      header:"Bonus Amount",
+      cell:(row)=>row?.closingBonus ? `₹${spliceDecimals(row?.closingBonus,2)}` : "-",
     },
    {
       header: "Closed Date",

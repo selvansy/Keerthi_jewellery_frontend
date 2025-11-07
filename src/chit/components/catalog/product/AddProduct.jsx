@@ -1968,7 +1968,7 @@ useEffect(() => {
                 <input
                   name="price"
                   type="string"
-                  value={price}
+                  value={spliceDecimals(price,2)}
                   className="w-full focus:outline-none ml-2 bg-[#F4F4F4]"
                   placeholder="Price"
                   readOnly
@@ -1989,7 +1989,7 @@ useEffect(() => {
 
                 <input
                   type="string"
-                  value={spliceDecimals(totalPrice,3)}
+                  value={spliceDecimals(totalPrice,2)}
                   className="w-full focus:outline-none ml-2 bg-[#F4F4F4]"
                   placeholder="Price"
                   readOnly

@@ -37,12 +37,12 @@ const statusStyles = {
     text: "text-red-500",
   },
   Preclose: {
-    bg: "bg-[#FF000038]",
+    bg: "bg-[#F8E8D1]",
     text: "text-red-500",
   },
   Refund: {
-    bg: "bg-[#FF000038]",
-    text: "text-red-500",
+    bg: "bg-[#D1D5D4]",
+    text: "text-gray-700",
   },
 };
 
@@ -230,7 +230,7 @@ const SchemeAccount = () => {
     },
     {
       header: "Accounter Name",
-      cell: (row) => row?.customer_name,
+      cell: (row) => row?.account_name,
     },
     {
       header: "Mobile",
@@ -264,13 +264,9 @@ const SchemeAccount = () => {
         if (isWeightBased && min_weight !== null && max_weight !== null) {
           return `${scheme_name} ( ${min_weight} g - ${max_weight} g)`;
         }
-
-        // Amount-based schemes (default)
         if (!isWeightBased && min_amount !== null && max_amount !== null) {
           return `${scheme_name} ( ₹ ${min_amount} - ₹ ${max_amount})`;
         }
-
-        // Amount-based schemes (default)
         const digi = [11, 12].includes(Number(scheme_type));
         if (digi) {
         }
@@ -322,7 +318,17 @@ const SchemeAccount = () => {
     },
      {
       header:"Saved Weight",
-      cell:(row)=> row?.total_weight ? `${spliceDecimals(row?.total_weight,3)} g` : "0.000 g"
+      cell:(row)=> {
+        const {
+          scheme_type
+        } = row
+
+        if([0, 8, 13, 11, 1, 7].includes(scheme_type)){
+          return "-"
+        }else{
+          return row?.total_weight ? `${spliceDecimals(row?.total_weight,3)} g` : "0.000 g"
+        }
+      }
     },
     {
       header: "Start Date",

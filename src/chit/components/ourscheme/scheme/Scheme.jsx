@@ -520,10 +520,10 @@ const Scheme = () => {
             rowIndex={rowIndex}
             activeDropdown={activeDropdown}
             setActive={hanldeActiveDropDown}
-            // handleEdit={row.scheme_type !== 10 ? handleEdit : handleDigiGold}
+            handleEdit={row.scheme_type !== 10 && row.scheme_type !== 14 ? handleEdit : handleDigiGold}
             handleView={handleView}
             cancel={true}
-            showEdit={false}
+            showEdit={true}
             showDelete={false}
           />
         ),

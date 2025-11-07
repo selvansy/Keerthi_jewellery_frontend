@@ -188,8 +188,6 @@ const Classification = ({
           <textarea
             name="description"
             value={formik?.values?.description || ""}
-            // onChange={formik?.handleChange}
-            // onBlur={formik?.handleBlur}
             onChange={(e) => formik.setFieldValue("description", e.target.value, true)}
             onBlur={() => formik.setFieldTouched("description", true)}
             className="border resize-none rounded-md p-2 w-full h-32 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
@@ -208,8 +206,6 @@ const Classification = ({
           <textarea
             name="term_desc"
             value={formik?.values?.term_desc || ""}
-            // onChange={formik?.handleChange}
-            // onBlur={formik?.handleBlur}
             onChange={(e) => formik.setFieldValue("term_desc", e.target.value, true)}
             onBlur={() => formik.setFieldTouched("term_desc", true)}
             className="border rounded-md resize-none p-2 w-full h-32 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
@@ -221,6 +217,34 @@ const Classification = ({
           )}
         </div>
       </div>
+
+      {/* <div className="flex flex-row justify-between gap-x-4 mb-4">
+        {[1, 2, 3,4].map((i) => (
+          <div key={i} className="flex flex-col mt-2 flex-1">
+            <label className="block text-sm font-medium mb-1">
+              Scheme Description {i}  <span className="text-red-500 text-sm mt-1">*</span>
+            </label>
+            <div className="relative">
+              <input
+                type="text"
+                name={`description${i}`}
+                onWheel={(e) => e.target.blur()}
+                value={formik.values[`description${i}`]}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                className="border border-[#f2f3f8] rounded-lg p-2 w-full h-11 focus:outline-none focus:ring-1 focus:ring-black focus:border-transparent"
+                placeholder={`Enter Scheme Description ${i}`}
+              />
+            </div>
+            {formik.touched[`description${i}`] &&
+              formik.errors[`description${i}`] && (
+                <span className="text-red-500 text-sm mt-1">
+                  {formik.errors[`description${i}`]}
+                </span>
+              )}
+          </div>
+        ))}
+      </div> */}
 
       <div className="flex items-center w-full bg-[#FFF8EA] rounded-md h-[68px] p-3">
         <div className="flex items-center gap-3">
@@ -235,7 +259,7 @@ const Classification = ({
       </div>
 
       {/* Classification Order */}
-      <div className="mt-4">
+      {/* <div className="mt-4">
         <label className="block mb-2">
           Display Order (App)
         </label>
@@ -317,7 +341,7 @@ const Classification = ({
               {formik.errors.classification_order}
             </div>
           )}
-      </div>
+      </div> */}
     </div>
   );
 };

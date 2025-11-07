@@ -75,7 +75,8 @@ export default function MakingChargesForm({ onChange, initialState }) {
   };
 
   const handlediscountedPercentageChange = (e) => {
-    let value = e.target.value.replace(/[^0-9]/g, "").slice(0, 2);
+    let value = e.target.value.replace(/[^0-9]/g, "").slice(0, 3);
+    if (Number(value) > 100) value = 100;
     handleInputChange("discountedPercentage", value);
 
     if (formData.actualValue && value) {

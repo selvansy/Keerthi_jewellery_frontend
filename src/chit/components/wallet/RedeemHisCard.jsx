@@ -74,7 +74,7 @@ export default function RedeemHisCard(userdata) {
         {
             header: "Redeemed Amount",
             cell: (row) => {
-                return row?.credited_amount !== undefined ? `₹${spliceDecimals(Math.abs(row.credited_amount) )}` : "-";
+                return row?.credited_amount !== undefined ? `₹${spliceDecimals(Math.abs(row.credited_amount),2)}` : "-";
             }
         },
         {
@@ -247,14 +247,6 @@ export function RefferalCusCard({ refData }) {
         },
         {
             header: "Installment Date",
-            // cell: (row) => {
-            //     if (!row?.createdAt) return "-";
-            //     const formatDate = (dateString) => {
-            //         const date = new Date(dateString);
-            //         return date.toLocaleDateString('en-GB');
-            //     };
-            //     return formatDate(row?.createdAt);
-            // }
             cell:(row)=>formatDate(row?.createdAt)
         },
         {

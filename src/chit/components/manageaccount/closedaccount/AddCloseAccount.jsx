@@ -566,8 +566,13 @@ const AddCloseAccount = () => {
       return;
     }
 
+  const baseAmount = selectedScheme?.total_paidamount || 0;
+  const totalAmountWithBonus = Number(values.total_paidamount) || 0;
+  const closingBonus = totalAmountWithBonus - baseAmount;
+
     const submitData = {
       ...values,
+      closingBonus: closingBonus > 0 ? closingBonus : 0,
       multiPaymentValues: ispaymode ? multiPaymentValues : undefined,
     };
 

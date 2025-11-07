@@ -381,16 +381,14 @@ const ViewScheme = () => {
       if(schemeData?.data?.referralTriggerType){
         let data = referralCommissionType.filter((item)=> schemeData?.data?.commissionType == item.id)
         formik.setFieldValue("commissionType",data[0].name)
+        setCommissionType(data[0].id)
       }
       if(schemeData?.data?.commissionType){
          let data = commissionTriggerType.filter((item)=> schemeData?.data?.referralTriggerType == item.id)
         formik.setFieldValue("referralTriggerType",data[0].name)
-        setCommissionType(data[0].id)
       }
     }
   }, [id, schemeData, classifications]);
-
-  console.log("tewdtyw",formik.values.commissionType)
 
   useEffect(() => {
     if (schemeData?.data && Array.isArray(schemeData.data.fixed_amounts)) {
@@ -1072,6 +1070,8 @@ const ViewScheme = () => {
           </div>
           <h2 className="text-lg font-semibold mb-4 border-b pb-4">Referral</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {formik.values.display_referral === true && (
+              <> 
              <div>
               <label className="block text-sm font-medium mb-1">
                 Commission Trigger Type
@@ -1089,8 +1089,7 @@ const ViewScheme = () => {
               </p>
             </div>
 
-            {
-            formik.values?.commissionType === "Percentage Of Payment"
+            { commissionType == 1
              ? (
               <>
                <div>
@@ -1116,7 +1115,8 @@ const ViewScheme = () => {
             )
               
             }
-                
+            </>
+            )}    
             <div>
               <label className="block text-sm font-medium mb-1">
                 Display Referral
