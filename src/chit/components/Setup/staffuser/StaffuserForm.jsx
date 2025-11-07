@@ -135,7 +135,9 @@ function StaffuserForm({ setIsOpen }) {
     mutationFn: () => getemployeebybranch({ id_branch: id_branch }),
     onSuccess: (response) => {
       if (response?.data) {
-        setEmployeeData(response.data.map(employee => ({
+        setEmployeeData(response.data
+          .filter(employee => employee.active === true)
+          .map(employee => ({
           value: employee._id,
           label: `${employee.firstname} ${employee.lastname}`
         })));

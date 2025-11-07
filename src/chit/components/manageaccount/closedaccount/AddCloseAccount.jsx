@@ -34,7 +34,7 @@ import { formatNumber } from "../../../utils/commonFunction";
 import plus from "../../../../assets/plus.svg";
 import { VerifiedIcon } from "lucide-react";
 
- const customStyles = (isReadOnly) => ({
+const customStyles = (isReadOnly) => ({
   control: (base, state) => ({
     ...base,
     minHeight: "42px", //42px
@@ -85,16 +85,15 @@ import { VerifiedIcon } from "lucide-react";
     fontSize: "14px",
   }),
   menuList: (provided) => ({
-      ...provided,
-      // paddingTop: 0,
-      // paddingBottom: 0,
-      maxHeight:  "120px",
-      // maxHeight: [2, 5, 6].includes(formik.values.scheme_type)
-      //   ? "130px"
-      //   : "209px",
-    }),
+    ...provided,
+    // paddingTop: 0,
+    // paddingBottom: 0,
+    maxHeight: "120px",
+    // maxHeight: [2, 5, 6].includes(formik.values.scheme_type)
+    //   ? "130px"
+    //   : "209px",
+  }),
 });
-
 
 const AddCloseAccount = () => {
   const dispatch = useDispatch();
@@ -135,7 +134,6 @@ const AddCloseAccount = () => {
   const [selectedMode, setSelectedMode] = useState(0);
   const [multipaymode, setMultiPaymode] = useState([]);
   const [multiPaymentValues, setMultiPaymentValues] = useState({});
-  const [timeLeft, setTimeLeft] = useState(30);
 
   // Format today's date
   const today = new Date();
@@ -175,15 +173,14 @@ const AddCloseAccount = () => {
       mobile: "",
       penalty_amount: "",
       total_paidamount: 0,
-      otpMobile:"",
+      otpMobile: "",
       total_amount: 0,
       bonusAmnt: "",
       dynamic: false,
-      otpVerified:false
+      otpVerified: false,
     },
     validationSchema,
     onSubmit: (values) => {
-     
       handleSubmit(values);
     },
     validateOnBlur: true,
@@ -206,12 +203,12 @@ const AddCloseAccount = () => {
   useEffect(() => {
     if (paymentModes) {
       const data = paymentModes.data
-      .filter((item) => item.mode_name.trim().toLowerCase() !== "cash free")
-      .map((item) => ({
-        mode: item.id_mode,
-        value: item._id,
-        label: item.mode_name,
-      }));
+        .filter((item) => item.mode_name.trim().toLowerCase() !== "cash free")
+        .map((item) => ({
+          mode: item.id_mode,
+          value: item._id,
+          label: item.mode_name,
+        }));
       setPaymentmode(data);
     }
   }, [paymentModes]);
@@ -238,7 +235,6 @@ const AddCloseAccount = () => {
         }));
         setMultiPaymode(data);
 
-        // Initialize multi payment values
         const initialValues = {};
         multiplayModes.data.forEach((mode) => {
           initialValues[mode.parameter] = 0;
@@ -375,8 +371,10 @@ const AddCloseAccount = () => {
     mutationFn: getallpaymentmodes,
     onSuccess: (response) => {
       if (response?.data) {
-        const filteredData = response.data.filter((mode) => mode.mode_name !== "CASH FREE");
-        console.log(filteredData)
+        const filteredData = response.data.filter(
+          (mode) => mode.mode_name !== "CASH FREE"
+        );
+        console.log(filteredData);
         const options = filteredData.map((mode) => ({
           value: mode._id,
           label: mode.mode_name,
@@ -409,9 +407,9 @@ const AddCloseAccount = () => {
       setSaveLoading(false);
       if (response) {
         toast.success(response.message);
-        if (formik.values.status === 1) {
+        if (formik.values.status == 1) {
           navigate("/report/redemptionsummary/");
-        } else if (Number(formik.values.status) === 3) {
+        } else if (Number(formik.values.status) == 3) {
           navigate("/reports/preclosesummary");
         } else {
           navigate("/report/refund/");
@@ -566,9 +564,9 @@ const AddCloseAccount = () => {
       return;
     }
 
-  const baseAmount = selectedScheme?.total_paidamount || 0;
-  const totalAmountWithBonus = Number(values.total_paidamount) || 0;
-  const closingBonus = totalAmountWithBonus - baseAmount;
+    const baseAmount = selectedScheme?.total_paidamount || 0;
+    const totalAmountWithBonus = Number(values.total_paidamount) || 0;
+    const closingBonus = totalAmountWithBonus - baseAmount;
 
     const submitData = {
       ...values,
@@ -604,7 +602,6 @@ const AddCloseAccount = () => {
     // } else if ([0, 1, 2].includes(account?.id_scheme?.scheme_type)) {
     //   label += ` (Rs. ${account?.id_scheme?.amount})`;
     // }
-    
 
     label += ` - (${account?.scheme_acc_number || "Not Allocated"})`;
 
@@ -634,19 +631,18 @@ const AddCloseAccount = () => {
     setSendOtp(false);
     setReverView(false);
     // setChecked(false)
-    formik.setFieldValue("otpVerified",true)
+    formik.setFieldValue("otpVerified", true);
   };
 
   useEffect(() => {
     if (otpCompleted === true) {
       const timeout = setTimeout(() => {
         setOtpComplete(false);
-      }, 300); 
-  
-      return () => clearTimeout(timeout); 
+      }, 300);
+
+      return () => clearTimeout(timeout);
     }
   }, [otpCompleted]);
-  
 
   return (
     <>
@@ -672,8 +668,8 @@ const AddCloseAccount = () => {
                   onClick={(e) => handleOpenRevert(e)}
                   style={{ backgroundColor: layout_color }}
                 >
-                   <img src={plus} alt="plus" className="w-4 h-4 me-[10px]" />
-                   Revert account
+                  <img src={plus} alt="plus" className="w-4 h-4 me-[10px]" />
+                  Revert account
                 </button>
               </div>
             )}
@@ -864,10 +860,13 @@ const AddCloseAccount = () => {
               </label>
               <input
                 type="text"
-                className="border-[1px] border-[#f2f3f8] rounded-md p-2 w-full"
+                className="border-[1px] border-[#f2f3f8] rounded-md p-2 w-full uppercase"
                 placeholder="Bill No"
                 name="bill_no"
-                onChange={formik.handleChange}
+                onChange={(e) => {
+                  const upperValue = e.target.value.toUpperCase();
+                  formik.setFieldValue("bill_no", upperValue);
+                }}
                 value={formik.values.bill_no}
                 onBlur={formik.handleBlur}
               />
@@ -877,7 +876,6 @@ const AddCloseAccount = () => {
                 </div>
               )}
             </div>
-
             <div>
               <label className="text-black mb-2 font-normal">
                 Bill Date<span className="text-red-400">*</span>
@@ -917,7 +915,7 @@ const AddCloseAccount = () => {
               <input
                 disabled
                 type="text"
-                value={selectedScheme?.total_paidinstallments || ""}
+                value={selectedScheme?.total_paidinstallments || 0}
                 className="border-[1px] border-[#f2f3f8] rounded-md p-2 w-full"
                 placeholder="Paid Installments"
               />
@@ -1138,7 +1136,6 @@ const AddCloseAccount = () => {
                         const paidAmount =
                           Number(formik.values.total_paidamount) || 0;
 
-                        // Calculate what the new total would be if we accept this change
                         const newTotal =
                           currentTotal -
                           Number(formik.values[multipay.parameter] || 0) +
@@ -1165,47 +1162,51 @@ const AddCloseAccount = () => {
             <div className="flex flex-col gap-3 lg:mt-4">
               <CheckboxToggle
                 checked={checked}
-                label={dynamic?"Proceed with pre-closure and refund after OTP verification":"Proceed with account closure using OTP verification"}
+                label={
+                  dynamic
+                    ? "Proceed with pre-closure and refund after OTP verification"
+                    : "Proceed with account closure using OTP verification"
+                }
                 onChange={handleOtpToggle}
               />
 
-{checked && (
-  <div className="flex flex-row justify-between w-full gap-4">
-    <div className="flex flex-col gap-3 flex-[0.9]">
-      <label className="block text-sm font-medium mb-1">
-        Mobile Number<span className="text-red-400"> *</span>
-        {formik.values.otpVerified && (
-          <span className="ml-2 text-green-500">
-            <VerifiedIcon className="inline-block w-4 h-4" />
-            <span className="ml-1 text-xs">Verified</span>
-          </span>
-        )}
-      </label>
-      <div className="relative">
-        <input
-          type="number"
-          min="0"
-          className="border-[1px] border-[#f2f3f8] rounded-md p-2 w-96 lg:w-[46%] focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent pr-24"
-          placeholder="Enter mobile number"
-          value={formik.values.mobile || formik.values.otpMobile}
-          onChange={formik.handleChange}
-          name="otpMobile"
-        />
-        <div className="absolute right-6 sm:right-4 md:right-96 top-1/2 -translate-y-1/2">
-          {!formik.values.otpVerified && (
-            <button
-              className="bg-[#004181] text-white rounded-md px-4 py-2"
-              onClick={(e) => sendOtpToMobile(e)}
-              disabled={isSendOtpLoading}
-            >
-              {isSendOtpLoading ? <SpinLoading /> : "Send OTP"}
-            </button>
-          )}
-        </div>
-      </div>
-    </div>
-  </div>
-)}
+              {checked && (
+                <div className="flex flex-row justify-between w-full gap-4">
+                  <div className="flex flex-col gap-3 flex-[0.9]">
+                    <label className="block text-sm font-medium mb-1">
+                      Mobile Number<span className="text-red-400"> *</span>
+                      {formik.values.otpVerified && (
+                        <span className="ml-2 text-green-500">
+                          <VerifiedIcon className="inline-block w-4 h-4" />
+                          <span className="ml-1 text-xs">Verified</span>
+                        </span>
+                      )}
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="number"
+                        min="0"
+                        className="border-[1px] border-[#f2f3f8] rounded-md p-2 w-96 lg:w-[46%] focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent pr-24"
+                        placeholder="Enter mobile number"
+                        value={formik.values.mobile || formik.values.otpMobile}
+                        onChange={formik.handleChange}
+                        name="otpMobile"
+                      />
+                      <div className="absolute right-6 sm:right-4 md:right-96 top-1/2 -translate-y-1/2">
+                        {!formik.values.otpVerified && (
+                          <button
+                            className="bg-[#004181] text-white rounded-md px-4 py-2"
+                            onClick={(e) => sendOtpToMobile(e)}
+                            disabled={isSendOtpLoading}
+                          >
+                            {isSendOtpLoading ? <SpinLoading /> : "Send OTP"}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -1225,7 +1226,6 @@ const AddCloseAccount = () => {
           >
             Clear
           </button>
-          
         </div>
       </form>
       {otpSended && (

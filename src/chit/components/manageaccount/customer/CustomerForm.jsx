@@ -152,20 +152,18 @@ const CustomerForm = ({
 
   const validationSchema = Yup.object({
     firstname: Yup.string().required("First name is required"),
-    // lastname: Yup.string().required("Last name is required"),
     mobile: Yup.string()
-      .required("Mobile number is required")
-      .matches(/^\d{10}$/, "Mobile number must be 10 digits"),
+    .required("Mobile number is required")
+    .matches(
+      /^[6-9]\d{9}$/,
+      "Enter 10 digits without +91 or leading zero"
+    ),
     gender: Yup.number().required("Gender is required"),
     address: Yup.string().required("Address is required"),
     id_country: Yup.string().required("Country is required"),
     id_state: Yup.string().required("State is required"),
     id_city: Yup.string().required("City is required"),
-    // date_of_birth: Yup.date()
-    //   .typeError("Invalid date format")
-    //   .required("Birth Date is required"),
     date_of_birth: Yup.date()
-      // .required("Birth date is required")
       .max(
         new Date(new Date().setFullYear(new Date().getFullYear() - 18)),
         "Customer must be at least 18 years old"
@@ -180,12 +178,6 @@ const CustomerForm = ({
       .nullable()
       .oneOf([Yup.ref("password")], "Passwords must match")
       .notRequired(),
-    // aadharNumber: Yup.string()
-    //   .required("Aadhaar number is required")
-    //   .matches(/^\d{12}$/, "Aadhaar number must be exactly 12 digits"),
-    // pan: Yup.string()
-    //   .required("PAN card number is required")
-    //   .matches(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, "Invalid PAN card format"),
   });
 
   const formik = useFormik({

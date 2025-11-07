@@ -77,6 +77,7 @@ function PreCloseReport() {
     setCurrentPage(pageNumber);
   };
 
+  const rejectWeightField = [0, 8, 13, 11, 1, 7];
   useEffect(() => {
     const process = preCloseData.map((item, index) => ({
       "S.No": index + 1,
@@ -88,12 +89,7 @@ function PreCloseReport() {
       "Total Paid Installment":item.total_paid_installments,
       "Total Installment":item.total_installments,
       "Total amount":item.totalPaidAmount,
-      "Total Weight":item.totalPaidWeight,
-      // "Classifictaion Name":item.classification_name,
-      // "Created At":item.createdAt,
-      // "Maturity date":item.maturity_date,
-      // "Last Paid Date":item.last_paid_date,
-      // "Closed Date":item.closed_date,
+      "Total Weight":!rejectWeightField.includes(item.schemeType) ? item.totalPaidWeight : "-",
       "PaymentModename":item?.paymentModename,
       "Bonus Amount": item?.closingBonus ? spliceDecimals(item?.closingBonus,3) : "-",
       "Bill Number":item.bill_no,
@@ -136,7 +132,6 @@ function PreCloseReport() {
     },
     {
       header: "Paid Amount",
-      // cell: (row) => row?.totalPaidAmount,
       cell: (row) => (
         <div style={{ textAlign: 'right' }}>
           {formatNumber({value:row?.totalPaidAmount,decimalPlaces:0})}
@@ -145,7 +140,17 @@ function PreCloseReport() {
     },
     {
       header: "Paid Weight",
-      cell: (row) => `${spliceDecimals(row?.totalPaidWeight,3)} g`,
+      cell: (row) => {
+        const {
+          schemeType
+        } = row
+
+        if(!rejectWeightField.includes(schemeType)){
+          return `${spliceDecimals(row?.totalPaidWeight,3)} g`
+        }else{
+          return '-'
+        }
+      }
     },
     {
       header: "Classification",
@@ -157,16 +162,6 @@ function PreCloseReport() {
     },
     {
       header: "Last Paid Date",
-      // cell: (row) => {
-      //   if (!row?.last_paid_date) return "-"; 
-      //   const date = new Date(row.last_paid_date);
-      //   if (isNaN(date)) return "-"; 
-      //   return date.toLocaleDateString("en-GB", {
-      //     year: "numeric",
-      //     month: "numeric",
-      //     day: "numeric",
-      //   });
-      // },
       cell:(row)=>formatDate(row?.last_paid_date)
     },
     {
@@ -175,16 +170,6 @@ function PreCloseReport() {
     },
    {
       header: "Closed Date",
-      // cell: (row) => {
-      //   if (!row?.closedDate) return "-"; 
-      //   const date = new Date(row.closedDate);
-      //   if (isNaN(date)) return "-"; 
-      //   return date.toLocaleDateString("en-GB", {
-      //     year: "numeric",
-      //     month: "numeric",
-      //     day: "numeric",
-      //   });
-      // },
       cell:(row)=>formatDate(row?.closedDate)
     },
     {
@@ -193,35 +178,6 @@ function PreCloseReport() {
     },
     {
       header: "Bill Date",
-      // cell: (row) => {
-      //   const rawDate = row?.bill_date;
-
-      //   if (!rawDate) return "-";
-
-      //   let dateObj;
-
-
-      //   dateObj = new Date(rawDate);
-
-
-      //   if (isNaN(dateObj.getTime())) {
-      //     const parts = rawDate.split(/[-/]/);
-      //     if (parts.length === 3) {
-      //       const [day, month, year] = parts.map(Number);
-      //       dateObj = new Date(year, month - 1, day);
-      //     }
-      //   }
-
-      //   if (isNaN(dateObj.getTime())) {
-      //     return rawDate;
-      //   }
-
-      //   return dateObj.toLocaleDateString("en-GB", {
-      //     day: "numeric",
-      //     month: "numeric",
-      //     year: "numeric",
-      //   });
-      // },
       cell:(row)=>formatDate(row?.bill_date)
     },   
 

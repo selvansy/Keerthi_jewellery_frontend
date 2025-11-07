@@ -409,7 +409,7 @@ export const DeptForm = ({ closeIncommingModal, id, clearId }) => {
     },
     onError: (error) => {
       setIsLoading(false);
-      toast.error(error.response.message);
+      toast.error(error.response?.data?.message);
     },
   });
 

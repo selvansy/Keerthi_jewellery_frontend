@@ -57,10 +57,8 @@ const CreateDigiGoldScheme = () => {
 
   // Improved cleanup function
   const destroyAllStates = () => {
-    console.log("Cleaning up all states...");
-    
-    // Reset all state variables to their initial values
-    setBranch(accessBranch === "0" ? [] : {});
+
+    // setBranch(accessBranch === "0" ? [] : {});
     setLayoutColor("#015173");
     setStaticData({});
     setIsLoading(false);
@@ -132,7 +130,7 @@ const CreateDigiGoldScheme = () => {
       scheme_name: "",
       description: "",
       term_desc: "",
-      id_branch: accessBranch !== "0" ? accessBranch : id_branch || "",
+      id_branch: accessBranch !== "0" ? accessBranch : id_branch,
       id_metal: "",
       id_purity: "",
       id_classification: "",
@@ -275,6 +273,8 @@ const CreateDigiGoldScheme = () => {
       }
     }
   });
+
+
  
   // API calls
   const { data: branchData } = useQuery({
@@ -410,6 +410,15 @@ const CreateDigiGoldScheme = () => {
       }
     }
   }, [digigoldData, silver]);
+
+  useEffect(() => {
+    if (!formik.values.id_branch) {
+      const branchToSet = accessBranch !== "0" ? accessBranch : id_branch;
+      if (branchToSet && formik.values.id_branch !== branchToSet) {
+        formik.setFieldValue("id_branch", branchToSet);
+      }
+    }
+  }, [accessBranch, id_branch]);  
 
   // Fixed: Only populate form data when ALL required data is available
   useEffect(() => {

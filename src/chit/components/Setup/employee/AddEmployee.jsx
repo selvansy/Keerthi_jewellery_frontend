@@ -623,13 +623,18 @@ const AddEmployee = () => {
                 type="text"
                 name={field}
                 value={formik.values[field]}
+                maxLength={10}
                 // onChange={formik.handleChange}
                             onChange={(e) => {
-                              formik.setFieldValue(field, e.target.value.toUpperCase());
+                              const value = e.target.value
+                                .toUpperCase()
+                                .replace(/[^A-Z0-9]/g, "");
+                                 formik.setFieldValue(field, value);
+                              // formik.setFieldValue(field, e.target.value.toUpperCase());
                             }}
                 onBlur={formik.handleBlur}
                 className="w-full border-[1px] border-[#f2f3f8] rounded-md px-3 py-2"
-                placeholder={`Enter pancard number`}
+                placeholder={`Enter Pancard number`}
               />
             ) : (
               <input
